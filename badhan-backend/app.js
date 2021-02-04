@@ -7,7 +7,7 @@ const env = process.env.NODE_ENV || 'development';
 console.log(env);
 
 if (env === 'development') {
-    MONGODB
+    MONGODB_URI = "mongodb://localhost:27017/Badhan"
 }
 
 const exec = require('child_process').exec
