@@ -6,11 +6,10 @@ const env = process.env.NODE_ENV || 'development';
 
 console.log(env);
 
-// if (env === 'development') {
-//     process.env.MONGODB_URI = 'mongodb+srv://shwarup:shawroop@product.xwfvv.mongodb.net/Chaldal?retryWrites=true&w=majority';
-// } else {
-//     process.env.MONGODB_URI = 'mongodb+srv://shwarup:shawroop@product.xwfvv.mongodb.net/Chaldal?retryWrites=true&w=majority';
-// }
+if (env === 'development') {
+    MONGODB
+}
+
 const exec = require('child_process').exec
 const fs = require('fs')
 const colors = require('colors')
