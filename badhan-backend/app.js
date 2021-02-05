@@ -1,19 +1,17 @@
 const dotenv = require('dotenv')
-//LOAD ENV VARS
+
 dotenv.config( { path : './config/config.env'} )
 
 const env = process.env.NODE_ENV || 'development';
-
-console.log(env);
 
 if (env === 'development') {
     MONGODB_URI = "mongodb://localhost:27017/Badhan"
 }
 
-const exec = require('child_process').exec
-const fs = require('fs')
-const colors = require('colors')
-const errorHandler = require('./middleware/error')
+const exec = require('child_process').exec;
+const fs = require('fs');
+const colors = require('colors');
+const errorHandler = require('./middleware/error');
 const history = require('connect-history-api-fallback');
 const bodyParser=require('body-parser');
 let createError = require('http-errors');
