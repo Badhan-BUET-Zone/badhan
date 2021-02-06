@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 const jwt = require('jsonwebtoken');
 
 const donorSchema = new mongoose.Schema({
@@ -65,6 +64,21 @@ const donorSchema = new mongoose.Schema({
             required: true
         }
     }]
+});
+
+donorSchema.pre('save', function (next) {
+    let donor = this;
+    if (donor.isModified('password')){
+        bcrypt.genSalt(10, (err,salt) => {
+            bcrypt.hash(donor.password, salt,(err, hash) => {
+                donor.password = hash;
+                donor.tokens = [];
+                next();
+            })
+        })
+    } else {
+        next();
+    }
 });
 
 

@@ -1,45 +1,148 @@
 const Donor = require('../models/Donor');
 
+const insertDonor = async (donorObject) => {
+    try {
+        let donor = new Donor(donorObject);
+        let data = await donor.save();
+
+        if (data.nInserted === 0){
+            return {
+                message: 'Donor insertion failed',
+                status: 'ERROR'
+            }
+        } else {
+            return {
+                message: 'Donor insertion successful',
+                status: 'OK'
+            };
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'ERROR'
+        }
+    }
+};
 
 
-const generateAuthToken = async function() {
-    const user = this;
+const deleteDonor = async (donorID) => {
+    try {
+        let data = await Donor.findOneAndDelete({_id: donorID});
+        if (data){
+            return {
+                message: 'Donor removed successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                message: 'Could not remove donor',
+                status: 'ERROR'
+            }
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
 
-    const token = await jwt.sign({ _id: user._id.toString() }, 'secretkey');
+const findDonorByQuery = async (query, option) => {
+    try {
+        let data = await Donor.findOne(query, option);
+        if (data){
+            return {
+                data,
+                message: 'Donor found',
+                status: 'OK'
+            }
+        } else {
+            return {
+                data: null,
+                message: 'Donor not found',
+                status: 'ERROR'
+            }
+        }
 
-    user.tokens = [{ token }];
-    await user.save();
+    } catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
 
-    return token;
+const findDonorsByQuery = async (query, option) => {
+    try {
+        let data = await Donor.find(query, option);
+        let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+        return {
+            data,
+            message,
+            status: 'OK'
+        };
+    } catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
+
+
+const findDonorByIDAndUpdate = async (id, update) => {
+    try {
+        let data = await Donor.findByIdAndUpdate(id, update);
+
+        if (data){
+            return {
+                data,
+                message: 'Donor updated successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                data: null,
+                message: 'Donor update failed',
+                status: 'ERROR'
+            };
+        }
+
+    } catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'ERROR'
+        };
+    }
+};
+
+const findDonorAndUpdate = async (query, donorUpdate) => {
+    try {
+        let data = await Donor.findOneAndUpdate(query, donorUpdate, {
+            returnOriginal: false
+        });
+
+        return {
+            status: 'OK',
+            message: 'Donor updated successfully'
+        };
+    } catch (e) {
+        return {
+            status: 'EXCEPTION',
+            message: 'Donor update unsuccessful'
+        };
+    }
 }
 
-const authenticate = async function(token) {
 
-    const donor = this;
-
-    if (!donor) {
-        throw new Error('User does not exist.');
-    }
-
-    if (donor.tokens[0].token !== token) {
-        throw new Error('User is not authenticated.')
-    }
-
-    return donor;
-
-}
-
-const findByCredentials = async function(phone, password) {
-
-    const donor = await Donor.findOne({ phone });
-
-    if (!donor) {
-        throw new Error('Unable to find donor with this phone number.');
-    }
-
-    if (password.localeCompare(donor.password) !== 0) {
-        throw new Error(`Incorrect password ${password}`);
-    }
-
-    return donor;
+module.exports = {
+    insertDonor,
+    deleteDonor,
+    findDonorByQuery,
+    findDonorsByQuery,
+    findDonorByIDAndUpdate,
+    findDonorAndUpdate
 }

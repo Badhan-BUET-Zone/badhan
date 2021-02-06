@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
-
+//DONE
 router.post('/insert', async(req, res) => {
     try {
         var reqBody = req.body;
@@ -60,7 +60,7 @@ router.post('/insert', async(req, res) => {
 
 });
 
-
+//DONE
 router.post('/search', async(req, res) => {
 
     try {
@@ -144,8 +144,10 @@ router.post('/search', async(req, res) => {
     }
 });
 
+
 //seeHistory
 
+//DONE
 router.post('/seeHistory', async(req, res) => {
     try {
         const user = await Donor.findOne({ phone: req.body.userPhone });
@@ -645,7 +647,6 @@ router.post('/changeAdmin', async(req, res) => {
 
 
 router.post('/showAdmins', async(req, res) => {
-
     try {
         var reqBody = req.body;
         var user = await Donor.findOne({ phone: reqBody.userPhone });
