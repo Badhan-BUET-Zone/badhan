@@ -529,7 +529,7 @@ const handleGETViewVolunteers = async (req, res) => {
         let donorsQueryResult = await donorInterface.findDonorsByQuery({
             hall: userHall,
             designation: 1
-        });
+        }, {});
 
         if (donorsQueryResult.status !== 'OK') {
             return res.status(400).send({
@@ -554,6 +554,155 @@ const handleGETViewVolunteers = async (req, res) => {
     }
 }
 
+
+/**
+ * This function handles the changing of a hall admin.
+ *
+ * The request body is expected to contain:
+ * &emsp; donorPhone -> THe phone number of the user who is to be promoted to hall admin
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ */
+const handlePOSTChangeAdmin = async (req, res) => {
+    try {
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+        let userDesignation = authenticatedUser.designation;
+
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            phone: req.body.donorPhone
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+        let donorDesignation = donor.designation;
+
+        if (userDesignation !== 3 || donorDesignation !== 1) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to change hall admins'
+            });
+        }
+
+        // Make previous hall admin volunteer
+
+        let donorHall = donor.hall;
+        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({ hall: donorHall, designation: 2 });
+
+        if (prevHallAdminQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Could not change hall admin'
+            });
+        }
+
+        let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+            hall: donorHall,
+            designation: 2
+        }, {
+            $set: {
+                designation: 1,
+            }
+        });
+
+        if (prevHallAdminUpdateResult.status !== 'OK') {
+            return res.status(400).send({
+                status: prevHallAdminUpdateResult,
+                message: 'Could not change hall admin'
+            });
+        }
+
+        // Make new hall admin
+        let newHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+            phone: req.body.donorPhone
+        }, {
+            $set: {
+                designation: 2,
+            }
+        });
+
+        if (newHallAdminUpdateResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Demoted previous hall admin, but could not set new hall admin'
+            });
+        }
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully changed hall admin'
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+
+/**
+ * This function handles the fetching of hall admin list for a super admin.
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ */
+const handlePOSTShowHallAdmins = async (req, res) => {
+    try {
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+
+        if (authenticatedUser.designation !== 3) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to view hall admins'
+            });
+        }
+
+        let adminsQueryResult = await donorInterface.findDonorsByQuery({ designation: 2 }, {});
+
+        if (adminsQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: adminsQueryResult.status,
+                message: adminsQueryResult.message
+            });
+        }
+
+        let admins = adminsQueryResult.data;
+
+        const filteredAdmins = [];
+
+        for (let i = 0; i < admins.length; i++) {
+            let obj = {
+                phone: admins[i].phone,
+                hall: admins[i].hall,
+                name: admins[i].name
+            };
+            filteredAdmins.push(obj);
+        }
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Hall admin list fetched successfully',
+            filteredAdmins
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+
+}
+
+
 module.exports = {
     handlePOSTInsertDonor,
     handleGETSearchDonors,
@@ -561,5 +710,7 @@ module.exports = {
     handlePOSTChangePassword,
     handlePOSTEditDonor,
     handlePOSTPromote,
-    handleGETViewVolunteers
+    handleGETViewVolunteers,
+    handlePOSTChangeAdmin,
+    handlePOSTShowHallAdmins
 }

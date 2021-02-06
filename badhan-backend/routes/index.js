@@ -595,6 +595,7 @@ router.post('/volunteers', async (req, res) => {
 
 
 //changeAdmin
+//Done
 router.post('/changeAdmin', async(req, res) => {
     try {
         const user = await Donor.findOne({ phone: req.body.userPhone });
@@ -650,6 +651,7 @@ router.post('/changeAdmin', async(req, res) => {
 });
 
 
+//Done
 router.post('/showAdmins', async(req, res) => {
     try {
         var reqBody = req.body;
