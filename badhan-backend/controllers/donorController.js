@@ -703,6 +703,58 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 }
 
 
+/**
+ * This function handles the fetching of donor details.
+ *
+ * The request body is expected to contain:
+ *
+ * &espm; donorPhone -> The phone number for the target donor
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ */
+const handlePOSTViewDonorDetails = async (req, res) => {
+    try {
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            phone: req.body.donorPhone
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+
+        let obj = {
+            phone: donor.phone,
+            name: donor.name,
+            studentId: donor.studentId,
+            lastDonation: donor.lastDonation,
+            bloodGroup: donor.bloodGroup,
+            hall: donor.hall,
+            roomNumber: donor.roomNumber,
+            address: donor.address,
+            comment: donor.comment,
+            designation: donor.designation
+        }
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            donor: obj
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 module.exports = {
     handlePOSTInsertDonor,
     handlePOSTSearchDonors,
@@ -712,5 +764,6 @@ module.exports = {
     handlePOSTPromote,
     handlePOSTViewVolunteers,
     handlePOSTChangeAdmin,
-    handlePOSTShowHallAdmins
+    handlePOSTShowHallAdmins,
+    handlePOSTViewDonorDetails
 }
