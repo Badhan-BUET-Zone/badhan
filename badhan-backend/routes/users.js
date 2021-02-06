@@ -3,11 +3,6 @@ require('./../config/config');
 const express = require('express');
 const router = express.Router();
 
-
-const { mongoose } = require('./../db/mongoose');
-const { Donor } = require('./../db/models/Donor');
-const { Donation } = require('./../db/models/Donation');
-
 const donorController = require('../controllers/donorController');
 const donationController = require('../controllers/donationController');
 const authenticator = require('../middlewares/authenticate');

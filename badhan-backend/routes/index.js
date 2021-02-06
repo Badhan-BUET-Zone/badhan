@@ -1,12 +1,6 @@
-require('./../config/config');
+let express = require('express');
+let router = express.Router();
 
-var express = require('express');
-var router = express.Router();
-
-const moment = require('moment');
-const {mongoose} = require('./../db/mongoose');
-const {Donor} = require('./../db/models/Donor');
-const {Donation} = require('./../db/models/Donation');
 
 const donorController = require('../controllers/donorController');
 const donationController = require('../controllers/donationController');
