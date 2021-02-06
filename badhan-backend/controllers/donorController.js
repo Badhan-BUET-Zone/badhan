@@ -84,7 +84,7 @@ const handlePOSTInsertDonor = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
-const handleGETSearchDonors = async (req, res) => {
+const handlePOSTSearchDonors = async (req, res) => {
     try {
         let reqBody = req.body;
 
@@ -512,7 +512,7 @@ const handlePOSTPromote = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
-const handleGETViewVolunteers = async (req, res) => {
+const handlePOSTViewVolunteers = async (req, res) => {
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
         let userDesignation = authenticatedUser.designation;
@@ -705,12 +705,12 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 
 module.exports = {
     handlePOSTInsertDonor,
-    handleGETSearchDonors,
+    handlePOSTSearchDonors,
     handlePOSTComment,
     handlePOSTChangePassword,
     handlePOSTEditDonor,
     handlePOSTPromote,
-    handleGETViewVolunteers,
+    handlePOSTViewVolunteers,
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins
 }
