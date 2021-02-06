@@ -496,6 +496,7 @@ router.post('/edit', async(req, res) => {
 /********Hall admin APIs*********/
 
 //promote
+//Done
 router.post('/promote', async(req, res) => {
     try {
         const user = await Donor.findOne({ phone: req.body.userPhone });
@@ -564,7 +565,7 @@ router.post('/promote', async(req, res) => {
 
 
 // Hall admin gets volunteers
-
+//Done
 router.post('/volunteers', async (req, res) => {
     try {
         const user = await Donor.findOne({phone: req.body.userPhone});

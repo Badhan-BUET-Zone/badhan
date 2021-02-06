@@ -506,11 +506,60 @@ const handlePOSTPromote = async (req, res) => {
 }
 
 
+/**
+ * This function handles the fetching of volunteer lists for a hall admin.
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ */
+const handleGETViewVolunteers = async (req, res) => {
+    try {
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+        let userDesignation = authenticatedUser.designation;
+
+        let userHall = authenticatedUser.hall;
+
+        if (userDesignation !== 2) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to view volunteer list'
+            });
+        }
+
+        let donorsQueryResult = await donorInterface.findDonorsByQuery({
+            hall: userHall,
+            designation: 1
+        });
+
+        if (donorsQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorsQueryResult.status,
+                message: donorsQueryResult.message
+            });
+        }
+
+        let volunteerList = donorsQueryResult.data;
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Volunteer list fetched successfully',
+            volunteerList
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 module.exports = {
     handlePOSTInsertDonor,
     handleGETSearchDonors,
     handlePOSTComment,
     handlePOSTChangePassword,
     handlePOSTEditDonor,
-    handlePOSTPromote
+    handlePOSTPromote,
+    handleGETViewVolunteers
 }
