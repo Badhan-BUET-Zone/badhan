@@ -46,6 +46,27 @@ const deleteDonation = async (donationID) => {
         }
     }
 };
+const deleteDonationByQuery = async (query) => {
+    try {
+        let data = await Donation.findOneAndDelete(query);
+        if (data){
+            return {
+                message: 'Donation removed successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                message: 'Could not remove donation',
+                status: 'ERROR'
+            }
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
 
 const findDonationByQuery = async (query, option) => {
     try {
@@ -96,5 +117,6 @@ module.exports = {
     insertDonation,
     deleteDonation,
     findDonationByQuery,
-    findDonationsByQuery
+    findDonationsByQuery,
+    deleteDonationByQuery
 }
