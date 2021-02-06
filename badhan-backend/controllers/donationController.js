@@ -6,8 +6,8 @@ const donationInterface = require('../db/interfaces/donationInterface');
  * The request body is expected to contain:
  *      donorPhone -> The phone number for the target donor
  *
- * @param req The request for this http request-response cycle.
- * @param res The response for this http request-response cycle.
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
  */
 const handleGETSeeHistory = async (req, res) => {
     try {
@@ -64,8 +64,8 @@ const handleGETSeeHistory = async (req, res) => {
  *      donorPhone -> The phone number for the target donor
  *      date -> The date of the donation that is to be inserted
  *
- * @param req The request for this http request-response cycle.
- * @param res The response for this http request-response cycle.
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
  */
 const handlePOSTInsertDonation = async (req, res) => {
     try {
@@ -178,8 +178,8 @@ const handlePOSTInsertDonation = async (req, res) => {
  *      donorPhone -> The phone number for the target donor
  *      date -> The date of the donation that is to be deleted
  *
- * @param req The request for this http request-response cycle.
- * @param res The response for this http request-response cycle.
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
  */
 const handlePOSTDeleteDonation = async (req, res) => {
     try {

@@ -271,6 +271,7 @@ router.post('/comment', async(req, res) => {
 });
 
 //deleteDonation
+//DONE
 router.post('/deleteDonation', async(req, res) => {
     try {
         const user = await Donor.findOne({ phone: req.body.userPhone });

@@ -7,8 +7,8 @@ const donationInterface = require('../db/interfaces/donationInterface');
  * The request body is expected to contain donorObject which is a JSON object containing
  * a fully constructed donor document.
  *
- * @param req The request for this http request-response cycle.
- * @param res The response for this http request-response cycle.
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
  */
 const handlePOSTInsertDonor = async (req, res) => {
     try {
@@ -77,11 +77,13 @@ const handlePOSTInsertDonor = async (req, res) => {
 
 /**
  * This function handles the filtered query of donors from the database.
- * The request body is expected to contain a search filter, that can optionally be empty.
+ * The request body is expected to contain:
+ *      A search filter, that can optionally be empty
+ *
  * An empty search filter would return all donor documents in the database.
  *
- * @param req The request for this http request-response cycle.
- * @param res The response for this http request-response cycle.
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
  */
 const handleGETSearchDonors = async (req, res) => {
     try {
@@ -159,12 +161,12 @@ const handleGETSearchDonors = async (req, res) => {
 
 /**
  * This function adds a comment to a donor's profile.
- * The request body is expected to contain donorPhone, which is the phone
- * number of the donor to whose profile the comment is to be added.
- * The request body is expected to contain comment, which is the comment to be added
+ * The request body is expected to contain:
+ *      donorPhone -> The phone number for the target donor
+ *      comment -> The comment to be added
  *
- * @param req The request for this http request-response cycle.
- * @param res The response for this http request-response cycle.
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
  */
 const handlePOSTComment = async (req, res) => {
     try {
@@ -196,7 +198,76 @@ const handlePOSTComment = async (req, res) => {
 }
 
 
+/**
+ * This function handles the changing of password for an account.
+ * The request body is expected to contain:
+ *      donorPhone -> The phone number for the target donor
+ *      newPassword -> The new password that is to be set
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ * @returns {Promise<*>}
+ */
+const handlePOSTChangePassword = async (req, res) => {
+    try {
+        let reqBody = req.body;
+
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+
+        if (authenticatedUser.designation === 0) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to change password'
+            });
+        }
+
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            phone: reqBody.donorPhone
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let target = donorQueryResult.data;
+
+        if (target.designation === 0) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to change password for this donor'
+            });
+        }
+
+        if (authenticatedUser.designation < target.designation || (authenticatedUser.designation === target.designation && authenticatedUser.phone !== target.phone)) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to change password for this donor'
+            });
+        }
+
+        target.password = reqBody.newPassword;
+
+        await target.save();
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Password changed successfully'
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 module.exports = {
     handlePOSTInsertDonor,
-    handleGETSearchDonors
+    handleGETSearchDonors,
+    handlePOSTComment,
+    handlePOSTChangePassword
 }
