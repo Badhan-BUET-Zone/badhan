@@ -12,9 +12,9 @@ const donationInterface = require('../db/interfaces/donationInterface');
  */
 const handlePOSTInsertDonor = async (req, res) => {
     try {
-        let authenticatedDonor = res.locals.middlewareResponse.donor;
+        let authenticatedUser = res.locals.middlewareResponse.donor;
 
-        if (authenticatedDonor.designation === 0) {
+        if (authenticatedUser.designation === 0) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to add donors'
@@ -286,9 +286,9 @@ const handlePOSTEditDonor = async (req, res) => {
     try {
         let reqBody = req.body;
 
-        let authenticatedDonor = res.locals.middlewareResponse.donor;
+        let authenticatedUser = res.locals.middlewareResponse.donor;
 
-        if (authenticatedDonor.designation === 0) {
+        if (authenticatedUser.designation === 0) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit'
@@ -308,9 +308,9 @@ const handlePOSTEditDonor = async (req, res) => {
 
         let target = donorQueryResult.data;
 
-        if (authenticatedDonor.designation < target.designation ||
-            (authenticatedDonor.designation === target.designation
-                && authenticatedDonor.phone !== target.phone)) {
+        if (authenticatedUser.designation < target.designation ||
+            (authenticatedUser.designation === target.designation
+                && authenticatedUser.phone !== target.phone)) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit this donor'
@@ -395,10 +395,122 @@ const handlePOSTEditDonor = async (req, res) => {
 }
 
 
+/**
+ * This function handles the promotion or demotion of users.
+ *
+ * The request body is expected to contain:
+ *
+ * &emsp; donorPhone -> The phone number of the target user
+ *
+ * &emsp; promoteFlag -> A boolean indicating either promotion or demotion
+ *
+ * &emsp; newPassword -> Present when promoteFlag is true, i.e. when promoting a general user to one with access credentials
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ */
+const handlePOSTPromote = async (req, res) => {
+    try {
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            phone: req.body.donorPhone
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+        let donorDesignation = donor.designation;
+
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+        let userDesignation = authenticatedUser.designation;
+
+        if (!((donorDesignation === 0 || donorDesignation === 1) && (userDesignation === 2 || userDesignation === 3))) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User can not promote the target entity'
+            });
+        }
+        if ((donorDesignation === 1 && req.body.promoteFlag) || (donorDesignation === 0 && !req.body.promoteFlag)) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Can\'t promote volunteer or can\'t demote donor'
+            });
+        }
+        if (userDesignation === 2) {
+            if (authenticatedUser.hall !== donor.hall) {
+                return res.status(401).send({
+                    status: 'ERROR',
+                    message: 'Hall admin can\'t promote donors or demote volunteers of different halls'
+                });
+            }
+        }
+
+        let newDesignation;
+
+        if (req.body.promoteFlag) {
+            newDesignation = donorDesignation + 1;
+        } else {
+            newDesignation = donorDesignation - 1;
+        }
+
+        if (req.body.promoteFlag) {
+            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                phone: req.body.donorPhone
+            }, {
+                $set: {
+                    designation: newDesignation,
+                    password: req.body.newPassword
+                }
+            });
+
+            if (donorUpdateResult.status !== 'OK') {
+                return res.status(400).send({
+                    status: donorUpdateResult.status,
+                    message: donorUpdateResult.message
+                });
+            }
+        } else {
+
+            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                phone: req.body.donorPhone
+            }, {
+                $set: {
+                    designation: newDesignation,
+                    password: null
+                }
+            });
+
+            if (donorUpdateResult.status !== 'OK') {
+                return res.status(400).send({
+                    status: donorUpdateResult.status,
+                    message: donorUpdateResult.message
+                });
+            }
+        }
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Target user promoted/demoted successfully'
+        });
+
+    } catch (e) {
+        res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+
 module.exports = {
     handlePOSTInsertDonor,
     handleGETSearchDonors,
     handlePOSTComment,
     handlePOSTChangePassword,
-    handlePOSTEditDonor
+    handlePOSTEditDonor,
+    handlePOSTPromote
 }
