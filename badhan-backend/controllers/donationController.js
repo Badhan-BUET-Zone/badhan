@@ -48,13 +48,24 @@ const handleGETSeeHistory = async (req, res) => {
             });
         }
     } catch (e) {
-        res.status(500).send({
+        return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
         });
     }
 }
 
+
+/**
+ * This function handles the insertion of a new donation for a donor.
+ * The request body is expected to contain donorPhone, which is the phone number for
+ * the donor whose donation history is to be updated.
+ * Additionally, the request body is expected to contain date, which is the date of
+ * the donation under consideration.
+ *
+ * @param req The request for this http request-response cycle.
+ * @param res The response for this http request-response cycle.
+ */
 const handlePOSTInsertDonation = async (req, res) => {
     try {
         let authenticatedDonor = res.locals.middlewareResponse.donor;
@@ -75,74 +86,94 @@ const handlePOSTInsertDonation = async (req, res) => {
 
             let newDonationCount = donor.donationCount + 1;
 
-            if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
-                let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-                    phone: donor.phone
-                }, {
-                    $set: {
-                        lastDonation: req.body.date,
-                        donationCount: newDonationCount
-                    }
-                });
-
-                if (donorUpdateResult.status === 'OK') {
-
-                } else {
-                    return res.status(400).send({
-                        status: 'ERROR',
-                        message: 'Donation insertion unsuccessful'
-                    });
-                }
-
-            } else if (donor.donationCount !== 0 && req.body.date <= donor.lastDonation) {
-                let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-                    phone: donor.phone
-                }, {
-                    $set: {
-                        donationCount: newDonationCount
-                    }
-                }, {
-                    returnOriginal: false
-                });
-
-                if (donorUpdateResult.status === 'OK') {
-
-                } else {
-                    return res.status(400).send({
-                        status: 'ERROR',
-                        message: 'Donation insertion unsuccessful'
-                    });
-                }
-
-            }
 
             let donationInsertionResult = await donationInterface.insertDonation({
-                phone: req.body.donorPhone,
+                phone: donor.phone,
                 date: req.body.date
             });
 
-            let newDonation = new Donation({
-                phone: req.body.donorPhone,
-                date: req.body.date
+            if (donationInsertionResult.status === 'OK') {
+                if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
+                    let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                        phone: donor.phone
+                    }, {
+                        $set: {
+                            lastDonation: req.body.date,
+                            donationCount: newDonationCount
+                        }
+                    });
+
+                    if (donorUpdateResult.status === 'OK') {
+                        return res.status(200).send({
+                            status: 'OK',
+                            message: 'Donation inserted successfully'
+                        });
+                    } else {
+                        let donationQueryResult = await donationInterface.findDonationByQuery({
+                            phone: donor.phone,
+                            date: req.body.date
+                        }, {});
+
+                        await donationInterface.deleteDonation(donationQueryResult.data._id);
+
+                        return res.status(400).send({
+                            status: 'ERROR',
+                            message: 'Donation insertion unsuccessful'
+                        });
+                    }
+
+                } else if (donor.donationCount !== 0 && req.body.date <= donor.lastDonation) {
+                    let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                        phone: donor.phone
+                    }, {
+                        $set: {
+                            donationCount: newDonationCount
+                        }
+                    }, {
+                        returnOriginal: false
+                    });
+
+                    if (donorUpdateResult.status === 'OK') {
+                        return res.status(200).send({
+                            status: 'OK',
+                            message: 'Donation inserted successfully'
+                        });
+                    } else {
+                        let donationQueryResult = await donationInterface.findDonationByQuery({
+                            phone: donor.phone,
+                            date: req.body.date
+                        }, {});
+
+                        await donationInterface.deleteDonation(donationQueryResult.data._id);
+
+                        return res.status(400).send({
+                            status: 'ERROR',
+                            message: 'Donation insertion unsuccessful'
+                        });
+                    }
+                }
+
+            } else {
+                return res.status(400).send({
+                    status: 'ERROR',
+                    message: donationInsertionResult.message
+                });
+            }
+        } else {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Target donor not found'
             });
-
-            const doc = await newDonation.save();
-
-            res.send({
-                success: true,
-                message: "Donation saved"
-            });
-
         }
-
-
-
-
-
     } catch (e) {
-        res.status(400).send({
-            success: false,
-            message: e.toString()
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
         });
     }
+}
+
+module.exports = {
+    handleGETSeeHistory,
+    handlePOSTInsertDonation
 }
