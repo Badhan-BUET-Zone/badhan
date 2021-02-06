@@ -157,6 +157,45 @@ const handleGETSearchDonors = async (req, res) => {
     }
 }
 
+/**
+ * This function adds a comment to a donor's profile.
+ * The request body is expected to contain donorPhone, which is the phone
+ * number of the donor to whose profile the comment is to be added.
+ * The request body is expected to contain comment, which is the comment to be added
+ *
+ * @param req The request for this http request-response cycle.
+ * @param res The response for this http request-response cycle.
+ */
+const handlePOSTComment = async (req, res) => {
+    try {
+        const donorUpdateResult = await donorInterface.findDonorAndUpdate({
+            phone: req.body.donorPhone
+        }, {
+            $set: {
+                comment: req.body.comment
+            }
+        });
+
+        if (donorUpdateResult.status === 'OK') {
+            return res.status(200).send({
+                status: 'OK',
+                message: 'Comment posted successfully'
+            });
+        } else {
+            return res.status(400).send({
+                status: donorUpdateResult.status,
+                message: donorUpdateResult.message
+            });
+        }
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+
 module.exports = {
     handlePOSTInsertDonor,
     handleGETSearchDonors

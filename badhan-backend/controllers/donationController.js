@@ -129,8 +129,6 @@ const handlePOSTInsertDonation = async (req, res) => {
                         $set: {
                             donationCount: newDonationCount
                         }
-                    }, {
-                        returnOriginal: false
                     });
 
                     if (donorUpdateResult.status === 'OK') {

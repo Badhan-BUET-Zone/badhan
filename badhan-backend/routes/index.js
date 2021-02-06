@@ -146,7 +146,6 @@ router.post('/search', async(req, res) => {
 
 
 //seeHistory
-
 //DONE
 router.post('/seeHistory', async(req, res) => {
     try {
@@ -176,6 +175,7 @@ router.post('/seeHistory', async(req, res) => {
 });
 
 //donate
+//DONE
 router.post('/donate', async(req, res) => {
     try {
         const user = await Donor.findOne({ phone: req.body.userPhone });

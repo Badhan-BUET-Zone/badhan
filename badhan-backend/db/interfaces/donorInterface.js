@@ -124,15 +124,22 @@ const findDonorAndUpdate = async (query, donorUpdate) => {
         let data = await Donor.findOneAndUpdate(query, donorUpdate, {
             returnOriginal: false
         });
-
-        return {
-            status: 'OK',
-            message: 'Donor updated successfully'
-        };
+        if (data) {
+            return {
+                data,
+                status: 'OK',
+                message: 'Donor updated successfully'
+            };
+        } else {
+            return {
+                status: 'ERROR',
+                message: 'Donor not found'
+            }
+        }
     } catch (e) {
         return {
             status: 'EXCEPTION',
-            message: 'Donor update unsuccessful'
+            message: e.message
         };
     }
 }
