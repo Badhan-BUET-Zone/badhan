@@ -68,6 +68,11 @@ router.post('/donor/insert',
 //
 // });
 
+router.post('/donor/details',
+    authenticator.handleAuthentication,
+    donorController.handlePOSTViewDonorDetails
+);
+
 
 router.post('/donor/search',
     authenticator.handleAuthentication,
