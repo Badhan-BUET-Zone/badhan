@@ -49,41 +49,4 @@ router.post('/signin',
 // });
 
 
-
-//See details
-router.post('/seeDetails', async(req, res) => {
-    try {
-        const user = await Donor.findOne({ phone: req.body.userPhone });
-        console.log(user);
-        const authenticatedUser = await user.authenticate(req.body.token);
-
-        const donor = await Donor.findOne({ phone: req.body.donorPhone });
-        if (!donor) {
-            throw new Error('Donor not found');
-        }
-        var obj = {
-          phone: donor.phone,
-          name: donor.name,
-          studentId: donor.studentId,
-          lastDonation: donor.lastDonation,
-          bloodGroup: donor.bloodGroup,
-          hall: donor.hall,
-          roomNumber: donor.roomNumber,
-          address: donor.address,
-          comment: donor.comment,
-          designation: donor.designation
-        }
-        res.send(obj);
-    } catch (e) {
-        res.status(400).send({
-            success: false,
-            message: e.toString()
-        });
-    }
-});
-
-
-
-
-
 module.exports = router;
