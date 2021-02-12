@@ -533,7 +533,14 @@ const handlePOSTViewVolunteers = async (req, res) => {
         let donorsQueryResult = await donorInterface.findDonorsByQuery({
             hall: userHall,
             designation: 1
-        }, {});
+        }, {
+            _id: 0,
+            studentID: 1,
+            name: 1,
+            roomNumber: 1,
+            bloodGroup: 1,
+            phone: 1
+        });
 
         if (donorsQueryResult.status !== 'OK') {
             return res.status(400).send({

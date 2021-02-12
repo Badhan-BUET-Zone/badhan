@@ -670,6 +670,7 @@ router.post('/admin/volunteers',
 
 
 router.post('/admin/hall/change',
+    authenticator.handleAuthentication,
     donorController.handlePOSTChangeAdmin
 );
 
