@@ -20,6 +20,7 @@ const handlePOSTInsertDonor = async (req, res) => {
                 message: 'User does not have permission to add donors'
             });
         }
+        console.log("passed auth");
 
         let donorObject = {
             phone: req.body.phone,
@@ -36,6 +37,8 @@ const handlePOSTInsertDonor = async (req, res) => {
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
 
         if (donorInsertionResult.status === 'OK') {
+            // console.log("donor insertion complete");
+
             if (donorObject.lastDonation !== 0) {
                 // Insert Donation Here
                 let donationObject = {
@@ -45,12 +48,7 @@ const handlePOSTInsertDonor = async (req, res) => {
 
                 let donationInsertionResult = await donationInterface.insertDonation(donationObject);
 
-                if (donationInsertionResult.status === 'OK') {
-                    return res.status(201).send({
-                        status: 'OK',
-                        message: 'New donor inserted successfully'
-                    });
-                } else {
+                if (donationInsertionResult.status !== 'OK') {
                     let donorQueryResult = await donorInterface.findDonorByQuery({phone: req.body.donorObject.phone}, {});
                     let insertedDonor = donorQueryResult.data;
                     await donorInterface.deleteDonor(insertedDonor._id);
@@ -59,8 +57,14 @@ const handlePOSTInsertDonor = async (req, res) => {
                         status: 'ERROR',
                         message: 'New donor insertion unsuccessful'
                     });
+
                 }
             }
+
+            return res.status(201).send({
+                status: 'OK',
+                message: 'New donor inserted successfully'
+            });
         } else {
             return res.status(400).send({
                 status: 'ERROR',
@@ -755,6 +759,37 @@ const handlePOSTViewDonorDetails = async (req, res) => {
     }
 }
 
+
+const handlePOSTAdminSignup = async (req, res) => {
+    try {
+        let token = req.header('x-auth');
+        if (token !== 'lekhaporaputkirmoddhebhoiradimu') {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Invalid secret for signup'
+            });
+        }
+        console.log(req.body.donorObject);
+
+        let donorInsertionResult = await donorInterface.insertDonor(req.body.donorObject);
+
+        if (donorInsertionResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorInsertionResult.status,
+                message: donorInsertionResult.message
+            });
+        }
+
+        return res.status(201).send({
+            status: 'OK',
+            message: 'Signed up successfully'
+        });
+
+    } catch (e) {
+
+    }
+}
+
 module.exports = {
     handlePOSTInsertDonor,
     handlePOSTSearchDonors,
@@ -765,5 +800,6 @@ module.exports = {
     handlePOSTViewVolunteers,
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins,
-    handlePOSTViewDonorDetails
+    handlePOSTViewDonorDetails,
+    handlePOSTAdminSignup
 }

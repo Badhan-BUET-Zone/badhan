@@ -1,4 +1,4 @@
-const Donor = require('../models/Donor');
+const {Donor} = require('../models/Donor');
 
 const insertDonor = async (donorObject) => {
     try {

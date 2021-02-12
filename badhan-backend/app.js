@@ -11,7 +11,6 @@ if (env === 'development') {
 const exec = require('child_process').exec;
 const fs = require('fs');
 const colors = require('colors');
-const errorHandler = require('./middleware/error');
 const history = require('connect-history-api-fallback');
 const bodyParser=require('body-parser');
 let createError = require('http-errors');
@@ -58,7 +57,6 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-app.use( errorHandler )
 
 
 // catch 404 and forward to error handler

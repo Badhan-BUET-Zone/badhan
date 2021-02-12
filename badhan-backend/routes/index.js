@@ -11,10 +11,15 @@ router.post('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
 
+router.post('/admin/signup',
+    donorController.handlePOSTAdminSignup
+);
+
 router.post('/donor/insert',
     authenticator.handleAuthentication,
     donorController.handlePOSTInsertDonor
 );
+
 
 //DONE
 
