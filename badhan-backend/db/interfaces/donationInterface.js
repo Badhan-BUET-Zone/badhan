@@ -1,4 +1,5 @@
 const {Donation} = require('../models/Donation');
+const bcrypt = require('bcryptjs');
 
 const insertDonation = async (donationObject) => {
     try {

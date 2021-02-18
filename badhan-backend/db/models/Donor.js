@@ -76,7 +76,7 @@ donorSchema.pre('save', function (next) {
                 donor.tokens = [];
                 next();
             })
-        })
+        });
     } else {
         next();
     }
