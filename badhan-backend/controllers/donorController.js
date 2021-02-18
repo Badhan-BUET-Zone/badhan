@@ -462,23 +462,11 @@ const handlePOSTPromote = async (req, res) => {
         }
 
         if (req.body.promoteFlag) {
-            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-                phone: req.body.donorPhone
-            }, {
-                $set: {
-                    designation: newDesignation,
-                    password: req.body.newPassword
-                }
-            });
+            donor.designation = newDesignation;
+            donor.password = req.body.newPassword;
 
-            if (donorUpdateResult.status !== 'OK') {
-                return res.status(400).send({
-                    status: donorUpdateResult.status,
-                    message: donorUpdateResult.message
-                });
-            }
+            await donor.save();
         } else {
-
             let donorUpdateResult = await donorInterface.findDonorAndUpdate({
                 phone: req.body.donorPhone
             }, {
