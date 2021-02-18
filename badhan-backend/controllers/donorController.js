@@ -470,6 +470,7 @@ const handlePOSTPromote = async (req, res) => {
 
         donor.designation = newDesignation;
         if (req.body.promoteFlag) {
+
             donor.password = req.body.newPassword;
             await bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(donor.password, salt, (err, hash) => {
