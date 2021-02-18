@@ -606,27 +606,22 @@ const handlePOSTChangeAdmin = async (req, res) => {
         let donorHall = donor.hall;
         let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({ hall: donorHall, designation: 2 });
 
-        if (prevHallAdminQueryResult.status !== 'OK') {
-            return res.status(400).send({
-                status: 'ERROR',
-                message: 'Could not change hall admin'
+        if (prevHallAdminQueryResult.status === 'OK') {
+            let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+                hall: donorHall,
+                designation: 2
+            }, {
+                $set: {
+                    designation: 1,
+                }
             });
-        }
 
-        let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
-            hall: donorHall,
-            designation: 2
-        }, {
-            $set: {
-                designation: 1,
+            if (prevHallAdminUpdateResult.status !== 'OK') {
+                return res.status(400).send({
+                    status: prevHallAdminUpdateResult,
+                    message: 'Could not change hall admin'
+                });
             }
-        });
-
-        if (prevHallAdminUpdateResult.status !== 'OK') {
-            return res.status(400).send({
-                status: prevHallAdminUpdateResult,
-                message: 'Could not change hall admin'
-            });
         }
 
         // Make new hall admin
