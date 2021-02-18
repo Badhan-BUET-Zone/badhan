@@ -1,6 +1,8 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 
+const bcrypt = require('bcryptjs');
+
 
 /**
  * This function handles the insertion of a new donor into the database.
