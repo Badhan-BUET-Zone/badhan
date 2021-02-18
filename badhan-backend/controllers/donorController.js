@@ -258,15 +258,12 @@ const handlePOSTChangePassword = async (req, res) => {
             });
         }
 
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(reqBody.newPassword, salt, (err, hash) => {
+        await bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(reqBody.newPassword, salt, async (err, hash) => {
                 target.password = hash;
                 target.tokens = [];
+                await target.save();
             })
-        }).then(res => {
-            target.save().then(res => {
-                console.log("Updated");
-            });
         });
 
 
@@ -473,19 +470,19 @@ const handlePOSTPromote = async (req, res) => {
 
         donor.designation = newDesignation;
         if (req.body.promoteFlag) {
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(req.body.newPassword, salt, (err, hash) => {
+
+            donor.password = req.body.newPassword;
+            await bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(donor.password, salt, async (err, hash) => {
                     donor.password = hash;
                     donor.tokens = [];
+                    await donor.save();
                 })
-            }).then(res => {
-                donor.save().then(res => {
-                    console.log("Updated");
-                });
             });
 
         } else {
             donor.password = null;
+            await donor.save();
         }
 
         return res.status(200).send({
