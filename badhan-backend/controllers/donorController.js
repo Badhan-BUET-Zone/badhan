@@ -1,8 +1,6 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 
-const bcrypt = require('bcryptjs');
-
 
 /**
  * This function handles the insertion of a new donor into the database.
@@ -258,14 +256,9 @@ const handlePOSTChangePassword = async (req, res) => {
             });
         }
 
-        await bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(reqBody.newPassword, salt, async (err, hash) => {
-                target.password = hash;
-                target.tokens = [];
-                await target.save();
-            })
-        });
+        target.password = reqBody.newPassword;
 
+        await target.save();
 
         return res.status(200).send({
             status: 'OK',
@@ -470,20 +463,11 @@ const handlePOSTPromote = async (req, res) => {
 
         donor.designation = newDesignation;
         if (req.body.promoteFlag) {
-
             donor.password = req.body.newPassword;
-            await bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(donor.password, salt, async (err, hash) => {
-                    donor.password = hash;
-                    donor.tokens = [];
-                    await donor.save();
-                })
-            });
-
         } else {
             donor.password = null;
-            await donor.save();
         }
+        await donor.save();
 
         return res.status(200).send({
             status: 'OK',
@@ -593,7 +577,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
         // Make previous hall admin volunteer
 
         let donorHall = donor.hall;
-        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({hall: donorHall, designation: 2});
+        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({ hall: donorHall, designation: 2 });
 
         if (prevHallAdminQueryResult.status === 'OK') {
             let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
@@ -660,7 +644,7 @@ const handlePOSTShowHallAdmins = async (req, res) => {
             });
         }
 
-        let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {});
+        let adminsQueryResult = await donorInterface.findDonorsByQuery({ designation: 2 }, {});
 
         if (adminsQueryResult.status !== 'OK') {
             return res.status(400).send({
