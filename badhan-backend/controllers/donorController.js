@@ -110,6 +110,11 @@ const handlePOSTSearchDonors = async (req, res) => {
         if (donorsQueryResult.status === 'OK') {
             let donors = donorsQueryResult.data;
 
+            if (reqBody.isAvailable) {
+                let threshold = moment().subtract(120, 'days').valueOf();
+                donors = donors.filter((donor) => donor.lastDonation <= threshold);
+            }
+
             if (reqBody.batch !== '') {
                 donors = donors.filter((donor) => donor.studentId.startsWith(reqBody.batch));
             }
