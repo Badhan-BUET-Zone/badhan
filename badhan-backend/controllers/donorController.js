@@ -33,8 +33,7 @@ const handlePOSTInsertDonor = async (req, res) => {
             address: req.body.address,
             roomNumber: req.body.roomNumber,
             lastDonation: req.body.lastDonation,
-            comment: req.body.comment,
-            contact: req.body.contact
+            comment: req.body.comment
         };
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);

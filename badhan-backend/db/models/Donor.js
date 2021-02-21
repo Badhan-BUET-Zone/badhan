@@ -25,7 +25,6 @@ const donorSchema = new mongoose.Schema({
         minlength: 1,
         maxlength: 1
     },
-    contact: String,
     hall: {
         type: Number,
         required: true,
