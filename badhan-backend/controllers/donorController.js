@@ -33,7 +33,8 @@ const handlePOSTInsertDonor = async (req, res) => {
             address: req.body.address,
             roomNumber: req.body.roomNumber,
             lastDonation: req.body.lastDonation,
-            comment: req.body.comment
+            comment: req.body.comment,
+            contact: req.body.contact
         };
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
@@ -120,6 +121,7 @@ const handlePOSTSearchDonors = async (req, res) => {
             if (reqBody.batch !== '') {
                 donors = donors.filter((donor) => donor.studentId.startsWith(reqBody.batch));
             }
+
             if (reqBody.name !== '') {
                 donors = donors.filter((donor) => {
                     let j = 0;
@@ -136,6 +138,12 @@ const handlePOSTSearchDonors = async (req, res) => {
                 });
             }
 
+            if (reqBody.address !== '') {
+                donors = donors.filter(donor => {
+                    return donor.address.toLowerCase().includes(reqBody.address.toLowerCase());
+                })
+            }
+
             const filteredDonors = [];
 
             for (let i = 0; i < donors.length; i++) {
@@ -144,7 +152,8 @@ const handlePOSTSearchDonors = async (req, res) => {
                     name: donors[i].name,
                     studentId: donors[i].studentId,
                     lastDonation: donors[i].lastDonation,
-                    bloodGroup: donors[i].bloodGroup
+                    bloodGroup: donors[i].bloodGroup,
+                    address: donors[i].address
                 };
 
                 filteredDonors.push(obj);
