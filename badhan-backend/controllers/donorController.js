@@ -138,7 +138,11 @@ const handlePOSTSearchDonors = async (req, res) => {
             }
 
             if (reqBody.address !== '') {
+
                 donors = donors.filter(donor => {
+                    if (donor.address === undefined) return false;
+                    // console.log("Donor address = " + donor.address);
+                    // console.log("Query address = " + reqBody.address);
                     return donor.address.toLowerCase().includes(reqBody.address.toLowerCase());
                 })
             }
