@@ -34,7 +34,7 @@ let handlePOSTLogIn = async (req, res) => {
         } else {
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'Incorrect password'
+                message: 'Incorrect phone / password'
             });
         }
     } catch (e) {
