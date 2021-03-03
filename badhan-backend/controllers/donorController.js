@@ -140,7 +140,7 @@ const handlePOSTSearchDonors = async (req, res) => {
             if (reqBody.address !== '') {
 
                 donors = donors.filter(donor => {
-                    if (donor.address === undefined) return false;
+                    if (donor.address === undefined || donor.address === null) return false;
                     // console.log("Donor address = " + donor.address);
                     // console.log("Query address = " + reqBody.address);
                     return donor.address.toLowerCase().includes(reqBody.address.toLowerCase());
@@ -174,6 +174,7 @@ const handlePOSTSearchDonors = async (req, res) => {
             });
         }
     } catch (e) {
+        console.log(e);
         res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -514,7 +515,6 @@ const handlePOSTViewVolunteers = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         let userHall = authenticatedUser.hall;
-
         if (userDesignation !== 2) {
             return res.status(401).send({
                 status: 'ERROR',
