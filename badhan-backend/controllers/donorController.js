@@ -529,11 +529,12 @@ const handlePOSTViewVolunteers = async (req, res) => {
             designation: 1
         }, {
             _id: 0,
-            studentID: 1,
+            studentId: 1,
             name: 1,
             roomNumber: 1,
             bloodGroup: 1,
-            phone: 1
+            phone: 1,
+
         });
 
         if (donorsQueryResult.status !== 'OK') {
