@@ -517,7 +517,7 @@ const handlePOSTViewVolunteers = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         let userHall = authenticatedUser.hall;
-        if (userDesignation !== 2) {
+        if (userDesignation < 2) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to view volunteer list'
