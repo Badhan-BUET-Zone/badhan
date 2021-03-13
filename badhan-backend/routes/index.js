@@ -6,6 +6,8 @@ const donorController = require('../controllers/donorController');
 const donationController = require('../controllers/donationController');
 const authenticator = require('../middlewares/authenticate');
 
+var gplay = require('google-play-scraper');
+
 /* GET home page. */
 router.post('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
@@ -735,6 +737,13 @@ router.post('/admin/hall/show',
     authenticator.handleAuthentication,
     donorController.handlePOSTShowHallAdmins
 );
+
+router.get('/version',(req,res,next)=>{
+    gplay.app({appId: 'com.mmmbadhan'})
+        .then((response)=>{
+            res.status(200).send(response)
+        });
+})
 
 //Done
 
