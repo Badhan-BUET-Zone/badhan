@@ -159,6 +159,7 @@ const handlePOSTSearchDonors = async (req, res) => {
                     address: donors[i].address,
                     donationCount: donors[i].donationCount,
                     roomNumber: donors[i].roomNumber,
+                    comment: donors[i].comment
                 };
 
                 filteredDonors.push(obj);
