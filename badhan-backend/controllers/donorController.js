@@ -188,7 +188,7 @@ const handlePOSTSearchDonors = async (req, res) => {
             if (reqBody.address !== '') {
 
                 donors = donors.filter(donor => {
-                    if (donor.address === undefined) return false;
+                    if (donor.address === undefined || donor.address === null) return false;
                     // console.log("Donor address = " + donor.address);
                     // console.log("Query address = " + reqBody.address);
                     return donor.address.toLowerCase().includes(reqBody.address.toLowerCase());
@@ -204,7 +204,10 @@ const handlePOSTSearchDonors = async (req, res) => {
                     studentId: donors[i].studentId,
                     lastDonation: donors[i].lastDonation,
                     bloodGroup: donors[i].bloodGroup,
-                    address: donors[i].address
+                    address: donors[i].address,
+                    donationCount: donors[i].donationCount,
+                    roomNumber: donors[i].roomNumber,
+                    comment: donors[i].comment
                 };
 
                 filteredDonors.push(obj);
@@ -222,6 +225,7 @@ const handlePOSTSearchDonors = async (req, res) => {
             });
         }
     } catch (e) {
+        console.log(e);
         res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -562,8 +566,7 @@ const handlePOSTViewVolunteers = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         let userHall = authenticatedUser.hall;
-
-        if (userDesignation !== 2) {
+        if (userDesignation < 2) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to view volunteer list'
@@ -575,11 +578,12 @@ const handlePOSTViewVolunteers = async (req, res) => {
             designation: 1
         }, {
             _id: 0,
-            studentID: 1,
+            studentId: 1,
             name: 1,
             roomNumber: 1,
             bloodGroup: 1,
-            phone: 1
+            phone: 1,
+
         });
 
         if (donorsQueryResult.status !== 'OK') {
