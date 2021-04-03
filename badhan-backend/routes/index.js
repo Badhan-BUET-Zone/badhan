@@ -461,6 +461,13 @@ router.post('/donor/edit',
     donorController.handlePOSTEditDonor
 );
 
+
+router.post('/donor/delete',
+    authenticator.handleAuthentication,
+    donorController.handlePOSTDeleteDonor
+);
+
+
 //Done
 
 // router.post('/edit', async (req, res) => {

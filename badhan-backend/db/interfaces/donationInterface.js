@@ -4,7 +4,7 @@ const insertDonation = async (donationObject) => {
         let donation = new Donation(donationObject);
         let data = await donation.save();
 
-        if (data.nInserted === 0){
+        if (data.nInserted === 0) {
             return {
                 message: 'Donation insertion failed',
                 status: 'ERROR'
@@ -27,28 +27,7 @@ const insertDonation = async (donationObject) => {
 const deleteDonation = async (donationID) => {
     try {
         let data = await Donation.findOneAndDelete({_id: donationID});
-        if (data){
-            return {
-                message: 'Donation removed successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                message: 'Could not remove donation',
-                status: 'ERROR'
-            }
-        }
-    } catch (e) {
-        return {
-            message: e.message,
-            status: 'EXCEPTION'
-        }
-    }
-};
-const deleteDonationByQuery = async (query) => {
-    try {
-        let data = await Donation.findOneAndDelete(query);
-        if (data){
+        if (data) {
             return {
                 message: 'Donation removed successfully',
                 status: 'OK'
@@ -67,10 +46,54 @@ const deleteDonationByQuery = async (query) => {
     }
 };
 
+const deleteDonationByQuery = async (query) => {
+    try {
+        let data = await Donation.findOneAndDelete(query);
+        if (data) {
+            return {
+                message: 'Donation removed successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                message: 'Could not remove donation',
+                status: 'ERROR'
+            }
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
+
+const deleteDonationsByQuery = async (query) => {
+    try {
+        let data = await Donation.deleteMany(query);
+        if (data) {
+            return {
+                message: 'Donations removed successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                message: 'Could not remove donations',
+                status: 'ERROR'
+            }
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
+
 const findDonationByQuery = async (query, option) => {
     try {
         let data = await Donation.findOne(query, option);
-        if (data){
+        if (data) {
             return {
                 data,
                 message: 'Donation found',
@@ -117,5 +140,6 @@ module.exports = {
     deleteDonation,
     findDonationByQuery,
     findDonationsByQuery,
-    deleteDonationByQuery
+    deleteDonationByQuery,
+    deleteDonationsByQuery
 }
