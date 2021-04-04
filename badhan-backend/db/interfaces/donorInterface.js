@@ -47,6 +47,28 @@ const deleteDonor = async (donorID) => {
     }
 };
 
+const deleteDonorByPhone = async (donorPhone) => {
+    try {
+        let data = await Donor.findOneAndDelete({phone: donorPhone});
+        if (data){
+            return {
+                message: 'Donor removed successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                message: 'Could not remove donor',
+                status: 'ERROR'
+            }
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
+
 const findDonorByQuery = async (query, option) => {
     try {
         let data = await Donor.findOne(query, option);
@@ -148,6 +170,7 @@ const findDonorAndUpdate = async (query, donorUpdate) => {
 module.exports = {
     insertDonor,
     deleteDonor,
+    deleteDonorByPhone,
     findDonorByQuery,
     findDonorsByQuery,
     findDonorByIDAndUpdate,

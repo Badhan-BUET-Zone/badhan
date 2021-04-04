@@ -464,7 +464,7 @@ router.post('/donor/edit',
 );
 
 
-router.post('/donor/delete',
+router.post('/admin/donor/delete',
     authenticator.handleAuthentication,
     donorController.handlePOSTDeleteDonor
 );

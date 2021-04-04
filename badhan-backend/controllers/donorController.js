@@ -89,35 +89,65 @@ const handlePOSTInsertDonor = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
-const handlePOSTDeleteDonor = async (req, res) => {
+const handlePOSTDeleteSelf = async (req, res) => {
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
-        if (authenticatedUser.designation === 0) {
+        let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
+            phone: authenticatedUser.phone
+        });
+
+        if (deleteDonationsResult.status === 'OK') {
+            let deleteDonorResult = await donorInterface.deleteDonorByPhone(authenticatedUser.phone);
+
+            if (deleteDonorResult.status === 'OK') {
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donor deleted successfully'
+                });
+            }
+        }
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        })
+    }
+}
+
+/**
+ * This function handles the deletion of an existing donor from the database.
+ *
+ * The request body is expected to contain the phone number of the donor to be deleted.
+ *
+ * @param req The request for this http request-response cycle
+ * @param res The response for this http request-response cycle
+ */
+const handlePOSTDeleteDonor = async (req, res) => {
+    try {
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+        let donorPhone = req.body.donorPhone;
+
+        if (authenticatedUser.designation !== 3) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to delete donors'
             });
         }
-        console.log("passed auth");
 
-        let donationsQueryResult = await donationInterface.findDonationsByQuery({
-            phone: authenticatedUser.phone
-        }, {});
+        let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
+            phone: donorPhone
+        });
 
-        if (donationsQueryResult.status === 'OK') {
-            let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
-                phone: authenticatedUser.phone
-            });
-            if (deleteDonationsResult.status === 'OK') {
-                let deleteDonorResult = await donorInterface.deleteDonor(authenticatedUser._id);
+        if (deleteDonationsResult.status === 'OK') {
+            let deleteDonorResult = await donorInterface.deleteDonorByPhone(donorPhone);
 
-                if (deleteDonorResult.status === 'OK') {
-                    return res.status(200).send({
-                        status: 'OK',
-                        message: 'Donor deleted successfully'
-                    });
-                }
+            if (deleteDonorResult.status === 'OK') {
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donor deleted successfully'
+                });
             }
         }
 
@@ -838,6 +868,7 @@ const handlePOSTAdminSignup = async (req, res) => {
 
 module.exports = {
     handlePOSTInsertDonor,
+    handlePOSTDeleteSelf,
     handlePOSTDeleteDonor,
     handlePOSTSearchDonors,
     handlePOSTComment,
