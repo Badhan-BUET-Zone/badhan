@@ -8,7 +8,7 @@ const donationSchema = new mongoose.Schema({
         maxlength: 13,
         minlength: 13
     },
-    donorID: {
+    donorId: {
         type: String
     },
     date: {
