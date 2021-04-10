@@ -27,6 +27,11 @@ router.post('/donor/details',
     donorController.handlePOSTViewDonorDetails
 );
 
+router.post('/donor/details/self',
+    authenticator.handleAuthentication,
+    donorController.handlePOSTViewDonorDetailsSelf
+);
+
 router.post('/donor/search',
     authenticator.handleAuthentication,
     donorController.handlePOSTSearchDonors
