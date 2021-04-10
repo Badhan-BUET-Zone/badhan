@@ -1,7 +1,7 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 
-/**
+/** DONE
  * This function handles the retrieval of donation history for a particular donor.
  * The request body is expected to contain:
  *      donorPhone -> The phone number for the target donor
@@ -12,14 +12,14 @@ const donationInterface = require('../db/interfaces/donationInterface');
 const handleGETSeeHistory = async (req, res) => {
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorPhone
+            phone: req.body.donorId
         }, {});
 
         if (donorQueryResult.status === 'OK') {
             let donor = donorQueryResult.data;
 
             let donationsQueryResult = await donationInterface.findDonationsByQuery({
-                phone: donor.phone
+                donorId: donor._id
             }, {});
 
             if (donationsQueryResult.status === 'OK') {
@@ -79,8 +79,8 @@ const handlePOSTInsertDonation = async (req, res) => {
         }
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorPhone
-        });
+            _id: req.body.donorId
+        },{});
 
         if (donorQueryResult.status === 'OK') {
             let donor = donorQueryResult.data;
@@ -90,13 +90,14 @@ const handlePOSTInsertDonation = async (req, res) => {
 
             let donationInsertionResult = await donationInterface.insertDonation({
                 phone: donor.phone,
+                donorId: donor._id,
                 date: req.body.date
             });
 
             if (donationInsertionResult.status === 'OK') {
                 if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
                     let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-                        phone: donor.phone
+                        _id: donor._id
                     }, {
                         $set: {
                             lastDonation: req.body.date,
@@ -111,7 +112,7 @@ const handlePOSTInsertDonation = async (req, res) => {
                         });
                     } else {
                         let donationQueryResult = await donationInterface.findDonationByQuery({
-                            phone: donor.phone,
+                            donorId: donor._id,
                             date: req.body.date
                         }, {});
 
@@ -147,7 +148,7 @@ const handlePOSTInsertDonation = async (req, res) => {
 
                         return res.status(400).send({
                             status: 'ERROR',
-                            message: 'Donation insertion unsuccessful'
+                            message: donorUpdateResult.message
                         });
                     }
                 }
@@ -172,7 +173,7 @@ const handlePOSTInsertDonation = async (req, res) => {
     }
 }
 
-/**
+/** DONE
  * This function handles the deletion of a donation for a donor.
  * The request body is expected to contain:
  *      donorPhone -> The phone number for the target donor
@@ -185,7 +186,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
     try {
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorPhone
+            donorId: req.body.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
@@ -198,7 +199,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
         let donor = donorQueryResult.data;
 
         let donationsQueryResult = await donationInterface.findDonationsByQuery({
-            phone: req.body.donorPhone
+            donorId: donor._id
         });
 
         if (donationsQueryResult.status !== 'OK') {
@@ -253,9 +254,9 @@ const handlePOSTDeleteDonation = async (req, res) => {
         }
 
         let donationDeleteResult = await donationInterface.deleteDonationByQuery({
-            phone: req.body.donorPhone,
+            donorId: req.body.donorId,
             date: req.body.date
-        })
+        });
 
         if (donationDeleteResult.status !== 'OK') {
             return res.status(400).send({
@@ -265,7 +266,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
         }
 
         let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-            phone: req.body.donorPhone
+            _id: req.body.donorId
         }, {
             $set: {
                 lastDonation: newLastDonation,
