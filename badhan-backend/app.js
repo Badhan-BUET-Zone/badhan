@@ -23,6 +23,7 @@ let cors = require('cors');
 
 
 let indexRouter = require('./routes/index');
+let apiV2Router = require('./routes/apiV2');
 let usersRouter = require('./routes/users');
 
 const { mongoose } = require('./db/mongoose');
@@ -55,6 +56,7 @@ app.use(cookieParser());
 
 
 app.use('/', indexRouter);
+app.use('/v2', apiV2Router);
 app.use('/users', usersRouter);
 
 

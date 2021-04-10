@@ -4,7 +4,7 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 
 
-/**
+/** DONE
  * This function handles the insertion of a new donor into the database.
  *
  * The request body is expected to contain all donor attributes (excepted protected ones) for a donor document.
@@ -22,7 +22,7 @@ const handlePOSTInsertDonor = async (req, res) => {
                 message: 'User does not have permission to add donors'
             });
         }
-        console.log("passed auth");
+        // console.log("passed auth");
 
         let donorObject = {
             phone: req.body.phone,
@@ -40,26 +40,25 @@ const handlePOSTInsertDonor = async (req, res) => {
 
         if (donorInsertionResult.status === 'OK') {
             // console.log("donor insertion complete");
+            let donorQueryResult = await donorInterface.findDonorByQuery(req.body.phone);
 
             if (donorObject.lastDonation !== 0) {
                 // Insert Donation Here
                 let donationObject = {
                     phone: donorObject.phone,
+                    donorId: donorQueryResult.data._id,
                     date: donorObject.lastDonation
                 }
 
                 let donationInsertionResult = await donationInterface.insertDonation(donationObject);
 
                 if (donationInsertionResult.status !== 'OK') {
-                    let donorQueryResult = await donorInterface.findDonorByQuery({phone: req.body.donorObject.phone}, {});
                     let insertedDonor = donorQueryResult.data;
                     await donorInterface.deleteDonor(insertedDonor._id);
-
                     return res.status(400).send({
                         status: 'ERROR',
                         message: 'New donor insertion unsuccessful'
                     });
-
                 }
             }
 
@@ -81,7 +80,7 @@ const handlePOSTInsertDonor = async (req, res) => {
     }
 }
 
-/**
+/** DONE
  * This function handles the deletion of an existing donor from the database.
  *
  * The request body is expected to contain the phone number of the donor to be deleted.
@@ -94,11 +93,11 @@ const handlePOSTDeleteSelf = async (req, res) => {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
         let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
-            phone: authenticatedUser.phone
+            donorId: authenticatedUser._id
         });
 
         if (deleteDonationsResult.status === 'OK') {
-            let deleteDonorResult = await donorInterface.deleteDonorByPhone(authenticatedUser.phone);
+            let deleteDonorResult = await donorInterface.deleteDonorById(authenticatedUser._id);
 
             if (deleteDonorResult.status === 'OK') {
                 return res.status(200).send({
@@ -116,7 +115,7 @@ const handlePOSTDeleteSelf = async (req, res) => {
     }
 }
 
-/**
+/** DONE
  * This function handles the deletion of an existing donor from the database.
  *
  * The request body is expected to contain the phone number of the donor to be deleted.
@@ -127,7 +126,7 @@ const handlePOSTDeleteSelf = async (req, res) => {
 const handlePOSTDeleteDonor = async (req, res) => {
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
-        let donorPhone = req.body.donorPhone;
+        let donorId = req.body.donorId;
 
         if (authenticatedUser.designation !== 3) {
             return res.status(401).send({
@@ -137,11 +136,11 @@ const handlePOSTDeleteDonor = async (req, res) => {
         }
 
         let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
-            phone: donorPhone
+            donorId
         });
 
         if (deleteDonationsResult.status === 'OK') {
-            let deleteDonorResult = await donorInterface.deleteDonorByPhone(donorPhone);
+            let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
 
             if (deleteDonorResult.status === 'OK') {
                 return res.status(200).send({
@@ -159,7 +158,7 @@ const handlePOSTDeleteDonor = async (req, res) => {
     }
 }
 
-/**
+/** DONE
  * This function handles the filtered query of donors from the database.
  *
  * The request body is expected to contain a search filter, that can optionally be empty.
@@ -263,7 +262,7 @@ const handlePOSTSearchDonors = async (req, res) => {
     }
 }
 
-/**
+/** DONE
  * This function adds a comment to a donor's profile.
  *
  * The request body is expected to contain:
@@ -278,7 +277,7 @@ const handlePOSTSearchDonors = async (req, res) => {
 const handlePOSTComment = async (req, res) => {
     try {
         const donorUpdateResult = await donorInterface.findDonorAndUpdate({
-            phone: req.body.donorPhone
+            _id: req.body.donorId
         }, {
             $set: {
                 comment: req.body.comment
@@ -305,7 +304,7 @@ const handlePOSTComment = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the changing of password for an account.
  *
  * The request body is expected to contain:
@@ -331,7 +330,7 @@ const handlePOSTChangePassword = async (req, res) => {
         }
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: reqBody.donorPhone
+            _id: reqBody.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
@@ -375,7 +374,7 @@ const handlePOSTChangePassword = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the update of donor information.
  *
  * The request body is expected to contain:
@@ -401,7 +400,7 @@ const handlePOSTEditDonor = async (req, res) => {
         }
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: reqBody.oldPhone
+            _id: reqBody.donorId
         })
 
         if (donorQueryResult.status !== 'OK') {
@@ -415,7 +414,7 @@ const handlePOSTEditDonor = async (req, res) => {
 
         if (authenticatedUser.designation < target.designation ||
             (authenticatedUser.designation === target.designation
-                && authenticatedUser.phone !== target.phone)) {
+                && authenticatedUser._id !== target._id)) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit this donor'
@@ -500,7 +499,7 @@ const handlePOSTEditDonor = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the promotion or demotion of users.
  *
  * The request body is expected to contain:
@@ -517,7 +516,7 @@ const handlePOSTEditDonor = async (req, res) => {
 const handlePOSTPromote = async (req, res) => {
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorPhone
+            _id: req.body.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
@@ -584,7 +583,7 @@ const handlePOSTPromote = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the fetching of volunteer lists for a hall admin.
  *
  * @param req The request for this http request-response cycle
@@ -607,7 +606,6 @@ const handlePOSTViewVolunteers = async (req, res) => {
             hall: userHall,
             designation: 1
         }, {
-            _id: 0,
             studentId: 1,
             name: 1,
             roomNumber: 1,
@@ -640,7 +638,7 @@ const handlePOSTViewVolunteers = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the changing of a hall admin.
  *
  * The request body is expected to contain:
@@ -655,7 +653,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorPhone
+            _id: req.body.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
@@ -678,7 +676,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
         // Make previous hall admin volunteer
 
         let donorHall = donor.hall;
-        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({ hall: donorHall, designation: 2 });
+        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({hall: donorHall, designation: 2});
 
         if (prevHallAdminQueryResult.status === 'OK') {
             let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
@@ -700,7 +698,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
 
         // Make new hall admin
         let newHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
-            phone: req.body.donorPhone
+            _id: req.body.donorId
         }, {
             $set: {
                 designation: 2,
@@ -728,7 +726,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the fetching of hall admin list for a super admin.
  *
  * @param req The request for this http request-response cycle
@@ -745,7 +743,11 @@ const handlePOSTShowHallAdmins = async (req, res) => {
             });
         }
 
-        let adminsQueryResult = await donorInterface.findDonorsByQuery({ designation: 2 }, {});
+        let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {
+            phone: 1,
+            hall: 1,
+            name: 1
+        });
 
         if (adminsQueryResult.status !== 'OK') {
             return res.status(400).send({
@@ -756,21 +758,10 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 
         let admins = adminsQueryResult.data;
 
-        const filteredAdmins = [];
-
-        for (let i = 0; i < admins.length; i++) {
-            let obj = {
-                phone: admins[i].phone,
-                hall: admins[i].hall,
-                name: admins[i].name
-            };
-            filteredAdmins.push(obj);
-        }
-
         return res.status(200).send({
             status: 'OK',
             message: 'Hall admin list fetched successfully',
-            filteredAdmins
+            admins
         });
 
     } catch (e) {
@@ -783,7 +774,7 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 }
 
 
-/**
+/** DONE
  * This function handles the fetching of donor details.
  *
  * The request body is expected to contain:
@@ -796,7 +787,7 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 const handlePOSTViewDonorDetails = async (req, res) => {
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorPhone
+            _id: req.body.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
@@ -809,6 +800,7 @@ const handlePOSTViewDonorDetails = async (req, res) => {
         let donor = donorQueryResult.data;
 
         let obj = {
+            _id: donor._id,
             phone: donor.phone,
             name: donor.name,
             studentId: donor.studentId,
@@ -845,7 +837,7 @@ const handlePOSTAdminSignup = async (req, res) => {
                 message: 'Invalid secret for signup'
             });
         }
-        console.log(req.body.donorObject);
+        // console.log(req.body.donorObject);
 
         let donorInsertionResult = await donorInterface.insertDonor(req.body.donorObject);
 
@@ -862,7 +854,10 @@ const handlePOSTAdminSignup = async (req, res) => {
         });
 
     } catch (e) {
-
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
     }
 }
 
