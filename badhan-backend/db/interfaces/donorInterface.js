@@ -5,7 +5,7 @@ const insertDonor = async (donorObject) => {
         let donor = new Donor(donorObject);
         let data = await donor.save();
 
-        if (data.nInserted === 0){
+        if (data.nInserted === 0) {
             return {
                 message: 'Donor insertion failed',
                 status: 'ERROR'
@@ -28,7 +28,7 @@ const insertDonor = async (donorObject) => {
 const deleteDonor = async (donorID) => {
     try {
         let data = await Donor.findOneAndDelete({_id: donorID});
-        if (data){
+        if (data) {
             return {
                 message: 'Donor removed successfully',
                 status: 'OK'
@@ -50,7 +50,29 @@ const deleteDonor = async (donorID) => {
 const deleteDonorByPhone = async (donorPhone) => {
     try {
         let data = await Donor.findOneAndDelete({phone: donorPhone});
-        if (data){
+        if (data) {
+            return {
+                message: 'Donor removed successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                message: 'Could not remove donor',
+                status: 'ERROR'
+            }
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+};
+
+const deleteDonorById = async (donorId) => {
+    try {
+        let data = await Donor.findOneAndDelete({_id: donorId});
+        if (data) {
             return {
                 message: 'Donor removed successfully',
                 status: 'OK'
@@ -72,7 +94,7 @@ const deleteDonorByPhone = async (donorPhone) => {
 const findDonorByQuery = async (query, option) => {
     try {
         let data = await Donor.findOne(query, option);
-        if (data){
+        if (data) {
             return {
                 data,
                 message: 'Donor found',
@@ -118,7 +140,7 @@ const findDonorByIDAndUpdate = async (id, update) => {
     try {
         let data = await Donor.findByIdAndUpdate(id, update);
 
-        if (data){
+        if (data) {
             return {
                 data,
                 message: 'Donor updated successfully',
@@ -171,6 +193,7 @@ module.exports = {
     insertDonor,
     deleteDonor,
     deleteDonorByPhone,
+    deleteDonorById,
     findDonorByQuery,
     findDonorsByQuery,
     findDonorByIDAndUpdate,
