@@ -228,6 +228,7 @@ const handlePOSTSearchDonors = async (req, res) => {
 
             for (let i = 0; i < donors.length; i++) {
                 let obj = {
+                    _id: donor[i]._id,
                     phone: donors[i].phone,
                     name: donors[i].name,
                     studentId: donors[i].studentId,
