@@ -12,7 +12,7 @@ const donationInterface = require('../db/interfaces/donationInterface');
 const handleGETSeeHistory = async (req, res) => {
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            phone: req.body.donorId
+            _id: req.body.donorId
         }, {});
 
         if (donorQueryResult.status === 'OK') {
