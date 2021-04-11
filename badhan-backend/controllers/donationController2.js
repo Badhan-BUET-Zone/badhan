@@ -186,7 +186,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
     try {
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            donorId: req.body.donorId
+            _id: req.body.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
