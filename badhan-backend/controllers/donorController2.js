@@ -400,16 +400,14 @@ const handlePOSTChangePassword = async (req, res) => {
 const handlePOSTEditDonor = async (req, res) => {
     try {
         let reqBody = req.body;
-
         let authenticatedUser = res.locals.middlewareResponse.donor;
-
         if (authenticatedUser.designation === 0) {
+
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit'
             });
         }
-
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: reqBody.donorId
         })
@@ -425,7 +423,7 @@ const handlePOSTEditDonor = async (req, res) => {
 
         if (authenticatedUser.designation < target.designation ||
             (authenticatedUser.designation === target.designation
-                && authenticatedUser._id !== target._id)) {
+                && !authenticatedUser._id.equals(target._id))) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit this donor'
