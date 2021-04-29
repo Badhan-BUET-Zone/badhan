@@ -462,7 +462,7 @@ const handlePOSTEditDonor = async (req, res) => {
             updates.hall = target.hall;
         }
 
-        if (reqBody.newRoomNumber !== '') {
+        if (reqBody.newRoomNumber !== undefined && reqBody.newRoomNumber !==null) {
             updates.roomNumber = reqBody.newRoomNumber;
         } else {
             updates.roomNumber = target.roomNumber;
