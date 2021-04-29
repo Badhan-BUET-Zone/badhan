@@ -196,12 +196,12 @@ const handlePOSTSearchDonors = async (req, res) => {
 
             if (!reqBody.isAvailable) {
                 let threshold = moment().subtract(120, 'days').valueOf();
-                donors = donors.filter((donor) => donor.lastDonation > threshold);
+                donors = donors.filter((donor) => donor.lastDonation >= threshold);
             }
 
             if (!reqBody.isNotAvailable) {
                 let threshold = moment().subtract(120, 'days').valueOf();
-                donors = donors.filter((donor) => donor.lastDonation <= threshold);
+                donors = donors.filter((donor) => donor.lastDonation < threshold);
             }
 
             if (reqBody.batch !== '') {
