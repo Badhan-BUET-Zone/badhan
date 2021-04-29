@@ -174,7 +174,7 @@ const handlePOSTInsertDonation = async (req, res) => {
 }
 
 /** DONE
- * This function handles the deletion of a donation for a donor
+ * This function handles the deletion of a donation for a donor.
  * The request body is expected to contain:
  *      donorPhone -> The phone number for the target donor
  *      date -> The date of the donation that is to be deleted
