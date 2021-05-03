@@ -604,12 +604,12 @@ const handlePOSTViewVolunteers = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         let userHall = authenticatedUser.hall;
-        if (userDesignation < 2) {
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to view volunteer list'
-            });
-        }
+        // if (userDesignation < 2) {
+        //     return res.status(401).send({
+        //         status: 'ERROR',
+        //         message: 'User does not have permission to view volunteer list'
+        //     });
+        // }
 
         let donorsQueryResult = await donorInterface.findDonorsByQuery({
             hall: userHall,
@@ -745,12 +745,12 @@ const handlePOSTShowHallAdmins = async (req, res) => {
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
-        if (authenticatedUser.designation !== 3) {
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to view hall admins'
-            });
-        }
+        // if (authenticatedUser.designation !== 3) {
+        //     return res.status(401).send({
+        //         status: 'ERROR',
+        //         message: 'User does not have permission to view hall admins'
+        //     });
+        // }
 
         let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {
             phone: 1,
