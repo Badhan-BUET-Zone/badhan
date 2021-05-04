@@ -9,9 +9,9 @@ const authenticator = require('../middlewares/authenticate');
 let gplay = require('google-play-scraper');
 
 /* GET home page. */
-// router.post('/', function (req, res, next) {
-//     res.render('index', {title: 'Express'});
-// });
+router.get('/', function (req, res, next) {
+    return res.status(200).send("Badhan API is online")
+});
 
 // router.post('/admin/signup',
 //     donorController.handlePOSTAdminSignup

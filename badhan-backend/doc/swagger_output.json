@@ -38,6 +38,14 @@
     "application/json"
   ],
   "paths": {
+    "/": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
     "/donor/insert": {
       "post": {
         "tags": [
@@ -527,14 +535,6 @@
             "description": "OK"
           }
         }
-      }
-    },
-    "/": {
-      "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
       }
     },
     "/signin": {
