@@ -19,21 +19,13 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('./doc/swagger_output.json')
 
-
-
-let indexRouter = require('./routes/index');
 let apiV2Router = require('./routes/apiV2');
 let usersRouter = require('./routes/users');
 
 const { mongoose } = require('./db/mongoose');
-
-// //Load Models 
-// const Product = require('./db/models/product').Product
-// //Emptying the database
-// Product.collection.deleteMany()
-// console.log("Data deleted".red.inverse);
-
 
 let app = express();
 
@@ -45,7 +37,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-// app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 
@@ -55,9 +46,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
 app.use('/v2', apiV2Router);
 app.use('/users', usersRouter);
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 
 

@@ -10,6 +10,8 @@ const donationInterface = require('../db/interfaces/donationInterface');
  * @param res The response for this http request-response cycle
  */
 const handleGETSeeHistory = async (req, res) => {
+    /*  #swagger.tags = ['Donations']
+            #swagger.description = 'handles the retrieval of donation history for a particular donor.' */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: req.body.donorId
@@ -68,6 +70,8 @@ const handleGETSeeHistory = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTInsertDonation = async (req, res) => {
+    /*  #swagger.tags = ['Donations']
+            #swagger.description = 'Endpoint to insert a donation date for a donor' */
     try {
         let authenticatedDonor = res.locals.middlewareResponse.donor;
 
@@ -183,6 +187,8 @@ const handlePOSTInsertDonation = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTDeleteDonation = async (req, res) => {
+    /*  #swagger.tags = ['Donations']
+            #swagger.description = 'handles the deletion of a donation for a donor.' */
     try {
 
         let donorQueryResult = await donorInterface.findDonorByQuery({

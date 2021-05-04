@@ -1,0 +1,693 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Badhan API",
+    "description": "Automatically generated documentation of Badhan API"
+  },
+  "host": "https://badhan-backend.herokuapp.com:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "User",
+      "description": "Authentication Endpoints"
+    },
+    {
+      "name": "Donors",
+      "description": "Routes to handle donors"
+    },
+    {
+      "name": "Donations",
+      "description": "Endpoints to handle donations"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "x-auth",
+      "in": "header"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/donor/insert": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the insertion of a new donor into the database.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "example": "any"
+                },
+                "bloodGroup": {
+                  "example": "any"
+                },
+                "hall": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "studentId": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "roomNumber": {
+                  "example": "any"
+                },
+                "lastDonation": {
+                  "example": "any"
+                },
+                "comment\r": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/details": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of donor details.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId\r": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/details/self": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of own details.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/search": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the filtered query of donors from the database.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/donations": {
+      "post": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the retrieval of donation history for a particular donor.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId\r": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donation/insert": {
+      "post": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "Endpoint to insert a donation date for a donor",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId\r": {
+                  "example": "any"
+                },
+                "date\r": {
+                  "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/comment": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "adds a comment to a donor",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donation/delete": {
+      "post": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the deletion of a donation for a donor.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId\r": {
+                  "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                },
+                "donorId": {
+                  "example": "any"
+                },
+                "date\r": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/password/change": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the changing of password for an account.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/donor/edit": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the update of donor information.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/donor/delete": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the deletion of an existing donor from the database.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/promote": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the promotion or demotion of users.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId\r": {
+                  "example": "any"
+                },
+                "promoteFlag": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/volunteers": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of volunteer lists for a hall admin.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/hall/change": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the changing of a hall admin.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId\r": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/hall/show": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of hall admin list for a super admin.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "tags": [],
+        "description": "Get app info deployed to play store",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/signin": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to login a user.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/signout": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to logout a user.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Donors": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e901d56effc5900177ced73"
+        },
+        "designation": {
+          "type": "number",
+          "example": 3
+        },
+        "lastDonation": {
+          "type": "number",
+          "example": 0
+        },
+        "donationCount": {
+          "type": "number",
+          "example": 0
+        },
+        "phone": {
+          "type": "number",
+          "example": 8801521438557
+        },
+        "bloodGroup": {
+          "type": "number",
+          "example": 2
+        },
+        "hall": {
+          "type": "number",
+          "example": 5
+        },
+        "name": {
+          "type": "string",
+          "example": "Mir Mahathir Mohammad"
+        },
+        "studentId": {
+          "type": "string",
+          "example": "1605011"
+        },
+        "address": {
+          "type": "string",
+          "example": "Azimpur road"
+        },
+        "roomNumber": {
+          "type": "string",
+          "example": ""
+        },
+        "comment": {
+          "type": "string",
+          "example": "Designer and developer of Badhan Web and App"
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "608fc94c28599700175b31eb"
+              },
+              "token": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTkwMWQ1NmVmZmM1OTAwM..."
+              }
+            }
+          }
+        },
+        "password": {
+          "type": "string",
+          "example": "$2a$10$9B3aSkcw7n0/H.vQq5MMQeaeosyssb/VsjvLFydGQiTMYS89a9vkS"
+        }
+      }
+    },
+    "Donations": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "phone": {
+          "type": "number",
+          "example": 8801746027313
+        },
+        "date": {
+          "type": "number",
+          "example": 1514764800000
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    }
+  }
+}

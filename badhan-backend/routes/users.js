@@ -2,8 +2,6 @@
 const express = require('express');
 const router = express.Router();
 
-const donorController = require('../controllers/donorController');
-const donationController = require('../controllers/donationController');
 const authenticator = require('../middlewares/authenticate');
 
 /* GET users listing. */

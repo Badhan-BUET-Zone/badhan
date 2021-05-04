@@ -9,13 +9,13 @@ const authenticator = require('../middlewares/authenticate');
 let gplay = require('google-play-scraper');
 
 /* GET home page. */
-router.post('/', function (req, res, next) {
-    res.render('index', {title: 'Express'});
-});
+// router.post('/', function (req, res, next) {
+//     res.render('index', {title: 'Express'});
+// });
 
-router.post('/admin/signup',
-    donorController.handlePOSTAdminSignup
-);
+// router.post('/admin/signup',
+//     donorController.handlePOSTAdminSignup
+// );
 
 router.post('/donor/insert',
     authenticator.handleAuthentication,
@@ -95,6 +95,8 @@ router.post('/admin/hall/show',
 );
 
 router.get('/version',(req,res,next)=>{
+    /*
+    #swagger.description = 'Get app info deployed to play store' */
     gplay.app({appId: 'com.mmmbadhan'})
         .then((response)=>{
             res.status(200).send(response)

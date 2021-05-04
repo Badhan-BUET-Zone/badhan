@@ -13,6 +13,8 @@ const donationInterface = require('../db/interfaces/donationInterface');
  * @param res The response for this http request-response cycle
  */
 const handlePOSTInsertDonor = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the insertion of a new donor into the database.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
@@ -89,6 +91,8 @@ const handlePOSTInsertDonor = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTDeleteSelf = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the deletion of an existing donor from the database.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
@@ -124,6 +128,8 @@ const handlePOSTDeleteSelf = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTDeleteDonor = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the deletion of an existing donor from the database.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
         let donorId = req.body.donorId;
@@ -168,6 +174,8 @@ const handlePOSTDeleteDonor = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTSearchDonors = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the filtered query of donors from the database.' */
     try {
         let reqBody = req.body;
 
@@ -286,6 +294,8 @@ const handlePOSTSearchDonors = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTComment = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'adds a comment to a donor's profile.' */
     try {
         const donorUpdateResult = await donorInterface.findDonorAndUpdate({
             _id: req.body.donorId
@@ -328,6 +338,8 @@ const handlePOSTComment = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTChangePassword = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the changing of password for an account.' */
     try {
         let reqBody = req.body;
 
@@ -398,6 +410,8 @@ const handlePOSTChangePassword = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTEditDonor = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the update of donor information.' */
     try {
         let reqBody = req.body;
         let authenticatedUser = res.locals.middlewareResponse.donor;
@@ -523,6 +537,8 @@ const handlePOSTEditDonor = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTPromote = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the promotion or demotion of users.' */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: req.body.donorId
@@ -599,6 +615,8 @@ const handlePOSTPromote = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTViewVolunteers = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the fetching of volunteer lists for a hall admin.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
         let userDesignation = authenticatedUser.designation;
@@ -657,6 +675,8 @@ const handlePOSTViewVolunteers = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTChangeAdmin = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the changing of a hall admin.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
         let userDesignation = authenticatedUser.designation;
@@ -742,15 +762,10 @@ const handlePOSTChangeAdmin = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTShowHallAdmins = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the fetching of hall admin list for a super admin.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
-
-        // if (authenticatedUser.designation !== 3) {
-        //     return res.status(401).send({
-        //         status: 'ERROR',
-        //         message: 'User does not have permission to view hall admins'
-        //     });
-        // }
 
         let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {
             phone: 1,
@@ -794,6 +809,9 @@ const handlePOSTShowHallAdmins = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTViewDonorDetails = async (req, res) => {
+
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the fetching of donor details.' */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: req.body.donorId
@@ -844,6 +862,8 @@ const handlePOSTViewDonorDetails = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 const handlePOSTViewDonorDetailsSelf = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+        #swagger.description = 'handles the fetching of own details.' */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: res.locals.middlewareResponse.donor._id
@@ -888,6 +908,8 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
 
 
 const handlePOSTAdminSignup = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+        #swagger.description = 'handles signup of admin' */
     try {
         let token = req.header('x-auth');
         if (token !== 'lekhaporaputkirmoddhebhoiradimu') {

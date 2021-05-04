@@ -5,6 +5,8 @@ const donorInterface = require('../db/interfaces/donorInterface');
 
 
 let handlePOSTLogIn = async (req, res) => {
+    /*  #swagger.tags = ['User']
+            #swagger.description = 'Endpoint to login a user.' */
     try {
         let donorPhone = req.body.phone;
         let password = req.body.password;
@@ -74,6 +76,8 @@ let handleAuthentication = async (req, res, next) => {
 };
 
 let handlePOSTLogOut = async (req, res) => {
+    /*  #swagger.tags = ['User']
+            #swagger.description = 'Endpoint to logout a user.' */
     try {
         let donor = res.locals.middlewareResponse.donor;
         let token = res.locals.middlewareResponse.token;
