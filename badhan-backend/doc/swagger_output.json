@@ -639,6 +639,26 @@
           }
         }
       }
+    },
+    "/signoutall": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to logout a user.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "definitions": {

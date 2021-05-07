@@ -138,8 +138,33 @@ let handlePOSTLogOut = async (req, res) => {
     }
 };
 
+let handlePOSTLogOutAll = async (req, res) => {
+    /*  #swagger.tags = ['User']
+            #swagger.description = 'Endpoint to logout a user.' */
+    try {
+        let donor = res.locals.middlewareResponse.donor;
+
+        await donorInterface.findDonorByIDAndUpdate(donor._id, {
+            $set: {
+                tokens: []
+            }
+        });
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Logged out from all devices successfully'
+        });
+    } catch (e) {
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+};
+
 module.exports = {
     handlePOSTLogIn,
     handleAuthentication,
-    handlePOSTLogOut
+    handlePOSTLogOut,
+    handlePOSTLogOutAll
 }

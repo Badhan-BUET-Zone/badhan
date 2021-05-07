@@ -19,6 +19,11 @@ router.post('/signout',
     authenticator.handlePOSTLogOut
 );
 
+router.post('/signoutall',
+    authenticator.handleAuthentication,
+    authenticator.handlePOSTLogOutAll
+);
+
 // signin api
 
 // router.post('/signin', async(req, res) => {
