@@ -47,7 +47,10 @@ let handlePOSTLogIn = async (req, res) => {
                 _id: donor._id.toString(),
                 access
             }, 'lekhaporaputkirmoddhebhoiradimu').toString();
-            donor.tokens.push({access, token});
+
+
+                donor.tokens.push({access, token});
+
             await donor.save();
 
             /* #swagger.responses[201] = {
@@ -93,6 +96,18 @@ let handleAuthentication = async (req, res, next) => {
 
         if (donorQueryResult.status === 'OK') {
             let donor = donorQueryResult.data;
+
+            let result = donor.tokens.find(obj => {
+                return obj.token === token
+            })
+
+            if(result === undefined){
+                return res.status(401).send({
+                    status: 'ERROR',
+                    message: 'User has been logged out'
+                });
+            }
+
             res.locals.middlewareResponse = {
                 donor,
                 token
