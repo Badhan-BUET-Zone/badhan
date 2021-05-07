@@ -73,7 +73,7 @@ let handlePOSTLogIn = async (req, res) => {
     } catch (e) {
         /* #swagger.responses[500] = {
                schema: {
-                    status: 'ERROR',
+                    status: 'EXCEPTION',
                     message: 'message generated from the backend caused by runtime error'
                 },
                description: 'When the server malfunctions to the request body'
