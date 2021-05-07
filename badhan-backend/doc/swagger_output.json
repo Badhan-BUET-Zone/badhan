@@ -5,7 +5,7 @@
     "title": "Badhan API",
     "description": "Automatically generated documentation of Badhan API"
   },
-  "host": "https://badhan-backend.herokuapp.com:3000",
+  "host": "badhan-backend.herokuapp.com:3000",
   "basePath": "/",
   "tags": [
     {
@@ -545,16 +545,19 @@
         "description": "Endpoint to login a user.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "logIn",
             "in": "body",
+            "description": "Phone number of a logging user.",
             "schema": {
               "type": "object",
               "properties": {
                 "phone": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "8801521438557"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "123456"
                 }
               }
             }
@@ -562,13 +565,57 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "A successful sign in returns a token for the user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "example": "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "When the user provides an invalid password",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Incorrect phone / password"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "When the server malfunctions to the request body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "message generated from the backend caused by runtime error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }

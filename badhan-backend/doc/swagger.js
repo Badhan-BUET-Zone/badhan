@@ -7,7 +7,7 @@ const doc = {
         title: "Badhan API",
         description: "Automatically generated documentation of Badhan API"
     },
-    host: "https://badhan-backend.herokuapp.com:3000",
+    host: "badhan-backend.herokuapp.com:3000",
     basePath: "/",
     schemes: ['https'],
     consumes: ['application/json'],
