@@ -39,34 +39,12 @@ const handlePOSTInsertDonor = async (req, res) => {
         };
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
-
         if (donorInsertionResult.status === 'OK') {
-            // console.log("donor insertion complete");
-            let donorQueryResult = await donorInterface.findDonorByQuery(req.body.phone);
-
-            if (donorObject.lastDonation !== 0) {
-                // Insert Donation Here
-                let donationObject = {
-                    phone: donorObject.phone,
-                    donorId: donorQueryResult.data._id,
-                    date: donorObject.lastDonation
-                }
-
-                let donationInsertionResult = await donationInterface.insertDonation(donationObject);
-
-                if (donationInsertionResult.status !== 'OK') {
-                    let insertedDonor = donorQueryResult.data;
-                    await donorInterface.deleteDonor(insertedDonor._id);
-                    return res.status(400).send({
-                        status: 'ERROR',
-                        message: 'New donor insertion unsuccessful'
-                    });
-                }
-            }
 
             return res.status(201).send({
                 status: 'OK',
-                message: 'New donor inserted successfully'
+                message: 'New donor inserted successfully',
+                newDonor: donorInsertionResult.data
             });
         } else {
             return res.status(400).send({

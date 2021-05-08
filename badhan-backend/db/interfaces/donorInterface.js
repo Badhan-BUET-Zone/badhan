@@ -8,18 +8,21 @@ const insertDonor = async (donorObject) => {
         if (data.nInserted === 0) {
             return {
                 message: 'Donor insertion failed',
-                status: 'ERROR'
+                status: 'ERROR',
+                data: data,
             }
         } else {
             return {
                 message: 'Donor insertion successful',
-                status: 'OK'
+                status: 'OK',
+                data: data,
             };
         }
     } catch (e) {
         return {
             message: e.message,
-            status: 'ERROR'
+            status: 'ERROR',
+            data: null
         }
     }
 };
