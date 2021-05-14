@@ -6,4 +6,4 @@ git add .
 git commit -am "$message"
 git push origin master
 git push origin2 master
-git push heroku master
+#git push heroku master
