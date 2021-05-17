@@ -4,6 +4,15 @@ echo "The commit message is: $message"
 node doc/swagger.js
 git add .
 git commit -am "$message"
+
+# push to mahathir backend repo
 git push origin master
-git push origin2 master
-#git push heroku master
+
+# push to remote-aniruddha repo
+#git push remote-aniruddha master
+
+# push to mahathir heroku app
+git push heroku master
+
+# push to aniruddha heroku app
+#git push heroku-deprecated master
