@@ -16,3 +16,6 @@ git push heroku master
 
 # push to aniruddha heroku app
 #git push heroku-deprecated master
+
+cd ../secrets
+bash ./push.sh
