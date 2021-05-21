@@ -4,6 +4,7 @@ let router = express.Router();
 
 const donorController = require('../controllers/donorController2');
 const donationController = require('../controllers/donationController2');
+const logController = require('../controllers/logController');
 const authenticator = require('../middlewares/authenticate');
 
 let gplay = require('google-play-scraper');
@@ -102,5 +103,9 @@ router.get('/version',(req,res,next)=>{
             res.status(200).send(response)
         });
 });
+
+router.get('/log/statistics',
+    authenticator.handleAuthentication,
+    logController.handleGETStatistics)
 
 module.exports = router;

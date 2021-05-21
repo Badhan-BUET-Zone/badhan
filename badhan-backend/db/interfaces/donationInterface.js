@@ -1,4 +1,5 @@
 const {Donation} = require('../models/Donation');
+
 const insertDonation = async (donationObject) => {
     try {
         let donation = new Donation(donationObject);
@@ -22,7 +23,6 @@ const insertDonation = async (donationObject) => {
         }
     }
 };
-
 
 const deleteDonation = async (donationID) => {
     try {
@@ -134,12 +134,28 @@ const findDonationsByQuery = async (query, option) => {
     }
 };
 
-
+const getCount = async ()=>{
+    try {
+        let donationCount = await Donation.count();
+        return {
+            message: "Fetched donation count",
+            status: 'OK',
+            data: donationCount
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
 module.exports = {
     insertDonation,
     deleteDonation,
+    deleteDonationByQuery,
+    deleteDonationsByQuery,
     findDonationByQuery,
     findDonationsByQuery,
-    deleteDonationByQuery,
-    deleteDonationsByQuery
+    getCount
 }

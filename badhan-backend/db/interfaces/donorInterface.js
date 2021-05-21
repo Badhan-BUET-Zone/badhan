@@ -27,7 +27,6 @@ const insertDonor = async (donorObject) => {
     }
 };
 
-
 const deleteDonor = async (donorID) => {
     try {
         let data = await Donor.findOneAndDelete({_id: donorID});
@@ -72,6 +71,7 @@ const deleteDonorByPhone = async (donorPhone) => {
     }
 };
 
+
 const deleteDonorById = async (donorId) => {
     try {
         let data = await Donor.findOneAndDelete({_id: donorId});
@@ -93,6 +93,7 @@ const deleteDonorById = async (donorId) => {
         }
     }
 };
+
 
 const findDonorByQuery = async (query, option) => {
     try {
@@ -119,6 +120,7 @@ const findDonorByQuery = async (query, option) => {
         }
     }
 };
+
 
 const findDonorsByQuery = async (query, option) => {
     try {
@@ -191,7 +193,39 @@ const findDonorAndUpdate = async (query, donorUpdate) => {
     }
 }
 
+const getCount = async ()=>{
+    try {
+        let donorCount = await Donor.count();
+        return {
+            message: "Fetched donor count",
+            status: 'OK',
+            data: donorCount
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
 
+const getVolunteerCount = async () =>{
+    try {
+        let volunteerCount = await Donor.find({designation:1}).count();
+        return {
+            message: "Fetched volunteer count",
+            status: 'OK',
+            data: volunteerCount
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
 module.exports = {
     insertDonor,
     deleteDonor,
@@ -200,5 +234,7 @@ module.exports = {
     findDonorByQuery,
     findDonorsByQuery,
     findDonorByIDAndUpdate,
-    findDonorAndUpdate
+    findDonorAndUpdate,
+    getCount,
+    getVolunteerCount
 }
