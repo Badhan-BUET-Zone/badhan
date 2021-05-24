@@ -8,10 +8,6 @@ if (env === 'development') {
     MONGODB_URI = "mongodb://localhost:27017/Badhan"
 }
 
-const exec = require('child_process').exec;
-const fs = require('fs');
-const colors = require('colors');
-const history = require('connect-history-api-fallback');
 const bodyParser=require('body-parser');
 let createError = require('http-errors');
 let express = require('express');
@@ -22,7 +18,7 @@ let cors = require('cors');
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./doc/swagger_output.json')
 
-let apiV2Router = require('./routes/apiV2');
+let apiRouter = require('./routes/api');
 let usersRouter = require('./routes/users');
 
 const { mongoose } = require('./db/mongoose');
@@ -43,12 +39,13 @@ app.use(cookieParser());
 
 
 // app.use('/', indexRouter);
-app.use('/v2', apiV2Router);
+
 app.use('/users', usersRouter);
+app.use('/', apiRouter);
 
 
 
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 
 
@@ -69,7 +66,7 @@ app.use(function(err, req, res, next) {
 });
 
 process.on('SIGINT', async function () {
-    
+
     //todo shift from console.error to something more...reasonable
     console.error('SIGINT called');
     await mongoose.disconnect();

@@ -600,12 +600,6 @@ const handlePOSTViewVolunteers = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         let userHall = authenticatedUser.hall;
-        // if (userDesignation < 2) {
-        //     return res.status(401).send({
-        //         status: 'ERROR',
-        //         message: 'User does not have permission to view volunteer list'
-        //     });
-        // }
 
         let donorsQueryResult = await donorInterface.findDonorsByQuery({
             hall: userHall,
@@ -786,6 +780,55 @@ const handlePOSTShowHallAdmins = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+const handleGETViewDonorDetails = async (req, res) => {
+
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the fetching of donor details.' */
+    try {
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            _id: req.query.donorId
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+
+        let obj = {
+            _id: donor._id,
+            phone: donor.phone,
+            name: donor.name,
+            studentId: donor.studentId,
+            lastDonation: donor.lastDonation,
+            bloodGroup: donor.bloodGroup,
+            hall: donor.hall,
+            roomNumber: donor.roomNumber,
+            address: donor.address,
+            comment: donor.comment,
+            designation: donor.designation
+        }
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            donor: obj
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
+//APP VERSION <= 3.5.1 STILL USES IT
 const handlePOSTViewDonorDetails = async (req, res) => {
 
     /*  #swagger.tags = ['Donors']
@@ -890,7 +933,7 @@ const handlePOSTAdminSignup = async (req, res) => {
         #swagger.description = 'handles signup of admin' */
     try {
         let token = req.header('x-auth');
-        if (token !== 'lekhaporaputkirmoddhebhoiradimu') {
+        if (token !== process.env.JWT_SECRET) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Invalid secret for signup'
@@ -932,7 +975,9 @@ module.exports = {
     handlePOSTViewVolunteers,
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins,
-    handlePOSTViewDonorDetails,
+    handleGETViewDonorDetails,
+    handlePOSTViewDonorDetails,//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
+//APP VERSION <= 3.5.1 STILL USES IT
     handlePOSTViewDonorDetailsSelf,
-    handlePOSTAdminSignup
+    handlePOSTAdminSignup,
 }

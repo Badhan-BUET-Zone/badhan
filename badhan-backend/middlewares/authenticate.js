@@ -39,14 +39,24 @@ let handlePOSTLogIn = async (req, res) => {
 
         let donor = donorQueryResult.data;
 
-        let matched = await bcrypt.compare(password, donor.password);
+        let matched;
+
+        try{
+            matched = await bcrypt.compare(password, donor.password);
+        }catch(e){
+            return res.status(401).send({
+                status: "ERROR",
+                message: "You do not have an account",
+            });
+        }
+
 
         if (matched) {
             let access = 'auth';
             let token = await jwt.sign({
                 _id: donor._id.toString(),
                 access
-            }, 'lekhaporaputkirmoddhebhoiradimu').toString();
+            }, process.env.JWT_SECRET).toString();
 
 
                 donor.tokens.push({access, token});
@@ -91,7 +101,7 @@ let handlePOSTLogIn = async (req, res) => {
 let handleAuthentication = async (req, res, next) => {
     try {
         let token = req.header('x-auth');
-        let decodedDonor = await jwt.verify(token, 'lekhaporaputkirmoddhebhoiradimu');
+        let decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
         let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
 
         if (donorQueryResult.status === 'OK') {
