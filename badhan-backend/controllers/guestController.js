@@ -1,5 +1,5 @@
 let handlePOSTLogIn = async (req, res) => {
-    return res.status(201).send({token: "sdghweignsdiugviub"});
+    return res.status(201).send({status: 'OK', message: "Guest sign in will not show actual nor accurate data",token: "sdghweignsdiugviub"});
 }
 
 const handlePOSTViewDonorDetailsSelf = async (req, res) => {

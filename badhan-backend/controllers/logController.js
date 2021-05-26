@@ -2,7 +2,7 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 let gplay = require('google-play-scraper');
 
-const handleGETOnlineCheck = async (req, res) =>{
+const handleGETOnlineCheck = async (req, res) => {
     return res.status(200).send("Badhan API is online")
 }
 
@@ -11,15 +11,15 @@ const handleGETStatistics = async (req, res) => {
         let donorCount = await donorInterface.getCount();
         let donationCount = await donationInterface.getCount();
         let volunteerCount = await donorInterface.getVolunteerCount();
-            return res.status(201).send({
-                status: 'OK',
-                message: 'Statistics fetched successfully',
-                statistics:{
-                    donorCount: donorCount.data,
-                    donationCount: donationCount.data,
-                    volunteerCount: volunteerCount.data
-                }
-            });
+        return res.status(201).send({
+            status: 'OK',
+            message: 'Statistics fetched successfully',
+            statistics: {
+                donorCount: donorCount.data,
+                donationCount: donationCount.data,
+                volunteerCount: volunteerCount.data
+            }
+        });
     } catch (e) {
         return res.status(500).send({
             status: 'EXCEPTION',
@@ -28,7 +28,7 @@ const handleGETStatistics = async (req, res) => {
     }
 }
 
-const handleGETAppVersion = (req,res,next)=> {
+const handleGETAppVersion = (req, res, next) => {
     /*
     #swagger.description = 'Get app info deployed to play store' */
     gplay.app({appId: 'com.mmmbadhan'})

@@ -68,7 +68,7 @@ let handlePOSTLogIn = async (req, res) => {
                 },
                description: 'A successful sign in returns a token for the user'
         } */
-            return res.status(201).send({token});
+            return res.status(201).send({status: 'OK', message: "Successfully signed in",token:token});
         } else {
             /* #swagger.responses[401] = {
                schema: {
