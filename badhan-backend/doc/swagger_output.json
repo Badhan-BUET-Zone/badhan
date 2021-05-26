@@ -46,7 +46,7 @@
         "responses": {}
       }
     },
-    "/donor/insert": {
+    "/v2/donor/insert": {
       "post": {
         "tags": [
           "Donors"
@@ -106,7 +106,36 @@
         }
       }
     },
-    "/donor/details": {
+    "/v3/donor/details": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of donor details.",
+        "parameters": [
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v2/donor/details": {
       "post": {
         "tags": [
           "Donors"
@@ -142,7 +171,7 @@
         }
       }
     },
-    "/donor/details/self": {
+    "/v2/donor/details/self": {
       "post": {
         "tags": [
           "Donors"
@@ -165,7 +194,7 @@
         }
       }
     },
-    "/donor/search": {
+    "/v2/donor/search": {
       "post": {
         "tags": [
           "Donors"
@@ -188,7 +217,7 @@
         }
       }
     },
-    "/donor/donations": {
+    "/v2/donor/donations": {
       "post": {
         "tags": [
           "Donations"
@@ -224,7 +253,7 @@
         }
       }
     },
-    "/donation/insert": {
+    "/v2/donation/insert": {
       "post": {
         "tags": [
           "Donations"
@@ -266,7 +295,7 @@
         }
       }
     },
-    "/donor/comment": {
+    "/v2/donor/comment": {
       "post": {
         "tags": [
           "Donors"
@@ -283,7 +312,7 @@
         }
       }
     },
-    "/donation/delete": {
+    "/v2/donation/delete": {
       "post": {
         "tags": [
           "Donations"
@@ -328,7 +357,7 @@
         }
       }
     },
-    "/donor/password/change": {
+    "/v2/donor/password/change": {
       "post": {
         "tags": [
           "Donors"
@@ -351,7 +380,7 @@
         }
       }
     },
-    "/donor/edit": {
+    "/v2/donor/edit": {
       "post": {
         "tags": [
           "Donors"
@@ -374,7 +403,7 @@
         }
       }
     },
-    "/admin/donor/delete": {
+    "/v2/admin/donor/delete": {
       "post": {
         "tags": [
           "Donors"
@@ -407,7 +436,7 @@
         }
       }
     },
-    "/admin/promote": {
+    "/v2/admin/promote": {
       "post": {
         "tags": [
           "Donors"
@@ -443,7 +472,7 @@
         }
       }
     },
-    "/admin/volunteers": {
+    "/v2/admin/volunteers": {
       "post": {
         "tags": [
           "Donors"
@@ -466,7 +495,7 @@
         }
       }
     },
-    "/admin/hall/change": {
+    "/v2/admin/hall/change": {
       "post": {
         "tags": [
           "Donors"
@@ -502,7 +531,7 @@
         }
       }
     },
-    "/admin/hall/show": {
+    "/v2/admin/hall/show": {
       "post": {
         "tags": [
           "Donors"
@@ -525,7 +554,7 @@
         }
       }
     },
-    "/version": {
+    "/v3/log/version": {
       "get": {
         "tags": [],
         "description": "Get app info deployed to play store",
@@ -537,7 +566,19 @@
         }
       }
     },
-    "/log/statistics": {
+    "/v2/version": {
+      "get": {
+        "tags": [],
+        "description": "Get app info deployed to play store",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/log/statistics": {
       "get": {
         "tags": [],
         "description": "",
