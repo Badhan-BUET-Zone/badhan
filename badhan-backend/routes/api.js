@@ -118,6 +118,12 @@ router.get('/v2/version',(req,res,next)=>{
 
 router.get('/v2/log/statistics',
     authenticator.handleAuthentication,
-    logController.handleGETStatistics)
+    logController.handleGETStatistics
+);
+
+router.get('/v1/log',
+    authenticator.handleAuthentication,
+    logController.handleGETLogs
+);
 
 module.exports = router;

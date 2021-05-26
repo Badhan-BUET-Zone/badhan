@@ -7,11 +7,13 @@ const insertDonation = async (donationObject) => {
 
         if (data.nInserted === 0) {
             return {
+
                 message: 'Donation insertion failed',
                 status: 'ERROR'
             }
         } else {
             return {
+                data,
                 message: 'Donation insertion successful',
                 status: 'OK'
             };
@@ -29,6 +31,7 @@ const deleteDonation = async (donationID) => {
         let data = await Donation.findOneAndDelete({_id: donationID});
         if (data) {
             return {
+                data,
                 message: 'Donation removed successfully',
                 status: 'OK'
             }
@@ -51,6 +54,7 @@ const deleteDonationByQuery = async (query) => {
         let data = await Donation.findOneAndDelete(query);
         if (data) {
             return {
+                data,
                 message: 'Donation removed successfully',
                 status: 'OK'
             }

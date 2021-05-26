@@ -1,6 +1,6 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
-
+const logInterface = require('../db/interfaces/logInterface');
 /** DONE
  * This function handles the retrieval of donation history for a particular donor.
  * The request body is expected to contain:
@@ -99,6 +99,8 @@ const handlePOSTInsertDonation = async (req, res) => {
             });
 
             if (donationInsertionResult.status === 'OK') {
+                await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"CREATE DONATION",donationInsertionResult.data);
+
                 if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
                     let donorUpdateResult = await donorInterface.findDonorAndUpdate({
                         _id: donor._id
@@ -110,6 +112,7 @@ const handlePOSTInsertDonation = async (req, res) => {
                     });
 
                     if (donorUpdateResult.status === 'OK') {
+                        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
                         return res.status(200).send({
                             status: 'OK',
                             message: 'Donation inserted successfully'
@@ -138,6 +141,7 @@ const handlePOSTInsertDonation = async (req, res) => {
                     });
 
                     if (donorUpdateResult.status === 'OK') {
+                        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
                         return res.status(200).send({
                             status: 'OK',
                             message: 'Donation inserted successfully'
@@ -264,6 +268,9 @@ const handlePOSTDeleteDonation = async (req, res) => {
             date: req.body.date
         });
 
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"DELETE DONATION",donationDeleteResult.data);
+
+
         if (donationDeleteResult.status !== 'OK') {
             return res.status(400).send({
                 status: donationDeleteResult.status,
@@ -286,6 +293,8 @@ const handlePOSTDeleteDonation = async (req, res) => {
                 message: 'Donation deleted but donor profile not updated concurrently. Inconsistent state reached.'
             });
         }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
 
         return res.status(200).send({
             status: 'OK',

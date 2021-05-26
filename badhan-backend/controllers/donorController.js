@@ -2,6 +2,7 @@ const moment = require('moment');
 
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
+const logInterface = require('../db/interfaces/logInterface');
 
 
 /** DONE
@@ -40,6 +41,7 @@ const handlePOSTInsertDonor = async (req, res) => {
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
         if (donorInsertionResult.status === 'OK') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"CREATE DONOR",donorInsertionResult.data);
 
             return res.status(201).send({
                 status: 'OK',
@@ -127,6 +129,8 @@ const handlePOSTDeleteDonor = async (req, res) => {
             let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
 
             if (deleteDonorResult.status === 'OK') {
+                await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"DELETE DONOR",deleteDonorResult.data);
+
                 return res.status(200).send({
                     status: 'OK',
                     message: 'Donor deleted successfully'
@@ -284,6 +288,8 @@ const handlePOSTComment = async (req, res) => {
         });
 
         if (donorUpdateResult.status === 'OK') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE COMMENT",donorUpdateResult.data);
+
             return res.status(200).send({
                 status: 'OK',
                 message: 'Comment posted successfully'
@@ -360,7 +366,7 @@ const handlePOSTChangePassword = async (req, res) => {
         target.password = reqBody.newPassword;
 
         await target.save();
-
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE PASSWORD",donorQueryResult.data);
         return res.status(200).send({
             status: 'OK',
             message: 'Password changed successfully'
@@ -486,6 +492,8 @@ const handlePOSTEditDonor = async (req, res) => {
                 message: donorUpdateResult.message
             });
         }
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
+
         return res.status(200).send({
             status: 'OK',
             message: 'Donor updated successfully'
@@ -571,6 +579,16 @@ const handlePOSTPromote = async (req, res) => {
             donor.password = null;
         }
         await donor.save();
+
+        let logOperation = "";
+        if(req.body.promoteFlag){
+            logOperation="PROMOTE DONOR";
+        }else{
+            logOperation="DEMOTE DONOR";
+        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,logOperation,donor);
+
 
         return res.status(200).send({
             status: 'OK',
@@ -695,6 +713,9 @@ const handlePOSTChangeAdmin = async (req, res) => {
                     message: 'Could not change hall admin'
                 });
             }
+
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"DEMOTE HALLADMIN",prevHallAdminUpdateResult.data);
+
         }
 
         // Make new hall admin
@@ -712,6 +733,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
                 message: 'Demoted previous hall admin, but could not set new hall admin'
             });
         }
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"PROMOTE VOLUNTEER",newHallAdminUpdateResult.data);
 
         return res.status(200).send({
             status: 'OK',
@@ -927,41 +949,41 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     }
 }
 
-
-const handlePOSTAdminSignup = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
-        #swagger.description = 'handles signup of admin' */
-    try {
-        let token = req.header('x-auth');
-        if (token !== process.env.JWT_SECRET) {
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'Invalid secret for signup'
-            });
-        }
-        // console.log(req.body.donorObject);
-
-        let donorInsertionResult = await donorInterface.insertDonor(req.body.donorObject);
-
-        if (donorInsertionResult.status !== 'OK') {
-            return res.status(400).send({
-                status: donorInsertionResult.status,
-                message: donorInsertionResult.message
-            });
-        }
-
-        return res.status(201).send({
-            status: 'OK',
-            message: 'Signed up successfully'
-        });
-
-    } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
-    }
-}
+//
+// const handlePOSTAdminSignup = async (req, res) => {
+//     /*  #swagger.tags = ['Donors']
+//         #swagger.description = 'handles signup of admin' */
+//     try {
+//         let token = req.header('x-auth');
+//         if (token !== process.env.JWT_SECRET) {
+//             return res.status(401).send({
+//                 status: 'ERROR',
+//                 message: 'Invalid secret for signup'
+//             });
+//         }
+//         // console.log(req.body.donorObject);
+//
+//         let donorInsertionResult = await donorInterface.insertDonor(req.body.donorObject);
+//
+//         if (donorInsertionResult.status !== 'OK') {
+//             return res.status(400).send({
+//                 status: donorInsertionResult.status,
+//                 message: donorInsertionResult.message
+//             });
+//         }
+//
+//         return res.status(201).send({
+//             status: 'OK',
+//             message: 'Signed up successfully'
+//         });
+//
+//     } catch (e) {
+//         return res.status(500).send({
+//             status: 'EXCEPTION',
+//             message: e.message
+//         });
+//     }
+// }
 
 module.exports = {
     handlePOSTInsertDonor,
@@ -979,5 +1001,4 @@ module.exports = {
     handlePOSTViewDonorDetails,//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 //APP VERSION <= 3.5.1 STILL USES IT
     handlePOSTViewDonorDetailsSelf,
-    handlePOSTAdminSignup,
 }

@@ -1,5 +1,6 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
+const logInterface = require('../db/interfaces/logInterface');
 let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
@@ -37,8 +38,26 @@ const handleGETAppVersion = (req, res, next) => {
         });
 }
 
+const handleGETLogs = async (req, res,next)=>{
+    try{
+        let allLogData = await logInterface.getLogs();
+        return res.status(201).send({
+            status: 'OK',
+            message: 'All logs fetched successfully',
+            logs: allLogData.data
+        });
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        })
+    }
+
+}
+
 module.exports = {
     handleGETStatistics,
     handleGETOnlineCheck,
-    handleGETAppVersion
+    handleGETAppVersion,
+    handleGETLogs,
 }

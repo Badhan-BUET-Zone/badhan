@@ -11,7 +11,7 @@ const signInLimiter = rateLimit({
 
 const donationInsertionLimiter = rateLimit({
     windowMs: minute,
-    max: 1,
+    max: 2,
     message:{
         status: "ERROR",
         message:"Please try again after 1 minute"
@@ -19,7 +19,7 @@ const donationInsertionLimiter = rateLimit({
 });
 const donorInsertionLimiter = rateLimit({
     windowMs: minute,
-    max: 1,
+    max: 2,
     message:{
         status: "ERROR",
         message:"Please try again after 1 minute"
@@ -27,7 +27,7 @@ const donorInsertionLimiter = rateLimit({
 });
 const donorDeletionLimiter = rateLimit({
     windowMs: minute,
-    max: 1,
+    max: 2,
     message:{
         status: "ERROR",
         message:"Please try again after 1 minute"
@@ -35,7 +35,7 @@ const donorDeletionLimiter = rateLimit({
 });
 const deleteDonationLimiter = rateLimit({
     windowMs: minute,
-    max: 1,
+    max: 2,
     message: {
         status: "ERROR",
         message: "Please try again after 1 minute"

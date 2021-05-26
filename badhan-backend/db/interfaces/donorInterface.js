@@ -77,6 +77,7 @@ const deleteDonorById = async (donorId) => {
         let data = await Donor.findOneAndDelete({_id: donorId});
         if (data) {
             return {
+                data,
                 message: 'Donor removed successfully',
                 status: 'OK'
             }
