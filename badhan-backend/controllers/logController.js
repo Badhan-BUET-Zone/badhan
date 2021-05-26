@@ -52,7 +52,21 @@ const handleGETLogs = async (req, res,next)=>{
             message: e.message
         })
     }
-
+}
+const handleDELETELogs = async (req,res,next)=>{
+    try{
+        let allLogData = await logInterface.deleteLogs();
+        return res.status(201).send({
+            status: 'OK',
+            message: 'All logs deleted successfully',
+            logs: allLogData.data
+        });
+    }catch (e){
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        })
+    }
 }
 
 module.exports = {
@@ -60,4 +74,5 @@ module.exports = {
     handleGETOnlineCheck,
     handleGETAppVersion,
     handleGETLogs,
+    handleDELETELogs
 }

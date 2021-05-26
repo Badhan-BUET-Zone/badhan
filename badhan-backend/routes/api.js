@@ -118,12 +118,20 @@ router.get('/v2/version',(req,res,next)=>{
 
 router.get('/v2/log/statistics',
     authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
     logController.handleGETStatistics
 );
 
 router.get('/v1/log',
     authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
     logController.handleGETLogs
+);
+
+router.delete('/v1/log',
+    authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
+    logController.handleDELETELogs
 );
 
 module.exports = router;

@@ -48,8 +48,26 @@ const getLogs = async () => {
         }
     }
 }
+const deleteLogs = async()=>{
+    try {
+        let logs = await Log.deleteMany();
+        return {
+            message: 'Log deletion successful',
+            status: 'OK',
+            data: logs,
+        }
+    } catch (e) {
+        console.log("ERROR")
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
 
 module.exports = {
     addLog,
-    getLogs
+    getLogs,
+    deleteLogs
 }

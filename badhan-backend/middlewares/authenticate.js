@@ -40,9 +40,9 @@ let handlePOSTLogIn = async (req, res) => {
 
         let matched;
 
-        try{
+        try {
             matched = await bcrypt.compare(password, donor.password);
-        }catch(e){
+        } catch (e) {
             return res.status(401).send({
                 status: "ERROR",
                 message: "You do not have an account",
@@ -58,7 +58,7 @@ let handlePOSTLogIn = async (req, res) => {
             }, process.env.JWT_SECRET).toString();
 
 
-                donor.tokens.push({access, token});
+            donor.tokens.push({access, token});
 
             await donor.save();
 
@@ -68,7 +68,7 @@ let handlePOSTLogIn = async (req, res) => {
                 },
                description: 'A successful sign in returns a token for the user'
         } */
-            return res.status(201).send({status: 'OK', message: "Successfully signed in",token:token});
+            return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
         } else {
             /* #swagger.responses[401] = {
                schema: {
@@ -110,7 +110,7 @@ let handleAuthentication = async (req, res, next) => {
                 return obj.token === token
             })
 
-            if(result === undefined){
+            if (result === undefined) {
                 return res.status(401).send({
                     status: 'ERROR',
                     message: 'User has been logged out'
@@ -186,9 +186,23 @@ let handlePOSTLogOutAll = async (req, res) => {
     }
 };
 
+let handleSuperAdminCheck = async (req, res, next) => {
+
+    if (res.locals.middlewareResponse.donor.designation === 3) {
+        return next();
+    } else {
+        return res.status(401).send({
+            status: 'ERROR',
+            message: 'You are not permitted to access this route'
+        });
+    }
+
+}
+
 module.exports = {
     handlePOSTLogIn,
     handleAuthentication,
     handlePOSTLogOut,
-    handlePOSTLogOutAll
+    handlePOSTLogOutAll,
+    handleSuperAdminCheck,
 }
