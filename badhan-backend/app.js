@@ -20,6 +20,7 @@ const swaggerFile = require('./doc/swagger_output.json')
 
 let apiRouter = require('./routes/api');
 let usersRouter = require('./routes/users');
+let guestRouter = require('./routes/guest')
 
 const { mongoose } = require('./db/mongoose');
 
@@ -41,6 +42,7 @@ app.use(cookieParser());
 // app.use('/', indexRouter);
 
 app.use('/users', usersRouter);
+app.use('/guest', guestRouter);
 app.use('/', apiRouter);
 
 

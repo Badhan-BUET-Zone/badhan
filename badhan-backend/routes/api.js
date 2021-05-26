@@ -15,6 +15,7 @@ router.get('/', logController.handleGETOnlineCheck);
 router.post('/v2/donor/insert',
     authenticator.handleAuthentication,
     rateLimiter.donorInsertionLimiter,
+    rateLimiter.donorInsertionLimiter,
     donorController.handlePOSTInsertDonor
 );
 

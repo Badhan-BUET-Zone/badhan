@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 
 const donorInterface = require('../db/interfaces/donorInterface');
 
-
 let handlePOSTLogIn = async (req, res) => {
     /*  #swagger.tags = ['User']
             #swagger.description = 'Endpoint to login a user.' */
