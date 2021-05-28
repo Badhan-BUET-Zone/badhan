@@ -79,5 +79,13 @@ router.get('/v2/log/statistics',
     guestController.handleGETStatistics
 );
 
+router.get('/v1/log',
+    guestController.handleGETLogs
+);
+
+router.delete('/v1/log',
+    guestController.handleDELETELogs
+);
+
 
 module.exports = router;
