@@ -112,7 +112,7 @@ const handlePOSTInsertDonation = async (req, res) => {
                     });
 
                     if (donorUpdateResult.status === 'OK') {
-                        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
+                        // await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
                         return res.status(200).send({
                             status: 'OK',
                             message: 'Donation inserted successfully'
@@ -141,7 +141,7 @@ const handlePOSTInsertDonation = async (req, res) => {
                     });
 
                     if (donorUpdateResult.status === 'OK') {
-                        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
+                        // await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
                         return res.status(200).send({
                             status: 'OK',
                             message: 'Donation inserted successfully'
@@ -294,7 +294,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
             });
         }
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
+        // await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
 
         return res.status(200).send({
             status: 'OK',
