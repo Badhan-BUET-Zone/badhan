@@ -487,12 +487,103 @@ const handleGETLogs = async (req, res) => {
     });
 }
 
-const handleDELETELogs = async (req, res)=>{
+const handleDELETELogs = async (req, res) => {
     return res.status(201).send({
         status: 'OK',
         message: 'All logs deleted successfully',
         logs: null
     });
+}
+
+const handleGETViewAllVolunteers = async (req, res) => {
+    let object = [
+        {
+            name: "Maksudur Rahman",
+            hall: 0,
+            studentId: 1605011,
+        },
+        {
+            name: "Rahman",
+            hall: 0,
+            studentId: 1605123,
+        },
+        {
+            name: "Maksudur",
+            hall: 0,
+            studentId: 1606789,
+        },
+        {
+            name: "Madhusudan Rahman",
+            hall: 1,
+            studentId: 1705757,
+        },
+        {
+            name: "Maksudur Jalal",
+            hall: 1,
+            studentId: 1806753,
+        },
+        {
+            name: "Hasan Rahman",
+            hall: 2,
+            studentId: 1905888,
+        },
+        {
+            name: "Mahin Ahmed",
+            hall: 2,
+            studentId: 1806852,
+        },
+        {
+            name: "Jalil Khan",
+            hall: 2,
+            studentId: 1705871,
+        },
+        {
+            name: "Begum Rahman",
+            hall: 2,
+            studentId: 1606888,
+        },
+        {
+            name: "Salli Rehma",
+            hall: 3,
+            studentId: 1505016,
+        },
+        {
+            name: "Salman Khan",
+            hall: 3,
+            studentId: 1406711,
+        },
+        {
+            name: "Makdur Rahan",
+            hall: 3,
+            studentId: 1506018,
+        },
+        {
+            name: "Maksu Rahm",
+            hall: 4,
+            studentId: 1606881,
+        },
+        {
+            name: "Masum Billa Rahman",
+            hall: 4,
+            studentId: 1705011,
+        },
+        {
+            name: "Sayeed Rahman",
+            hall: 4,
+            studentId: 1805211,
+        },
+        {
+            name: "Mahin Azad",
+            hall: 4,
+            studentId: 1905081,
+        },
+    ]
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Successfully fetched donor details',
+        data: object
+    });
+
 }
 
 module.exports = {
@@ -516,5 +607,6 @@ module.exports = {
     handlePOSTDeleteDonation,
     handleGETStatistics,
     handleGETLogs,
-    handleDELETELogs
+    handleDELETELogs,
+    handleGETViewAllVolunteers
 }

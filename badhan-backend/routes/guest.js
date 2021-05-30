@@ -87,5 +87,10 @@ router.delete('/v1/log',
     guestController.handleDELETELogs
 );
 
+router.get('/v1/admin/volunteers/all',
+    guestController.handleGETViewAllVolunteers,
+)
+
+
 
 module.exports = router;
