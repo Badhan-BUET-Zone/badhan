@@ -122,6 +122,29 @@ const findDonorByQuery = async (query, option) => {
     }
 };
 
+const findAllVolunteers = async () => {
+    try {
+        let data = await Donor.find({
+            designation: 1
+        },{
+            name: 1,
+            hall: 1,
+            studentId: 1,
+        });
+        return {
+            data,
+            message: 'Volunteers fetched successfully',
+            status: 'OK'
+        }
+    } catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+}
+
 
 const findDonorsByQuery = async (query, option) => {
     try {
@@ -194,7 +217,7 @@ const findDonorAndUpdate = async (query, donorUpdate) => {
     }
 }
 
-const getCount = async ()=>{
+const getCount = async () => {
     try {
         let donorCount = await Donor.count();
         return {
@@ -211,9 +234,9 @@ const getCount = async ()=>{
     }
 }
 
-const getVolunteerCount = async () =>{
+const getVolunteerCount = async () => {
     try {
-        let volunteerCount = await Donor.find({designation:1}).count();
+        let volunteerCount = await Donor.find({designation: 1}).count();
         return {
             message: "Fetched volunteer count",
             status: 'OK',
@@ -237,5 +260,6 @@ module.exports = {
     findDonorByIDAndUpdate,
     findDonorAndUpdate,
     getCount,
-    getVolunteerCount
+    getVolunteerCount,
+    findAllVolunteers
 }

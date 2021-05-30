@@ -88,11 +88,18 @@ router.post('/v2/admin/promote',
 
 router.post('/v2/admin/volunteers',
     authenticator.handleAuthentication,
-    donorController.handlePOSTViewVolunteers
+    donorController.handlePOSTViewVolunteersOfOwnHall
 );
+
+router.get('/v1/admin/volunteers/all',
+    authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
+    donorController.handleGETViewAllVolunteers,
+)
 
 router.post('/v2/admin/hall/change',
     authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
     donorController.handlePOSTChangeAdmin
 );
 

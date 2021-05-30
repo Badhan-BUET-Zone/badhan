@@ -610,7 +610,7 @@ const handlePOSTPromote = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
-const handlePOSTViewVolunteers = async (req, res) => {
+const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the fetching of volunteer lists for a hall admin.' */
     try {
@@ -668,8 +668,6 @@ const handlePOSTChangeAdmin = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the changing of a hall admin.' */
     try {
-        let authenticatedUser = res.locals.middlewareResponse.donor;
-        let userDesignation = authenticatedUser.designation;
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: req.body.donorId
@@ -685,10 +683,10 @@ const handlePOSTChangeAdmin = async (req, res) => {
         let donor = donorQueryResult.data;
         let donorDesignation = donor.designation;
 
-        if (userDesignation !== 3 || donorDesignation !== 1) {
+        if (donorDesignation !== 1) {
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'User does not have permission to change hall admins'
+                message: 'User is not a volunteer'
             });
         }
 
@@ -948,42 +946,31 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         });
     }
 }
+const handleGETViewAllVolunteers = async (req, res) => {
 
-//
-// const handlePOSTAdminSignup = async (req, res) => {
-//     /*  #swagger.tags = ['Donors']
-//         #swagger.description = 'handles signup of admin' */
-//     try {
-//         let token = req.header('x-auth');
-//         if (token !== process.env.JWT_SECRET) {
-//             return res.status(401).send({
-//                 status: 'ERROR',
-//                 message: 'Invalid secret for signup'
-//             });
-//         }
-//         // console.log(req.body.donorObject);
-//
-//         let donorInsertionResult = await donorInterface.insertDonor(req.body.donorObject);
-//
-//         if (donorInsertionResult.status !== 'OK') {
-//             return res.status(400).send({
-//                 status: donorInsertionResult.status,
-//                 message: donorInsertionResult.message
-//             });
-//         }
-//
-//         return res.status(201).send({
-//             status: 'OK',
-//             message: 'Signed up successfully'
-//         });
-//
-//     } catch (e) {
-//         return res.status(500).send({
-//             status: 'EXCEPTION',
-//             message: e.message
-//         });
-//     }
-// }
+    try {
+        let volunteerResult = await donorInterface.findAllVolunteers();
+
+        if (volunteerResult.status !== 'OK') {
+            return res.status(400).send({
+                status: volunteerResult.status,
+                message: volunteerResult.message
+            });
+        }
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            data: volunteerResult.data
+        });
+
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 
 module.exports = {
     handlePOSTInsertDonor,
@@ -994,11 +981,12 @@ module.exports = {
     handlePOSTChangePassword,
     handlePOSTEditDonor,
     handlePOSTPromote,
-    handlePOSTViewVolunteers,
+    handlePOSTViewVolunteersOfOwnHall,
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins,
     handleGETViewDonorDetails,
     handlePOSTViewDonorDetails,//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 //APP VERSION <= 3.5.1 STILL USES IT
     handlePOSTViewDonorDetailsSelf,
+    handleGETViewAllVolunteers
 }
