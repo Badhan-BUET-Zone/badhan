@@ -830,7 +830,8 @@ const handleGETViewDonorDetails = async (req, res) => {
             roomNumber: donor.roomNumber,
             address: donor.address,
             comment: donor.comment,
-            designation: donor.designation
+            designation: donor.designation,
+            donationCount: donor.donationCount,
         }
 
         return res.status(200).send({
