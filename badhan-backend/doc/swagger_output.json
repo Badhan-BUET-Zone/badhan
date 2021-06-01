@@ -83,7 +83,10 @@
                 "lastDonation": {
                   "example": "any"
                 },
-                "comment\r": {
+                "comment": {
+                  "example": "any"
+                },
+                "extraDonationCount": {
                   "example": "any"
                 }
               }

@@ -27,7 +27,7 @@ const handlePOSTInsertDonor = async (req, res) => {
         }
 
         let duplicateDonorResult = await donorInterface.findDonorsByPhone(req.body.phone);
-        if(duplicateDonorResult.donors.length!==0){
+        if (duplicateDonorResult.donors.length !== 0) {
             return res.status(409).send({
                 status: 'ERROR',
                 message: 'Donor(s) found with duplicate phone number',
@@ -44,24 +44,35 @@ const handlePOSTInsertDonor = async (req, res) => {
             address: req.body.address,
             roomNumber: req.body.roomNumber,
             lastDonation: req.body.lastDonation,
-            comment: req.body.comment
+            comment: req.body.comment,
+            donationCount: req.body.extraDonationCount,
         };
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
-        if (donorInsertionResult.status === 'OK') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"CREATE DONOR",donorInsertionResult.data);
-
-            return res.status(201).send({
-                status: 'OK',
-                message: 'New donor inserted successfully',
-                newDonor: donorInsertionResult.data
-            });
-        } else {
+        if (donorInsertionResult.status !== 'OK') {
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'New donor insertion unsuccessful'
             });
         }
+
+        console.log(donorInsertionResult.data)
+        for(let i = 0 ; i < req.body.extraDonationCount; i++){
+            await donationInterface.insertDonation({
+                phone: donorInsertionResult.data.phone,
+                donorId: donorInsertionResult.data._id,
+                date: 0
+            });
+        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONOR", donorInsertionResult.data);
+
+        return res.status(201).send({
+            status: 'OK',
+            message: 'New donor inserted successfully',
+            newDonor: donorInsertionResult.data
+        });
+
     } catch (e) {
         return res.status(500).send({
             status: 'EXCEPTION',
@@ -137,7 +148,7 @@ const handlePOSTDeleteDonor = async (req, res) => {
             let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
 
             if (deleteDonorResult.status === 'OK') {
-                await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"DELETE DONOR",deleteDonorResult.data);
+                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
 
                 return res.status(200).send({
                     status: 'OK',
@@ -296,7 +307,7 @@ const handlePOSTComment = async (req, res) => {
         });
 
         if (donorUpdateResult.status === 'OK') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE COMMENT",donorUpdateResult.data);
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
 
             return res.status(200).send({
                 status: 'OK',
@@ -374,7 +385,7 @@ const handlePOSTChangePassword = async (req, res) => {
         target.password = reqBody.newPassword;
 
         await target.save();
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE PASSWORD",donorQueryResult.data);
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", donorQueryResult.data);
         return res.status(200).send({
             status: 'OK',
             message: 'Password changed successfully'
@@ -468,7 +479,7 @@ const handlePOSTEditDonor = async (req, res) => {
             updates.hall = target.hall;
         }
 
-        if (reqBody.newRoomNumber !== undefined && reqBody.newRoomNumber !==null) {
+        if (reqBody.newRoomNumber !== undefined && reqBody.newRoomNumber !== null) {
             updates.roomNumber = reqBody.newRoomNumber;
         } else {
             updates.roomNumber = target.roomNumber;
@@ -500,7 +511,7 @@ const handlePOSTEditDonor = async (req, res) => {
                 message: donorUpdateResult.message
             });
         }
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
 
         return res.status(200).send({
             status: 'OK',
@@ -589,13 +600,13 @@ const handlePOSTPromote = async (req, res) => {
         await donor.save();
 
         let logOperation = "";
-        if(req.body.promoteFlag){
-            logOperation="PROMOTE DONOR";
-        }else{
-            logOperation="DEMOTE DONOR";
+        if (req.body.promoteFlag) {
+            logOperation = "PROMOTE DONOR";
+        } else {
+            logOperation = "DEMOTE DONOR";
         }
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,logOperation,donor);
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
 
 
         return res.status(200).send({
@@ -720,7 +731,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
                 });
             }
 
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"DEMOTE HALLADMIN",prevHallAdminUpdateResult.data);
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DEMOTE HALLADMIN", prevHallAdminUpdateResult.data);
 
         }
 
@@ -739,7 +750,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
                 message: 'Demoted previous hall admin, but could not set new hall admin'
             });
         }
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"PROMOTE VOLUNTEER",newHallAdminUpdateResult.data);
+        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
 
         return res.status(200).send({
             status: 'OK',
