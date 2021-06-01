@@ -25,7 +25,15 @@ const handlePOSTInsertDonor = async (req, res) => {
                 message: 'User does not have permission to add donors'
             });
         }
-        // console.log("passed auth");
+
+        let duplicateDonorResult = await donorInterface.findDonorsByPhone(req.body.phone);
+        if(duplicateDonorResult.donors.length!==0){
+            return res.status(409).send({
+                status: 'ERROR',
+                message: 'Donor(s) found with duplicate phone number',
+                donors: duplicateDonorResult.donors
+            });
+        }
 
         let donorObject = {
             phone: req.body.phone,
