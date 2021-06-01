@@ -176,7 +176,8 @@ const handleGETViewDonorDetails = async (req, res) => {
         roomNumber: "3009",
         address: "Azimpur Dhaka",
         comment: "Has high blood pressure",
-        designation: 1
+        designation: 1,
+        donationCount: 3,
     }
 
     return res.status(200).send({
