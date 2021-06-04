@@ -19,7 +19,7 @@ const donationInsertionLimiter = rateLimit({
 });
 const donorInsertionLimiter = rateLimit({
     windowMs: minute,
-    max: 2,
+    max: 12,
     message:{
         status: "ERROR",
         message:"Please try again after 1 minute"

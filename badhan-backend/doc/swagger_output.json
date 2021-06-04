@@ -80,9 +80,6 @@
                 "roomNumber": {
                   "example": "any"
                 },
-                "lastDonation": {
-                  "example": "any"
-                },
                 "comment": {
                   "example": "any"
                 },

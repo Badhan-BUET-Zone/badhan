@@ -99,8 +99,9 @@ const handlePOSTInsertDonation = async (req, res) => {
             });
 
             if (donationInsertionResult.status === 'OK') {
-                await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"CREATE DONATION",donationInsertionResult.data);
-
+                if(process.env.NODE_ENV !== 'development') {
+                    await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONATION", donationInsertionResult.data);
+                }
                 if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
                     let donorUpdateResult = await donorInterface.findDonorAndUpdate({
                         _id: donor._id
@@ -112,7 +113,6 @@ const handlePOSTInsertDonation = async (req, res) => {
                     });
 
                     if (donorUpdateResult.status === 'OK') {
-                        // await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
                         return res.status(200).send({
                             status: 'OK',
                             message: 'Donation inserted successfully'
@@ -141,7 +141,6 @@ const handlePOSTInsertDonation = async (req, res) => {
                     });
 
                     if (donorUpdateResult.status === 'OK') {
-                        // await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
                         return res.status(200).send({
                             status: 'OK',
                             message: 'Donation inserted successfully'
@@ -267,9 +266,9 @@ const handlePOSTDeleteDonation = async (req, res) => {
             donorId: req.body.donorId,
             date: req.body.date
         });
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"DELETE DONATION",donationDeleteResult.data);
-
+        if(process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONATION", donationDeleteResult.data);
+        }
 
         if (donationDeleteResult.status !== 'OK') {
             return res.status(400).send({
@@ -294,7 +293,6 @@ const handlePOSTDeleteDonation = async (req, res) => {
             });
         }
 
-        // await logInterface.addLog(res.locals.middlewareResponse.donor.name,res.locals.middlewareResponse.donor.hall,"UPDATE DONOR",donorUpdateResult.data);
 
         return res.status(200).send({
             status: 'OK',

@@ -28,11 +28,22 @@ const handlePOSTInsertDonor = async (req, res) => {
 
         let duplicateDonorResult = await donorInterface.findDonorsByPhone(req.body.phone);
         if (duplicateDonorResult.donors.length !== 0) {
-            return res.status(409).send({
-                status: 'ERROR',
-                message: 'Donor(s) found with duplicate phone number',
-                donors: duplicateDonorResult.donors
-            });
+
+
+            if(authenticatedUser.designation===3 || duplicateDonorResult.donors[0].hall===authenticatedUser.hall){
+                return res.status(409).send({
+                    status: 'ERROR',
+                    message: 'Donor found with duplicate phone number',
+                    donor: duplicateDonorResult.donors[0]
+                });
+            }else{
+                return res.status(401).send({
+                    status: 'ERROR',
+                    message: 'Donor found with duplicate phone number in another hall',
+                    donor: null
+                });
+            }
+
         }
 
         let donorObject = {
@@ -43,7 +54,7 @@ const handlePOSTInsertDonor = async (req, res) => {
             studentId: req.body.studentId,
             address: req.body.address,
             roomNumber: req.body.roomNumber,
-            lastDonation: req.body.lastDonation,
+            lastDonation: 0,
             comment: req.body.comment,
             donationCount: req.body.extraDonationCount,
         };
@@ -56,7 +67,6 @@ const handlePOSTInsertDonor = async (req, res) => {
             });
         }
 
-        console.log(donorInsertionResult.data)
         for(let i = 0 ; i < req.body.extraDonationCount; i++){
             await donationInterface.insertDonation({
                 phone: donorInsertionResult.data.phone,
@@ -64,9 +74,9 @@ const handlePOSTInsertDonor = async (req, res) => {
                 date: 0
             });
         }
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONOR", donorInsertionResult.data);
-
+        if(process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONOR", donorInsertionResult.data);
+        }
         return res.status(201).send({
             status: 'OK',
             message: 'New donor inserted successfully',
@@ -148,7 +158,10 @@ const handlePOSTDeleteDonor = async (req, res) => {
             let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
 
             if (deleteDonorResult.status === 'OK') {
-                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
+                if(process.env.NODE_ENV !== 'development'){
+                    await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
+
+                }
 
                 return res.status(200).send({
                     status: 'OK',
@@ -307,8 +320,9 @@ const handlePOSTComment = async (req, res) => {
         });
 
         if (donorUpdateResult.status === 'OK') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
-
+            if(process.env.NODE_ENV !== 'development') {
+                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
+            }
             return res.status(200).send({
                 status: 'OK',
                 message: 'Comment posted successfully'
@@ -385,7 +399,9 @@ const handlePOSTChangePassword = async (req, res) => {
         target.password = reqBody.newPassword;
 
         await target.save();
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", donorQueryResult.data);
+        if(process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", donorQueryResult.data);
+        }
         return res.status(200).send({
             status: 'OK',
             message: 'Password changed successfully'
@@ -511,8 +527,9 @@ const handlePOSTEditDonor = async (req, res) => {
                 message: donorUpdateResult.message
             });
         }
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
-
+        if(process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
+        }
         return res.status(200).send({
             status: 'OK',
             message: 'Donor updated successfully'
@@ -605,9 +622,9 @@ const handlePOSTPromote = async (req, res) => {
         } else {
             logOperation = "DEMOTE DONOR";
         }
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
-
+        if(process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
+        }
 
         return res.status(200).send({
             status: 'OK',
@@ -730,9 +747,9 @@ const handlePOSTChangeAdmin = async (req, res) => {
                     message: 'Could not change hall admin'
                 });
             }
-
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DEMOTE HALLADMIN", prevHallAdminUpdateResult.data);
-
+            if(process.env.NODE_ENV !== 'development') {
+                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DEMOTE HALLADMIN", prevHallAdminUpdateResult.data);
+            }
         }
 
         // Make new hall admin
@@ -750,8 +767,9 @@ const handlePOSTChangeAdmin = async (req, res) => {
                 message: 'Demoted previous hall admin, but could not set new hall admin'
             });
         }
-        await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
-
+        if(process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
+        }
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully changed hall admin'
