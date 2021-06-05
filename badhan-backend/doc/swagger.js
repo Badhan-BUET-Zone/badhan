@@ -22,9 +22,14 @@ const doc = {
             "description": "Routes to handle donors"
         },
         {
-            "name":"Donations",
-            "description":"Endpoints to handle donations"
-        }
+            "name":"Deprecated",
+            "description":"These routes will be deleted later"
+        },
+        {
+            "name":"Logs",
+            "description":"Fetch statistics about backend"
+        },
+
     ],
     securityDefinitions: {
         api_key: {
