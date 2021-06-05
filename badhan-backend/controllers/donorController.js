@@ -71,7 +71,7 @@ const handlePOSTInsertDonor = async (req, res) => {
               schema: {
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number in another hall',
-                    donor: null
+                    donor: 'this field will return null'
                },
               description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
        } */
@@ -122,6 +122,14 @@ const handlePOSTInsertDonor = async (req, res) => {
         if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONOR", donorInsertionResult.data);
         }
+        /* #swagger.responses[201] = {
+            schema: {
+                  status: 'OK',
+                message: 'New donor inserted successfully',
+                newDonor: 'new donor data'
+             },
+            description: 'successful donor insertion'
+     } */
         return res.status(201).send({
             status: 'OK',
             message: 'New donor inserted successfully',
@@ -129,6 +137,13 @@ const handlePOSTInsertDonor = async (req, res) => {
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+           schema: {
+                status: 'EXCEPTION',
+                message: 'error message'
+            },
+           description: 'In case of internal server error, the user will get this message'
+    } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

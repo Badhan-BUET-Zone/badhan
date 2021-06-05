@@ -54,37 +54,47 @@
         "description": "handles the insertion of a new donor into the database.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "logIn",
             "in": "body",
+            "description": "donor info for inserting donor.",
             "schema": {
               "type": "object",
               "properties": {
                 "phone": {
-                  "example": "any"
+                  "type": "number",
+                  "example": 8801521438557
                 },
                 "bloodGroup": {
-                  "example": "any"
+                  "type": "number",
+                  "example": 2
                 },
                 "hall": {
-                  "example": "any"
+                  "type": "number",
+                  "example": 5
                 },
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
                 },
                 "studentId": {
-                  "example": "any"
+                  "type": "number",
+                  "example": 1605011
                 },
                 "address": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "Azimpur"
                 },
                 "roomNumber": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "3009"
                 },
                 "comment": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "developer of badhan"
                 },
                 "extraDonationCount": {
-                  "example": "any"
+                  "type": "number",
+                  "example": 2
                 }
               }
             }
@@ -92,13 +102,30 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "successful donor insertion",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "New donor inserted successfully"
+                },
+                "newDonor": {
+                  "type": "string",
+                  "example": "new donor data"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -108,7 +135,30 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "New donor insertion unsuccessful"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor found with duplicate phone number in another hall"
+                },
+                "donor": {
+                  "type": "string",
+                  "example": "this field will return null"
                 }
               },
               "xml": {
@@ -117,16 +167,36 @@
             }
           },
           "409": {
-            "description": "Conflict"
-          },
-          "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "If the donor already exists in the database, user will get the error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor found with duplicate phone number"
+                },
+                "donor": {
+                  "type": "string",
+                  "example": "donor array"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "In case of internal server error, the user will get this message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
