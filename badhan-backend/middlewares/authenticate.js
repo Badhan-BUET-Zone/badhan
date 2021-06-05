@@ -111,6 +111,13 @@ let handleAuthentication = async (req, res, next) => {
             })
 
             if (result === undefined) {
+                /* #swagger.responses[401] = {
+               schema: {
+                    status: 'ERROR',
+                    message: 'User has been logged out'
+                },
+               description: 'If the token does not exist in database , the user might have logged out already.'
+        } */
                 return res.status(401).send({
                     status: 'ERROR',
                     message: 'User has been logged out'
@@ -123,6 +130,13 @@ let handleAuthentication = async (req, res, next) => {
             };
             return next();
         } else {
+            /* #swagger.responses[401] = {
+               schema: {
+                   status: 'ERROR',
+                message: 'Authentication failed. Invalid authentication token.'
+                },
+               description: 'This error will occur if the user does not exist'
+        } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Authentication failed. Invalid authentication token.'
@@ -130,6 +144,13 @@ let handleAuthentication = async (req, res, next) => {
         }
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+              schema: {
+              status: 'ERROR',
+           message: 'error message'
+               },
+              description: 'In case of internal server error user will receive an error message'
+       } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -140,6 +161,7 @@ let handleAuthentication = async (req, res, next) => {
 let handlePOSTLogOut = async (req, res) => {
     /*  #swagger.tags = ['User']
             #swagger.description = 'Endpoint to logout a user.' */
+
     try {
         let donor = res.locals.middlewareResponse.donor;
         let token = res.locals.middlewareResponse.token;
@@ -149,12 +171,25 @@ let handlePOSTLogOut = async (req, res) => {
                 tokens: {token}
             }
         });
-
+        /* #swagger.responses[200] = {
+               schema: {
+               status: 'OK',
+                message: 'Logged out successfully'
+                },
+               description: 'A successful sign out removes the token for the user'
+        } */
         return res.status(200).send({
             status: 'OK',
             message: 'Logged out successfully'
         });
     } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
         return res.status(500).send({
             status: 'ERROR',
             message: e.message
@@ -164,7 +199,7 @@ let handlePOSTLogOut = async (req, res) => {
 
 let handlePOSTLogOutAll = async (req, res) => {
     /*  #swagger.tags = ['User']
-            #swagger.description = 'Endpoint to logout a user.' */
+            #swagger.description = 'Endpoint to logout user from all devices.' */
     try {
         let donor = res.locals.middlewareResponse.donor;
 
@@ -173,12 +208,25 @@ let handlePOSTLogOutAll = async (req, res) => {
                 tokens: []
             }
         });
-
+        /* #swagger.responses[200] = {
+               schema: {
+               status: 'OK',
+                message: 'Logged out from all devices successfully'
+                },
+               description: 'A successful sign out removes all the tokens of the user'
+        } */
         return res.status(200).send({
             status: 'OK',
             message: 'Logged out from all devices successfully'
         });
     } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
         return res.status(500).send({
             status: 'ERROR',
             message: e.message

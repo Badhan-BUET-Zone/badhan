@@ -15,11 +15,33 @@ const logInterface = require('../db/interfaces/logInterface');
  */
 const handlePOSTInsertDonor = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the insertion of a new donor into the database.' */
+           #swagger.description = 'handles the insertion of a new donor into the database.' */
+    /* #swagger.parameters['logIn'] = {
+               in: 'body',
+               description: 'donor info for inserting donor.',
+               schema:{
+                phone: 8801521438557,
+                bloodGroup: 2,
+                hall: 5,
+                name: 'Mir Mahathir Mohammad',
+                studentId: 1605011,
+                address: 'Azimpur',
+                roomNumber: '3009',
+                comment: 'developer of badhan',
+                extraDonationCount: 2,
+               }
+      } */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
         if (authenticatedUser.designation === 0) {
+            /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'User does not have permission to add donors'
+               },
+              description: 'If user does not have permission to insert donor, user will get this error message'
+       } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to add donors'
@@ -30,13 +52,29 @@ const handlePOSTInsertDonor = async (req, res) => {
         if (duplicateDonorResult.donors.length !== 0) {
 
 
-            if(authenticatedUser.designation===3 || duplicateDonorResult.donors[0].hall===authenticatedUser.hall || duplicateDonorResult.donors[0].hall>6){
+            if (authenticatedUser.designation === 3 || duplicateDonorResult.donors[0].hall === authenticatedUser.hall || duplicateDonorResult.donors[0].hall > 6) {
+                /* #swagger.responses[409] = {
+              schema: {
+                    status: 'ERROR',
+                    message: 'Donor found with duplicate phone number',
+                    donor: 'donor array'
+               },
+              description: 'If the donor already exists in the database, user will get the error message'
+       } */
                 return res.status(409).send({
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number',
                     donor: duplicateDonorResult.donors[0]
                 });
-            }else{
+            } else {
+                /* #swagger.responses[401] = {
+              schema: {
+                    status: 'ERROR',
+                    message: 'Donor found with duplicate phone number in another hall',
+                    donor: null
+               },
+              description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
+       } */
                 return res.status(401).send({
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number in another hall',
@@ -61,20 +99,27 @@ const handlePOSTInsertDonor = async (req, res) => {
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
         if (donorInsertionResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+                   status: 'ERROR',
+                   message: 'New donor insertion unsuccessful'
+              },
+             description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
+      } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'New donor insertion unsuccessful'
             });
         }
 
-        for(let i = 0 ; i < req.body.extraDonationCount; i++){
+        for (let i = 0; i < req.body.extraDonationCount; i++) {
             await donationInterface.insertDonation({
                 phone: donorInsertionResult.data.phone,
                 donorId: donorInsertionResult.data._id,
                 date: 0
             });
         }
-        if(process.env.NODE_ENV !== 'development') {
+        if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONOR", donorInsertionResult.data);
         }
         return res.status(201).send({
@@ -158,7 +203,7 @@ const handlePOSTDeleteDonor = async (req, res) => {
             let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
 
             if (deleteDonorResult.status === 'OK') {
-                if(process.env.NODE_ENV !== 'development'){
+                if (process.env.NODE_ENV !== 'development') {
                     await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
 
                 }
@@ -320,7 +365,7 @@ const handlePOSTComment = async (req, res) => {
         });
 
         if (donorUpdateResult.status === 'OK') {
-            if(process.env.NODE_ENV !== 'development') {
+            if (process.env.NODE_ENV !== 'development') {
                 await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
             }
             return res.status(200).send({
@@ -399,7 +444,7 @@ const handlePOSTChangePassword = async (req, res) => {
         target.password = reqBody.newPassword;
 
         await target.save();
-        if(process.env.NODE_ENV !== 'development') {
+        if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", donorQueryResult.data);
         }
         return res.status(200).send({
@@ -527,7 +572,7 @@ const handlePOSTEditDonor = async (req, res) => {
                 message: donorUpdateResult.message
             });
         }
-        if(process.env.NODE_ENV !== 'development') {
+        if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
         }
         return res.status(200).send({
@@ -622,7 +667,7 @@ const handlePOSTPromote = async (req, res) => {
         } else {
             logOperation = "DEMOTE DONOR";
         }
-        if(process.env.NODE_ENV !== 'development') {
+        if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
         }
 
@@ -747,7 +792,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
                     message: 'Could not change hall admin'
                 });
             }
-            if(process.env.NODE_ENV !== 'development') {
+            if (process.env.NODE_ENV !== 'development') {
                 await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DEMOTE HALLADMIN", prevHallAdminUpdateResult.data);
             }
         }
@@ -767,7 +812,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
                 message: 'Demoted previous hall admin, but could not set new hall admin'
             });
         }
-        if(process.env.NODE_ENV !== 'development') {
+        if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
         }
         return res.status(200).send({

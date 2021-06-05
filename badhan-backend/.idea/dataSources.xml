@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="Badhan@cluster0.4xhyy.mongodb.net" uuid="672ee8e7-02dc-4216-885f-9c6451659b1c">
+    <data-source source="LOCAL" name="Badhan@cluster0.4xhyy.mongodb.net" uuid="1cc56e00-6902-407a-b8d1-4846d47c26f0">
       <driver-ref>mongo</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
       <jdbc-url>mongodb+srv://cluster0.4xhyy.mongodb.net/Badhan?retryWrites=true&amp;w=majority</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>
