@@ -15,6 +15,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
+require('./doc/swagger.js')
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./doc/swagger_output.json')
 
