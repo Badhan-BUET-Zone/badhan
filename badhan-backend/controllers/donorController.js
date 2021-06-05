@@ -30,7 +30,7 @@ const handlePOSTInsertDonor = async (req, res) => {
         if (duplicateDonorResult.donors.length !== 0) {
 
 
-            if(authenticatedUser.designation===3 || duplicateDonorResult.donors[0].hall===authenticatedUser.hall){
+            if(authenticatedUser.designation===3 || duplicateDonorResult.donors[0].hall===authenticatedUser.hall || duplicateDonorResult.donors[0].hall>6){
                 return res.status(409).send({
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number',

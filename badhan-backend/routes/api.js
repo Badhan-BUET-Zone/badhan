@@ -13,9 +13,8 @@ let gplay = require('google-play-scraper');
 router.get('/', logController.handleGETOnlineCheck);
 
 router.post('/v2/donor/insert',
+    rateLimiter.donorInsertionLimiter,
     authenticator.handleAuthentication,
-    rateLimiter.donorInsertionLimiter,
-    rateLimiter.donorInsertionLimiter,
     donorController.handlePOSTInsertDonor
 );
 
@@ -47,8 +46,8 @@ router.post('/v2/donor/donations',
 );
 
 router.post('/v2/donation/insert',
-    authenticator.handleAuthentication,
     rateLimiter.donationInsertionLimiter,
+    authenticator.handleAuthentication,
     donationController.handlePOSTInsertDonation
 );
 
@@ -58,8 +57,8 @@ router.post('/v2/donor/comment',
 );
 
 router.post('/v2/donation/delete',
-    authenticator.handleAuthentication,
     rateLimiter.deleteDonationLimiter,
+    authenticator.handleAuthentication,
     donationController.handlePOSTDeleteDonation
 );
 
@@ -74,8 +73,8 @@ router.post('/v2/donor/edit',
 );
 
 router.post('/v2/admin/donor/delete',
-    authenticator.handleAuthentication,
     rateLimiter.donorDeletionLimiter,
+    authenticator.handleAuthentication,
     donorController.handlePOSTDeleteDonor
 );
 
