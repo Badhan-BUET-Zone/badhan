@@ -258,7 +258,7 @@ const handlePOSTSearchDonors = async (req, res) => {
                 hall: 5,
                 batch: 2016,
                 name:'Mir Mahathir Mohammad',
-                address:'Azimpur',
+                address:'Azimpur'
                }
       } */
 
@@ -618,14 +618,27 @@ const handlePOSTEditDonor = async (req, res) => {
                in: 'body',
                description: 'donor info for editing donor',
                schema:{
-                donorId:'ghjdgejhd7623jhs'
+                donorId:'ghjdgejhd7623jhs',
+                newName:'Mir Mahathir Mohammad',
+                newPhone:8801521438557,
+                newStudentId:1605011,
+                newBloodGroup:2,
+                newHall:3,
+                newRoomNumber:'3009',
+                newAddress:'Azimpur'
                }
       } */
     try {
         let reqBody = req.body;
         let authenticatedUser = res.locals.middlewareResponse.donor;
         if (authenticatedUser.designation === 0) {
-
+            /* #swagger.responses[401] = {
+             schema: {
+                status: 'ERROR',
+                message: 'User does not have permission to edit'
+              },
+             description: 'User is not authenticated to edit info'
+      } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit'
@@ -636,6 +649,13 @@ const handlePOSTEditDonor = async (req, res) => {
         })
 
         if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+                status: 'Error status',
+                message: 'Error message'
+              },
+             description: 'Donor not found'
+      } */
             return res.status(400).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -647,6 +667,13 @@ const handlePOSTEditDonor = async (req, res) => {
         if (authenticatedUser.designation < target.designation ||
             (authenticatedUser.designation === target.designation
                 && !authenticatedUser._id.equals(target._id))) {
+            /* #swagger.responses[401] = {
+             schema: {
+                status: 'ERROR',
+                message: 'User does not have permission to edit'
+              },
+             description: 'User is not authenticated to edit info'
+      } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit this donor'
@@ -712,6 +739,13 @@ const handlePOSTEditDonor = async (req, res) => {
         });
 
         if (donorUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+                status: 'Error status',
+                message: 'Error message'
+              },
+             description: 'donor info update unsuccessful'
+      } */
             return res.status(400).send({
                 status: donorUpdateResult.status,
                 message: donorUpdateResult.message
@@ -720,12 +754,26 @@ const handlePOSTEditDonor = async (req, res) => {
         if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
         }
+        /* #swagger.responses[200] = {
+             schema: {
+                status: 'OK',
+                message: 'Donor updated successfully'
+              },
+             description: 'donor info update successful'
+      } */
         return res.status(200).send({
             status: 'OK',
             message: 'Donor updated successfully'
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+               status: 'EXCEPTION',
+               message: 'Error message'
+             },
+            description: 'Internal server error'
+     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

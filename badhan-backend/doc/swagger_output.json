@@ -1180,6 +1180,34 @@
                 "donorId": {
                   "type": "string",
                   "example": "ghjdgejhd7623jhs"
+                },
+                "newName": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "newPhone": {
+                  "type": "number",
+                  "example": 8801521438557
+                },
+                "newStudentId": {
+                  "type": "number",
+                  "example": 1605011
+                },
+                "newBloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "newHall": {
+                  "type": "number",
+                  "example": 3
+                },
+                "newRoomNumber": {
+                  "type": "string",
+                  "example": "3009"
+                },
+                "newAddress": {
+                  "type": "string",
+                  "example": "Azimpur"
                 }
               }
             }
@@ -1187,13 +1215,45 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "donor info update successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor updated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "donor info update unsuccessful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Error status"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "User is not authenticated to edit info",
             "schema": {
               "type": "object",
               "properties": {
@@ -1203,7 +1263,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "User does not have permission to edit"
                 }
               },
               "xml": {
@@ -1212,17 +1272,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "Internal server error",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Error message"
                 }
               },
               "xml": {
