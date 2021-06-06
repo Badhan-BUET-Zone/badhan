@@ -250,6 +250,15 @@ const handlePOSTDeleteDonor = async (req, res) => {
 const handlePOSTSearchDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the filtered query of donors from the database.' */
+    /* #swagger.parameters['SearchDonor'] = {
+               in: 'body',
+               description: 'search donor by blood group and hall',
+               schema:{
+                bloodGroup: 2,
+                hall: 5,
+               }
+      } */
+
     try {
         let reqBody = req.body;
 
@@ -334,13 +343,39 @@ const handlePOSTSearchDonors = async (req, res) => {
 
                 filteredDonors.push(obj);
             }
-
+            /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Donors queried successfully',
+                filteredDonors:[{
+                _id: 'abjcguiwefvew',
+                phone: 8801521438557,
+                name: 'Mir Mahathir Mohammad',
+                studentId: 1605011,
+                lastDonation: 987876287160,
+                bloodGroup: 2,
+                hall: 5,
+                roomNumber: '3009',
+                address: 'Azimpur',
+                comment: 'developer of badhan',
+                designation: 'Admin',
+                }]
+               },
+              description: 'donor info array with matching query parameter'
+       } */
             return res.status(200).send({
                 status: 'OK',
                 message: 'Donors queried successfully',
                 filteredDonors
             });
         } else {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Donor query unsuccessful'
+               },
+              description: 'Donor query failure'
+       } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'Donor query unsuccessful'
@@ -348,6 +383,13 @@ const handlePOSTSearchDonors = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
+        /* #swagger.responses[500] = {
+              schema: {
+                status: 'EXCEPTION',
+                message: 'Error message'
+               },
+              description: 'Internal server error'
+       } */
         res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -370,6 +412,14 @@ const handlePOSTSearchDonors = async (req, res) => {
 const handlePOSTComment = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'adds a comment to a donor's profile.' */
+    /* #swagger.parameters['insertDonor'] = {
+               in: 'body',
+               description: 'donor info for posting comment',
+               schema:{
+                donorId:'hujfsduif783ujh',
+                comment:'Comment about donor'
+               }
+      } */
     try {
         const donorUpdateResult = await donorInterface.findDonorAndUpdate({
             _id: req.body.donorId
@@ -383,17 +433,32 @@ const handlePOSTComment = async (req, res) => {
             if (process.env.NODE_ENV !== 'development') {
                 await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
             }
+            /* #swagger.responses[200] = {
+           schema: {
+                status: 'OK',
+                message: 'Comment posted successfully'
+            },
+           description: 'In case of successful comment post'
+    } */
             return res.status(200).send({
                 status: 'OK',
                 message: 'Comment posted successfully'
             });
         } else {
+
             return res.status(400).send({
                 status: donorUpdateResult.status,
                 message: donorUpdateResult.message
             });
         }
     } catch (e) {
+        /* #swagger.responses[500] = {
+           schema: {
+                status: 'EXCEPTION',
+                message: 'error message'
+            },
+           description: 'In case of internal server error, the user will get this message'
+    } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

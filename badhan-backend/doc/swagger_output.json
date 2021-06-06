@@ -572,13 +572,116 @@
           "Donors"
         ],
         "description": "handles the filtered query of donors from the database.",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "SearchDonor",
+            "in": "body",
+            "description": "search donor by blood group and hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "hall": {
+                  "type": "number",
+                  "example": 5
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "donor info array with matching query parameter",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donors queried successfully"
+                },
+                "filteredDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "abjcguiwefvew"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801521438557
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mir Mahathir Mohammad"
+                      },
+                      "studentId": {
+                        "type": "number",
+                        "example": 1605011
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 987876287160
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 5
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "3009"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "Azimpur"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "developer of badhan"
+                      },
+                      "designation": {
+                        "type": "string",
+                        "example": "Admin"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Donor query failure",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor query unsuccessful"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -600,17 +703,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "Internal server error",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Error message"
                 }
               },
               "xml": {
