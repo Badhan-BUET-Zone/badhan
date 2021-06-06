@@ -16,9 +16,9 @@ const logInterface = require('../db/interfaces/logInterface');
 const handlePOSTInsertDonor = async (req, res) => {
     /*  #swagger.tags = ['Donors']
            #swagger.description = 'handles the insertion of a new donor into the database.' */
-    /* #swagger.parameters['logIn'] = {
+    /* #swagger.parameters['insertDonor'] = {
                in: 'body',
-               description: 'donor info for inserting donor.',
+               description: 'donor info for inserting donor',
                schema:{
                 phone: 8801521438557,
                 bloodGroup: 2,
@@ -902,12 +902,26 @@ const handleGETViewDonorDetails = async (req, res) => {
 
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the fetching of donor details.' */
+    /* #swagger.parameters['donorId'] = {
+              description: 'Donor id for donor details blahh',
+              type: 'string',
+              name:'donorId',
+              in:'query'
+       } */
+    let query=req.query;
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.query.donorId
+            _id: query.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Donor doesnot exist'
+               },
+              description: 'when no donor with same donor id is found,user will get this error message'
+       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -930,7 +944,27 @@ const handleGETViewDonorDetails = async (req, res) => {
             designation: donor.designation,
             donationCount: donor.donationCount,
         }
-
+        /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Successfully fetched donor details',
+                donor: {
+                _id: 'abjcguiwefvew',
+                phone: 8801521438557,
+                name: 'Mir Mahathir Mohammad',
+                studentId: 1605011,
+                lastDonation: 987876287160,
+                bloodGroup: 2,
+                hall: 5,
+                roomNumber: '3009',
+                address: 'Azimpur',
+                comment: 'developer of badhan',
+                designation: 'Admin',
+                donationCount: 2,
+                }
+               },
+              description: 'donor info'
+       } */
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
@@ -938,6 +972,13 @@ const handleGETViewDonorDetails = async (req, res) => {
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+               status: 'EXCEPTION',
+                message: 'Error message'
+              },
+             description: 'Internal server error'
+      } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

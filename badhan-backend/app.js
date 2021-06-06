@@ -15,17 +15,24 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
-require('./doc/swagger.js')
-const swaggerUi = require('swagger-ui-express')
-const swaggerFile = require('./doc/swagger_output.json')
+let app = express();
+// const forceSync = require('sync-rpc')
+// const taaha=async ()=>{
+//     console.log('taaha');
+// }
+// const syncFunction =forceSync(taaha().resolve());
+// syncFunction();
 
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./doc/swagger_output.json');
 let apiRouter = require('./routes/api');
 let usersRouter = require('./routes/users');
 let guestRouter = require('./routes/guest')
 
 const { mongoose } = require('./db/mongoose');
 
-let app = express();
+
 
 //SPA Handling
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,6 +45,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
 // app.use('/', indexRouter);
@@ -48,7 +56,7 @@ app.use('/', apiRouter);
 
 
 
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
 
 
 

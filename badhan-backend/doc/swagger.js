@@ -85,4 +85,6 @@ const doc = {
 const outputFile = './doc/swagger_output.json'
 const endpointsFiles = ['./routes/api.js','./routes/users.js']
 
-swaggerAutogen(outputFile, endpointsFiles,doc)
+
+
+swaggerAutogen(outputFile, endpointsFiles,doc);
