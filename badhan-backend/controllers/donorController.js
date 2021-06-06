@@ -917,7 +917,7 @@ const handleGETViewDonorDetails = async (req, res) => {
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
               schema: {
-                status: 'ERROR',
+                status: 'Error status',
                 message: 'Donor doesnot exist'
                },
               description: 'when no donor with same donor id is found,user will get this error message'
@@ -990,7 +990,7 @@ const handleGETViewDonorDetails = async (req, res) => {
 //APP VERSION <= 3.5.1 STILL USES IT
 const handlePOSTViewDonorDetails = async (req, res) => {
 
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'handles the fetching of donor details.' */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
@@ -1027,6 +1027,7 @@ const handlePOSTViewDonorDetails = async (req, res) => {
         });
 
     } catch (e) {
+
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -1044,12 +1045,21 @@ const handlePOSTViewDonorDetails = async (req, res) => {
 const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     /*  #swagger.tags = ['Donors']
         #swagger.description = 'handles the fetching of own details.' */
+
+
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: res.locals.middlewareResponse.donor._id
         });
 
         if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+                status: 'Error status',
+                message: 'Error message'
+              },
+             description: 'No donor with the provided donor id from auth route'
+      } */
             return res.status(400).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -1071,7 +1081,26 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
             comment: donor.comment,
             designation: donor.designation
         }
-
+        /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Successfully fetched donor details',
+                donor: {
+                _id: 'abjcguiwefvew',
+                phone: 8801521438557,
+                name: 'Mir Mahathir Mohammad',
+                studentId: 1605011,
+                lastDonation: 987876287160,
+                bloodGroup: 2,
+                hall: 5,
+                roomNumber: '3009',
+                address: 'Azimpur',
+                comment: 'developer of badhan',
+                designation: 'Admin',
+                }
+               },
+              description: 'donor info'
+       } */
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
@@ -1079,6 +1108,13 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+         schema: {
+              status: 'EXCEPTION',
+              message: 'error message'
+          },
+         description: 'In case of internal server error, the user will get this message'
+  } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
