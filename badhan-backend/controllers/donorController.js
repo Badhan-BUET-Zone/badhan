@@ -445,7 +445,13 @@ const handlePOSTComment = async (req, res) => {
                 message: 'Comment posted successfully'
             });
         } else {
-
+            /* #swagger.responses[400] = {
+           schema: {
+                status: 'Error status',
+                message: 'error message'
+            },
+           description: 'In case of unsuccessful comment post'
+    } */
             return res.status(400).send({
                 status: donorUpdateResult.status,
                 message: donorUpdateResult.message
