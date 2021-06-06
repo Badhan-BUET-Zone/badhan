@@ -576,7 +576,7 @@
           {
             "name": "SearchDonor",
             "in": "body",
-            "description": "search donor by blood group and hall",
+            "description": "search donor by parameters",
             "schema": {
               "type": "object",
               "properties": {
@@ -587,6 +587,18 @@
                 "hall": {
                   "type": "number",
                   "example": 5
+                },
+                "batch": {
+                  "type": "number",
+                  "example": 2016
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
                 }
               }
             }
@@ -1157,7 +1169,22 @@
           "Donors"
         ],
         "description": "handles the update of donor information.",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "editDonor",
+            "in": "body",
+            "description": "donor info for editing donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "ghjdgejhd7623jhs"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"

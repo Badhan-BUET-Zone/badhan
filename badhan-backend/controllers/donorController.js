@@ -252,10 +252,13 @@ const handlePOSTSearchDonors = async (req, res) => {
             #swagger.description = 'handles the filtered query of donors from the database.' */
     /* #swagger.parameters['SearchDonor'] = {
                in: 'body',
-               description: 'search donor by blood group and hall',
+               description: 'search donor by parameters',
                schema:{
                 bloodGroup: 2,
                 hall: 5,
+                batch: 2016,
+                name:'Mir Mahathir Mohammad',
+                address:'Azimpur',
                }
       } */
 
@@ -611,6 +614,13 @@ const handlePOSTChangePassword = async (req, res) => {
 const handlePOSTEditDonor = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the update of donor information.' */
+    /* #swagger.parameters['editDonor'] = {
+               in: 'body',
+               description: 'donor info for editing donor',
+               schema:{
+                donorId:'ghjdgejhd7623jhs'
+               }
+      } */
     try {
         let reqBody = req.body;
         let authenticatedUser = res.locals.middlewareResponse.donor;
