@@ -1055,16 +1055,63 @@
           "Donors"
         ],
         "description": "handles the changing of password for an account.",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "changePassword",
+            "in": "body",
+            "description": "donor info for changing password",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "ghjdgejhd7623jhs"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successful password change done",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Password changed successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "If user with provided donor id does not exist ",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Error status"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error response"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "User is not authenticated yet",
             "schema": {
               "type": "object",
               "properties": {
@@ -1074,7 +1121,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "User does not have permission to change password"
                 }
               },
               "xml": {
@@ -1083,17 +1130,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "Internal server error",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Error message"
                 }
               },
               "xml": {

@@ -488,12 +488,26 @@ const handlePOSTComment = async (req, res) => {
 const handlePOSTChangePassword = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the changing of password for an account.' */
+    /* #swagger.parameters['changePassword'] = {
+               in: 'body',
+               description: 'donor info for changing password',
+               schema:{
+                donorId:'ghjdgejhd7623jhs'
+               }
+      } */
     try {
         let reqBody = req.body;
 
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
         if (authenticatedUser.designation === 0) {
+            /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'User does not have permission to change password'
+               },
+              description: 'User is not authenticated yet'
+       } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to change password'
@@ -505,6 +519,13 @@ const handlePOSTChangePassword = async (req, res) => {
         });
 
         if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'Error status',
+                message: 'Error response'
+               },
+              description: 'If user with provided donor id does not exist '
+       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -514,6 +535,13 @@ const handlePOSTChangePassword = async (req, res) => {
         let target = donorQueryResult.data;
 
         if (target.designation === 0) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+               message: 'User does not have permission to change password'
+              },
+             description: 'User is not authenticated yet'
+      } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to change password for this donor'
@@ -521,6 +549,13 @@ const handlePOSTChangePassword = async (req, res) => {
         }
 
         if (authenticatedUser.designation < target.designation || (authenticatedUser.designation === target.designation && authenticatedUser.phone !== target.phone)) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+               message: 'User does not have permission to change password'
+              },
+             description: 'User is not authenticated yet'
+      } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to change password for this donor'
@@ -533,12 +568,26 @@ const handlePOSTChangePassword = async (req, res) => {
         if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", donorQueryResult.data);
         }
+        /* #swagger.responses[200] = {
+             schema: {
+               status: 'OK',
+               message: 'Password changed successfully'
+              },
+             description: 'Successful password change done'
+      } */
         return res.status(200).send({
             status: 'OK',
             message: 'Password changed successfully'
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+               status: 'EXCEPTION',
+                message: 'Error message'
+              },
+             description: 'Internal server error'
+      } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
