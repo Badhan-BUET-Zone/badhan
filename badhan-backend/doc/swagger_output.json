@@ -1690,13 +1690,15 @@
         "description": "handles the changing of a hall admin.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "changeAdmin",
             "in": "body",
+            "description": "donor info for changing admin",
             "schema": {
               "type": "object",
               "properties": {
-                "donorId\r": {
-                  "example": "any"
+                "donorId": {
+                  "type": "string",
+                  "example": "hdjhd12vhjgjh"
                 }
               }
             }
@@ -1704,13 +1706,26 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successfully changed hall admin",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully changed hall admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "Previous hall admin demotion successful, but could not set new hall admin",
             "schema": {
               "type": "object",
               "properties": {
@@ -1720,7 +1735,26 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "Demoted previous hall admin, but could not set new hall admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "If user is not a volunteer , user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User is not a volunteer"
                 }
               },
               "xml": {
@@ -1729,17 +1763,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {

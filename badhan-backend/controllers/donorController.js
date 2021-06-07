@@ -1046,6 +1046,13 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
 const handlePOSTChangeAdmin = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the changing of a hall admin.' */
+    /* #swagger.parameters['changeAdmin'] = {
+               in: 'body',
+               description: 'donor info for changing admin',
+               schema:{
+                donorId:'hdjhd12vhjgjh'
+               }
+      } */
     try {
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
@@ -1053,6 +1060,13 @@ const handlePOSTChangeAdmin = async (req, res) => {
         });
 
         if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'Error status',
+                message: 'Error message'
+               },
+              description: 'If donor with same donor id doesnot exist , user will get this error message'
+       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -1063,6 +1077,13 @@ const handlePOSTChangeAdmin = async (req, res) => {
         let donorDesignation = donor.designation;
 
         if (donorDesignation !== 1) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+                message: 'User is not a volunteer'
+              },
+             description: 'If user is not a volunteer , user will get this error message'
+      } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User is not a volunteer'
@@ -1085,6 +1106,13 @@ const handlePOSTChangeAdmin = async (req, res) => {
             });
 
             if (prevHallAdminUpdateResult.status !== 'OK') {
+                /* #swagger.responses[400] = {
+              schema: {
+                status: 'Error status',
+                message: 'Could not change hall admin'
+               },
+              description: 'hall admin change unsuccessful'
+       } */
                 return res.status(400).send({
                     status: prevHallAdminUpdateResult,
                     message: 'Could not change hall admin'
@@ -1105,6 +1133,13 @@ const handlePOSTChangeAdmin = async (req, res) => {
         });
 
         if (newHallAdminUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Demoted previous hall admin, but could not set new hall admin'
+               },
+              description: 'Previous hall admin demotion successful, but could not set new hall admin'
+       } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'Demoted previous hall admin, but could not set new hall admin'
@@ -1113,12 +1148,26 @@ const handlePOSTChangeAdmin = async (req, res) => {
         if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
         }
+        /* #swagger.responses[200] = {
+            schema: {
+              status: 'OK',
+              message: 'Successfully changed hall admin'
+             },
+            description: 'Successfully changed hall admin'
+     } */
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully changed hall admin'
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
