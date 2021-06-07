@@ -1203,6 +1203,19 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 
         let admins = adminsQueryResult.data;
 
+        /* #swagger.responses[200] = {
+             schema: {
+                status: 'OK',
+                message: 'Hall admin list fetched successfully',
+                admins:[{
+                _id: "reohrewoihgfsdn",
+                hall: 0,
+                name: "Salman Khan",
+            phone: 8801521478996,
+        },]
+              },
+             description: 'Hall admin list fetch successful '
+      } */
         return res.status(200).send({
             status: 'OK',
             message: 'Hall admin list fetched successfully',
