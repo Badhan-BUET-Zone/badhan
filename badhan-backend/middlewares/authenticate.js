@@ -280,7 +280,8 @@ let handlePOSTRequestRedirection = async (req, res) => {
 };
 
 let handlePOSTRedirectedAuthentication = async (req, res) => {
-
+    /*  #swagger.tags = ['Users']
+           #swagger.description = 'Route endpoint to redirect user from app to web.' */
     try {
         let token = req.body.token;
         let decodedDonor;

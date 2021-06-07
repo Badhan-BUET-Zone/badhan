@@ -2102,7 +2102,7 @@
     "/v1/log": {
       "get": {
         "tags": [],
-        "description": "",
+        "description": "fetches logs.",
         "parameters": [],
         "responses": {
           "201": {
@@ -2618,8 +2618,10 @@
     },
     "/redirectionSignIn": {
       "post": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Route endpoint to redirect user from app to web.",
         "parameters": [
           {
             "name": "obj",
