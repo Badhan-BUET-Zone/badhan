@@ -1604,10 +1604,42 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Volunteer list fetch successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Volunteer list fetch unsuccessful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Error status"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -1629,17 +1661,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {

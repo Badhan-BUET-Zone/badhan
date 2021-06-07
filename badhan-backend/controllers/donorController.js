@@ -1410,11 +1410,25 @@ const handleGETViewAllVolunteers = async (req, res) => {
         let volunteerResult = await donorInterface.findAllVolunteers();
 
         if (volunteerResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'Error status',
+                message: 'Error message'
+               },
+              description: 'Volunteer list fetch unsuccessful'
+       } */
             return res.status(400).send({
                 status: volunteerResult.status,
                 message: volunteerResult.message
             });
         }
+        /* #swagger.responses[200] = {
+             schema: {
+               status: 'OK',
+               message: 'Successfully fetched donor details'
+              },
+             description: 'Volunteer list fetch successful'
+      } */
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
@@ -1422,6 +1436,13 @@ const handleGETViewAllVolunteers = async (req, res) => {
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
