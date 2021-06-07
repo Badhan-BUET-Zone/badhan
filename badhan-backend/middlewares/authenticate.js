@@ -234,6 +234,151 @@ let handlePOSTLogOutAll = async (req, res) => {
     }
 };
 
+let handlePOSTRequestRedirection = async (req, res) => {
+    /*  #swagger.tags = ['User']
+            #swagger.description = 'Endpoint to request a temporary redirection token' */
+    try {
+        let donor = res.locals.middlewareResponse.donor;
+        let access = 'auth';
+        let token = await jwt.sign({
+            _id: donor._id.toString(),
+            access
+        }, process.env.JWT_SECRET).toString();
+        // let token = await jwt.sign({
+        //     _id: donor._id.toString(),
+        //     access
+        // }, process.env.JWT_SECRET,{ expiresIn: '120s' }).toString();
+
+
+        donor.tokens.push({access, token});
+
+        await donor.save();
+
+        /* #swagger.responses[201] = {
+               schema: {
+                    status: 'OK',
+                    message: 'Redirection token created',
+                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                },
+               description: 'Redirection token created'
+        } */
+        return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
+    } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+
+};
+
+let handlePOSTRedirectedAuthentication = async (req, res) => {
+    try {
+        let token = req.body.token;
+        let decodedDonor;
+        try{
+            decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
+        }catch(e){
+            /* #swagger.responses[401] = {
+               schema: {
+                   status: 'ERROR',
+                message: 'Session Expired'
+                },
+               description: 'This error will occur if the jwt token is invalid'
+        } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Session Expired'
+            });
+        }
+
+        let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
+
+        if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[401] = {
+               schema: {
+                   status: 'ERROR',
+                message: 'Authentication failed. Invalid authentication token.'
+                },
+               description: 'This error will occur if the user does not exist'
+        } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Authentication failed. Invalid authentication token.'
+            });
+        }
+
+
+        let donor = donorQueryResult.data;
+
+        let result = donor.tokens.find(obj => {
+            return obj.token === token
+        })
+
+        if (result === undefined) {
+            /* #swagger.responses[401] = {
+           schema: {
+                status: 'ERROR',
+                message: 'User has been logged out'
+            },
+           description: 'If the token does not exist in database , the user might have logged out already.'
+    } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User has been logged out'
+            });
+        }
+
+        await donorInterface.findDonorByIDAndUpdate(donor._id, {
+            $pull: {
+                tokens: {token}
+            }
+        });
+
+        let access = 'auth';
+        let newToken = await jwt.sign({
+            _id: donor._id.toString(),
+            access
+        }, process.env.JWT_SECRET).toString();
+
+        donor.tokens.push({access, newToken});
+
+        await donor.save();
+
+        /* #swagger.responses[201] = {
+               schema: {
+                    status: 'OK',
+                    message: 'Redirected login successful',
+                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                },
+               description: 'Redirection token created'
+        } */
+        return res.status(201).send({status: 'OK', message: "Redirected login successful", token: token});
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
+        console.log(e);
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+
+}
+
 let handleSuperAdminCheck = async (req, res, next) => {
 
     if (res.locals.middlewareResponse.donor.designation === 3) {
@@ -253,4 +398,6 @@ module.exports = {
     handlePOSTLogOut,
     handlePOSTLogOutAll,
     handleSuperAdminCheck,
+    handlePOSTRequestRedirection,
+    handlePOSTRedirectedAuthentication
 }

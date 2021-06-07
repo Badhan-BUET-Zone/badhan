@@ -25,4 +25,14 @@ router.post('/signoutall',
     authenticator.handlePOSTLogOutAll
 );
 
+router.post('/requestRedirection',
+    authenticator.handleAuthentication,
+    authenticator.handlePOSTRequestRedirection
+);
+
+router.post('/redirectionSignIn',
+    rateLimiter.redirectionSignInLimiter,
+    authenticator.handlePOSTRedirectedAuthentication
+);
+
 module.exports = router;

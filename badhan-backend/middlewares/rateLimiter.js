@@ -9,6 +9,15 @@ const signInLimiter = rateLimit({
     }
 });
 
+const redirectionSignInLimiter = rateLimit({
+    windowMs: 5 * minute,
+    max: 3,
+    message:{
+        status: "ERROR",
+        message:"Please try again after 5 minutes"
+    }
+});
+
 const donationInsertionLimiter = rateLimit({
     windowMs: minute,
     max: 2,
@@ -48,4 +57,5 @@ module.exports={
     donorInsertionLimiter,
     deleteDonationLimiter,
     donorDeletionLimiter,
+    redirectionSignInLimiter
 }
