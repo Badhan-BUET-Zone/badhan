@@ -347,9 +347,7 @@ let handlePOSTRedirectedAuthentication = async (req, res) => {
             _id: donor._id.toString(),
             access
         }, process.env.JWT_SECRET).toString();
-
-        donor.tokens.push({access, newToken});
-
+        donor.tokens.push({access, token: newToken});
         await donor.save();
 
         /* #swagger.responses[201] = {
@@ -360,7 +358,7 @@ let handlePOSTRedirectedAuthentication = async (req, res) => {
                 },
                description: 'Redirection token created'
         } */
-        return res.status(201).send({status: 'OK', message: "Redirected login successful", token: token});
+        return res.status(201).send({status: 'OK', message: "Redirected login successful", token: newToken});
 
     } catch (e) {
         /* #swagger.responses[500] = {
