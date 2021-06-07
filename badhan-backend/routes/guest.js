@@ -56,7 +56,7 @@ router.get('/v3/donor/details',
 );
 
 router.post('/v2/admin/volunteers',
-    guestController.handlePOSTViewVolunteers
+    guestController.handlePOSTViewVolunteersOfOwnHall
 );
 
 router.post('/v2/admin/hall/show',

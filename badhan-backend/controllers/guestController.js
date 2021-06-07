@@ -187,7 +187,7 @@ const handleGETViewDonorDetails = async (req, res) => {
     });
 };
 
-const handlePOSTViewVolunteers = async (req, res) => {
+const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
     let volunteerList = [
         {
             _id: "dskgjhwebkjsdbd",
@@ -601,7 +601,7 @@ module.exports = {
     handlePOSTPromote,
     handlePOSTChangeAdmin,
     handleGETViewDonorDetails,
-    handlePOSTViewVolunteers,
+    handlePOSTViewVolunteersOfOwnHall,
     handlePOSTShowHallAdmins,
     handleGETSeeHistory,
     handlePOSTInsertDonation,

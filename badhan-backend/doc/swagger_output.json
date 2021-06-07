@@ -1487,10 +1487,74 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Volunteer list fetched successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Volunteer list fetched successfully"
+                },
+                "volunteerList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "dskgjhwebkjsdbd"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801456987445
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "409"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1610000"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Donor with the hall and designation does not exist",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Error status"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -1512,17 +1576,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {

@@ -981,6 +981,13 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
         });
 
         if (donorsQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+            schema: {
+                   status: 'Error status',
+                   message: 'Error message'
+             },
+            description: 'Donor with the hall and designation does not exist'
+     } */
             return res.status(400).send({
                 status: donorsQueryResult.status,
                 message: donorsQueryResult.message
@@ -988,7 +995,23 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
         }
 
         let volunteerList = donorsQueryResult.data;
-
+        /* #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                message: 'Volunteer list fetched successfully',
+                volunteerList:[
+                {
+                _id: "dskgjhwebkjsdbd",
+                bloodGroup: 2,
+                name: "John Doe",
+                phone: 8801456987445,
+                roomNumber: "409",
+                studentId: "1610000",
+                }
+                ]
+             },
+            description: 'Volunteer list fetched successfully'
+     } */
         return res.status(200).send({
             status: 'OK',
             message: 'Volunteer list fetched successfully',
@@ -996,6 +1019,13 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+                   status: 'EXCEPTION',
+                   message: 'Internal server error'
+             },
+            description: 'In case of internal server error, user will get this error message'
+     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
