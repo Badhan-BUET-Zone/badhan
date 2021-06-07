@@ -4,7 +4,14 @@ const logInterface = require('../db/interfaces/logInterface');
 let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
-
+    /*
+    #swagger.description = 'To show current state of the api' */
+    /* #swagger.responses[200] = {
+            schema: {
+              message: 'Badhan API is online'
+             },
+            description: 'To check if Badhan api is online'
+     } */
     return res.status(200).send("Badhan API is online")
 }
 

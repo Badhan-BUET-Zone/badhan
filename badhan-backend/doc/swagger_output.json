@@ -42,14 +42,6 @@
     "application/json"
   ],
   "paths": {
-    "/": {
-      "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      }
-    },
     "/v2/donor/insert": {
       "post": {
         "tags": [
@@ -1999,7 +1991,7 @@
               "properties": {
                 "version": {
                   "type": "string",
-                  "example": "v1"
+                  "example": "v3"
                 }
               },
               "xml": {
@@ -2170,6 +2162,14 @@
             }
           }
         }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
       }
     },
     "/signin": {

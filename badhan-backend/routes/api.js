@@ -9,8 +9,7 @@ const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
 let gplay = require('google-play-scraper');
 
-/* GET home page. */
-router.get('/', logController.handleGETOnlineCheck);
+
 
 router.post('/v2/donor/insert',
     rateLimiter.donorInsertionLimiter,
@@ -140,5 +139,8 @@ router.delete('/v1/log',
     authenticator.handleSuperAdminCheck,
     logController.handleDELETELogs
 );
+
+/* GET home page. */
+// router.get('/', logController.handleGETOnlineCheck);
 
 module.exports = router;
