@@ -240,14 +240,14 @@ let handlePOSTRequestRedirection = async (req, res) => {
     try {
         let donor = res.locals.middlewareResponse.donor;
         let access = 'auth';
-        let token = await jwt.sign({
-            _id: donor._id.toString(),
-            access
-        }, process.env.JWT_SECRET).toString();
         // let token = await jwt.sign({
         //     _id: donor._id.toString(),
         //     access
-        // }, process.env.JWT_SECRET,{ expiresIn: '120s' }).toString();
+        // }, process.env.JWT_SECRET).toString();
+        let token = await jwt.sign({
+            _id: donor._id.toString(),
+            access
+        }, process.env.JWT_SECRET,{ expiresIn: '30s' }).toString();
 
 
         donor.tokens.push({access, token});
