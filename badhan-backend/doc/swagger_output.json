@@ -1384,27 +1384,61 @@
         "description": "handles the promotion or demotion of users.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "promote",
             "in": "body",
+            "description": "donor info for promoting donor",
             "schema": {
               "type": "object",
               "properties": {
-                "donorId\r": {
-                  "example": "any"
-                },
-                "promoteFlag": {
-                  "example": "any"
+                "donorId": {
+                  "type": "string",
+                  "example": "hjasgd673278"
                 }
               }
             }
           }
         ],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Target user promoted/demoted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor promotion successful"
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "If donor does not exist in database, user will get this message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Error status"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "If hall admin can not promote donors or demote volunteers of different halls",
             "schema": {
               "type": "object",
               "properties": {
@@ -1414,7 +1448,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "Hall admin can't promote donors or demote volunteers of different halls"
                 }
               },
               "xml": {
@@ -1423,17 +1457,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "Internal server error",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Error message"
                 }
               },
               "xml": {

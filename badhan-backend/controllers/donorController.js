@@ -826,12 +826,26 @@ const handlePOSTEditDonor = async (req, res) => {
 const handlePOSTPromote = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the promotion or demotion of users.' */
+    /* #swagger.parameters['promote'] = {
+               in: 'body',
+               description: 'donor info for promoting donor',
+               schema:{
+                donorId:'hjasgd673278'
+               }
+      } */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: req.body.donorId
         });
 
         if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+               status: 'Error status',
+               message: 'Error message'
+              },
+             description: 'If donor does not exist in database, user will get this message'
+      } */
             return res.status(400).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -845,12 +859,26 @@ const handlePOSTPromote = async (req, res) => {
         let userDesignation = authenticatedUser.designation;
 
         if (!((donorDesignation === 0 || donorDesignation === 1) && (userDesignation === 2 || userDesignation === 3))) {
+            /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'User can not promote the target entity'
+               },
+              description: 'If user does not have permission to promote donor, user will get this error message'
+       } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User can not promote the target entity'
             });
         }
         if ((donorDesignation === 1 && req.body.promoteFlag) || (donorDesignation === 0 && !req.body.promoteFlag)) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+               message: 'Can not promote volunteer or can not demote donor'
+              },
+             description: 'If user cannot promote volunteer or cannot demote donor'
+      } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Can\'t promote volunteer or can\'t demote donor'
@@ -858,7 +886,14 @@ const handlePOSTPromote = async (req, res) => {
         }
         if (userDesignation === 2) {
             if (authenticatedUser.hall !== donor.hall) {
-                return res.status(401).send({
+                /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Hall admin can\'t promote donors or demote volunteers of different halls'
+               },
+              description: 'If hall admin can not promote donors or demote volunteers of different halls'
+       } */
+               return res.status(401).send({
                     status: 'ERROR',
                     message: 'Hall admin can\'t promote donors or demote volunteers of different halls'
                 });
@@ -890,13 +925,26 @@ const handlePOSTPromote = async (req, res) => {
         if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
         }
-
+        /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Target user promoted/demoted successfully'
+               },
+              description: 'Donor promotion successful'
+       } */
         return res.status(200).send({
             status: 'OK',
             message: 'Target user promoted/demoted successfully'
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+              schema: {
+                status: 'EXCEPTION',
+                message: 'Error message'
+               },
+              description: 'Internal server error'
+       } */
         res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
