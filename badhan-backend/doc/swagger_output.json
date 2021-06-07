@@ -2023,7 +2023,40 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Donation statistics fetch successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Statistics fetched successfully"
+                },
+                "statistics": {
+                  "type": "object",
+                  "properties": {
+                    "donorCount": {
+                      "type": "number",
+                      "example": 2600
+                    },
+                    "donationCount": {
+                      "type": "number",
+                      "example": 1200
+                    },
+                    "volunteerCount": {
+                      "type": "number",
+                      "example": 130
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -2045,17 +2078,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {
@@ -2095,17 +2128,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {
@@ -2117,9 +2150,32 @@
       },
       "delete": {
         "tags": [],
-        "description": "",
+        "description": "handles the deletion of logs.",
         "parameters": [],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All logs deleted successfully"
+                },
+                "logs": {
+                  "type": "string",
+                  "example": "null"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "All logs deleted successfully"
+          },
           "201": {
             "description": "Created"
           },
@@ -2143,17 +2199,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {

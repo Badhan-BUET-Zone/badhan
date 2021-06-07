@@ -20,6 +20,18 @@ const handleGETStatistics = async (req, res) => {
         let donorCount = await donorInterface.getCount();
         let donationCount = await donationInterface.getCount();
         let volunteerCount = await donorInterface.getVolunteerCount();
+        /* #swagger.responses[201] = {
+            schema: {
+              status: 'OK',
+              message: 'Statistics fetched successfully',
+              statistics: {
+                donorCount: 2600,
+                donationCount: 1200,
+                volunteerCount: 130
+              }
+             },
+            description: 'Donation statistics fetch successful'
+     } */
         return res.status(201).send({
             status: 'OK',
             message: 'Statistics fetched successfully',
@@ -30,6 +42,13 @@ const handleGETStatistics = async (req, res) => {
             }
         });
     } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+                   status: 'EXCEPTION',
+                   message: 'Internal server error'
+             },
+            description: 'In case of internal server error, user will get this error message'
+     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -55,12 +74,21 @@ const handleGETAppVersion = (req, res, next) => {
 const handleGETLogs = async (req, res,next)=>{
     try{
         let allLogData = await logInterface.getLogs();
+
+
         return res.status(201).send({
             status: 'OK',
             message: 'All logs fetched successfully',
             logs: allLogData.data
         });
     } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+                   status: 'EXCEPTION',
+                   message: 'Internal server error'
+             },
+            description: 'In case of internal server error, user will get this error message'
+     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -68,14 +96,31 @@ const handleGETLogs = async (req, res,next)=>{
     }
 }
 const handleDELETELogs = async (req,res,next)=>{
+    /*
+            #swagger.description = 'handles the deletion of logs.' */
     try{
         let allLogData = await logInterface.deleteLogs();
+        /* #swagger.responses[200] = {
+             schema: {
+               status: 'OK',
+               message: 'All logs deleted successfully',
+               logs: 'null'
+              },
+             description: 'All logs deleted successfully'
+      } */
         return res.status(201).send({
             status: 'OK',
             message: 'All logs deleted successfully',
             logs: allLogData.data
         });
     }catch (e){
+        /* #swagger.responses[500] = {
+            schema: {
+                   status: 'EXCEPTION',
+                   message: 'Internal server error'
+             },
+            description: 'In case of internal server error, user will get this error message'
+     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
