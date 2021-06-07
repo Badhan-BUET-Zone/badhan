@@ -199,11 +199,25 @@ const handlePOSTDeleteSelf = async (req, res) => {
 const handlePOSTDeleteDonor = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the deletion of an existing donor from the database.' */
+    /* #swagger.parameters['deleteDonor'] = {
+               in: 'body',
+               description: 'donor info for deleting donor',
+               schema:{
+                donorId: 'hgjgkdse7823',
+               }
+      } */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
         let donorId = req.body.donorId;
 
         if (authenticatedUser.designation !== 3) {
+            /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'User does not have permission to delete donors'
+               },
+              description: 'If user does not have permission to delete donor, user will get this error message'
+       } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to delete donors'
@@ -222,7 +236,13 @@ const handlePOSTDeleteDonor = async (req, res) => {
                     await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
 
                 }
-
+                /* #swagger.responses[200] = {
+             schema: {
+                    status: 'OK',
+                    message: 'Donor deleted successfully'
+              },
+             description: 'Successful donor deletion'
+      } */
                 return res.status(200).send({
                     status: 'OK',
                     message: 'Donor deleted successfully'
@@ -231,6 +251,13 @@ const handlePOSTDeleteDonor = async (req, res) => {
         }
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
