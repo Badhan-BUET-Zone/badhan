@@ -4,6 +4,7 @@ const logInterface = require('../db/interfaces/logInterface');
 let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
+
     return res.status(200).send("Badhan API is online")
 }
 
@@ -34,6 +35,12 @@ const handleGETAppVersion = (req, res, next) => {
     #swagger.description = 'Get app info deployed to play store' */
     gplay.app({appId: 'com.mmmbadhan'})
         .then((response) => {
+            /* #swagger.responses[200] = {
+           schema: {
+             version: 'v3'
+            },
+           description: 'response is the current version number of badhan api'
+    } */
             res.status(200).send(response)
         });
 }

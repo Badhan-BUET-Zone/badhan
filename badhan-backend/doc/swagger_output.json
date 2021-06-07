@@ -1993,7 +1993,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "response is the current version number of badhan api",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "example": "v1"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
