@@ -1195,6 +1195,13 @@ const handlePOSTShowHallAdmins = async (req, res) => {
         });
 
         if (adminsQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Error message'
+               },
+              description: 'If user does not exists in database, user will get this error message'
+       } */
             return res.status(400).send({
                 status: adminsQueryResult.status,
                 message: adminsQueryResult.message
@@ -1211,8 +1218,8 @@ const handlePOSTShowHallAdmins = async (req, res) => {
                 _id: "reohrewoihgfsdn",
                 hall: 0,
                 name: "Salman Khan",
-            phone: 8801521478996,
-        },]
+                phone: 8801521478996,
+        }]
               },
              description: 'Hall admin list fetch successful '
       } */
@@ -1223,6 +1230,13 @@ const handlePOSTShowHallAdmins = async (req, res) => {
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
