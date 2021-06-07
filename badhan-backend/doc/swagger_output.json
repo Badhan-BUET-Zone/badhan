@@ -744,13 +744,15 @@
         "description": "handles the retrieval of donation history for a particular donor.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "seeHistory",
             "in": "body",
+            "description": "donor info for inserting donor",
             "schema": {
               "type": "object",
               "properties": {
-                "donorId\r": {
-                  "example": "any"
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
                 }
               }
             }
@@ -758,10 +760,42 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Volunteer list fetch successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Donor query unsuccessful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -812,19 +846,19 @@
         "description": "Endpoint to insert a donation date for a donor",
         "parameters": [
           {
-            "name": "obj",
+            "name": "insertDonation",
             "in": "body",
+            "description": "donor info for inserting donation",
             "schema": {
               "type": "object",
               "properties": {
-                "donorId\r": {
-                  "example": "any"
-                },
-                "date\r": {
-                  "example": "any"
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
                 },
                 "date": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "15/2/2021"
                 }
               }
             }
@@ -832,10 +866,42 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Donation insertion successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donation inserted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Donation insertion unsuccessful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -857,17 +923,17 @@
             }
           },
           "500": {
-            "description": "In case of internal server error user will receive an error message",
+            "description": "In case of internal server error, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "EXCEPTION"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Internal server error"
                 }
               },
               "xml": {

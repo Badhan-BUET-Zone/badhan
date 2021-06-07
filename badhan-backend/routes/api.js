@@ -42,7 +42,7 @@ router.post('/v2/donor/search',
 
 router.post('/v2/donor/donations',
     authenticator.handleAuthentication,
-    donationController.handleGETSeeHistory
+    donationController.post
 );
 
 router.post('/v2/donation/insert',
