@@ -280,6 +280,7 @@ let handlePOSTRequestRedirection = async (req, res) => {
 };
 
 let handlePOSTRedirectedAuthentication = async (req, res) => {
+
     try {
         let token = req.body.token;
         let decodedDonor;

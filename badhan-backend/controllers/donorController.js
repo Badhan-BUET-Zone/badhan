@@ -1501,7 +1501,7 @@ const handleGETViewAllVolunteers = async (req, res) => {
         /* #swagger.responses[200] = {
              schema: {
                status: 'OK',
-               message: 'Successfully fetched donor details'
+               message: 'Volunteer list fetch successful'
               },
              description: 'Volunteer list fetch successful'
       } */

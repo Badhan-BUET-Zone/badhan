@@ -72,10 +72,40 @@ const handleGETAppVersion = (req, res, next) => {
 }
 
 const handleGETLogs = async (req, res,next)=>{
+    /*
+            #swagger.description = 'fetches logs.' */
     try{
         let allLogData = await logInterface.getLogs();
 
-
+        /* #swagger.responses[201] = {
+                schema: {
+                  status: 'OK',
+                  message: 'All logs fetched successfully',
+                   logs:[
+                   {
+                   _id: "fdogirehognrebk",
+                   name: "Mit Majumder",
+                   hall: 2,
+                   date: 1622090693113,
+                   editedObject: {
+                       _id: "60af292680015defd72",
+                       address: "Mohammadpur ",
+                       bloodGroup: 2,
+                       comment: "valid donor",
+                       designation: 0,
+                       donationCount: 0,
+                       hall: 8,
+                       lastDonation: 1622073600000,
+                       name: "Md. Rafat Hossain ",
+                       phone: 8801521347889,
+                       roomNumber: "TH-3012",
+                       studentId: 1516256,
+                   },
+                   operation: "EDIT COMMENT"
+                   }]
+                 },
+                description: 'All logs fetched successfully'
+         } */
         return res.status(201).send({
             status: 'OK',
             message: 'All logs fetched successfully',

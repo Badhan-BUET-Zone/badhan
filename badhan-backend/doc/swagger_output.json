@@ -1697,7 +1697,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Successfully fetched donor details"
+                  "example": "Volunteer list fetch successful"
                 }
               },
               "xml": {
@@ -2106,7 +2106,104 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "All logs fetched successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All logs fetched successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "fdogirehognrebk"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mit Majumder"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "date": {
+                        "type": "number",
+                        "example": 1622090693113
+                      },
+                      "editedObject": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "60af292680015defd72"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "Mohammadpur "
+                          },
+                          "bloodGroup": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "comment": {
+                            "type": "string",
+                            "example": "valid donor"
+                          },
+                          "designation": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "donationCount": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "hall": {
+                            "type": "number",
+                            "example": 8
+                          },
+                          "lastDonation": {
+                            "type": "number",
+                            "example": 1622073600000
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Md. Rafat Hossain "
+                          },
+                          "phone": {
+                            "type": "number",
+                            "example": 8801521347889
+                          },
+                          "roomNumber": {
+                            "type": "string",
+                            "example": "TH-3012"
+                          },
+                          "studentId": {
+                            "type": "number",
+                            "example": 1516256
+                          }
+                        }
+                      },
+                      "operation": {
+                        "type": "string",
+                        "example": "EDIT COMMENT"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "This error will occur if the user does not exist",
