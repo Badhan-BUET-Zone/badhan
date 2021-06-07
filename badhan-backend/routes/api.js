@@ -42,7 +42,7 @@ router.post('/v2/donor/search',
 
 router.post('/v2/donor/donations',
     authenticator.handleAuthentication,
-    donationController.post
+    donationController.handleGETSeeHistory
 );
 
 router.post('/v2/donation/insert',
@@ -114,6 +114,7 @@ router.get('/v3/log/version',
 //THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 //APP VERSION <= 3.5.1 STILL USES IT
 router.get('/v2/version',(req,res,next)=>{
+
     /*
     #swagger.description = 'Get app info deployed to play store' */
     gplay.app({appId: 'com.mmmbadhan'})

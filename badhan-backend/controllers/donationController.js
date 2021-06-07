@@ -302,7 +302,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
                status: 'Error status',
                message: 'Error message'
               },
-             description: 'Donation insertion unsuccessful'
+             description: 'Donation deletion unsuccessful'
       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
@@ -317,6 +317,13 @@ const handlePOSTDeleteDonation = async (req, res) => {
         });
 
         if (donationsQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+               status: 'Error status',
+               message: 'Error message'
+              },
+             description: 'Donation deletion unsuccessful'
+      } */
             return res.status(400).send({
                 status: donationsQueryResult.status,
                 message: donationsQueryResult.message
@@ -326,6 +333,13 @@ const handlePOSTDeleteDonation = async (req, res) => {
         let donationDates = donationsQueryResult.data;
 
         if (donationDates.length === 0) {
+            /* #swagger.responses[400] = {
+             schema: {
+               status: 'Error status',
+               message: 'No donations found for the specified donor on this date'
+              },
+             description: 'No Donation found to delete'
+      } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'No donations found for the specified donor on this date'
@@ -346,6 +360,13 @@ const handlePOSTDeleteDonation = async (req, res) => {
         let isValidDate = donations.includes(givenDate);
 
         if (!isValidDate) {
+            /* #swagger.responses[400] = {
+             schema: {
+               status: 'Error status',
+               message: 'No donations found for the specified donor on this date'
+              },
+             description: 'No Donation found for the specified date to delete'
+      } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'No donations found for the specified donor on this date'
@@ -376,6 +397,13 @@ const handlePOSTDeleteDonation = async (req, res) => {
         }
 
         if (donationDeleteResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+               status: 'Error status',
+               message: 'Error message'
+              },
+             description: 'Donation deletion unsuccessful'
+      } */
             return res.status(400).send({
                 status: donationDeleteResult.status,
                 message: donationDeleteResult.message
@@ -392,19 +420,39 @@ const handlePOSTDeleteDonation = async (req, res) => {
         });
 
         if (donorUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+               status: 'Error',
+               message: 'Donation deleted but donor profile not updated concurrently. Inconsistent state reached.'
+              },
+             description: 'Donation deleted but donor profile not updated concurrently. Inconsistent state reached.'
+      } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'Donation deleted but donor profile not updated concurrently. Inconsistent state reached.'
             });
         }
 
-
+        /* #swagger.responses[200] = {
+             schema: {
+               status: 'OK',
+               message: 'Successfully deleted donation'
+              },
+             description: 'Donation deletion successful'
+      } */
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully deleted donation'
         });
 
     } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+                   status: 'EXCEPTION',
+                   message: 'Internal server error'
+             },
+            description: 'In case of internal server error, user will get this error message'
+     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
