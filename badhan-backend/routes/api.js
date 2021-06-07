@@ -115,7 +115,7 @@ router.get('/v3/log/version',
 //APP VERSION <= 3.5.1 STILL USES IT
 router.get('/v2/version',(req,res,next)=>{
 
-    /*
+    /*#swagger.tags = ['Deprecated']
     #swagger.description = 'Get app info deployed to play store' */
     gplay.app({appId: 'com.mmmbadhan'})
         .then((response)=>{
