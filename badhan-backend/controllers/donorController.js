@@ -276,14 +276,14 @@ const handlePOSTDeleteDonor = async (req, res) => {
  */
 const handlePOSTSearchDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the filtered query of donors from the database.' */
+            #swagger.description = 'Searches for donors that matches the filters' */
     /* #swagger.parameters['SearchDonor'] = {
                in: 'body',
-               description: 'search donor by parameters',
+               description: 'Filter parameters',
                schema:{
                 bloodGroup: 2,
                 hall: 5,
-                batch: 2016,
+                batch: 16,
                 name:'Mir Mahathir Mohammad',
                 address:'Azimpur'
                }
@@ -388,10 +388,10 @@ const handlePOSTSearchDonors = async (req, res) => {
                 roomNumber: '3009',
                 address: 'Azimpur',
                 comment: 'developer of badhan',
-                designation: 'Admin',
+                designation: 3,
                 }]
                },
-              description: 'donor info array with matching query parameter'
+              description: 'Array of donors that matches the filter parameters'
        } */
             return res.status(200).send({
                 status: 'OK',
@@ -404,7 +404,7 @@ const handlePOSTSearchDonors = async (req, res) => {
                 status: 'ERROR',
                 message: 'Donor query unsuccessful'
                },
-              description: 'Donor query failure'
+              description: 'Filtering donors has been unsuccessful.'
        } */
             return res.status(400).send({
                 status: 'ERROR',
@@ -416,7 +416,7 @@ const handlePOSTSearchDonors = async (req, res) => {
         /* #swagger.responses[500] = {
               schema: {
                 status: 'EXCEPTION',
-                message: 'Error message'
+                message: '(Error message)'
                },
               description: 'Internal server error'
        } */
@@ -441,13 +441,13 @@ const handlePOSTSearchDonors = async (req, res) => {
  */
 const handlePOSTComment = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'adds a comment to a donor's profile.' */
+            #swagger.description = 'Adds a comment to a donor's profile.' */
     /* #swagger.parameters['insertDonor'] = {
                in: 'body',
                description: 'donor info for posting comment',
                schema:{
-                donorId:'hujfsduif783ujh',
-                comment:'Comment about donor'
+                donorId: 'hujfsduif783ujh',
+                comment:'Sample comment about donor'
                }
       } */
     try {
@@ -468,7 +468,7 @@ const handlePOSTComment = async (req, res) => {
                 status: 'OK',
                 message: 'Comment posted successfully'
             },
-           description: 'In case of successful comment post'
+           description: 'In case of successfully saving the comment'
     } */
             return res.status(200).send({
                 status: 'OK',
@@ -477,10 +477,10 @@ const handlePOSTComment = async (req, res) => {
         } else {
             /* #swagger.responses[400] = {
            schema: {
-                status: 'Error status',
-                message: 'error message'
+                status: 'ERROR',
+                message: '(Error message)'
             },
-           description: 'In case of unsuccessful comment post'
+           description: 'In case of failure of saving the comment'
     } */
             return res.status(400).send({
                 status: donorUpdateResult.status,
@@ -491,7 +491,7 @@ const handlePOSTComment = async (req, res) => {
         /* #swagger.responses[500] = {
            schema: {
                 status: 'EXCEPTION',
-                message: 'error message'
+                message: '(Error message)'
             },
            description: 'In case of internal server error, the user will get this message'
     } */
@@ -517,32 +517,19 @@ const handlePOSTComment = async (req, res) => {
  */
 const handlePOSTChangePassword = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the changing of password for an account.' */
+            #swagger.description = 'Handles the changing of password for an account.' */
     /* #swagger.parameters['changePassword'] = {
                in: 'body',
                description: 'donor info for changing password',
                schema:{
-                donorId:'ghjdgejhd7623jhs'
+                donorId:'ghjdgejhd7623jhs',
+                newPassword: 'thisisanewpassword'
                }
       } */
     try {
         let reqBody = req.body;
 
         let authenticatedUser = res.locals.middlewareResponse.donor;
-
-        if (authenticatedUser.designation === 0) {
-            /* #swagger.responses[401] = {
-              schema: {
-                status: 'ERROR',
-                message: 'User does not have permission to change password'
-               },
-              description: 'User is not authenticated yet'
-       } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to change password'
-            });
-        }
 
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: reqBody.donorId
@@ -551,8 +538,8 @@ const handlePOSTChangePassword = async (req, res) => {
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
               schema: {
-                status: 'Error status',
-                message: 'Error response'
+                status: 'ERROR',
+                message: '(Error message)'
                },
               description: 'If user with provided donor id does not exist '
        } */
@@ -570,7 +557,7 @@ const handlePOSTChangePassword = async (req, res) => {
                status: 'ERROR',
                message: 'User does not have permission to change password'
               },
-             description: 'User is not authenticated yet'
+             description: 'Target user does not have an account'
       } */
             return res.status(401).send({
                 status: 'ERROR',
@@ -584,7 +571,7 @@ const handlePOSTChangePassword = async (req, res) => {
                status: 'ERROR',
                message: 'User does not have permission to change password'
               },
-             description: 'User is not authenticated yet'
+              description: 'The user trying to change the password has a designation below the target donor designation or of different hall'
       } */
             return res.status(401).send({
                 status: 'ERROR',
@@ -614,7 +601,7 @@ const handlePOSTChangePassword = async (req, res) => {
         /* #swagger.responses[500] = {
              schema: {
                status: 'EXCEPTION',
-                message: 'Error message'
+                message: '(Error message)'
               },
              description: 'Internal server error'
       } */
@@ -640,7 +627,7 @@ const handlePOSTChangePassword = async (req, res) => {
  */
 const handlePOSTEditDonor = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the update of donor information.' */
+            #swagger.description = 'Handles the update of donor information.' */
     /* #swagger.parameters['editDonor'] = {
                in: 'body',
                description: 'donor info for editing donor',
@@ -658,19 +645,7 @@ const handlePOSTEditDonor = async (req, res) => {
     try {
         let reqBody = req.body;
         let authenticatedUser = res.locals.middlewareResponse.donor;
-        if (authenticatedUser.designation === 0) {
-            /* #swagger.responses[401] = {
-             schema: {
-                status: 'ERROR',
-                message: 'User does not have permission to edit'
-              },
-             description: 'User is not authenticated to edit info'
-      } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to edit'
-            });
-        }
+
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: reqBody.donorId
         })
@@ -678,10 +653,10 @@ const handlePOSTEditDonor = async (req, res) => {
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
              schema: {
-                status: 'Error status',
-                message: 'Error message'
+                status: 'ERROR',
+                message: '(Error message)'
               },
-             description: 'Donor not found'
+             description: 'Donor matching the ID has not been found'
       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
@@ -699,7 +674,7 @@ const handlePOSTEditDonor = async (req, res) => {
                 status: 'ERROR',
                 message: 'User does not have permission to edit'
               },
-             description: 'User is not authenticated to edit info'
+             description: 'User is below the target donor by designation'
       } */
             return res.status(401).send({
                 status: 'ERROR',
@@ -768,10 +743,10 @@ const handlePOSTEditDonor = async (req, res) => {
         if (donorUpdateResult.status !== 'OK') {
             /* #swagger.responses[400] = {
              schema: {
-                status: 'Error status',
-                message: 'Error message'
+                status: 'ERROR',
+                message: '(Error message)'
               },
-             description: 'donor info update unsuccessful'
+             description: 'Donor info update unsuccessful'
       } */
             return res.status(400).send({
                 status: donorUpdateResult.status,
@@ -786,7 +761,7 @@ const handlePOSTEditDonor = async (req, res) => {
                 status: 'OK',
                 message: 'Donor updated successfully'
               },
-             description: 'donor info update successful'
+             description: 'Donor info update successful'
       } */
         return res.status(200).send({
             status: 'OK',
@@ -797,7 +772,7 @@ const handlePOSTEditDonor = async (req, res) => {
         /* #swagger.responses[500] = {
             schema: {
                status: 'EXCEPTION',
-               message: 'Error message'
+               message: '(Error message)'
              },
             description: 'Internal server error'
      } */
@@ -825,12 +800,14 @@ const handlePOSTEditDonor = async (req, res) => {
  */
 const handlePOSTPromote = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the promotion or demotion of users.' */
+            #swagger.description = 'Handles the promotion or demotion of users.' */
     /* #swagger.parameters['promote'] = {
                in: 'body',
-               description: 'donor info for promoting donor',
+               description: 'If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.',
                schema:{
-                donorId:'hjasgd673278'
+                donorId:'hjasgd673278',
+                promoteFlag: true,
+                newPassword: 'thisisanewpassword'
                }
       } */
     try {
@@ -841,10 +818,10 @@ const handlePOSTPromote = async (req, res) => {
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
              schema: {
-               status: 'Error status',
-               message: 'Error message'
+               status: 'ERROR',
+               message: '(Error message)'
               },
-             description: 'If donor does not exist in database, user will get this message'
+             description: 'If a donor matching the ID does not exist in database, user will get this message'
       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
@@ -893,7 +870,7 @@ const handlePOSTPromote = async (req, res) => {
                },
               description: 'If hall admin can not promote donors or demote volunteers of different halls'
        } */
-               return res.status(401).send({
+                return res.status(401).send({
                     status: 'ERROR',
                     message: 'Hall admin can\'t promote donors or demote volunteers of different halls'
                 });
@@ -930,7 +907,7 @@ const handlePOSTPromote = async (req, res) => {
                 status: 'OK',
                 message: 'Target user promoted/demoted successfully'
                },
-              description: 'Donor promotion successful'
+              description: 'Donor promotion/ demotion successful'
        } */
         return res.status(200).send({
             status: 'OK',
@@ -941,7 +918,7 @@ const handlePOSTPromote = async (req, res) => {
         /* #swagger.responses[500] = {
               schema: {
                 status: 'EXCEPTION',
-                message: 'Error message'
+                message: '(Error message)'
                },
               description: 'Internal server error'
        } */
@@ -961,7 +938,7 @@ const handlePOSTPromote = async (req, res) => {
  */
 const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the fetching of volunteer lists for a hall admin.' */
+            #swagger.description = 'Handles the fetching of volunteer lists for a hall admin.' */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
         let userDesignation = authenticatedUser.designation;
@@ -977,16 +954,15 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
             roomNumber: 1,
             bloodGroup: 1,
             phone: 1,
-
         });
 
         if (donorsQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
             schema: {
-                   status: 'Error status',
-                   message: 'Error message'
+                   status: 'ERROR',
+                   message: '(Error message)'
              },
-            description: 'Donor with the hall and designation does not exist'
+            description: 'The filter parameters are incorrect'
      } */
             return res.status(400).send({
                 status: donorsQueryResult.status,
@@ -1000,17 +976,17 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
                 status: 'OK',
                 message: 'Volunteer list fetched successfully',
                 volunteerList:[
-                {
-                _id: "dskgjhwebkjsdbd",
-                bloodGroup: 2,
-                name: "John Doe",
-                phone: 8801456987445,
-                roomNumber: "409",
-                studentId: "1610000",
-                }
+                    {
+                        _id: "dskgjhwebkjsdbd",
+                        bloodGroup: 2,
+                        name: "John Doe",
+                        phone: 8801456987445,
+                        roomNumber: "409",
+                        studentId: 1610000,
+                    }
                 ]
              },
-            description: 'Volunteer list fetched successfully'
+            description: 'An array of volunteers fetched successfully'
      } */
         return res.status(200).send({
             status: 'OK',
@@ -1045,12 +1021,12 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
  */
 const handlePOSTChangeAdmin = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the changing of a hall admin.' */
+            #swagger.description = 'Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer' */
     /* #swagger.parameters['changeAdmin'] = {
                in: 'body',
                description: 'donor info for changing admin',
                schema:{
-                donorId:'hdjhd12vhjgjh'
+                donorId:'hdjhd12vhjgj3428569834hth'
                }
       } */
     try {
@@ -1061,11 +1037,11 @@ const handlePOSTChangeAdmin = async (req, res) => {
 
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
-              schema: {
-                status: 'Error status',
-                message: 'Error message'
-               },
-              description: 'If donor with same donor id doesnot exist , user will get this error message'
+            schema: {
+                status: 'ERROR',
+                message: '(Error message)'
+            },
+              description: 'If donor with specified id does not exist , user will get this error message'
        } */
             return res.status(400).send({
                 status: donorQueryResult.status,
@@ -1082,7 +1058,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
                status: 'ERROR',
                 message: 'User is not a volunteer'
               },
-             description: 'If user is not a volunteer , user will get this error message'
+             description: 'If fetched user is not a volunteer , user will get this error message'
       } */
             return res.status(401).send({
                 status: 'ERROR',
@@ -1164,7 +1140,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
         /* #swagger.responses[500] = {
              schema: {
                     status: 'EXCEPTION',
-                    message: 'Internal server error'
+                    message: '(Internal server error message)'
               },
              description: 'In case of internal server error, user will get this error message'
       } */
@@ -1186,7 +1162,6 @@ const handlePOSTShowHallAdmins = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the fetching of hall admin list for a super admin.' */
     try {
-        let authenticatedUser = res.locals.middlewareResponse.donor;
 
         let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {
             phone: 1,
@@ -1198,7 +1173,7 @@ const handlePOSTShowHallAdmins = async (req, res) => {
             /* #swagger.responses[400] = {
               schema: {
                 status: 'ERROR',
-                message: 'Error message'
+                message: '(Error message)'
                },
               description: 'If user does not exists in database, user will get this error message'
        } */
@@ -1215,11 +1190,11 @@ const handlePOSTShowHallAdmins = async (req, res) => {
                 status: 'OK',
                 message: 'Hall admin list fetched successfully',
                 admins:[{
-                _id: "reohrewoihgfsdn",
-                hall: 0,
-                name: "Salman Khan",
-                phone: 8801521478996,
-        }]
+                    _id: "reohrewoihgfsdn",
+                    hall: 0,
+                    name: "Salman Khan",
+                    phone: 8801521478996,
+                }]
               },
              description: 'Hall admin list fetch successful '
       } */
@@ -1233,7 +1208,7 @@ const handlePOSTShowHallAdmins = async (req, res) => {
         /* #swagger.responses[500] = {
              schema: {
                     status: 'EXCEPTION',
-                    message: 'Internal server error'
+                    message: '(Internal server error message)'
               },
              description: 'In case of internal server error, user will get this error message'
       } */
@@ -1262,12 +1237,12 @@ const handleGETViewDonorDetails = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the fetching of donor details.' */
     /* #swagger.parameters['donorId'] = {
-              description: 'Donor id for donor details blahh',
+              description: 'Donor id for donor details',
               type: 'string',
               name:'donorId',
               in:'query'
        } */
-    let query=req.query;
+    let query = req.query;
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: query.donorId
@@ -1276,10 +1251,10 @@ const handleGETViewDonorDetails = async (req, res) => {
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
               schema: {
-                status: 'Error status',
-                message: 'Donor doesnot exist'
+                status: 'ERROR',
+                message: '(Query error message)'
                },
-              description: 'when no donor with same donor id is found,user will get this error message'
+              description: 'When no donor with the specified donor id is found, user will get this error message'
        } */
             return res.status(400).send({
                 status: donorQueryResult.status,
@@ -1308,18 +1283,18 @@ const handleGETViewDonorDetails = async (req, res) => {
                 status: 'OK',
                 message: 'Successfully fetched donor details',
                 donor: {
-                _id: 'abjcguiwefvew',
-                phone: 8801521438557,
-                name: 'Mir Mahathir Mohammad',
-                studentId: 1605011,
-                lastDonation: 987876287160,
-                bloodGroup: 2,
-                hall: 5,
-                roomNumber: '3009',
-                address: 'Azimpur',
-                comment: 'developer of badhan',
-                designation: 'Admin',
-                donationCount: 2,
+                    _id: 'abjcguiwefvew',
+                    phone: 8801521438557,
+                    name: 'Mir Mahathir Mohammad',
+                    studentId: 1605011,
+                    lastDonation: 987876287160,
+                    bloodGroup: 2,
+                    hall: 5,
+                    roomNumber: '3009',
+                    address: 'Azimpur',
+                    comment: 'developer of badhan',
+                    designation: 3,
+                    donationCount: 2,
                 }
                },
               description: 'donor info'
@@ -1334,7 +1309,7 @@ const handleGETViewDonorDetails = async (req, res) => {
         /* #swagger.responses[500] = {
              schema: {
                status: 'EXCEPTION',
-                message: 'Error message'
+                message: '(Error message)'
               },
              description: 'Internal server error'
       } */
@@ -1403,7 +1378,7 @@ const handlePOSTViewDonorDetails = async (req, res) => {
  */
 const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     /*  #swagger.tags = ['Donors']
-        #swagger.description = 'handles the fetching of own details.' */
+        #swagger.description = 'Handles the fetching of own details.' */
 
 
     try {
@@ -1414,10 +1389,10 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         if (donorQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
              schema: {
-                status: 'Error status',
-                message: 'Error message'
+                status: 'ERROR',
+                message: '(Error message)'
               },
-             description: 'No donor with the provided donor id from auth route'
+             description: 'No donor found that matches the token'
       } */
             return res.status(400).send({
                 status: donorQueryResult.status,
@@ -1445,20 +1420,20 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
                 status: 'OK',
                 message: 'Successfully fetched donor details',
                 donor: {
-                _id: 'abjcguiwefvew',
-                phone: 8801521438557,
-                name: 'Mir Mahathir Mohammad',
-                studentId: 1605011,
-                lastDonation: 987876287160,
-                bloodGroup: 2,
-                hall: 5,
-                roomNumber: '3009',
-                address: 'Azimpur',
-                comment: 'developer of badhan',
-                designation: 'Admin',
+                    _id: 'abjcguiwefvew',
+                    phone: 8801521438557,
+                    name: 'Mir Mahathir Mohammad',
+                    studentId: 1605011,
+                    lastDonation: 987876287160,
+                    bloodGroup: 2,
+                    hall: 5,
+                    roomNumber: '3009',
+                    address: 'Azimpur',
+                    comment: 'Developer of badhan',
+                    designation: 3,
                 }
                },
-              description: 'donor info'
+              description: 'Info of the logged in user'
        } */
         return res.status(200).send({
             status: 'OK',
@@ -1470,7 +1445,7 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         /* #swagger.responses[500] = {
          schema: {
               status: 'EXCEPTION',
-              message: 'error message'
+              message: '(error message)'
           },
          description: 'In case of internal server error, the user will get this message'
   } */
@@ -1481,15 +1456,16 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     }
 }
 const handleGETViewAllVolunteers = async (req, res) => {
-
+    /*  #swagger.tags = ['Donors']
+        #swagger.description = 'Fetches all volunteers' */
     try {
         let volunteerResult = await donorInterface.findAllVolunteers();
 
         if (volunteerResult.status !== 'OK') {
             /* #swagger.responses[400] = {
               schema: {
-                status: 'Error status',
-                message: 'Error message'
+                status: 'ERROR',
+                message: '(Error message)'
                },
               description: 'Volunteer list fetch unsuccessful'
        } */

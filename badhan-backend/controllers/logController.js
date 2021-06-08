@@ -5,6 +5,7 @@ let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
     /*
+    #swagger.tags = ['Logs']
     #swagger.description = 'To show current state of the api' */
     /* #swagger.responses[200] = {
             schema: {
@@ -16,6 +17,9 @@ const handleGETOnlineCheck = async (req, res) => {
 }
 
 const handleGETStatistics = async (req, res) => {
+    /*
+    #swagger.tags = ['Logs']
+    #swagger.description = 'Fetch statistics about the current donor count and volunteer count' */
     try {
         let donorCount = await donorInterface.getCount();
         let donationCount = await donationInterface.getCount();
@@ -45,7 +49,7 @@ const handleGETStatistics = async (req, res) => {
         /* #swagger.responses[500] = {
             schema: {
                    status: 'EXCEPTION',
-                   message: 'Internal server error'
+                   message: '(Internal server error)'
              },
             description: 'In case of internal server error, user will get this error message'
      } */
@@ -58,12 +62,13 @@ const handleGETStatistics = async (req, res) => {
 
 const handleGETAppVersion = (req, res, next) => {
     /*
+    #swagger.tags = ['Logs']
     #swagger.description = 'Get app info deployed to play store' */
     gplay.app({appId: 'com.mmmbadhan'})
         .then((response) => {
             /* #swagger.responses[200] = {
            schema: {
-             version: 'v3'
+             version: '(App information fetched from google play store)'
             },
            description: 'response is the current version number of badhan api'
     } */
@@ -73,7 +78,8 @@ const handleGETAppVersion = (req, res, next) => {
 
 const handleGETLogs = async (req, res,next)=>{
     /*
-            #swagger.description = 'fetches logs.' */
+    #swagger.tags = ['Logs']
+            #swagger.description = 'The super admin sees all the activities done by the volunteers through this route' */
     try{
         let allLogData = await logInterface.getLogs();
 
@@ -127,14 +133,38 @@ const handleGETLogs = async (req, res,next)=>{
 }
 const handleDELETELogs = async (req,res,next)=>{
     /*
-            #swagger.description = 'handles the deletion of logs.' */
+        #swagger.tags = ['Logs']
+        #swagger.description = 'handles the deletion of logs.'
+    */
     try{
         let allLogData = await logInterface.deleteLogs();
         /* #swagger.responses[200] = {
              schema: {
                status: 'OK',
                message: 'All logs deleted successfully',
-               logs: 'null'
+               logs:[
+                   {
+                        "_id": "fdogirehognrebk",
+                        name: "Mit Majumder",
+                        hall: 2,
+                        date: 1622090693113,
+                        editedObject: {
+                            _id: "60af292680015defd72",
+                            address: "Mohammadpur",
+                            bloodGroup: 2,
+                            comment: "This is a comment",
+                            designation: 0,
+                            donationCount: 0,
+                            hall: 8,
+                            lastDonation: 1622073600000,
+                            name: "Md. Rafat Hossain ",
+                            phone: 8801521347889,
+                            roomNumber: "TH-3012",
+                            studentId: 1516256,
+                        },
+                        operation: "EDIT COMMENT"
+                    },
+                ]
               },
              description: 'All logs deleted successfully'
       } */
@@ -147,7 +177,7 @@ const handleDELETELogs = async (req,res,next)=>{
         /* #swagger.responses[500] = {
             schema: {
                    status: 'EXCEPTION',
-                   message: 'Internal server error'
+                   message: '(Internal server error)'
              },
             description: 'In case of internal server error, user will get this error message'
      } */

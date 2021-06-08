@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
+    "version": "3.0.0",
     "title": "Badhan API",
-    "description": "Automatically generated documentation of Badhan API"
+    "description": "Automatically generated documentation of Badhan API. The backend is documented and currently maintained by Sumaiya Azad"
   },
-  "host": "badhan-backend.herokuapp.com:3000",
+  "host": "badhan-web.herokuapp.com",
   "basePath": "/",
   "tags": [
     {
@@ -216,7 +216,7 @@
         "parameters": [
           {
             "name": "donorId",
-            "description": "Donor id for donor details blahh",
+            "description": "Donor id for donor details",
             "type": "string",
             "in": "query"
           }
@@ -279,8 +279,8 @@
                       "example": "developer of badhan"
                     },
                     "designation": {
-                      "type": "string",
-                      "example": "Admin"
+                      "type": "number",
+                      "example": 3
                     },
                     "donationCount": {
                       "type": "number",
@@ -295,17 +295,17 @@
             }
           },
           "400": {
-            "description": "when no donor with same donor id is found,user will get this error message",
+            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor doesnot exist"
+                  "example": "(Query error message)"
                 }
               },
               "xml": {
@@ -343,7 +343,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -427,11 +427,11 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the fetching of own details.",
+        "description": "Handles the fetching of own details.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "donor info",
+            "description": "Info of the logged in user",
             "schema": {
               "type": "object",
               "properties": {
@@ -484,11 +484,11 @@
                     },
                     "comment": {
                       "type": "string",
-                      "example": "developer of badhan"
+                      "example": "Developer of badhan"
                     },
                     "designation": {
-                      "type": "string",
-                      "example": "Admin"
+                      "type": "number",
+                      "example": 3
                     }
                   }
                 }
@@ -499,17 +499,17 @@
             }
           },
           "400": {
-            "description": "No donor with the provided donor id from auth route",
+            "description": "No donor found that matches the token",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -547,7 +547,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "(error message)"
                 }
               },
               "xml": {
@@ -563,12 +563,12 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the filtered query of donors from the database.",
+        "description": "Searches for donors that matches the filters",
         "parameters": [
           {
             "name": "SearchDonor",
             "in": "body",
-            "description": "search donor by parameters",
+            "description": "Filter parameters",
             "schema": {
               "type": "object",
               "properties": {
@@ -582,7 +582,7 @@
                 },
                 "batch": {
                   "type": "number",
-                  "example": 2016
+                  "example": 16
                 },
                 "name": {
                   "type": "string",
@@ -598,7 +598,7 @@
         ],
         "responses": {
           "200": {
-            "description": "donor info array with matching query parameter",
+            "description": "Array of donors that matches the filter parameters",
             "schema": {
               "type": "object",
               "properties": {
@@ -656,8 +656,8 @@
                         "example": "developer of badhan"
                       },
                       "designation": {
-                        "type": "string",
-                        "example": "Admin"
+                        "type": "number",
+                        "example": 3
                       }
                     }
                   }
@@ -669,7 +669,7 @@
             }
           },
           "400": {
-            "description": "Donor query failure",
+            "description": "Filtering donors has been unsuccessful.",
             "schema": {
               "type": "object",
               "properties": {
@@ -717,7 +717,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -771,7 +771,7 @@
             }
           },
           "400": {
-            "description": "Donor query unsuccessful",
+            "description": "Error happened when trying to find the specified donor",
             "schema": {
               "type": "object",
               "properties": {
@@ -781,7 +781,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -840,7 +840,7 @@
           {
             "name": "insertDonation",
             "in": "body",
-            "description": "donor info for inserting donation",
+            "description": "Donor info for inserting donation",
             "schema": {
               "type": "object",
               "properties": {
@@ -849,8 +849,8 @@
                   "example": "bhjdekj8923"
                 },
                 "date": {
-                  "type": "string",
-                  "example": "15/2/2021"
+                  "type": "number",
+                  "example": 1611100800000
                 }
               }
             }
@@ -887,7 +887,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "Target donor not found"
                 }
               },
               "xml": {
@@ -925,7 +925,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
+                  "example": "(Internal server error)"
                 }
               },
               "xml": {
@@ -941,7 +941,7 @@
         "tags": [
           "Donors"
         ],
-        "description": "adds a comment to a donor",
+        "description": "Adds a comment to a donor",
         "parameters": [
           {
             "name": "insertDonor",
@@ -956,7 +956,7 @@
                 },
                 "comment": {
                   "type": "string",
-                  "example": "Comment about donor"
+                  "example": "Sample comment about donor"
                 }
               }
             }
@@ -980,7 +980,7 @@
                 "name": "main"
               }
             },
-            "description": "In case of successful comment post"
+            "description": "In case of successfully saving the comment"
           },
           "400": {
             "schema": {
@@ -988,18 +988,18 @@
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "In case of unsuccessful comment post"
+            "description": "In case of failure of saving the comment"
           },
           "401": {
             "description": "This error will occur if the user does not exist",
@@ -1031,7 +1031,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1059,6 +1059,10 @@
                 "donorId": {
                   "type": "string",
                   "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
                 }
               }
             }
@@ -1091,7 +1095,7 @@
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
@@ -1133,7 +1137,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
+                  "example": "(Internal server error)"
                 }
               },
               "xml": {
@@ -1149,7 +1153,7 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the changing of password for an account.",
+        "description": "Handles the changing of password for an account.",
         "parameters": [
           {
             "name": "changePassword",
@@ -1161,6 +1165,10 @@
                 "donorId": {
                   "type": "string",
                   "example": "ghjdgejhd7623jhs"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "example": "thisisanewpassword"
                 }
               }
             }
@@ -1193,11 +1201,11 @@
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error response"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1206,7 +1214,7 @@
             }
           },
           "401": {
-            "description": "User is not authenticated yet",
+            "description": "The user trying to change the password has a designation below the target donor designation or of different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -1235,7 +1243,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1251,7 +1259,7 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the update of donor information.",
+        "description": "Handles the update of donor information.",
         "parameters": [
           {
             "name": "editDonor",
@@ -1298,7 +1306,7 @@
         ],
         "responses": {
           "200": {
-            "description": "donor info update successful",
+            "description": "Donor info update successful",
             "schema": {
               "type": "object",
               "properties": {
@@ -1317,17 +1325,17 @@
             }
           },
           "400": {
-            "description": "donor info update unsuccessful",
+            "description": "Donor info update unsuccessful",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1336,7 +1344,7 @@
             }
           },
           "401": {
-            "description": "User is not authenticated to edit info",
+            "description": "User is below the target donor by designation",
             "schema": {
               "type": "object",
               "properties": {
@@ -1365,7 +1373,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1464,18 +1472,26 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the promotion or demotion of users.",
+        "description": "Handles the promotion or demotion of users.",
         "parameters": [
           {
             "name": "promote",
             "in": "body",
-            "description": "donor info for promoting donor",
+            "description": "If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.",
             "schema": {
               "type": "object",
               "properties": {
                 "donorId": {
                   "type": "string",
                   "example": "hjasgd673278"
+                },
+                "promoteFlag": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "newPassword": {
+                  "type": "string",
+                  "example": "thisisanewpassword"
                 }
               }
             }
@@ -1499,20 +1515,20 @@
                 "name": "main"
               }
             },
-            "description": "Donor promotion successful"
+            "description": "Donor promotion/ demotion successful"
           },
           "400": {
-            "description": "If donor does not exist in database, user will get this message",
+            "description": "If a donor matching the ID does not exist in database, user will get this message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1550,7 +1566,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1566,11 +1582,11 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the fetching of volunteer lists for a hall admin.",
+        "description": "Handles the fetching of volunteer lists for a hall admin.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Volunteer list fetched successfully",
+            "description": "An array of volunteers fetched successfully",
             "schema": {
               "type": "object",
               "properties": {
@@ -1608,8 +1624,8 @@
                         "example": "409"
                       },
                       "studentId": {
-                        "type": "string",
-                        "example": "1610000"
+                        "type": "number",
+                        "example": 1610000
                       }
                     }
                   }
@@ -1621,17 +1637,17 @@
             }
           },
           "400": {
-            "description": "Donor with the hall and designation does not exist",
+            "description": "The filter parameters are incorrect",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1682,8 +1698,10 @@
     },
     "/v1/admin/volunteers/all": {
       "get": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Donors"
+        ],
+        "description": "Fetches all volunteers",
         "parameters": [],
         "responses": {
           "200": {
@@ -1712,11 +1730,11 @@
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Error status"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1770,7 +1788,7 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the changing of a hall admin.",
+        "description": "Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer",
         "parameters": [
           {
             "name": "changeAdmin",
@@ -1781,7 +1799,7 @@
               "properties": {
                 "donorId": {
                   "type": "string",
-                  "example": "hdjhd12vhjgjh"
+                  "example": "hdjhd12vhjgj3428569834hth"
                 }
               }
             }
@@ -1827,7 +1845,7 @@
             }
           },
           "401": {
-            "description": "If user is not a volunteer , user will get this error message",
+            "description": "If fetched user is not a volunteer , user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1856,7 +1874,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
+                  "example": "(Internal server error message)"
                 }
               },
               "xml": {
@@ -1929,7 +1947,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error message"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -1967,7 +1985,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
+                  "example": "(Internal server error message)"
                 }
               },
               "xml": {
@@ -1980,7 +1998,9 @@
     },
     "/v3/log/version": {
       "get": {
-        "tags": [],
+        "tags": [
+          "Logs"
+        ],
         "description": "Get app info deployed to play store",
         "parameters": [],
         "responses": {
@@ -1991,7 +2011,7 @@
               "properties": {
                 "version": {
                   "type": "string",
-                  "example": "v3"
+                  "example": "(App information fetched from google play store)"
                 }
               },
               "xml": {
@@ -2018,8 +2038,10 @@
     },
     "/v2/log/statistics": {
       "get": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Logs"
+        ],
+        "description": "Fetch statistics about the current donor count and volunteer count",
         "parameters": [],
         "responses": {
           "201": {
@@ -2088,7 +2110,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
+                  "example": "(Internal server error)"
                 }
               },
               "xml": {
@@ -2101,8 +2123,10 @@
     },
     "/v1/log": {
       "get": {
-        "tags": [],
-        "description": "fetches logs.",
+        "tags": [
+          "Logs"
+        ],
+        "description": "The super admin sees all the activities done by the volunteers through this route",
         "parameters": [],
         "responses": {
           "201": {
@@ -2246,7 +2270,9 @@
         }
       },
       "delete": {
-        "tags": [],
+        "tags": [
+          "Logs"
+        ],
         "description": "handles the deletion of logs.",
         "parameters": [],
         "responses": {
@@ -2263,8 +2289,85 @@
                   "example": "All logs deleted successfully"
                 },
                 "logs": {
-                  "type": "string",
-                  "example": "null"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "fdogirehognrebk"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mit Majumder"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "date": {
+                        "type": "number",
+                        "example": 1622090693113
+                      },
+                      "editedObject": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "60af292680015defd72"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "Mohammadpur"
+                          },
+                          "bloodGroup": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "comment": {
+                            "type": "string",
+                            "example": "This is a comment"
+                          },
+                          "designation": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "donationCount": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "hall": {
+                            "type": "number",
+                            "example": 8
+                          },
+                          "lastDonation": {
+                            "type": "number",
+                            "example": 1622073600000
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Md. Rafat Hossain "
+                          },
+                          "phone": {
+                            "type": "number",
+                            "example": 8801521347889
+                          },
+                          "roomNumber": {
+                            "type": "string",
+                            "example": "TH-3012"
+                          },
+                          "studentId": {
+                            "type": "number",
+                            "example": 1516256
+                          }
+                        }
+                      },
+                      "operation": {
+                        "type": "string",
+                        "example": "EDIT COMMENT"
+                      }
+                    }
+                  }
                 }
               },
               "xml": {
@@ -2306,7 +2409,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
+                  "example": "(Internal server error)"
                 }
               },
               "xml": {
@@ -2619,18 +2722,20 @@
     "/redirectionSignIn": {
       "post": {
         "tags": [
-          "Users"
+          "User"
         ],
         "description": "Route endpoint to redirect user from app to web.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "logIn",
             "in": "body",
+            "description": "The temporary token generated by /user/requestRedirection",
             "schema": {
               "type": "object",
               "properties": {
                 "token": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "sdlfkhgoenguiehgfudsnbvsiugkb"
                 }
               }
             }

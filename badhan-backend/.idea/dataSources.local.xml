@@ -2,11 +2,15 @@
 <project version="4">
   <component name="dataSourceStorageLocal">
     <data-source name="Badhan@cluster0.4xhyy.mongodb.net" uuid="1cc56e00-6902-407a-b8d1-4846d47c26f0">
-      <database-info product="Mongo DB" version="4.4.6" jdbc-version="4.2" driver-name="MongoDB JDBC Driver" driver-version="1.11" dbms="MONGO" exact-version="4.4.6" />
+      <database-info product="Mongo DB" version="4.4.6" jdbc-version="4.2" driver-name="MongoDB JDBC Driver" driver-version="1.11" dbms="MONGO" exact-version="4.4.6" exact-driver-version="1.11" />
       <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
       <secret-storage>master_key</secret-storage>
       <user-name>badhan-web-api</user-name>
-      <schema-mapping />
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" qname="@" />
+        </introspection-scope>
+      </schema-mapping>
     </data-source>
   </component>
 </project>

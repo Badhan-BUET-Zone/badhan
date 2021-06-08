@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 
 const doc = {
     info: {
-        version: "1.0.0",
+        version: "3.0.0",
         title: "Badhan API",
-        description: "Automatically generated documentation of Badhan API"
+        description: "Automatically generated documentation of Badhan API. The backend is documented and currently maintained by Sumaiya Azad"
     },
-    host: "badhan-backend.herokuapp.com:3000",
+    host: "badhan-web.herokuapp.com",
     basePath: "/",
     schemes: ['https'],
     consumes: ['application/json'],
