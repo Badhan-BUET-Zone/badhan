@@ -292,6 +292,7 @@ let handlePOSTRedirectedAuthentication = async (req, res) => {
        } */
     try {
         let token = req.body.token;
+        // console.log(token)
         let decodedDonor;
         try{
             decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);

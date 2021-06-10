@@ -292,6 +292,21 @@ const handlePOSTSearchDonors = async (req, res) => {
     try {
         let reqBody = req.body;
 
+        if(reqBody.hall!==res.locals.middlewareResponse.donor.hall && reqBody.hall<=6 && res.locals.middlewareResponse.donor.designation!==3){
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'You are not allowed to search donors of other halls'
+               },
+              description: 'This error will occur if the user tries to search other halls'
+       } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'You are not allowed to search donors of other halls'
+            });
+        }
+
+
         let searchFilter = {
             bloodGroup: reqBody.bloodGroup,
             hall: reqBody.hall,
