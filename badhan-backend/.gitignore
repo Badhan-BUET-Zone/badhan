@@ -3,3 +3,4 @@ playground/
 config/config.json
 config/config.env
 .idea
+app.yml

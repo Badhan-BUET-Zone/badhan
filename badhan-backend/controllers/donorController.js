@@ -1279,6 +1279,21 @@ const handleGETViewDonorDetails = async (req, res) => {
 
         let donor = donorQueryResult.data;
 
+        if(donor.hall <=6 && res.locals.middlewareResponse.donor.hall!== donor.hall && res.locals.middlewareResponse.donor.designation!==3){
+            /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'You are not authorized to view this donor'
+               },
+              description: 'The user is trying to access data of a different hall'
+       } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'You are not authorized to view this donor'
+            });
+        }
+
+
         let obj = {
             _id: donor._id,
             phone: donor.phone,
@@ -1335,54 +1350,7 @@ const handleGETViewDonorDetails = async (req, res) => {
     }
 }
 
-//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-//APP VERSION <= 3.5.1 STILL USES IT
-const handlePOSTViewDonorDetails = async (req, res) => {
 
-    /*  #swagger.tags = ['Deprecated']
-            #swagger.description = 'handles the fetching of donor details.' */
-    try {
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.body.donorId
-        });
-
-        if (donorQueryResult.status !== 'OK') {
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let donor = donorQueryResult.data;
-
-        let obj = {
-            _id: donor._id,
-            phone: donor.phone,
-            name: donor.name,
-            studentId: donor.studentId,
-            lastDonation: donor.lastDonation,
-            bloodGroup: donor.bloodGroup,
-            hall: donor.hall,
-            roomNumber: donor.roomNumber,
-            address: donor.address,
-            comment: donor.comment,
-            designation: donor.designation
-        }
-
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Successfully fetched donor details',
-            donor: obj
-        });
-
-    } catch (e) {
-
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
-    }
-}
 
 
 /** DONE
@@ -1510,6 +1478,55 @@ const handleGETViewAllVolunteers = async (req, res) => {
               },
              description: 'In case of internal server error, user will get this error message'
       } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
+//APP VERSION <= 3.5.1 STILL USES IT
+const handlePOSTViewDonorDetails = async (req, res) => {
+
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'handles the fetching of donor details.' */
+    try {
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            _id: req.body.donorId
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+
+        let obj = {
+            _id: donor._id,
+            phone: donor.phone,
+            name: donor.name,
+            studentId: donor.studentId,
+            lastDonation: donor.lastDonation,
+            bloodGroup: donor.bloodGroup,
+            hall: donor.hall,
+            roomNumber: donor.roomNumber,
+            address: donor.address,
+            comment: donor.comment,
+            designation: donor.designation
+        }
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            donor: obj
+        });
+
+    } catch (e) {
+
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

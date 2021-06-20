@@ -314,7 +314,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "The user is trying to access data of a different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -324,7 +324,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "You are not authorized to view this donor"
                 }
               },
               "xml": {

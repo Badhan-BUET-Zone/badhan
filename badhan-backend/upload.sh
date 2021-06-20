@@ -14,6 +14,8 @@ git push origin master
 # push to mahathir heroku app
 git push heroku master
 
+gcloud app deploy
+
 # push to aniruddha heroku app
 #git push heroku-deprecated master
 
