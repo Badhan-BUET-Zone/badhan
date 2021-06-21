@@ -14,7 +14,7 @@ git push origin master
 # push to mahathir heroku app
 git push heroku master
 
-gcloud app deploy
+gcloud app deploy --stop-previous-version -q
 
 # push to aniruddha heroku app
 #git push heroku-deprecated master

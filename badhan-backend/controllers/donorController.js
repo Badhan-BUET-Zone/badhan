@@ -576,7 +576,7 @@ const handlePOSTChangePassword = async (req, res) => {
       } */
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'User does not have permission to change password for this donor'
+                message: 'Target user does not have an account'
             });
         }
 
