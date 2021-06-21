@@ -281,13 +281,13 @@ const handlePOSTSearchDonors = async (req, res) => {
                in: 'body',
                description: 'Filter parameters',
                schema:{
-               address: "",
-               batch: "",
                 bloodGroup: 2,
                 hall: 5,
                 batch: 16,
                 name:'Mir Mahathir Mohammad',
-                address:'Azimpur'
+                address:'Azimpur',
+                isAvailable: true,
+                isNotAvailable: false
                }
       } */
 
