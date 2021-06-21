@@ -572,6 +572,14 @@
             "schema": {
               "type": "object",
               "properties": {
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
+                },
+                "batch": {
+                  "type": "number",
+                  "example": 16
+                },
                 "bloodGroup": {
                   "type": "number",
                   "example": 2
@@ -580,17 +588,9 @@
                   "type": "number",
                   "example": 5
                 },
-                "batch": {
-                  "type": "number",
-                  "example": 16
-                },
                 "name": {
                   "type": "string",
                   "example": "Mir Mahathir Mohammad"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "Azimpur"
                 }
               }
             }
