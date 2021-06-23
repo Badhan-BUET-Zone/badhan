@@ -1,0 +1,67 @@
+Report: No donation with inconsistent donorId exists in the donations table.
+
+
+
+// db.donations.count()
+
+
+// db.donors.aggregate([
+//     {
+//         $addFields: {
+//             donorObjectId: { $toObjectId: "$_id" }
+//         }
+//     },
+//     {$out:'modifiedDonors'}
+// ])
+
+// db.donors.aggregate([
+//     {
+//         "$addFields": {
+//             "donorId": {
+//                 "$toString": "$_id"
+//             }
+//         }
+//     },
+//     {$out:'modifiedDonors'}
+// ])
+
+
+// db.donations.aggregate([
+//     { $lookup:
+//             {
+//                 from: "modifiedDonors",
+//                 localField: "donorId",
+//                 foreignField: "donorId",
+//                 as: "donorInfo"
+//             }
+//     },
+//     {$out:'modifiedTable'}
+// ]);
+
+
+
+// db.modifiedTable.count()
+//2597
+
+//
+// db.modifiedTable.find({ donorInfo:{$exists:true} })
+
+// db.modifiedTable.find( { $where: "this.donorInfo.length > 0" } );
+// db.collection.find( { donorInfo: { $size: 1 } } )
+
+// db.collection.find( {$nor: [
+//         {donorInfo: {$size: 0}}
+//     ]} )
+
+//db.modifiedTable.find({ donorInfo: { $exists: true, $ne: [] } })
+
+// db.modifiedTable.find({ donorInfo: { $size: 0} }).count()
+
+
+
+// db.modifiedTable.findOne({ donorInfo: { $size: 0} })
+//donorId :
+// _id: 6071b057e80b9d0017aefe17
+
+
+// db.donations.deleteMany({donorId: {$exists: false}})

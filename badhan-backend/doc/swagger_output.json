@@ -611,6 +611,14 @@
                 "address": {
                   "type": "string",
                   "example": "Azimpur"
+                },
+                "isAvailable": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "isNotAvailable": {
+                  "type": "boolean",
+                  "example": false
                 }
               }
             }
