@@ -19,6 +19,7 @@ router.post('/v2/donor/insert',
 
 router.get('/v3/donor/details',
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donorController.handleGETViewDonorDetails
 );
 

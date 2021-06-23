@@ -389,7 +389,6 @@ let handlePOSTRedirectedAuthentication = async (req, res) => {
 }
 
 let handleSuperAdminCheck = async (req, res, next) => {
-
     if (res.locals.middlewareResponse.donor.designation === 3) {
         return next();
     } else {
@@ -398,6 +397,77 @@ let handleSuperAdminCheck = async (req, res, next) => {
             message: 'You are not permitted to access this route'
         });
     }
+}
+
+let handleHallPermission = async (req, res, next)=>{
+    /*
+    This middleware checks whether the targeted donor is accessible to the logged in user
+     */
+    let donorId;
+    /*
+    Makes sure that the targeted donor id is available in the request
+     */
+    if(req.body.donorId){
+        donorId = req.body.donorId
+    }else if(req.query.donorId){
+        donorId = req.query.donorId
+    }else{
+        /* #swagger.responses[400] = {
+           schema: {
+                status: 'ERROR',
+                message: 'Donor ID not specified'
+            },
+           description: 'This error will occur if the donor id in body nor param is not found'
+    } */
+        return res.status(400).send({
+            status: 'ERROR',
+            message: 'Donor ID not specified'
+        });
+    }
+
+    let donorQueryResult = await donorInterface.findDonorByQuery({
+        _id: donorId
+    });
+
+    if (donorQueryResult.status !== 'OK') {
+        /* #swagger.responses[400] = {
+          schema: {
+            status: 'ERROR',
+            message: '(Query error message)'
+           },
+          description: 'When no donor with the specified donor id is found, user will get this error message'
+        } */
+        return res.status(400).send({
+            status: donorQueryResult.status,
+            message: donorQueryResult.message
+        });
+    }
+
+    let donor = donorQueryResult.data;
+
+    /*
+    A super admin can access the data of any hall.
+    Every hall admin and volunteer can only access data of their own halls along with the data of
+    attached students and covid donors.
+     */
+    if(donor.hall <=6
+        && res.locals.middlewareResponse.donor.hall!== donor.hall
+        && res.locals.middlewareResponse.donor.designation!==3){
+        /* #swagger.responses[401] = {
+          schema: {
+            status: 'ERROR',
+            message: 'You are not authorized to access this donor'
+           },
+          description: 'The user is trying to access or modify data of a different hall'
+        } */
+        return res.status(401).send({
+            status: 'ERROR',
+            message: 'You are not authorized to access a donor of different hall'
+        });
+    }
+
+    res.locals.middlewareResponse.targetDonor = donor;
+    return next();
 
 }
 
@@ -407,6 +477,7 @@ module.exports = {
     handlePOSTLogOut,
     handlePOSTLogOutAll,
     handleSuperAdminCheck,
+    handleHallPermission,
     handlePOSTRequestRedirection,
     handlePOSTRedirectedAuthentication
 }

@@ -1257,42 +1257,10 @@ const handleGETViewDonorDetails = async (req, res) => {
               name:'donorId',
               in:'query'
        } */
-    let query = req.query;
+
     try {
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: query.donorId
-        });
 
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-              schema: {
-                status: 'ERROR',
-                message: '(Query error message)'
-               },
-              description: 'When no donor with the specified donor id is found, user will get this error message'
-       } */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let donor = donorQueryResult.data;
-
-        if(donor.hall <=6 && res.locals.middlewareResponse.donor.hall!== donor.hall && res.locals.middlewareResponse.donor.designation!==3){
-            /* #swagger.responses[401] = {
-              schema: {
-                status: 'ERROR',
-                message: 'You are not authorized to view this donor'
-               },
-              description: 'The user is trying to access data of a different hall'
-       } */
-            return res.status(400).send({
-                status: 'ERROR',
-                message: 'You are not authorized to view this donor'
-            });
-        }
-
+        let donor = res.locals.middlewareResponse.targetDonor;
 
         let obj = {
             _id: donor._id,

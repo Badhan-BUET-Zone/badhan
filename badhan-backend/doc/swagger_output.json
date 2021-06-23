@@ -216,9 +216,29 @@
         "parameters": [
           {
             "name": "donorId",
-            "description": "Donor id for donor details",
+            "in": "query",
             "type": "string",
-            "in": "query"
+            "description": "Donor id for donor details"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "example": "any"
+                },
+                "donorId\r": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -314,7 +334,7 @@
             }
           },
           "401": {
-            "description": "The user is trying to access data of a different hall",
+            "description": "The user is trying to access or modify data of a different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -324,7 +344,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "You are not authorized to view this donor"
+                  "example": "You are not authorized to access this donor"
                 }
               },
               "xml": {
