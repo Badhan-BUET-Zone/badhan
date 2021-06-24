@@ -139,6 +139,7 @@ router.get('/v2/version',(req,res,next)=>{
 
     /*#swagger.tags = ['Deprecated']
     #swagger.description = 'Get app info deployed to play store' */
+    rateLimiter.commonLimiter,
     gplay.app({appId: 'com.mmmbadhan'})
         .then((response)=>{
             res.status(200).send(response)
