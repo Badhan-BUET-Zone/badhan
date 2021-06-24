@@ -28,6 +28,7 @@ router.post('/signoutall',
 );
 
 router.post('/requestRedirection',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handlePOSTRequestRedirection
 );

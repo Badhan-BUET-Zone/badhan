@@ -18,6 +18,7 @@ router.post('/v2/donor/insert',
 );
 
 router.get('/v3/donor/details',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handleGETViewDonorDetails
@@ -26,21 +27,25 @@ router.get('/v3/donor/details',
 //THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 //APP VERSION <= 3.5.1 STILL USES IT
 router.post('/v2/donor/details',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTViewDonorDetails
 );
 
 router.post('/v2/donor/details/self',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTViewDonorDetailsSelf
 );
 
 router.post('/v2/donor/search',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTSearchDonors
 );
 
 router.post('/v2/donor/donations',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donationController.handleGETSeeHistory
@@ -54,6 +59,7 @@ router.post('/v2/donation/insert',
 );
 
 router.post('/v2/donor/comment',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handlePOSTComment
@@ -67,12 +73,14 @@ router.post('/v2/donation/delete',
 );
 
 router.post('/v2/donor/password/change',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handlePOSTChangePassword
 );
 
 router.post('/v2/donor/edit',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handlePOSTEditDonor
@@ -88,6 +96,7 @@ router.post('/v2/admin/donor/delete',
 /********Hall admin APIs*********/
 
 router.post('/v2/admin/promote',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handlePOSTPromote
