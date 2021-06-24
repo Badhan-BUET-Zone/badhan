@@ -20,65 +20,47 @@ const handleGETSeeHistory = async (req, res) => {
                }
       } */
     try {
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.body.donorId
+        let donor = res.locals.middlewareResponse.targetDonor;
+
+        let donationsQueryResult = await donationInterface.findDonationsByQuery({
+            donorId: donor._id
         }, {});
 
-        if (donorQueryResult.status === 'OK') {
-            let donor = donorQueryResult.data;
-
-            let donationsQueryResult = await donationInterface.findDonationsByQuery({
-                donorId: donor._id
-            }, {});
-
-            if (donationsQueryResult.status === 'OK') {
-                let donationDates = donationsQueryResult.data;
-                let donations = [];
-                donationDates.forEach(donation => {
-                    donations.push(donation.date);
-                });
-                donations.sort(function (a, b) {
-                    return b - a
-                });
-                /* #swagger.responses[200] = {
-                   schema: {
-                         status: 'OK',
-                         message: 'Donations queried successfully',
-                         donations : [1611100800000, 1558051200000, 1557964800000, 1546300800000]
-                    },
-                   description: 'Donations queried successfully'
-                } */
-                return res.status(200).send({
-                    status: 'OK',
-                    message: 'Donations queried successfully',
-                    donations
-                });
-            } else {
-                /* #swagger.responses[400] = {
-                        schema: {
-                          status: 'ERROR',
-                          message: '(Error message)'
-                         },
-                        description: 'Error happened when trying to find the donations'
-                 } */
-                return res.status(400).send({
-                    status: donationsQueryResult.status,
-                    message: donationsQueryResult.message
-                });
-            }
-        } else {
+        if (donationsQueryResult.status !== 'OK') {
             /* #swagger.responses[400] = {
-               schema: {
-                     status: 'ERROR',
-                     message: '(Error message)'
-                },
-               description: 'Error happened when trying to find the specified donor'
-            } */
+                                schema: {
+                                  status: 'ERROR',
+                                  message: '(Error message)'
+                                 },
+                                description: 'Error happened when trying to find the donations'
+                         } */
             return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
+                status: donationsQueryResult.status,
+                message: donationsQueryResult.message
             });
         }
+
+        let donationDates = donationsQueryResult.data;
+        let donations = [];
+        donationDates.forEach(donation => {
+            donations.push(donation.date);
+        });
+        donations.sort(function (a, b) {
+            return b - a
+        });
+        /* #swagger.responses[200] = {
+           schema: {
+                 status: 'OK',
+                 message: 'Donations queried successfully',
+                 donations : [1611100800000, 1558051200000, 1557964800000, 1546300800000]
+            },
+           description: 'Donations queried successfully'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Donations queried successfully',
+            donations
+        });
     } catch (e) {
         /* #swagger.responses[200] = {
            schema: {
@@ -116,146 +98,128 @@ const handlePOSTInsertDonation = async (req, res) => {
                }
       } */
     try {
-        let authenticatedDonor = res.locals.middlewareResponse.donor;
+        let donor = res.locals.middlewareResponse.targetDonor;
 
-        if (authenticatedDonor.designation === 0) {
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User is not permitted to add donation'
-            });
-        }
-
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.body.donorId
-        },{});
-
-        if (donorQueryResult.status === 'OK') {
-            let donor = donorQueryResult.data;
-
-            let newDonationCount = donor.donationCount + 1;
+        let newDonationCount = donor.donationCount + 1;
 
 
-            let donationInsertionResult = await donationInterface.insertDonation({
-                phone: donor.phone,
-                donorId: donor._id,
-                date: req.body.date
-            });
+        let donationInsertionResult = await donationInterface.insertDonation({
+            phone: donor.phone,
+            donorId: donor._id,
+            date: req.body.date
+        });
 
-            if (donationInsertionResult.status === 'OK') {
-                if(process.env.NODE_ENV !== 'development') {
-                    await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONATION", donationInsertionResult.data);
-                }
-                if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
-                    let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-                        _id: donor._id
-                    }, {
-                        $set: {
-                            lastDonation: req.body.date,
-                            donationCount: newDonationCount
-                        }
-                    });
-
-                    if (donorUpdateResult.status === 'OK') {
-                        /* #swagger.responses[200] = {
-                             schema: {
-                                   status: 'OK',
-                                   message: 'Donation inserted successfully'
-                             },
-                             description: 'Donation insertion successful'
-                        } */
-                        return res.status(200).send({
-                            status: 'OK',
-                            message: 'Donation inserted successfully'
-                        });
-                    } else {
-                        let donationQueryResult = await donationInterface.findDonationByQuery({
-                            donorId: donor._id,
-                            date: req.body.date
-                        }, {});
-
-                        await donationInterface.deleteDonation(donationQueryResult.data._id);
-                        /* #swagger.responses[400] = {
-                              schema: {
-                                    status: 'ERROR',
-                                    message: 'Donation insertion unsuccessful'
-                               },
-                               description: 'Donation insertion unsuccessful'
-                        } */
-                        return res.status(400).send({
-                            status: 'ERROR',
-                            message: 'Donation insertion unsuccessful'
-                        });
-                    }
-
-                } else if (donor.donationCount !== 0 && req.body.date <= donor.lastDonation) {
-                    let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-                        phone: donor.phone
-                    }, {
-                        $set: {
-                            donationCount: newDonationCount
-                        }
-                    });
-
-                    if (donorUpdateResult.status === 'OK') {
-                        /* #swagger.responses[200] = {
-                               schema: {
-                                 status: 'OK',
-                                 message: 'Donation inserted successfully'
-                                },
-                               description: 'Donation insertion successful'
-                        } */
-                        return res.status(200).send({
-                            status: 'OK',
-                            message: 'Donation inserted successfully'
-                        });
-                    } else {
-                        let donationQueryResult = await donationInterface.findDonationByQuery({
-                            phone: donor.phone,
-                            date: req.body.date
-                        }, {});
-
-                        await donationInterface.deleteDonation(donationQueryResult.data._id);
-                        /* #swagger.responses[400] = {
-                              schema: {
-                                status: 'ERROR',
-                                message: '(Error message)'
-                               },
-                              description: 'Donation insertion unsuccessful'
-                       } */
-
-                        return res.status(400).send({
-                            status: 'ERROR',
-                            message: donorUpdateResult.message
-                        });
-                    }
-                }
-
-            } else {
-                /* #swagger.responses[400] = {
-                    schema: {
-                      status: 'ERROR',
-                      message: '(Error message)'
-                     },
-                    description: 'Donation insertion unsuccessful'
-                } */
-                return res.status(400).send({
-                    status: 'ERROR',
-                    message: donationInsertionResult.message
-                });
-            }
-        } else {
+        if (donationInsertionResult.status !== 'OK') {
             /* #swagger.responses[400] = {
                 schema: {
-                    status: 'ERROR',
-                    message: 'Target donor not found'
-               },
-              description: 'Donation insertion unsuccessful'
+                  status: 'ERROR',
+                  message: '(Error message)'
+                 },
+                description: 'Donation insertion unsuccessful'
             } */
             return res.status(400).send({
                 status: 'ERROR',
-                message: 'Target donor not found'
+                message: donationInsertionResult.message
             });
         }
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONATION", donationInsertionResult.data);
+        }
+
+        if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
+            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                _id: donor._id
+            }, {
+                $set: {
+                    lastDonation: req.body.date,
+                    donationCount: newDonationCount
+                }
+            });
+
+            if (donorUpdateResult.status === 'OK') {
+                /* #swagger.responses[200] = {
+                     schema: {
+                           status: 'OK',
+                           message: 'Donation inserted successfully'
+                     },
+                     description: 'Donation insertion successful'
+                } */
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donation inserted successfully'
+                });
+            }
+
+            //This line will be reached if the donation count of a donor is not updated successfully
+            //This, this portion will delete the already added donation
+            let donationQueryResult = await donationInterface.findDonationByQuery({
+                donorId: donor._id,
+                date: req.body.date
+            }, {});
+
+            await donationInterface.deleteDonation(donationQueryResult.data._id);
+            /* #swagger.responses[400] = {
+                  schema: {
+                        status: 'ERROR',
+                        message: 'Donation insertion unsuccessful'
+                   },
+                   description: 'Donation insertion unsuccessful'
+            } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Donation insertion unsuccessful'
+            });
+
+
+        } else if (donor.donationCount !== 0 && req.body.date <= donor.lastDonation) {
+            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                phone: donor.phone
+            }, {
+                $set: {
+                    donationCount: newDonationCount
+                }
+            });
+
+            if (donorUpdateResult.status === 'OK') {
+                /* #swagger.responses[200] = {
+                       schema: {
+                         status: 'OK',
+                         message: 'Donation inserted successfully'
+                        },
+                       description: 'Donation insertion successful'
+                } */
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donation inserted successfully'
+                });
+            }
+
+            //This line will be reached if the donation count of a donor is not updated successfully
+            //This, this portion will delete the already added donation
+            let donationQueryResult = await donationInterface.findDonationByQuery({
+                phone: donor.phone,
+                date: req.body.date
+            }, {});
+
+            await donationInterface.deleteDonation(donationQueryResult.data._id);
+
+            /* #swagger.responses[400] = {
+                  schema: {
+                    status: 'ERROR',
+                    message: '(Error message)'
+                   },
+                  description: 'Donation insertion unsuccessful'
+           } */
+
+            return res.status(400).send({
+                status: 'ERROR',
+                message: donorUpdateResult.message
+            });
+
+        }
+
+
     } catch (e) {
         /* #swagger.responses[500] = {
              schema: {
@@ -292,26 +256,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
               }
      } */
     try {
-
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.body.donorId
-        });
-
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-             schema: {
-               status: 'ERROR',
-               message: '(Error message)'
-              },
-             description: 'Donation deletion unsuccessful'
-      } */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let donor = donorQueryResult.data;
+        let donor = res.locals.middlewareResponse.targetDonor;
 
         let donationsQueryResult = await donationInterface.findDonationsByQuery({
             donorId: donor._id
@@ -324,7 +269,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
                message: '(Error message)'
               },
              description: 'Donation deletion unsuccessful'
-      } */
+            } */
             return res.status(400).send({
                 status: donationsQueryResult.status,
                 message: donationsQueryResult.message
@@ -393,7 +338,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
             donorId: req.body.donorId,
             date: req.body.date
         });
-        if(process.env.NODE_ENV !== 'development') {
+        if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONATION", donationDeleteResult.data);
         }
 

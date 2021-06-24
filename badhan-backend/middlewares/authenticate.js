@@ -29,7 +29,7 @@ let handlePOSTLogIn = async (req, res) => {
                     message: 'Donor not found',
                 },
                description: 'When the donor is not found'
-        } */
+            } */
             return res.status(401).send({
                 status: donorQueryResult.status,
                 message: donorQueryResult.message
@@ -67,7 +67,7 @@ let handlePOSTLogIn = async (req, res) => {
                     token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
                 },
                description: 'A successful sign in returns a token for the user'
-        } */
+            } */
             return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
         } else {
             /* #swagger.responses[401] = {
@@ -437,9 +437,9 @@ let handleHallPermission = async (req, res, next)=>{
            },
           description: 'When no donor with the specified donor id is found, user will get this error message'
         } */
-        return res.status(400).send({
-            status: donorQueryResult.status,
-            message: donorQueryResult.message
+        return res.status(404).send({
+            status: "ERROR",
+            message: "Donor not found"
         });
     }
 

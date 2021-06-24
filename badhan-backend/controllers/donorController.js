@@ -41,7 +41,7 @@ const handlePOSTInsertDonor = async (req, res) => {
                 message: 'User does not have permission to add donors'
                },
               description: 'If user does not have permission to insert donor, user will get this error message'
-       } */
+            } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to add donors'
@@ -54,13 +54,13 @@ const handlePOSTInsertDonor = async (req, res) => {
 
             if (authenticatedUser.designation === 3 || duplicateDonorResult.donors[0].hall === authenticatedUser.hall || duplicateDonorResult.donors[0].hall > 6) {
                 /* #swagger.responses[409] = {
-              schema: {
+                schema: {
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number',
                     donor: 'donor array'
-               },
-              description: 'If the donor already exists in the database, user will get the error message'
-       } */
+                },
+                description: 'If the donor already exists in the database, user will get the error message'
+                } */
                 return res.status(409).send({
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number',
@@ -68,7 +68,7 @@ const handlePOSTInsertDonor = async (req, res) => {
                 });
             } else {
                 /* #swagger.responses[401] = {
-              schema: {
+                schema: {
                     status: 'ERROR',
                     message: 'Donor found with duplicate phone number in another hall',
                     donor: 'this field will return null'
@@ -207,48 +207,58 @@ const handlePOSTDeleteDonor = async (req, res) => {
                }
       } */
     try {
-        let authenticatedUser = res.locals.middlewareResponse.donor;
-        let donorId = req.body.donorId;
-
-        if (authenticatedUser.designation !== 3) {
-            /* #swagger.responses[401] = {
-              schema: {
-                status: 'ERROR',
-                message: 'User does not have permission to delete donors'
-               },
-              description: 'If user does not have permission to delete donor, user will get this error message'
-       } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to delete donors'
-            });
-        }
+        let donorId = res.locals.middlewareResponse.targetDonor._id;
 
         let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
             donorId
         });
 
-        if (deleteDonationsResult.status === 'OK') {
-            let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
-
-            if (deleteDonorResult.status === 'OK') {
-                if (process.env.NODE_ENV !== 'development') {
-                    await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
-
-                }
-                /* #swagger.responses[200] = {
+        if (deleteDonationsResult.status !== 'OK') {
+            /* #swagger.responses[404] = {
              schema: {
-                    status: 'OK',
-                    message: 'Donor deleted successfully'
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
               },
-             description: 'Successful donor deletion'
-      } */
-                return res.status(200).send({
-                    status: 'OK',
-                    message: 'Donor deleted successfully'
-                });
-            }
+             description: 'In case of internal server error, user will get this error message'
+            } */
+            return res.status(500).send({
+                status: 'EXCEPTION',
+                message: "Error occured in deleting donations of target donor"
+            })
         }
+
+        let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
+
+        /* #swagger.responses[404] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Error occurred in deleting target donor'
+              },
+             description: 'Error occured when deleting target donor'
+        } */
+        if (deleteDonorResult.status !== 'OK') {
+            return res.status(404).send({
+                status: 'EXCEPTION',
+                message: "Error occurred in deleting target donor"
+            })
+        }
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
+        }
+
+        /* #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            message: 'Donor deleted successfully'
+        },
+        description: 'Successful donor deletion'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Donor deleted successfully'
+        });
+
 
     } catch (e) {
         /* #swagger.responses[500] = {
@@ -257,7 +267,7 @@ const handlePOSTDeleteDonor = async (req, res) => {
                     message: 'Internal server error'
               },
              description: 'In case of internal server error, user will get this error message'
-      } */
+        } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -294,7 +304,7 @@ const handlePOSTSearchDonors = async (req, res) => {
     try {
         let reqBody = req.body;
 
-        if(reqBody.hall!==res.locals.middlewareResponse.donor.hall && reqBody.hall<=6 && res.locals.middlewareResponse.donor.designation!==3){
+        if (reqBody.hall !== res.locals.middlewareResponse.donor.hall && reqBody.hall <= 6 && res.locals.middlewareResponse.donor.designation !== 3) {
             /* #swagger.responses[400] = {
               schema: {
                 status: 'ERROR',
@@ -468,42 +478,45 @@ const handlePOSTComment = async (req, res) => {
                }
       } */
     try {
+        let targetDonor = res.locals.middlewareResponse.targetDonor;
         const donorUpdateResult = await donorInterface.findDonorAndUpdate({
-            _id: req.body.donorId
+            _id: targetDonor._id
         }, {
             $set: {
                 comment: req.body.comment
             }
         });
 
-        if (donorUpdateResult.status === 'OK') {
-            if (process.env.NODE_ENV !== 'development') {
-                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
-            }
-            /* #swagger.responses[200] = {
-           schema: {
-                status: 'OK',
-                message: 'Comment posted successfully'
-            },
-           description: 'In case of successfully saving the comment'
-    } */
-            return res.status(200).send({
-                status: 'OK',
-                message: 'Comment posted successfully'
-            });
-        } else {
+        if (donorUpdateResult.status !== 'OK') {
             /* #swagger.responses[400] = {
-           schema: {
-                status: 'ERROR',
-                message: '(Error message)'
+            schema: {
+               status: 'ERROR',
+               message: '(Error message)'
             },
-           description: 'In case of failure of saving the comment'
-    } */
+            description: 'In case of failure of saving the comment'
+            } */
             return res.status(400).send({
                 status: donorUpdateResult.status,
                 message: donorUpdateResult.message
             });
         }
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
+        }
+
+        /* #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            message: 'Comment posted successfully'
+        },
+        description: 'In case of successfully saving the comment'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Comment posted successfully'
+        });
+
     } catch (e) {
         /* #swagger.responses[500] = {
            schema: {
@@ -511,7 +524,7 @@ const handlePOSTComment = async (req, res) => {
                 message: '(Error message)'
             },
            description: 'In case of internal server error, the user will get this message'
-    } */
+        } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -546,61 +559,29 @@ const handlePOSTChangePassword = async (req, res) => {
     try {
         let reqBody = req.body;
 
-        let authenticatedUser = res.locals.middlewareResponse.donor;
-
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: reqBody.donorId
-        });
-
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-              schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-               },
-              description: 'If user with provided donor id does not exist '
-       } */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let target = donorQueryResult.data;
+        let target = res.locals.middlewareResponse.targetDonor;
 
         if (target.designation === 0) {
             /* #swagger.responses[401] = {
              schema: {
                status: 'ERROR',
-               message: 'User does not have permission to change password'
+               message: 'Target user does not have an account'
               },
              description: 'Target user does not have an account'
-      } */
+            } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Target user does not have an account'
             });
         }
 
-        if (authenticatedUser.designation < target.designation || (authenticatedUser.designation === target.designation && authenticatedUser.phone !== target.phone)) {
-            /* #swagger.responses[401] = {
-             schema: {
-               status: 'ERROR',
-               message: 'User does not have permission to change password'
-              },
-              description: 'The user trying to change the password has a designation below the target donor designation or of different hall'
-      } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to change password for this donor'
-            });
-        }
 
         target.password = reqBody.newPassword;
 
         await target.save();
+
         if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", donorQueryResult.data);
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", {});
         }
         /* #swagger.responses[200] = {
              schema: {
@@ -608,7 +589,7 @@ const handlePOSTChangePassword = async (req, res) => {
                message: 'Password changed successfully'
               },
              description: 'Successful password change done'
-      } */
+        } */
         return res.status(200).send({
             status: 'OK',
             message: 'Password changed successfully'
@@ -621,7 +602,7 @@ const handlePOSTChangePassword = async (req, res) => {
                 message: '(Error message)'
               },
              description: 'Internal server error'
-      } */
+        } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -663,25 +644,7 @@ const handlePOSTEditDonor = async (req, res) => {
         let reqBody = req.body;
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: reqBody.donorId
-        })
-
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-             schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-              },
-             description: 'Donor matching the ID has not been found'
-      } */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let target = donorQueryResult.data;
+        let target = res.locals.middlewareResponse.targetDonor;
 
         if (authenticatedUser.designation < target.designation ||
             (authenticatedUser.designation === target.designation
@@ -692,7 +655,7 @@ const handlePOSTEditDonor = async (req, res) => {
                 message: 'User does not have permission to edit'
               },
              description: 'User is below the target donor by designation'
-      } */
+            } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User does not have permission to edit this donor'
@@ -779,7 +742,7 @@ const handlePOSTEditDonor = async (req, res) => {
                 message: 'Donor updated successfully'
               },
              description: 'Donor info update successful'
-      } */
+        } */
         return res.status(200).send({
             status: 'OK',
             message: 'Donor updated successfully'
@@ -792,7 +755,7 @@ const handlePOSTEditDonor = async (req, res) => {
                message: '(Error message)'
              },
             description: 'Internal server error'
-     } */
+        } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -828,25 +791,7 @@ const handlePOSTPromote = async (req, res) => {
                }
       } */
     try {
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.body.donorId
-        });
-
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-             schema: {
-               status: 'ERROR',
-               message: '(Error message)'
-              },
-             description: 'If a donor matching the ID does not exist in database, user will get this message'
-      } */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let donor = donorQueryResult.data;
+        let donor = res.locals.middlewareResponse.targetDonor;
         let donorDesignation = donor.designation;
 
         let authenticatedUser = res.locals.middlewareResponse.donor;
@@ -1319,8 +1264,6 @@ const handleGETViewDonorDetails = async (req, res) => {
         });
     }
 }
-
-
 
 
 /** DONE

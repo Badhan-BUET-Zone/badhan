@@ -42,39 +42,46 @@ router.post('/v2/donor/search',
 
 router.post('/v2/donor/donations',
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donationController.handleGETSeeHistory
 );
 
 router.post('/v2/donation/insert',
     rateLimiter.donationInsertionLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donationController.handlePOSTInsertDonation
 );
 
 router.post('/v2/donor/comment',
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donorController.handlePOSTComment
 );
 
 router.post('/v2/donation/delete',
     rateLimiter.deleteDonationLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donationController.handlePOSTDeleteDonation
 );
 
 router.post('/v2/donor/password/change',
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donorController.handlePOSTChangePassword
 );
 
 router.post('/v2/donor/edit',
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donorController.handlePOSTEditDonor
 );
 
 router.post('/v2/admin/donor/delete',
     rateLimiter.donorDeletionLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donorController.handlePOSTDeleteDonor
 );
 
@@ -82,6 +89,7 @@ router.post('/v2/admin/donor/delete',
 
 router.post('/v2/admin/promote',
     authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
     donorController.handlePOSTPromote
 );
 

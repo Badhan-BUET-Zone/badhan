@@ -352,6 +352,9 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found"
+          },
           "500": {
             "description": "Internal server error",
             "schema": {
@@ -764,6 +767,16 @@
         "description": "handles the retrieval of donation history for a particular donor.",
         "parameters": [
           {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "seeHistory",
             "in": "body",
             "description": "donor info for inserting donor",
@@ -799,7 +812,7 @@
             }
           },
           "400": {
-            "description": "Error happened when trying to find the specified donor",
+            "description": "Error happened when trying to find the donations",
             "schema": {
               "type": "object",
               "properties": {
@@ -818,7 +831,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "The user is trying to access or modify data of a different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -828,13 +841,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "You are not authorized to access this donor"
                 }
               },
               "xml": {
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error user will receive an error message",
@@ -865,6 +881,16 @@
         ],
         "description": "Endpoint to insert a donation date for a donor",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "insertDonation",
             "in": "body",
@@ -915,7 +941,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Target donor not found"
+                  "example": "(Error message)"
                 }
               },
               "xml": {
@@ -924,7 +950,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "The user is trying to access or modify data of a different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -934,13 +960,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "You are not authorized to access this donor"
                 }
               },
               "xml": {
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -971,6 +1000,16 @@
         ],
         "description": "Adds a comment to a donor",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "insertDonor",
             "in": "body",
@@ -1011,6 +1050,7 @@
             "description": "In case of successfully saving the comment"
           },
           "400": {
+            "description": "In case of failure of saving the comment",
             "schema": {
               "type": "object",
               "properties": {
@@ -1026,11 +1066,10 @@
               "xml": {
                 "name": "main"
               }
-            },
-            "description": "In case of failure of saving the comment"
+            }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "The user is trying to access or modify data of a different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -1040,13 +1079,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "You are not authorized to access this donor"
                 }
               },
               "xml": {
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error, the user will get this message",
@@ -1077,6 +1119,16 @@
         ],
         "description": "handles the deletion of a donation for a donor.",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "deleteDonation",
             "in": "body",
@@ -1136,7 +1188,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
+            "description": "The user is trying to access or modify data of a different hall",
             "schema": {
               "type": "object",
               "properties": {
@@ -1146,13 +1198,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "You are not authorized to access this donor"
                 }
               },
               "xml": {
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -1183,6 +1238,16 @@
         ],
         "description": "Handles the changing of password for an account.",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "changePassword",
             "in": "body",
@@ -1223,7 +1288,7 @@
             }
           },
           "400": {
-            "description": "If user with provided donor id does not exist ",
+            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1233,7 +1298,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Error message)"
+                  "example": "(Query error message)"
                 }
               },
               "xml": {
@@ -1242,7 +1307,7 @@
             }
           },
           "401": {
-            "description": "The user trying to change the password has a designation below the target donor designation or of different hall",
+            "description": "Target user does not have an account",
             "schema": {
               "type": "object",
               "properties": {
@@ -1252,13 +1317,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "User does not have permission to change password"
+                  "example": "Target user does not have an account"
                 }
               },
               "xml": {
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal server error",
@@ -1289,6 +1357,16 @@
         ],
         "description": "Handles the update of donor information.",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "editDonor",
             "in": "body",
@@ -1390,6 +1468,9 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found"
+          },
           "500": {
             "description": "Internal server error",
             "schema": {
@@ -1419,6 +1500,16 @@
         ],
         "description": "handles the deletion of an existing donor from the database.",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "deleteDonor",
             "in": "body",
@@ -1454,8 +1545,8 @@
               }
             }
           },
-          "401": {
-            "description": "If user does not have permission to delete donor, user will get this error message",
+          "400": {
+            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1465,7 +1556,45 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "User does not have permission to delete donors"
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Error occured when deleting target donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error occurred in deleting target donor"
                 }
               },
               "xml": {
@@ -1502,6 +1631,16 @@
         ],
         "description": "Handles the promotion or demotion of users.",
         "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "promote",
             "in": "body",
@@ -1546,7 +1685,7 @@
             "description": "Donor promotion/ demotion successful"
           },
           "400": {
-            "description": "If a donor matching the ID does not exist in database, user will get this message",
+            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1556,7 +1695,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Error message)"
+                  "example": "(Query error message)"
                 }
               },
               "xml": {
@@ -1582,6 +1721,9 @@
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal server error",
