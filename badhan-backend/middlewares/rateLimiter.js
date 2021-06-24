@@ -14,7 +14,7 @@ const redirectionSignInLimiter = rateLimit({
     max: 3,
     message:{
         status: "ERROR",
-        message:"Please try again after 5 minutes"
+        message:"Service unavailable!!"
     }
 });
 
@@ -23,7 +23,7 @@ const donationInsertionLimiter = rateLimit({
     max: 2,
     message:{
         status: "ERROR",
-        message:"Please try again after 1 minute"
+        message:"Service unavailable!!"
     }
 });
 const donorInsertionLimiter = rateLimit({
@@ -31,7 +31,7 @@ const donorInsertionLimiter = rateLimit({
     max: 12,
     message:{
         status: "ERROR",
-        message:"Please try again after 1 minute"
+        message:"Service unavailable!!"
     }
 });
 const donorDeletionLimiter = rateLimit({
@@ -39,7 +39,7 @@ const donorDeletionLimiter = rateLimit({
     max: 2,
     message:{
         status: "ERROR",
-        message:"Please try again after 1 minute"
+        message:"Service unavailable!!"
     }
 });
 const deleteDonationLimiter = rateLimit({
@@ -47,7 +47,16 @@ const deleteDonationLimiter = rateLimit({
     max: 2,
     message: {
         status: "ERROR",
-        message: "Please try again after 1 minute"
+        message: "Service unavailable!!"
+    }
+});
+
+const commonLimiter = rateLimit({
+    windowMs: minute,
+    max: 24,
+    message: {
+        status: "ERROR",
+        message: "Service unavailable!!"
     }
 });
 
@@ -57,5 +66,6 @@ module.exports={
     donorInsertionLimiter,
     deleteDonationLimiter,
     donorDeletionLimiter,
-    redirectionSignInLimiter
+    redirectionSignInLimiter,
+    commonLimiter
 }

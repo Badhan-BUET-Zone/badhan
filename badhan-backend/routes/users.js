@@ -16,11 +16,13 @@ router.post('/signin',
 );
 
 router.post('/signout',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handlePOSTLogOut
 );
 
 router.post('/signoutall',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handlePOSTLogOutAll
 );
