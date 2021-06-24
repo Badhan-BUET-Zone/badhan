@@ -247,7 +247,7 @@ let handlePOSTRequestRedirection = async (req, res) => {
         let token = await jwt.sign({
             _id: donor._id.toString(),
             access
-        }, process.env.JWT_SECRET,{ expiresIn: '30s' }).toString();
+        }, process.env.JWT_SECRET, {expiresIn: '30s'}).toString();
 
 
         donor.tokens.push({access, token});
@@ -294,9 +294,9 @@ let handlePOSTRedirectedAuthentication = async (req, res) => {
         let token = req.body.token;
         // console.log(token)
         let decodedDonor;
-        try{
+        try {
             decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
-        }catch(e){
+        } catch (e) {
             /* #swagger.responses[401] = {
                schema: {
                    status: 'ERROR',
@@ -399,7 +399,43 @@ let handleSuperAdminCheck = async (req, res, next) => {
     }
 }
 
-let handleHallPermission = async (req, res, next)=>{
+let handleHallAdminCheck = async (req, res, next) => {
+    if (res.locals.middlewareResponse.donor.designation < 2) {
+        /* #swagger.responses[401] = {
+                schema: {
+                status: 'ERROR',
+                message: 'error message'
+                },
+               description: 'This error will appear if anyone below the designation of hall admin tries to access this route. This middleware assumes that the handleHallPermission middleware is used before and along with this middleware'
+        } */
+        return res.status(401).send({
+            status: 'ERROR',
+            message: 'You are not permitted to access this route'
+        });
+    }
+    next();
+}
+
+let handleHigherDesignationCheck = async (req, res, next) => {
+    if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation
+        && res.locals.middlewareResponse.donor._id !== res.locals.middlewareResponse.targetDonor._id
+    ) {
+        /* #swagger.responses[401] = {
+                schema: {
+                status: 'ERROR',
+                message: 'You cannot modify the details of a Badhan member with higher designation'
+                },
+               description: 'This middleware is used to block the manipulation of data of a member with higher designation'
+        } */
+        return res.status(401).send({
+            status: 'ERROR',
+            message: 'You cannot modify the details of a Badhan member with higher designation'
+        });
+    }
+    next();
+}
+
+let handleHallPermission = async (req, res, next) => {
     /*
     This middleware checks whether the targeted donor is accessible to the logged in user
      */
@@ -407,11 +443,11 @@ let handleHallPermission = async (req, res, next)=>{
     /*
     Makes sure that the targeted donor id is available in the request
      */
-    if(req.body.donorId){
+    if (req.body.donorId) {
         donorId = req.body.donorId
-    }else if(req.query.donorId){
+    } else if (req.query.donorId) {
         donorId = req.query.donorId
-    }else{
+    } else {
         /* #swagger.responses[400] = {
            schema: {
                 status: 'ERROR',
@@ -450,9 +486,9 @@ let handleHallPermission = async (req, res, next)=>{
     Every hall admin and volunteer can only access data of their own halls along with the data of
     attached students and covid donors.
      */
-    if(donor.hall <=6
-        && res.locals.middlewareResponse.donor.hall!== donor.hall
-        && res.locals.middlewareResponse.donor.designation!==3){
+    if (donor.hall <= 6
+        && res.locals.middlewareResponse.donor.hall !== donor.hall
+        && res.locals.middlewareResponse.donor.designation !== 3) {
         /* #swagger.responses[401] = {
           schema: {
             status: 'ERROR',
@@ -476,8 +512,11 @@ module.exports = {
     handleAuthentication,
     handlePOSTLogOut,
     handlePOSTLogOutAll,
+    handleHallAdminCheck,
     handleSuperAdminCheck,
     handleHallPermission,
+    handleHigherDesignationCheck,
     handlePOSTRequestRedirection,
-    handlePOSTRedirectedAuthentication
+    handlePOSTRedirectedAuthentication,
+
 }

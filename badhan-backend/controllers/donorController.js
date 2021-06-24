@@ -794,22 +794,20 @@ const handlePOSTPromote = async (req, res) => {
         let donor = res.locals.middlewareResponse.targetDonor;
         let donorDesignation = donor.designation;
 
-        let authenticatedUser = res.locals.middlewareResponse.donor;
-        let userDesignation = authenticatedUser.designation;
-
-        if (!((donorDesignation === 0 || donorDesignation === 1) && (userDesignation === 2 || userDesignation === 3))) {
+        if (donorDesignation>1) {
             /* #swagger.responses[401] = {
               schema: {
                 status: 'ERROR',
-                message: 'User can not promote the target entity'
+                message: 'The target donor is not a donor nor a volunteer'
                },
-              description: 'If user does not have permission to promote donor, user will get this error message'
-       } */
+              description: 'This route will not work if target donor is a hall admin or super admin'
+            } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'User can not promote the target entity'
             });
         }
+
         if ((donorDesignation === 1 && req.body.promoteFlag) || (donorDesignation === 0 && !req.body.promoteFlag)) {
             /* #swagger.responses[401] = {
              schema: {
@@ -817,27 +815,13 @@ const handlePOSTPromote = async (req, res) => {
                message: 'Can not promote volunteer or can not demote donor'
               },
              description: 'If user cannot promote volunteer or cannot demote donor'
-      } */
+            } */
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Can\'t promote volunteer or can\'t demote donor'
             });
         }
-        if (userDesignation === 2) {
-            if (authenticatedUser.hall !== donor.hall) {
-                /* #swagger.responses[401] = {
-              schema: {
-                status: 'ERROR',
-                message: 'Hall admin can\'t promote donors or demote volunteers of different halls'
-               },
-              description: 'If hall admin can not promote donors or demote volunteers of different halls'
-       } */
-                return res.status(401).send({
-                    status: 'ERROR',
-                    message: 'Hall admin can\'t promote donors or demote volunteers of different halls'
-                });
-            }
-        }
+
 
         let newDesignation;
 

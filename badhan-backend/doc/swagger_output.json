@@ -1565,7 +1565,7 @@
             }
           },
           "401": {
-            "description": "The user is trying to access or modify data of a different hall",
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation",
             "schema": {
               "type": "object",
               "properties": {
@@ -1575,7 +1575,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "You are not authorized to access this donor"
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
                 }
               },
               "xml": {
@@ -1704,7 +1704,7 @@
             }
           },
           "401": {
-            "description": "If hall admin can not promote donors or demote volunteers of different halls",
+            "description": "If user cannot promote volunteer or cannot demote donor",
             "schema": {
               "type": "object",
               "properties": {
@@ -1714,7 +1714,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Hall admin can't promote donors or demote volunteers of different halls"
+                  "example": "Can not promote volunteer or can not demote donor"
                 }
               },
               "xml": {

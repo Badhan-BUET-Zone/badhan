@@ -76,6 +76,7 @@ router.post('/v2/donor/password/change',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTChangePassword
 );
 
@@ -83,6 +84,7 @@ router.post('/v2/donor/edit',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTEditDonor
 );
 
@@ -90,6 +92,7 @@ router.post('/v2/admin/donor/delete',
     rateLimiter.donorDeletionLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTDeleteDonor
 );
 
@@ -99,6 +102,7 @@ router.post('/v2/admin/promote',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
+    authenticator.handleHallAdminCheck,
     donorController.handlePOSTPromote
 );
 
