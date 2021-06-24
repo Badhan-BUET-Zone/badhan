@@ -103,28 +103,33 @@ router.post('/v2/admin/promote',
 );
 
 router.post('/v2/admin/volunteers',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTViewVolunteersOfOwnHall
 );
 
 router.get('/v1/admin/volunteers/all',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     donorController.handleGETViewAllVolunteers,
 )
 
 router.post('/v2/admin/hall/change',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     donorController.handlePOSTChangeAdmin
 );
 
 router.post('/v2/admin/hall/show',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTShowHallAdmins
 );
 
 router.get('/v3/log/version',
+    rateLimiter.commonLimiter,
     logController.handleGETAppVersion
 );
 
@@ -141,18 +146,21 @@ router.get('/v2/version',(req,res,next)=>{
 });
 
 router.get('/v2/log/statistics',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     logController.handleGETStatistics
 );
 
 router.get('/v1/log',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     logController.handleGETLogs
 );
 
 router.delete('/v1/log',
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     logController.handleDELETELogs
