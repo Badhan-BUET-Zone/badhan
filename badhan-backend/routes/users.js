@@ -34,6 +34,7 @@ router.post('/requestRedirection',
 );
 
 router.post('/redirectionSignIn',
+    rateLimiter.commonLimiter,
     rateLimiter.redirectionSignInLimiter,
     authenticator.handlePOSTRedirectedAuthentication
 );
