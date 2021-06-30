@@ -606,7 +606,7 @@ const handlePOSTSearchDonors = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE....
 const handlePOSTComment = async (req, res) => {
     /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Adds a comment to a donor's profile.' */

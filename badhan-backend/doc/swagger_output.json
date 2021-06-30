@@ -912,6 +912,142 @@
         }
       }
     },
+    "/donors/me": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Handles the fetching of own details.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Info of the logged in user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                },
+                "donor": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "abjcguiwefvew"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir Mohammad"
+                    },
+                    "studentId": {
+                      "type": "number",
+                      "example": 1605011
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 987876287160
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "3009"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "Developer of badhan"
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 3
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "No donor found that matches the token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "This error will occur if the user does not exist",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Authentication failed. Invalid authentication token."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "In case of internal server error, the user will get this message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/donor/search": {
       "post": {
         "tags": [
@@ -1796,6 +1932,125 @@
     },
     "/v2/donor/comment": {
       "post": {
+        "tags": [
+          "Deprecated"
+        ],
+        "description": "Adds a comment to a donor",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "insertDonor",
+            "in": "body",
+            "description": "donor info for posting comment",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hujfsduif783ujh"
+                },
+                "comment": {
+                  "type": "string",
+                  "example": "Sample comment about donor"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Comment posted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "In case of successfully saving the comment"
+          },
+          "400": {
+            "description": "In case of failure of saving the comment",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "In case of internal server error, the user will get this message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/donors/comment": {
+      "patch": {
         "tags": [
           "Donors"
         ],
