@@ -111,11 +111,19 @@ router.delete('/donations',
     donationController.handleDeleteDonations
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donor/comment',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handlePOSTComment
+);
+
+router.patch('/donors/comment',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    donorController.handlePATCHDonorsComment
 );
 
 router.post('/v2/donor/password/change',

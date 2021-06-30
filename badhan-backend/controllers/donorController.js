@@ -605,8 +605,10 @@ const handlePOSTSearchDonors = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTComment = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Adds a comment to a donor's profile.' */
     /* #swagger.parameters['insertDonor'] = {
                in: 'body',
@@ -671,6 +673,71 @@ const handlePOSTComment = async (req, res) => {
     }
 }
 
+const handlePATCHDonorsComment = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'Adds a comment to a donor's profile.' */
+    /* #swagger.parameters['insertDonor'] = {
+               in: 'body',
+               description: 'donor info for posting comment',
+               schema:{
+                donorId: 'hujfsduif783ujh',
+                comment:'Sample comment about donor'
+               }
+      } */
+    try {
+        let targetDonor = res.locals.middlewareResponse.targetDonor;
+        const donorUpdateResult = await donorInterface.findDonorAndUpdate({
+            _id: targetDonor._id
+        }, {
+            $set: {
+                comment: req.body.comment
+            }
+        });
+
+        if (donorUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+            schema: {
+               status: 'ERROR',
+               message: '(Error message)'
+            },
+            description: 'In case of failure of saving the comment'
+            } */
+            return res.status(400).send({
+                status: donorUpdateResult.status,
+                message: donorUpdateResult.message
+            });
+        }
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
+        }
+
+        /* #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            message: 'Comment posted successfully'
+        },
+        description: 'In case of successfully saving the comment'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Comment posted successfully'
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+           schema: {
+                status: 'EXCEPTION',
+                message: '(Error message)'
+            },
+           description: 'In case of internal server error, the user will get this message'
+        } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
 
 /** DONE
  * This function handles the changing of password for an account.
@@ -1729,6 +1796,7 @@ module.exports = {
     handlePOSTDeleteDonor,
     handlePOSTSearchDonors,
     handlePOSTComment,
+    handlePATCHDonorsComment,
     handlePOSTChangePassword,
     handlePOSTEditDonor,
     handlePOSTPromote,
