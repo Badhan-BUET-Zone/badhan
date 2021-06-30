@@ -158,7 +158,47 @@ let handleAuthentication = async (req, res, next) => {
     }
 };
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 let handlePOSTLogOut = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'Endpoint to logout a user.' */
+
+    try {
+        let donor = res.locals.middlewareResponse.donor;
+        let token = res.locals.middlewareResponse.token;
+
+        await donorInterface.findDonorByIDAndUpdate(donor._id, {
+            $pull: {
+                tokens: {token}
+            }
+        });
+        /* #swagger.responses[200] = {
+               schema: {
+               status: 'OK',
+                message: 'Logged out successfully'
+                },
+               description: 'A successful sign out removes the token for the user'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Logged out successfully'
+        });
+    } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+};
+
+let handleDeleteSignOut = async (req, res) => {
     /*  #swagger.tags = ['User']
             #swagger.description = 'Endpoint to logout a user.' */
 
@@ -196,6 +236,7 @@ let handlePOSTLogOut = async (req, res) => {
         });
     }
 };
+
 
 let handlePOSTLogOutAll = async (req, res) => {
     /*  #swagger.tags = ['User']
@@ -511,6 +552,7 @@ module.exports = {
     handlePOSTLogIn,
     handleAuthentication,
     handlePOSTLogOut,
+    handleDeleteSignOut,
     handlePOSTLogOutAll,
     handleHallAdminCheck,
     handleSuperAdminCheck,
