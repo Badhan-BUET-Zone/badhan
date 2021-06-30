@@ -237,8 +237,46 @@ let handleDeleteSignOut = async (req, res) => {
     }
 };
 
-
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 let handlePOSTLogOutAll = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'Endpoint to logout user from all devices.' */
+    try {
+        let donor = res.locals.middlewareResponse.donor;
+
+        await donorInterface.findDonorByIDAndUpdate(donor._id, {
+            $set: {
+                tokens: []
+            }
+        });
+        /* #swagger.responses[200] = {
+               schema: {
+               status: 'OK',
+                message: 'Logged out from all devices successfully'
+                },
+               description: 'A successful sign out removes all the tokens of the user'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Logged out from all devices successfully'
+        });
+    } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+};
+
+
+let handleDeleteSignOutAll = async (req, res) => {
     /*  #swagger.tags = ['User']
             #swagger.description = 'Endpoint to logout user from all devices.' */
     try {
@@ -554,6 +592,7 @@ module.exports = {
     handlePOSTLogOut,
     handleDeleteSignOut,
     handlePOSTLogOutAll,
+    handleDeleteSignOutAll,
     handleHallAdminCheck,
     handleSuperAdminCheck,
     handleHallPermission,

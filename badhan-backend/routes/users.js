@@ -28,10 +28,17 @@ router.delete('/signout',
     authenticator.handleDeleteSignOut
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/signoutall',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handlePOSTLogOutAll
+);
+
+router.delete('/signout/all',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleDeleteSignOutAll
 );
 
 router.post('/requestRedirection',
