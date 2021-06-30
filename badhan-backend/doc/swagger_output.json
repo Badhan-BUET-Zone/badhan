@@ -877,6 +877,125 @@
     "/v2/donation/insert": {
       "post": {
         "tags": [
+          "Deprecated"
+        ],
+        "description": "Endpoint to insert a donation date for a donor",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "insertDonation",
+            "in": "body",
+            "description": "Donor info for inserting donation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donation insertion successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donation inserted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Donation insertion unsuccessful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/donation": {
+      "post": {
+        "tags": [
           "Donations"
         ],
         "description": "Endpoint to insert a donation date for a donor",
@@ -942,6 +1061,125 @@
                 "message": {
                   "type": "string",
                   "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/donation/delete": {
+      "post": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the deletion of a donation for a donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "deleteDonation",
+            "in": "body",
+            "description": "donor info for deleting donation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donation deletion successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully deleted donation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached."
                 }
               },
               "xml": {
@@ -1102,125 +1340,6 @@
                 "message": {
                   "type": "string",
                   "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/donation/delete": {
-      "post": {
-        "tags": [
-          "Donations"
-        ],
-        "description": "handles the deletion of a donation for a donor.",
-        "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "deleteDonation",
-            "in": "body",
-            "description": "donor info for deleting donation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "bhjdekj8923"
-                },
-                "date": {
-                  "type": "number",
-                  "example": 1611100800000
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Donation deletion successful",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully deleted donation"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "400": {
-            "description": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached.",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "401": {
-            "description": "The user is trying to access or modify data of a different hall",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "You are not authorized to access this donor"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error)"
                 }
               },
               "xml": {

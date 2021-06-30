@@ -44,6 +44,7 @@ router.post('/v2/donor/search',
     donorController.handlePOSTSearchDonors
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donor/donations',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
@@ -51,6 +52,14 @@ router.post('/v2/donor/donations',
     donationController.handleGETSeeHistory
 );
 
+router.post('/v2/donor/donations',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    donationController.handleGETSeeHistory
+);
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donation/insert',
     rateLimiter.donationInsertionLimiter,
     authenticator.handleAuthentication,
@@ -58,18 +67,32 @@ router.post('/v2/donation/insert',
     donationController.handlePOSTInsertDonation
 );
 
-router.post('/v2/donor/comment',
-    rateLimiter.commonLimiter,
+router.post('/donations',
+    rateLimiter.donationInsertionLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
-    donorController.handlePOSTComment
+    donationController.handlePOSTDonations
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donation/delete',
     rateLimiter.deleteDonationLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donationController.handlePOSTDeleteDonation
+);
+router.post('/v2/donation/delete',
+    rateLimiter.deleteDonationLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    donationController.handlePOSTDeleteDonation
+);
+
+router.post('/v2/donor/comment',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    donorController.handlePOSTComment
 );
 
 router.post('/v2/donor/password/change',

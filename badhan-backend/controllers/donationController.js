@@ -86,7 +86,158 @@ const handleGETSeeHistory = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTInsertDonation = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'Endpoint to insert a donation date for a donor' */
+    /* #swagger.parameters['insertDonation'] = {
+               in: 'body',
+               description: 'Donor info for inserting donation',
+               schema:{
+                    donorId:'bhjdekj8923',
+                    date:1611100800000,
+               }
+      } */
+    try {
+        let donor = res.locals.middlewareResponse.targetDonor;
+
+        let newDonationCount = donor.donationCount + 1;
+
+
+        let donationInsertionResult = await donationInterface.insertDonation({
+            phone: donor.phone,
+            donorId: donor._id,
+            date: req.body.date
+        });
+
+        if (donationInsertionResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+                schema: {
+                  status: 'ERROR',
+                  message: '(Error message)'
+                 },
+                description: 'Donation insertion unsuccessful'
+            } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: donationInsertionResult.message
+            });
+        }
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONATION", donationInsertionResult.data);
+        }
+
+        if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
+            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                _id: donor._id
+            }, {
+                $set: {
+                    lastDonation: req.body.date,
+                    donationCount: newDonationCount
+                }
+            });
+
+            if (donorUpdateResult.status === 'OK') {
+                /* #swagger.responses[200] = {
+                     schema: {
+                           status: 'OK',
+                           message: 'Donation inserted successfully'
+                     },
+                     description: 'Donation insertion successful'
+                } */
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donation inserted successfully'
+                });
+            }
+
+            //This line will be reached if the donation count of a donor is not updated successfully
+            //This, this portion will delete the already added donation
+            let donationQueryResult = await donationInterface.findDonationByQuery({
+                donorId: donor._id,
+                date: req.body.date
+            }, {});
+
+            await donationInterface.deleteDonation(donationQueryResult.data._id);
+            /* #swagger.responses[400] = {
+                  schema: {
+                        status: 'ERROR',
+                        message: 'Donation insertion unsuccessful'
+                   },
+                   description: 'Donation insertion unsuccessful'
+            } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Donation insertion unsuccessful'
+            });
+
+
+        } else if (donor.donationCount !== 0 && req.body.date <= donor.lastDonation) {
+            let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+                phone: donor.phone
+            }, {
+                $set: {
+                    donationCount: newDonationCount
+                }
+            });
+
+            if (donorUpdateResult.status === 'OK') {
+                /* #swagger.responses[200] = {
+                       schema: {
+                         status: 'OK',
+                         message: 'Donation inserted successfully'
+                        },
+                       description: 'Donation insertion successful'
+                } */
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donation inserted successfully'
+                });
+            }
+
+            //This line will be reached if the donation count of a donor is not updated successfully
+            //This, this portion will delete the already added donation
+            let donationQueryResult = await donationInterface.findDonationByQuery({
+                phone: donor.phone,
+                date: req.body.date
+            }, {});
+
+            await donationInterface.deleteDonation(donationQueryResult.data._id);
+
+            /* #swagger.responses[400] = {
+                  schema: {
+                    status: 'ERROR',
+                    message: '(Error message)'
+                   },
+                  description: 'Donation insertion unsuccessful'
+           } */
+
+            return res.status(400).send({
+                status: 'ERROR',
+                message: donorUpdateResult.message
+            });
+
+        }
+
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error)'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handlePOSTDonations = async (req, res) => {
     /*  #swagger.tags = ['Donations']
             #swagger.description = 'Endpoint to insert a donation date for a donor' */
     /* #swagger.parameters['insertDonation'] = {
@@ -409,5 +560,6 @@ const handlePOSTDeleteDonation = async (req, res) => {
 module.exports = {
     handleGETSeeHistory,
     handlePOSTInsertDonation,
+    handlePOSTDonations,
     handlePOSTDeleteDonation
 }
