@@ -10,11 +10,17 @@ const rateLimiter = require('../middlewares/rateLimiter');
 let gplay = require('google-play-scraper');
 
 
-
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donor/insert',
     rateLimiter.donorInsertionLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTInsertDonor
+);
+
+router.post('/donors',
+    rateLimiter.donorInsertionLimiter,
+    authenticator.handleAuthentication,
+    donorController.handlePOSTDonors
 );
 
 router.get('/v3/donor/details',

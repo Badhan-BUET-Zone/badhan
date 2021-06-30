@@ -45,6 +45,171 @@
     "/v2/donor/insert": {
       "post": {
         "tags": [
+          "Deprecated"
+        ],
+        "description": "handles the insertion of a new donor into the database.",
+        "parameters": [
+          {
+            "name": "insertDonor",
+            "in": "body",
+            "description": "donor info for inserting donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "number",
+                  "example": 8801521438557
+                },
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "hall": {
+                  "type": "number",
+                  "example": 5
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "studentId": {
+                  "type": "number",
+                  "example": 1605011
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
+                },
+                "roomNumber": {
+                  "type": "string",
+                  "example": "3009"
+                },
+                "comment": {
+                  "type": "string",
+                  "example": "developer of badhan"
+                },
+                "extraDonationCount": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful donor insertion",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "New donor inserted successfully"
+                },
+                "newDonor": {
+                  "type": "string",
+                  "example": "new donor data"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "New donor insertion unsuccessful"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor found with duplicate phone number in another hall"
+                },
+                "donor": {
+                  "type": "string",
+                  "example": "this field will return null"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "If the donor already exists in the database, user will get the error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor found with duplicate phone number"
+                },
+                "donor": {
+                  "type": "string",
+                  "example": "donor array"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "In case of internal server error, the user will get this message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/donor": {
+      "post": {
+        "tags": [
           "Donors"
         ],
         "description": "handles the insertion of a new donor into the database.",
@@ -379,10 +544,8 @@
     },
     "/v2/donor/details": {
       "post": {
-        "tags": [
-          "Deprecated"
-        ],
-        "description": "handles the fetching of donor details.",
+        "tags": [],
+        "description": "",
         "parameters": [
           {
             "name": "obj",
@@ -884,7 +1047,8 @@
           {
             "name": "donorId",
             "in": "query",
-            "type": "string"
+            "type": "string",
+            "description": "donor info for donations"
           },
           {
             "name": "donorId\r",
@@ -892,15 +1056,16 @@
             "type": "string"
           },
           {
-            "name": "seeHistory",
+            "name": "obj",
             "in": "body",
-            "description": "donor info for inserting donor",
             "schema": {
               "type": "object",
               "properties": {
                 "donorId": {
-                  "type": "string",
-                  "example": "bhjdekj8923"
+                  "example": "any"
+                },
+                "donorId\r": {
+                  "example": "any"
                 }
               }
             }
