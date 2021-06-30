@@ -751,8 +751,10 @@ const handlePATCHDonorsComment = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTChangePassword = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Handles the changing of password for an account.' */
     /* #swagger.parameters['changePassword'] = {
                in: 'body',
@@ -816,6 +818,70 @@ const handlePOSTChangePassword = async (req, res) => {
     }
 }
 
+const handlePATCHDonorsPassword = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'Handles the changing of password for an account.' */
+    /* #swagger.parameters['changePassword'] = {
+               in: 'body',
+               description: 'donor info for changing password',
+               schema:{
+                donorId:'ghjdgejhd7623jhs',
+                newPassword: 'thisisanewpassword'
+               }
+      } */
+    try {
+        let reqBody = req.body;
+
+        let target = res.locals.middlewareResponse.targetDonor;
+
+        if (target.designation === 0) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+               message: 'Target user does not have an account'
+              },
+             description: 'Target user does not have an account'
+            } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Target user does not have an account'
+            });
+        }
+
+
+        target.password = reqBody.newPassword;
+
+        await target.save();
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", {});
+        }
+        /* #swagger.responses[200] = {
+             schema: {
+               status: 'OK',
+               message: 'Password changed successfully'
+              },
+             description: 'Successful password change done'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Password changed successfully'
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+               status: 'EXCEPTION',
+                message: '(Error message)'
+              },
+             description: 'Internal server error'
+        } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
 
 /** DONE
  * This function handles the update of donor information.
@@ -1798,6 +1864,7 @@ module.exports = {
     handlePOSTComment,
     handlePATCHDonorsComment,
     handlePOSTChangePassword,
+    handlePATCHDonorsPassword,
     handlePOSTEditDonor,
     handlePOSTPromote,
     handlePOSTViewVolunteersOfOwnHall,

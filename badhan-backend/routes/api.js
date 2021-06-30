@@ -126,12 +126,21 @@ router.patch('/donors/comment',
     donorController.handlePATCHDonorsComment
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donor/password/change',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTChangePassword
+);
+
+router.patch('/donors/password',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
+    donorController.handlePATCHDonorsPassword
 );
 
 router.post('/v2/donor/edit',
