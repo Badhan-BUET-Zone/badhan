@@ -313,7 +313,53 @@ let handleDeleteSignOutAll = async (req, res) => {
     }
 };
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 let handlePOSTRequestRedirection = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'Endpoint to request a temporary redirection token' */
+    try {
+        let donor = res.locals.middlewareResponse.donor;
+        let access = 'auth';
+        // let token = await jwt.sign({
+        //     _id: donor._id.toString(),
+        //     access
+        // }, process.env.JWT_SECRET).toString();
+        let token = await jwt.sign({
+            _id: donor._id.toString(),
+            access
+        }, process.env.JWT_SECRET, {expiresIn: '30s'}).toString();
+
+
+        donor.tokens.push({access, token});
+
+        await donor.save();
+
+        /* #swagger.responses[201] = {
+               schema: {
+                    status: 'OK',
+                    message: 'Redirection token created',
+                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                },
+               description: 'Redirection token created'
+        } */
+        return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
+    } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+               status: 'ERROR',
+            message: 'error message'
+                },
+               description: 'In case of internal server error user will receive an error message'
+        } */
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+
+};
+
+let handlePOSTRedirection = async (req, res) => {
     /*  #swagger.tags = ['User']
             #swagger.description = 'Endpoint to request a temporary redirection token' */
     try {
@@ -598,6 +644,7 @@ module.exports = {
     handleHallPermission,
     handleHigherDesignationCheck,
     handlePOSTRequestRedirection,
+    handlePOSTRedirection,
     handlePOSTRedirectedAuthentication,
 
 }
