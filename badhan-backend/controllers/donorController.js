@@ -1546,6 +1546,87 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         });
     }
 }
+
+const handleGETDonorsMe = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+        #swagger.description = 'Handles the fetching of own details.' */
+
+
+    try {
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            _id: res.locals.middlewareResponse.donor._id
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+                status: 'ERROR',
+                message: '(Error message)'
+              },
+             description: 'No donor found that matches the token'
+      } */
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+
+        let obj = {
+            _id: donor._id,
+            phone: donor.phone,
+            name: donor.name,
+            studentId: donor.studentId,
+            lastDonation: donor.lastDonation,
+            bloodGroup: donor.bloodGroup,
+            hall: donor.hall,
+            roomNumber: donor.roomNumber,
+            address: donor.address,
+            comment: donor.comment,
+            designation: donor.designation
+        }
+        /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Successfully fetched donor details',
+                donor: {
+                    _id: 'abjcguiwefvew',
+                    phone: 8801521438557,
+                    name: 'Mir Mahathir Mohammad',
+                    studentId: 1605011,
+                    lastDonation: 987876287160,
+                    bloodGroup: 2,
+                    hall: 5,
+                    roomNumber: '3009',
+                    address: 'Azimpur',
+                    comment: 'Developer of badhan',
+                    designation: 3,
+                }
+               },
+              description: 'Info of the logged in user'
+       } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            donor: obj
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+         schema: {
+              status: 'EXCEPTION',
+              message: '(error message)'
+          },
+         description: 'In case of internal server error, the user will get this message'
+  } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 const handleGETViewAllVolunteers = async (req, res) => {
     /*  #swagger.tags = ['Donors']
         #swagger.description = 'Fetches all volunteers' */
@@ -1659,5 +1740,6 @@ module.exports = {
     handlePOSTViewDonorDetails,//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 //APP VERSION <= 3.5.1 STILL USES IT
     handlePOSTViewDonorDetailsSelf,
+    handleGETDonorsMe,
     handleGETViewAllVolunteers
 }

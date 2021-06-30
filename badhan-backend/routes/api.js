@@ -46,10 +46,18 @@ router.post('/v2/donor/details',
     donorController.handlePOSTViewDonorDetails
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
+
 router.post('/v2/donor/details/self',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTViewDonorDetailsSelf
+);
+
+router.get('/donors/me',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETDonorsMe
 );
 
 router.post('/v2/donor/search',
