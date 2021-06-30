@@ -52,11 +52,11 @@ router.post('/v2/donor/donations',
     donationController.handleGETSeeHistory
 );
 
-router.post('/v2/donor/donations',
+router.get('/donations',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
-    donationController.handleGETSeeHistory
+    donationController.handleGETDonations
 );
 
 //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.

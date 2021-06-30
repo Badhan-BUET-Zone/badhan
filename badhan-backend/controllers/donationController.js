@@ -9,8 +9,10 @@ const logInterface = require('../db/interfaces/logInterface');
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handleGETSeeHistory = async (req, res) => {
-    /*  #swagger.tags = ['Donations']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'handles the retrieval of donation history for a particular donor.' */
     /* #swagger.parameters['seeHistory'] = {
                in: 'body',
@@ -76,6 +78,70 @@ const handleGETSeeHistory = async (req, res) => {
     }
 }
 
+const handleGETDonations = async (req, res) => {
+    /*  #swagger.tags = ['Donations']
+            #swagger.description = 'handles the retrieval of donation history for a particular donor.' */
+    /* #swagger.parameters['donorId'] = {
+              description: 'donor info for donations',
+              type: 'string',
+              name:'donorId'
+      } */
+    try {
+        let donor = res.locals.middlewareResponse.targetDonor;
+
+        let donationsQueryResult = await donationInterface.findDonationsByQuery({
+            donorId: donor._id
+        }, {});
+
+        if (donationsQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+                                schema: {
+                                  status: 'ERROR',
+                                  message: '(Error message)'
+                                 },
+                                description: 'Error happened when trying to find the donations'
+                         } */
+            return res.status(400).send({
+                status: donationsQueryResult.status,
+                message: donationsQueryResult.message
+            });
+        }
+
+        let donationDates = donationsQueryResult.data;
+        let donations = [];
+        donationDates.forEach(donation => {
+            donations.push(donation.date);
+        });
+        donations.sort(function (a, b) {
+            return b - a
+        });
+        /* #swagger.responses[200] = {
+           schema: {
+                 status: 'OK',
+                 message: 'Donations queried successfully',
+                 donations : [1611100800000, 1558051200000, 1557964800000, 1546300800000]
+            },
+           description: 'Donations queried successfully'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Donations queried successfully',
+            donations
+        });
+    } catch (e) {
+        /* #swagger.responses[200] = {
+           schema: {
+             status: 'OK',
+             message: 'Successfully fetched donor details'
+            },
+           description: 'Volunteer list fetch successful'
+    } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
 
 /**
  * This function handles the insertion of a new donation for a donor.
@@ -723,6 +789,7 @@ const handleDeleteDonations = async (req, res) => {
 
 module.exports = {
     handleGETSeeHistory,
+    handleGETDonations,
     handlePOSTInsertDonation,
     handlePOSTDonations,
     handlePOSTDeleteDonation,

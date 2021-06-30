@@ -762,7 +762,7 @@
     "/v2/donor/donations": {
       "post": {
         "tags": [
-          "Donations"
+          "Deprecated"
         ],
         "description": "handles the retrieval of donation history for a particular donor.",
         "parameters": [
@@ -874,12 +874,12 @@
         }
       }
     },
-    "/v2/donation/insert": {
-      "post": {
+    "/donations": {
+      "get": {
         "tags": [
-          "Deprecated"
+          "Donations"
         ],
-        "description": "Endpoint to insert a donation date for a donor",
+        "description": "handles the retrieval of donation history for a particular donor.",
         "parameters": [
           {
             "name": "donorId",
@@ -892,19 +892,15 @@
             "type": "string"
           },
           {
-            "name": "insertDonation",
+            "name": "seeHistory",
             "in": "body",
-            "description": "Donor info for inserting donation",
+            "description": "donor info for inserting donor",
             "schema": {
               "type": "object",
               "properties": {
                 "donorId": {
                   "type": "string",
                   "example": "bhjdekj8923"
-                },
-                "date": {
-                  "type": "number",
-                  "example": 1611100800000
                 }
               }
             }
@@ -912,7 +908,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Donation insertion successful",
+            "description": "Volunteer list fetch successful",
             "schema": {
               "type": "object",
               "properties": {
@@ -922,7 +918,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donation inserted successfully"
+                  "example": "Successfully fetched donor details"
                 }
               },
               "xml": {
@@ -931,7 +927,7 @@
             }
           },
           "400": {
-            "description": "Donation insertion unsuccessful",
+            "description": "Error happened when trying to find the donations",
             "schema": {
               "type": "object",
               "properties": {
@@ -972,17 +968,17 @@
             "description": "Not Found"
           },
           "500": {
-            "description": "In case of internal server error, user will get this error message",
+            "description": "In case of internal server error user will receive an error message",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "EXCEPTION"
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Internal server error)"
+                  "example": "error message"
                 }
               },
               "xml": {
@@ -991,9 +987,7 @@
             }
           }
         }
-      }
-    },
-    "/donations": {
+      },
       "post": {
         "tags": [
           "Donations"
@@ -1178,6 +1172,125 @@
                 "message": {
                   "type": "string",
                   "example": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/donation/insert": {
+      "post": {
+        "tags": [
+          "Deprecated"
+        ],
+        "description": "Endpoint to insert a donation date for a donor",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "insertDonation",
+            "in": "body",
+            "description": "Donor info for inserting donation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donation insertion successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donation inserted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Donation insertion unsuccessful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
                 }
               },
               "xml": {

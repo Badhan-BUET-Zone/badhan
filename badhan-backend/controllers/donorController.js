@@ -1386,8 +1386,6 @@ const handleGETViewAllVolunteers = async (req, res) => {
 //APP VERSION <= 3.5.1 STILL USES IT
 const handlePOSTViewDonorDetails = async (req, res) => {
 
-    /*  #swagger.tags = ['Deprecated']
-            #swagger.description = 'handles the fetching of donor details.' */
     try {
         let donorQueryResult = await donorInterface.findDonorByQuery({
             _id: req.body.donorId
