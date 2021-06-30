@@ -48,15 +48,22 @@ router.post('/requestRedirection',
     authenticator.handlePOSTRequestRedirection
 );
 
+
 router.post('/redirection',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handlePOSTRedirection
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/redirectionSignIn',
     rateLimiter.redirectionSignInLimiter,
     authenticator.handlePOSTRedirectedAuthentication
+);
+
+router.patch('/redirection',
+    rateLimiter.redirectionSignInLimiter,
+    authenticator.handlePATCHRedirectedAuthentication
 );
 
 module.exports = router;
