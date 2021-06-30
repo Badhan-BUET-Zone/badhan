@@ -1317,7 +1317,79 @@ const handlePOSTShowHallAdmins = async (req, res) => {
  * @param res The response for this http request-response cycle
  */
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handleGETViewDonorDetails = async (req, res) => {
+
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'handles the fetching of donor details.' */
+    /* #swagger.parameters['donorId'] = {
+              description: 'Donor id for donor details',
+              type: 'string',
+              name:'donorId',
+              in:'query'
+       } */
+
+    try {
+
+        let donor = res.locals.middlewareResponse.targetDonor;
+
+        let obj = {
+            _id: donor._id,
+            phone: donor.phone,
+            name: donor.name,
+            studentId: donor.studentId,
+            lastDonation: donor.lastDonation,
+            bloodGroup: donor.bloodGroup,
+            hall: donor.hall,
+            roomNumber: donor.roomNumber,
+            address: donor.address,
+            comment: donor.comment,
+            designation: donor.designation,
+            donationCount: donor.donationCount,
+        }
+        /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Successfully fetched donor details',
+                donor: {
+                    _id: 'abjcguiwefvew',
+                    phone: 8801521438557,
+                    name: 'Mir Mahathir Mohammad',
+                    studentId: 1605011,
+                    lastDonation: 987876287160,
+                    bloodGroup: 2,
+                    hall: 5,
+                    roomNumber: '3009',
+                    address: 'Azimpur',
+                    comment: 'developer of badhan',
+                    designation: 3,
+                    donationCount: 2,
+                }
+               },
+              description: 'donor info'
+       } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            donor: obj
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+               status: 'EXCEPTION',
+                message: '(Error message)'
+              },
+             description: 'Internal server error'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handleGETDonors = async (req, res) => {
 
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the fetching of donor details.' */
@@ -1583,6 +1655,7 @@ module.exports = {
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins,
     handleGETViewDonorDetails,
+    handleGETDonors,
     handlePOSTViewDonorDetails,//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 //APP VERSION <= 3.5.1 STILL USES IT
     handlePOSTViewDonorDetailsSelf,

@@ -207,7 +207,7 @@
         }
       }
     },
-    "/donor": {
+    "/donors": {
       "post": {
         "tags": [
           "Donors"
@@ -370,12 +370,180 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of donor details.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string",
+            "description": "Donor id for donor details"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "example": "any"
+                },
+                "donorId\r": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "donor info",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                },
+                "donor": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "abjcguiwefvew"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir Mohammad"
+                    },
+                    "studentId": {
+                      "type": "number",
+                      "example": 1605011
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 987876287160
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "3009"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "developer of badhan"
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "donationCount": {
+                      "type": "number",
+                      "example": 2
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "When no donor with the specified donor id is found, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
       }
     },
     "/v3/donor/details": {
       "get": {
         "tags": [
-          "Donors"
+          "Deprecated"
         ],
         "description": "handles the fetching of donor details.",
         "parameters": [

@@ -23,11 +23,19 @@ router.post('/donors',
     donorController.handlePOSTDonors
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.get('/v3/donor/details',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     donorController.handleGETViewDonorDetails
+);
+
+router.get('/donors',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    donorController.handleGETDonors
 );
 
 //THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
