@@ -993,7 +993,7 @@
         }
       }
     },
-    "/donation": {
+    "/donations": {
       "post": {
         "tags": [
           "Donations"
@@ -1110,12 +1110,129 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the deletion of a donation for a donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "deleteDonation",
+            "in": "body",
+            "description": "donor info for deleting donation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donation deletion successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully deleted donation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donation deleted but donor profile not updated concurrently. Inconsistent state reached."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "The user is trying to access or modify data of a different hall",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not authorized to access this donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
       }
     },
     "/v2/donation/delete": {
       "post": {
         "tags": [
-          "Donations"
+          "Deprecated"
         ],
         "description": "handles the deletion of a donation for a donor.",
         "parameters": [

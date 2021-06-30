@@ -81,11 +81,12 @@ router.post('/v2/donation/delete',
     authenticator.handleHallPermission,
     donationController.handlePOSTDeleteDonation
 );
-router.post('/v2/donation/delete',
+
+router.delete('/donations',
     rateLimiter.deleteDonationLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
-    donationController.handlePOSTDeleteDonation
+    donationController.handleDeleteDonations
 );
 
 router.post('/v2/donor/comment',
