@@ -1763,7 +1763,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
     }
 }
 
-const handlePATCHAdmin = async (req, res) => {
+const handlePATCHAdmins = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer' */
     /* #swagger.parameters['admin'] = {
@@ -2448,7 +2448,7 @@ module.exports = {
     handlePOSTViewVolunteersOfOwnHall,
     handleGETVolunteers,
     handlePOSTChangeAdmin,
-    handlePATCHAdmin,
+    handlePATCHAdmins,
     handlePOSTShowHallAdmins,
     handleGETViewDonorDetails,
     handleGETDonors,

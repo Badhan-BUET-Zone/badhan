@@ -231,11 +231,11 @@ router.post('/v2/admin/hall/change',
     donorController.handlePOSTChangeAdmin
 );
 
-router.patch('/admin',
+router.patch('/admins',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
-    donorController.handlePATCHAdmin
+    donorController.handlePATCHAdmins
 );
 
 router.post('/v2/admin/hall/show',
