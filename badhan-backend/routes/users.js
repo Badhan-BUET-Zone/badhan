@@ -10,9 +10,15 @@ router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/signin',
     rateLimiter.signInLimiter,
     authenticator.handlePOSTLogIn
+);
+
+router.post('/signin',
+    rateLimiter.signInLimiter,
+    authenticator.handlePOSTSignIn
 );
 
 //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.

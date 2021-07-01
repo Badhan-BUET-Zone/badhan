@@ -3,11 +3,106 @@ const jwt = require('jsonwebtoken');
 
 const donorInterface = require('../db/interfaces/donorInterface');
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 let handlePOSTLogIn = async (req, res) => {
-    /*  #swagger.tags = ['User']
+    /*  #swagger.tags = ['Dprecated']
             #swagger.description = 'Endpoint to login a user.' */
 
     /* #swagger.parameters['logIn'] = {
+               in: 'body',
+               description: 'Phone number of a logging user.',
+               schema:{
+                phone: "8801521438557",
+                password: "123456"
+               }
+      } */
+
+    try {
+        let donorPhone = req.body.phone;
+        let password = req.body.password;
+        let donorQueryResult = await donorInterface.findDonorByQuery({phone: donorPhone}, {});
+
+
+        if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[401] = {
+               schema: {
+                    status: 401,
+                    message: 'Donor not found',
+                },
+               description: 'When the donor is not found'
+            } */
+            return res.status(401).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+
+        let matched;
+
+        try {
+            matched = await bcrypt.compare(password, donor.password);
+        } catch (e) {
+            return res.status(401).send({
+                status: "ERROR",
+                message: "You do not have an account",
+            });
+        }
+
+
+        if (matched) {
+            let access = 'auth';
+            let token = await jwt.sign({
+                _id: donor._id.toString(),
+                access
+            }, process.env.JWT_SECRET).toString();
+
+
+            donor.tokens.push({access, token});
+
+            await donor.save();
+
+            /* #swagger.responses[201] = {
+               schema: {
+                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                },
+               description: 'A successful sign in returns a token for the user'
+            } */
+            return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
+        } else {
+            /* #swagger.responses[401] = {
+               schema: {
+                    status: 'ERROR',
+                    message: 'Incorrect phone / password'
+                },
+               description: 'When the user provides an invalid password'
+            } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Incorrect phone / password'
+            });
+        }
+    } catch (e) {
+        /* #swagger.responses[500] = {
+               schema: {
+                    status: 'EXCEPTION',
+                    message: 'message generated from the backend caused by runtime error'
+                },
+               description: 'When the server malfunctions to the request body'
+        } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+};
+
+let handlePOSTSignIn = async (req, res) => {
+    /*  #swagger.tags = ['User']
+            #swagger.description = 'Endpoint to login a user.' */
+
+    /* #swagger.parameters['signIn'] = {
                in: 'body',
                description: 'Phone number of a logging user.',
                schema:{
@@ -745,6 +840,7 @@ let handleHallPermission = async (req, res, next) => {
 
 module.exports = {
     handlePOSTLogIn,
+    handlePOSTSignIn,
     handleAuthentication,
     handlePOSTLogOut,
     handleDeleteSignOut,
