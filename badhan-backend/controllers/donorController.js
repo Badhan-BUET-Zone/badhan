@@ -2153,7 +2153,55 @@ const handleGETDonorsMe = async (req, res) => {
     }
 }
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handleGETViewAllVolunteers = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+        #swagger.description = 'Fetches all volunteers' */
+    try {
+        let volunteerResult = await donorInterface.findAllVolunteers();
+
+        if (volunteerResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: '(Error message)'
+               },
+              description: 'Volunteer list fetch unsuccessful'
+       } */
+            return res.status(400).send({
+                status: volunteerResult.status,
+                message: volunteerResult.message
+            });
+        }
+        /* #swagger.responses[200] = {
+             schema: {
+               status: 'OK',
+               message: 'Volunteer list fetch successful'
+              },
+             description: 'Volunteer list fetch successful'
+      } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully fetched donor details',
+            data: volunteerResult.data
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handleGETVolunteersAll = async (req, res) => {
     /*  #swagger.tags = ['Donors']
         #swagger.description = 'Fetches all volunteers' */
     try {
@@ -2273,5 +2321,6 @@ module.exports = {
 //APP VERSION <= 3.5.1 STILL USES IT
     handlePOSTViewDonorDetailsSelf,
     handleGETDonorsMe,
-    handleGETViewAllVolunteers
+    handleGETViewAllVolunteers,
+    handleGETVolunteersAll,
 }
