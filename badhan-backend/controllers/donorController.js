@@ -1270,7 +1270,105 @@ const handlePATCHDonors = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTPromote = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'Handles the promotion or demotion of users.' */
+    /* #swagger.parameters['promote'] = {
+               in: 'body',
+               description: 'If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.',
+               schema:{
+                donorId:'hjasgd673278',
+                promoteFlag: true,
+                newPassword: 'thisisanewpassword'
+               }
+      } */
+    try {
+        let donor = res.locals.middlewareResponse.targetDonor;
+        let donorDesignation = donor.designation;
+
+        if (donorDesignation>1) {
+            /* #swagger.responses[401] = {
+              schema: {
+                status: 'ERROR',
+                message: 'The target donor is not a donor nor a volunteer'
+               },
+              description: 'This route will not work if target donor is a hall admin or super admin'
+            } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User can not promote the target entity'
+            });
+        }
+
+        if ((donorDesignation === 1 && req.body.promoteFlag) || (donorDesignation === 0 && !req.body.promoteFlag)) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+               message: 'Can not promote volunteer or can not demote donor'
+              },
+             description: 'If user cannot promote volunteer or cannot demote donor'
+            } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Can\'t promote volunteer or can\'t demote donor'
+            });
+        }
+
+
+        let newDesignation;
+
+        if (req.body.promoteFlag) {
+            newDesignation = donorDesignation + 1;
+        } else {
+            newDesignation = donorDesignation - 1;
+        }
+
+        donor.designation = newDesignation;
+        if (req.body.promoteFlag) {
+            donor.password = req.body.newPassword;
+        } else {
+            donor.password = null;
+        }
+        await donor.save();
+
+        let logOperation = "";
+        if (req.body.promoteFlag) {
+            logOperation = "PROMOTE DONOR";
+        } else {
+            logOperation = "DEMOTE DONOR";
+        }
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
+        }
+        /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Target user promoted/demoted successfully'
+               },
+              description: 'Donor promotion/ demotion successful'
+       } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Target user promoted/demoted successfully'
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+              schema: {
+                status: 'EXCEPTION',
+                message: '(Error message)'
+               },
+              description: 'Internal server error'
+       } */
+        res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handlePATCHDonorsDesignation = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'Handles the promotion or demotion of users.' */
     /* #swagger.parameters['promote'] = {
@@ -2090,6 +2188,7 @@ module.exports = {
     handlePOSTEditDonor,
     handlePATCHDonors,
     handlePOSTPromote,
+    handlePATCHDonorsDesignation,
     handlePOSTViewVolunteersOfOwnHall,
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins,

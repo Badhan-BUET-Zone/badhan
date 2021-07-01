@@ -178,13 +178,21 @@ router.delete('/donors',
 );
 
 /********Hall admin APIs*********/
-
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/admin/promote',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     authenticator.handleHallAdminCheck,
     donorController.handlePOSTPromote
+);
+
+router.patch('/donors/designation',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    authenticator.handleHallAdminCheck,
+    donorController.handlePATCHDonorsDesignation
 );
 
 router.post('/v2/admin/volunteers',
