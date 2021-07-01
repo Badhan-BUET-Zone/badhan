@@ -160,12 +160,21 @@ router.patch('/donors',
     donorController.handlePATCHDonors
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/admin/donor/delete',
     rateLimiter.donorDeletionLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTDeleteDonor
+);
+
+router.delete('/donors',
+    rateLimiter.donorDeletionLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
+    donorController.handleDeleteDonors
 );
 
 /********Hall admin APIs*********/

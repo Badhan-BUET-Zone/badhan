@@ -335,7 +335,87 @@ const handlePOSTDeleteSelf = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+    //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTDeleteDonor = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'handles the deletion of an existing donor from the database.' */
+    /* #swagger.parameters['deleteDonor'] = {
+               in: 'body',
+               description: 'donor info for deleting donor',
+               schema:{
+                donorId: 'hgjgkdse7823',
+               }
+      } */
+    try {
+        let donorId = res.locals.middlewareResponse.targetDonor._id;
+
+        let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
+            donorId
+        });
+
+        if (deleteDonationsResult.status !== 'OK') {
+            /* #swagger.responses[404] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+            } */
+            return res.status(500).send({
+                status: 'EXCEPTION',
+                message: "Error occured in deleting donations of target donor"
+            })
+        }
+
+        let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
+
+        /* #swagger.responses[404] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Error occurred in deleting target donor'
+              },
+             description: 'Error occured when deleting target donor'
+        } */
+        if (deleteDonorResult.status !== 'OK') {
+            return res.status(404).send({
+                status: 'EXCEPTION',
+                message: "Error occurred in deleting target donor"
+            })
+        }
+
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
+        }
+
+        /* #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            message: 'Donor deleted successfully'
+        },
+        description: 'Successful donor deletion'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Donor deleted successfully'
+        });
+
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: 'Internal server error'
+              },
+             description: 'In case of internal server error, user will get this error message'
+        } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        })
+    }
+}
+
+const handleDeleteDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the deletion of an existing donor from the database.' */
     /* #swagger.parameters['deleteDonor'] = {
@@ -1740,8 +1820,9 @@ const handleGETDonors = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+    //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTViewDonorDetailsSelf = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
         #swagger.description = 'Handles the fetching of own details.' */
 
 
@@ -2000,6 +2081,7 @@ module.exports = {
     handlePOSTDonors,
     handlePOSTDeleteSelf,
     handlePOSTDeleteDonor,
+    handleDeleteDonors,
     handlePOSTSearchDonors,
     handlePOSTComment,
     handlePATCHDonorsComment,

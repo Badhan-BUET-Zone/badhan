@@ -679,6 +679,135 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the deletion of an existing donor from the database.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "deleteDonor",
+            "in": "body",
+            "description": "donor info for deleting donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hgjgkdse7823"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful donor deletion",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "When no donor with the specified donor id is found, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Error occured when deleting target donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Error occurred in deleting target donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
       }
     },
     "/v3/donor/details": {
@@ -920,7 +1049,7 @@
     "/v2/donor/details/self": {
       "post": {
         "tags": [
-          "Donors"
+          "Deprecated"
         ],
         "description": "Handles the fetching of own details.",
         "parameters": [],
@@ -2693,7 +2822,7 @@
     "/v2/admin/donor/delete": {
       "post": {
         "tags": [
-          "Donors"
+          "Deprecated"
         ],
         "description": "handles the deletion of an existing donor from the database.",
         "parameters": [
