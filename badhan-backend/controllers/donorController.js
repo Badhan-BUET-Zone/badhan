@@ -503,8 +503,10 @@ const handleDeleteDonors = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTSearchDonors = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Searches for donors that matches the filters' */
     /* #swagger.parameters['SearchDonor'] = {
                in: 'body',
@@ -672,6 +674,209 @@ const handlePOSTSearchDonors = async (req, res) => {
         });
     }
 }
+
+const handleGETSearch = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'Searches for donors that matches the filters' */
+    /* #swagger.parameters['bloodGroup'] = {
+             description: 'blood group for donors',
+             type: 'number',
+             name:'bloodGroup',
+             in:'query'
+      } */
+    /* #swagger.parameters['hall'] = {
+            description: 'hall for donors',
+            type: 'number',
+            name:'hall',
+            in:'query'
+     } */
+    /* #swagger.parameters['batch'] = {
+            description: 'batch for donors',
+            type: 'number',
+            name:'batch',
+            in:'query'
+     } */
+    /* #swagger.parameters['name'] = {
+            description: 'name for donors',
+            type: 'string',
+            name:'name',
+            in:'query'
+     } */
+    /* #swagger.parameters['name'] = {
+           description: 'address for donors',
+           type: 'string',
+           name:'address',
+           in:'query'
+    } */
+    /* #swagger.parameters['isAvailable'] = {
+          description: 'isAvailable for donors',
+          type: 'boolean',
+          name:'isAvailable',
+          in:'query'
+   } */
+    /* #swagger.parameters['isNotAvailable'] = {
+         description: 'isNotAvailable for donors',
+         type: 'boolean',
+         name:'isNotAvailable',
+         in:'query'
+  } */
+    try {
+        let reqQuery = req.query;
+        reqQuery.bloodGroup=parseFloat(reqQuery.bloodGroup);
+        reqQuery.hall=parseFloat(reqQuery.hall);
+        reqQuery.batch=parseFloat(reqQuery.batch);
+        reqQuery.isAvailable = reqQuery.isAvailable.toLowerCase() == 'true' ? true : false;
+        reqQuery.isNotAvailable = reqQuery.isNotAvailable.toLowerCase() == 'true' ? true : false;
+        if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall && reqQuery.hall <= 6 && res.locals.middlewareResponse.donor.designation !== 3) {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'You are not allowed to search donors of other halls'
+               },
+              description: 'This error will occur if the user tries to search other halls'
+       } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'You are not allowed to search donors of other halls'
+            });
+        }
+
+
+        let searchFilter = {
+            bloodGroup: reqQuery.bloodGroup,
+            hall: reqQuery.hall,
+        };
+
+        if (reqQuery.bloodGroup === -1) {
+            delete searchFilter.bloodGroup;
+        }
+
+        if (reqQuery.hall === -1) {
+            delete searchFilter.hall;
+        }
+
+        let donorsQueryResult = await donorInterface.findDonorsByQuery(searchFilter, {password: 0});
+
+        if (donorsQueryResult.status === 'OK') {
+            let donors = donorsQueryResult.data;
+
+            // if (reqBody.isAvailable) {
+            //     let threshold = moment().subtract(120, 'days').valueOf();
+            //     donors = donors.filter((donor) => donor.lastDonation <= threshold);
+            // }
+
+            if (!reqQuery.isAvailable) {
+                let threshold = moment().subtract(120, 'days').valueOf();
+                donors = donors.filter((donor) => donor.lastDonation >= threshold);
+            }
+
+            if (!reqQuery.isNotAvailable) {
+                let threshold = moment().subtract(120, 'days').valueOf();
+                donors = donors.filter((donor) => donor.lastDonation < threshold);
+            }
+
+            if (reqQuery.batch !== '') {
+                donors = donors.filter((donor) => donor.studentId.startsWith(reqQuery.batch));
+            }
+
+            if (reqQuery.name !== '') {
+                donors = donors.filter((donor) => {
+                    let j = 0;
+                    for (let i = 0; i < donor.name.length; i++) {
+                        if (reqQuery.name[j] === donor.name[i] || reqQuery.name[j].toUpperCase() === donor.name[i]) {
+                            j++;
+                        }
+                        if (j >= reqQuery.name.length) {
+                            break;
+                        }
+                    }
+                    return j >= reqQuery.name.length;
+
+                });
+            }
+
+            if (reqQuery.address !== '') {
+
+                donors = donors.filter(donor => {
+                    if (donor.address === undefined || donor.address === null) return false;
+                    // console.log("Donor address = " + donor.address);
+                    // console.log("Query address = " + reqQuery.address);
+                    return donor.address.toLowerCase().includes(reqQuery.address.toLowerCase());
+                })
+            }
+
+            const filteredDonors = [];
+
+            for (let i = 0; i < donors.length; i++) {
+                let obj = {
+                    _id: donors[i]._id,
+                    phone: donors[i].phone,
+                    name: donors[i].name,
+                    studentId: donors[i].studentId,
+                    lastDonation: donors[i].lastDonation,
+                    bloodGroup: donors[i].bloodGroup,
+                    address: donors[i].address,
+                    donationCount: donors[i].donationCount,
+                    roomNumber: donors[i].roomNumber,
+                    comment: donors[i].comment
+                };
+
+                filteredDonors.push(obj);
+            }
+            /* #swagger.responses[200] = {
+              schema: {
+                status: 'OK',
+                message: 'Donors queried successfully',
+                filteredDonors:[{
+                _id: 'abjcguiwefvew',
+                phone: 8801521438557,
+                name: 'Mir Mahathir Mohammad',
+                studentId: 1605011,
+                lastDonation: 987876287160,
+                bloodGroup: 2,
+                hall: 5,
+                roomNumber: '3009',
+                address: 'Azimpur',
+                comment: 'developer of badhan',
+                designation: 3,
+                }]
+               },
+              description: 'Array of donors that matches the filter parameters'
+       } */
+            return res.status(200).send({
+                status: 'OK',
+                message: 'Donors queried successfully',
+                filteredDonors
+            });
+        } else {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Donor query unsuccessful'
+               },
+              description: 'Filtering donors has been unsuccessful.'
+       } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Donor query unsuccessful'
+            });
+        }
+    } catch (e) {
+        console.log(e);
+        /* #swagger.responses[500] = {
+              schema: {
+                status: 'EXCEPTION',
+                message: '(Error message)'
+               },
+              description: 'Internal server error'
+       } */
+        res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 
 /** DONE
  * This function adds a comment to a donor's profile.
@@ -2499,6 +2704,7 @@ module.exports = {
     handlePOSTDeleteDonor,
     handleDeleteDonors,
     handlePOSTSearchDonors,
+    handleGETSearch,
     handlePOSTComment,
     handlePATCHDonorsComment,
     handlePOSTChangePassword,

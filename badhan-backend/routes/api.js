@@ -59,11 +59,17 @@ router.get('/donors/me',
     authenticator.handleAuthentication,
     donorController.handleGETDonorsMe
 );
-
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donor/search',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTSearchDonors
+);
+
+router.get('/search',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETSearch
 );
 
 //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.

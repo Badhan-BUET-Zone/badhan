@@ -1321,12 +1321,226 @@
     "/v2/donor/search": {
       "post": {
         "tags": [
-          "Donors"
+          "Deprecated"
         ],
         "description": "Searches for donors that matches the filters",
         "parameters": [
           {
             "name": "SearchDonor",
+            "in": "body",
+            "description": "Filter parameters",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "hall": {
+                  "type": "number",
+                  "example": 5
+                },
+                "batch": {
+                  "type": "number",
+                  "example": 16
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
+                },
+                "isAvailable": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "isNotAvailable": {
+                  "type": "boolean",
+                  "example": false
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of donors that matches the filter parameters",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donors queried successfully"
+                },
+                "filteredDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "abjcguiwefvew"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801521438557
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mir Mahathir Mohammad"
+                      },
+                      "studentId": {
+                        "type": "number",
+                        "example": 1605011
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 987876287160
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 5
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "3009"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "Azimpur"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "developer of badhan"
+                      },
+                      "designation": {
+                        "type": "number",
+                        "example": 3
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Filtering donors has been unsuccessful.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor query unsuccessful"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "This error will occur if the user does not exist",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Authentication failed. Invalid authentication token."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Searches for donors that matches the filters",
+        "parameters": [
+          {
+            "name": "bloodGroup",
+            "description": "blood group for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "hall",
+            "description": "hall for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "batch",
+            "description": "batch for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "address",
+            "description": "address for donors",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "isAvailable",
+            "description": "isAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "isNotAvailable",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "searchDonors",
             "in": "body",
             "description": "Filter parameters",
             "schema": {
@@ -2337,7 +2551,7 @@
             "type": "string"
           },
           {
-            "name": "insertDonor",
+            "name": "editDonorComment",
             "in": "body",
             "description": "donor info for posting comment",
             "schema": {
