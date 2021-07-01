@@ -223,11 +223,19 @@ router.get('/volunteers/all',
     donorController.handleGETVolunteersAll,
 )
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/admin/hall/change',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     donorController.handlePOSTChangeAdmin
+);
+
+router.patch('/admin',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
+    donorController.handlePATCHAdmin
 );
 
 router.post('/v2/admin/hall/show',

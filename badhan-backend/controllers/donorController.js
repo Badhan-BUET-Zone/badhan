@@ -1629,10 +1629,144 @@ const handleGETVolunteers = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTChangeAdmin = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer' */
     /* #swagger.parameters['changeAdmin'] = {
+               in: 'body',
+               description: 'donor info for changing admin',
+               schema:{
+                donorId:'hdjhd12vhjgj3428569834hth'
+               }
+      } */
+    try {
+
+        let donorQueryResult = await donorInterface.findDonorByQuery({
+            _id: req.body.donorId
+        });
+
+        if (donorQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+            schema: {
+                status: 'ERROR',
+                message: '(Error message)'
+            },
+              description: 'If donor with specified id does not exist , user will get this error message'
+       } */
+            return res.status(400).send({
+                status: donorQueryResult.status,
+                message: donorQueryResult.message
+            });
+        }
+
+        let donor = donorQueryResult.data;
+        let donorDesignation = donor.designation;
+
+        if (donorDesignation !== 1) {
+            /* #swagger.responses[401] = {
+             schema: {
+               status: 'ERROR',
+                message: 'User is not a volunteer'
+              },
+             description: 'If fetched user is not a volunteer , user will get this error message'
+      } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User is not a volunteer'
+            });
+        }
+
+        // Make previous hall admin volunteer
+
+        let donorHall = donor.hall;
+        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({hall: donorHall, designation: 2});
+
+        if (prevHallAdminQueryResult.status === 'OK') {
+            let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+                hall: donorHall,
+                designation: 2
+            }, {
+                $set: {
+                    designation: 1,
+                }
+            });
+
+            if (prevHallAdminUpdateResult.status !== 'OK') {
+                /* #swagger.responses[400] = {
+              schema: {
+                status: 'Error status',
+                message: 'Could not change hall admin'
+               },
+              description: 'hall admin change unsuccessful'
+       } */
+                return res.status(400).send({
+                    status: prevHallAdminUpdateResult,
+                    message: 'Could not change hall admin'
+                });
+            }
+            if (process.env.NODE_ENV !== 'development') {
+                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DEMOTE HALLADMIN", prevHallAdminUpdateResult.data);
+            }
+        }
+
+        // Make new hall admin
+        let newHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+            _id: req.body.donorId
+        }, {
+            $set: {
+                designation: 2,
+            }
+        });
+
+        if (newHallAdminUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'Demoted previous hall admin, but could not set new hall admin'
+               },
+              description: 'Previous hall admin demotion successful, but could not set new hall admin'
+       } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Demoted previous hall admin, but could not set new hall admin'
+            });
+        }
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
+        }
+        /* #swagger.responses[200] = {
+            schema: {
+              status: 'OK',
+              message: 'Successfully changed hall admin'
+             },
+            description: 'Successfully changed hall admin'
+     } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Successfully changed hall admin'
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error message)'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handlePATCHAdmin = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer' */
+    /* #swagger.parameters['admin'] = {
                in: 'body',
                description: 'donor info for changing admin',
                schema:{
@@ -2314,6 +2448,7 @@ module.exports = {
     handlePOSTViewVolunteersOfOwnHall,
     handleGETVolunteers,
     handlePOSTChangeAdmin,
+    handlePATCHAdmin,
     handlePOSTShowHallAdmins,
     handleGETViewDonorDetails,
     handleGETDonors,

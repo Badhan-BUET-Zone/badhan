@@ -3611,12 +3611,114 @@
     "/v2/admin/hall/change": {
       "post": {
         "tags": [
-          "Donors"
+          "Deprecated"
         ],
         "description": "Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer",
         "parameters": [
           {
             "name": "changeAdmin",
+            "in": "body",
+            "description": "donor info for changing admin",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hdjhd12vhjgj3428569834hth"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully changed hall admin",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully changed hall admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Previous hall admin demotion successful, but could not set new hall admin",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Demoted previous hall admin, but could not set new hall admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "If fetched user is not a volunteer , user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User is not a volunteer"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin": {
+      "patch": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer",
+        "parameters": [
+          {
+            "name": "admin",
             "in": "body",
             "description": "donor info for changing admin",
             "schema": {
