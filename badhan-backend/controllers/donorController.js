@@ -756,7 +756,7 @@ const handlePOSTComment = async (req, res) => {
 const handlePATCHDonorsComment = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'Adds a comment to a donor's profile.' */
-    /* #swagger.parameters['insertDonor'] = {
+    /* #swagger.parameters['editDonorComment'] = {
                in: 'body',
                description: 'donor info for posting comment',
                schema:{
