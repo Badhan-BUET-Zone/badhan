@@ -195,10 +195,17 @@ router.patch('/donors/designation',
     donorController.handlePATCHDonorsDesignation
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/admin/volunteers',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTViewVolunteersOfOwnHall
+);
+
+router.get('/volunteers',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETVolunteers
 );
 
 router.get('/v1/admin/volunteers/all',

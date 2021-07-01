@@ -1472,7 +1472,81 @@ const handlePATCHDonorsDesignation = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+    //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
+    /*  #swagger.tags = ['Deprecated']
+            #swagger.description = 'Handles the fetching of volunteer lists for a hall admin.' */
+    try {
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+        let userDesignation = authenticatedUser.designation;
+
+        let userHall = authenticatedUser.hall;
+
+        let donorsQueryResult = await donorInterface.findDonorsByQuery({
+            hall: userHall,
+            designation: 1
+        }, {
+            studentId: 1,
+            name: 1,
+            roomNumber: 1,
+            bloodGroup: 1,
+            phone: 1,
+        });
+
+        if (donorsQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+            schema: {
+                   status: 'ERROR',
+                   message: '(Error message)'
+             },
+            description: 'The filter parameters are incorrect'
+     } */
+            return res.status(400).send({
+                status: donorsQueryResult.status,
+                message: donorsQueryResult.message
+            });
+        }
+
+        let volunteerList = donorsQueryResult.data;
+        /* #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                message: 'Volunteer list fetched successfully',
+                volunteerList:[
+                    {
+                        _id: "dskgjhwebkjsdbd",
+                        bloodGroup: 2,
+                        name: "John Doe",
+                        phone: 8801456987445,
+                        roomNumber: "409",
+                        studentId: 1610000,
+                    }
+                ]
+             },
+            description: 'An array of volunteers fetched successfully'
+     } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Volunteer list fetched successfully',
+            volunteerList
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+                   status: 'EXCEPTION',
+                   message: 'Internal server error'
+             },
+            description: 'In case of internal server error, user will get this error message'
+     } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handleGETVolunteers = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'Handles the fetching of volunteer lists for a hall admin.' */
     try {
@@ -2190,6 +2264,7 @@ module.exports = {
     handlePOSTPromote,
     handlePATCHDonorsDesignation,
     handlePOSTViewVolunteersOfOwnHall,
+    handleGETVolunteers,
     handlePOSTChangeAdmin,
     handlePOSTShowHallAdmins,
     handleGETViewDonorDetails,

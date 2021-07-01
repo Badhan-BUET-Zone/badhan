@@ -2953,6 +2953,129 @@
     "/v2/admin/promote": {
       "post": {
         "tags": [
+          "Deprecated"
+        ],
+        "description": "Handles the promotion or demotion of users.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "donorId\r",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "promote",
+            "in": "body",
+            "description": "If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hjasgd673278"
+                },
+                "promoteFlag": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "newPassword": {
+                  "type": "string",
+                  "example": "thisisanewpassword"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Target user promoted/demoted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor promotion/ demotion successful"
+          },
+          "400": {
+            "description": "When no donor with the specified donor id is found, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "If user cannot promote volunteer or cannot demote donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Can not promote volunteer or can not demote donor"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/donors/designation": {
+      "patch": {
+        "tags": [
           "Donors"
         ],
         "description": "Handles the promotion or demotion of users.",
@@ -3075,6 +3198,125 @@
     },
     "/v2/admin/volunteers": {
       "post": {
+        "tags": [
+          "Deprecated"
+        ],
+        "description": "Handles the fetching of volunteer lists for a hall admin.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "An array of volunteers fetched successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Volunteer list fetched successfully"
+                },
+                "volunteerList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "dskgjhwebkjsdbd"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801456987445
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "409"
+                      },
+                      "studentId": {
+                        "type": "number",
+                        "example": 1610000
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "The filter parameters are incorrect",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "This error will occur if the user does not exist",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Authentication failed. Invalid authentication token."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "In case of internal server error, user will get this error message",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/volunteers": {
+      "get": {
         "tags": [
           "Donors"
         ],
