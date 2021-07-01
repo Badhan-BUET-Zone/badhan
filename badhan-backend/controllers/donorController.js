@@ -1902,8 +1902,9 @@ const handlePATCHAdmins = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+    //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTShowHallAdmins = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'handles the fetching of hall admin list for a super admin.' */
     try {
 
@@ -1964,6 +1965,67 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 
 }
 
+const handleGETAdmins = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'handles the fetching of hall admin list for a super admin.' */
+    try {
+
+        let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {
+            phone: 1,
+            hall: 1,
+            name: 1
+        });
+
+        if (adminsQueryResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: '(Error message)'
+               },
+              description: 'If user does not exists in database, user will get this error message'
+       } */
+            return res.status(400).send({
+                status: adminsQueryResult.status,
+                message: adminsQueryResult.message
+            });
+        }
+
+        let admins = adminsQueryResult.data;
+
+        /* #swagger.responses[200] = {
+             schema: {
+                status: 'OK',
+                message: 'Hall admin list fetched successfully',
+                admins:[{
+                    _id: "reohrewoihgfsdn",
+                    hall: 0,
+                    name: "Salman Khan",
+                    phone: 8801521478996,
+                }]
+              },
+             description: 'Hall admin list fetch successful '
+      } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Hall admin list fetched successfully',
+            admins
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error message)'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+
+}
 
 /** DONE
  * This function handles the fetching of donor details.
@@ -2450,6 +2512,7 @@ module.exports = {
     handlePOSTChangeAdmin,
     handlePATCHAdmins,
     handlePOSTShowHallAdmins,
+    handleGETAdmins,
     handleGETViewDonorDetails,
     handleGETDonors,
     handlePOSTViewDonorDetails,//THIS IS A DEPRECATED ROUTE THAT WILL BE REMOVED ON 25 MAY 2022. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.

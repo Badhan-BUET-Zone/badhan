@@ -238,10 +238,17 @@ router.patch('/admins',
     donorController.handlePATCHAdmins
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/admin/hall/show',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTShowHallAdmins
+);
+
+router.get('/admins',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETAdmins
 );
 
 router.get('/v3/log/version',
