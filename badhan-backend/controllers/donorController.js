@@ -895,8 +895,9 @@ const handlePATCHDonorsPassword = async (req, res) => {
  * @param req The request for this http request-response cycle
  * @param res The response for this http request-response cycle
  */
+    //THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 const handlePOSTEditDonor = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
+    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Handles the update of donor information.' */
     /* #swagger.parameters['editDonor'] = {
                in: 'body',
@@ -1035,6 +1036,145 @@ const handlePOSTEditDonor = async (req, res) => {
     }
 }
 
+const handlePATCHDonors = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'Handles the update of donor information.' */
+    /* #swagger.parameters['editDonor'] = {
+               in: 'body',
+               description: 'donor info for editing donor',
+               schema:{
+                donorId:'ghjdgejhd7623jhs',
+                newName:'Mir Mahathir Mohammad',
+                newPhone:8801521438557,
+                newStudentId:1605011,
+                newBloodGroup:2,
+                newHall:3,
+                newRoomNumber:'3009',
+                newAddress:'Azimpur'
+               }
+      } */
+    try {
+        let reqBody = req.body;
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+
+        let target = res.locals.middlewareResponse.targetDonor;
+
+        if (authenticatedUser.designation < target.designation ||
+            (authenticatedUser.designation === target.designation
+                && !authenticatedUser._id.equals(target._id))) {
+            /* #swagger.responses[401] = {
+             schema: {
+                status: 'ERROR',
+                message: 'User does not have permission to edit'
+              },
+             description: 'User is below the target donor by designation'
+            } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have permission to edit this donor'
+            });
+        }
+
+        let updates = {};
+
+        if (reqBody.newName !== '') {
+            updates.name = reqBody.newName;
+        } else {
+            updates.name = target.name;
+        }
+
+        if (reqBody.newPhone !== -1) {
+            updates.phone = reqBody.newPhone;
+        } else {
+            updates.phone = target.phone;
+        }
+
+        if (reqBody.newStudentId !== '') {
+            updates.studentId = reqBody.newStudentId;
+        } else {
+            updates.studentId = target.studentId
+        }
+
+        if (reqBody.newBloodGroup !== -1) {
+            updates.bloodGroup = reqBody.newBloodGroup;
+        } else {
+            updates.bloodGroup = target.bloodGroup;
+        }
+
+        if (reqBody.newHall !== -1) {
+            updates.hall = reqBody.newHall;
+        } else {
+            updates.hall = target.hall;
+        }
+
+        if (reqBody.newRoomNumber !== undefined && reqBody.newRoomNumber !== null) {
+            updates.roomNumber = reqBody.newRoomNumber;
+        } else {
+            updates.roomNumber = target.roomNumber;
+        }
+
+        if (reqBody.newAddress !== '') {
+            updates.address = reqBody.newAddress;
+        } else {
+            updates.address = target.address;
+        }
+
+        let donorUpdateResult = await donorInterface.findDonorAndUpdate({
+            phone: target.phone
+        }, {
+            $set: {
+                phone: updates.phone,
+                name: updates.name,
+                studentId: updates.studentId,
+                bloodGroup: updates.bloodGroup,
+                hall: updates.hall,
+                roomNumber: updates.roomNumber,
+                address: updates.address
+            }
+        });
+
+        if (donorUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+             schema: {
+                status: 'ERROR',
+                message: '(Error message)'
+              },
+             description: 'Donor info update unsuccessful'
+      } */
+            return res.status(400).send({
+                status: donorUpdateResult.status,
+                message: donorUpdateResult.message
+            });
+        }
+        if (process.env.NODE_ENV !== 'development') {
+            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
+        }
+        /* #swagger.responses[200] = {
+             schema: {
+                status: 'OK',
+                message: 'Donor updated successfully'
+              },
+             description: 'Donor info update successful'
+        } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Donor updated successfully'
+        });
+
+    } catch (e) {
+        /* #swagger.responses[500] = {
+            schema: {
+               status: 'EXCEPTION',
+               message: '(Error message)'
+             },
+            description: 'Internal server error'
+        } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
 
 /** DONE
  * This function handles the promotion or demotion of users.
@@ -1866,6 +2006,7 @@ module.exports = {
     handlePOSTChangePassword,
     handlePATCHDonorsPassword,
     handlePOSTEditDonor,
+    handlePATCHDonors,
     handlePOSTPromote,
     handlePOSTViewVolunteersOfOwnHall,
     handlePOSTChangeAdmin,

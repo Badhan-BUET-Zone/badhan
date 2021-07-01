@@ -143,12 +143,21 @@ router.patch('/donors/password',
     donorController.handlePATCHDonorsPassword
 );
 
+//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
 router.post('/v2/donor/edit',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTEditDonor
+);
+
+router.patch('/donors',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
+    donorController.handlePATCHDonors
 );
 
 router.post('/v2/admin/donor/delete',
