@@ -418,13 +418,12 @@ const handlePOSTDeleteDonor = async (req, res) => {
 const handleDeleteDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the deletion of an existing donor from the database.' */
-    /* #swagger.parameters['deleteDonor'] = {
-               in: 'body',
-               description: 'donor info for deleting donor',
-               schema:{
-                donorId: 'hgjgkdse7823',
-               }
-      } */
+    /* #swagger.parameters['donorId'] = {
+              in: 'query',
+              description: 'donor id for deleting donation',
+              type:'string'
+     } */
+
     try {
         let donorId = res.locals.middlewareResponse.targetDonor._id;
 
