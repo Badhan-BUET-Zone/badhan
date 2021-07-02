@@ -1538,44 +1538,6 @@
             "description": "isNotAvailable for donors",
             "type": "boolean",
             "in": "query"
-          },
-          {
-            "name": "searchDonors",
-            "in": "body",
-            "description": "Filter parameters",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "bloodGroup": {
-                  "type": "number",
-                  "example": 2
-                },
-                "hall": {
-                  "type": "number",
-                  "example": 5
-                },
-                "batch": {
-                  "type": "number",
-                  "example": 16
-                },
-                "name": {
-                  "type": "string",
-                  "example": "Mir Mahathir Mohammad"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "Azimpur"
-                },
-                "isAvailable": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "isNotAvailable": {
-                  "type": "boolean",
-                  "example": false
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -2067,7 +2029,8 @@
           {
             "name": "donorId",
             "in": "query",
-            "type": "string"
+            "type": "string",
+            "description": "donor id for deleting donation"
           },
           {
             "name": "donorId\r",
@@ -2075,19 +2038,25 @@
             "type": "string"
           },
           {
-            "name": "deleteDonation",
+            "name": "date",
+            "in": "query",
+            "description": "donation date for deleting donation",
+            "type": "timestamp"
+          },
+          {
+            "name": "obj",
             "in": "body",
-            "description": "donor info for deleting donation",
             "schema": {
               "type": "object",
               "properties": {
                 "donorId": {
-                  "type": "string",
-                  "example": "bhjdekj8923"
+                  "example": "any"
+                },
+                "donorId\r": {
+                  "example": "any"
                 },
                 "date": {
-                  "type": "number",
-                  "example": 1611100800000
+                  "example": "any"
                 }
               }
             }

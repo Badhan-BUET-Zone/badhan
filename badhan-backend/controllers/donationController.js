@@ -628,13 +628,15 @@ const handlePOSTDeleteDonation = async (req, res) => {
 const handleDeleteDonations = async (req, res) => {
     /*  #swagger.tags = ['Donations']
             #swagger.description = 'handles the deletion of a donation for a donor.' */
-    /* #swagger.parameters['deleteDonation'] = {
-              in: 'body',
-              description: 'donor info for deleting donation',
-              schema:{
-                   donorId:'bhjdekj8923',
-                   date: 1611100800000,
-              }
+    /* #swagger.parameters['donorId'] = {
+              in: 'query',
+              description: 'donor id for deleting donation',
+              type:'string'
+     } */
+    /* #swagger.parameters['date'] = {
+              in: 'query',
+              description: 'donation date for deleting donation',
+              type:'timestamp'
      } */
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
@@ -714,10 +716,10 @@ const handleDeleteDonations = async (req, res) => {
                 }
             }
         }
-
+        let reqQuery=req.query;
         let donationDeleteResult = await donationInterface.deleteDonationByQuery({
-            donorId: req.body.donorId,
-            date: req.body.date
+            donorId: reqQuery.donorId,
+            date: reqQuery.date
         });
         if (process.env.NODE_ENV !== 'development') {
             await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONATION", donationDeleteResult.data);
@@ -738,7 +740,7 @@ const handleDeleteDonations = async (req, res) => {
         }
 
         let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-            _id: req.body.donorId
+            _id: reqQuery.donorId
         }, {
             $set: {
                 lastDonation: newLastDonation,
