@@ -2043,7 +2043,7 @@
             "name": "date",
             "in": "query",
             "description": "donation date for deleting donation",
-            "type": "timestamp"
+            "type": "number"
           },
           {
             "name": "obj",
@@ -2055,9 +2055,6 @@
                   "example": "any"
                 },
                 "donorId\r": {
-                  "example": "any"
-                },
-                "date": {
                   "example": "any"
                 }
               }

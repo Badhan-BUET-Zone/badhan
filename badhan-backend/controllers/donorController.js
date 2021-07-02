@@ -721,11 +721,13 @@ const handleGETSearch = async (req, res) => {
   } */
     try {
         let reqQuery = req.query;
-        reqQuery.bloodGroup=parseFloat(reqQuery.bloodGroup);
-        reqQuery.hall=parseFloat(reqQuery.hall);
-        reqQuery.batch=parseFloat(reqQuery.batch);
-        reqQuery.isAvailable = reqQuery.isAvailable.toLowerCase() == 'true' ? true : false;
-        reqQuery.isNotAvailable = reqQuery.isNotAvailable.toLowerCase() == 'true' ? true : false;
+        reqQuery.bloodGroup=parseInt(reqQuery.bloodGroup);
+
+        reqQuery.hall=parseInt(reqQuery.hall);
+        reqQuery.batch=isNaN(parseInt(reqQuery.batch))?"":parseInt(reqQuery.batch);
+        reqQuery.isAvailable = reqQuery.isAvailable.toLowerCase() === 'true';
+        reqQuery.isNotAvailable = reqQuery.isNotAvailable.toLowerCase() === 'true';
+
         if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall && reqQuery.hall <= 6 && res.locals.middlewareResponse.donor.designation !== 3) {
             /* #swagger.responses[400] = {
               schema: {

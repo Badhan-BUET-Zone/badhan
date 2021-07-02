@@ -636,7 +636,7 @@ const handleDeleteDonations = async (req, res) => {
     /* #swagger.parameters['date'] = {
               in: 'query',
               description: 'donation date for deleting donation',
-              type:'timestamp'
+              type:'number'
      } */
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
@@ -685,7 +685,9 @@ const handleDeleteDonations = async (req, res) => {
             return a - b
         });
 
-        let givenDate = req.body.date;
+        let reqQuery=req.query;
+
+        let givenDate = parseInt(reqQuery.date);
         let isValidDate = donations.includes(givenDate);
 
         if (!isValidDate) {
@@ -695,7 +697,7 @@ const handleDeleteDonations = async (req, res) => {
                message: 'No donations found for the specified donor on this date'
               },
              description: 'No Donation found for the specified date to delete'
-      } */
+            } */
             return res.status(400).send({
                 status: 'ERROR',
                 message: 'No donations found for the specified donor on this date'
@@ -716,7 +718,7 @@ const handleDeleteDonations = async (req, res) => {
                 }
             }
         }
-        let reqQuery=req.query;
+
         let donationDeleteResult = await donationInterface.deleteDonationByQuery({
             donorId: reqQuery.donorId,
             date: reqQuery.date
