@@ -1538,44 +1538,6 @@
             "description": "isNotAvailable for donors",
             "type": "boolean",
             "in": "query"
-          },
-          {
-            "name": "searchDonors",
-            "in": "body",
-            "description": "Filter parameters",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "bloodGroup": {
-                  "type": "number",
-                  "example": 2
-                },
-                "hall": {
-                  "type": "number",
-                  "example": 5
-                },
-                "batch": {
-                  "type": "number",
-                  "example": 16
-                },
-                "name": {
-                  "type": "string",
-                  "example": "Mir Mahathir Mohammad"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "Azimpur"
-                },
-                "isAvailable": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "isNotAvailable": {
-                  "type": "boolean",
-                  "example": false
-                }
-              }
-            }
           }
         ],
         "responses": {
