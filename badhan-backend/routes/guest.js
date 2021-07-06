@@ -7,71 +7,71 @@ router.post('/users/signin',
     guestController.handlePOSTLogIn
 );
 
-router.post('/users/signout',
+router.delete('/users/signout',
     guestController.handlePOSTLogOut
 );
 
-router.post('/users/signoutall',
+router.delete('/users/signout/all',
     guestController.handlePOSTLogOutAll
 );
 
-router.post('/v2/donor/details/self',
+router.get('/donors/me',
     guestController.handlePOSTViewDonorDetailsSelf
 );
 
-router.post('/v2/donor/insert',
+router.post('/donors',
     guestController.handlePOSTInsertDonor
 );
 
-router.post('/v2/donor/search',
+router.get('/search',
     guestController.handlePOSTSearchDonors
 );
 
-router.post('/v2/admin/donor/delete',
+router.delete('/donors',
     guestController.handlePOSTDeleteDonor,
 );
 
-router.post('/v2/donor/comment',
+router.patch('/donors/comment',
     guestController.handlePOSTComment,
 );
 
-router.post('/v2/donor/password/change',
+router.patch('/donors/password',
     guestController.handlePOSTChangePassword,
 );
 
-router.post('/v2/donor/edit',
+router.patch('/donors',
     guestController.handlePOSTEditDonor,
 );
 
-router.post('/v2/admin/promote',
+router.patch('/donors/designation',
     guestController.handlePOSTPromote
 );
 
-router.post('/v2/admin/hall/change',
+router.patch('/admins',
     guestController.handlePOSTChangeAdmin
 );
 
-router.get('/v3/donor/details',
+router.get('/donors',
     guestController.handleGETViewDonorDetails
 );
 
-router.post('/v2/admin/volunteers',
+router.get('/volunteers',
     guestController.handlePOSTViewVolunteersOfOwnHall
 );
 
-router.post('/v2/admin/hall/show',
+router.get('/admins',
     guestController.handlePOSTShowHallAdmins
 );
 
-router.post('/v2/donor/donations',
+router.get('/donations',
     guestController.handleGETSeeHistory
 );
 
-router.post('/v2/donation/insert',
+router.post('/donations',
     guestController.handlePOSTInsertDonation
 );
 
-router.post('/v2/donation/delete',
+router.delete('/donations',
     guestController.handlePOSTDeleteDonation
 );
 
@@ -87,7 +87,7 @@ router.delete('/v1/log',
     guestController.handleDELETELogs
 );
 
-router.get('/v1/admin/volunteers/all',
+router.get('/volunteers/all',
     guestController.handleGETViewAllVolunteers,
 )
 
