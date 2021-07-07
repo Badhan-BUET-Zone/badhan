@@ -15,26 +15,10 @@ router.post('/signin',
     authenticator.handlePOSTSignIn
 );
 
-
-
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-router.post('/signout',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handlePOSTLogOut
-);
-
 router.delete('/signout',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleDeleteSignOut
-);
-
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-router.post('/signoutall',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handlePOSTLogOutAll
 );
 
 router.delete('/signout/all',
@@ -43,24 +27,11 @@ router.delete('/signout/all',
     authenticator.handleDeleteSignOutAll
 );
 
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-router.post('/requestRedirection',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handlePOSTRequestRedirection
-);
-
 
 router.post('/redirection',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handlePOSTRedirection
-);
-
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-router.post('/redirectionSignIn',
-    rateLimiter.redirectionSignInLimiter,
-    authenticator.handlePOSTRedirectedAuthentication
 );
 
 router.patch('/redirection',
