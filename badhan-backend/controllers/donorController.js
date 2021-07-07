@@ -402,7 +402,8 @@ const handleGETSearch = async (req, res) => {
                     address: donors[i].address,
                     donationCount: donors[i].donationCount,
                     roomNumber: donors[i].roomNumber,
-                    comment: donors[i].comment
+                    comment: donors[i].comment,
+                    commentTime: donors[i].commentTime,
                 };
 
                 filteredDonors.push(obj);
@@ -493,6 +494,21 @@ const handlePATCHDonorsComment = async (req, res) => {
             return res.status(400).send({
                 status: donorUpdateResult.status,
                 message: donorUpdateResult.message
+            });
+        }
+
+        const donorCommentTimeUpdateResult = await donorInterface.findDonorByIDAndUpdateCommentTime(targetDonor._id,new Date().getTime());
+        if (donorCommentTimeUpdateResult.status !== 'OK') {
+            /* #swagger.responses[400] = {
+            schema: {
+               status: 'ERROR',
+               message: '(Error message)'
+            },
+            description: 'In case of failure of saving the comment time'
+            } */
+            return res.status(400).send({
+                status: donorCommentTimeUpdateResult.status,
+                message: donorCommentTimeUpdateResult.message
             });
         }
 
@@ -1122,6 +1138,7 @@ const handleGETDonors = async (req, res) => {
             roomNumber: donor.roomNumber,
             address: donor.address,
             comment: donor.comment,
+            commentTime: donor.commentTime,
             designation: donor.designation,
             donationCount: donor.donationCount,
         }
@@ -1204,6 +1221,7 @@ const handleGETDonorsMe = async (req, res) => {
             roomNumber: donor.roomNumber,
             address: donor.address,
             comment: donor.comment,
+            commentTime: donor.commentTime,
             designation: donor.designation
         }
         /* #swagger.responses[200] = {

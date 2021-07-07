@@ -1,0 +1,1 @@
+db.donors.updateMany({},{$set: {"commentTime":0}},false,true)

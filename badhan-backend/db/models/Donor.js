@@ -55,6 +55,10 @@ const donorSchema = new mongoose.Schema({
     comment: {
         type: String
     },
+    commentTime:{
+        type: Number,
+        default: 0
+    },
     donationCount: {
         type: Number,
         default: 0

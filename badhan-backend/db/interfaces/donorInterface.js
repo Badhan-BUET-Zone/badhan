@@ -182,7 +182,36 @@ const findDonorsByQuery = async (query, option) => {
         }
     }
 };
+const findDonorByIDAndUpdateCommentTime = async (id, commentTime)=>{
+    try {
+        let data = await Donor.findByIdAndUpdate(id, {
+            $set:{
+                commentTime
+            }
+        });
 
+        if (data) {
+            return {
+                data,
+                message: 'Comment time updated successfully',
+                status: 'OK'
+            }
+        } else {
+            return {
+                data: null,
+                message: 'Comment time update failed',
+                status: 'ERROR'
+            };
+        }
+
+    } catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'ERROR'
+        };
+    }
+}
 
 const findDonorByIDAndUpdate = async (id, update) => {
     try {
@@ -281,5 +310,6 @@ module.exports = {
     getCount,
     getVolunteerCount,
     findAllVolunteers,
-    findDonorsByPhone
+    findDonorsByPhone,
+    findDonorByIDAndUpdateCommentTime
 }

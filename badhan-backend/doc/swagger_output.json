@@ -1261,7 +1261,7 @@
             "description": "In case of successfully saving the comment"
           },
           "400": {
-            "description": "In case of failure of saving the comment",
+            "description": "In case of failure of saving the comment time",
             "schema": {
               "type": "object",
               "properties": {
