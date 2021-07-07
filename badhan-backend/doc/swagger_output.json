@@ -379,29 +379,9 @@
         "parameters": [
           {
             "name": "donorId",
-            "in": "query",
+            "description": "Donor id for donor details",
             "type": "string",
-            "description": "Donor id for donor details"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "example": "any"
-                },
-                "donorId\r": {
-                  "example": "any"
-                }
-              }
-            }
+            "in": "query"
           }
         ],
         "responses": {
@@ -546,16 +526,6 @@
         "description": "Handles the update of donor information.",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "editDonor",
             "in": "body",
             "description": "donor info for editing donor",
@@ -689,28 +659,8 @@
           {
             "name": "donorId",
             "in": "query",
-            "type": "string",
-            "description": "donor id for deleting donation"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
+            "description": "donor id for deleting donation",
             "type": "string"
-          },
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "example": "any"
-                },
-                "donorId\r": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -821,29 +771,9 @@
         "parameters": [
           {
             "name": "donorId",
-            "in": "query",
+            "description": "Donor id for donor details",
             "type": "string",
-            "description": "Donor id for donor details"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "example": "any"
-                },
-                "donorId\r": {
-                  "example": "any"
-                }
-              }
-            }
+            "in": "query"
           }
         ],
         "responses": {
@@ -1682,16 +1612,6 @@
         "description": "handles the retrieval of donation history for a particular donor.",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "seeHistory",
             "in": "body",
             "description": "donor info for inserting donor",
@@ -1798,29 +1718,9 @@
         "parameters": [
           {
             "name": "donorId",
-            "in": "query",
+            "description": "donor info for donations",
             "type": "string",
-            "description": "donor info for donations"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "example": "any"
-                },
-                "donorId\r": {
-                  "example": "any"
-                }
-              }
-            }
+            "in": "query"
           }
         ],
         "responses": {
@@ -1911,16 +1811,6 @@
         ],
         "description": "Endpoint to insert a donation date for a donor",
         "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "insertDonation",
             "in": "body",
@@ -2031,12 +1921,7 @@
           {
             "name": "donorId",
             "in": "query",
-            "type": "string",
-            "description": "donor id for deleting donation"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
+            "description": "donor id for deleting donation",
             "type": "string"
           },
           {
@@ -2044,21 +1929,6 @@
             "in": "query",
             "description": "donation date for deleting donation",
             "type": "number"
-          },
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "example": "any"
-                },
-                "donorId\r": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -2151,16 +2021,6 @@
         ],
         "description": "Endpoint to insert a donation date for a donor",
         "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "insertDonation",
             "in": "body",
@@ -2271,16 +2131,6 @@
         "description": "handles the deletion of a donation for a donor.",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "deleteDonation",
             "in": "body",
             "description": "donor info for deleting donation",
@@ -2389,16 +2239,6 @@
         ],
         "description": "Adds a comment to a donor",
         "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "insertDonor",
             "in": "body",
@@ -2509,16 +2349,6 @@
         "description": "Adds a comment to a donor",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "editDonorComment",
             "in": "body",
             "description": "donor info for posting comment",
@@ -2627,16 +2457,6 @@
         ],
         "description": "Handles the changing of password for an account.",
         "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "changePassword",
             "in": "body",
@@ -2747,16 +2567,6 @@
         "description": "Handles the changing of password for an account.",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "changePassword",
             "in": "body",
             "description": "donor info for changing password",
@@ -2865,16 +2675,6 @@
         ],
         "description": "Handles the update of donor information.",
         "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "editDonor",
             "in": "body",
@@ -3009,16 +2809,6 @@
         "description": "handles the deletion of an existing donor from the database.",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "deleteDonor",
             "in": "body",
             "description": "donor info for deleting donor",
@@ -3140,16 +2930,6 @@
         "description": "Handles the promotion or demotion of users.",
         "parameters": [
           {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "promote",
             "in": "body",
             "description": "If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.",
@@ -3262,16 +3042,6 @@
         ],
         "description": "Handles the promotion or demotion of users.",
         "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "donorId\r",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "promote",
             "in": "body",

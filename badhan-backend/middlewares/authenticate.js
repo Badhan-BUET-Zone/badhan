@@ -681,10 +681,12 @@ let handleHallPermission = async (req, res, next) => {
     /*
     Makes sure that the targeted donor id is available in the request
      */
-    if (req.body.donorId) {
-        donorId = req.body.donorId
-    } else if (req.query.donorId) {
-        donorId = req.query.donorId
+    let request=req;
+
+    if (request.body.donorId) {
+        donorId = request.body.donorId
+    } else if (request.query.donorId) {
+        donorId = request.query.donorId
     } else {
         /* #swagger.responses[400] = {
            schema: {
