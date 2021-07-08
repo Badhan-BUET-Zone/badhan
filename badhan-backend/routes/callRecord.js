@@ -13,5 +13,18 @@ router.post('/callrecords',
     callRecordController.handlePOSTCallRecord
 );
 
+router.get('/callrecords',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    callRecordController.handleGETCallRecords
+);
+
+router.delete('/callrecords',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleHallPermission,
+    callRecordController.handleDELETESingleCallRecord
+);
 
 module.exports = router;

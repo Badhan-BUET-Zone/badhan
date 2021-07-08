@@ -29,6 +29,10 @@ const doc = {
             "name":"Logs",
             "description":"Fetch statistics about backend"
         },
+        {
+            "name":"Call Records",
+            "description":"Fetch call records of donors"
+        },
 
     ],
     securityDefinitions: {
@@ -83,7 +87,7 @@ const doc = {
 }
 
 const outputFile = './doc/swagger_output.json'
-const endpointsFiles = ['./routes/api.js','./routes/users.js']
+const endpointsFiles = ['./routes/api.js','./routes/users.js','./routes/callRecord.js']
 
 
 

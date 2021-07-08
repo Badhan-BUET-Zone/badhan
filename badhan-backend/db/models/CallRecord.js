@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 const callRecordSchema = new mongoose.Schema({
-    callerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donor' },
+    callerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Donor',
+        required: true
+    },
     calleeId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Donor',
+        required: true
     },
     date: {
         type: Number,

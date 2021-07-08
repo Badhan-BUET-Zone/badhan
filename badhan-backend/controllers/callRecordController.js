@@ -6,7 +6,7 @@ const handlePOSTCallRecord = async (req, res) => {
         #swagger.description = 'Endpoint to insert a call record' */
     /* #swagger.parameters['CallRecordObject'] = {
                in: 'body',
-               description: 'Contains the donor id of caller and callee',
+               description: 'Contains the donor id of callee',
                schema:{
                     donorId:'fwetiubg43t6847gsdffwekt',
                }
@@ -32,7 +32,13 @@ const handlePOSTCallRecord = async (req, res) => {
         /* #swagger.responses[200] = {
                      schema: {
                            status: 'OK',
-                           message: 'Call record insertion successful'
+                           message: 'Call record insertion successful',
+                           callRecord: {
+                                date: 1625755390858,
+                                _id: '60e70f42055a83d88',
+                                callerId: "5e901d567ced73",
+                                calleeId: "5e68514546b0e",
+                            }
                      },
                      description: 'Call record insertion successful'
                 } */
@@ -56,6 +62,160 @@ const handlePOSTCallRecord = async (req, res) => {
     }
 }
 
+const handleGETCallRecords = async (req,res)=>{
+    /*  #swagger.tags = ['Call Records']
+            #swagger.description = 'handles the retrieval of call history for a particular donor.' */
+    /* #swagger.parameters['donorId'] = {
+              description: 'donor info for call history',
+              type: 'string',
+              name:'donorId'
+      } */
+    try {
+        let donor = res.locals.middlewareResponse.targetDonor;
+        let callRecordResult = await callRecordInterface.findManyByCallee(donor._id);
+        if(callRecordResult.status!=='OK'){
+            /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error)'
+              },
+             description: 'This error occurs if the call record insertion fails'
+            } */
+            return res.status(500).send({
+                status: 'EXCEPTION',
+                message: callRecordResult.message
+            });
+        }
+        /* #swagger.responses[200] = {
+                     schema: {
+                           status: 'OK',
+                           message: 'Call record fetch successful',
+                           callRecords:{
+                                "status": "OK",
+                                "message": "Call record fetch successful",
+                                "callRecord": [
+                                    {
+                                        "date": 1625754390478,
+                                        "_id": "60e70d6972a660d4f156906b",
+                                        "callerId": "5e901d56effc5900177ced73",
+                                        "calleeId": "5e68514995b0367d81546b0e",
+                                    },
+                                 ]
+                           }
+                     },
+                     description: 'Call record fetch successful'
+                } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Call record fetch successful',
+            callRecords: callRecordResult.data,
+        });
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error)'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+const handleDELETESingleCallRecord = async (req,res)=>{
+    /*  #swagger.tags = ['Call Records']
+            #swagger.description = 'handles the deletion of one call history for a particular donor.' */
+    /* #swagger.parameters['donorId'] = {
+              description: 'Id of donor for call history',
+              type: 'string',
+              name:'donorId'
+      }
+       */
+
+    /* #swagger.parameters['callRecordId'] = {
+              description: 'Id of call record that is going to be deleted ',
+              type: 'string',
+              name:'callRecordId'
+      }
+       */
+    try {
+        let donor = res.locals.middlewareResponse.targetDonor;
+        let callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId);
+        if(callRecordSearchResult.status!=='OK'){
+            /* #swagger.responses[404] = {
+             schema: {
+                    status: 'ERROR',
+                    message: 'Call record not found'
+              },
+             description: 'This error occurs if the call record does not exist'
+            } */
+            return res.status(404).send({
+                status: 'ERROR',
+                message: 'Call record not found'
+            });
+        }
+
+        if(!callRecordSearchResult.data.calleeId.equals(donor._id)){
+            /* #swagger.responses[400] = {
+             schema: {
+                    status: 'ERROR',
+                    message: 'Target donor does not have the callee of call record'
+              },
+             description: 'This error occurs if the call record does not associate with the target donor'
+            } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Target donor does not have the callee of call record'
+            });
+        }
+
+        let callRecordDeleteResult = await callRecordInterface.deleteById(req.query.callRecordId);
+        if(callRecordDeleteResult.status!=='OK'){
+            /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error)'
+              },
+             description: 'This error occurs if the call record deletion failed for unknown reason'
+            } */
+            return res.status(500).send({
+                status: 'EXCEPTION',
+                message: callRecordDeleteResult.message
+            });
+        }
+        /* #swagger.responses[200] = {
+                     schema: {
+                           status: 'OK',
+                           message: 'Call record deletion successful',
+                     },
+                     description: 'Call record deletion successful'
+         } */
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Call record deletion successful'
+        });
+    } catch (e) {
+        /* #swagger.responses[500] = {
+             schema: {
+                    status: 'EXCEPTION',
+                    message: '(Internal server error)'
+              },
+             description: 'In case of internal server error, user will get this error message'
+      } */
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
+
+
 module.exports = {
-    handlePOSTCallRecord
+    handlePOSTCallRecord,
+    handleGETCallRecords,
+    handleDELETESingleCallRecord
 }
