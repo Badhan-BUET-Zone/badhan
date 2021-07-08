@@ -18,6 +18,7 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         roomNumber: "3009",
         address: "Azimpur",
         comment: "This person has diabetes",
+        commentTime: 1625755390858,
         designation: 3
     }
 
@@ -64,7 +65,8 @@ const handlePOSTSearchDonors = async (req, res) => {
             address: "Azimpur",
             donationCount: 2,
             roomNumber: "307",
-            comment: "Developer of Badhan"
+            comment: "Developer of Badhan",
+            commentTime: 1625755390858,
         }, {
             _id: "sgherjknfb",
             phone: 8801521444444,
@@ -75,7 +77,8 @@ const handlePOSTSearchDonors = async (req, res) => {
             address: "Banani",
             donationCount: 4,
             roomNumber: "E-892",
-            comment: "Full Stack developer"
+            comment: "Full Stack developer",
+            commentTime: 1625755390858,
         }, {
             _id: "dfjhgotnkjgh",
             phone: 8801621478996,
@@ -86,7 +89,8 @@ const handlePOSTSearchDonors = async (req, res) => {
             address: "Azimpur Colony",
             donationCount: 0,
             roomNumber: "E-206",
-            comment: "Backend developer"
+            comment: "Backend developer",
+            commentTime: 1625755390858,
         }, {
             _id: "edswhweoirn",
             phone: 8801711111111,
@@ -97,7 +101,8 @@ const handlePOSTSearchDonors = async (req, res) => {
             address: "Azimpur Colony",
             donationCount: 0,
             roomNumber: "E-206",
-            comment: "Backend developer"
+            comment: "Backend developer",
+            commentTime: 1625755390858,
         }, {
             _id: "tgfdhklntlnb",
             phone: 8801452147889,
@@ -108,7 +113,8 @@ const handlePOSTSearchDonors = async (req, res) => {
             address: "BUET Hall",
             donationCount: 3,
             roomNumber: "899",
-            comment: "Tester"
+            comment: "Tester",
+            commentTime: 1625755390858,
         },
     ];
 
@@ -178,6 +184,7 @@ const handleGETViewDonorDetails = async (req, res) => {
         comment: "Has high blood pressure",
         designation: 1,
         donationCount: 3,
+        commentTime: 1625755390858,
     }
 
     return res.status(200).send({
@@ -584,8 +591,43 @@ const handleGETViewAllVolunteers = async (req, res) => {
         message: 'Successfully fetched donor details',
         data: object
     });
-
 }
+
+const handlePOSTCallRecord = async (req, res) => {
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Call record insertion successful',
+        callRecord: {
+            date: 1625755390858,
+            _id: '60e70f42055a83d88',
+            callerId: "5e901d567ced73",
+            calleeId: "5e68514546b0e",
+        }
+    })
+};
+
+const handleGETCallRecords = async (req, res) => {
+    return res.status(200).send({
+        status: "OK",
+        message: "Call record fetch successful",
+        callRecord: [
+            {
+                "date": 1625754390478,
+                "_id": "60e76906b",
+                "callerId": "5e901d56e0177ced73",
+                "calleeId": "5e6851546b0e",
+            },
+        ]
+
+    })
+};
+
+const handleDELETESingleCallRecord = async (req, res) => {
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Call record deletion successful',
+    });
+};
 
 module.exports = {
     handlePOSTLogIn,
@@ -609,5 +651,8 @@ module.exports = {
     handleGETStatistics,
     handleGETLogs,
     handleDELETELogs,
-    handleGETViewAllVolunteers
+    handleGETViewAllVolunteers,
+    handlePOSTCallRecord,
+    handleGETCallRecords,
+    handleDELETESingleCallRecord
 }

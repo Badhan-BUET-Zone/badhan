@@ -141,6 +141,8 @@ const handleDELETESingleCallRecord = async (req,res)=>{
               name:'callRecordId'
       }
        */
+    let user = res.locals.middlewareResponse.donor;
+
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
         let callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId);
@@ -186,6 +188,9 @@ const handleDELETESingleCallRecord = async (req,res)=>{
                 message: callRecordDeleteResult.message
             });
         }
+
+        await logInterface.addLog(user.name,user.hall,"DELETE CALLRECORD",callRecordSearchResult.data);
+
         /* #swagger.responses[200] = {
                      schema: {
                            status: 'OK',

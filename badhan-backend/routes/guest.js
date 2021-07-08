@@ -91,6 +91,18 @@ router.get('/volunteers/all',
     guestController.handleGETViewAllVolunteers,
 )
 
+router.post('/callrecords',
+    guestController.handlePOSTCallRecord
+);
+
+router.get('/callrecords',
+    guestController.handleGETCallRecords
+);
+
+router.delete('/callrecords',
+    guestController.handleDELETESingleCallRecord
+);
+
 
 
 module.exports = router;
