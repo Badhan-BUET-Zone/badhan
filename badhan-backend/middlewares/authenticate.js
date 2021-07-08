@@ -748,16 +748,17 @@ let handleHallPermission = async (req, res, next) => {
 }
 
 module.exports = {
-    handlePOSTSignIn,
     handleAuthentication,
-    handlePOSTLogOut,
-    handleDeleteSignOut,
-    handlePOSTLogOutAll,
-    handleDeleteSignOutAll,
     handleHallAdminCheck,
     handleSuperAdminCheck,
     handleHallPermission,
     handleHigherDesignationCheck,
+
+    handlePOSTSignIn,
+    handlePOSTLogOut,
+    handleDeleteSignOut,
+    handlePOSTLogOutAll,
+    handleDeleteSignOutAll,
     handlePOSTRequestRedirection,
     handlePOSTRedirection,
     handlePOSTRedirectedAuthentication,

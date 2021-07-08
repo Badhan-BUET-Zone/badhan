@@ -29,6 +29,7 @@ const swaggerFile = require('./doc/swagger_output.json');
 let apiRouter = require('./routes/api');
 let usersRouter = require('./routes/users');
 let guestRouter = require('./routes/guest')
+let callRecordRouter = require('./routes/callRecord');
 
 const { mongoose } = require('./db/mongoose');
 
@@ -53,6 +54,7 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/users', usersRouter);
 app.use('/guest', guestRouter);
 app.use('/', apiRouter);
+app.use('/', callRecordRouter);
 
 
 
