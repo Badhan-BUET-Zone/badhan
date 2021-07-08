@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 const callRecordSchema = new mongoose.Schema({
-    callerId: {
-        type: String,
-        required: true,
-    },
+    callerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donor' },
     calleeId: {
         type: String,
         required: true,
