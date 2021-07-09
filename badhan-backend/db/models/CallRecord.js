@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 const callRecordSchema = new mongoose.Schema({
     callerId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -14,7 +13,6 @@ const callRecordSchema = new mongoose.Schema({
     date: {
         type: Number,
         required: true,
-        default: moment().valueOf()
     }
 });
 

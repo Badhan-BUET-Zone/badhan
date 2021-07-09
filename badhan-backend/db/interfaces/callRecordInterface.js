@@ -1,7 +1,9 @@
 const {CallRecord} = require('../models/CallRecord');
+
 const insertOne = async (callerId,calleeId)=>{
     try {
-        let callRecord = new CallRecord(callerId,calleeId);
+        let callRecord = new CallRecord(
+            {callerId,calleeId,date:new Date().getTime()});
         let data = await callRecord.save();
         return {
             message: "Created call record successfully",
@@ -18,9 +20,7 @@ const insertOne = async (callerId,calleeId)=>{
 }
 const findManyByCallee = async (calleeId)=>{
     try {
-        let data = await CallRecord.find({calleeId}).populate({path:'callerId',select: { '_id': 1,'name':1},}).select('_id date callerId');
-
-
+        let data = await CallRecord.find({calleeId}).populate({path:'callerId',select: { '_id': 1,'name':1},});
 
         return {
             message: "Fetched call record successfully",

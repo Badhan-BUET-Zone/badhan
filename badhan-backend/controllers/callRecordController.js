@@ -14,7 +14,7 @@ const handlePOSTCallRecord = async (req, res) => {
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
         let user = res.locals.middlewareResponse.donor;
-        let callRecordInsertionResult = await callRecordInterface.insertOne({callerId:user._id,calleeId:donor._id});
+        let callRecordInsertionResult = await callRecordInterface.insertOne(user._id,donor._id);
         if(callRecordInsertionResult.status!=='OK'){
             /* #swagger.responses[500] = {
              schema: {
