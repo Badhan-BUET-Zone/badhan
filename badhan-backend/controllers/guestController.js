@@ -614,7 +614,12 @@ const handleGETCallRecords = async (req, res) => {
             {
                 "date": 1625754390478,
                 "_id": "60e76906b",
-                "callerId": "5e901d56e0177ced73",
+                "callerId": {
+                    _id:"5e901d56e0177ced73",
+                    name: "Mir Mahathir Mohammad",
+                    designation: 3,
+                    hall: 4
+                },
                 "calleeId": "5e6851546b0e",
             },
         ]

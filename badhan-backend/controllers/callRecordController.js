@@ -36,7 +36,12 @@ const handlePOSTCallRecord = async (req, res) => {
                            callRecord: {
                                 date: 1625755390858,
                                 _id: '60e70f42055a83d88',
-                                callerId: "5e901d567ced73",
+                                "callerId": {
+                                    _id:"5e901d56e0177ced73",
+                                    name: "Mir Mahathir Mohammad",
+                                    designation: 3,
+                                    hall: 4
+                                },
                                 calleeId: "5e68514546b0e",
                             }
                      },

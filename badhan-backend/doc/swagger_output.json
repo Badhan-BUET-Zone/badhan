@@ -2808,8 +2808,25 @@
                       "example": "60e70f42055a83d88"
                     },
                     "callerId": {
-                      "type": "string",
-                      "example": "5e901d567ced73"
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "5e901d56e0177ced73"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Mir Mahathir Mohammad"
+                        },
+                        "designation": {
+                          "type": "number",
+                          "example": 3
+                        },
+                        "hall": {
+                          "type": "number",
+                          "example": 4
+                        }
+                      }
                     },
                     "calleeId": {
                       "type": "string",
