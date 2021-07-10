@@ -19,4 +19,4 @@ const callRecordSchema = new mongoose.Schema({
 const CallRecord = mongoose.model('CallRecords', callRecordSchema);
 
 
-module.exports = { CallRecord }
+module.exports = { CallRecord, callRecordSchema }

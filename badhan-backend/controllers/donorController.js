@@ -142,43 +142,6 @@ const handlePOSTDonors = async (req, res) => {
     }
 }
 
-/** DONE
- * This function handles the deletion of an existing donor from the database.
- *
- * The request body is expected to contain the phone number of the donor to be deleted.
- *
- * @param req The request for this http request-response cycle
- * @param res The response for this http request-response cycle
- */
-const handlePOSTDeleteSelf = async (req, res) => {
-    /*  #swagger.tags = ['Donors']
-            #swagger.description = 'handles the deletion of an existing donor from the database.' */
-    try {
-        let authenticatedUser = res.locals.middlewareResponse.donor;
-
-        let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
-            donorId: authenticatedUser._id
-        });
-
-        if (deleteDonationsResult.status === 'OK') {
-            let deleteDonorResult = await donorInterface.deleteDonorById(authenticatedUser._id);
-
-            if (deleteDonorResult.status === 'OK') {
-                return res.status(200).send({
-                    status: 'OK',
-                    message: 'Donor deleted successfully'
-                });
-            }
-        }
-
-    } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
-    }
-}
-
 const handleDeleteDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the deletion of an existing donor from the database.' */
@@ -190,24 +153,6 @@ const handleDeleteDonors = async (req, res) => {
 
     try {
         let donorId = res.locals.middlewareResponse.targetDonor._id;
-
-        let deleteDonationsResult = await donationInterface.deleteDonationsByQuery({
-            donorId
-        });
-
-        if (deleteDonationsResult.status !== 'OK') {
-            /* #swagger.responses[404] = {
-             schema: {
-                    status: 'EXCEPTION',
-                    message: 'Internal server error'
-              },
-             description: 'In case of internal server error, user will get this error message'
-            } */
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: "Error occured in deleting donations of target donor"
-            })
-        }
 
         let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
 
@@ -1315,7 +1260,6 @@ const handleGETVolunteersAll = async (req, res) => {
 
 module.exports = {
     handlePOSTDonors,
-    handlePOSTDeleteSelf,
     handleDeleteDonors,
     handleGETSearch,
     handlePATCHDonorsComment,
