@@ -13,7 +13,7 @@ const logSchema = new mongoose.Schema({
     date: {
         type: Number,
         required: true,
-        default: moment().valueOf()
+        default: Date.now,
     },
     operation:{
         type: String,
@@ -22,8 +22,17 @@ const logSchema = new mongoose.Schema({
     editedObject: {
         type: Object,
         required: true,
+    },
+    expireAt: {
+        type: Date,
+        default: ()=>{
+            return new Date().getTime()+60*1000*60*24*30//30days
+        },
     }
+
 });
+
+logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
 const Log = mongoose.model('Logs', logSchema);
 
