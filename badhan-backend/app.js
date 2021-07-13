@@ -4,10 +4,6 @@ dotenv.config( { path : './config/config.env'} )
 
 const env = process.env.NODE_ENV || 'development';
 
-if (env === 'development') {
-    MONGODB_URI = "mongodb://localhost:27017/Badhan"
-}
-
 const bodyParser=require('body-parser');
 let createError = require('http-errors');
 let express = require('express');
@@ -16,12 +12,6 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
 let app = express();
-// const forceSync = require('sync-rpc')
-// const taaha=async ()=>{
-//     console.log('taaha');
-// }
-// const syncFunction =forceSync(taaha().resolve());
-// syncFunction();
 
 
 const swaggerUi = require('swagger-ui-express');
