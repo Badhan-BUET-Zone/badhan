@@ -12,7 +12,7 @@ git push origin master
 #git push remote-aniruddha master
 
 # push to mahathir heroku app
-git push heroku master
+git push heroku-prod master
 
 #gcloud app deploy --stop-previous-version -q
 
