@@ -28,7 +28,7 @@ const handlePOSTCallRecord = async (req, res) => {
                 message: callRecordInsertionResult.message
             });
         }
-        await logInterface.addLog(user.name,user.hall,"INSERT CALLRECORD",{date: callRecordInsertionResult.data.date});
+        await logInterface.addLog(user._id,"CREATE CALLRECORD",{callee: donor.name});
         /* #swagger.responses[200] = {
                      schema: {
                            status: 'OK',
@@ -194,7 +194,7 @@ const handleDELETESingleCallRecord = async (req,res)=>{
             });
         }
 
-        await logInterface.addLog(user.name,user.hall,"DELETE CALLRECORD",callRecordSearchResult.data);
+        await logInterface.addLog(user._id,"DELETE CALLRECORD",{callee:donor.name,deletedDate: new Date(callRecordSearchResult.data.date).toLocaleString()});
 
         /* #swagger.responses[200] = {
                      schema: {

@@ -1,1 +1,4 @@
 db.donors.updateMany({},{$set: {"commentTime":0}},false,true)
+//DONE ON PROD DATABASE
+
+drop logs collection

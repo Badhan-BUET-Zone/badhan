@@ -104,9 +104,7 @@ const handlePOSTDonations = async (req, res) => {
             });
         }
 
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONATION", donationInsertionResult.data);
-        }
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"CREATE DONATION", {date: new Date(donationInsertionResult.data.date).toLocaleString(),donor: donor.name});
 
         if (donor.donationCount === 0 || (donor.donationCount !== 0 && req.body.date > donor.lastDonation)) {
             let donorUpdateResult = await donorInterface.findDonorAndUpdate({
@@ -314,9 +312,9 @@ const handleDeleteDonations = async (req, res) => {
             donorId: reqQuery.donorId,
             date: reqQuery.date
         });
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONATION", donationDeleteResult.data);
-        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATION", {date: new Date(reqQuery.date),name: donor.name});
+
 
         if (donationDeleteResult.status !== 'OK') {
             /* #swagger.responses[400] = {

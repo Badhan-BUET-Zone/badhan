@@ -110,9 +110,9 @@ const handlePOSTDonors = async (req, res) => {
                 date: 0
             });
         }
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "CREATE DONOR", donorInsertionResult.data);
-        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"CREATE DONOR", donorInsertionResult.data);
+
         /* #swagger.responses[201] = {
             schema: {
                   status: 'OK',
@@ -170,9 +170,7 @@ const handleDeleteDonors = async (req, res) => {
             })
         }
 
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DELETE DONOR", deleteDonorResult.data);
-        }
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONOR", deleteDonorResult.data);
 
         /* #swagger.responses[200] = {
         schema: {
@@ -433,9 +431,8 @@ const handlePATCHDonorsComment = async (req, res) => {
             });
         }
 
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE COMMENT", donorUpdateResult.data);
-        }
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"UPDATE DONOR COMMENT", donorUpdateResult.data);
+
 
         /* #swagger.responses[200] = {
         schema: {
@@ -499,9 +496,8 @@ const handlePATCHDonorsPassword = async (req, res) => {
 
         await target.save();
 
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE PASSWORD", {});
-        }
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR PASSWORD", {name: target.name});
+
         /* #swagger.responses[200] = {
              schema: {
                status: 'OK',
@@ -639,9 +635,9 @@ const handlePATCHDonors = async (req, res) => {
                 message: donorUpdateResult.message
             });
         }
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "UPDATE DONOR", donorUpdateResult.data);
-        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR", donorUpdateResult.data);
+
         /* #swagger.responses[200] = {
              schema: {
                 status: 'OK',
@@ -732,13 +728,12 @@ const handlePATCHDonorsDesignation = async (req, res) => {
 
         let logOperation = "";
         if (req.body.promoteFlag) {
-            logOperation = "PROMOTE DONOR";
+            logOperation = "PROMOTE";
         } else {
-            logOperation = "DEMOTE DONOR";
+            logOperation = "DEMOTE";
         }
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, logOperation, donor);
-        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR DESIGNATION ("+logOperation+")", donor);
         /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -914,9 +909,9 @@ const handlePATCHAdmins = async (req, res) => {
                     message: 'Could not change hall admin'
                 });
             }
-            if (process.env.NODE_ENV !== 'development') {
-                await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "DEMOTE HALLADMIN", prevHallAdminUpdateResult.data);
-            }
+
+            await logInterface.addLog(res.locals.middlewareResponse.donor._id,"UPDATE DONOR DESIGNATION (DEMOTE HALLADMIN)", prevHallAdminUpdateResult.data);
+
         }
 
         // Make new hall admin
@@ -941,9 +936,9 @@ const handlePATCHAdmins = async (req, res) => {
                 message: 'Demoted previous hall admin, but could not set new hall admin'
             });
         }
-        if (process.env.NODE_ENV !== 'development') {
-            await logInterface.addLog(res.locals.middlewareResponse.donor.name, res.locals.middlewareResponse.donor.hall, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
-        }
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
+
         /* #swagger.responses[200] = {
             schema: {
               status: 'OK',

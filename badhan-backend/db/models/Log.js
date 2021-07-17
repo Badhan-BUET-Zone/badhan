@@ -1,14 +1,10 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 
 const logSchema = new mongoose.Schema({
-    name: {
-        type: String,
+    donorId: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-    },
-    hall: {
-        type: Number,
-        required: true,
+        ref: 'Donor'
     },
     date: {
         type: Number,
@@ -19,7 +15,7 @@ const logSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    editedObject: {
+    details: {
         type: Object,
         required: true,
     },

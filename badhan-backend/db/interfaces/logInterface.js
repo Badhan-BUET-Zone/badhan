@@ -1,8 +1,8 @@
 const {Log} = require('../models/Log');
 
-const addLog = async (name, hall, operation, editedObject) => {
+const addLog = async (donorId, operation, details) => {
     try {
-        let log = new Log({name, hall, operation, editedObject});
+        let log = new Log({donorId, operation, details});
         let data = await log.save();
 
         if (data.nInserted === 0) {
@@ -30,9 +30,7 @@ const addLog = async (name, hall, operation, editedObject) => {
 
 const getLogs = async () => {
     try {
-        let logs = await Log.find();
-
-
+        let logs = await Log.find().populate({path:'donorId',select:{'name':1,'hall':1,'designation':3}});
         return {
             message: 'Log insertion successful',
             status: 'OK',
