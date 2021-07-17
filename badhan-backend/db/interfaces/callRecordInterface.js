@@ -20,7 +20,7 @@ const insertOne = async (callerId,calleeId)=>{
 }
 const findManyByCallee = async (calleeId)=>{
     try {
-        let data = await CallRecord.find({calleeId}).populate({path:'callerId',select: { '_id': 1,'name':1,'hall':1,'designation':1},});
+        let data = await CallRecord.find({calleeId}).populate({path:'callerId',select: { '_id': 1,'name':1,'hall':1,'designation':1}});
 
         return {
             message: "Fetched call record successfully",

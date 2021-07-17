@@ -677,25 +677,6 @@
               }
             }
           },
-          "400": {
-            "description": "No donor found that matches the token",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
           "401": {
             "description": "This error will occur if the user does not exist",
             "schema": {

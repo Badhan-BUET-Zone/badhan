@@ -69,8 +69,33 @@ const donorSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
 });
+
+donorSchema.virtual('callRecords', {
+    ref: 'CallRecords',
+    localField: '_id',
+    foreignField: 'calleeId'
+});
+
+donorSchema.virtual('donations',{
+    ref: 'Donations',
+    localField: '_id',
+    foreignField: 'donorId'
+})
+
+donorSchema.set('toObject', { virtuals: true });
+donorSchema.set('toJSON', { virtuals: true });
+
+donorSchema.methods.toJSON = function () {
+    const donor = this
+    const donorObject = donor.toObject()
+
+    delete donorObject.password
+    delete donorObject.tokens
+
+    return donorObject
+}
 
 donorSchema.pre('save', function (next) {
     let donor = this;
@@ -92,7 +117,6 @@ donorSchema.post('findOneAndDelete',  async (donor)=>{
     await CallRecord.deleteMany({calleeId: donor._id});
     await Donation.deleteMany({donorId:donor._id});
 });
-
 
 const Donor = mongoose.model('Donor', donorSchema);
 

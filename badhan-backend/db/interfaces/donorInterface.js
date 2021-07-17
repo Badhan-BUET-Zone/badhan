@@ -94,10 +94,35 @@ const deleteDonorById = async (donorId) => {
         }
     }
 };
+const fineDonorById = async (id)=>{
+    try {
+        let data = await Donor.findById(id).populate({path: 'callRecords'}).populate({path: 'donations'});
+        if (data) {
+            return {
+                data,
+                message: 'Donor found',
+                status: 'OK'
+            }
+        } else {
+            return {
+                data: null,
+                message: 'Donor not found',
+                status: 'ERROR'
+            }
+        }
 
+    } catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+}
 
 const findDonorByQuery = async (query, option) => {
     try {
+
         let data = await Donor.findOne(query, option);
         if (data) {
             return {
@@ -165,9 +190,9 @@ const findAllVolunteers = async () => {
 }
 
 
-const findDonorsByQuery = async (query, option) => {
+const findDonorsByQuery = async (query) => {
     try {
-        let data = await Donor.find(query, option);
+        let data = await Donor.find(query).populate({path:'callRecords',select:{'_id':1,'date':1,'callerId':1}});
         let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
         return {
             data,
@@ -311,5 +336,6 @@ module.exports = {
     getVolunteerCount,
     findAllVolunteers,
     findDonorsByPhone,
-    findDonorByIDAndUpdateCommentTime
+    findDonorByIDAndUpdateCommentTime,
+    fineDonorById
 }

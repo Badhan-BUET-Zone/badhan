@@ -9,6 +9,7 @@ const errorLogSchema = new mongoose.Schema({
     date: {
         type: Number,
         required: true,
+        default: Date.now,
     },
     message:{
         type: String,
@@ -20,6 +21,6 @@ const errorLogSchema = new mongoose.Schema({
     }
 });
 
-const ErrorLog = mongoose.model('Logs', errorLogSchema);
+const ErrorLog = mongoose.model('ErrorLogs', errorLogSchema);
 
 module.exports = { ErrorLog }

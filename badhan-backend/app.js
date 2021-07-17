@@ -20,8 +20,8 @@ let apiRouter = require('./routes/api');
 let usersRouter = require('./routes/users');
 let guestRouter = require('./routes/guest')
 let callRecordRouter = require('./routes/callRecord');
-
 const { mongoose } = require('./db/mongoose');
+let {responseInterceptor} = require('./middlewares/response');
 
 
 
@@ -39,21 +39,15 @@ app.use(cookieParser());
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
-// app.use('/', indexRouter);
+// app.use(responseInterceptor);
 
 app.use('/users', usersRouter);
 app.use('/guest', guestRouter);
 app.use('/', apiRouter);
 app.use('/', callRecordRouter);
 
-
-
-
-
-
-
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use('*',(req, res, next)=>{
     next(createError(404));
 });
 

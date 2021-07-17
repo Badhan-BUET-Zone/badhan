@@ -249,10 +249,10 @@ const handleGETSearch = async (req, res) => {
   } */
     try {
         let reqQuery = req.query;
-        reqQuery.bloodGroup=parseInt(reqQuery.bloodGroup);
+        reqQuery.bloodGroup = parseInt(reqQuery.bloodGroup);
 
-        reqQuery.hall=parseInt(reqQuery.hall);
-        reqQuery.batch=isNaN(parseInt(reqQuery.batch))?"":parseInt(reqQuery.batch);
+        reqQuery.hall = parseInt(reqQuery.hall);
+        reqQuery.batch = isNaN(parseInt(reqQuery.batch)) ? "" : parseInt(reqQuery.batch);
         reqQuery.isAvailable = reqQuery.isAvailable.toLowerCase() === 'true';
         reqQuery.isNotAvailable = reqQuery.isNotAvailable.toLowerCase() === 'true';
 
@@ -288,11 +288,6 @@ const handleGETSearch = async (req, res) => {
 
         if (donorsQueryResult.status === 'OK') {
             let donors = donorsQueryResult.data;
-
-            // if (reqBody.isAvailable) {
-            //     let threshold = moment().subtract(120, 'days').valueOf();
-            //     donors = donors.filter((donor) => donor.lastDonation <= threshold);
-            // }
 
             if (!reqQuery.isAvailable) {
                 let threshold = moment().subtract(120, 'days').valueOf();
@@ -334,25 +329,6 @@ const handleGETSearch = async (req, res) => {
                 })
             }
 
-            const filteredDonors = [];
-
-            for (let i = 0; i < donors.length; i++) {
-                let obj = {
-                    _id: donors[i]._id,
-                    phone: donors[i].phone,
-                    name: donors[i].name,
-                    studentId: donors[i].studentId,
-                    lastDonation: donors[i].lastDonation,
-                    bloodGroup: donors[i].bloodGroup,
-                    address: donors[i].address,
-                    donationCount: donors[i].donationCount,
-                    roomNumber: donors[i].roomNumber,
-                    comment: donors[i].comment,
-                    commentTime: donors[i].commentTime,
-                };
-
-                filteredDonors.push(obj);
-            }
             /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -376,7 +352,7 @@ const handleGETSearch = async (req, res) => {
             return res.status(200).send({
                 status: 'OK',
                 message: 'Donors queried successfully',
-                filteredDonors
+                filteredDonors: donors
             });
         } else {
             /* #swagger.responses[400] = {
@@ -442,7 +418,7 @@ const handlePATCHDonorsComment = async (req, res) => {
             });
         }
 
-        const donorCommentTimeUpdateResult = await donorInterface.findDonorByIDAndUpdateCommentTime(targetDonor._id,new Date().getTime());
+        const donorCommentTimeUpdateResult = await donorInterface.findDonorByIDAndUpdateCommentTime(targetDonor._id, new Date().getTime());
         if (donorCommentTimeUpdateResult.status !== 'OK') {
             /* #swagger.responses[400] = {
             schema: {
@@ -709,7 +685,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
         let donor = res.locals.middlewareResponse.targetDonor;
         let donorDesignation = donor.designation;
 
-        if (donorDesignation>1) {
+        if (donorDesignation > 1) {
             /* #swagger.responses[401] = {
               schema: {
                 status: 'ERROR',
@@ -1072,21 +1048,18 @@ const handleGETDonors = async (req, res) => {
 
         let donor = res.locals.middlewareResponse.targetDonor;
 
-        let obj = {
-            _id: donor._id,
-            phone: donor.phone,
-            name: donor.name,
-            studentId: donor.studentId,
-            lastDonation: donor.lastDonation,
-            bloodGroup: donor.bloodGroup,
-            hall: donor.hall,
-            roomNumber: donor.roomNumber,
-            address: donor.address,
-            comment: donor.comment,
-            commentTime: donor.commentTime,
-            designation: donor.designation,
-            donationCount: donor.donationCount,
-        }
+        await donor.populate({
+            path:'donations'
+        }).populate({
+            path: 'callRecords',
+            populate: {
+                path: 'callerId',
+                select: {
+                    '_id': 1,
+                    'name': 1,
+                    'hall': 1,
+                    'designation': 1
+                }}}).execPopulate();
         /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -1111,7 +1084,7 @@ const handleGETDonors = async (req, res) => {
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
-            donor: obj
+            donor: donor
         });
 
     } catch (e) {
@@ -1133,42 +1106,10 @@ const handleGETDonorsMe = async (req, res) => {
     /*  #swagger.tags = ['Donors']
         #swagger.description = 'Handles the fetching of own details.' */
 
-
     try {
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: res.locals.middlewareResponse.donor._id
-        });
+        let donor = res.locals.middlewareResponse.donor;
+        await donor.populate({path: 'callRecords'}).populate({path: 'donations'}).execPopulate();
 
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-             schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-              },
-             description: 'No donor found that matches the token'
-      } */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let donor = donorQueryResult.data;
-
-        let obj = {
-            _id: donor._id,
-            phone: donor.phone,
-            name: donor.name,
-            studentId: donor.studentId,
-            lastDonation: donor.lastDonation,
-            bloodGroup: donor.bloodGroup,
-            hall: donor.hall,
-            roomNumber: donor.roomNumber,
-            address: donor.address,
-            comment: donor.comment,
-            commentTime: donor.commentTime,
-            designation: donor.designation
-        }
         /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -1192,7 +1133,7 @@ const handleGETDonorsMe = async (req, res) => {
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
-            donor: obj
+            donor: donor
         });
 
     } catch (e) {
@@ -1202,7 +1143,7 @@ const handleGETDonorsMe = async (req, res) => {
               message: '(error message)'
           },
          description: 'In case of internal server error, the user will get this message'
-  } */
+        } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
