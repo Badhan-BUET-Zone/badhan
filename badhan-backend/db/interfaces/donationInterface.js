@@ -59,6 +59,7 @@ const deleteDonationByQuery = async (query) => {
                 status: 'OK'
             }
         } else {
+            console.log("ERROR")
             return {
                 message: 'Could not remove donation',
                 status: 'ERROR'
@@ -140,7 +141,7 @@ const findDonationsByQuery = async (query, option) => {
 
 const getCount = async ()=>{
     try {
-        let donationCount = await Donation.count();
+        let donationCount = await Donation.countDocuments();
         return {
             message: "Fetched donation count",
             status: 'OK',

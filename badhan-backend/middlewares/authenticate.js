@@ -2,7 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const donorInterface = require('../db/interfaces/donorInterface');
-
+const tokenInterface = require('../db/interfaces/tokenInterface');
+const logInterface = require("../db/interfaces/logInterface");
 
 
 let handlePOSTSignIn = async (req, res) => {
@@ -51,27 +52,7 @@ let handlePOSTSignIn = async (req, res) => {
             });
         }
 
-
-        if (matched) {
-            let access = 'auth';
-            let token = await jwt.sign({
-                _id: donor._id.toString(),
-                access
-            }, process.env.JWT_SECRET).toString();
-
-
-            donor.tokens.push({access, token});
-
-            await donor.save();
-
-            /* #swagger.responses[201] = {
-               schema: {
-                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-                },
-               description: 'A successful sign in returns a token for the user'
-            } */
-            return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
-        } else {
+        if (!matched) {
             /* #swagger.responses[401] = {
                schema: {
                     status: 'ERROR',
@@ -84,6 +65,34 @@ let handlePOSTSignIn = async (req, res) => {
                 message: 'Incorrect phone / password'
             });
         }
+
+        let access = 'auth';
+        let token = await jwt.sign({
+            _id: donor._id.toString(),
+            access
+        }, process.env.JWT_SECRET).toString();
+
+
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, token);
+
+        if (tokenInsertResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Token insertion failed'
+            });
+        }
+
+        /* #swagger.responses[201] = {
+           schema: {
+                token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+            },
+           description: 'A successful sign in returns a token for the user'
+        } */
+        await logInterface.addLog(donor._id, "CREATE SIGN IN", {});
+
+        return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
+
+
     } catch (e) {
         /* #swagger.responses[500] = {
                schema: {
@@ -102,49 +111,43 @@ let handlePOSTSignIn = async (req, res) => {
 let handleAuthentication = async (req, res, next) => {
     try {
         let token = req.header('x-auth');
+
         let decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
-        let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
 
-        if (donorQueryResult.status === 'OK') {
-            let donor = donorQueryResult.data;
+        let tokenCheckResult = await tokenInterface.findTokenDataByToken(token);
 
-            let result = donor.tokens.find(obj => {
-                return obj.token === token
-            })
-
-            if (result === undefined) {
-                /* #swagger.responses[401] = {
-               schema: {
-                    status: 'ERROR',
-                    message: 'User has been logged out'
-                },
-               description: 'If the token does not exist in database , the user might have logged out already.'
-        } */
-                return res.status(401).send({
-                    status: 'ERROR',
-                    message: 'User has been logged out'
-                });
-            }
-
-            res.locals.middlewareResponse = {
-                donor,
-                token
-            };
-            return next();
-        } else {
-            /* #swagger.responses[401] = {
-               schema: {
-                   status: 'ERROR',
-                message: 'Authentication failed. Invalid authentication token.'
-                },
-               description: 'This error will occur if the user does not exist'
-        } */
+        if (tokenCheckResult.status !== 'OK') {
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'Authentication failed. Invalid authentication token.'
+                message: 'Token not found'
             });
         }
 
+        let tokenData = tokenCheckResult.data;
+
+        let findDonorResult = await donorInterface.findDonorByQuery({_id: tokenData.donorId});
+
+        if (findDonorResult.status !== 'OK') {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'No user found associated with token'
+            });
+        }
+
+        let donor = findDonorResult.data;
+
+        if (!donor._id.equals(decodedDonor._id)) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Invalid token'
+            });
+        }
+
+        res.locals.middlewareResponse = {
+            donor,
+            token
+        };
+        return next();
     } catch (e) {
         /* #swagger.responses[500] = {
               schema: {
@@ -160,20 +163,24 @@ let handleAuthentication = async (req, res, next) => {
     }
 };
 
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-let handlePOSTLogOut = async (req, res) => {
-    /*  #swagger.tags = ['Deprecated']
+let handleDELETESignOut = async (req, res) => {
+    /*  #swagger.tags = ['User']
             #swagger.description = 'Endpoint to logout a user.' */
 
     try {
-        let donor = res.locals.middlewareResponse.donor;
         let token = res.locals.middlewareResponse.token;
+        let donor = res.locals.middlewareResponse.donor;
 
-        await donorInterface.findDonorByIDAndUpdate(donor._id, {
-            $pull: {
-                tokens: {token}
-            }
-        });
+        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token);
+
+        if (tokenDeleteResponse.status !== "OK") {
+            return res.status(404).send({
+                status: 'OK',
+                message: 'Token not found'
+            });
+        }
+
+
         /* #swagger.responses[200] = {
                schema: {
                status: 'OK',
@@ -181,6 +188,9 @@ let handlePOSTLogOut = async (req, res) => {
                 },
                description: 'A successful sign out removes the token for the user'
         } */
+
+        await logInterface.addLog(donor._id, "DELETE SIGN OUT", {});
+
         return res.status(200).send({
             status: 'OK',
             message: 'Logged out successfully'
@@ -200,57 +210,22 @@ let handlePOSTLogOut = async (req, res) => {
     }
 };
 
-let handleDeleteSignOut = async (req, res) => {
+let handleDELETESignOutAll = async (req, res) => {
     /*  #swagger.tags = ['User']
-            #swagger.description = 'Endpoint to logout a user.' */
-
-    try {
-        let donor = res.locals.middlewareResponse.donor;
-        let token = res.locals.middlewareResponse.token;
-
-        await donorInterface.findDonorByIDAndUpdate(donor._id, {
-            $pull: {
-                tokens: {token}
-            }
-        });
-        /* #swagger.responses[200] = {
-               schema: {
-               status: 'OK',
-                message: 'Logged out successfully'
-                },
-               description: 'A successful sign out removes the token for the user'
-        } */
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Logged out successfully'
-        });
-    } catch (e) {
-        /* #swagger.responses[500] = {
-               schema: {
-               status: 'ERROR',
-            message: 'error message'
-                },
-               description: 'In case of internal server error user will receive an error message'
-        } */
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
-    }
-};
-
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-let handlePOSTLogOutAll = async (req, res) => {
-    /*  #swagger.tags = ['Deprecated']
             #swagger.description = 'Endpoint to logout user from all devices.' */
     try {
         let donor = res.locals.middlewareResponse.donor;
 
-        await donorInterface.findDonorByIDAndUpdate(donor._id, {
-            $set: {
-                tokens: []
-            }
-        });
+        let deleteTokensResponse = await tokenInterface.deleteAllTokensByDonorId(donor._id);
+
+        if (deleteTokensResponse.status !== "OK") {
+            return res.status(404).send({
+                status: 'ERROR',
+                message: deleteTokensResponse.message
+            });
+        }
+
+
         /* #swagger.responses[200] = {
                schema: {
                status: 'OK',
@@ -258,6 +233,7 @@ let handlePOSTLogOutAll = async (req, res) => {
                 },
                description: 'A successful sign out removes all the tokens of the user'
         } */
+        await logInterface.addLog(donor._id, "DELETE SIGN OUT ALL", {});
         return res.status(200).send({
             status: 'OK',
             message: 'Logged out from all devices successfully'
@@ -275,90 +251,6 @@ let handlePOSTLogOutAll = async (req, res) => {
             message: e.message
         });
     }
-};
-
-
-let handleDeleteSignOutAll = async (req, res) => {
-    /*  #swagger.tags = ['User']
-            #swagger.description = 'Endpoint to logout user from all devices.' */
-    try {
-        let donor = res.locals.middlewareResponse.donor;
-
-        await donorInterface.findDonorByIDAndUpdate(donor._id, {
-            $set: {
-                tokens: []
-            }
-        });
-        /* #swagger.responses[200] = {
-               schema: {
-               status: 'OK',
-                message: 'Logged out from all devices successfully'
-                },
-               description: 'A successful sign out removes all the tokens of the user'
-        } */
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Logged out from all devices successfully'
-        });
-    } catch (e) {
-        /* #swagger.responses[500] = {
-               schema: {
-               status: 'ERROR',
-            message: 'error message'
-                },
-               description: 'In case of internal server error user will receive an error message'
-        } */
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
-    }
-};
-
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-let handlePOSTRequestRedirection = async (req, res) => {
-    /*  #swagger.tags = ['Deprecated']
-            #swagger.description = 'Endpoint to request a temporary redirection token' */
-    try {
-        let donor = res.locals.middlewareResponse.donor;
-        let access = 'auth';
-        // let token = await jwt.sign({
-        //     _id: donor._id.toString(),
-        //     access
-        // }, process.env.JWT_SECRET).toString();
-        let token = await jwt.sign({
-            _id: donor._id.toString(),
-            access
-        }, process.env.JWT_SECRET, {expiresIn: '30s'}).toString();
-
-
-        donor.tokens.push({access, token});
-
-        await donor.save();
-
-        /* #swagger.responses[201] = {
-               schema: {
-                    status: 'OK',
-                    message: 'Redirection token created',
-                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-                },
-               description: 'Redirection token created'
-        } */
-        return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
-    } catch (e) {
-        /* #swagger.responses[500] = {
-               schema: {
-               status: 'ERROR',
-            message: 'error message'
-                },
-               description: 'In case of internal server error user will receive an error message'
-        } */
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
-    }
-
 };
 
 let handlePOSTRedirection = async (req, res) => {
@@ -377,9 +269,14 @@ let handlePOSTRedirection = async (req, res) => {
         }, process.env.JWT_SECRET, {expiresIn: '30s'}).toString();
 
 
-        donor.tokens.push({access, token});
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, token);
 
-        await donor.save();
+        if (tokenInsertResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Token insertion failed'
+            });
+        }
 
         /* #swagger.responses[201] = {
                schema: {
@@ -389,6 +286,9 @@ let handlePOSTRedirection = async (req, res) => {
                 },
                description: 'Redirection token created'
         } */
+
+        await logInterface.addLog(donor._id, "CREATE REDIRECTED TO WEB", {});
+
         return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
     } catch (e) {
         /* #swagger.responses[500] = {
@@ -406,115 +306,6 @@ let handlePOSTRedirection = async (req, res) => {
 
 };
 
-//THIS ROUTE HAS BEEN DEPRECATED ON 30 JUNE 2021. PLEASE DO NOT EDIT THIS ROUTE ANYMORE.
-let handlePOSTRedirectedAuthentication = async (req, res) => {
-    /*  #swagger.tags = ['Deprecated']
-           #swagger.description = 'Route endpoint to redirect user from app to web.' */
-
-    /* #swagger.parameters['logIn'] = {
-                in: 'body',
-                description: 'The temporary token generated by /user/requestRedirection',
-                schema:{
-                 token: "sdlfkhgoenguiehgfudsnbvsiugkb"
-                }
-       } */
-    try {
-        let token = req.body.token;
-        // console.log(token)
-        let decodedDonor;
-        try {
-            decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
-        } catch (e) {
-            /* #swagger.responses[401] = {
-               schema: {
-                   status: 'ERROR',
-                message: 'Session Expired'
-                },
-               description: 'This error will occur if the jwt token is invalid'
-        } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'Session Expired'
-            });
-        }
-
-        let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
-
-        if (donorQueryResult.status !== 'OK') {
-            /* #swagger.responses[401] = {
-               schema: {
-                   status: 'ERROR',
-                message: 'Authentication failed. Invalid authentication token.'
-                },
-               description: 'This error will occur if the user does not exist'
-        } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'Authentication failed. Invalid authentication token.'
-            });
-        }
-
-
-        let donor = donorQueryResult.data;
-
-        let result = donor.tokens.find(obj => {
-            return obj.token === token
-        })
-
-        if (result === undefined) {
-            /* #swagger.responses[401] = {
-           schema: {
-                status: 'ERROR',
-                message: 'User has been logged out'
-            },
-           description: 'If the token does not exist in database , the user might have logged out already.'
-    } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User has been logged out'
-            });
-        }
-
-        await donorInterface.findDonorByIDAndUpdate(donor._id, {
-            $pull: {
-                tokens: {token}
-            }
-        });
-
-        let access = 'auth';
-        let newToken = await jwt.sign({
-            _id: donor._id.toString(),
-            access
-        }, process.env.JWT_SECRET).toString();
-        donor.tokens.push({access, token: newToken});
-        await donor.save();
-
-        /* #swagger.responses[201] = {
-               schema: {
-                    status: 'OK',
-                    message: 'Redirected login successful',
-                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-                },
-               description: 'Redirection token created'
-        } */
-        return res.status(201).send({status: 'OK', message: "Redirected login successful", token: newToken});
-
-    } catch (e) {
-        /* #swagger.responses[500] = {
-               schema: {
-               status: 'ERROR',
-            message: 'error message'
-                },
-               description: 'In case of internal server error user will receive an error message'
-        } */
-        console.log(e);
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
-    }
-
-}
 
 let handlePATCHRedirectedAuthentication = async (req, res) => {
     /*  #swagger.tags = ['User']
@@ -529,7 +320,7 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
        } */
     try {
         let token = req.body.token;
-        // console.log(token)
+
         let decodedDonor;
         try {
             decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
@@ -557,46 +348,46 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
                 },
                description: 'This error will occur if the user does not exist'
         } */
-            return res.status(401).send({
+            return res.status(404).send({
                 status: 'ERROR',
-                message: 'Authentication failed. Invalid authentication token.'
+                message: 'Donor not found'
             });
         }
-
 
         let donor = donorQueryResult.data;
 
-        let result = donor.tokens.find(obj => {
-            return obj.token === token
-        })
-
-        if (result === undefined) {
-            /* #swagger.responses[401] = {
-           schema: {
+        let tokenSearchResult = await tokenInterface.findTokenDataByToken(token);
+        if (tokenSearchResult.status !== "OK") {
+            return res.status(404).send({
                 status: 'ERROR',
-                message: 'User has been logged out'
-            },
-           description: 'If the token does not exist in database , the user might have logged out already.'
-    } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User has been logged out'
+                message: 'Token not found'
             });
         }
 
-        await donorInterface.findDonorByIDAndUpdate(donor._id, {
-            $pull: {
-                tokens: {token}
-            }
-        });
+        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token);
+
+        if (tokenDeleteResponse.status !== "OK") {
+            return res.status(404).send({
+                status: 'OK',
+                message: 'Token not found'
+            });
+        }
 
         let access = 'auth';
         let newToken = await jwt.sign({
             _id: donor._id.toString(),
             access
         }, process.env.JWT_SECRET).toString();
-        donor.tokens.push({access, token: newToken});
-        await donor.save();
+
+
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, token);
+
+        if (tokenInsertResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Token insertion failed'
+            });
+        }
 
         /* #swagger.responses[201] = {
                schema: {
@@ -681,7 +472,7 @@ let handleHallPermission = async (req, res, next) => {
     /*
     Makes sure that the targeted donor id is available in the request
      */
-    let request=req;
+    let request = req;
 
     if (request.body.donorId) {
         donorId = request.body.donorId
@@ -748,19 +539,17 @@ let handleHallPermission = async (req, res, next) => {
 }
 
 module.exports = {
+    //CHECK PERMISSIONS
     handleAuthentication,
     handleHallAdminCheck,
     handleSuperAdminCheck,
     handleHallPermission,
     handleHigherDesignationCheck,
 
+    //TOKEN HANDLERS
     handlePOSTSignIn,
-    handlePOSTLogOut,
-    handleDeleteSignOut,
-    handlePOSTLogOutAll,
-    handleDeleteSignOutAll,
-    handlePOSTRequestRedirection,
+    handleDELETESignOut,
+    handleDELETESignOutAll,
     handlePOSTRedirection,
-    handlePOSTRedirectedAuthentication,
     handlePATCHRedirectedAuthentication
 }

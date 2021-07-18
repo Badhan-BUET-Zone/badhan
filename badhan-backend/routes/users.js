@@ -18,13 +18,13 @@ router.post('/signin',
 router.delete('/signout',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handleDeleteSignOut
+    authenticator.handleDELETESignOut
 );
 
 router.delete('/signout/all',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handleDeleteSignOutAll
+    authenticator.handleDELETESignOutAll
 );
 
 

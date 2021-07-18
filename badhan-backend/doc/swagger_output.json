@@ -678,23 +678,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, the user will get this message",
@@ -854,23 +838,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal server error",
@@ -1609,23 +1577,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -1696,23 +1648,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -1907,23 +1843,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -2018,23 +1938,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -2167,23 +2071,7 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -2317,23 +2205,7 @@
             "description": "Created"
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error, user will get this error message",
@@ -2407,6 +2279,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "When the user provides an invalid password",
             "schema": {
@@ -2476,23 +2351,10 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error user will receive an error message",
@@ -2544,23 +2406,10 @@
             }
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error user will receive an error message",
@@ -2615,24 +2464,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
-            "description": "This error will occur if the user does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            "description": "Unauthorized"
           },
           "500": {
             "description": "In case of internal server error user will receive an error message",
@@ -2700,8 +2536,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
-            "description": "If the token does not exist in database , the user might have logged out already.",
+            "description": "This error will occur if the user does not exist",
             "schema": {
               "type": "object",
               "properties": {
@@ -2711,13 +2550,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "User has been logged out"
+                  "example": "Authentication failed. Invalid authentication token."
                 }
               },
               "xml": {
                 "name": "main"
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "In case of internal server error user will receive an error message",

@@ -104,7 +104,6 @@ donorSchema.pre('save', function (next) {
         bcrypt.genSalt(10, (err,salt) => {
             bcrypt.hash(donor.password, salt,(err, hash) => {
                 donor.password = hash;
-                donor.tokens = [];
                 next();
             })
         });

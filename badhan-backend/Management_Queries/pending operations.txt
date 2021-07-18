@@ -1,4 +1,6 @@
 db.donors.updateMany({},{$set: {"commentTime":0}},false,true)
 //DONE ON PROD DATABASE
 
-drop logs collection
+db.logs.drop() //make sure super admin updates the app
+db.donors.updateMany({}, {$unset: {tokens:1}}); //this will cause all users to logout
+

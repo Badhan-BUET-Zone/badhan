@@ -3,6 +3,7 @@ const moment = require('moment');
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
+const tokenInterface = require('../db/interfaces/tokenInterface');
 
 const handlePOSTDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
@@ -246,6 +247,8 @@ const handleGETSearch = async (req, res) => {
          in:'query'
   } */
     try {
+
+
         let reqQuery = req.query;
         reqQuery.bloodGroup = parseInt(reqQuery.bloodGroup);
 
@@ -347,6 +350,8 @@ const handleGETSearch = async (req, res) => {
                },
               description: 'Array of donors that matches the filter parameters'
        } */
+            await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ SEARCH", {filter: reqQuery, resultCount:donors.length});
+
             return res.status(200).send({
                 status: 'OK',
                 message: 'Donors queried successfully',
@@ -495,6 +500,8 @@ const handlePATCHDonorsPassword = async (req, res) => {
         target.password = reqBody.newPassword;
 
         await target.save();
+
+        await tokenInterface.deleteAllTokensByDonorId(target._id);
 
         await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR PASSWORD", {name: target.name});
 
@@ -813,6 +820,8 @@ const handleGETVolunteers = async (req, res) => {
              },
             description: 'An array of volunteers fetched successfully'
      } */
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ VOLUNTEERS", {});
+
         return res.status(200).send({
             status: 'OK',
             message: 'Volunteer list fetched successfully',
@@ -1006,6 +1015,8 @@ const handleGETAdmins = async (req, res) => {
               },
              description: 'Hall admin list fetch successful '
       } */
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ ADMINS", {});
+
         return res.status(200).send({
             status: 'OK',
             message: 'Hall admin list fetched successfully',
@@ -1076,6 +1087,9 @@ const handleGETDonors = async (req, res) => {
                },
               description: 'donor info'
        } */
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ DONOR", {name: donor.name});
+
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
@@ -1125,6 +1139,9 @@ const handleGETDonorsMe = async (req, res) => {
                },
               description: 'Info of the logged in user'
        } */
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "ENTERED APP", {name: donor.name});
+
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',

@@ -310,7 +310,7 @@ const handleDeleteDonations = async (req, res) => {
 
         let donationDeleteResult = await donationInterface.deleteDonationByQuery({
             donorId: reqQuery.donorId,
-            date: reqQuery.date
+            date: givenDate
         });
 
         await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATION", {date: new Date(reqQuery.date),name: donor.name});

@@ -292,7 +292,7 @@ const findDonorAndUpdate = async (query, donorUpdate) => {
 
 const getCount = async () => {
     try {
-        let donorCount = await Donor.count();
+        let donorCount = await Donor.countDocuments();
         return {
             message: "Fetched donor count",
             status: 'OK',
@@ -309,7 +309,7 @@ const getCount = async () => {
 
 const getVolunteerCount = async () => {
     try {
-        let volunteerCount = await Donor.find({designation: 1}).count();
+        let volunteerCount = await Donor.find({designation: 1}).countDocuments();
         return {
             message: "Fetched volunteer count",
             status: 'OK',
