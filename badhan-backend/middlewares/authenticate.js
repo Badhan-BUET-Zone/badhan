@@ -119,7 +119,7 @@ let handleAuthentication = async (req, res, next) => {
         if (tokenCheckResult.status !== 'OK') {
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'Token not found'
+                message: 'You have been logged out'
             });
         }
 
