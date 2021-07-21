@@ -4,3 +4,14 @@ db.donors.updateMany({},{$set: {"commentTime":0}},false,true)
 db.logs.drop() //make sure super admin updates the app
 db.donors.updateMany({}, {$unset: {tokens:1}}); //this will cause all users to logout
 
+db.donors.updateMany(
+    { },
+    [
+        { $set: { availableToAll: { $switch: {
+                        branches: [
+                            { case: { $eq: [ "$hall", 8 ] }, then: true },
+                        ],
+                        default: false
+                    } } } }
+    ]
+    )

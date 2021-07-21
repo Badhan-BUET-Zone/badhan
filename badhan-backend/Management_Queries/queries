@@ -65,3 +65,45 @@ Report: No donation with inconsistent donorId exists in the donations table.
 
 
 // db.donations.deleteMany({donorId: {$exists: false}})
+
+
+////////////////////////GET THE LIST OF DUPLICATE DONORS THAT DON'T MATCH ONLY BY ID
+db.donors.aggregate({
+    $project: {
+        "_id": 1, // keep the _id field where it is anyway
+        "doc": "$$ROOT" // store the entire document in the "doc" field
+    }
+}, {
+    $project: {
+        "doc._id": 0 // remove the _id from the stored document because we do not want to compare it
+    }
+}, {
+    $group: {
+        "_id": "$doc", // group by the entire document's contents as in "compare the whole document"
+        "ids": { $push: "$_id" }, // create an array of all IDs that form this group
+        "count": { $sum: 1 } // count the number of documents in this group
+    }
+}, {
+    $match: {
+        "count": { $gt: 1 } // only show what's duplicated
+    }
+})
+
+////////////GET LIST OF DONORS AND COUNT WITH DUPLICATE PHONE
+db.donors.aggregate([
+    {$group: {
+            _id: {name: "$phone"},
+            uniqueIds: {$addToSet: "$_id"},
+            count: {$sum: 1}
+        }
+    },
+    {$match: {
+            count: {"$gt": 1}
+        }
+    },
+    {$sort: {
+            count: -1
+        }
+    }
+]);
+

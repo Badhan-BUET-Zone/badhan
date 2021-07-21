@@ -399,44 +399,11 @@ const handlePATCHDonorsComment = async (req, res) => {
       } */
     try {
         let targetDonor = res.locals.middlewareResponse.targetDonor;
-        const donorUpdateResult = await donorInterface.findDonorAndUpdate({
-            _id: targetDonor._id
-        }, {
-            $set: {
-                comment: req.body.comment
-            }
-        });
 
-        if (donorUpdateResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-            schema: {
-               status: 'ERROR',
-               message: '(Error message)'
-            },
-            description: 'In case of failure of saving the comment'
-            } */
-            return res.status(400).send({
-                status: donorUpdateResult.status,
-                message: donorUpdateResult.message
-            });
-        }
+        targetDonor.comment = req.body.comment;
+        await targetDonor.save();
 
-        const donorCommentTimeUpdateResult = await donorInterface.findDonorByIDAndUpdateCommentTime(targetDonor._id, new Date().getTime());
-        if (donorCommentTimeUpdateResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-            schema: {
-               status: 'ERROR',
-               message: '(Error message)'
-            },
-            description: 'In case of failure of saving the comment time'
-            } */
-            return res.status(400).send({
-                status: donorCommentTimeUpdateResult.status,
-                message: donorCommentTimeUpdateResult.message
-            });
-        }
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"UPDATE DONOR COMMENT", donorUpdateResult.data);
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"UPDATE DONOR COMMENT", targetDonor);
 
 
         /* #swagger.responses[200] = {
@@ -551,99 +518,41 @@ const handlePATCHDonors = async (req, res) => {
       } */
     try {
         let reqBody = req.body;
-        let authenticatedUser = res.locals.middlewareResponse.donor;
+        // let authenticatedUser = res.locals.middlewareResponse.donor;
 
         let target = res.locals.middlewareResponse.targetDonor;
 
-        if (authenticatedUser.designation < target.designation ||
-            (authenticatedUser.designation === target.designation
-                && !authenticatedUser._id.equals(target._id))) {
-            /* #swagger.responses[401] = {
-             schema: {
-                status: 'ERROR',
-                message: 'User does not have permission to edit'
-              },
-             description: 'User is below the target donor by designation'
-            } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to edit this donor'
-            });
-        }
-
-        let updates = {};
-
         if (reqBody.newName !== '') {
-            updates.name = reqBody.newName;
-        } else {
-            updates.name = target.name;
+            target.name = reqBody.newName;
         }
 
         if (reqBody.newPhone !== -1) {
-            updates.phone = reqBody.newPhone;
-        } else {
-            updates.phone = target.phone;
+            target.phone = reqBody.newPhone;
         }
 
         if (reqBody.newStudentId !== '') {
-            updates.studentId = reqBody.newStudentId;
-        } else {
-            updates.studentId = target.studentId
+            target.studentId = reqBody.newStudentId;
         }
 
         if (reqBody.newBloodGroup !== -1) {
-            updates.bloodGroup = reqBody.newBloodGroup;
-        } else {
-            updates.bloodGroup = target.bloodGroup;
+            target.bloodGroup = reqBody.newBloodGroup;
         }
 
         if (reqBody.newHall !== -1) {
-            updates.hall = reqBody.newHall;
-        } else {
-            updates.hall = target.hall;
+            target.hall = reqBody.newHall;
         }
 
         if (reqBody.newRoomNumber !== undefined && reqBody.newRoomNumber !== null) {
-            updates.roomNumber = reqBody.newRoomNumber;
-        } else {
-            updates.roomNumber = target.roomNumber;
+            target.roomNumber = reqBody.newRoomNumber;
         }
 
         if (reqBody.newAddress !== '') {
-            updates.address = reqBody.newAddress;
-        } else {
-            updates.address = target.address;
+            target.address = reqBody.newAddress;
         }
 
-        let donorUpdateResult = await donorInterface.findDonorAndUpdate({
-            phone: target.phone
-        }, {
-            $set: {
-                phone: updates.phone,
-                name: updates.name,
-                studentId: updates.studentId,
-                bloodGroup: updates.bloodGroup,
-                hall: updates.hall,
-                roomNumber: updates.roomNumber,
-                address: updates.address
-            }
-        });
+        await target.save();
 
-        if (donorUpdateResult.status !== 'OK') {
-            /* #swagger.responses[400] = {
-             schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-              },
-             description: 'Donor info update unsuccessful'
-      } */
-            return res.status(400).send({
-                status: donorUpdateResult.status,
-                message: donorUpdateResult.message
-            });
-        }
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR", donorUpdateResult.data);
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR", target);
 
         /* #swagger.responses[200] = {
              schema: {
