@@ -84,7 +84,7 @@ router.delete('/donors',
     authenticator.handleAuthentication,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
-    donorController.handleDeleteDonors
+    donorController.handleDELETEDonors
 );
 
 router.patch('/donors/designation',

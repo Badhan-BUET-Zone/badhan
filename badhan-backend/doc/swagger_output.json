@@ -95,6 +95,10 @@
                 "extraDonationCount": {
                   "type": "number",
                   "example": 2
+                },
+                "availableToAll": {
+                  "type": "boolean",
+                  "example": true
                 }
               }
             }

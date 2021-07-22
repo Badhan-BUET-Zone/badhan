@@ -7,6 +7,18 @@ db.donors.updateMany({}, {$unset: {tokens:1}}); //this will cause all users to l
 db.donors.updateMany(
     { },
     [
+        { $set: { hall: { $switch: {
+                        branches: [
+                            { case: { $eq: [ "$hall", 7 ] }, then: 8 },
+                        ],
+                        default: "$hall"
+                    } } } }
+    ]
+    )
+
+db.donors.updateMany(
+    { },
+    [
         { $set: { availableToAll: { $switch: {
                         branches: [
                             { case: { $eq: [ "$hall", 8 ] }, then: true },
@@ -15,3 +27,4 @@ db.donors.updateMany(
                     } } } }
     ]
     )
+

@@ -21,29 +21,16 @@ const handlePOSTDonors = async (req, res) => {
                 roomNumber: '3009',
                 comment: 'developer of badhan',
                 extraDonationCount: 2,
+                availableToAll: true
                }
       } */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
-        if (authenticatedUser.designation === 0) {
-            /* #swagger.responses[401] = {
-              schema: {
-                status: 'ERROR',
-                message: 'User does not have permission to add donors'
-               },
-              description: 'If user does not have permission to insert donor, user will get this error message'
-            } */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User does not have permission to add donors'
-            });
-        }
 
         let duplicateDonorResult = await donorInterface.findDonorsByPhone(req.body.phone);
+
         if (duplicateDonorResult.donors.length !== 0) {
-
-
             if (authenticatedUser.designation === 3 || duplicateDonorResult.donors[0].hall === authenticatedUser.hall || duplicateDonorResult.donors[0].hall > 6) {
                 /* #swagger.responses[409] = {
                 schema: {
@@ -58,21 +45,21 @@ const handlePOSTDonors = async (req, res) => {
                     message: 'Donor found with duplicate phone number',
                     donor: duplicateDonorResult.donors[0]
                 });
-            } else {
-                /* #swagger.responses[401] = {
-                schema: {
-                    status: 'ERROR',
-                    message: 'Donor found with duplicate phone number in another hall',
-                    donor: 'this field will return null'
-               },
-              description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
-       } */
-                return res.status(401).send({
-                    status: 'ERROR',
-                    message: 'Donor found with duplicate phone number in another hall',
-                    donor: null
-                });
             }
+            /* #swagger.responses[401] = {
+            schema: {
+                status: 'ERROR',
+                message: 'Donor found with duplicate phone number in another hall',
+                donor: 'this field will return null'
+           },
+          description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
+   } */
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Donor found with duplicate phone number in another hall',
+                donor: null
+            });
+
 
         }
 
@@ -87,6 +74,7 @@ const handlePOSTDonors = async (req, res) => {
             lastDonation: 0,
             comment: req.body.comment,
             donationCount: req.body.extraDonationCount,
+            availableToAll: req.body.availableToAll,
         };
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
@@ -104,15 +92,26 @@ const handlePOSTDonors = async (req, res) => {
             });
         }
 
+        let dummyDonations = [];
         for (let i = 0; i < req.body.extraDonationCount; i++) {
-            await donationInterface.insertDonation({
+            dummyDonations.push({
                 phone: donorInsertionResult.data.phone,
                 donorId: donorInsertionResult.data._id,
                 date: 0
+            })
+        }
+
+        let dummyInsertionResult = await donationInterface.insertManyDonations(dummyDonations);
+
+        if(dummyInsertionResult.status!=="OK"){
+            return res.status(500).send({
+                status: 'ERROR',
+                message: 'Dummy donations insertion unsuccessful'
             });
         }
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"CREATE DONOR", donorInsertionResult.data);
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONOR", donorInsertionResult.data);
 
         /* #swagger.responses[201] = {
             schema: {
@@ -143,7 +142,7 @@ const handlePOSTDonors = async (req, res) => {
     }
 }
 
-const handleDeleteDonors = async (req, res) => {
+const handleDELETEDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'handles the deletion of an existing donor from the database.' */
     /* #swagger.parameters['donorId'] = {
@@ -350,7 +349,10 @@ const handleGETSearch = async (req, res) => {
                },
               description: 'Array of donors that matches the filter parameters'
        } */
-            await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ SEARCH", {filter: reqQuery, resultCount:donors.length});
+            await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ SEARCH", {
+                filter: reqQuery,
+                resultCount: donors.length
+            });
 
             return res.status(200).send({
                 status: 'OK',
@@ -403,7 +405,7 @@ const handlePATCHDonorsComment = async (req, res) => {
         targetDonor.comment = req.body.comment;
         await targetDonor.save();
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"UPDATE DONOR COMMENT", targetDonor);
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR COMMENT", targetDonor);
 
 
         /* #swagger.responses[200] = {
@@ -649,7 +651,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
             logOperation = "DEMOTE";
         }
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR DESIGNATION ("+logOperation+")", donor);
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR DESIGNATION (" + logOperation + ")", donor);
         /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -828,7 +830,7 @@ const handlePATCHAdmins = async (req, res) => {
                 });
             }
 
-            await logInterface.addLog(res.locals.middlewareResponse.donor._id,"UPDATE DONOR DESIGNATION (DEMOTE HALLADMIN)", prevHallAdminUpdateResult.data);
+            await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR DESIGNATION (DEMOTE HALLADMIN)", prevHallAdminUpdateResult.data);
 
         }
 
@@ -855,7 +857,7 @@ const handlePATCHAdmins = async (req, res) => {
             });
         }
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
 
         /* #swagger.responses[200] = {
             schema: {
@@ -964,7 +966,7 @@ const handleGETDonors = async (req, res) => {
         let donor = res.locals.middlewareResponse.targetDonor;
 
         await donor.populate({
-            path:'donations'
+            path: 'donations'
         }).populate({
             path: 'callRecords',
             populate: {
@@ -974,7 +976,9 @@ const handleGETDonors = async (req, res) => {
                     'name': 1,
                     'hall': 1,
                     'designation': 1
-                }}}).execPopulate();
+                }
+            }
+        }).execPopulate();
         /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -1122,7 +1126,7 @@ const handleGETVolunteersAll = async (req, res) => {
 
 module.exports = {
     handlePOSTDonors,
-    handleDeleteDonors,
+    handleDELETEDonors,
     handleGETSearch,
     handlePATCHDonorsComment,
     handlePATCHDonorsPassword,

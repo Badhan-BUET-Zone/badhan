@@ -95,6 +95,23 @@ const deleteDonationsByQuery = async (query) => {
     }
 };
 
+const insertManyDonations = async(donations)=>{
+    try{
+        let data = await Donation.insertMany(donations);
+        return {
+            message: 'Donations inserted successfully',
+            status: 'OK',
+            data
+        }
+    }catch (e) {
+        return {
+            data: null,
+            message: e.message,
+            status: 'EXCEPTION'
+        }
+    }
+}
+
 const findDonationByQuery = async (query, option) => {
     try {
         let data = await Donation.findOne(query, option);
@@ -162,5 +179,6 @@ module.exports = {
     deleteDonationsByQuery,
     findDonationByQuery,
     findDonationsByQuery,
-    getCount
+    getCount,
+    insertManyDonations
 }
