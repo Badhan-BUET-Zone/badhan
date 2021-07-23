@@ -28,11 +28,19 @@ router.get('/donors/me',
     donorController.handleGETDonorsMe
 );
 
+router.get('/search/v2',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETSearchOptimized
+)
+
 router.get('/search',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handleGETSearch
 );
+
+
 
 router.get('/donations',
     rateLimiter.commonLimiter,

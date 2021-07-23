@@ -5,6 +5,8 @@ const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
 
+const {Donor} = require('../db/models/Donor');
+
 const handlePOSTDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
            #swagger.description = 'handles the insertion of a new donor into the database.' */
@@ -388,6 +390,102 @@ const handleGETSearch = async (req, res) => {
     }
 }
 
+const handleGETSearchOptimized = async (req, res) => {
+    /*  #swagger.tags = ['Donors']
+            #swagger.description = 'Searches for donors that matches the filters' */
+    /* #swagger.parameters['bloodGroup'] = {
+             description: 'blood group for donors',
+             type: 'number',
+             name:'bloodGroup',
+             in:'query'
+      } */
+    /* #swagger.parameters['hall'] = {
+            description: 'hall for donors',
+            type: 'number',
+            name:'hall',
+            in:'query'
+     } */
+    /* #swagger.parameters['batch'] = {
+            description: 'batch for donors',
+            type: 'number',
+            name:'batch',
+            in:'query'
+     } */
+    /* #swagger.parameters['name'] = {
+            description: 'name for donors',
+            type: 'string',
+            name:'name',
+            in:'query'
+     } */
+    /* #swagger.parameters['name'] = {
+           description: 'address for donors',
+           type: 'string',
+           name:'address',
+           in:'query'
+    } */
+    /* #swagger.parameters['isAvailable'] = {
+          description: 'isAvailable for donors',
+          type: 'boolean',
+          name:'isAvailable',
+          in:'query'
+   } */
+    /* #swagger.parameters['isNotAvailable'] = {
+         description: 'isNotAvailable for donors',
+         type: 'boolean',
+         name:'isNotAvailable',
+         in:'query'
+  } */
+    try {
+
+
+        let reqQuery = req.query;
+        reqQuery.bloodGroup = parseInt(reqQuery.bloodGroup);
+
+        reqQuery.hall = parseInt(reqQuery.hall);
+        reqQuery.batch = isNaN(parseInt(reqQuery.batch)) ? "" : parseInt(reqQuery.batch);
+        reqQuery.isAvailable = reqQuery.isAvailable.toLowerCase() === 'true';
+        reqQuery.isNotAvailable = reqQuery.isNotAvailable.toLowerCase() === 'true';
+
+        if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall && reqQuery.hall <= 6 && res.locals.middlewareResponse.donor.designation !== 3) {
+            /* #swagger.responses[400] = {
+              schema: {
+                status: 'ERROR',
+                message: 'You are not allowed to search donors of other halls'
+               },
+              description: 'This error will occur if the user tries to search other halls'
+       } */
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'You are not allowed to search donors of other halls'
+            });
+        }
+
+        console.log(reqQuery)
+
+        let result = await Donor.find({hall: reqQuery.hall,bloodGroup: reqQuery.bloodGroup});
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Donors queried successfully',
+            filteredDonors: result
+        });
+
+    } catch (e) {
+        console.log(e);
+        /* #swagger.responses[500] = {
+              schema: {
+                status: 'EXCEPTION',
+                message: '(Error message)'
+               },
+              description: 'Internal server error'
+       } */
+        res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 const handlePATCHDonorsComment = async (req, res) => {
     /*  #swagger.tags = ['Donors']
             #swagger.description = 'Adds a comment to a donor's profile.' */
@@ -466,7 +564,7 @@ const handlePATCHDonorsPassword = async (req, res) => {
         }
 
 
-        target.password = reqBody.newPassword;
+        target.password = reqBody.password;
 
         await target.save();
 
@@ -524,32 +622,36 @@ const handlePATCHDonors = async (req, res) => {
 
         let target = res.locals.middlewareResponse.targetDonor;
 
-        if (reqBody.newName !== '') {
-            target.name = reqBody.newName;
+        if (reqBody.name !== '') {
+            target.name = reqBody.name;
         }
 
-        if (reqBody.newPhone !== -1) {
-            target.phone = reqBody.newPhone;
+        if (reqBody.phone !== -1) {
+            target.phone = reqBody.phone;
         }
 
-        if (reqBody.newStudentId !== '') {
-            target.studentId = reqBody.newStudentId;
+        if (reqBody.studentId !== '') {
+            target.studentId = reqBody.studentId;
         }
 
-        if (reqBody.newBloodGroup !== -1) {
-            target.bloodGroup = reqBody.newBloodGroup;
+        if (reqBody.bloodGroup !== -1) {
+            target.bloodGroup = reqBody.bloodGroup;
         }
 
-        if (reqBody.newHall !== -1) {
-            target.hall = reqBody.newHall;
+        if (reqBody.hall !== -1) {
+            target.hall = reqBody.hall;
         }
 
-        if (reqBody.newRoomNumber !== undefined && reqBody.newRoomNumber !== null) {
-            target.roomNumber = reqBody.newRoomNumber;
+        if (reqBody.roomNumber !== undefined && reqBody.roomNumber !== null) {
+            target.roomNumber = reqBody.roomNumber;
         }
 
-        if (reqBody.newAddress !== '') {
-            target.address = reqBody.newAddress;
+        if (reqBody.address !== '') {
+            target.address = reqBody.address;
+        }
+
+        if(reqBody.availableToAll){
+            target.availableToAll = reqBody.availableToAll;
         }
 
         await target.save();
@@ -996,6 +1098,7 @@ const handleGETDonors = async (req, res) => {
                     comment: 'developer of badhan',
                     designation: 3,
                     donationCount: 2,
+                    availableToAll: true
                 }
                },
               description: 'donor info'
@@ -1048,6 +1151,7 @@ const handleGETDonorsMe = async (req, res) => {
                     address: 'Azimpur',
                     comment: 'Developer of badhan',
                     designation: 3,
+                    availableToAll: true
                 }
                },
               description: 'Info of the logged in user'
@@ -1128,6 +1232,7 @@ module.exports = {
     handlePOSTDonors,
     handleDELETEDonors,
     handleGETSearch,
+    handleGETSearchOptimized,
     handlePATCHDonorsComment,
     handlePATCHDonorsPassword,
     handlePATCHDonors,

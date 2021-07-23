@@ -6,38 +6,19 @@ const {Donor} = require('../db/models/Donor');
 const {Donation} = require('../db/models/Donation');
 
 const test = async()=>{
-    let result = await Donor.aggregate([
-        {$group: {
-                _id: {name: "$phone"},
-                uniqueIds: {$addToSet: "$_id"},
-                count: {$sum: 1},
-            }
-        },
-        {$match: {
-                count: {"$gt": 1}
-            }
-        },
-        {$sort: {
-                count: -1
-            }
-        }
-    ]);
+    let reqBody = {
+        bloodGroup: 2,
+        hall: 8,
+        batch: 16,
+        name: 'm',
+        address: 'dhan',
+        isAvailable: true,
+        isNotAvailable: true
+    };
+    let result = await Donor.find({hall: reqBody.hall, bloodGroup: reqBody.bloodGroup});
 
-    console.log("total duplicates: ",result.length)
+    console.log(result.length);
 
-    for(let i = 0 ; i < result.length; i++){
-        let _id = result[i]._id;
-        let uniqueIds= result[i].uniqueIds;
-        let count= result[i].count;
-
-        let donors = await Donor.find({"_id" : {"$in" : uniqueIds}});
-        console.log(_id)
-        donors.forEach((donor)=>{
-            console.log(donor.name,", Hall:",donor.hall);
-        })
-        console.log("_")
-    }
-
-    await mongoose.disconnect()
+    await mongoose.disconnect();
 }
 test();

@@ -291,6 +291,10 @@
                     "donationCount": {
                       "type": "number",
                       "example": 2
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
                     }
                   }
                 }
@@ -672,6 +676,10 @@
                     "designation": {
                       "type": "number",
                       "example": 3
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
                     }
                   }
                 }
@@ -696,6 +704,98 @@
                 "message": {
                   "type": "string",
                   "example": "(error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/v2": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Searches for donors that matches the filters",
+        "parameters": [
+          {
+            "name": "bloodGroup",
+            "description": "blood group for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "hall",
+            "description": "hall for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "batch",
+            "description": "batch for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "address",
+            "description": "address for donors",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "isAvailable",
+            "description": "isAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "isNotAvailable",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "This error will occur if the user tries to search other halls",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not allowed to search donors of other halls"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
                 }
               },
               "xml": {
