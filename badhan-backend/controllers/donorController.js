@@ -485,11 +485,17 @@ const handleGETSearchOptimized = async (req, res) => {
         }
 
 
-        //process hall
-        queryBuilder.hall= reqQuery.hall;
+
 
         //process availableToAll
         queryBuilder.availableToAll= reqQuery.availableToAll;
+
+        //process hall
+        // if the availableToAll is true, then there is no need to search using hall
+        // otherwise, hall must be included
+        if(!reqQuery.availableToAll){
+            queryBuilder.hall= reqQuery.hall;
+        }
 
         //process batch
         let batchRegex="......."
