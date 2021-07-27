@@ -819,7 +819,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
 
         donor.designation = newDesignation;
         if (req.body.promoteFlag) {
-            donor.password = req.body.newPassword;
+            donor.password = req.body.password;
         } else {
             donor.password = null;
         }
