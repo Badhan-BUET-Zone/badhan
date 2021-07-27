@@ -4,8 +4,7 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
-
-const {Donor} = require('../db/models/Donor');
+const util = require('util')
 
 const handlePOSTDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
@@ -484,9 +483,6 @@ const handleGETSearchOptimized = async (req, res) => {
             queryBuilder.bloodGroup = reqQuery.bloodGroup;
         }
 
-
-
-
         //process availableToAll
         queryBuilder.availableToAll= reqQuery.availableToAll;
 
@@ -547,12 +543,16 @@ const handleGETSearchOptimized = async (req, res) => {
             queryBuilder.$and.push({$or:lastDonationAvailability});
         }
 
+
+        // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+
+
         let result = await donorInterface.findDonorsByQuery(queryBuilder);
 
         return res.status(200).send({
             status: 'OK',
             message: 'Donors queried successfully',
-            filteredDonors: result
+            filteredDonors: result.data
         });
 
     } catch (e) {
