@@ -1,7 +1,38 @@
 db.donors.updateMany({},{$set: {"commentTime":0}},false,true)
 //DONE ON PROD DATABASE
 
-db.logs.drop() //make sure super admin updates the app
+db.donors.updateMany({},
+                 [
+                     { $set: { address: { $switch: {
+                                     branches: [
+                                         { case: { $eq: [ "$address", "" ] }, then: "(unknown)" },
+                                         { case: { $eq: [ "$address", null ] }, then: "(unknown)" },
+                                         { case: { $eq: [ "$address", undefined ] }, then: "(unknown)" },
+                                     ],
+                                     default: "$address"
+                                 } } ,
+                             comment: { $switch: {
+                                     branches: [
+                                         { case: { $eq: [ "$comment", "" ] }, then: "(unknown)" },
+                                         { case: { $eq: [ "$comment", null ] }, then: "(unknown)" },
+                                         { case: { $eq: [ "$comment", undefined ] }, then: "(unknown)" },
+                                     ],
+                                     default: "$comment"
+                                 } },
+                             roomNumber: { $switch: {
+                                     branches: [
+                                         { case: { $eq: [ "$roomNumber", "" ] }, then: "(unknown)" },
+                                         { case: { $eq: [ "$roomNumber", null ] }, then: "(unknown)" },
+                                         { case: { $eq: [ "$roomNumber", undefined ] }, then: "(unknown)" },
+                                     ],
+                                     default: "$roomNumber"
+                                 } }
+                         } },
+
+                 ])
+
+
+db.logs.drop()
 db.donors.updateMany({}, {$unset: {tokens:1}}); //this will cause all users to logout
 
 db.donors.updateMany(

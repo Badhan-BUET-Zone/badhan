@@ -34,16 +34,21 @@ const donorSchema = new mongoose.Schema({
         maxlength: 1
     },
     address: {
-        type: String
+        type: String,
+        required: true,
+        default: "(unknown)",
     },
     roomNumber: {
         type: String,
+        required: true,
+        default: "(unknown)",
     },
     designation: {
         type: Number,
         default: 0,
         minlength: 1,
-        maxlength: 1
+        maxlength: 1,
+        required: true,
     },
     lastDonation: {
         type: Number,
@@ -55,7 +60,9 @@ const donorSchema = new mongoose.Schema({
         maxlength: 40
     },
     comment: {
-        type: String
+        type: String,
+        required: true,
+        default: "(unknown)",
     },
     commentTime:{
         type: Number,
