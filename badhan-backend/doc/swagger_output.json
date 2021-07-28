@@ -901,7 +901,7 @@
                   "type": "string",
                   "example": "ghjdgejhd7623jhs"
                 },
-                "newPassword": {
+                "password": {
                   "type": "string",
                   "example": "thisisanewpassword"
                 }

@@ -440,7 +440,7 @@ const handlePATCHDonorsPassword = async (req, res) => {
                description: 'donor info for changing password',
                schema:{
                 donorId:'ghjdgejhd7623jhs',
-                newPassword: 'thisisanewpassword'
+                password: 'thisisanewpassword'
                }
       } */
     try {
