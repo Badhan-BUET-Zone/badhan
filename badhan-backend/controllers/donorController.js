@@ -593,7 +593,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
                schema:{
                 donorId:'hjasgd673278',
                 promoteFlag: true,
-                newPassword: 'thisisanewpassword'
+                password: 'thisisanewpassword'
                }
       } */
     try {

@@ -5,3 +5,4 @@ node doc/swagger.js
 git add .
 git commit -am "%message%"
 git push origin test-branch
+npm run serve

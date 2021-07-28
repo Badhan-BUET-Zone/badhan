@@ -1014,7 +1014,7 @@
                   "type": "boolean",
                   "example": true
                 },
-                "newPassword": {
+                "password": {
                   "type": "string",
                   "example": "thisisanewpassword"
                 }
