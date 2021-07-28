@@ -327,10 +327,6 @@
                               "name": {
                                 "type": "string",
                                 "example": "Mir Mahathir (Volunteer)"
-                              },
-                              "id": {
-                                "type": "string",
-                                "example": "61011bd99bf18c82b9e56209"
                               }
                             }
                           },

@@ -1008,7 +1008,6 @@ const handleGETDonors = async (req, res) => {
                             _id: '61011bd99bf18c82b9e56209',
                             hall: 5,
                             name: 'Mir Mahathir (Volunteer)',
-                            "id": "61011bd99bf18c82b9e56209"
                         },
                         calleeId: '5e6781006ecd148aa8cc76d8',
                         date: 1627492207064,
