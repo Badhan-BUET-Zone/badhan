@@ -367,33 +367,37 @@
                   "type": "string",
                   "example": "ghjdgejhd7623jhs"
                 },
-                "newName": {
+                "name": {
                   "type": "string",
                   "example": "Mir Mahathir Mohammad"
                 },
-                "newPhone": {
+                "phone": {
                   "type": "number",
                   "example": 8801521438557
                 },
-                "newStudentId": {
+                "studentId": {
                   "type": "number",
                   "example": 1605011
                 },
-                "newBloodGroup": {
+                "bloodGroup": {
                   "type": "number",
                   "example": 2
                 },
-                "newHall": {
+                "hall": {
                   "type": "number",
                   "example": 3
                 },
-                "newRoomNumber": {
+                "roomNumber": {
                   "type": "string",
                   "example": "3009"
                 },
-                "newAddress": {
+                "address": {
                   "type": "string",
                   "example": "Azimpur"
+                },
+                "availableToAll": {
+                  "type": "boolean",
+                  "example": true
                 }
               }
             }

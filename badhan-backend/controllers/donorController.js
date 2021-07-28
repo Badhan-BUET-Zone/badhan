@@ -506,13 +506,14 @@ const handlePATCHDonors = async (req, res) => {
                description: 'donor info for editing donor',
                schema:{
                 donorId:'ghjdgejhd7623jhs',
-                newName:'Mir Mahathir Mohammad',
-                newPhone:8801521438557,
-                newStudentId:1605011,
-                newBloodGroup:2,
-                newHall:3,
-                newRoomNumber:'3009',
-                newAddress:'Azimpur'
+                name:'Mir Mahathir Mohammad',
+                phone:8801521438557,
+                studentId:1605011,
+                bloodGroup:2,
+                hall:3,
+                roomNumber:'3009',
+                address:'Azimpur',
+                availableToAll: true
                }
       } */
     try {
