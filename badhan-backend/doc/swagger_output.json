@@ -821,6 +821,12 @@
             "description": "isNotAvailable for donors",
             "type": "boolean",
             "in": "query"
+          },
+          {
+            "name": "availableToAll",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
           }
         ],
         "responses": {

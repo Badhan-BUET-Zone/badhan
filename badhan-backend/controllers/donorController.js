@@ -247,6 +247,12 @@ const handleGETSearchOptimized = async (req, res) => {
          name:'isNotAvailable',
          in:'query'
   } */
+    /* #swagger.parameters['availableToAll'] = {
+         description: 'isNotAvailable for donors',
+         type: 'boolean',
+         name:'availableToAll',
+         in:'query'
+  } */
     try {
 
 
