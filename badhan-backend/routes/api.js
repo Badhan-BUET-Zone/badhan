@@ -18,7 +18,8 @@ router.post('/donors',
 router.get('/donors',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handleHallPermission,
+    authenticator.handleFetchTargetDonor,
+    authenticator.handleHallPermissionOrCheckAvailableToAll,
     donorController.handleGETDonors
 );
 
@@ -42,38 +43,20 @@ router.get('/search',
 
 
 
-router.get('/donations',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleHallPermission,
-    donationController.handleGETDonations
-);
 
-router.post('/donations',
-    rateLimiter.donationInsertionLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleHallPermission,
-    donationController.handlePOSTDonations
-);
-
-
-router.delete('/donations',
-    rateLimiter.deleteDonationLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleHallPermission,
-    donationController.handleDeleteDonations
-);
 
 router.patch('/donors/comment',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handleHallPermission,
+    authenticator.handleFetchTargetDonor,
+    authenticator.handleHallPermissionOrCheckAvailableToAll,
     donorController.handlePATCHDonorsComment
 );
 
 router.patch('/donors/password',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handlePATCHDonorsPassword
@@ -82,6 +65,7 @@ router.patch('/donors/password',
 router.patch('/donors',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handlePATCHDonors
@@ -90,6 +74,7 @@ router.patch('/donors',
 router.delete('/donors',
     rateLimiter.donorDeletionLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handleDELETEDonors
@@ -98,6 +83,7 @@ router.delete('/donors',
 router.patch('/donors/designation',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermission,
     authenticator.handleHallAdminCheck,
     donorController.handlePATCHDonorsDesignation
@@ -129,30 +115,5 @@ router.get('/admins',
     donorController.handleGETAdmins
 );
 
-router.get('/v3/log/version',
-    rateLimiter.commonLimiter,
-    logController.handleGETAppVersion
-);
-
-router.get('/v2/log/statistics',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleSuperAdminCheck,
-    logController.handleGETStatistics
-);
-
-router.get('/v1/log',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleSuperAdminCheck,
-    logController.handleGETLogs
-);
-
-router.delete('/v1/log',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleSuperAdminCheck,
-    logController.handleDELETELogs
-);
 
 module.exports = router;

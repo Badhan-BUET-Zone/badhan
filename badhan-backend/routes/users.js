@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const authenticator = require('../middlewares/authenticate');
+const userController = require('../controllers/userController');
 const rateLimiter = require('../middlewares/rateLimiter')
 
 /* GET users listing. */
@@ -12,31 +13,32 @@ router.get('/', function(req, res, next) {
 
 router.post('/signin',
     rateLimiter.signInLimiter,
-    authenticator.handlePOSTSignIn
+    userController.handlePOSTSignIn
 );
 
 router.delete('/signout',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handleDELETESignOut
+    userController.handleDELETESignOut
 );
 
 router.delete('/signout/all',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handleDELETESignOutAll
+    userController.handleDELETESignOutAll
 );
 
 
 router.post('/redirection',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
-    authenticator.handlePOSTRedirection
+    userController.handlePOSTRedirection
 );
 
 router.patch('/redirection',
     rateLimiter.redirectionSignInLimiter,
-    authenticator.handlePATCHRedirectedAuthentication
+    userController.handlePATCHRedirectedAuthentication
 );
+
 
 module.exports = router;

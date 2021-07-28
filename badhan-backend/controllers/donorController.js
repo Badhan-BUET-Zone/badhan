@@ -4,7 +4,6 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
-const util = require('util')
 
 const handlePOSTDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
@@ -479,7 +478,8 @@ const handleGETSearchOptimized = async (req, res) => {
         let queryBuilder = {}
 
         //process blood group
-        if(reqQuery.bloodGroup){
+        let availableGroups = [0,1,2,3,4,5,6,7];
+        if(reqQuery.bloodGroup && availableGroups.includes(reqQuery.bloodGroup)){
             queryBuilder.bloodGroup = reqQuery.bloodGroup;
         }
 
@@ -707,35 +707,35 @@ const handlePATCHDonors = async (req, res) => {
 
         let target = res.locals.middlewareResponse.targetDonor;
 
-        if (reqBody.name !== '') {
+        if (reqBody.name!==undefined) {
             target.name = reqBody.name;
         }
 
-        if (reqBody.phone !== -1) {
+        if (reqBody.phone!==undefined) {
             target.phone = reqBody.phone;
         }
 
-        if (reqBody.studentId !== '') {
+        if (reqBody.studentId!==undefined) {
             target.studentId = reqBody.studentId;
         }
 
-        if (reqBody.bloodGroup !== -1) {
+        if (reqBody.bloodGroup!==undefined) {
             target.bloodGroup = reqBody.bloodGroup;
         }
 
-        if (reqBody.hall !== -1) {
+        if (reqBody.hall!==undefined) {
             target.hall = reqBody.hall;
         }
 
-        if (reqBody.roomNumber !== undefined && reqBody.roomNumber !== null) {
+        if (reqBody.roomNumber!==undefined) {
             target.roomNumber = reqBody.roomNumber;
         }
 
-        if (reqBody.address !== '') {
+        if (reqBody.address!==undefined) {
             target.address = reqBody.address;
         }
 
-        if(reqBody.availableToAll){
+        if(reqBody.availableToAll!==undefined){
             target.availableToAll = reqBody.availableToAll;
         }
 

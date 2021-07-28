@@ -1,32 +1,32 @@
 let express = require('express');
 let router = express.Router();
-
-const callRecordController = require('../controllers/callRecordController');
+const donationController = require('../controllers/donationController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
-
-router.post('/',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
-    callRecordController.handlePOSTCallRecord
-);
 
 router.get('/',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
-    callRecordController.handleGETCallRecords
+    donationController.handleGETDonations
 );
 
-router.delete('/',
-    rateLimiter.commonLimiter,
+router.post('/',
+    rateLimiter.donationInsertionLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
-    callRecordController.handleDELETESingleCallRecord
+    donationController.handlePOSTDonations
+);
+
+
+router.delete('/',
+    rateLimiter.deleteDonationLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
+    authenticator.handleHallPermissionOrCheckAvailableToAll,
+    donationController.handleDeleteDonations
 );
 
 module.exports = router;

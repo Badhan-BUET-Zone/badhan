@@ -16,14 +16,16 @@ let app = express();
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./doc/swagger_output.json');
+
 let apiRouter = require('./routes/api');
 let usersRouter = require('./routes/users');
+let donationsRouter = require('./routes/donations');
 let guestRouter = require('./routes/guest')
 let callRecordRouter = require('./routes/callRecord');
+let logRouter = require('./routes/logs');
+
 const { mongoose } = require('./db/mongoose');
-let {responseInterceptor} = require('./middlewares/response');
-
-
+// let {responseInterceptor} = require('./middlewares/response');
 
 //SPA Handling
 app.use(express.static(path.join(__dirname, 'public')));
@@ -42,9 +44,11 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 // app.use(responseInterceptor);
 
 app.use('/users', usersRouter);
+app.use('/donations',donationsRouter);
 app.use('/guest', guestRouter);
+app.use('/callrecords', callRecordRouter);
 app.use('/', apiRouter);
-app.use('/', callRecordRouter);
+app.use('/',logRouter);
 
 // catch 404 and forward to error handler
 app.use('*',(req, res, next)=>{
