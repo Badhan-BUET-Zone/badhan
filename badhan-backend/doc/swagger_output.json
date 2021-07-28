@@ -824,7 +824,7 @@
           },
           {
             "name": "availableToAll",
-            "description": "isNotAvailable for donors",
+            "description": "availableToAll denotes the availability of the donor to the other hall members",
             "type": "boolean",
             "in": "query"
           }
