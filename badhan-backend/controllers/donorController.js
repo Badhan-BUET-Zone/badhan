@@ -59,8 +59,12 @@ const handlePOSTDonors = async (req, res) => {
                 message: 'Donor found with duplicate phone number in another hall',
                 donor: null
             });
+        }
 
-
+        //if the hall is unknown, then the donor must be available to all
+        let availableToAll = req.body.availableToAll
+        if(req.body.hall===8){
+            availableToAll = true;
         }
 
         let donorObject = {
@@ -74,7 +78,7 @@ const handlePOSTDonors = async (req, res) => {
             lastDonation: 0,
             comment: req.body.comment,
             donationCount: req.body.extraDonationCount,
-            availableToAll: req.body.availableToAll,
+            availableToAll: availableToAll,
         };
 
         let donorInsertionResult = await donorInterface.insertDonor(donorObject);
@@ -303,14 +307,13 @@ const handleGETSearchOptimized = async (req, res) => {
             queryBuilder.bloodGroup = reqQuery.bloodGroup;
         }
 
-        //process availableToAll
-        queryBuilder.availableToAll= reqQuery.availableToAll;
-
         //process hall
         // if the availableToAll is true, then there is no need to search using hall
         // otherwise, hall must be included
         if(!reqQuery.availableToAll){
             queryBuilder.hall= reqQuery.hall;
+        }else{
+            queryBuilder.availableToAll= reqQuery.availableToAll;
         }
 
         //process batch
@@ -558,6 +561,10 @@ const handlePATCHDonors = async (req, res) => {
 
         if(reqBody.availableToAll!==undefined){
             target.availableToAll = reqBody.availableToAll;
+        }
+
+        if (target.hall===8){
+            target.availableToAll = true;
         }
 
         await target.save();

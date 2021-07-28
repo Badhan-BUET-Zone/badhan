@@ -1,5 +1,9 @@
 db.donors.updateMany({},{$set: {"commentTime":0}},false,true)
+
 //DONE ON PROD DATABASE
+
+db.donors.updateMany({},
+    [{ $set: { studentId: { $toString: "$studentId" } } }]);
 
 db.donors.updateMany({},
                  [

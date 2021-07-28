@@ -7,14 +7,15 @@ const {Donation} = require('../db/models/Donation');
 const util = require('util')
 
 const test = async()=>{
-    let donors = await Donor.find({studentId:{$type:2}})
+    let donors = await Donor.find({studentId:{$type:16}}).limit(5);
     console.log(donors.length)
-    // for(let i = 0 ; i < donors.length; i++){
-    //     donors[i].studentId = donors[i].studentId.toString();
-    //
-    //     console.log(donors[i].studentId);
-    //     await donors[i].save();
-    // }
+    for(let i = 0 ; i < donors.length; i++){
+        // console.log(typeof donors[i].studentId);
+        // donors[i].studentId = donors[i].studentId.toString();
+
+        // console.log(donors[i].studentId);
+        // await donors[i].save();
+    }
     await mongoose.disconnect();
 }
 test();
