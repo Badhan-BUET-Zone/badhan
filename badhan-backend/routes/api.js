@@ -35,11 +35,7 @@ router.get('/search/v2',
     donorController.handleGETSearchOptimized
 )
 
-router.get('/search',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    donorController.handleGETSearch
-);
+
 
 
 
