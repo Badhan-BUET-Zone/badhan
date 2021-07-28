@@ -284,6 +284,10 @@
                       "type": "string",
                       "example": "developer of badhan"
                     },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 0
+                    },
                     "designation": {
                       "type": "number",
                       "example": 3
@@ -295,6 +299,83 @@
                     "availableToAll": {
                       "type": "boolean",
                       "example": true
+                    },
+                    "callRecords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "61018f6f49904a07f010d0c8"
+                          },
+                          "callerId": {
+                            "type": "object",
+                            "properties": {
+                              "designation": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "_id": {
+                                "type": "string",
+                                "example": "61011bd99bf18c82b9e56209"
+                              },
+                              "hall": {
+                                "type": "number",
+                                "example": 5
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Mir Mahathir (Volunteer)"
+                              },
+                              "id": {
+                                "type": "string",
+                                "example": "61011bd99bf18c82b9e56209"
+                              }
+                            }
+                          },
+                          "calleeId": {
+                            "type": "string",
+                            "example": "5e6781006ecd148aa8cc76d8"
+                          },
+                          "date": {
+                            "type": "number",
+                            "example": 1627492207064
+                          },
+                          "expireAt": {
+                            "type": "string",
+                            "example": "2021-08-27T17:10:07.066Z"
+                          },
+                          "__v": {
+                            "type": "number",
+                            "example": 0
+                          }
+                        }
+                      }
+                    },
+                    "donations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "number",
+                            "example": 1546300800000
+                          },
+                          "_id": {
+                            "type": "string",
+                            "example": "5e6781006ecd148aa8cc76d8"
+                          },
+                          "phone": {
+                            "type": "number",
+                            "example": 8801724097983
+                          },
+                          "donorId": {
+                            "type": "string",
+                            "example": "5e6781006ecd148aa8cc76d8"
+                          }
+                        }
+                      }
                     }
                   }
                 }

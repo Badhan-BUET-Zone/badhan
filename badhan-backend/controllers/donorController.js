@@ -996,9 +996,34 @@ const handleGETDonors = async (req, res) => {
                     roomNumber: '3009',
                     address: 'Azimpur',
                     comment: 'developer of badhan',
+                    commentTime: 0,
                     designation: 3,
                     donationCount: 2,
-                    availableToAll: true
+                    availableToAll: true,
+                    callRecords: [
+                    {
+                        _id: '61018f6f49904a07f010d0c8',
+                       callerId: {
+                            designation: 1,
+                            _id: '61011bd99bf18c82b9e56209',
+                            hall: 5,
+                            name: 'Mir Mahathir (Volunteer)',
+                            "id": "61011bd99bf18c82b9e56209"
+                        },
+                        calleeId: '5e6781006ecd148aa8cc76d8',
+                        date: 1627492207064,
+                        expireAt: '2021-08-27T17:10:07.066Z',
+                        __v: 0
+                     }
+                    ],
+                    donations: [
+                    {
+                    date: 1546300800000,
+                    _id: "5e6781006ecd148aa8cc76d8",
+                    phone: 8801724097983,
+                    donorId: "5e6781006ecd148aa8cc76d8"
+                    }
+                    ]
                 }
                },
               description: 'donor info'

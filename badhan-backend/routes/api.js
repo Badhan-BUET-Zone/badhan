@@ -37,10 +37,6 @@ router.get('/search/v2',
 
 
 
-
-
-
-
 router.patch('/donors/comment',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
