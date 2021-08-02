@@ -372,6 +372,8 @@ const handleGETSearchOptimized = async (req, res) => {
 
         let result = await donorInterface.findDonorsByQuery(queryBuilder);
 
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id,"SEARCH DONORS",{filter: reqQuery,resultCount:result.data.length})
+
         return res.status(200).send({
             status: 'OK',
             message: 'Donors queried successfully',
