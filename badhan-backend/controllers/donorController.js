@@ -303,7 +303,7 @@ const handleGETSearchOptimized = async (req, res) => {
 
         //process blood group
         let availableGroups = [0,1,2,3,4,5,6,7];
-        if(gavailableGroups.includes(reqQuery.bloodGroup)){
+        if(availableGroups.includes(reqQuery.bloodGroup)){
             queryBuilder.bloodGroup = reqQuery.bloodGroup;
         }
 
