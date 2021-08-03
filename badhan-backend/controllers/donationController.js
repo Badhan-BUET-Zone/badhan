@@ -195,7 +195,7 @@ const handleDeleteDonations = async (req, res) => {
                    message: '(Internal server error)'
              },
             description: 'In case of internal server error, user will get this error message'
-     } */
+        } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
