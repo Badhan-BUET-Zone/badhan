@@ -73,20 +73,44 @@ const deleteDonationByQuery = async (query) => {
     }
 };
 
+const findMaxDonationByDonorId = async (id) => {
+    try {
+        let data = await Donation.find({donorId: id}).sort({date: -1}).limit(1);
+        if (data.length!==0) {
+            return {
+                message: 'Max donation fetched successfully',
+                status: 'OK',
+                data
+            }
+        }
+
+        return {
+            message: 'No donations found',
+            status: 'ERROR'
+        }
+    } catch (e) {
+        return {
+            message: e.message,
+            status: "EXCEPTION"
+        }
+    }
+}
+
 const deleteDonationsByQuery = async (query) => {
     try {
         let data = await Donation.deleteMany(query);
         if (data) {
             return {
                 message: 'Donations removed successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                message: 'Could not remove donations',
-                status: 'ERROR'
+                status: 'OK',
+                data
             }
         }
+        return {
+            message: 'Could not remove donations',
+            status: 'ERROR'
+        }
+
     } catch (e) {
         return {
             message: e.message,
@@ -95,15 +119,15 @@ const deleteDonationsByQuery = async (query) => {
     }
 };
 
-const insertManyDonations = async(donations)=>{
-    try{
+const insertManyDonations = async (donations) => {
+    try {
         let data = await Donation.insertMany(donations);
         return {
             message: 'Donations inserted successfully',
             status: 'OK',
             data
         }
-    }catch (e) {
+    } catch (e) {
         return {
             data: null,
             message: e.message,
@@ -156,7 +180,7 @@ const findDonationsByQuery = async (query, option) => {
     }
 };
 
-const getCount = async ()=>{
+const getCount = async () => {
     try {
         let donationCount = await Donation.countDocuments();
         return {
@@ -180,5 +204,6 @@ module.exports = {
     findDonationByQuery,
     findDonationsByQuery,
     getCount,
-    insertManyDonations
+    insertManyDonations,
+    findMaxDonationByDonorId
 }
