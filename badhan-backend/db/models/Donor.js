@@ -90,12 +90,12 @@ donorSchema.virtual('donations',{
     foreignField: 'donorId'
 })
 
-// donorSchema.virtual('donationCountOptimized',{
-//     ref: 'Donations',
-//     localField: '_id',
-//     foreignField: 'donorId',
-//     count: true
-// })
+donorSchema.virtual('donationCountOptimized',{
+    ref: 'Donations',
+    localField: '_id',
+    foreignField: 'donorId',
+    count: true
+})
 
 donorSchema.set('toObject', { virtuals: true });
 donorSchema.set('toJSON', { virtuals: true });
