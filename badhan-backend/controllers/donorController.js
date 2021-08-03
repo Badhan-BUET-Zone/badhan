@@ -995,8 +995,7 @@ const handleGETDonors = async (req, res) => {
                     'designation': 1
                 }
             }
-        }).populate({path:'donationCountOptimized'})
-            .execPopulate();
+        }).execPopulate();
         /* #swagger.responses[200] = {
               schema: {
                 status: 'OK',
@@ -1073,7 +1072,7 @@ const handleGETDonorsMe = async (req, res) => {
 
     try {
         let donor = res.locals.middlewareResponse.donor;
-        await donor.populate({path: 'callRecords'}).populate({path: 'donations'}).populate({path:'donationCountOptimized'}).execPopulate();
+        await donor.populate({path: 'callRecords'}).populate({path: 'donations'}).execPopulate();
 
         /* #swagger.responses[200] = {
               schema: {
