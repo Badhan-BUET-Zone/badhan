@@ -115,6 +115,13 @@ const getBackupList = async ()=>{
 const restoreController = async (argv) => {
     console.log("restore command initiated");
     console.log("time: ",argv.time);
+    console.log("restore to production: ",argv.production);
+
+    let mongoURI = process.env.MONGODB_URI_TEST;
+
+    if(argv.production===true){
+        mongoURI = process.env.MONGODB_URI_PROD;
+    }
 
     console.log("fetching backups from cloud...")
     let backupList = await getBackupList();
@@ -140,7 +147,7 @@ const restoreController = async (argv) => {
     let backupProcess = spawn('./mongorestore', [
         '--drop',
         '--dir=backup/'+argv.time+'/Badhan',
-        process.env.MONGODB_URI_TEST
+        mongoURI
     ]);
 
     backupProcess.on('exit', async (code, signal) => {

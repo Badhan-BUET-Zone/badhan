@@ -37,6 +37,11 @@ yargs.command({
             describe: 'The backup having the specified timestamp will be restored',
             demandOption: true,
             type: 'number'
+        },
+        production: {
+            describe: 'If true, then the backup will be restored to the production database',
+            type: 'boolean',
+            default: false,
         }
     },
     handler: controllers.restoreController
