@@ -159,7 +159,7 @@ const handleDeleteDonations = async (req, res) => {
 
         let donationDeletionResult = await donationInterface.deleteDonationByQuery({donorId:donor._id,date:givenDate});
 
-        console.log(donationDeletionResult.data)
+        // console.log(donationDeletionResult.data)
 
         if(donationDeletionResult.status!=="OK"){
             return res.status(404).send({
