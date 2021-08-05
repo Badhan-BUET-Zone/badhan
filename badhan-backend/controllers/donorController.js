@@ -107,6 +107,7 @@ const handlePOSTDonors = async (req, res) => {
 
         let dummyInsertionResult = await donationInterface.insertManyDonations(dummyDonations);
 
+
         if(dummyInsertionResult.status!=="OK"){
             return res.status(500).send({
                 status: 'ERROR',
@@ -411,6 +412,7 @@ const handlePATCHDonorsComment = async (req, res) => {
         let targetDonor = res.locals.middlewareResponse.targetDonor;
 
         targetDonor.comment = req.body.comment;
+        targetDonor.commentTime = new Date().getTime();
         await targetDonor.save();
 
         await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR COMMENT", targetDonor);
