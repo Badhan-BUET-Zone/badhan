@@ -44,7 +44,7 @@ const donorDeletionLimiter = rateLimit({
 });
 const deleteDonationLimiter = rateLimit({
     windowMs: minute,
-    max: 2,
+    max: 6,
     message: {
         status: "ERROR",
         message: "Service unavailable!!"
