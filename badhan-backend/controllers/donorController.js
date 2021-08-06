@@ -4,6 +4,7 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
+const {halls} = require('../constants')
 
 const handlePOSTDonors = async (req, res) => {
     /*  #swagger.tags = ['Donors']
@@ -42,8 +43,8 @@ const handlePOSTDonors = async (req, res) => {
                 } */
                 return res.status(409).send({
                     status: 'ERROR',
-                    message: 'Donor found with duplicate phone number',
-                    donor: duplicateDonorResult.donors[0]
+                    message: 'Donor found with duplicate phone number in '+halls[duplicateDonorResult.donors[0].hall]+" hall",
+                    donor: duplicateDonorResult.donors[0],
                 });
             }
             /* #swagger.responses[401] = {
@@ -56,8 +57,8 @@ const handlePOSTDonors = async (req, res) => {
    } */
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'Donor found with duplicate phone number in another hall',
-                donor: null
+                message: 'Donor found with duplicate phone number in '+halls[duplicateDonorResult.donors[0].hall]+" hall. You are not permitted to access this donor.",
+                donor: null,
             });
         }
 
