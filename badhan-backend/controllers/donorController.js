@@ -29,10 +29,15 @@ const handlePOSTDonors = async (req, res) => {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
 
-        let duplicateDonorResult = await donorInterface.findDonorsByPhone(req.body.phone);
+        let duplicateDonorResult = await donorInterface.findDonorByPhone(req.body.phone);
 
-        if (duplicateDonorResult.donors.length !== 0) {
-            if (authenticatedUser.designation === 3 || duplicateDonorResult.donors[0].hall === authenticatedUser.hall || duplicateDonorResult.donors[0].hall > 6) {
+        if (duplicateDonorResult.status==='OK') {
+            if (
+                authenticatedUser.designation === 3 ||
+                duplicateDonorResult.data.hall === authenticatedUser.hall ||
+                duplicateDonorResult.data.hall > 6 ||
+                duplicateDonorResult.data.availableToAll === true
+            ) {
                 /* #swagger.responses[409] = {
                 schema: {
                     status: 'ERROR',
@@ -43,8 +48,8 @@ const handlePOSTDonors = async (req, res) => {
                 } */
                 return res.status(409).send({
                     status: 'ERROR',
-                    message: 'Donor found with duplicate phone number in '+halls[duplicateDonorResult.donors[0].hall]+" hall",
-                    donor: duplicateDonorResult.donors[0],
+                    message: 'Donor found with duplicate phone number in '+halls[duplicateDonorResult.data.hall]+" hall",
+                    donor: duplicateDonorResult.data,
                 });
             }
             /* #swagger.responses[401] = {
@@ -57,7 +62,7 @@ const handlePOSTDonors = async (req, res) => {
    } */
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'Donor found with duplicate phone number in '+halls[duplicateDonorResult.donors[0].hall]+" hall. You are not permitted to access this donor.",
+                message: 'Donor found with duplicate phone number in '+halls[duplicateDonorResult.data.hall]+" hall. You are not permitted to access this donor.",
                 donor: null,
             });
         }

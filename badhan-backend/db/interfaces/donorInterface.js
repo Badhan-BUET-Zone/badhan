@@ -147,16 +147,27 @@ const findDonorByQuery = async (query, option) => {
     }
 };
 
-const findDonorsByPhone = async (phoneNumber)=>{
+const findDonorByPhone = async (phoneNumber)=>{
     try{
-        let data = await Donor.find({
+        let data = await Donor.findOne({
             phone: phoneNumber
         });
-        return {
-            donors: data,
-            message: 'Donor fetched successfully',
-            status: 'OK'
+
+        if(data){
+            return {
+                data: data,
+                message: 'Donor fetched successfully',
+                status: 'OK'
+            }
         }
+
+        return {
+            data: data,
+            message: 'Donor not found',
+            status: 'ERROR'
+        }
+
+
     }catch(e){
         return {
             data: null,
@@ -335,7 +346,7 @@ module.exports = {
     getCount,
     getVolunteerCount,
     findAllVolunteers,
-    findDonorsByPhone,
+    findDonorByPhone,
     findDonorByIDAndUpdateCommentTime,
     fineDonorById
 }
