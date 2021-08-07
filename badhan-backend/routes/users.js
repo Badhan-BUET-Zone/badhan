@@ -5,6 +5,8 @@ const router = express.Router();
 const authenticator = require('../middlewares/authenticate');
 const userController = require('../controllers/userController');
 const rateLimiter = require('../middlewares/rateLimiter')
+const {validate} = require('../validations');
+const userValidator = require('../validations/users')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -12,6 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signin',
+    userValidator.validateLogin,
     rateLimiter.signInLimiter,
     userController.handlePOSTSignIn
 );
