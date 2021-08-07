@@ -989,7 +989,6 @@ const handleGETDonors = async (req, res) => {
     try {
 
         let donor = res.locals.middlewareResponse.targetDonor;
-        console.log("CALLED")
         await donor.populate({
             path: 'donations',
             options: { sort: { 'date': -1 } }
