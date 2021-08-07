@@ -31,12 +31,27 @@ const { mongoose } = require('./db/mongoose');
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(history());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+    bodyParser.json()(req, res, err => {
+        if (err) {
+            console.error(err);
+            return res.status(400).json({
+                status:"ERROR",
+                message: "Malformed JSON",
+            });        }
+
+        next();
+    });
+});
+
 app.use(cors());
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 

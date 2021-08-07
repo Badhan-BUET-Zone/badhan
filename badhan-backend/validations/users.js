@@ -12,6 +12,7 @@ const validateLogin = validate([
 ]);
 
 
+
 module.exports = {
     validateLogin
 }
