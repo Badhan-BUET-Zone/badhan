@@ -989,9 +989,10 @@ const handleGETDonors = async (req, res) => {
     try {
 
         let donor = res.locals.middlewareResponse.targetDonor;
-
+        console.log("CALLED")
         await donor.populate({
-            path: 'donations'
+            path: 'donations',
+            options: { sort: { 'date': -1 } }
         }).populate({
             path: 'callRecords',
             populate: {
@@ -1002,7 +1003,8 @@ const handleGETDonors = async (req, res) => {
                     'hall': 1,
                     'designation': 1
                 }
-            }
+            },
+            options: { sort: { 'date': -1 } }
         }).execPopulate();
         /* #swagger.responses[200] = {
               schema: {
