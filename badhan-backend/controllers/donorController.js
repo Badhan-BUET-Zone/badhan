@@ -537,41 +537,17 @@ const handlePATCHDonors = async (req, res) => {
       } */
     try {
         let reqBody = req.body;
-        // let authenticatedUser = res.locals.middlewareResponse.donor;
 
         let target = res.locals.middlewareResponse.targetDonor;
 
-        if (reqBody.name!==undefined) {
-            target.name = reqBody.name;
-        }
-
-        if (reqBody.phone!==undefined) {
-            target.phone = reqBody.phone;
-        }
-
-        if (reqBody.studentId!==undefined) {
-            target.studentId = reqBody.studentId;
-        }
-
-        if (reqBody.bloodGroup!==undefined) {
-            target.bloodGroup = reqBody.bloodGroup;
-        }
-
-        if (reqBody.hall!==undefined) {
-            target.hall = reqBody.hall;
-        }
-
-        if (reqBody.roomNumber!==undefined) {
-            target.roomNumber = reqBody.roomNumber;
-        }
-
-        if (reqBody.address!==undefined) {
-            target.address = reqBody.address;
-        }
-
-        if(reqBody.availableToAll!==undefined){
-            target.availableToAll = reqBody.availableToAll;
-        }
+        target.name = reqBody.name;
+        target.phone = reqBody.phone;
+        target.studentId = reqBody.studentId;
+        target.bloodGroup = reqBody.bloodGroup;
+        target.hall = reqBody.hall;
+        target.roomNumber = reqBody.roomNumber;
+        target.address = reqBody.address;
+        target.availableToAll = reqBody.availableToAll;
 
         if (target.hall===8){
             target.availableToAll = true;
