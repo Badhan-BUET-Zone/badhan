@@ -36,6 +36,7 @@ router.get('/search/v2',
 
 
 router.patch('/donors/comment',
+    donorValidator.validatePATCHDonorsComment,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
@@ -44,6 +45,7 @@ router.patch('/donors/comment',
 );
 
 router.patch('/donors/password',
+    donorValidator.validatePATCHDonorsPassword,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
@@ -53,6 +55,7 @@ router.patch('/donors/password',
 );
 
 router.patch('/donors',
+    donorValidator.validatePATCHDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,

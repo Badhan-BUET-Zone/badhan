@@ -1,4 +1,5 @@
 const {body, checkSchema, validationResult} = require('express-validator');
+const mongoose = require('mongoose');
 // index.js
 const validate = validations => {
     return async (req, res, next) => {
@@ -50,11 +51,11 @@ const validateBODYStudentId = body('studentId')
     .isInt().withMessage('studentId must be integer');
 
 const validateBODYPassword = body('password')
-    .exists().withMessage('Password is required').customSanitizer(value => String(value))
+    .exists().not().isEmpty().withMessage('Password is required').customSanitizer(value => String(value))
     .trim().isLength({min:4}).withMessage('Password length must be more than 4')
 
 const validateBODYComment = body('comment')
-    .exists().withMessage('comment is required')
+    .exists().not().isEmpty().withMessage('comment is required')
     .customSanitizer(value => String(value))
     .escape().trim().isLength({min:2,max:500}).withMessage('Comment length must be between 2 and 500');
 
@@ -65,7 +66,22 @@ const validateBODYDonationCount = body('extraDonationCount')
 
 const validateBODYAvailableToAll = body('availableToAll')
     .exists().withMessage('availableToAll is required')
-    .isBoolean().toBoolean().withMessage("availableToAll must be boolean")
+    .isBoolean().toBoolean().withMessage("availableToAll must be boolean");
+
+const validateBODYAddress = body('address')
+    .exists().not().isEmpty().withMessage('address is required')
+    .customSanitizer(value => String(value))
+    .escape().trim().isLength({min:2,max:500}).withMessage('Address length must be between 2 and 500');
+
+const validateBODYRoomNumber = body('roomNumber')
+    .exists().not().isEmpty().withMessage('roomNumber is required')
+    .customSanitizer(value => String(value))
+    .escape().trim().isLength({min:2,max:500}).withMessage('roomNumber length must be between 2 and 500');
+
+const validateBODYDonorId = body('donorId')
+    .exists().withMessage('donorId is required')
+    .customSanitizer(value => String(value))
+    .escape().trim().custom(donorId=>mongoose.Types.ObjectId.isValid(donorId)).withMessage('Enter a valid donorId');
 
 module.exports={
     validate,
@@ -77,5 +93,8 @@ module.exports={
     validateBODYPassword,
     validateBODYComment,
     validateBODYDonationCount,
-    validateBODYAvailableToAll
+    validateBODYAvailableToAll,
+    validateBODYAddress,
+    validateBODYRoomNumber,
+    validateBODYDonorId
 }

@@ -17,7 +17,7 @@ echo "---committing staged files---"
 git commit -am "$message"
 
 # push to mahathir backend repo
-echo "---pushging master branch to github---"
+echo "---pushing master branch to github---"
 git push origin master
 
 # push to remote-aniruddha repo
