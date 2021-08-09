@@ -1,4 +1,7 @@
-const {validate,validateBODYPassword,validateBODYDonorId,validateBODYAddress,validateBODYRoomNumber,validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId} = require('../validations');
+const {validate} = require('../validations');
+const {validateBODYPromoteFlag, validateBODYPassword,validateBODYDonorId,validateBODYAddress,validateBODYRoomNumber,validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId} = require('../validations/validateRequest/validateBody')
+const {validateQUERYDonorId, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName} = require('../validations/validateRequest/validateQuery');
+
 const validatePOSTDonors = validate([
     validateBODYPhone,
     validateBODYBloodGroup,
@@ -34,9 +37,43 @@ const validatePATCHDonorsComment = validate([
     validateBODYComment,
 ]);
 
+const validatePATCHDonorsDesignation = validate([
+    validateBODYDonorId,
+    validateBODYPromoteFlag,
+    validateBODYPassword,
+]);
+
+const validatePATCHAdmins = validate([
+    validateBODYDonorId,
+])
+
+const validateGETDonors = validate([
+    validateQUERYDonorId,
+])
+
+const validateGETSearchDonors = validate([
+    validateQUERYBloodGroup,
+    validateQUERYHall,
+    validateQUERYBatch,
+    validateQUERYName,
+    validateQUERYAddress,
+    validateQUERYIsAvailable,
+    validateQEURYIsNotAvailable,
+    validateQUERYAvailableToAll,
+])
+
+const validateDELETEDonors = validate([
+    validateQUERYDonorId
+])
+
 module.exports = {
     validatePOSTDonors,
     validatePATCHDonors,
     validatePATCHDonorsComment,
-    validatePATCHDonorsPassword
+    validatePATCHDonorsPassword,
+    validatePATCHDonorsDesignation,
+    validatePATCHAdmins,
+    validateGETDonors,
+    validateGETSearchDonors,
+    validateDELETEDonors
 }

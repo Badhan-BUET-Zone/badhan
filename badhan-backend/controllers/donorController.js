@@ -1,5 +1,5 @@
 const moment = require('moment');
-
+const util = require('util');
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
@@ -265,18 +265,13 @@ const handleGETSearchOptimized = async (req, res) => {
          in:'query'
   } */
     try {
-
-
         let reqQuery = req.query;
-        reqQuery.bloodGroup = parseInt(reqQuery.bloodGroup);
 
-        reqQuery.hall = parseInt(reqQuery.hall);
-        reqQuery.batch = isNaN(parseInt(reqQuery.batch)) ? "" : reqQuery.batch;
-        reqQuery.isAvailable = reqQuery.isAvailable.toLowerCase() === 'true';
-        reqQuery.isNotAvailable = reqQuery.isNotAvailable.toLowerCase() === 'true';
-        reqQuery.availableToAll = reqQuery.availableToAll.toLowerCase() === 'true';
+        // console.log(util.inspect(reqQuery, false, null, true /* enable colors */))
 
-        if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall && reqQuery.hall <= 6 && res.locals.middlewareResponse.donor.designation !== 3) {
+        if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall
+            && reqQuery.hall <= 6
+            && res.locals.middlewareResponse.donor.designation !== 3) {
             /* #swagger.responses[400] = {
               schema: {
                 status: 'ERROR',
@@ -290,27 +285,10 @@ const handleGETSearchOptimized = async (req, res) => {
             });
         }
 
-        // console.log(reqQuery)
-
-        // let reqQuery = {
-        //     bloodGroup: 2,//can be null, but must be number of one digit
-        //     hall: 8,// cannot be null and must be number of one digit
-        //     isNotAvailable: false, // cannot be null and must be boolean
-        //     isAvailable: false, // cannot be null and must be boolean
-        //     name: 'm', // can be null
-        //     address: 'mirpur', //can be null
-        //     availableToAll: true, // cannot be null and must be boolean
-        //     batch: "", // cannot be null and must be "" or "16"
-        // };
-
-        //MAJOR BUG NOT RESOLVED: SOME STUDENT IDS ARE STILL NUMBER
-        //NEET TO MAKE THEM STRING
-
         let queryBuilder = {}
 
         //process blood group
-        let availableGroups = [0,1,2,3,4,5,6,7];
-        if(availableGroups.includes(reqQuery.bloodGroup)){
+        if(reqQuery.bloodGroup!==-1){
             queryBuilder.bloodGroup = reqQuery.bloodGroup;
         }
 
@@ -332,22 +310,20 @@ const handleGETSearchOptimized = async (req, res) => {
 
         //process name
         let nameRegex = ".*";
-        if(reqQuery.name){
-            reqQuery.name = String(reqQuery.name).toLowerCase();
+
             for (let i = 0; i < reqQuery.name.length; i++) {
                 nameRegex += (reqQuery.name.charAt(i)+".*");
             }
-        }
+
         queryBuilder.name= { $regex: nameRegex, $options: 'ix' };
 
         //process address
         let addressRegex = ".*";
-        if(reqQuery.address){
-            reqQuery.address = String(reqQuery.address).toLowerCase();
+
             for (let i = 0; i < reqQuery.address.length; i++) {
                 addressRegex += (reqQuery.address.charAt(i)+".*");
             }
-        }
+
         queryBuilder.$and = [{$or:[
                 {comment: { $regex: addressRegex, $options: 'ix' }},
                 {address: { $regex: addressRegex, $options: 'ix' }}]},
@@ -373,9 +349,7 @@ const handleGETSearchOptimized = async (req, res) => {
             queryBuilder.$and.push({$or:lastDonationAvailability});
         }
 
-
         // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
-
 
         let result = await donorInterface.findDonorsByQuery(queryBuilder);
 

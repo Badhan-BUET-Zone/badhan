@@ -3,6 +3,7 @@ let router = express.Router();
 const donationController = require('../controllers/donationController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
+const donationValidator = require('../validations/donations');
 
 router.get('/',
     rateLimiter.commonLimiter,
@@ -13,6 +14,7 @@ router.get('/',
 );
 
 router.post('/',
+    donationValidator.validatePOSTDonations,
     rateLimiter.donationInsertionLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
@@ -22,6 +24,7 @@ router.post('/',
 
 
 router.delete('/',
+    donationValidator.validateDELETEDonations,
     rateLimiter.deleteDonationLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,

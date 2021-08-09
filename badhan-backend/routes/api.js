@@ -14,12 +14,15 @@ router.post('/donors',
 );
 
 router.get('/donors',
+    donorValidator.validateGETDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
     donorController.handleGETDonors
 );
+
+
 
 router.get('/donors/me',
     rateLimiter.commonLimiter,
@@ -28,6 +31,7 @@ router.get('/donors/me',
 );
 
 router.get('/search/v2',
+    donorValidator.validateGETSearchDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handleGETSearchOptimized
@@ -65,6 +69,7 @@ router.patch('/donors',
 );
 
 router.delete('/donors',
+    donorValidator.validateDELETEDonors,
     rateLimiter.donorDeletionLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
@@ -74,6 +79,7 @@ router.delete('/donors',
 );
 
 router.patch('/donors/designation',
+    donorValidator.validatePATCHDonorsDesignation,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
@@ -103,6 +109,7 @@ router.patch('/admins',
 );
 
 router.get('/admins',
+    donorValidator.validatePATCHAdmins,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handleGETAdmins
