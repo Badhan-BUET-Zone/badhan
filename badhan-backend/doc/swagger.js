@@ -87,7 +87,7 @@ const doc = {
 }
 
 const outputFile = './doc/swagger_output.json'
-const endpointsFiles = ['./routes/api.js','./routes/users.js','./routes/callRecord.js']
+const endpointsFiles = ['./routes/api.js','./routes/users.js','./routes/callRecords.js']
 
 
 

@@ -7,7 +7,16 @@ let handleAuthentication = async (req, res, next) => {
     try {
         let token = req.header('x-auth');
 
-        let decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
+        let decodedDonor;
+
+        try{
+            decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
+        }catch (e) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Malformed authentication token'
+            });
+        }
 
         let tokenCheckResult = await tokenInterface.findTokenDataByToken(token);
 
@@ -59,7 +68,6 @@ let handleAuthentication = async (req, res, next) => {
 };
 
 
-
 let handleSuperAdminCheck = async (req, res, next) => {
     if (res.locals.middlewareResponse.donor.designation === 3) {
         return next();
@@ -107,7 +115,7 @@ let handleHigherDesignationCheck = async (req, res, next) => {
     next();
 }
 
-let handleFetchTargetDonor = async (req,res,next)=>{
+let handleFetchTargetDonor = async (req, res, next) => {
     /*
     This middleware checks whether the targeted donor is accessible to the logged in user
      */
@@ -160,14 +168,14 @@ let handleFetchTargetDonor = async (req,res,next)=>{
     return next();
 }
 
-let handleHallPermissionOrCheckAvailableToAll = async (req,res,next)=>{
+let handleHallPermissionOrCheckAvailableToAll = async (req, res, next) => {
     let targetDonor = res.locals.middlewareResponse.targetDonor;
 
-    if(targetDonor.availableToAll){
+    if (targetDonor.availableToAll) {
         return next();
     }
 
-    await handleHallPermission(req,res,next);
+    await handleHallPermission(req, res, next);
 
 }
 

@@ -1,15 +1,13 @@
 let express = require('express');
 let router = express.Router();
 
-
 const donorController = require('../controllers/donorController');
-const donationController = require('../controllers/donationController');
-const logController = require('../controllers/logController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
-let gplay = require('google-play-scraper');
+const donorValidator = require('../validations/donors');
 
 router.post('/donors',
+    donorValidator.validatePOSTDonors,
     rateLimiter.donorInsertionLimiter,
     authenticator.handleAuthentication,
     donorController.handlePOSTDonors

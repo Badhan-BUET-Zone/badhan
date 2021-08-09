@@ -107,3 +107,7 @@ db.donors.aggregate([
     }
 ]);
 
+// GET student IDs having integer values
+db.donors.find({studentId:{$type:18}}).count()
+db.donors.find({studentId:{$type:16}}).count()
+
