@@ -1,4 +1,5 @@
-const {validate, validateBODYPhone, validateBODYPassword} = require('../validations');
+const {validate} = require('../validations');
+const {validateBODYPhone, validateBODYPassword} = require('../validations/validateRequest/validateBody')
 const validateLogin = validate([
     validateBODYPhone,
     validateBODYPassword
