@@ -4,12 +4,18 @@ const logSchema = new mongoose.Schema({
     donorId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Donor'
+        ref: 'Donor',
     },
     date: {
         type: Number,
         required: true,
         default: Date.now,
+        min: 0,
+        validate: [{
+            validator: (value) => {
+                return Number.isInteger(value);
+            }, msg: 'DB: lastDonation must be an integer'
+        }],
     },
     operation:{
         type: String,

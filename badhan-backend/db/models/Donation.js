@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 
 const donationSchema = new mongoose.Schema({
     phone: {
@@ -9,12 +8,23 @@ const donationSchema = new mongoose.Schema({
         minlength: 13
     },
     donorId: {
-        type: String
+        type: String,
+        validate: [{
+            validator: (value) => {
+                return mongoose.Types.ObjectId.isValid(value);
+            }, msg: 'DB: donorId is invalid'
+        }],
     },
     date: {
         type: Number,
+        default: 0,
+        min: 0,
         required: true,
-        default: moment().valueOf()
+        validate: [{
+            validator: (value) => {
+                return Number.isInteger(value);
+            }, msg: 'DB: lastDonation must be an integer'
+        }],
     }
 });
 

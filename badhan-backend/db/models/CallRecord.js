@@ -3,16 +3,23 @@ const callRecordSchema = new mongoose.Schema({
     callerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Donor',
-        required: true
+        required: true,
     },
     calleeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Donor',
-        required: true
+        required: true,
     },
     date: {
         type: Number,
+        default: 0,
+        min: 0,
         required: true,
+        validate: [{
+            validator: (value) => {
+                return Number.isInteger(value);
+            }, msg: 'DB: lastDonation must be an integer'
+        }],
     },
     expireAt: {
         type: Date,
