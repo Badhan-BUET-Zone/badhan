@@ -7,6 +7,8 @@ const rateLimiter = require('../middlewares/rateLimiter');
 
 const callRecordValidator = require('../validations/callRecords');
 
+const {deprecatedController} = require('../controllers/otherControllers');
+
 router.post('/',
     callRecordValidator.validatePOSTCallRecords,
     rateLimiter.commonLimiter,
@@ -17,11 +19,12 @@ router.post('/',
 );
 
 router.get('/',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
-    callRecordController.handleGETCallRecords
+    deprecatedController
+    // rateLimiter.commonLimiter,
+    // authenticator.handleAuthentication,
+    // authenticator.handleFetchTargetDonor,
+    // authenticator.handleHallPermissionOrCheckAvailableToAll,
+    // callRecordController.handleGETCallRecords
 );
 
 router.delete('/',

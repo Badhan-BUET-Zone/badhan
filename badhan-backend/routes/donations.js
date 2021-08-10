@@ -5,12 +5,15 @@ const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
 const donationValidator = require('../validations/donations');
 
+const {deprecatedController} = require('../controllers/otherControllers');
+
 router.get('/',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
-    donationController.handleGETDonations
+    deprecatedController
+    // rateLimiter.commonLimiter,
+    // authenticator.handleAuthentication,
+    // authenticator.handleFetchTargetDonor,
+    // authenticator.handleHallPermissionOrCheckAvailableToAll,
+    // donationController.handleGETDonations
 );
 
 router.post('/',
