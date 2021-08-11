@@ -328,7 +328,7 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
         }, process.env.JWT_SECRET).toString();
 
 
-        let tokenInsertResult = await tokenInterface.addToken(donor._id, token);
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, newToken);
 
         if (tokenInsertResult.status !== 'OK') {
             return res.status(400).send({
