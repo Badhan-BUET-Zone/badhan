@@ -9,7 +9,7 @@ const callRecordValidator = require('../validations/callRecords');
 
 const {deprecatedController} = require('../controllers/otherControllers');
 
-router.post('/',
+router.post('/', /*#swagger.path = '/callrecords'*/
     callRecordValidator.validatePOSTCallRecords,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
@@ -27,7 +27,7 @@ router.get('/',
     // callRecordController.handleGETCallRecords
 );
 
-router.delete('/',
+router.delete('/', /*#swagger.path = '/callrecords'*/
     callRecordValidator.validateDELETECallRecords,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,

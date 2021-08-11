@@ -5,7 +5,7 @@
     "title": "Badhan API",
     "description": "Automatically generated documentation of Badhan API. The backend is documented and currently maintained by Sumaiya Azad"
   },
-  "host": "badhan-web.herokuapp.com",
+  "host": "badhan-web-test.herokuapp.com",
   "basePath": "/",
   "tags": [
     {
@@ -15,10 +15,6 @@
     {
       "name": "Donors",
       "description": "Routes to handle donors"
-    },
-    {
-      "name": "Deprecated",
-      "description": "These routes will be deleted later"
     },
     {
       "name": "Logs",
@@ -237,8 +233,8 @@
                       "example": "Mir Mahathir Mohammad"
                     },
                     "studentId": {
-                      "type": "number",
-                      "example": 1605011
+                      "type": "string",
+                      "example": "1605011"
                     },
                     "lastDonation": {
                       "type": "number",
@@ -271,10 +267,6 @@
                     "designation": {
                       "type": "number",
                       "example": 3
-                    },
-                    "donationCount": {
-                      "type": "number",
-                      "example": 2
                     },
                     "availableToAll": {
                       "type": "boolean",
@@ -723,6 +715,113 @@
           }
         ],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "filteredDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "address": {
+                        "type": "string",
+                        "example": "Narayangonj Narayangonj "
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "249"
+                      },
+                      "designation": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 1569974400000
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "Has diabetes"
+                      },
+                      "commentTime": {
+                        "type": "number",
+                        "example": 1628521457159
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a0624"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1606001"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Swapnil Saha"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 88014587556
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "availableToAll": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "callRecords": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "date": {
+                              "type": "number",
+                              "example": 1628520769727
+                            },
+                            "_id": {
+                              "type": "string",
+                              "example": "611141413ac83c0015f851b7"
+                            },
+                            "callerId": {
+                              "type": "string",
+                              "example": "5e6776166f73f925e22a05aa"
+                            },
+                            "calleeId": {
+                              "type": "string",
+                              "example": "5e6776166f73f925e22a0624"
+                            }
+                          }
+                        }
+                      },
+                      "donationCountOptimized": {
+                        "type": "number",
+                        "example": 6
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successful donor deletion"
+          },
           "400": {
             "schema": {
               "type": "object",
@@ -1281,113 +1380,6 @@
         "description": "",
         "parameters": [],
         "responses": {}
-      },
-      "post": {
-        "tags": [
-          "Donations"
-        ],
-        "description": "Endpoint to insert a donation date for a donor",
-        "parameters": [
-          {
-            "name": "insertDonation",
-            "in": "body",
-            "description": "Donor info for inserting donation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "bhjdekj8923"
-                },
-                "date": {
-                  "type": "number",
-                  "example": 1611100800000
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Donation insertion unsuccessful"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Donations"
-        ],
-        "description": "handles the deletion of a donation for a donor.",
-        "parameters": [
-          {
-            "name": "donorId",
-            "in": "query",
-            "description": "donor id for deleting donation",
-            "type": "string"
-          },
-          {
-            "name": "date",
-            "in": "query",
-            "description": "donation date for deleting donation",
-            "type": "number"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully deleted donation"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Donation deletion successful"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Query error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
-          }
-        }
       }
     },
     "/users/signin": {
@@ -1637,6 +1629,315 @@
               }
             },
             "description": "This error will occur if the token does not exist"
+          }
+        }
+      }
+    },
+    "/callrecords": {
+      "post": {
+        "tags": [
+          "Call Records"
+        ],
+        "description": "Endpoint to insert a call record",
+        "parameters": [
+          {
+            "name": "CallRecordObject",
+            "in": "body",
+            "description": "Contains the donor id of callee",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "fwetiubg43t6847gsdffwekt"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Call record insertion successful"
+                },
+                "callRecord": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "number",
+                      "example": 1625755390858
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "60e70f42055a83d88"
+                    },
+                    "callerId": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "5e901d56e0177ced73"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Mir Mahathir Mohammad"
+                        },
+                        "designation": {
+                          "type": "number",
+                          "example": 3
+                        },
+                        "hall": {
+                          "type": "number",
+                          "example": 4
+                        }
+                      }
+                    },
+                    "calleeId": {
+                      "type": "string",
+                      "example": "5e68514546b0e"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Call record insertion successful"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "500": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error occurs if the call record insertion fails"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Call Records"
+        ],
+        "description": "handles the deletion of one call history for a particular donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "description": "Id of donor for call history",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "callRecordId",
+            "description": "Id of call record that is going to be deleted ",
+            "type": "string",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Call record deletion successful"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Call record deletion successful"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Target donor does not have the callee of call record"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error occurs if the call record does not associate with the target donor"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Call record not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error occurs if the call record does not exist"
+          }
+        }
+      }
+    },
+    "/donations": {
+      "post": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "Endpoint to insert a donation date for a donor",
+        "parameters": [
+          {
+            "name": "insertDonation",
+            "in": "body",
+            "description": "Donor info for inserting donation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donation insertion unsuccessful"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the deletion of a donation for a donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "description": "donor id for deleting donation",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "donation date for deleting donation",
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully deleted donation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donation deletion successful"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       }
@@ -2008,10 +2309,6 @@
           "type": "number",
           "example": 0
         },
-        "donationCount": {
-          "type": "number",
-          "example": 0
-        },
         "phone": {
           "type": "number",
           "example": 8801521438557
@@ -2038,7 +2335,7 @@
         },
         "roomNumber": {
           "type": "string",
-          "example": ""
+          "example": "ME-103"
         },
         "comment": {
           "type": "string",
@@ -2051,7 +2348,7 @@
             "properties": {
               "_id": {
                 "type": "string",
-                "example": "608fc94c28599700175b31eb"
+                "example": "608f8bb86c080000177c763a"
               },
               "token": {
                 "type": "string",
@@ -2062,7 +2359,7 @@
         },
         "password": {
           "type": "string",
-          "example": "$2a$10$9B3aSkcw7n0/H.vQq5MMQeaeosyssb/VsjvLFydGQiTMYS89a9vkS"
+          "example": "$2a$10$9B3aSkiguyvukvGQiTMYS89a9vkS"
         }
       }
     },
@@ -2080,6 +2377,69 @@
         "date": {
           "type": "number",
           "example": 1514764800000
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    },
+    "CallRecords": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "date": {
+          "type": "number",
+          "example": 1514764800000
+        },
+        "callerId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "calleeId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    },
+    "Logs": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "operation": {
+          "type": "string",
+          "example": "CREATE DONOR"
+        },
+        "date": {
+          "type": "number",
+          "example": 1514764800000
+        },
+        "details": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "Tokens": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "token": {
+          "type": "string",
+          "example": "shgreoinghbedoiughewiutb3outgesiuvberugbgneh"
         },
         "donorId": {
           "type": "string",

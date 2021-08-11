@@ -16,7 +16,7 @@ router.get('/',
     // donationController.handleGETDonations
 );
 
-router.post('/',
+router.post('/', /*#swagger.path = '/donations'*/
     donationValidator.validatePOSTDonations,
     rateLimiter.donationInsertionLimiter,
     authenticator.handleAuthentication,
@@ -26,7 +26,7 @@ router.post('/',
 );
 
 
-router.delete('/',
+router.delete('/', /*#swagger.path = '/donations'*/
     donationValidator.validateDELETEDonations,
     rateLimiter.deleteDonationLimiter,
     authenticator.handleAuthentication,

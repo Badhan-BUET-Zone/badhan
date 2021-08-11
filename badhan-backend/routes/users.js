@@ -6,10 +6,10 @@ const authenticator = require('../middlewares/authenticate');
 const userController = require('../controllers/userController');
 const rateLimiter = require('../middlewares/rateLimiter')
 const userValidator = require('../validations/users')
+const {deprecatedController} = require('../controllers/otherControllers');
 
-
-router.get('/', (req, res, next)=>{
-    return res.send('respond with a resource');
+router.get('/',(req,res)=>{
+    return res.status(200).send('Backend active')
 });
 
 

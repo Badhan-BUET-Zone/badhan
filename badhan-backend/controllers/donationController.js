@@ -5,7 +5,7 @@ const logInterface = require('../db/interfaces/logInterface');
 const handleGETDonations = async (req, res) => {
     /*
         #swagger.auto = false
-        #swagger.tags = ['Donations']
+        #swagger.deprecated = true
         #swagger.description = 'handles the retrieval of donation history for a particular donor.'
         #swagger.parameters['donorId'] = {
             description: 'donor info for donations',

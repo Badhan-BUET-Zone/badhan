@@ -7,28 +7,28 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 const {halls} = require('../constants')
 
 const handlePOSTDonors = async (req, res) => {
-/*
-    #swagger.auto = false
-    #swagger.tags = ['Donors']
-    #swagger.description = 'handles the insertion of a new donor into the database.'
-    #swagger.parameters['insertDonor'] = {
-        in: 'body',
-        description: 'donor info for inserting donor',
-        schema: {
-            phone: 8801521438557,
-            bloodGroup: 2,
-            hall: 5,
-            name: 'Mir Mahathir Mohammad',
-            studentId: 1605011,
-            address: 'Azimpur',
-            roomNumber: '3009',
-            comment: 'developer of badhan',
-            extraDonationCount: 2,
-            availableToAll: true
+    /*
+        #swagger.auto = false
+        #swagger.tags = ['Donors']
+        #swagger.description = 'handles the insertion of a new donor into the database.'
+        #swagger.parameters['insertDonor'] = {
+            in: 'body',
+            description: 'donor info for inserting donor',
+            schema: {
+                phone: 8801521438557,
+                bloodGroup: 2,
+                hall: 5,
+                name: 'Mir Mahathir Mohammad',
+                studentId: 1605011,
+                address: 'Azimpur',
+                roomNumber: '3009',
+                comment: 'developer of badhan',
+                extraDonationCount: 2,
+                availableToAll: true
+            }
         }
-    }
 
- */
+     */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
@@ -374,6 +374,42 @@ const handleGETSearchOptimized = async (req, res) => {
             filter: reqQuery,
             resultCount: result.data.length
         })
+
+/*
+        #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                message: 'Donor deleted successfully',
+                filteredDonors: [
+                    {
+                        "address": "Narayangonj Narayangonj ",
+                        "roomNumber": "249",
+                        "designation": 0,
+                        "lastDonation": 1569974400000,
+                        "comment": "Has diabetes",
+                        "commentTime": 1628521457159,
+                        "_id": "5e6776166f73f925e22a0624",
+                        "studentId": "1606001",
+                        "name": "Swapnil Saha",
+                        "bloodGroup": 2,
+                        "phone": 88014587556,
+                        "hall": 0,
+                        "availableToAll": true,
+                        "callRecords": [
+                            {
+                                "date": 1628520769727,
+                                "_id": "611141413ac83c0015f851b7",
+                                "callerId": "5e6776166f73f925e22a05aa",
+                                "calleeId": "5e6776166f73f925e22a0624"
+                            }
+                        ],
+                        "donationCountOptimized": 6,
+                    }
+                ]
+            },
+            description: 'Successful donor deletion'
+        }
+*/
 
         return res.status(200).send({
             status: 'OK',
@@ -1006,7 +1042,7 @@ const handleGETDonors = async (req, res) => {
                     _id: 'abjcguiwefvew',
                     phone: 8801521438557,
                     name: 'Mir Mahathir Mohammad',
-                    studentId: 1605011,
+                    studentId: '1605011',
                     lastDonation: 987876287160,
                     bloodGroup: 2,
                     hall: 5,
@@ -1015,7 +1051,6 @@ const handleGETDonors = async (req, res) => {
                     comment: 'developer of badhan',
                     commentTime: 0,
                     designation: 3,
-                    donationCount: 2,
                     availableToAll: true,
                     callRecords: [
                         {
