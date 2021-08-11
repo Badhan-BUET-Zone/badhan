@@ -43,7 +43,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
-
+app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
 // app.use(responseInterceptor);
@@ -54,8 +54,6 @@ app.use('/guest', guestRouter);
 app.use('/callrecords', callRecordRouter);
 app.use('/', apiRouter);
 app.use('/',logRouter);
-
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // catch 404 and forward to error handler
 app.use('*',(req, res, next)=>{
