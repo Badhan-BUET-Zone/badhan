@@ -43,7 +43,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
 // app.use(responseInterceptor);
