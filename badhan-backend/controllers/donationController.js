@@ -126,6 +126,16 @@ const handlePOSTDonations = async (req, res) => {
         donor.donationCount++;
 
         await donor.save();
+        /*
+        #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                message: 'Donations inserted successfully'
+            },
+            description: 'Donations inserted successfully'
+        }
+
+         */
 
         return res.status(200).send({
             status: 'OK',

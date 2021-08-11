@@ -1731,25 +1731,6 @@
               }
             },
             "description": "When no donor with the specified donor id is found, user will get this error message"
-          },
-          "500": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error occurs if the call record insertion fails"
           }
         }
       },
@@ -1860,6 +1841,25 @@
           }
         ],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donations inserted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donations inserted successfully"
+          },
           "400": {
             "schema": {
               "type": "object",
@@ -2011,25 +2011,6 @@
               }
             },
             "description": "Donation statistics fetch successful"
-          },
-          "500": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "In case of internal server error, user will get this error message"
           }
         }
       }
@@ -2141,25 +2122,6 @@
               }
             },
             "description": "All logs fetched successfully"
-          },
-          "500": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Internal server error"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "In case of internal server error, user will get this error message"
           }
         }
       },
@@ -2269,25 +2231,6 @@
               }
             },
             "description": "All logs deleted successfully"
-          },
-          "500": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "In case of internal server error, user will get this error message"
           }
         }
       }

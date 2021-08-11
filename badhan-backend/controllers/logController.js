@@ -54,16 +54,6 @@ const handleGETStatistics = async (req, res) => {
             }
         });
     } catch (e) {
-        /*
-        #swagger.responses[500] = {
-            schema: {
-                status: 'EXCEPTION',
-                message: '(Internal server error)'
-            },
-            description: 'In case of internal server error, user will get this error message'
-        }
-
-         */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -137,13 +127,6 @@ const handleGETLogs = async (req, res, next) => {
             logs: allLogData.data
         });
     } catch (e) {
-        /* #swagger.responses[500] = {
-            schema: {
-                   status: 'EXCEPTION',
-                   message: 'Internal server error'
-             },
-            description: 'In case of internal server error, user will get this error message'
-     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -194,13 +177,6 @@ const handleDELETELogs = async (req, res, next) => {
             logs: allLogData.data
         });
     } catch (e) {
-        /* #swagger.responses[500] = {
-            schema: {
-                   status: 'EXCEPTION',
-                   message: '(Internal server error)'
-             },
-            description: 'In case of internal server error, user will get this error message'
-     } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

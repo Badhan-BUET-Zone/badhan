@@ -20,16 +20,6 @@ const handlePOSTCallRecord = async (req, res) => {
         let user = res.locals.middlewareResponse.donor;
         let callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id);
         if (callRecordInsertionResult.status !== 'OK') {
-            /*
-                        #swagger.responses[500] = {
-                            schema: {
-                                status: 'EXCEPTION',
-                                message: '(Internal server error)'
-                            },
-                            description: 'This error occurs if the call record insertion fails'
-                        }
-
-             */
             return res.status(500).send({
                 status: 'EXCEPTION',
                 message: callRecordInsertionResult.message
