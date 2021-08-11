@@ -10,16 +10,64 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     let obj = {
         _id: "sgrngsrdiobvhnroilgn",
         phone: 8801521438557,
-        name: "Guest Account",
-        studentId: 1605011,
-        lastDonation: 0,
+        name: "Mir Mahathir Mohammad",
+        studentId: "1605011",
         bloodGroup: 2,
-        hall: 7,
+        hall: 5,
         roomNumber: "3009",
         address: "Azimpur",
-        comment: "This person has diabetes",
+        comment: "Severe allergies",
         commentTime: 1625755390858,
-        designation: 3
+        designation: 3,
+        "callRecords": [
+            {
+                "date": 1628685342498,
+                "_id": "6113c41e0b04d011c1abd6b4",
+                "callerId": "5e901d56effc5900177ced73",
+                "calleeId": "5e901d56effc5900177ced73",
+                "expireAt": "2021-09-10T12:35:42.499Z",
+                "__v": 0
+            },
+            {
+                "date": 1628685347683,
+                "_id": "6113c4230b04d011c1abd6b6",
+                "callerId": "5e901d56effc5900177ced73",
+                "calleeId": "5e901d56effc5900177ced73",
+                "expireAt": "2021-09-10T12:35:47.684Z",
+                "__v": 0
+            },
+            {
+                "date": 1628685362852,
+                "_id": "6113c4320b04d011c1abd6b8",
+                "callerId": "5e901d56effc5900177ced73",
+                "calleeId": "5e901d56effc5900177ced73",
+                "expireAt": "2021-09-10T12:36:02.852Z",
+                "__v": 0
+            }
+        ],
+        "donations": [
+            {
+                "date": 1611100800000,
+                "_id": "6113c3bfd743b90015c59190",
+                "phone": 8801521438557,
+                "donorId": "5e901d56effc5900177ced73",
+                "__v": 0
+            },
+            {
+                "date": 1611100800000,
+                "_id": "6113c3c3d743b90015c59192",
+                "phone": 8801521438557,
+                "donorId": "5e901d56effc5900177ced73",
+                "__v": 0
+            },
+            {
+                "date": 161110080000000,
+                "_id": "6113c4100b04d011c1abd6b2",
+                "phone": 8801521438557,
+                "donorId": "5e901d56effc5900177ced73",
+                "__v": 0
+            }
+        ],
     }
 
     return res.status(200).send({
@@ -33,6 +81,22 @@ const handlePOSTInsertDonor = async (req, res) => {
     return res.status(201).send({
         status: 'OK',
         message: 'New donor inserted successfully',
+        "newDonor": {
+            "address": "(Unknown)",
+            "roomNumber": "(Unknown)",
+            "designation": 0,
+            "lastDonation": 0,
+            "comment": "(Unknown)",
+            "commentTime": 0,
+            "donationCount": 4,
+            "_id": "6113c49024a9b0122ed5f445",
+            "phone": 8801711203677,
+            "bloodGroup": 1,
+            "hall": 8,
+            "name": "Mir Mahathir",
+            "studentId": "1705147",
+            "availableToAll": true,
+        }
     });
 
 }
@@ -59,62 +123,137 @@ const handlePOSTSearchDonors = async (req, res) => {
             _id: "shotgnelnblk",
             phone: 8801521111111,
             name: "Mir Mahathir Mohammad",
-            studentId: 1605011,
+            studentId: "1605011",
             lastDonation: 0,
             bloodGroup: 2,
             address: "Azimpur",
             donationCount: 2,
             roomNumber: "307",
             comment: "Developer of Badhan",
+            "donationCountOptimized": 1,
             commentTime: 1625755390858,
+            "callRecords": [
+                {
+                    "date": 1627575310398,
+                    "_id": "6102d40eabcb9e00153a6ad0",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                },
+                {
+                    "date": 1628501246158,
+                    "_id": "6110f4fe622b670015c0a05e",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                }
+            ],
         }, {
             _id: "sgherjknfb",
             phone: 8801521444444,
             name: "Sumaiya Azad",
-            studentId: 1705048,
+            studentId: "1705048",
             lastDonation: 1615507200000,
             bloodGroup: 0,
             address: "Banani",
             donationCount: 4,
             roomNumber: "E-892",
             comment: "Full Stack developer",
+            "donationCountOptimized": 2,
             commentTime: 1625755390858,
+            "callRecords": [
+                {
+                    "date": 1627575310398,
+                    "_id": "6102d40eabcb9e00153a6ad0",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                },
+                {
+                    "date": 1628501246158,
+                    "_id": "6110f4fe622b670015c0a05e",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                }
+            ],
         }, {
             _id: "dfjhgotnkjgh",
             phone: 8801621478996,
             name: "Atiqur Rahman Shuvo",
-            studentId: 1605041,
+            studentId: "1605041",
             lastDonation: 0,
             bloodGroup: 3,
             address: "Azimpur Colony",
             donationCount: 0,
             roomNumber: "E-206",
             comment: "Backend developer",
+            "donationCountOptimized": 3,
             commentTime: 1625755390858,
+            "callRecords": [
+                {
+                    "date": 1627575310398,
+                    "_id": "6102d40eabcb9e00153a6ad0",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                },
+                {
+                    "date": 1628501246158,
+                    "_id": "6110f4fe622b670015c0a05e",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                }
+            ],
         }, {
             _id: "edswhweoirn",
             phone: 8801711111111,
             name: "Aniruddha GS",
-            studentId: 1605031,
+            studentId: "1605031",
             lastDonation: 1615334400000,
             bloodGroup: 3,
             address: "Azimpur Colony",
             donationCount: 0,
             roomNumber: "E-206",
             comment: "Backend developer",
+            "donationCountOptimized": 4,
             commentTime: 1625755390858,
+            "callRecords": [
+                {
+                    "date": 1627575310398,
+                    "_id": "6102d40eabcb9e00153a6ad0",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                },
+                {
+                    "date": 1628501246158,
+                    "_id": "6110f4fe622b670015c0a05e",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                }
+            ],
         }, {
             _id: "tgfdhklntlnb",
             phone: 8801452147889,
             name: "MH Rahat",
-            studentId: 1806058,
+            studentId: "1806058",
             lastDonation: 1615334400000,
             bloodGroup: 3,
             address: "BUET Hall",
             donationCount: 3,
             roomNumber: "899",
             comment: "Tester",
+            "donationCountOptimized": 5,
             commentTime: 1625755390858,
+            "callRecords": [
+                {
+                    "date": 1627575310398,
+                    "_id": "6102d40eabcb9e00153a6ad0",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                },
+                {
+                    "date": 1628501246158,
+                    "_id": "6110f4fe622b670015c0a05e",
+                    "callerId": "5e68514995b0367d81546aa5",
+                    "calleeId": "5e6781006ecd148aa8cc76f9"
+                }
+            ],
         },
     ];
 
@@ -174,9 +313,9 @@ const handleGETViewDonorDetails = async (req, res) => {
     let obj = {
         _id: "dslgjerngkjdshkj",
         phone: 8801521478996,
-        name: "Jhon Doe",
-        studentId: 1605011,
-        lastDonation: 0,
+        name: "Mir Mahathir Mohammad",
+        studentId: "1605011",
+        lastDonation: 1611100800000,
         bloodGroup: 2,
         hall: 3,
         roomNumber: "3009",
@@ -185,6 +324,73 @@ const handleGETViewDonorDetails = async (req, res) => {
         designation: 1,
         donationCount: 3,
         commentTime: 1625755390858,
+        "callRecords": [
+            {
+                "date": 1628685362852,
+                "_id": "6113c4320b04d011c1abd6b8",
+                "callerId": {
+                    "designation": 3,
+                    "_id": "5e901d56effc5900177ced73",
+                    "hall": 5,
+                    "name": "Mir Mahathir Mohammad",
+                    "id": "5e901d56effc5900177ced73"
+                },
+                "calleeId": "5e901d56effc5900177ced73",
+                "expireAt": "2021-09-10T12:36:02.852Z",
+                "__v": 0
+            },
+            {
+                "date": 1628685347683,
+                "_id": "6113c4230b04d011c1abd6b6",
+                "callerId": {
+                    "designation": 3,
+                    "_id": "5e901d56effc5900177ced73",
+                    "hall": 5,
+                    "name": "Mir Mahathir Mohammad",
+                    "id": "5e901d56effc5900177ced73"
+                },
+                "calleeId": "5e901d56effc5900177ced73",
+                "expireAt": "2021-09-10T12:35:47.684Z",
+                "__v": 0
+            },
+            {
+                "date": 1628685342498,
+                "_id": "6113c41e0b04d011c1abd6b4",
+                "callerId": {
+                    "designation": 3,
+                    "_id": "5e901d56effc5900177ced73",
+                    "hall": 5,
+                    "name": "Mir Mahathir Mohammad",
+                    "id": "5e901d56effc5900177ced73"
+                },
+                "calleeId": "5e901d56effc5900177ced73",
+                "expireAt": "2021-09-10T12:35:42.499Z",
+                "__v": 0
+            }
+        ],
+        "donations": [
+            {
+                "date": 161110080000000,
+                "_id": "6113c4100b04d011c1abd6b2",
+                "phone": 8801521438557,
+                "donorId": "5e901d56effc5900177ced73",
+                "__v": 0
+            },
+            {
+                "date": 1611100800000,
+                "_id": "6113c3bfd743b90015c59190",
+                "phone": 8801521438557,
+                "donorId": "5e901d56effc5900177ced73",
+                "__v": 0
+            },
+            {
+                "date": 1611100800000,
+                "_id": "6113c3c3d743b90015c59192",
+                "phone": 8801521438557,
+                "donorId": "5e901d56effc5900177ced73",
+                "__v": 0
+            }
+        ],
     }
 
     return res.status(200).send({
@@ -320,15 +526,15 @@ const handlePOSTShowHallAdmins = async (req, res) => {
     });
 };
 
-const handleGETSeeHistory = async (req, res) => {
-    let donations = [1611100800000, 1558051200000, 1557964800000, 1546300800000];
-
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Donations queried successfully',
-        donations
-    });
-}
+// const handleGETSeeHistory = async (req, res) => {
+//     let donations = [1611100800000, 1558051200000, 1557964800000, 1546300800000];
+//
+//     return res.status(200).send({
+//         status: 'OK',
+//         message: 'Donations queried successfully',
+//         donations
+//     });
+// }
 
 const handlePOSTInsertDonation = async (req, res) => {
 
@@ -360,134 +566,7 @@ const handleGETStatistics = async (req, res) => {
 }
 
 const handleGETLogs = async (req, res) => {
-    let object = [
-        {
-            "_id": "fdogirehognrebk",
-            name: "Mit Majumder",
-            hall: 2,
-            date: 1622090693113,
-            editedObject: {
-                _id: "60af292680015defd72",
-                address: "Mohammadpur ",
-                bloodGroup: 2,
-                comment: null,
-                designation: 0,
-                donationCount: 0,
-                hall: 8,
-                lastDonation: 1622073600000,
-                name: "Md. Rafat Hossain ",
-                phone: 8801521347889,
-                roomNumber: "TH-3012",
-                studentId: "1516256",
-            },
-            operation: "EDIT COMMENT"
-        },
-        {
-            "_id": "fdogirehognfherhrerebk",
-            name: "Sumit Haoladar",
-            hall: 2,
-            date: 1622090673113,
-            editedObject: {
-                _id: "60af2926580015defd72",
-                address: "Azimpur ",
-                bloodGroup: 4,
-                comment: "Diabetes",
-                designation: 1,
-                donationCount: 2,
-                hall: 8,
-                lastDonation: 1622173600000,
-                name: "Md. Rifat Hossain ",
-                phone: 8801521789665,
-                roomNumber: "12",
-                studentId: "1517480",
-            },
-            operation: "EDIT DONOR"
-        },
-        {
-            _id: "fdorehognrebk",
-            name: "Mahir Majumder",
-            hall: 3,
-            date: 1627090693113,
-            editedObject: {
-                _id: "60af2926387858001d72",
-                address: "Ramna ",
-                bloodGroup: 4,
-                comment: null,
-                designation: 1,
-                donationCount: 7,
-                hall: 3,
-                lastDonation: 1672073600000,
-                name: "Md. Arafat Chowdhury ",
-                phone: 8801521896554,
-                roomNumber: "TH",
-                studentId: "1716007",
-            },
-            operation: "DELETE DONATION"
-        },
-        {
-            _id: "fdogirehognrebk",
-            name: "Mir Maha",
-            hall: 1,
-            date: 1622090697113,
-            editedObject: {
-                _id: "ihuydtrxgfvjhb",
-                address: "Gazimpur",
-                bloodGroup: 2,
-                comment: null,
-                designation: 1,
-                donationCount: 0,
-                hall: 6,
-                lastDonation: 1622073600000,
-                name: "Hossain ",
-                phone: 8801521471445,
-                roomNumber: "3012",
-                studentId: "1816007",
-            },
-            operation: "EDIT COMMENT"
-        },
-        {
-            _id: "4987iugytfuhvhgc",
-            name: "Sumit Majumder",
-            hall: 3,
-            date: 1622090693123,
-            editedObject: {
-                _id: "60af2926385defd72",
-                address: "Mohammadpur Azimpur",
-                bloodGroup: 7,
-                comment: "HElloo",
-                designation: 0,
-                donationCount: 2,
-                hall: 8,
-                lastDonation: 1622173600000,
-                name: "Abul Hossain ",
-                phone: 8801521874558,
-                roomNumber: "TH-12",
-                studentId: "1506007",
-            },
-            operation: "EDIT PASSWORD"
-        },
-        {
-            _id: "fdogirehognhmjy,u,rebk",
-            name: "Saman Majumder",
-            hall: 3,
-            date: 1622090683113,
-            editedObject: {
-                _id: "lknuivgytctrfc",
-                address: "Savar",
-                bloodGroup: 5,
-                comment: "Cancer",
-                designation: 1,
-                donationCount: 0,
-                hall: 8,
-                lastDonation: 1622073600000,
-                name: "Md. Hossain ",
-                phone: 8801521478996,
-                roomNumber: "309",
-                studentId: "1916007",
-            },
-            operation: "EDIT COMMENT"
-        },
-    ];
+    let object = [];
     return res.status(201).send({
         status: 'OK',
         message: 'All logs fetched successfully',
@@ -605,27 +684,27 @@ const handlePOSTCallRecord = async (req, res) => {
         }
     })
 };
-
-const handleGETCallRecords = async (req, res) => {
-    return res.status(200).send({
-        status: "OK",
-        message: "Call record fetch successful",
-        callRecord: [
-            {
-                "date": 1625754390478,
-                "_id": "60e76906b",
-                "callerId": {
-                    _id:"5e901d56e0177ced73",
-                    name: "Mir Mahathir Mohammad",
-                    designation: 3,
-                    hall: 4
-                },
-                "calleeId": "5e6851546b0e",
-            },
-        ]
-
-    })
-};
+//
+// const handleGETCallRecords = async (req, res) => {
+//     return res.status(200).send({
+//         status: "OK",
+//         message: "Call record fetch successful",
+//         callRecord: [
+//             {
+//                 "date": 1625754390478,
+//                 "_id": "60e76906b",
+//                 "callerId": {
+//                     _id:"5e901d56e0177ced73",
+//                     name: "Mir Mahathir Mohammad",
+//                     designation: 3,
+//                     hall: 4
+//                 },
+//                 "calleeId": "5e6851546b0e",
+//             },
+//         ]
+//
+//     })
+// };
 
 const handleDELETESingleCallRecord = async (req, res) => {
     return res.status(200).send({
@@ -650,7 +729,7 @@ module.exports = {
     handleGETViewDonorDetails,
     handlePOSTViewVolunteersOfOwnHall,
     handlePOSTShowHallAdmins,
-    handleGETSeeHistory,
+    // handleGETSeeHistory,
     handlePOSTInsertDonation,
     handlePOSTDeleteDonation,
     handleGETStatistics,
@@ -658,6 +737,6 @@ module.exports = {
     handleDELETELogs,
     handleGETViewAllVolunteers,
     handlePOSTCallRecord,
-    handleGETCallRecords,
+    // handleGETCallRecords,
     handleDELETESingleCallRecord
 }

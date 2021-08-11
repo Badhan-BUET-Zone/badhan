@@ -23,7 +23,7 @@ router.post('/donors',
     guestController.handlePOSTInsertDonor
 );
 
-router.get('/search',
+router.get('/search/v2',
     guestController.handlePOSTSearchDonors
 );
 
@@ -63,9 +63,13 @@ router.get('/admins',
     guestController.handlePOSTShowHallAdmins
 );
 
-router.get('/donations',
-    guestController.handleGETSeeHistory
-);
+router.get('/volunteers/all',
+    guestController.handleGETViewAllVolunteers,
+)
+
+// router.get('/donations',
+//     guestController.handleGETSeeHistory
+// );
 
 router.post('/donations',
     guestController.handlePOSTInsertDonation
@@ -87,17 +91,15 @@ router.delete('/v1/log',
     guestController.handleDELETELogs
 );
 
-router.get('/volunteers/all',
-    guestController.handleGETViewAllVolunteers,
-)
+
 
 router.post('/callrecords',
     guestController.handlePOSTCallRecord
 );
 
-router.get('/callrecords',
-    guestController.handleGETCallRecords
-);
+// router.get('/callrecords',
+//     guestController.handleGETCallRecords
+// );
 
 router.delete('/callrecords',
     guestController.handleDELETESingleCallRecord
