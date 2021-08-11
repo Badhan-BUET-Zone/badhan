@@ -4,14 +4,17 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 
 
 let handleAuthentication = async (req, res, next) => {
+    /*
+    #swagger.auto = false
+     */
     try {
         let token = req.header('x-auth');
 
         let decodedDonor;
 
-        try{
+        try {
             decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
-        }catch (e) {
+        } catch (e) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Malformed authentication token'
@@ -53,13 +56,6 @@ let handleAuthentication = async (req, res, next) => {
         };
         return next();
     } catch (e) {
-        /* #swagger.responses[500] = {
-              schema: {
-              status: 'ERROR',
-           message: 'error message'
-               },
-              description: 'In case of internal server error user will receive an error message'
-       } */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

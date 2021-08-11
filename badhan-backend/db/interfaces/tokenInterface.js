@@ -70,10 +70,19 @@ const findTokenDataByToken = async (token)=>{
 const deleteTokenDataByToken = async(token)=>{
     try{
         let tokenData = await Token.findOneAndDelete({token});
-        return{
-            message: "Token successfully removed",
-            status: "OK"
+
+        if(tokenData){
+            return{
+                message: "Token successfully removed",
+                status: "OK"
+            }
         }
+
+        return{
+            message: "Token not found",
+            status: "ERROR"
+        }
+
     }catch (e) {
         console.log("ERROR")
         return {

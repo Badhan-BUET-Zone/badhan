@@ -5,37 +5,45 @@ let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
     /*
-    #swagger.tags = ['Logs']
-    #swagger.description = 'To show current state of the api' */
-    /* #swagger.responses[200] = {
+        #swagger.auto = false
+        #swagger.tags = ['Logs']
+        #swagger.description = 'To show current state of the api'
+        #swagger.responses[200] = {
             schema: {
-              message: 'Badhan API is online'
-             },
+                message: 'Badhan API is online'
+            },
             description: 'To check if Badhan api is online'
-     } */
+        }
+
+     */
     return res.status(200).send("Badhan API is online")
 }
 
 const handleGETStatistics = async (req, res) => {
     /*
+    #swagger.auto = false
     #swagger.tags = ['Logs']
-    #swagger.description = 'Fetch statistics about the current donor count and volunteer count' */
+    #swagger.description = 'Fetch statistics about the current donor count and volunteer count'
+    */
     try {
         let donorCount = await donorInterface.getCount();
         let donationCount = await donationInterface.getCount();
         let volunteerCount = await donorInterface.getVolunteerCount();
-        /* #swagger.responses[201] = {
+        /*
+        #swagger.responses[201] = {
             schema: {
-              status: 'OK',
-              message: 'Statistics fetched successfully',
-              statistics: {
-                donorCount: 2600,
-                donationCount: 1200,
-                volunteerCount: 130
-              }
-             },
+                status: 'OK',
+                message: 'Statistics fetched successfully',
+                statistics: {
+                    donorCount: 2600,
+                    donationCount: 1200,
+                    volunteerCount: 130
+                }
+            },
             description: 'Donation statistics fetch successful'
-     } */
+        }
+
+         */
         return res.status(201).send({
             status: 'OK',
             message: 'Statistics fetched successfully',
@@ -46,13 +54,16 @@ const handleGETStatistics = async (req, res) => {
             }
         });
     } catch (e) {
-        /* #swagger.responses[500] = {
+        /*
+        #swagger.responses[500] = {
             schema: {
-                   status: 'EXCEPTION',
-                   message: '(Internal server error)'
-             },
+                status: 'EXCEPTION',
+                message: '(Internal server error)'
+            },
             description: 'In case of internal server error, user will get this error message'
-     } */
+        }
+
+         */
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message
@@ -62,25 +73,33 @@ const handleGETStatistics = async (req, res) => {
 
 const handleGETAppVersion = (req, res, next) => {
     /*
+    #swagger.auto = false
     #swagger.tags = ['Logs']
-    #swagger.description = 'Get app info deployed to play store' */
+    #swagger.description = 'Get app info deployed to play store'
+    */
     gplay.app({appId: 'com.mmmbadhan'})
         .then((response) => {
-            /* #swagger.responses[200] = {
-           schema: {
-             version: '(App information fetched from google play store)'
-            },
-           description: 'response is the current version number of badhan api'
-    } */
+            /*
+            #swagger.responses[200] = {
+                schema: {
+                    version: '(App information fetched from google play store)'
+                },
+                description: 'response is the current version number of badhan api'
+            }
+
+             */
             res.status(200).send(response)
         });
 }
 
-const handleGETLogs = async (req, res,next)=>{
+const handleGETLogs = async (req, res, next) => {
     /*
+    #swagger.auto = false
     #swagger.tags = ['Logs']
-            #swagger.description = 'The super admin sees all the activities done by the volunteers through this route' */
-    try{
+    #swagger.description = 'The super admin sees all the activities done by the volunteers through this route'
+
+     */
+    try {
         let allLogData = await logInterface.getLogs();
 
         /* #swagger.responses[201] = {
@@ -131,12 +150,13 @@ const handleGETLogs = async (req, res,next)=>{
         })
     }
 }
-const handleDELETELogs = async (req,res,next)=>{
+const handleDELETELogs = async (req, res, next) => {
     /*
+    #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'handles the deletion of logs.'
     */
-    try{
+    try {
         let allLogData = await logInterface.deleteLogs();
         /* #swagger.responses[200] = {
              schema: {
@@ -173,7 +193,7 @@ const handleDELETELogs = async (req,res,next)=>{
             message: 'All logs deleted successfully',
             logs: allLogData.data
         });
-    }catch (e){
+    } catch (e) {
         /* #swagger.responses[500] = {
             schema: {
                    status: 'EXCEPTION',

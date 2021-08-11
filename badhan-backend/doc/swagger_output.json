@@ -106,7 +106,6 @@
         ],
         "responses": {
           "201": {
-            "description": "successful donor insertion",
             "schema": {
               "type": "object",
               "properties": {
@@ -120,16 +119,16 @@
                 },
                 "newDonor": {
                   "type": "string",
-                  "example": "new donor data"
+                  "example": "(new donor data)"
                 }
               },
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "successful donor insertion"
           },
           "400": {
-            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -145,10 +144,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
           },
           "401": {
-            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -168,10 +167,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
           },
           "409": {
-            "description": "If the donor already exists in the database, user will get the error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -191,26 +190,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "500": {
-            "description": "In case of internal server error, the user will get this message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "error message"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "If the donor already exists in the database, user will get the error message"
           }
         }
       },
@@ -229,7 +210,6 @@
         ],
         "responses": {
           "200": {
-            "description": "donor info",
             "schema": {
               "type": "object",
               "properties": {
@@ -379,10 +359,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "donor info"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -398,32 +378,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       },
@@ -482,7 +438,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Donor info update successful",
             "schema": {
               "type": "object",
               "properties": {
@@ -498,10 +453,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Donor info update successful"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -517,10 +472,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           },
           "401": {
-            "description": "This middleware is used to block the manipulation of data of a member with higher designation",
             "schema": {
               "type": "object",
               "properties": {
@@ -536,29 +491,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
           }
         }
       },
@@ -566,7 +500,7 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the deletion of an existing donor from the database.",
+        "description": "handles the deletion of an existing donor from the database.\r  \n#swagger.parameters[",
         "parameters": [
           {
             "name": "donorId",
@@ -577,7 +511,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful donor deletion",
             "schema": {
               "type": "object",
               "properties": {
@@ -593,10 +526,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Successful donor deletion"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -612,10 +545,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           },
           "401": {
-            "description": "This middleware is used to block the manipulation of data of a member with higher designation",
             "schema": {
               "type": "object",
               "properties": {
@@ -631,10 +564,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
           },
           "404": {
-            "description": "Error occured when deleting target donor",
             "schema": {
               "type": "object",
               "properties": {
@@ -650,26 +583,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Internal server error"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "Error occured when deleting target donor"
           }
         }
       }
@@ -683,7 +598,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Info of the logged in user",
             "schema": {
               "type": "object",
               "properties": {
@@ -752,29 +666,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "In case of internal server error, the user will get this message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "Info of the logged in user"
           }
         }
       }
@@ -830,11 +723,7 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
-            "description": "This error will occur if the user tries to search other halls",
             "schema": {
               "type": "object",
               "properties": {
@@ -850,29 +739,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "This error will occur if the user tries to search other halls"
           }
         }
       }
@@ -882,7 +750,7 @@
         "tags": [
           "Donors"
         ],
-        "description": "Adds a comment to a donor",
+        "description": "Adds a comment to a donors profile.",
         "parameters": [
           {
             "name": "editDonorComment",
@@ -924,7 +792,6 @@
             "description": "In case of successfully saving the comment"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -940,32 +807,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "In case of internal server error, the user will get this message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       }
@@ -998,7 +841,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful password change done",
             "schema": {
               "type": "object",
               "properties": {
@@ -1014,10 +856,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Successful password change done"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1033,10 +875,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           },
           "401": {
-            "description": "Target user does not have an account",
             "schema": {
               "type": "object",
               "properties": {
@@ -1052,29 +894,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "Target user does not have an account"
           }
         }
       }
@@ -1130,7 +951,6 @@
             "description": "Donor promotion/ demotion successful"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1146,10 +966,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           },
           "401": {
-            "description": "If user cannot promote volunteer or cannot demote donor",
             "schema": {
               "type": "object",
               "properties": {
@@ -1165,29 +985,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "If user cannot promote volunteer or cannot demote donor"
           }
         }
       }
@@ -1201,7 +1000,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "An array of volunteers fetched successfully",
             "schema": {
               "type": "object",
               "properties": {
@@ -1249,10 +1047,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "An array of volunteers fetched successfully"
           },
           "400": {
-            "description": "The filter parameters are incorrect",
             "schema": {
               "type": "object",
               "properties": {
@@ -1268,29 +1066,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Internal server error"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "The filter parameters are incorrect"
           }
         }
       }
@@ -1304,7 +1081,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Volunteer list fetch successful",
             "schema": {
               "type": "object",
               "properties": {
@@ -1320,10 +1096,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Volunteer list fetch successful"
           },
           "400": {
-            "description": "Volunteer list fetch unsuccessful",
             "schema": {
               "type": "object",
               "properties": {
@@ -1339,29 +1115,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Internal server error"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "Volunteer list fetch unsuccessful"
           }
         }
       }
@@ -1390,7 +1145,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully changed hall admin",
             "schema": {
               "type": "object",
               "properties": {
@@ -1406,10 +1160,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Successfully changed hall admin"
           },
           "400": {
-            "description": "Previous hall admin demotion successful, but could not set new hall admin",
             "schema": {
               "type": "object",
               "properties": {
@@ -1425,10 +1179,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Previous hall admin demotion successful, but could not set new hall admin"
           },
           "401": {
-            "description": "If fetched user is not a volunteer , user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1444,26 +1198,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "If fetched user is not a volunteer , user will get this error message"
           }
         }
       },
@@ -1475,7 +1211,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Hall admin list fetch successful ",
             "schema": {
               "type": "object",
               "properties": {
@@ -1515,10 +1250,10 @@
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Hall admin list fetch successful "
           },
           "400": {
-            "description": "If user does not exists in database, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1534,58 +1269,87 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "If user does not exists in database, user will get this error message"
           }
         }
       }
     },
     "/": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      },
       "post": {
         "tags": [
-          "Call Records"
+          "Donations"
         ],
-        "description": "Endpoint to insert a call record",
+        "description": "Endpoint to insert a donation date for a donor",
         "parameters": [
           {
-            "name": "CallRecordObject",
+            "name": "insertDonation",
             "in": "body",
-            "description": "Contains the donor id of callee",
+            "description": "Donor info for inserting donation",
             "schema": {
               "type": "object",
               "properties": {
                 "donorId": {
                   "type": "string",
-                  "example": "fwetiubg43t6847gsdffwekt"
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
                 }
               }
             }
           }
         ],
         "responses": {
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donation insertion unsuccessful"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the deletion of a donation for a donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "description": "donor id for deleting donation",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "donation date for deleting donation",
+            "type": "number"
+          }
+        ],
+        "responses": {
           "200": {
-            "description": "Call record insertion successful",
             "schema": {
               "type": "object",
               "properties": {
@@ -1595,54 +1359,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Call record insertion successful"
-                },
-                "callRecord": {
-                  "type": "object",
-                  "properties": {
-                    "date": {
-                      "type": "number",
-                      "example": 1625755390858
-                    },
-                    "_id": {
-                      "type": "string",
-                      "example": "60e70f42055a83d88"
-                    },
-                    "callerId": {
-                      "type": "object",
-                      "properties": {
-                        "_id": {
-                          "type": "string",
-                          "example": "5e901d56e0177ced73"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "Mir Mahathir Mohammad"
-                        },
-                        "designation": {
-                          "type": "number",
-                          "example": 3
-                        },
-                        "hall": {
-                          "type": "number",
-                          "example": 4
-                        }
-                      }
-                    },
-                    "calleeId": {
-                      "type": "string",
-                      "example": "5e68514546b0e"
-                    }
-                  }
+                  "example": "Successfully deleted donation"
                 }
               },
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "Donation deletion successful"
           },
           "400": {
-            "description": "When no donor with the specified donor id is found, user will get this error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -1658,144 +1384,13 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      },
-      "delete": {
-        "tags": [
-          "Call Records"
-        ],
-        "description": "handles the deletion of one call history for a particular donor.",
-        "parameters": [
-          {
-            "name": "donorId",
-            "description": "Id of donor for call history",
-            "type": "string",
-            "in": "query"
-          },
-          {
-            "name": "callRecordId",
-            "description": "Id of call record that is going to be deleted ",
-            "type": "string",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Call record deletion successful",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Call record deletion successful"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "400": {
-            "description": "This error occurs if the call record does not associate with the target donor",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Target donor does not have the callee of call record"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "This error occurs if the call record does not exist",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Call record not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "500": {
-            "description": "In case of internal server error, user will get this error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Internal server error)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       }
     },
-    "/signin": {
+    "/users/signin": {
       "post": {
         "tags": [
           "User"
@@ -1823,10 +1418,17 @@
         ],
         "responses": {
           "201": {
-            "description": "A successful sign in returns a token for the user",
             "schema": {
               "type": "object",
               "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully signed in"
+                },
                 "token": {
                   "type": "string",
                   "example": "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
@@ -1835,13 +1437,10 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
+            },
+            "description": "A successful sign in returns a token for the user"
           },
           "401": {
-            "description": "When the user provides an invalid password",
             "schema": {
               "type": "object",
               "properties": {
@@ -1857,31 +1456,13 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "500": {
-            "description": "When the server malfunctions to the request body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "EXCEPTION"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "message generated from the backend caused by runtime error"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "When the user provides an invalid password"
           }
         }
       }
     },
-    "/signout": {
+    "/users/signout": {
       "delete": {
         "tags": [
           "User"
@@ -1890,7 +1471,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "A successful sign out removes the token for the user",
             "schema": {
               "type": "object",
               "properties": {
@@ -1906,37 +1486,13 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "In case of internal server error user will receive an error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "error message"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "A successful sign out removes the token for the user"
           }
         }
       }
     },
-    "/signout/all": {
+    "/users/signout/all": {
       "delete": {
         "tags": [
           "User"
@@ -1945,7 +1501,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "A successful sign out removes all the tokens of the user",
             "schema": {
               "type": "object",
               "properties": {
@@ -1961,37 +1516,13 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "In case of internal server error user will receive an error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "error message"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "A successful sign out removes all the tokens of the user"
           }
         }
       }
     },
-    "/redirection": {
+    "/users/redirection": {
       "post": {
         "tags": [
           "User"
@@ -2000,7 +1531,6 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "Redirection token created",
             "schema": {
               "type": "object",
               "properties": {
@@ -2020,32 +1550,8 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "In case of internal server error user will receive an error message",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "error message"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+            },
+            "description": "Redirection token created"
           }
         }
       },
@@ -2072,7 +1578,6 @@
         ],
         "responses": {
           "201": {
-            "description": "Redirection token created",
             "schema": {
               "type": "object",
               "properties": {
@@ -2092,13 +1597,10 @@
               "xml": {
                 "name": "main"
               }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
+            },
+            "description": "Redirection token created"
           },
           "401": {
-            "description": "This error will occur if the user does not exist",
             "schema": {
               "type": "object",
               "properties": {
@@ -2108,19 +1610,16 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Authentication failed. Invalid authentication token."
+                  "example": "Session Expired"
                 }
               },
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "This error will occur if the jwt token is invalid"
           },
           "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "In case of internal server error user will receive an error message",
             "schema": {
               "type": "object",
               "properties": {
@@ -2130,13 +1629,364 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "error message"
+                  "example": "Token not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
-            }
+            },
+            "description": "This error will occur if the token does not exist"
+          }
+        }
+      }
+    },
+    "/v3/log/version": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get app info deployed to play store",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "example": "(App information fetched from google play store)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "response is the current version number of badhan api"
+          }
+        }
+      }
+    },
+    "/v2/log/statistics": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Fetch statistics about the current donor count and volunteer count",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Statistics fetched successfully"
+                },
+                "statistics": {
+                  "type": "object",
+                  "properties": {
+                    "donorCount": {
+                      "type": "number",
+                      "example": 2600
+                    },
+                    "donationCount": {
+                      "type": "number",
+                      "example": 1200
+                    },
+                    "volunteerCount": {
+                      "type": "number",
+                      "example": 130
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donation statistics fetch successful"
+          },
+          "500": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "In case of internal server error, user will get this error message"
+          }
+        }
+      }
+    },
+    "/v1/log": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "The super admin sees all the activities done by the volunteers through this route",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All logs fetched successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "fdogirehognrebk"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mit Majumder"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "date": {
+                        "type": "number",
+                        "example": 1622090693113
+                      },
+                      "editedObject": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "60af292680015defd72"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "Mohammadpur "
+                          },
+                          "bloodGroup": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "comment": {
+                            "type": "string",
+                            "example": "valid donor"
+                          },
+                          "designation": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "donationCount": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "hall": {
+                            "type": "number",
+                            "example": 8
+                          },
+                          "lastDonation": {
+                            "type": "number",
+                            "example": 1622073600000
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Md. Rafat Hossain "
+                          },
+                          "phone": {
+                            "type": "number",
+                            "example": 8801521347889
+                          },
+                          "roomNumber": {
+                            "type": "string",
+                            "example": "TH-3012"
+                          },
+                          "studentId": {
+                            "type": "number",
+                            "example": 1516256
+                          }
+                        }
+                      },
+                      "operation": {
+                        "type": "string",
+                        "example": "EDIT COMMENT"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "All logs fetched successfully"
+          },
+          "500": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "In case of internal server error, user will get this error message"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "handles the deletion of logs.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All logs deleted successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "fdogirehognrebk"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mit Majumder"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "date": {
+                        "type": "number",
+                        "example": 1622090693113
+                      },
+                      "editedObject": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "60af292680015defd72"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "Mohammadpur"
+                          },
+                          "bloodGroup": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "comment": {
+                            "type": "string",
+                            "example": "This is a comment"
+                          },
+                          "designation": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "donationCount": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "hall": {
+                            "type": "number",
+                            "example": 8
+                          },
+                          "lastDonation": {
+                            "type": "number",
+                            "example": 1622073600000
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Md. Rafat Hossain "
+                          },
+                          "phone": {
+                            "type": "number",
+                            "example": 8801521347889
+                          },
+                          "roomNumber": {
+                            "type": "string",
+                            "example": "TH-3012"
+                          },
+                          "studentId": {
+                            "type": "number",
+                            "example": 1516256
+                          }
+                        }
+                      },
+                      "operation": {
+                        "type": "string",
+                        "example": "EDIT COMMENT"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "All logs deleted successfully"
+          },
+          "500": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "EXCEPTION"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Internal server error)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "In case of internal server error, user will get this error message"
           }
         }
       }
