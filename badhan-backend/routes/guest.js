@@ -55,6 +55,10 @@ router.get('/donors',
     guestController.handleGETViewDonorDetails
 );
 
+router.get('/donors/checkDuplicate',
+    guestController.handleGETDonorsDuplicate
+);
+
 router.get('/volunteers',
     guestController.handlePOSTViewVolunteersOfOwnHall
 );

@@ -23,7 +23,6 @@ router.get('/donors',
 );
 
 
-
 router.get('/donors/me',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
@@ -36,7 +35,6 @@ router.get('/search/v2',
     authenticator.handleAuthentication,
     donorController.handleGETSearchOptimized
 )
-
 
 
 router.patch('/donors/comment',
@@ -86,6 +84,13 @@ router.patch('/donors/designation',
     authenticator.handleHallPermission,
     authenticator.handleHallAdminCheck,
     donorController.handlePATCHDonorsDesignation
+);
+
+router.get('/donors/checkDuplicate',
+    donorValidator.validateGETDonorsDuplicate,
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETDonorsDuplicate
 );
 
 router.get('/volunteers',

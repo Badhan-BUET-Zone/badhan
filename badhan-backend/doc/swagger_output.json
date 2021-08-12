@@ -1090,6 +1090,51 @@
         }
       }
     },
+    "/donors/checkDuplicate": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Check whether phone number already exists",
+        "parameters": [
+          {
+            "name": "phone",
+            "description": "Phone number of donor",
+            "type": "number",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "No duplicate donors found"
+                },
+                "found": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "donor": {
+                  "type": "string",
+                  "example": "(null)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If the phone number does not exist in database"
+          }
+        }
+      }
+    },
     "/volunteers": {
       "get": {
         "tags": [

@@ -52,6 +52,10 @@ const validateQUERYCallRecordId = query('callRecordId')
     .customSanitizer(value => String(value))
     .escape().trim().custom(callRecordId=>mongoose.Types.ObjectId.isValid(callRecordId)).withMessage('Enter a valid callRecordId');
 
+const validateQUERYPhone = query('phone')
+    .exists().withMessage('Phone number is required')
+    .isLength({min:13,max:13}).withMessage('Phone number must be of 13 digits')
+    .isNumeric().isInt().toInt().withMessage('Phone number must be integer');
 
 module.exports={
     validateQUERYDonorId,
@@ -64,5 +68,6 @@ module.exports={
     validateQEURYIsNotAvailable,
     validateQUERYAvailableToAll,
     validateQUERYDate,
-    validateQUERYCallRecordId
+    validateQUERYCallRecordId,
+    validateQUERYPhone
 }

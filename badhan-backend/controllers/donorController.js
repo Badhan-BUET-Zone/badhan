@@ -374,41 +374,41 @@ const handleGETSearchOptimized = async (req, res) => {
             resultCount: result.data.length
         })
 
-/*
-        #swagger.responses[200] = {
-            schema: {
-                status: 'OK',
-                message: 'Donor deleted successfully',
-                filteredDonors: [
-                    {
-                        "address": "Narayangonj Narayangonj ",
-                        "roomNumber": "249",
-                        "designation": 0,
-                        "lastDonation": 1569974400000,
-                        "comment": "Has diabetes",
-                        "commentTime": 1628521457159,
-                        "_id": "5e6776166f73f925e22a0624",
-                        "studentId": "1606001",
-                        "name": "Swapnil Saha",
-                        "bloodGroup": 2,
-                        "phone": 88014587556,
-                        "hall": 0,
-                        "availableToAll": true,
-                        "callRecords": [
+        /*
+                #swagger.responses[200] = {
+                    schema: {
+                        status: 'OK',
+                        message: 'Donor deleted successfully',
+                        filteredDonors: [
                             {
-                                "date": 1628520769727,
-                                "_id": "611141413ac83c0015f851b7",
-                                "callerId": "5e6776166f73f925e22a05aa",
-                                "calleeId": "5e6776166f73f925e22a0624"
+                                "address": "Narayangonj Narayangonj ",
+                                "roomNumber": "249",
+                                "designation": 0,
+                                "lastDonation": 1569974400000,
+                                "comment": "Has diabetes",
+                                "commentTime": 1628521457159,
+                                "_id": "5e6776166f73f925e22a0624",
+                                "studentId": "1606001",
+                                "name": "Swapnil Saha",
+                                "bloodGroup": 2,
+                                "phone": 88014587556,
+                                "hall": 0,
+                                "availableToAll": true,
+                                "callRecords": [
+                                    {
+                                        "date": 1628520769727,
+                                        "_id": "611141413ac83c0015f851b7",
+                                        "callerId": "5e6776166f73f925e22a05aa",
+                                        "calleeId": "5e6776166f73f925e22a0624"
+                                    }
+                                ],
+                                "donationCountOptimized": 6,
                             }
-                        ],
-                        "donationCountOptimized": 6,
-                    }
-                ]
-            },
-            description: 'Successful donor deletion'
-        }
-*/
+                        ]
+                    },
+                    description: 'Successful donor deletion'
+                }
+        */
 
         return res.status(200).send({
             status: 'OK',
@@ -1197,6 +1197,101 @@ const handleGETVolunteersAll = async (req, res) => {
     }
 }
 
+const handleGETDonorsDuplicate = async (req, res) => {
+
+
+    /*
+    #swagger.auto = false
+    #swagger.tags = ['Donors']
+    #swagger.description = 'Check whether phone number already exists'
+    #swagger.parameters['phone'] = {
+        description: 'Phone number of donor',
+        type: 'number',
+        name: 'phone',
+        in: 'query'
+    }
+     */
+
+    try {
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+
+        let duplicateDonorResult = await donorInterface.findDonorByPhone(req.query.phone);
+
+        if (duplicateDonorResult.status === 'OK') {
+            if (
+                authenticatedUser.designation === 3 ||
+                duplicateDonorResult.data.hall === authenticatedUser.hall ||
+                duplicateDonorResult.data.hall > 6 ||
+                duplicateDonorResult.data.availableToAll === true
+            ) {
+                /*
+                #swagger.responses[200] = {
+                    schema: {
+                        status: 'OK',
+                        message: 'Donor found with duplicate phone number in Titumir Hall',
+                        found: true,
+                        donor: '(donor object)'
+                    },
+                    description: 'If the donor already exists in the database, user will get the error message'
+                }
+
+                 */
+                return res.status(200).send({
+                    status: 'OK',
+                    message: 'Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",
+                    found: true,
+                    donor: duplicateDonorResult.data,
+                });
+            }
+            /*
+            #swagger.responses[200] = {
+                schema: {
+                    status: 'OK',
+                    message: 'Donor found with duplicate phone number in Titumir hall. You are not permitted to access this donor. ',
+                    found: true,
+                    donor: 'this field will return null'
+                },
+                description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
+            }
+
+             */
+            return res.status(200).send({
+                status: 'OK',
+                message: 'Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",
+                found: true,
+                donor: null,
+            });
+        }
+
+        /*
+        #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                message: 'No duplicate donors found',
+                found: false,
+                donor: '(null)'
+            },
+            description: 'If the phone number does not exist in database'
+        }
+
+         */
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DUPLICATE", {phone: req.query.phone});
+
+        return res.status(200).send({
+            status: 'OK',
+            message: 'No duplicate donors found',
+            found: false,
+            donor: null,
+        });
+    } catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 
 module.exports = {
     handlePOSTDonors,
@@ -1212,4 +1307,5 @@ module.exports = {
     handleGETDonors,
     handleGETDonorsMe,
     handleGETVolunteersAll,
+    handleGETDonorsDuplicate
 }

@@ -12,7 +12,7 @@ let app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./doc/swagger_output.json');
 
-let apiRouter = require('./routes/api');
+let apiRouter = require('./routes/donors');
 let usersRouter = require('./routes/users');
 let donationsRouter = require('./routes/donations');
 let guestRouter = require('./routes/guest')

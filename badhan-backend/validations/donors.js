@@ -1,6 +1,6 @@
 const {validate} = require('../validations');
 const {validateBODYPromoteFlag, validateBODYPassword,validateBODYDonorId,validateBODYAddress,validateBODYRoomNumber,validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId} = require('../validations/validateRequest/validateBody')
-const {validateQUERYDonorId, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName} = require('../validations/validateRequest/validateQuery');
+const {validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName} = require('../validations/validateRequest/validateQuery');
 
 const validatePOSTDonors = validate([
     validateBODYPhone,
@@ -66,6 +66,10 @@ const validateDELETEDonors = validate([
     validateQUERYDonorId
 ])
 
+const validateGETDonorsDuplicate = validate([
+    validateQUERYPhone
+])
+
 module.exports = {
     validatePOSTDonors,
     validatePATCHDonors,
@@ -75,5 +79,6 @@ module.exports = {
     validatePATCHAdmins,
     validateGETDonors,
     validateGETSearchDonors,
-    validateDELETEDonors
+    validateDELETEDonors,
+    validateGETDonorsDuplicate
 }

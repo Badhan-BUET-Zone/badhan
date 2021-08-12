@@ -713,6 +713,15 @@ const handleDELETESingleCallRecord = async (req, res) => {
     });
 };
 
+const handleGETDonorsDuplicate = async (req, res) => {
+    return res.status(200).send({
+        status: 'OK',
+        message: 'No duplicate donors found',
+        found: false,
+        donor: null,
+    });
+}
+
 module.exports = {
     handlePOSTLogIn,
     handlePOSTViewDonorDetailsSelf,
@@ -738,5 +747,6 @@ module.exports = {
     handleGETViewAllVolunteers,
     handlePOSTCallRecord,
     // handleGETCallRecords,
-    handleDELETESingleCallRecord
+    handleDELETESingleCallRecord,
+    handleGETDonorsDuplicate
 }
