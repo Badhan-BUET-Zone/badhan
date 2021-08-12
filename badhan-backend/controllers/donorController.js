@@ -365,7 +365,7 @@ const handleGETSearchOptimized = async (req, res) => {
             queryBuilder.$and.push({$or: lastDonationAvailability});
         }
 
-        // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+        console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
 
         let result = await donorInterface.findDonorsByQuery(queryBuilder);
 
