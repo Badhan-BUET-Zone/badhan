@@ -107,6 +107,7 @@ router.get('/volunteers/all',
 )
 
 router.patch('/admins',
+    donorController.handlePATCHAdmins,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
