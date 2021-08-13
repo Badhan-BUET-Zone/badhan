@@ -2062,113 +2062,10 @@
     },
     "/v1/log": {
       "get": {
-        "tags": [
-          "Logs"
-        ],
-        "description": "The super admin sees all the activities done by the volunteers through this route",
+        "tags": [],
+        "description": "",
         "parameters": [],
-        "responses": {
-          "201": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "All logs fetched successfully"
-                },
-                "logs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string",
-                        "example": "fdogirehognrebk"
-                      },
-                      "name": {
-                        "type": "string",
-                        "example": "Mit Majumder"
-                      },
-                      "hall": {
-                        "type": "number",
-                        "example": 2
-                      },
-                      "date": {
-                        "type": "number",
-                        "example": 1622090693113
-                      },
-                      "editedObject": {
-                        "type": "object",
-                        "properties": {
-                          "_id": {
-                            "type": "string",
-                            "example": "60af292680015defd72"
-                          },
-                          "address": {
-                            "type": "string",
-                            "example": "Mohammadpur "
-                          },
-                          "bloodGroup": {
-                            "type": "number",
-                            "example": 2
-                          },
-                          "comment": {
-                            "type": "string",
-                            "example": "valid donor"
-                          },
-                          "designation": {
-                            "type": "number",
-                            "example": 0
-                          },
-                          "donationCount": {
-                            "type": "number",
-                            "example": 0
-                          },
-                          "hall": {
-                            "type": "number",
-                            "example": 8
-                          },
-                          "lastDonation": {
-                            "type": "number",
-                            "example": 1622073600000
-                          },
-                          "name": {
-                            "type": "string",
-                            "example": "Md. Rafat Hossain "
-                          },
-                          "phone": {
-                            "type": "number",
-                            "example": 8801521347889
-                          },
-                          "roomNumber": {
-                            "type": "string",
-                            "example": "TH-3012"
-                          },
-                          "studentId": {
-                            "type": "number",
-                            "example": 1516256
-                          }
-                        }
-                      },
-                      "operation": {
-                        "type": "string",
-                        "example": "EDIT COMMENT"
-                      }
-                    }
-                  }
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "All logs fetched successfully"
-          }
-        }
+        "responses": {}
       },
       "delete": {
         "tags": [
@@ -2276,6 +2173,180 @@
               }
             },
             "description": "All logs deleted successfully"
+          }
+        }
+      }
+    },
+    "/log/date/{date}/donorId/{donorId}": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get api call details of a donor by date",
+        "parameters": [
+          {
+            "name": "date",
+            "description": "Date of logs",
+            "type": "number",
+            "in": "param"
+          },
+          {
+            "name": "donorId",
+            "description": "donorId of the target donor",
+            "type": "string",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logs fetched by user and date"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "611559f87be47bc8ca89b8a1"
+                      },
+                      "date": {
+                        "type": "number",
+                        "example": 1628789240641
+                      },
+                      "operation": {
+                        "type": "string",
+                        "example": "SEARCH DONORS"
+                      },
+                      "details": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/log/date/{date}": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get user-wise api call counts for specific date",
+        "parameters": [
+          {
+            "name": "date",
+            "description": "Date of logs",
+            "type": "number",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "Mir Mahathir Mohammad"
+                      },
+                      "donorId": {
+                        "type": "string",
+                        "example": "5e901d56effc5900177ced73"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 5
+                      },
+                      "count": {
+                        "type": "number",
+                        "example": 32
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/log": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get date wise count of api calls",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "dateString": {
+                        "type": "string",
+                        "example": "2021-08-14"
+                      },
+                      "count": {
+                        "type": "number",
+                        "example": 2
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
           }
         }
       }

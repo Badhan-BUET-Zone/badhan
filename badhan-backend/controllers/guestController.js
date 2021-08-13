@@ -565,14 +565,7 @@ const handleGETStatistics = async (req, res) => {
 
 }
 
-const handleGETLogs = async (req, res) => {
-    let object = [];
-    return res.status(201).send({
-        status: 'OK',
-        message: 'All logs fetched successfully',
-        logs: object
-    });
-}
+
 
 const handleDELETELogs = async (req, res) => {
     return res.status(201).send({
@@ -722,6 +715,30 @@ const handleGETDonorsDuplicate = async (req, res) => {
     });
 }
 
+const handleGETLogs = async (req, res) => {
+    return res.status(200).send({
+        status: 'OK',
+        message: 'All logs fetched successfully',
+        logs: []
+    });
+}
+
+const handleGETLogsByDateAndDonor = async (req,res)=>{
+    return res.status(200).send({
+        "status": "OK",
+        "message": "Logs fetched by user and date",
+        "logs": []
+    })
+}
+
+const handleGETLogsByDate = async (req,res)=>{
+    return res.status(200).send({
+        "status": "OK",
+        "message": "Logs fetched by date successfully",
+        "logs": []
+    })
+}
+
 module.exports = {
     handlePOSTLogIn,
     handlePOSTViewDonorDetailsSelf,
@@ -748,5 +765,8 @@ module.exports = {
     handlePOSTCallRecord,
     // handleGETCallRecords,
     handleDELETESingleCallRecord,
-    handleGETDonorsDuplicate
+    handleGETDonorsDuplicate,
+    handleGETLogsByDateAndDonor,
+    handleGETLogsByDate
+
 }

@@ -71,10 +71,6 @@ router.get('/volunteers/all',
     guestController.handleGETViewAllVolunteers,
 )
 
-// router.get('/donations',
-//     guestController.handleGETSeeHistory
-// );
-
 router.post('/donations',
     guestController.handlePOSTInsertDonation
 );
@@ -87,28 +83,29 @@ router.get('/v2/log/statistics',
     guestController.handleGETStatistics
 );
 
-router.get('/v1/log',
-    guestController.handleGETLogs
-);
-
 router.delete('/v1/log',
     guestController.handleDELETELogs
 );
-
-
 
 router.post('/callrecords',
     guestController.handlePOSTCallRecord
 );
 
-// router.get('/callrecords',
-//     guestController.handleGETCallRecords
-// );
-
 router.delete('/callrecords',
     guestController.handleDELETESingleCallRecord
 );
 
+router.get('/log/date/:date/donorId/:donorId',
+    guestController.handleGETLogsByDateAndDonor
+);
+
+router.get('/log/date/:date',
+    guestController.handleGETLogsByDate
+);
+
+router.get('/log',
+    guestController.handleGETLogs
+);
 
 
 module.exports = router;

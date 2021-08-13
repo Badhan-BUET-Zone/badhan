@@ -4,6 +4,10 @@ const logController = require('../controllers/logController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
 
+const logValidator = require('../validations/logs');
+
+const {deprecatedController} = require('../controllers/otherControllers');
+
 
 router.get('/v3/log/version',
     rateLimiter.commonLimiter,
@@ -18,10 +22,11 @@ router.get('/v2/log/statistics',
 );
 
 router.get('/v1/log',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleSuperAdminCheck,
-    logController.handleGETLogs
+    deprecatedController
+    // rateLimiter.commonLimiter,
+    // authenticator.handleAuthentication,
+    // authenticator.handleSuperAdminCheck,
+    // logController.handleGETLogs
 );
 
 router.delete('/v1/log',
@@ -29,6 +34,29 @@ router.delete('/v1/log',
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     logController.handleDELETELogs
+);
+
+router.get('/log/date/:date/donorId/:donorId',
+    logValidator.validateGETLogsByDateAndDonor,
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
+    logController.handleGETLogsByDateAndDonor
+);
+
+router.get('/log/date/:date',
+    logValidator.validateGETLogsByDate,
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
+    logController.handleGETLogsByDate
+);
+
+router.get('/log',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleSuperAdminCheck,
+    logController.handleGETLogs
 );
 
 module.exports = router;
