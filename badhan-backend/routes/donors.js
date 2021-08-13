@@ -114,7 +114,6 @@ router.patch('/admins',
 );
 
 router.get('/admins',
-    donorValidator.validatePATCHAdmins,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     donorController.handleGETAdmins
