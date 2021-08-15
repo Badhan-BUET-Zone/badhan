@@ -332,11 +332,11 @@ const handleGETSearchOptimized = async (req, res) => {
         queryBuilder.name = {$regex: nameRegex, $options: 'ix'};
 
         //process address
-        let addressRegex = ".*";
+        let addressRegex = ".*"+reqQuery.address+".*";
 
-        for (let i = 0; i < reqQuery.address.length; i++) {
-            addressRegex += (reqQuery.address.charAt(i) + ".*");
-        }
+        // for (let i = 0; i < reqQuery.address.length; i++) {
+        //     addressRegex += (reqQuery.address.charAt(i) + ".*");
+        // }
 
         queryBuilder.$and = [{
             $or: [
@@ -365,7 +365,7 @@ const handleGETSearchOptimized = async (req, res) => {
             queryBuilder.$and.push({$or: lastDonationAvailability});
         }
 
-        console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+        // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
 
         let result = await donorInterface.findDonorsByQuery(queryBuilder);
 
