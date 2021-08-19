@@ -1177,12 +1177,18 @@ const handleGETVolunteersAll = async (req, res) => {
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
-                message: 'Volunteer list fetch successful'
+                message: 'Successfully fetched donor details',
+                data: [{
+                    name: "Mahin Azad",
+                    hall: 4,
+                    studentId: 1905081,
+                    logCount:11,
+                }],
             },
             description: 'Volunteer list fetch successful'
         }
+*/
 
-         */
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',

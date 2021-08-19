@@ -1234,7 +1234,31 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Volunteer list fetch successful"
+                  "example": "Successfully fetched donor details"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "Mahin Azad"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 4
+                      },
+                      "studentId": {
+                        "type": "number",
+                        "example": 1905081
+                      },
+                      "logCount": {
+                        "type": "number",
+                        "example": 11
+                      }
+                    }
+                  }
                 }
               },
               "xml": {
