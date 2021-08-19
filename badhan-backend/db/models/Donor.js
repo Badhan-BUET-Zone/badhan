@@ -172,6 +172,13 @@ donorSchema.virtual('donationCountOptimized', {
     count: true
 })
 
+donorSchema.virtual('logCount', {
+    ref: 'Logs',
+    localField: '_id',
+    foreignField: 'donorId',
+    count: true
+})
+
 donorSchema.set('toObject', {virtuals: true});
 donorSchema.set('toJSON', {virtuals: true});
 

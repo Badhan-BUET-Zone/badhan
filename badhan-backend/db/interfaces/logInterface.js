@@ -2,6 +2,9 @@ const {Log} = require('../models/Log');
 const mongoose = require('mongoose');
 
 const addLog = async (donorId, operation, details) => {
+    if(donorId.equals("5e901d56effc5900177ced73")){
+        return;
+    }
     try {
         let log = new Log({donorId, operation, details});
         let data = await log.save();

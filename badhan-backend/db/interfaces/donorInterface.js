@@ -185,7 +185,7 @@ const findAllVolunteers = async () => {
             name: 1,
             hall: 1,
             studentId: 1,
-        });
+        }).populate({path:'logCount'});
         return {
             data,
             message: 'Volunteers fetched successfully',

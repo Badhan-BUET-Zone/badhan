@@ -194,7 +194,6 @@ const handleGETLogsByDate = async (req, res, next) => {
         }
     */
     try {
-        console.log(req.params.date)
         let logsByDateResult = await logInterface.getLogsByDate(req.params.date);
         return res.status(200).send({
             status: 'OK',
