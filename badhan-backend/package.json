@@ -21,6 +21,7 @@
     "express": "~4.16.1",
     "express-rate-limit": "^5.2.6",
     "express-validator": "^6.12.1",
+    "faker": "^5.5.3",
     "google-play-scraper": "^8.0.2",
     "http-errors": "^1.8.0",
     "jade": "~1.11.0",
