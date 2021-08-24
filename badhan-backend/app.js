@@ -22,6 +22,17 @@ let logRouter = require('./routes/logs');
 const { mongoose } = require('./db/mongoose');
 // let {responseInterceptor} = require('./middlewares/response');
 
+
+
+app.use(cors());
+
+
+// app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use(cookieParser());
+app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+
 app.use(logger('dev'));
 
 app.use((req, res, next) => {
@@ -35,17 +46,6 @@ app.use((req, res, next) => {
         next();
     });
 });
-
-app.use(cors());
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.use(cookieParser());
-app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
-
 // app.use(responseInterceptor);
 
 app.use('/users', usersRouter);
