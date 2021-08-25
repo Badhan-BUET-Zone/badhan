@@ -175,9 +175,16 @@ const handleDELETEDonors = async (req, res) => {
      */
 
     try {
-        let donorId = res.locals.middlewareResponse.targetDonor._id;
+        let donor = res.locals.middlewareResponse.targetDonor;
 
-        let deleteDonorResult = await donorInterface.deleteDonorById(donorId);
+        if(donor.designation>1){
+            return res.status(401).send({
+                status: 'ERROR',
+                message: "Donor must be demoted for deletion"
+            })
+        }
+
+        let deleteDonorResult = await donorInterface.deleteDonorById(donor._id);
         /*
                 #swagger.responses[404] = {
                     schema: {
@@ -621,7 +628,6 @@ const handlePATCHDonorsDesignation = async (req, res) => {
             schema: {
                 donorId: 'hjasgd673278',
                 promoteFlag: true,
-                password: 'thisisanewpassword'
             }
         }
 
@@ -630,24 +636,9 @@ const handlePATCHDonorsDesignation = async (req, res) => {
         let donor = res.locals.middlewareResponse.targetDonor;
         let donorDesignation = donor.designation;
 
-        if (donorDesignation > 1) {
-            /*
-            #swagger.responses[401] = {
-                schema: {
-                    status: 'ERROR',
-                    message: 'The target donor is not a donor nor a volunteer'
-                },
-                description: 'This route will not work if target donor is a hall admin or super admin'
-            }
 
-             */
-            return res.status(401).send({
-                status: 'ERROR',
-                message: 'User can not promote the target entity'
-            });
-        }
-
-        if ((donorDesignation === 1 && req.body.promoteFlag) || (donorDesignation === 0 && !req.body.promoteFlag)) {
+        if ((donorDesignation === 1 && req.body.promoteFlag)
+            || (donorDesignation === 0 && !req.body.promoteFlag)) {
             /*
             #swagger.responses[401] = {
                 schema: {
@@ -664,21 +655,12 @@ const handlePATCHDonorsDesignation = async (req, res) => {
             });
         }
 
-
-        let newDesignation;
-
         if (req.body.promoteFlag) {
-            newDesignation = donorDesignation + 1;
+            donor.designation = 1
         } else {
-            newDesignation = donorDesignation - 1;
+            donor.designation = 0
         }
 
-        donor.designation = newDesignation;
-        if (req.body.promoteFlag) {
-            donor.password = req.body.password;
-        } else {
-            donor.password = null;
-        }
         await donor.save();
 
         let logOperation = "";

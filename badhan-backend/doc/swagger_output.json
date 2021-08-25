@@ -1065,10 +1065,6 @@
                 "promoteFlag": {
                   "type": "boolean",
                   "example": true
-                },
-                "password": {
-                  "type": "string",
-                  "example": "thisisanewpassword"
                 }
               }
             }

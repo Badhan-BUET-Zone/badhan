@@ -40,7 +40,6 @@ const validatePATCHDonorsComment = validate([
 const validatePATCHDonorsDesignation = validate([
     validateBODYDonorId,
     validateBODYPromoteFlag,
-    validateBODYPassword,
 ]);
 
 const validatePATCHAdmins = validate([
