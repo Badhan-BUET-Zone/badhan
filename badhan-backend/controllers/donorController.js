@@ -4,6 +4,7 @@ const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
 const {halls} = require('../constants')
+const jwt = require('jsonwebtoken');
 
 const handlePOSTDonors = async (req, res) => {
     /*
@@ -1298,6 +1299,39 @@ const handleGETDonorsDuplicate = async (req, res) => {
     }
 }
 
+const handlePOSTDonorsPasswordRequest =  async (req, res) => {
+    try {
+        let donor = res.locals.middlewareResponse.targetDonor;
+
+        if(donor.designation===0){
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Donor is not a volunteer/ admin',
+            });
+        }
+
+        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id);
+
+        if (tokenInsertResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Token insertion failed',
+            });
+        }
+
+        return res.status(201).send({
+            status: 'OK',
+            message: "Successfully created sign in token for user",
+            token: tokenInsertResult.data.token
+        });
+    }catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 
 module.exports = {
     handlePOSTDonors,
@@ -1313,5 +1347,6 @@ module.exports = {
     handleGETDonors,
     handleGETDonorsMe,
     handleGETVolunteersAll,
-    handleGETDonorsDuplicate
+    handleGETDonorsDuplicate,
+    handlePOSTDonorsPasswordRequest
 }

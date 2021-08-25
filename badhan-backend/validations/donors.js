@@ -51,6 +51,10 @@ const validateGETDonors = validate([
     validateQUERYDonorId,
 ])
 
+const validatePOSTDonorsPasswordRequest = validate([
+   validateBODYDonorId,
+]);
+
 const validateGETSearchDonors = validate([
     validateQUERYBloodGroup,
     validateQUERYHall,
@@ -80,5 +84,6 @@ module.exports = {
     validateGETDonors,
     validateGETSearchDonors,
     validateDELETEDonors,
-    validateGETDonorsDuplicate
+    validateGETDonorsDuplicate,
+    validatePOSTDonorsPasswordRequest
 }

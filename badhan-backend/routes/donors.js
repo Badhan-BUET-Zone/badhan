@@ -6,6 +6,8 @@ const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
 const donorValidator = require('../validations/donors');
 
+const {deprecatedController} = require('../controllers/otherControllers');
+
 router.post('/donors',
     donorValidator.validatePOSTDonors,
     rateLimiter.donorInsertionLimiter,
@@ -46,6 +48,7 @@ router.patch('/donors/comment',
     donorController.handlePATCHDonorsComment
 );
 
+//DEPRECATE THIS AFTER UPDATING THE FRONTEND
 router.patch('/donors/password',
     donorValidator.validatePATCHDonorsPassword,
     rateLimiter.commonLimiter,
@@ -54,6 +57,16 @@ router.patch('/donors/password',
     authenticator.handleHallPermission,
     authenticator.handleHigherDesignationCheck,
     donorController.handlePATCHDonorsPassword
+);
+
+router.post('/donors/password',
+    donorValidator.validatePOSTDonorsPasswordRequest,
+    rateLimiter.passwordRequestLimiter,
+    authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
+    authenticator.handleHallPermission,
+    authenticator.handleHigherDesignationCheck,
+    donorController.handlePOSTDonorsPasswordRequest
 );
 
 router.patch('/donors',

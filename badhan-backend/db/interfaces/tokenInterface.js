@@ -1,4 +1,38 @@
 const {Token} = require('../models/Token');
+const jwt = require('jsonwebtoken');
+
+const insertAndSaveToken = async (donorId) => {
+    try {
+        let access = 'auth';
+        let token = await jwt.sign({
+            _id: String(donorId),
+            access
+        }, process.env.JWT_SECRET).toString();
+        let tokenData = new Token({donorId, token});
+        let data = await tokenData.save();
+        if (data.nInserted === 0) {
+            return {
+                message: 'Token insertion failed',
+                status: 'ERROR',
+                data: data,
+            }
+        }
+        return {
+            message: 'Token insertion successful',
+            status: 'OK',
+            data: data,
+        };
+
+    } catch (e) {
+        console.log("ERROR");
+        console.log(e.message);
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
 
 const addToken = async (donorId, token) => {
     try {
@@ -28,18 +62,18 @@ const addToken = async (donorId, token) => {
     }
 };
 
-const findTokenDataByToken = async (token)=>{
+const findTokenDataByToken = async (token) => {
     try {
         let tokenData = await Token.findOne({token})
 
-        if(tokenData===null){
+        if (tokenData === null) {
             return {
                 message: 'Token not found',
                 status: 'ERROR'
             }
         }
 
-        return{
+        return {
             message: 'Token found successfully',
             status: 'OK',
             data: tokenData
@@ -67,23 +101,23 @@ const findTokenDataByToken = async (token)=>{
     }
 }
 
-const deleteTokenDataByToken = async(token)=>{
-    try{
+const deleteTokenDataByToken = async (token) => {
+    try {
         let tokenData = await Token.findOneAndDelete({token});
 
-        if(tokenData){
-            return{
+        if (tokenData) {
+            return {
                 message: "Token successfully removed",
                 status: "OK"
             }
         }
 
-        return{
+        return {
             message: "Token not found",
             status: "ERROR"
         }
 
-    }catch (e) {
+    } catch (e) {
         console.log("ERROR")
         return {
             message: e.message,
@@ -93,14 +127,14 @@ const deleteTokenDataByToken = async(token)=>{
     }
 }
 
-const deleteAllTokensByDonorId = async (donorId)=>{
-    try{
+const deleteAllTokensByDonorId = async (donorId) => {
+    try {
         let tokenData = await Token.deleteMany({donorId});
-        return{
+        return {
             message: "Token successfully removed",
             status: "OK"
         }
-    }catch (e) {
+    } catch (e) {
         console.log("ERROR")
         return {
             message: e.message,
@@ -114,5 +148,6 @@ module.exports = {
     addToken,
     findTokenDataByToken,
     deleteTokenDataByToken,
-    deleteAllTokensByDonorId
+    deleteAllTokensByDonorId,
+    insertAndSaveToken
 }

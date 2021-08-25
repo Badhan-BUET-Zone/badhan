@@ -43,5 +43,12 @@ router.patch('/redirection', /*#swagger.path = '/users/redirection'*/
     userController.handlePATCHRedirectedAuthentication
 );
 
+router.patch('/password',
+    rateLimiter.commonLimiter,
+    userValidator.validatePATCHPassword,
+    authenticator.handleAuthentication,
+    userController.handlePATCHPassword
+);
+
 
 module.exports = router;

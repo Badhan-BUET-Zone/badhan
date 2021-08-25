@@ -53,12 +53,21 @@ const deleteDonationLimiter = rateLimit({
 
 const commonLimiter = rateLimit({
     windowMs: minute,
-    max: 24,
+    max: 12,
     message: {
         status: "ERROR",
         message: "Service unavailable!!"
     }
 });
+
+const passwordRequestLimiter = rateLimit({
+    windowMs: minute,
+    max: 2,
+    message: {
+        status: "ERROR",
+        message: "Service unavailable!!"
+    }
+})
 
 module.exports={
     signInLimiter,
@@ -67,5 +76,6 @@ module.exports={
     deleteDonationLimiter,
     donorDeletionLimiter,
     redirectionSignInLimiter,
-    commonLimiter
+    commonLimiter,
+    passwordRequestLimiter
 }

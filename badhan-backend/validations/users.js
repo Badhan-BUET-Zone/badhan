@@ -5,6 +5,11 @@ const validateLogin = validate([
     validateBODYPassword
 ]);
 
+const validatePATCHPassword = validate([
+   validateBODYPassword
+]);
+
 module.exports = {
-    validateLogin
+    validateLogin,
+    validatePATCHPassword
 }

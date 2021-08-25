@@ -997,6 +997,51 @@
             "description": "Target user does not have an account"
           }
         }
+      },
+      "post": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "(Query error message)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
+          }
+        }
       }
     },
     "/donors/designation": {
@@ -1698,6 +1743,34 @@
               }
             },
             "description": "This error will occur if the token does not exist"
+          }
+        }
+      }
+    },
+    "/password": {
+      "patch": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Password changed successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successful password change done"
           }
         }
       }

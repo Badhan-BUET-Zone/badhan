@@ -358,11 +358,51 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
     }
 }
 
+const handlePATCHPassword = async (req, res) => {
+    try {
+        let reqBody = req.body;
+
+        let donor = res.locals.middlewareResponse.donor;
+        donor.password = reqBody.password;
+
+        await donor.save();
+
+        await tokenInterface.deleteAllTokensByDonorId(donor._id);
+
+        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id)
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH PASSWORD", {});
+
+        /*
+        #swagger.responses[201] = {
+            schema: {
+                status: 'OK',
+                message: 'Password changed successfully'
+            },
+            description: 'Successful password change done'
+        }
+
+         */
+        return res.status(201).send({
+            status: 'OK',
+            message: 'Password changed successfully',
+            token: tokenInsertResult.data.token
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({
+            status: 'ERROR',
+            message: e.message
+        });
+    }
+}
+
 module.exports = {
     //TOKEN HANDLERS
     handlePOSTSignIn,
     handleDELETESignOut,
     handleDELETESignOutAll,
     handlePOSTRedirection,
-    handlePATCHRedirectedAuthentication
+    handlePATCHRedirectedAuthentication,
+    handlePATCHPassword
 }
