@@ -1292,6 +1292,8 @@ const handlePOSTDonorsPasswordRequest =  async (req, res) => {
             });
         }
 
+        let tokenDeleteResult = await tokenInterface.deleteAllTokensByDonorId(donor._id);
+
         let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id);
 
         if (tokenInsertResult.status !== 'OK') {
@@ -1303,7 +1305,7 @@ const handlePOSTDonorsPasswordRequest =  async (req, res) => {
 
         return res.status(201).send({
             status: 'OK',
-            message: "Successfully created sign in token for user",
+            message: "Successfully created recovery link for user",
             token: tokenInsertResult.data.token
         });
     }catch (e) {
