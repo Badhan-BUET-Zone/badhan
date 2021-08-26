@@ -120,9 +120,10 @@ router.get('/volunteers/all',
 )
 
 router.patch('/admins',
-    donorController.handlePATCHAdmins,
+    donorValidator.validatePATCHAdmins,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
+    authenticator.handleFetchTargetDonor,
     authenticator.handleSuperAdminCheck,
     donorController.handlePATCHAdmins
 );

@@ -177,7 +177,7 @@ const handleDELETEDonors = async (req, res) => {
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
 
-        if(donor.designation>1){
+        if (donor.designation > 1) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: "Donor must be demoted for deletion"
@@ -340,7 +340,7 @@ const handleGETSearchOptimized = async (req, res) => {
         queryBuilder.name = {$regex: nameRegex, $options: 'ix'};
 
         //process address
-        let addressRegex = ".*"+reqQuery.address+".*";
+        let addressRegex = ".*" + reqQuery.address + ".*";
 
         // for (let i = 0; i < reqQuery.address.length; i++) {
         //     addressRegex += (reqQuery.address.charAt(i) + ".*");
@@ -655,6 +655,13 @@ const handlePATCHDonorsDesignation = async (req, res) => {
             });
         }
 
+        if (donor.hall > 6) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'Donor does not have a valid hall'
+            });
+        }
+
         if (req.body.promoteFlag) {
             donor.designation = 1
         } else {
@@ -784,35 +791,11 @@ const handlePATCHAdmins = async (req, res) => {
                 donorId: 'hdjhd12vhjgj3428569834hth'
             }
         }
-
      */
     try {
+        let targetDonor = res.locals.middlewareResponse.targetDonor;
 
-        let donorQueryResult = await donorInterface.findDonorByQuery({
-            _id: req.body.donorId
-        });
-
-        if (donorQueryResult.status !== 'OK') {
-            /*
-            #swagger.responses[400] = {
-                schema: {
-                    status: 'ERROR',
-                    message: '(Error message)'
-                },
-                description: 'If donor with specified id does not exist , user will get this error message'
-            }
-
-             */
-            return res.status(400).send({
-                status: donorQueryResult.status,
-                message: donorQueryResult.message
-            });
-        }
-
-        let donor = donorQueryResult.data;
-        let donorDesignation = donor.designation;
-
-        if (donorDesignation !== 1) {
+        if (targetDonor.designation !== 1) {
             /*
             #swagger.responses[401] = {
                 schema: {
@@ -821,7 +804,6 @@ const handlePATCHAdmins = async (req, res) => {
                 },
                 description: 'If fetched user is not a volunteer , user will get this error message'
             }
-
              */
             return res.status(401).send({
                 status: 'ERROR',
@@ -829,69 +811,41 @@ const handlePATCHAdmins = async (req, res) => {
             });
         }
 
-        // Make previous hall admin volunteer
-
-        let donorHall = donor.hall;
-        let prevHallAdminQueryResult = await donorInterface.findDonorByQuery({hall: donorHall, designation: 2});
-
-        if (prevHallAdminQueryResult.status === 'OK') {
-            let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
-                hall: donorHall,
-                designation: 2
-            }, {
-                $set: {
-                    designation: 1,
-                }
+        if (targetDonor.hall > 6) {
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'User does not have a valid hall'
             });
-
-            if (prevHallAdminUpdateResult.status !== 'OK') {
-                /*
-                #swagger.responses[400] = {
-                    schema: {
-                        status: 'Error status',
-                        message: 'Could not change hall admin'
-                    },
-                    description: 'hall admin change unsuccessful'
-                }
-
-                 */
-                return res.status(400).send({
-                    status: prevHallAdminUpdateResult,
-                    message: 'Could not change hall admin'
-                });
-            }
-
-            await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR DESIGNATION (DEMOTE HALLADMIN)", prevHallAdminUpdateResult.data);
-
         }
 
-        // Make new hall admin
-        let newHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
-            _id: req.body.donorId
+        let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+            hall: targetDonor.hall,
+            designation: 2
         }, {
-            $set: {
-                designation: 2,
-            }
+            $set: {designation: 1}
         });
 
-        if (newHallAdminUpdateResult.status !== 'OK') {
+        if (prevHallAdminUpdateResult.status !== 'OK') {
             /*
             #swagger.responses[400] = {
                 schema: {
-                    status: 'ERROR',
-                    message: 'Demoted previous hall admin, but could not set new hall admin'
+                    status: 'Error status',
+                    message: 'Could not change hall admin'
                 },
-                description: 'Previous hall admin demotion successful, but could not set new hall admin'
+                description: 'hall admin change unsuccessful'
             }
-
              */
             return res.status(400).send({
-                status: 'ERROR',
-                message: 'Demoted previous hall admin, but could not set new hall admin'
+                status: "ERROR",
+                message: 'Could not change hall admin'
             });
         }
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PROMOTE VOLUNTEER", newHallAdminUpdateResult.data);
+        // Make new hall admin
+        targetDonor.designation = 2;
+        await targetDonor.save();
+
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PROMOTE VOLUNTEER", {name: targetDonor.name});
         /*
                 #swagger.responses[200] = {
                     schema: {
@@ -1281,11 +1235,11 @@ const handleGETDonorsDuplicate = async (req, res) => {
     }
 }
 
-const handlePOSTDonorsPasswordRequest =  async (req, res) => {
+const handlePOSTDonorsPasswordRequest = async (req, res) => {
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
 
-        if(donor.designation===0){
+        if (donor.designation === 0) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Donor is not a volunteer/ admin',
@@ -1308,7 +1262,7 @@ const handlePOSTDonorsPasswordRequest =  async (req, res) => {
             message: "Successfully created recovery link for user",
             token: tokenInsertResult.data.token
         });
-    }catch (e) {
+    } catch (e) {
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

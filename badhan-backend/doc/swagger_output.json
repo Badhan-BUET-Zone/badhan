@@ -1378,18 +1378,18 @@
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "ERROR"
+                  "example": "Error status"
                 },
                 "message": {
                   "type": "string",
-                  "example": "Demoted previous hall admin, but could not set new hall admin"
+                  "example": "Could not change hall admin"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Previous hall admin demotion successful, but could not set new hall admin"
+            "description": "hall admin change unsuccessful"
           },
           "401": {
             "schema": {
