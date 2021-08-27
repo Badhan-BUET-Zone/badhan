@@ -2,7 +2,7 @@ const {validate} = require('../validations');
 const {validateBODYPhone, validateBODYPassword} = require('../validations/validateRequest/validateBody')
 const validateLogin = validate([
     validateBODYPhone,
-    validateBODYPassword
+    validateBODYPassword,
 ]);
 
 const validatePATCHPassword = validate([

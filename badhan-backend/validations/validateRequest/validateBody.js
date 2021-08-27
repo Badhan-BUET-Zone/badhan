@@ -89,5 +89,4 @@ module.exports={
     validateBODYDonorId,
     validateBODYPromoteFlag,
     validateBODYDate,
-
 }

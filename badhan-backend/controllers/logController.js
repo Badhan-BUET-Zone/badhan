@@ -44,7 +44,7 @@ const handleGETStatistics = async (req, res) => {
         }
 
          */
-        return res.status(201).send({
+        return res.status(200).send({
             status: 'OK',
             message: 'Statistics fetched successfully',
             statistics: {
@@ -120,7 +120,7 @@ const handleDELETELogs = async (req, res, next) => {
               },
              description: 'All logs deleted successfully'
       } */
-        return res.status(201).send({
+        return res.status(200).send({
             status: 'OK',
             message: 'All logs deleted successfully',
             logs: allLogData.data

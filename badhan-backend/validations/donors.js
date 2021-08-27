@@ -85,5 +85,4 @@ module.exports = {
     validateDELETEDonors,
     validateGETDonorsDuplicate,
     validatePOSTDonorsPasswordRequest,
-    validatePATCHAdmins
 }

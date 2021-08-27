@@ -88,9 +88,6 @@ const handlePOSTDonations = async (req, res) => {
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
 
-        let newDonationCount = donor.donationCount + 1;
-
-
         let donationInsertionResult = await donationInterface.insertDonation({
             phone: donor.phone,
             donorId: donor._id,
@@ -127,7 +124,7 @@ const handlePOSTDonations = async (req, res) => {
 
         await donor.save();
         /*
-        #swagger.responses[200] = {
+        #swagger.responses[201] = {
             schema: {
                 status: 'OK',
                 message: 'Donations inserted successfully'
@@ -137,7 +134,7 @@ const handlePOSTDonations = async (req, res) => {
 
          */
 
-        return res.status(200).send({
+        return res.status(201).send({
             status: 'OK',
             message: 'Donation inserted successfully'
         });
