@@ -33,7 +33,7 @@ router.delete('/', /*#swagger.path = '/callrecords'*/
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
-    callRecordController.handleDELETESingleCallRecord
+    callRecordController.handleDELETECallRecord
 );
 
 module.exports = router;

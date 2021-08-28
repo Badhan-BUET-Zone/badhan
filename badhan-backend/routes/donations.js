@@ -32,7 +32,7 @@ router.delete('/', /*#swagger.path = '/donations'*/
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
-    donationController.handleDeleteDonations
+    donationController.handleDELETEDonations
 );
 
 module.exports = router;

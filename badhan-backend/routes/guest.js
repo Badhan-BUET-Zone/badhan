@@ -92,7 +92,7 @@ router.post('/callrecords',
 );
 
 router.delete('/callrecords',
-    guestController.handleDELETESingleCallRecord
+    guestController.handleDELETECallRecord
 );
 
 router.get('/log/date/:date/donorId/:donorId',

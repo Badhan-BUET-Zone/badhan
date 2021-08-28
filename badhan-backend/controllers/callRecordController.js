@@ -118,7 +118,7 @@ const handleGETCallRecords = async (req, res) => {
     }
 }
 
-const handleDELETESingleCallRecord = async (req, res) => {
+const handleDELETECallRecord = async (req, res) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Call Records']
@@ -214,5 +214,5 @@ const handleDELETESingleCallRecord = async (req, res) => {
 module.exports = {
     handlePOSTCallRecord,
     handleGETCallRecords,
-    handleDELETESingleCallRecord
+    handleDELETECallRecord
 }

@@ -148,7 +148,7 @@ const handlePOSTDonations = async (req, res) => {
     }
 }
 
-const handleDeleteDonations = async (req, res) => {
+const handleDELETEDonations = async (req, res) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donations']
@@ -224,5 +224,5 @@ const handleDeleteDonations = async (req, res) => {
 module.exports = {
     handleGETDonations,
     handlePOSTDonations,
-    handleDeleteDonations
+    handleDELETEDonations
 }

@@ -2080,7 +2080,7 @@
         }
       }
     },
-    "/v3/log/version": {
+    "/log/version": {
       "get": {
         "tags": [
           "Logs"
@@ -2106,7 +2106,7 @@
         }
       }
     },
-    "/v2/log/statistics": {
+    "/log/statistics": {
       "get": {
         "tags": [
           "Logs"
@@ -2153,13 +2153,7 @@
         }
       }
     },
-    "/v1/log": {
-      "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      },
+    "/log": {
       "delete": {
         "tags": [
           "Logs"
@@ -2266,6 +2260,50 @@
               }
             },
             "description": "All logs deleted successfully"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get date wise count of api calls",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "dateString": {
+                        "type": "string",
+                        "example": "2021-08-14"
+                      },
+                      "count": {
+                        "type": "number",
+                        "example": 2
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
           }
         }
       }
@@ -2384,52 +2422,6 @@
                       "count": {
                         "type": "number",
                         "example": 32
-                      }
-                    }
-                  }
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/log": {
-      "get": {
-        "tags": [
-          "Logs"
-        ],
-        "description": "Get date wise count of api calls",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor deleted successfully"
-                },
-                "logs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "dateString": {
-                        "type": "string",
-                        "example": "2021-08-14"
-                      },
-                      "count": {
-                        "type": "number",
-                        "example": 2
                       }
                     }
                   }

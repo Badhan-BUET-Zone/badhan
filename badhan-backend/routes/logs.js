@@ -6,30 +6,19 @@ const rateLimiter = require('../middlewares/rateLimiter');
 
 const logValidator = require('../validations/logs');
 
-const {deprecatedController} = require('../controllers/otherControllers');
-
-
-router.get('/v3/log/version',
+router.get('/log/version',
     rateLimiter.commonLimiter,
     logController.handleGETAppVersion
 );
 
-router.get('/v2/log/statistics',
+router.get('/log/statistics',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,
     logController.handleGETStatistics
 );
 
-router.get('/v1/log',
-    deprecatedController
-    // rateLimiter.commonLimiter,
-    // authenticator.handleAuthentication,
-    // authenticator.handleSuperAdminCheck,
-    // logController.handleGETLogs
-);
-
-router.delete('/v1/log',
+router.delete('/log',
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleSuperAdminCheck,

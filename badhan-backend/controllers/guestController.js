@@ -325,7 +325,7 @@ const handlePOSTCallRecord = async (req, res) => {
     })
 };
 
-const handleDELETESingleCallRecord = async (req, res) => {
+const handleDELETECallRecord = async (req, res) => {
     return res.status(200).send({
         status: 'OK',
         message: 'Call record deletion successful',
@@ -415,7 +415,7 @@ module.exports = {
     handleDELETELogs,
     handleGETViewAllVolunteers,
     handlePOSTCallRecord,
-    handleDELETESingleCallRecord,
+    handleDELETECallRecord,
     handleGETDonorsDuplicate,
     handleGETLogsByDateAndDonor,
     handleGETLogsByDate
