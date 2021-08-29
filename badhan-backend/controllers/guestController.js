@@ -142,7 +142,8 @@ const handlePOSTComment = async (req, res) => {
 const handlePOSTChangePassword = async (req, res) => {
     return res.status(200).send({
         status: 'OK',
-        message: 'Password changed successfully'
+        message: "Successfully created recovery link for user",
+        token: faker.getToken(),
     });
 };
 
@@ -389,7 +390,15 @@ const handleGETLogsByDate = async (req, res) => {
         status: "OK",
         message: "Logs fetched by date successfully",
         logs: logs
-    })
+    });
+}
+
+const handlePATCHPassword = async (req,res)=>{
+    return res.status(201).send({
+        status: 'OK',
+        message: 'Password changed successfully',
+        token: faker.getToken(),
+    });
 }
 
 module.exports = {
@@ -418,6 +427,7 @@ module.exports = {
     handleDELETECallRecord,
     handleGETDonorsDuplicate,
     handleGETLogsByDateAndDonor,
-    handleGETLogsByDate
+    handleGETLogsByDate,
+    handlePATCHPassword
 
 }

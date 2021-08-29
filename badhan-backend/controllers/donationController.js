@@ -224,5 +224,5 @@ const handleDELETEDonations = async (req, res) => {
 module.exports = {
     handleGETDonations,
     handlePOSTDonations,
-    handleDELETEDonations
+    handleDELETEDonations,
 }

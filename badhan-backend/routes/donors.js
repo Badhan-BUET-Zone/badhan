@@ -48,15 +48,9 @@ router.patch('/donors/comment',
     donorController.handlePATCHDonorsComment
 );
 
-//DEPRECATE THIS AFTER UPDATING THE FRONTEND
+//REMOVE THIS AFTER UPDATING THE FRONTEND
 router.patch('/donors/password',
-    donorValidator.validatePATCHDonorsPassword,
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermission,
-    authenticator.handleHigherDesignationCheck,
-    donorController.handlePATCHDonorsPassword
+    deprecatedController
 );
 
 router.post('/donors/password',

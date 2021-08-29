@@ -14,6 +14,9 @@ router.delete('/users/signout',
 router.delete('/users/signout/all',
     guestController.handlePOSTLogOutAll
 );
+router.patch('/users/password',
+    guestController.handlePATCHPassword
+);
 
 router.get('/donors/me',
     guestController.handlePOSTViewDonorDetailsSelf
@@ -35,7 +38,7 @@ router.patch('/donors/comment',
     guestController.handlePOSTComment,
 );
 
-router.patch('/donors/password',
+router.post('/donors/password',
     guestController.handlePOSTChangePassword,
 );
 
@@ -79,11 +82,11 @@ router.delete('/donations',
     guestController.handlePOSTDeleteDonation
 );
 
-router.get('/v2/log/statistics',
+router.get('/log/statistics',
     guestController.handleGETStatistics
 );
 
-router.delete('/v1/log',
+router.delete('/log',
     guestController.handleDELETELogs
 );
 

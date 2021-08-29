@@ -914,32 +914,34 @@
     },
     "/donors/password": {
       "patch": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      },
+      "post": {
         "tags": [
           "Donors"
         ],
-        "description": "Handles the changing of password for an account.",
+        "description": "Request for password reset link for a user",
         "parameters": [
           {
-            "name": "changePassword",
+            "name": "request",
             "in": "body",
-            "description": "donor info for changing password",
+            "description": "donorId of the user",
             "schema": {
               "type": "object",
               "properties": {
                 "donorId": {
                   "type": "string",
-                  "example": "ghjdgejhd7623jhs"
-                },
-                "password": {
-                  "type": "string",
-                  "example": "thisisanewpassword"
+                  "example": "hdjhd12vhjgj3428569834hth"
                 }
               }
             }
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "schema": {
               "type": "object",
               "properties": {
@@ -949,14 +951,18 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Password changed successfully"
+                  "example": "Successfully created recovery link for user"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "dagwerhgiownbweshgewiugnswieugnwkj"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Successful password change done"
+            "description": "Successfully created recovery link for user"
           },
           "400": {
             "schema": {
@@ -987,59 +993,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Target user does not have an account"
+                  "example": "Donor is not a volunteer/ admin"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Target user does not have an account"
-          }
-        }
-      },
-      "post": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Query error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
-          },
-          "401": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "You cannot modify the details of a Badhan member with higher designation"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
+            "description": "Donor is not a volunteer/ admin"
           }
         }
       }
@@ -1743,11 +1704,28 @@
         }
       }
     },
-    "/password": {
+    "/users/password": {
       "patch": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
+        "tags": [
+          "User"
+        ],
+        "description": "Route endpoint to change password",
+        "parameters": [
+          {
+            "name": "passwordChange",
+            "in": "body",
+            "description": "New Password",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "type": "string",
+                  "example": "mynewpassword"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "201": {
             "schema": {
@@ -1760,6 +1738,10 @@
                 "message": {
                   "type": "string",
                   "example": "Password changed successfully"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "dsgfewosgnwegnhw"
                 }
               },
               "xml": {

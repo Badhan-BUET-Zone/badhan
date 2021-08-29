@@ -359,6 +359,19 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
 }
 
 const handlePATCHPassword = async (req, res) => {
+    /*
+    #swagger.auto = false
+    #swagger.tags = ['User']
+    #swagger.description = 'Route endpoint to change password'
+    #swagger.parameters['passwordChange'] = {
+        in: 'body',
+        description: 'New Password',
+        schema: {
+            password: "mynewpassword"
+        }
+    }
+*/
+
     try {
         let reqBody = req.body;
 
@@ -377,11 +390,11 @@ const handlePATCHPassword = async (req, res) => {
         #swagger.responses[201] = {
             schema: {
                 status: 'OK',
-                message: 'Password changed successfully'
+                message: 'Password changed successfully',
+                token: 'dsgfewosgnwegnhw'
             },
             description: 'Successful password change done'
         }
-
          */
         return res.status(201).send({
             status: 'OK',

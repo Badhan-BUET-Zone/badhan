@@ -1236,10 +1236,32 @@ const handleGETDonorsDuplicate = async (req, res) => {
 }
 
 const handlePOSTDonorsPasswordRequest = async (req, res) => {
+    /*
+    #swagger.auto = false
+    #swagger.tags = ['Donors']
+    #swagger.description = 'Request for password reset link for a user'
+    #swagger.parameters['request'] = {
+        in: 'body',
+        description: 'donorId of the user',
+        schema: {
+            donorId: 'hdjhd12vhjgj3428569834hth'
+        }
+    }
+ */
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
 
         if (donor.designation === 0) {
+            /*
+            #swagger.responses[401] = {
+                schema: {
+                    status: 'ERROR',
+                    message: 'Donor is not a volunteer/ admin',
+                },
+                description: 'Donor is not a volunteer/ admin'
+            }
+            */
+
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'Donor is not a volunteer/ admin',
@@ -1256,6 +1278,16 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
                 message: 'Token insertion failed',
             });
         }
+        /*
+        #swagger.responses[201] = {
+            schema: {
+                status: 'OK',
+                message: 'Successfully created recovery link for user',
+                token: 'dagwerhgiownbweshgewiugnswieugnwkj',
+            },
+            description: 'Successfully created recovery link for user'
+        }
+*/
 
         return res.status(201).send({
             status: 'OK',
