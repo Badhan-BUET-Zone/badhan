@@ -6,6 +6,11 @@ const rateLimiter = require('../middlewares/rateLimiter');
 
 const logValidator = require('../validations/logs');
 
+router.get('/v3/log/version',
+    rateLimiter.commonLimiter,
+    logController.handleGETAppVersion
+);
+
 router.get('/log/version',
     rateLimiter.commonLimiter,
     logController.handleGETAppVersion

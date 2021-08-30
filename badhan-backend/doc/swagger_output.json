@@ -2062,6 +2062,32 @@
         }
       }
     },
+    "/v3/log/version": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get app info deployed to play store",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "example": "(App information fetched from google play store)"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "response is the current version number of badhan api"
+          }
+        }
+      }
+    },
     "/log/version": {
       "get": {
         "tags": [
