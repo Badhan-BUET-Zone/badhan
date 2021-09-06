@@ -3,6 +3,7 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
+const emailInterface = require('../db/interfaces/emailInterface');
 const {halls} = require('../constants')
 const jwt = require('jsonwebtoken');
 
@@ -578,6 +579,13 @@ const handlePATCHDonors = async (req, res) => {
         let reqBody = req.body;
 
         let target = res.locals.middlewareResponse.targetDonor;
+
+        if(reqBody.email!=="" && !await emailInterface.checkIfEmailExists(reqBody.email)){
+            return res.status(404).send({
+                status: 'ERROR',
+                message: 'Email address does not exist'
+            });
+        }
 
         target.name = reqBody.name;
         target.phone = reqBody.phone;

@@ -20,3 +20,7 @@ const validate = validations => {
 module.exports={
     validate,
 }
+/*
+rules of using express validator
+- no asynchronous calls
+ */

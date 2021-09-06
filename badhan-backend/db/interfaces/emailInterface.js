@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const {google} = require('googleapis');
+const emailValidator = require('deep-email-validator');
 
 const CLIENT_ID = process.env.GMAIL_CLIENT_ID;
 const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
@@ -47,6 +48,11 @@ const sendMail = async(emailAddress,subject,html)=>{
     }
 }
 
+const checkIfEmailExists = async(email)=>{
+    let result = await emailValidator.validate(email);
+    return result.valid;
+}
+
 const generatePasswordForgotHTML = (token)=>{
     let url = process.env.VUE_APP_FRONTEND_BASE+ '#/passwordReset?token=' + token;
     return `
@@ -60,5 +66,6 @@ const generatePasswordForgotHTML = (token)=>{
 
 module.exports = {
     sendMail,
-    generatePasswordForgotHTML
+    generatePasswordForgotHTML,
+    checkIfEmailExists
 }
