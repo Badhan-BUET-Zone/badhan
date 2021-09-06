@@ -74,7 +74,7 @@ const passwordForgotLimiter = rateLimit({
     max: 1,
     message: {
         status: "ERROR",
-        message: "Service unavailable!!"
+        message: "Please try again after 5 minutes"
     }
 });
 
