@@ -20,6 +20,13 @@ const handlePOSTPasswordForgot = async (req, res) => {
         let donor = queryByPhoneResult.data;
         let email = donor.email;
 
+        if(donor.designation===0){
+            return res.status(404).send({
+                status: 'ERROR',
+                message: "Account not found"
+            });
+        }
+
         if(email===""){
             return res.status(404).send({
                 status: 'ERROR',

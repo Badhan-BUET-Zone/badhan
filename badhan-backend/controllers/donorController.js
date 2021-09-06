@@ -579,11 +579,19 @@ const handlePATCHDonors = async (req, res) => {
         let reqBody = req.body;
 
         let target = res.locals.middlewareResponse.targetDonor;
+        let user = res.locals.middlewareResponse.donor;
 
         if(reqBody.email!=="" && !await emailInterface.checkIfEmailExists(reqBody.email)){
             return res.status(404).send({
                 status: 'ERROR',
                 message: 'Email address does not exist'
+            });
+        }
+
+        if(target.email!==reqBody.email && !target._id.equals(user._id)){
+            return res.status(401).send({
+                status: 'ERROR',
+                message: 'You do not have permission to edit email address of another user'
             });
         }
 
