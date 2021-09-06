@@ -5,6 +5,59 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
 const logInterface = require("../db/interfaces/logInterface");
 
+const nodemailer = require('nodemailer');
+const {google} = require('googleapis');
+
+const CLIENT_ID = process.env.GMAIL_CLIENT_ID;
+const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
+const REDIRECT_URI = process.env.GMAIL_REDIRECT_URI;
+const REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;
+
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID,CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN});
+
+async function sendMail(){
+    //https://www.youtube.com/watch?v=-rcRf7yswfM
+    try{
+        const accessToken = await oAuth2Client.getAccessToken();
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: '1605011@ugrad.cse.buet.ac.bd',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            }
+        });
+
+        const mailOptions = {
+            from: 'BadhanAdmin<1605011@ugrad.cse.buet.ac.bd>',
+            to: 'mirmahathir1@gmail.com',
+            subject: "Hello from Badhan admin",
+            text: "Hello text mail",
+            html: "<h1>Hello email</h1>",
+        }
+
+        return await transport.sendMail(mailOptions);
+    }catch (error) {
+        return error;
+    }
+}
+
+const handlePOSTPasswordForgot = async (req,res)=>{
+    try{
+        let result = await sendMail();
+        return res.status(200).send({status: 'OK', message: "A recovery email has been sent to your email"});
+    }catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 let handlePOSTSignIn = async (req, res) => {
     /*
         #swagger.auto = false
@@ -417,5 +470,6 @@ module.exports = {
     handleDELETESignOutAll,
     handlePOSTRedirection,
     handlePATCHRedirectedAuthentication,
-    handlePATCHPassword
+    handlePATCHPassword,
+    handlePOSTPasswordForgot
 }
