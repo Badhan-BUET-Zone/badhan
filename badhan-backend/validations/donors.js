@@ -1,5 +1,5 @@
 const {validate} = require('../validations');
-const {validateBODYPromoteFlag, validateBODYPassword,validateBODYDonorId,validateBODYAddress,validateBODYRoomNumber,validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId} = require('../validations/validateRequest/validateBody')
+const {validateBODYEmail,validateBODYPromoteFlag, validateBODYPassword,validateBODYDonorId,validateBODYAddress,validateBODYRoomNumber,validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId} = require('../validations/validateRequest/validateBody')
 const {validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName} = require('../validations/validateRequest/validateQuery');
 
 const validatePOSTDonors = validate([
@@ -24,7 +24,8 @@ const validatePATCHDonors = validate([
     validateBODYHall,
     validateBODYRoomNumber,
     validateBODYAddress,
-    validateBODYAvailableToAll
+    validateBODYAvailableToAll,
+    validateBODYEmail
 ]);
 
 const validatePATCHDonorsPassword = validate([

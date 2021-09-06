@@ -4,53 +4,49 @@ const jwt = require('jsonwebtoken');
 const donorInterface = require('../db/interfaces/donorInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
 const logInterface = require("../db/interfaces/logInterface");
+const emailInterface = require("../db/interfaces/emailInterface");
 
-const nodemailer = require('nodemailer');
-const {google} = require('googleapis');
-
-const CLIENT_ID = process.env.GMAIL_CLIENT_ID;
-const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
-const REDIRECT_URI = process.env.GMAIL_REDIRECT_URI;
-const REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;
-
-const oAuth2Client = new google.auth.OAuth2(CLIENT_ID,CLIENT_SECRET, REDIRECT_URI);
-oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN});
-
-async function sendMail(){
-    //https://www.youtube.com/watch?v=-rcRf7yswfM
-    try{
-        const accessToken = await oAuth2Client.getAccessToken();
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: '1605011@ugrad.cse.buet.ac.bd',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            }
-        });
-
-        const mailOptions = {
-            from: 'BadhanAdmin<1605011@ugrad.cse.buet.ac.bd>',
-            to: 'mirmahathir1@gmail.com',
-            subject: "Hello from Badhan admin",
-            text: "Hello text mail",
-            html: "<h1>Hello email</h1>",
+const handlePOSTPasswordForgot = async (req, res) => {
+    try {
+        let phone = req.body.phone;
+        let queryByPhoneResult = await donorInterface.findDonorByPhone(phone);
+        if (queryByPhoneResult.status !== "OK") {
+            return res.status(404).send({
+                status: 'ERROR',
+                message: "Phone number not recognized"
+            });
         }
 
-        return await transport.sendMail(mailOptions);
-    }catch (error) {
-        return error;
-    }
-}
+        let donor = queryByPhoneResult.data;
+        let email = donor.email;
 
-const handlePOSTPasswordForgot = async (req,res)=>{
-    try{
-        let result = await sendMail();
-        return res.status(200).send({status: 'OK', message: "A recovery email has been sent to your email"});
-    }catch (e) {
+        if(email===""){
+            return res.status(404).send({
+                status: 'ERROR',
+                message: "No recovery email found for this phone number"
+            });
+        }
+
+        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id);
+
+        if (tokenInsertResult.status !== 'OK') {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: 'Token insertion failed',
+            });
+        }
+
+        let emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
+
+        let result = await emailInterface.sendMail(email, "Password Recovery Email from Badhan", emailHtml);
+        if (result.status !== "OK") {
+            return res.status(400).send({
+                status: 'ERROR',
+                message: result.message
+            });
+        }
+        return res.status(200).send({status: 'OK', message: "A recovery mail has been sent to your email address"});
+    } catch (e) {
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

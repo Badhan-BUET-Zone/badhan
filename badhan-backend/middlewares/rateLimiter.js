@@ -67,7 +67,16 @@ const passwordRequestLimiter = rateLimit({
         status: "ERROR",
         message: "Service unavailable!!"
     }
-})
+});
+
+const passwordForgotLimiter = rateLimit({
+    windowMs: 5 * minute,
+    max: 1,
+    message: {
+        status: "ERROR",
+        message: "Service unavailable!!"
+    }
+});
 
 module.exports={
     signInLimiter,
@@ -77,5 +86,6 @@ module.exports={
     donorDeletionLimiter,
     redirectionSignInLimiter,
     commonLimiter,
-    passwordRequestLimiter
+    passwordRequestLimiter,
+    passwordForgotLimiter
 }

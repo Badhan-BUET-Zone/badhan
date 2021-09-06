@@ -423,6 +423,10 @@
                 "availableToAll": {
                   "type": "boolean",
                   "example": true
+                },
+                "email": {
+                  "type": "string",
+                  "example": "mirmahathir1@gmail.com"
                 }
               }
             }
@@ -1708,10 +1712,29 @@
       "post": {
         "tags": [],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"

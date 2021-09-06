@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const {CallRecord} = require('./CallRecord');
 const {Donation} = require('./Donation');
 const {Log} = require('./Log')
+const {checkEmail} = require('../../validations/validateRequest/others')
 const donorSchema = new mongoose.Schema({
     phone: {
         unique: true,
@@ -150,6 +151,19 @@ const donorSchema = new mongoose.Schema({
     availableToAll: {
         type: Boolean,
         required: true
+    },
+    email: {
+        type: String,
+        default:"",
+        maxlength: 100,
+        validate: [{
+            validator: (email) => {
+                if(email===""){
+                    return true;
+                }
+                return checkEmail(email);
+            }, msg: 'DB: Email is not valid'
+        }],
     }
 });
 

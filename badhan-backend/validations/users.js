@@ -9,7 +9,12 @@ const validatePATCHPassword = validate([
    validateBODYPassword
 ]);
 
+const validatePOSTPasswordForgot = validate([
+    validateBODYPhone
+])
+
 module.exports = {
     validateLogin,
-    validatePATCHPassword
+    validatePATCHPassword,
+    validatePOSTPasswordForgot
 }

@@ -568,7 +568,8 @@ const handlePATCHDonors = async (req, res) => {
                 hall: 3,
                 roomNumber: '3009',
                 address: 'Azimpur',
-                availableToAll: true
+                availableToAll: true,
+                email: 'mirmahathir1@gmail.com'
             }
         }
 
@@ -586,6 +587,7 @@ const handlePATCHDonors = async (req, res) => {
         target.roomNumber = reqBody.roomNumber;
         target.address = reqBody.address;
         target.availableToAll = reqBody.availableToAll;
+        target.email = reqBody.email;
 
         if (target.hall === 8) {
             target.availableToAll = true;

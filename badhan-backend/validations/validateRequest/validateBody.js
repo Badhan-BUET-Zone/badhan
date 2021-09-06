@@ -1,5 +1,6 @@
 const {body} = require('express-validator');
 const mongoose = require('mongoose');
+const {checkEmail} = require('./others')
 
 const validateBODYPhone = body('phone')
     .exists().withMessage('Phone number is required')
@@ -73,6 +74,15 @@ const validateBODYDate = body('date')
     .exists().not().isEmpty().withMessage('date is required')
     .isInt().toInt().withMessage('date must be integer')
 
+const validateBODYEmail = body('email')
+    .exists().withMessage('email is required')
+    .customSanitizer(value => String(value)).escape().trim()
+    .custom((email)=>{
+        if(email===""){
+            return true;
+        }
+        return checkEmail(email);
+    }).withMessage("email is not valid");
 
 module.exports={
     validateBODYPhone,
@@ -89,4 +99,5 @@ module.exports={
     validateBODYDonorId,
     validateBODYPromoteFlag,
     validateBODYDate,
+    validateBODYEmail
 }
