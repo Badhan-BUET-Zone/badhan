@@ -56,8 +56,10 @@ const checkIfEmailExists = async(email)=>{
 const generatePasswordForgotHTML = (token)=>{
     let url = process.env.VUE_APP_FRONTEND_BASE+ '#/passwordReset?token=' + token;
     return `
-    <h1>Password Recovery Email</h1>
+    <p>Password Recovery Email</p>
+    <br>
     <p>Click <a href="${url}">here</a> to reset your password</p>
+    <br>
     <p>Sincerely Yours,</p>
     <p>Mir Mahathir Mohammad</p>
     <p>Administrator of Badhan Web and App</p>
