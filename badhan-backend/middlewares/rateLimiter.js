@@ -70,11 +70,11 @@ const passwordRequestLimiter = rateLimit({
 });
 
 const passwordForgotLimiter = rateLimit({
-    windowMs: 5 * minute,
+    windowMs: 3 * minute,
     max: 1,
     message: {
         status: "ERROR",
-        message: "Please try again after 5 minutes"
+        message: "Please try again after 3 minutes"
     }
 });
 
