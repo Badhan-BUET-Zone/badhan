@@ -61,5 +61,6 @@ db.donors.updateMany(
     ]
     )
 
-//DONE ON PROD DATABASE
+
 db.donors.updateMany({},{$set: {"email":""}},false,true)
+//DONE ON PROD DATABASE
