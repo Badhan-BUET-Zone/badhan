@@ -1325,6 +1325,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
             description: 'Successfully created recovery link for user'
         }
 */
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONOR PASSWORD REQUEST", {name: donor.name});
 
         return res.status(201).send({
             status: 'OK',

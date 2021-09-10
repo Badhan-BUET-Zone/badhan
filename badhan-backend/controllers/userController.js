@@ -73,6 +73,9 @@ const handlePOSTPasswordForgot = async (req, res) => {
                 message: result.message
             });
         }
+
+        await logInterface.addLog(donor._id, "CREATE USER PASSWORD FORGOT", {});
+
         return res.status(200).send({status: 'OK', message: "A recovery mail has been sent to your email address"});
     } catch (e) {
         return res.status(500).send({
@@ -184,7 +187,7 @@ let handlePOSTSignIn = async (req, res) => {
 
          */
 
-        await logInterface.addLog(donor._id, "CREATE SIGN IN", {});
+        await logInterface.addLog(donor._id, "CREATE USER SIGN IN", {});
 
         return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
     } catch (e) {
@@ -222,7 +225,7 @@ let handleDELETESignOut = async (req, res) => {
             description: 'A successful sign out removes the token for the user'
         }
 */
-        await logInterface.addLog(donor._id, "DELETE SIGN OUT", {});
+        await logInterface.addLog(donor._id, "DELETE USER SIGN OUT", {});
 
         return res.status(200).send({
             status: 'OK',
@@ -259,7 +262,7 @@ let handleDELETESignOutAll = async (req, res) => {
                 }
 
          */
-        await logInterface.addLog(donor._id, "DELETE SIGN OUT ALL", {});
+        await logInterface.addLog(donor._id, "DELETE USER SIGN OUT ALL", {});
         return res.status(200).send({
             status: 'OK',
             message: 'Logged out from all devices successfully'
@@ -308,7 +311,7 @@ let handlePOSTRedirection = async (req, res) => {
 
          */
 
-        await logInterface.addLog(donor._id, "CREATE REDIRECTED TO WEB", {});
+        await logInterface.addLog(donor._id, "CREATE USER REDIRECTION", {});
 
         return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
     } catch (e) {
@@ -424,6 +427,8 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
                 }
 
          */
+        await logInterface.addLog(donor._id, "PATCH USER REDIRECTION", {});
+
         return res.status(201).send({status: 'OK', message: "Redirected login successful", token: newToken});
 
     } catch (e) {
@@ -461,7 +466,7 @@ const handlePATCHPassword = async (req, res) => {
 
         let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id)
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH PASSWORD", {});
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH USER PASSWORD", {});
 
         /*
         #swagger.responses[201] = {
