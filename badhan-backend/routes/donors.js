@@ -62,8 +62,9 @@ router.post('/donors/password',
     authenticator.handleHigherDesignationCheck,
     donorController.handlePOSTDonorsPasswordRequest
 );
+router.patch('/donors',deprecatedController);
 
-router.patch('/donors',
+router.patch('/donors/v2',
     donorValidator.validatePATCHDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,

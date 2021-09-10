@@ -7,10 +7,31 @@ const logInterface = require("../db/interfaces/logInterface");
 const emailInterface = require("../db/interfaces/emailInterface");
 
 const handlePOSTPasswordForgot = async (req, res) => {
+    /*
+        #swagger.auto = false
+        #swagger.tags = ['User']
+        #swagger.description = 'Route if user forgets the password.'
+        #swagger.parameters['signIn'] = {
+            in: 'body',
+            description: 'Phone number of user who forgot his/her password',
+            schema: {
+                phone: "8801521438557",
+            }
+        }
+    */
     try {
         let phone = req.body.phone;
         let queryByPhoneResult = await donorInterface.findDonorByPhone(phone);
         if (queryByPhoneResult.status !== "OK") {
+            /*
+            #swagger.responses[404] = {
+                schema: {
+                    status: 404,
+                    message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
+                },
+                description: 'When the phone number is not found'
+            }
+             */
             return res.status(404).send({
                 status: 'ERROR',
                 message: "Phone number not recognized"
@@ -37,8 +58,8 @@ const handlePOSTPasswordForgot = async (req, res) => {
         let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id);
 
         if (tokenInsertResult.status !== 'OK') {
-            return res.status(400).send({
-                status: 'ERROR',
+            return res.status(500).send({
+                status: 'EXCEPTION',
                 message: 'Token insertion failed',
             });
         }
@@ -47,8 +68,8 @@ const handlePOSTPasswordForgot = async (req, res) => {
 
         let result = await emailInterface.sendMail(email, "Password Recovery Email from Badhan", emailHtml);
         if (result.status !== "OK") {
-            return res.status(400).send({
-                status: 'ERROR',
+            return res.status(500).send({
+                status: 'EXCEPTION',
                 message: result.message
             });
         }

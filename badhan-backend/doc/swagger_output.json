@@ -364,7 +364,26 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the donor id in body nor param is not found"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
                 }
               },
               "xml": {
@@ -376,121 +395,10 @@
         }
       },
       "patch": {
-        "tags": [
-          "Donors"
-        ],
-        "description": "Handles the update of donor information.",
-        "parameters": [
-          {
-            "name": "editDonor",
-            "in": "body",
-            "description": "donor info for editing donor",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "ghjdgejhd7623jhs"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "Mir Mahathir Mohammad"
-                },
-                "phone": {
-                  "type": "number",
-                  "example": 8801521438557
-                },
-                "studentId": {
-                  "type": "number",
-                  "example": 1605011
-                },
-                "bloodGroup": {
-                  "type": "number",
-                  "example": 2
-                },
-                "hall": {
-                  "type": "number",
-                  "example": 3
-                },
-                "roomNumber": {
-                  "type": "string",
-                  "example": "3009"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "Azimpur"
-                },
-                "availableToAll": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "email": {
-                  "type": "string",
-                  "example": "mirmahathir1@gmail.com"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor updated successfully"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Donor info update successful"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Query error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
-          },
-          "401": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "You cannot modify the details of a Badhan member with higher designation"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
-          }
-        }
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
       },
       "delete": {
         "tags": [
@@ -535,14 +443,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
+            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "401": {
             "schema": {
@@ -904,7 +812,26 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the donor id in body nor param is not found"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
                 }
               },
               "xml": {
@@ -978,14 +905,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
+            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "401": {
             "schema": {
@@ -1005,6 +932,163 @@
               }
             },
             "description": "Donor is not a volunteer/ admin"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        }
+      }
+    },
+    "/donors/v2": {
+      "patch": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Handles the update of donor information.",
+        "parameters": [
+          {
+            "name": "editDonor",
+            "in": "body",
+            "description": "donor info for editing donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "ghjdgejhd7623jhs"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "phone": {
+                  "type": "number",
+                  "example": 8801521438557
+                },
+                "studentId": {
+                  "type": "number",
+                  "example": 1605011
+                },
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "hall": {
+                  "type": "number",
+                  "example": 3
+                },
+                "roomNumber": {
+                  "type": "string",
+                  "example": "3009"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
+                },
+                "availableToAll": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "email": {
+                  "type": "string",
+                  "example": "mirmahathir1@gmail.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor updated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor info update successful"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor ID not specified"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the donor id in body nor param is not found"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You do not have permission to edit email address of another user"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "You do not have permission to edit email address of another user"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email address does not exist"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor info update successful"
           }
         }
       }
@@ -1065,14 +1149,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
+            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "401": {
             "schema": {
@@ -1092,6 +1176,25 @@
               }
             },
             "description": "If user cannot promote volunteer or cannot demote donor"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       }
@@ -1374,6 +1477,25 @@
               }
             },
             "description": "If fetched user is not a volunteer , user will get this error message"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       },
@@ -1708,36 +1830,47 @@
         }
       }
     },
-    "/password/forgot": {
+    "/users/password/forgot": {
       "post": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "Route if user forgets the password.",
         "parameters": [
           {
-            "name": "obj",
+            "name": "signIn",
             "in": "body",
+            "description": "Phone number of user who forgot his/her password",
             "schema": {
               "type": "object",
               "properties": {
                 "phone": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "8801521438557"
                 }
               }
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Phone number not recognized/ Account not found/ No recovery email found for this phone number"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When the phone number is not found"
           }
         }
       }
@@ -1881,7 +2014,26 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the donor id in body nor param is not found"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
                 }
               },
               "xml": {
@@ -2036,6 +2188,25 @@
               }
             },
             "description": "Donation insertion unsuccessful"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
       },
@@ -2088,7 +2259,26 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Query error message)"
+                  "example": "Donor ID not specified"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the donor id in body nor param is not found"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
                 }
               },
               "xml": {

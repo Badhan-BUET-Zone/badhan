@@ -27,7 +27,7 @@ const sendMail = async(emailAddress,subject,html)=>{
         });
 
         const mailOptions = {
-            from: 'BadhanAdmin<1605011@ugrad.cse.buet.ac.bd>',
+            from: '1605011@ugrad.cse.buet.ac.bd',
             to: emailAddress,
             subject: subject,
             text: "Email from Badhan Admin",

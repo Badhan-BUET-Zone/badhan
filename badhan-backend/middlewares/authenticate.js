@@ -144,10 +144,10 @@ let handleFetchTargetDonor = async (req, res, next) => {
     });
 
     if (donorQueryResult.status !== 'OK') {
-        /* #swagger.responses[400] = {
+        /* #swagger.responses[404] = {
           schema: {
             status: 'ERROR',
-            message: '(Query error message)'
+            message: "Donor not found"
            },
           description: 'When no donor with the specified donor id is found, user will get this error message'
         } */
@@ -157,9 +157,7 @@ let handleFetchTargetDonor = async (req, res, next) => {
         });
     }
 
-    let donor = donorQueryResult.data;
-
-    res.locals.middlewareResponse.targetDonor = donor;
+    res.locals.middlewareResponse.targetDonor = donorQueryResult.data;
 
     return next();
 }

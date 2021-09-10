@@ -575,20 +575,39 @@ const handlePATCHDonors = async (req, res) => {
         }
 
      */
+
+    /*
+    #swagger.responses[404] = {
+        schema: {
+            status: 'ERROR',
+            message: 'Email address does not exist'
+        },
+        description: 'Donor info update successful'
+    }
+
+    #swagger.responses[401] = {
+        schema: {
+            status: 'ERROR',
+            message: 'You do not have permission to edit email address of another user'
+        },
+        description: 'You do not have permission to edit email address of another user'
+    }
+
+     */
     try {
         let reqBody = req.body;
 
         let target = res.locals.middlewareResponse.targetDonor;
         let user = res.locals.middlewareResponse.donor;
 
-        if(reqBody.email!=="" && !await emailInterface.checkIfEmailExists(reqBody.email)){
+        if (reqBody.email !== "" && !await emailInterface.checkIfEmailExists(reqBody.email)) {
             return res.status(404).send({
                 status: 'ERROR',
                 message: 'Email address does not exist'
             });
         }
 
-        if(target.email!==reqBody.email && !target._id.equals(user._id)){
+        if (target.email !== reqBody.email && !target._id.equals(user._id)) {
             return res.status(401).send({
                 status: 'ERROR',
                 message: 'You do not have permission to edit email address of another user'
