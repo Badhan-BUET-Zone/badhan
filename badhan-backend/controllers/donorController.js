@@ -747,7 +747,6 @@ const handleGETVolunteers = async (req, res) => {
      */
     try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
-        let userDesignation = authenticatedUser.designation;
 
         let userHall = authenticatedUser.hall;
 
@@ -923,7 +922,7 @@ const handleGETAdmins = async (req, res) => {
 
         if (adminsQueryResult.status !== 'OK') {
             /*
-            #swagger.responses[400] = {
+            #swagger.responses[500] = {
                 schema: {
                     status: 'ERROR',
                     message: '(Error message)'
@@ -932,7 +931,7 @@ const handleGETAdmins = async (req, res) => {
             }
 
              */
-            return res.status(400).send({
+            return res.status(500).send({
                 status: adminsQueryResult.status,
                 message: adminsQueryResult.message
             });
@@ -1340,6 +1339,56 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
     }
 }
 
+const handleGETDonorsDesignation  = async (req, res) => {
+    try{
+        let authenticatedUser = res.locals.middlewareResponse.donor;
+
+        let adminsQueryResult = await donorInterface.findAdmins(2);
+
+        if (adminsQueryResult.status !== 'OK') {
+            return res.status(500).send({
+                status: adminsQueryResult.status,
+                message: adminsQueryResult.message
+            });
+        }
+        let adminList = adminsQueryResult.data;
+
+        let donorsQueryResult = await donorInterface.findVolunteersOfHall( authenticatedUser.hall);
+
+        if (donorsQueryResult.status !== 'OK') {
+            return res.status(500).send({
+                status: donorsQueryResult.status,
+                message: donorsQueryResult.message
+            });
+        }
+
+        let volunteerList = donorsQueryResult.data;
+
+        let superAdminQuery = await donorInterface.findAdmins(3);
+
+        if (superAdminQuery.status !== 'OK') {
+            return res.status(500).send({
+                status: superAdminQuery.status,
+                message: superAdminQuery.message
+            });
+        }
+        let superAdminList = superAdminQuery.data;
+
+        return res.status(200).send({
+            status: 'OK',
+            message: "All designated members fetched",
+            volunteerList,
+            adminList,
+            superAdminList
+        });
+    }catch (e) {
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+};
+
 
 module.exports = {
     handlePOSTDonors,
@@ -1347,6 +1396,7 @@ module.exports = {
     handleGETSearchOptimized,
     handlePATCHDonorsComment,
     handlePATCHDonorsPassword,
+    handleGETDonorsDesignation,
     handlePATCHDonors,
     handlePATCHDonorsDesignation,
     handleGETVolunteers,

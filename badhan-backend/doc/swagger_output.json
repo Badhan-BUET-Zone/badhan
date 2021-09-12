@@ -1197,6 +1197,12 @@
             "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         }
+      },
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
       }
     },
     "/donors/checkDuplicate": {
@@ -1549,7 +1555,7 @@
             },
             "description": "Hall admin list fetch successful "
           },
-          "400": {
+          "500": {
             "schema": {
               "type": "object",
               "properties": {
@@ -2391,113 +2397,10 @@
     },
     "/log": {
       "delete": {
-        "tags": [
-          "Logs"
-        ],
-        "description": "handles the deletion of logs.",
+        "tags": [],
+        "description": "",
         "parameters": [],
-        "responses": {
-          "200": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "OK"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "All logs deleted successfully"
-                },
-                "logs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string",
-                        "example": "fdogirehognrebk"
-                      },
-                      "name": {
-                        "type": "string",
-                        "example": "Mit Majumder"
-                      },
-                      "hall": {
-                        "type": "number",
-                        "example": 2
-                      },
-                      "date": {
-                        "type": "number",
-                        "example": 1622090693113
-                      },
-                      "editedObject": {
-                        "type": "object",
-                        "properties": {
-                          "_id": {
-                            "type": "string",
-                            "example": "60af292680015defd72"
-                          },
-                          "address": {
-                            "type": "string",
-                            "example": "Mohammadpur"
-                          },
-                          "bloodGroup": {
-                            "type": "number",
-                            "example": 2
-                          },
-                          "comment": {
-                            "type": "string",
-                            "example": "This is a comment"
-                          },
-                          "designation": {
-                            "type": "number",
-                            "example": 0
-                          },
-                          "donationCount": {
-                            "type": "number",
-                            "example": 0
-                          },
-                          "hall": {
-                            "type": "number",
-                            "example": 8
-                          },
-                          "lastDonation": {
-                            "type": "number",
-                            "example": 1622073600000
-                          },
-                          "name": {
-                            "type": "string",
-                            "example": "Md. Rafat Hossain "
-                          },
-                          "phone": {
-                            "type": "number",
-                            "example": 8801521347889
-                          },
-                          "roomNumber": {
-                            "type": "string",
-                            "example": "TH-3012"
-                          },
-                          "studentId": {
-                            "type": "number",
-                            "example": 1516256
-                          }
-                        }
-                      },
-                      "operation": {
-                        "type": "string",
-                        "example": "EDIT COMMENT"
-                      }
-                    }
-                  }
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "All logs deleted successfully"
-          }
-        }
+        "responses": {}
       },
       "get": {
         "tags": [

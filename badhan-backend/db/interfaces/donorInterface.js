@@ -334,6 +334,55 @@ const getVolunteerCount = async () => {
         }
     }
 }
+
+const findAdmins = async (designation) => {
+    try{
+            let data = await Donor.find({designation}, {
+                studentId: 1,
+                name: 1,
+                phone: 1,
+                hall:1,
+            });
+            let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+            return {
+                data,
+                message,
+                status: 'OK'
+            };
+
+    }catch (e) {
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
+
+const findVolunteersOfHall = async (hall) => {
+    try{
+        let data = await Donor.find({designation:1,hall:hall}, {
+            studentId: 1,
+            name: 1,
+            roomNumber: 1,
+            bloodGroup: 1,
+            phone: 1,
+        });
+        let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+        return {
+            data,
+            message,
+            status: 'OK'
+        };
+
+    }catch (e) {
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
 module.exports = {
     insertDonor,
     deleteDonor,
@@ -348,5 +397,7 @@ module.exports = {
     findAllVolunteers,
     findDonorByPhone,
     findDonorByIDAndUpdateCommentTime,
-    fineDonorById
+    fineDonorById,
+    findAdmins,
+    findVolunteersOfHall
 }

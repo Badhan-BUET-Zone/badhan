@@ -94,6 +94,12 @@ router.patch('/donors/designation',
     donorController.handlePATCHDonorsDesignation
 );
 
+router.get('/donors/designation',
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    donorController.handleGETDonorsDesignation,
+);
+
 router.get('/donors/checkDuplicate',
     donorValidator.validateGETDonorsDuplicate,
     rateLimiter.commonLimiter,
