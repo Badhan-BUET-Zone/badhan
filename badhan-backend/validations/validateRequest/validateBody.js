@@ -12,6 +12,12 @@ const validateBODYBloodGroup = body('bloodGroup')
     .isInt().toInt().withMessage('bloodGroup must be integer')
     .isIn([0,1,2,3,4,5,6,7]).withMessage('Please input valid blood group from 0 to 7')
 
+const validateBODYPublicContactBloodGroup = body('bloodGroup')
+    .exists().withMessage('bloodGroup is required')
+    .isInt().toInt().withMessage('bloodGroup must be integer')
+    .isIn([-1,0,2,4,6]).withMessage('Please input valid blood group (-1,0,2,4,6)')
+
+
 const validateBODYHall = body('hall')
     .exists().withMessage('hall is required')
     .isInt().toInt().withMessage('hall must be integer')
@@ -99,5 +105,6 @@ module.exports={
     validateBODYDonorId,
     validateBODYPromoteFlag,
     validateBODYDate,
-    validateBODYEmail
+    validateBODYEmail,
+    validateBODYPublicContactBloodGroup
 }

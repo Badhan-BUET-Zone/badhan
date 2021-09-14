@@ -78,6 +78,23 @@ const passwordForgotLimiter = rateLimit({
     }
 });
 
+const publicContactInsertionLimiter = rateLimit({
+    windowMs: minute,
+    max: 2,
+    message: {
+        status: "ERROR",
+        message: "Service unavailable!!"
+    }
+})
+const publicContactDeletionLimiter = rateLimit({
+    windowMs: minute,
+    max: 2,
+    message: {
+        status: "ERROR",
+        message: "Service unavailable!!"
+    }
+})
+
 module.exports={
     signInLimiter,
     donationInsertionLimiter,
@@ -87,5 +104,7 @@ module.exports={
     redirectionSignInLimiter,
     commonLimiter,
     passwordRequestLimiter,
-    passwordForgotLimiter
+    passwordForgotLimiter,
+    publicContactInsertionLimiter,
+    publicContactDeletionLimiter
 }

@@ -57,6 +57,12 @@ const validateQUERYPhone = query('phone')
     .isLength({min:13,max:13}).withMessage('Phone number must be of 13 digits')
     .isNumeric().isInt().toInt().withMessage('Phone number must be integer');
 
+const validateQUERYPublicContactId = query('contactId')
+    .exists().withMessage('contactId is required')
+    .customSanitizer(value => String(value))
+    .escape().trim().custom(contactId=>mongoose.Types.ObjectId.isValid(contactId)).withMessage('Enter a valid contactId');
+
+
 module.exports={
     validateQUERYDonorId,
     validateQUERYBloodGroup,
@@ -69,5 +75,6 @@ module.exports={
     validateQUERYAvailableToAll,
     validateQUERYDate,
     validateQUERYCallRecordId,
-    validateQUERYPhone
+    validateQUERYPhone,
+    validateQUERYPublicContactId
 }

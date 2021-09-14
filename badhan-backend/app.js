@@ -17,6 +17,7 @@ let usersRouter = require('./routes/users');
 let donationsRouter = require('./routes/donations');
 let guestRouter = require('./routes/guest')
 let callRecordRouter = require('./routes/callRecords');
+let publicContactsRouter = require('./routes/publicContacts');
 let logRouter = require('./routes/logs');
 
 const { mongoose } = require('./db/mongoose');
@@ -52,6 +53,7 @@ app.use('/users', usersRouter);
 app.use('/donations',donationsRouter);
 app.use('/guest', guestRouter);
 app.use('/callrecords', callRecordRouter);
+app.use('/publicContacts',publicContactsRouter);
 app.use('/', apiRouter);
 app.use('/',logRouter);
 

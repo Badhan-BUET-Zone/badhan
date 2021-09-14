@@ -8,3 +8,4 @@ To add a new route, make sure to add the followings to the new route:
 * Guest API
 * Swagger documentation
 * Logging
+* Update permission matrix
