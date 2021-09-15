@@ -1004,6 +1004,12 @@ const handleGETDonors = async (req, res) => {
                 }
             },
             options: {sort: {'date': -1}}
+        }).populate({
+            path: 'publicContacts',
+            select: {
+                '_id':1,
+                'bloodGroup':1
+            }
         }).execPopulate();
         /*
         #swagger.responses[200] = {

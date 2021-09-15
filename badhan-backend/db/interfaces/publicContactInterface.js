@@ -77,7 +77,7 @@ const findPublicContactById = async (publicContactId) => {
 
 const findAllPublicContacts = async ()=>{
     try{
-        let data = await PublicContact.find({}).populate({path:'donorId',select:{'_id':1,'name':1,'hall':1,'phone':1,'availableToAll':1}});
+        let data = await PublicContact.find({}).populate({path:'donorId',select:{'_id':1,'name':1,'hall':1,'phone':1}});
         return {
             data: data,
             message: 'All public contacts fetched',

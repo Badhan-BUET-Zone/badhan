@@ -13,7 +13,7 @@ router.post('/', /*#swagger.path = '/publicContacts'*/
     publicContactValidator.validatePOSTPublicContact,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
+    authenticator.handleHallPermission,
     publicContactController.handlePOSTPublicContact
 );
 
@@ -27,7 +27,7 @@ router.delete('/', /*#swagger.path = '/publicContacts'*/
     publicContactValidator.validateDELETEPublicContact,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
+    authenticator.handleHallPermission,
     publicContactController.handleDELETEPublicContact
 );
 

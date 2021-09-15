@@ -193,6 +193,12 @@ donorSchema.virtual('logCount', {
     count: true
 })
 
+donorSchema.virtual('publicContacts',{
+    ref: 'PublicContacts',
+    localField: '_id',
+    foreignField: 'donorId',
+})
+
 donorSchema.set('toObject', {virtuals: true});
 donorSchema.set('toJSON', {virtuals: true});
 
