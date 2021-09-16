@@ -76,7 +76,8 @@ const handlePOSTPublicContact = async (req, res) => {
         }
         return res.status(201).send({
             status: 'OK',
-            message: 'Public contact added successfully'
+            message: 'Public contact added successfully',
+            publicContact: insertionResult.data
         })
     } catch (e) {
         return res.status(500).send({

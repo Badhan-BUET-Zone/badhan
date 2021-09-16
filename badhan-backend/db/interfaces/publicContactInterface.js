@@ -92,6 +92,7 @@ const findAllPublicContacts = async ()=>{
                     name:{ $arrayElemAt: [ "$donorDetails.name",0]},
                     donorId:"$donorId",
                     bloodGroup: "$bloodGroup",
+                    contactId: "$_id",
                     phone: { $arrayElemAt: [ "$donorDetails.phone",0]},
                 }
             },
@@ -100,7 +101,7 @@ const findAllPublicContacts = async ()=>{
                     _id:{
                         bloodGroup:"$bloodGroup"
                     },
-                    contacts:{$push: {donorId:"$donorId",phone: "$phone", name: "$name"}}
+                    contacts:{$push: {donorId:"$donorId",phone: "$phone", name: "$name", contactId:"$contactId"}}
                 }
             },
             {
