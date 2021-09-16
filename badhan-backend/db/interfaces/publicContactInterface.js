@@ -77,7 +77,45 @@ const findPublicContactById = async (publicContactId) => {
 
 const findAllPublicContacts = async ()=>{
     try{
-        let data = await PublicContact.find({}).populate({path:'donorId',select:{'_id':1,'name':1,'hall':1,'phone':1}});
+        // let data = await PublicContact.find({}).populate({path:'donorId',select:{'_id':1,'name':1,'hall':1,'phone':1}}).sort({bloodGroup:1});
+        let data  =  await PublicContact.aggregate([
+            {
+                $lookup:{
+                    from:'donors',
+                    localField:'donorId',
+                    foreignField:'_id',
+                    as: 'donorDetails'
+                }
+            },
+            {
+                $project:{
+                    name:{ $arrayElemAt: [ "$donorDetails.name",0]},
+                    donorId:"$donorId",
+                    bloodGroup: "$bloodGroup",
+                    phone: { $arrayElemAt: [ "$donorDetails.phone",0]},
+                }
+            },
+            {
+                $group:{
+                    _id:{
+                        bloodGroup:"$bloodGroup"
+                    },
+                    contacts:{$push: {donorId:"$donorId",phone: "$phone", name: "$name"}}
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    bloodGroup: "$_id.bloodGroup",
+                    contacts: "$contacts"
+                }
+            },
+            {
+                $sort:{
+                    bloodGroup:1
+                }
+            }
+        ])
         return {
             data: data,
             message: 'All public contacts fetched',
