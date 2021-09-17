@@ -474,6 +474,48 @@ const handleGETPublicContacts = async(req,res)=>{
     })
 }
 
+const handleGETDonorsDesignation = async(req,res)=>{
+    let volunteerList = [];
+    let adminList = [];
+    let superAdminList = [];
+
+    for(let i = 0 ; i < 7; i++){
+        adminList.push({
+            _id: faker.getId(),
+            studentId: faker.getStudentId(),
+            name: faker.getName(),
+            phone: faker.getPhone(),
+            hall: i,
+        });
+    }
+    for(let i = 0 ; i < faker.getRandomIndex(50);i++){
+        volunteerList.push({
+            roomNumber: faker.getRoom(),
+            _id: faker.getId(),
+            studentId: faker.getStudentId(),
+            name: faker.getName(),
+            bloodGroup: faker.getBloodGroup(),
+            phone: faker.getPhone(),
+        });
+    }
+    for(let i = 0; i < faker.getRandomIndex(20);i++){
+        superAdminList.push({
+            _id: faker.getId(),
+            studentId: faker.getStudentId(),
+            name: faker.getName(),
+            phone: faker.getPhone(),
+            hall: faker.getHall(),
+        });
+    }
+    return res.status(200).send({
+        status: 'OK',
+        message: "All designated members fetched",
+        volunteerList,
+        adminList,
+        superAdminList
+    })
+}
+
 module.exports = {
     handlePOSTLogIn,
     handlePOSTViewDonorDetailsSelf,
@@ -505,4 +547,5 @@ module.exports = {
     handleGETPublicContacts,
     handleDELETEPublicContact,
     handlePOSTPublicContact,
+    handleGETDonorsDesignation
 }
