@@ -1,7 +1,7 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
-let gplay = require('google-play-scraper');
+// let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
     /*
@@ -67,9 +67,8 @@ const handleGETAppVersion = (req, res, next) => {
     #swagger.tags = ['Logs']
     #swagger.description = 'Get app info deployed to play store'
     */
-    gplay.app({appId: 'com.mmmbadhan'})
-        .then((response) => {
-            /*
+
+    /*
             #swagger.responses[200] = {
                 schema: {
                     version: '(App information fetched from google play store)'
@@ -78,8 +77,14 @@ const handleGETAppVersion = (req, res, next) => {
             }
 
              */
-            res.status(200).send(response)
-        });
+    // gplay.app({appId: 'com.mmmbadhan'})
+    //     .then((response) => {
+    //
+    //         res.status(200).send(response)
+    //     });
+    res.status(200).send({
+        version:"4.4.0"
+    })
 }
 
 const handleDELETELogs = async (req, res, next) => {
