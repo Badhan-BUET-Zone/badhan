@@ -195,6 +195,19 @@ const handleGETViewDonorDetails = async (req, res) => {
             }
         )
     }
+    let publicContacts = [
+        {
+            bloodGroup: 2,
+            _id: faker.getId(),
+            donorId: faker.getId()
+        },
+        {
+            bloodGroup: -1,
+            _id: faker.getId(),
+            donorId: faker.getId()
+        }
+    ];
+
     let obj = {
         _id: faker.getId(),
         phone: faker.getPhone(),
@@ -211,6 +224,7 @@ const handleGETViewDonorDetails = async (req, res) => {
         commentTime: faker.getTimestamp(240),
         callRecords: callRecords,
         donations: donations,
+        publicContacts: publicContacts
     }
 
     return res.status(200).send({
@@ -401,6 +415,65 @@ const handlePATCHPassword = async (req,res)=>{
     });
 }
 
+const handlePOSTPublicContact = async (req,res)=>{
+    return res.status(201).send({
+        status: 'OK',
+        message: 'Public contact added successfully',
+        publicContact: {
+            bloodGroup: 2,
+            _id: faker.getId(),
+            donorId: faker.getId(),
+        }
+    })
+}
+
+const handleDELETEPublicContact = async (req,res)=>{
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Public contact deleted successfully'
+    })
+}
+
+const handleGETPublicContacts = async(req,res)=>{
+    let publicContacts = [];
+    let contacts = [];
+
+    for(let i = 0 ; i < 2 ; i++){
+        contacts.push({
+            donorId: faker.getId(),
+            phone: faker.getPhone(),
+            name: faker.getName(),
+            contactId: faker.getId()
+        })
+    }
+    publicContacts.push({
+        bloodGroup: -1,
+        contacts: contacts
+    });
+
+    for(let i = 0 ; i < 4;i++){
+        contacts=[];
+        for(let j = 0 ; j < 2; j++){
+            contacts.push({
+                donorId: faker.getId(),
+                phone: faker.getPhone(),
+                name: faker.getName(),
+                contactId: faker.getId()
+            })
+        }
+        publicContacts.push({
+            bloodGroup: i*2,
+            contacts: contacts
+        })
+    }
+
+    return res.status(200).send({
+        status: 'OK',
+        message: "All public contacts fetched successfully",
+        publicContacts: publicContacts,
+    })
+}
+
 module.exports = {
     handlePOSTLogIn,
     handlePOSTViewDonorDetailsSelf,
@@ -428,6 +501,8 @@ module.exports = {
     handleGETDonorsDuplicate,
     handleGETLogsByDateAndDonor,
     handleGETLogsByDate,
-    handlePATCHPassword
-
+    handlePATCHPassword,
+    handleGETPublicContacts,
+    handleDELETEPublicContact,
+    handlePOSTPublicContact,
 }

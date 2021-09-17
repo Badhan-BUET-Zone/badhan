@@ -110,5 +110,16 @@ router.get('/log',
     guestController.handleGETLogs
 );
 
+router.get('/publicContacts',
+    guestController.handleGETPublicContacts
+);
+
+router.post('/publicContacts',
+    guestController.handlePOSTPublicContact,
+);
+
+router.delete('/publicContacts',
+    guestController.handleDELETEPublicContact
+);
 
 module.exports = router;
