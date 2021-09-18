@@ -17,7 +17,7 @@ let handleAuthentication = async (req, res, next) => {
         } catch (e) {
             return res.status(401).send({
                 status: 'ERROR',
-                message: 'Malformed authentication token'
+                message: 'Invalid Authentication'
             });
         }
 
