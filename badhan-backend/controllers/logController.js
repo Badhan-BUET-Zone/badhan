@@ -1,7 +1,6 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
-// let gplay = require('google-play-scraper');
 
 const handleGETOnlineCheck = async (req, res) => {
     /*
@@ -75,68 +74,11 @@ const handleGETAppVersion = (req, res, next) => {
                 },
                 description: 'response is the current version number of badhan api'
             }
-
-             */
-    // gplay.app({appId: 'com.mmmbadhan'})
-    //     .then((response) => {
-    //
-    //         res.status(200).send(response)
-    //     });
+*/
     res.status(200).send({
-        version:"4.4.0"
+        version:"4.5.0"
     })
 }
-
-const handleDELETELogs = async (req, res, next) => {
-    /*
-    #swagger.auto = false
-        #swagger.tags = ['Logs']
-        #swagger.description = 'handles the deletion of logs.'
-    */
-    try {
-        let allLogData = await logInterface.deleteLogs();
-        /* #swagger.responses[200] = {
-             schema: {
-               status: 'OK',
-               message: 'All logs deleted successfully',
-               logs:[
-                   {
-                        "_id": "fdogirehognrebk",
-                        name: "Mit Majumder",
-                        hall: 2,
-                        date: 1622090693113,
-                        editedObject: {
-                            _id: "60af292680015defd72",
-                            address: "Mohammadpur",
-                            bloodGroup: 2,
-                            comment: "This is a comment",
-                            designation: 0,
-                            donationCount: 0,
-                            hall: 8,
-                            lastDonation: 1622073600000,
-                            name: "Md. Rafat Hossain ",
-                            phone: 8801521347889,
-                            roomNumber: "TH-3012",
-                            studentId: 1516256,
-                        },
-                        operation: "EDIT COMMENT"
-                    },
-                ]
-              },
-             description: 'All logs deleted successfully'
-      } */
-        return res.status(200).send({
-            status: 'OK',
-            message: 'All logs deleted successfully',
-            logs: allLogData.data
-        });
-    } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
-    }
-};
 
 const handleGETLogs = async (req, res, next) => {
     /*
@@ -266,7 +208,6 @@ module.exports = {
     handleGETOnlineCheck,
     handleGETAppVersion,
     handleGETLogs,
-    handleDELETELogs,
     handleGETLogsByDate,
     handleGETLogsByDateAndDonor
 }

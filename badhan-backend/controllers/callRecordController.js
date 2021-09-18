@@ -60,64 +60,6 @@ const handlePOSTCallRecord = async (req, res) => {
     }
 }
 
-const handleGETCallRecords = async (req, res) => {
-    /*
-        #swagger.auto = false
-        #swagger.tags = ['Call Records']
-        #swagger.description = 'handles the retrieval of call history for a particular donor.'
-        #swagger.parameters['donorId'] = {
-            description: 'donor info for call history',
-            type: 'string',
-            name: 'donorId'
-        }
-
-     */
-    try {
-        let donor = res.locals.middlewareResponse.targetDonor;
-        let callRecordResult = await callRecordInterface.findManyByCallee(donor._id);
-        if (callRecordResult.status !== 'OK') {
-            return res.status(404).send({
-                status: 'ERROR',
-                message: "Call records not found"
-            });
-        }
-        /*
-                #swagger.responses[200] = {
-                    schema: {
-                        status: 'OK',
-                        message: 'Call record fetch successful',
-                        callRecords: {
-                            "status": "OK",
-                            "message": "Call record fetch successful",
-                            "callRecord": [
-                                {
-                                    "date": 1625754390478,
-                                    "_id": "60e70d6972a660d4f156906b",
-                                    "callerId": "5e901d56effc5900177ced73",
-                                    "calleeId": "5e68514995b0367d81546b0e",
-                                },
-                            ]
-                        }
-                    },
-                    description: 'Call record fetch successful'
-                }
-
-         */
-
-
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Call record fetch successful',
-            callRecords: callRecordResult.data,
-        });
-    } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
-    }
-}
-
 const handleDELETECallRecord = async (req, res) => {
     /*
         #swagger.auto = false
@@ -213,6 +155,5 @@ const handleDELETECallRecord = async (req, res) => {
 
 module.exports = {
     handlePOSTCallRecord,
-    handleGETCallRecords,
     handleDELETECallRecord
 }
