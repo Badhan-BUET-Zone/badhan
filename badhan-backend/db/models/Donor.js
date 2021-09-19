@@ -3,8 +3,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const {CallRecord} = require('./CallRecord');
 const {Donation} = require('./Donation');
-const {Log} = require('./Log')
-const {checkEmail} = require('../../validations/validateRequest/others')
+const {Log} = require('./Log');
+const {PublicContact} = require('./PublicContacts');
+const {checkEmail} = require('../../validations/validateRequest/others');
 const donorSchema = new mongoose.Schema({
     phone: {
         unique: true,
@@ -231,6 +232,7 @@ donorSchema.post('findOneAndDelete', async (donor) => {
     await CallRecord.deleteMany({calleeId: donor._id});
     await Donation.deleteMany({donorId: donor._id});
     await Log.deleteMany({donorId: donor._id});
+    await PublicContact.deleteMany({donorId: donor._id});
 });
 
 const Donor = mongoose.model('Donor', donorSchema);
