@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+var cachegoose = require('cachegoose');
+
+cachegoose(mongoose, {});
+const cacheExpiryTime = 10*60//seconds;
 
 mongoose.Promise = global.Promise;
 
@@ -16,4 +20,4 @@ mongoose.connect(process.env.MONGODB_URI, {
     process.exit();
 });
 
-module.exports = {mongoose};
+module.exports = {mongoose,cacheExpiryTime};

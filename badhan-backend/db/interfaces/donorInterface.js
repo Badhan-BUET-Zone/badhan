@@ -1,4 +1,5 @@
 const {Donor} = require('../models/Donor');
+const {cacheExpiryTime} = require('../mongoose');
 
 const insertDonor = async (donorObject) => {
     try {
@@ -96,7 +97,7 @@ const deleteDonorById = async (donorId) => {
 };
 const fineDonorById = async (id)=>{
     try {
-        let data = await Donor.findById(id).populate({path: 'callRecords'}).populate({path: 'donations'});
+        let data = await Donor.findById(id).cache(0);
         if (data) {
             return {
                 data,
@@ -120,10 +121,13 @@ const fineDonorById = async (id)=>{
     }
 }
 
+
+
 const findDonorByQuery = async (query, option) => {
     try {
 
-        let data = await Donor.findOne(query, option);
+        let data = await Donor.findOne(query, option)
+        // let data = await Donor.findOne(query, option);
         if (data) {
             return {
                 data,

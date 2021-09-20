@@ -21,7 +21,7 @@ let handleAuthentication = async (req, res, next) => {
             });
         }
 
-        let tokenCheckResult = await tokenInterface.findTokenDataByToken(token);
+        let tokenCheckResult = await tokenInterface.findTokenDataByToken(token,decodedDonor._id);
 
         if (tokenCheckResult.status !== 'OK') {
             return res.status(401).send({
@@ -32,7 +32,7 @@ let handleAuthentication = async (req, res, next) => {
 
         let tokenData = tokenCheckResult.data;
 
-        let findDonorResult = await donorInterface.findDonorByQuery({_id: tokenData.donorId});
+        let findDonorResult = await donorInterface.fineDonorById(tokenData.donorId);
 
         if (findDonorResult.status !== 'OK') {
             return res.status(401).send({
