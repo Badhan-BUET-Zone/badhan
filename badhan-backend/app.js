@@ -22,7 +22,7 @@ let logRouter = require('./routes/logs');
 
 const { mongoose } = require('./db/mongoose');
 // let {responseInterceptor} = require('./middlewares/response');
-
+const {userAgentHandler} = require('./middlewares/userAgent');
 
 
 app.use(cors());
@@ -35,6 +35,8 @@ app.use(cookieParser());
 app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(logger('dev'));
+
+app.use(userAgentHandler);
 
 app.use((req, res, next) => {
     bodyParser.json()(req, res, err => {

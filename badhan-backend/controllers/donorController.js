@@ -6,7 +6,7 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 const emailInterface = require('../db/interfaces/emailInterface');
 const {halls} = require('../constants')
 const jwt = require('jsonwebtoken');
-var useragent = require('useragent');
+
 
 const handlePOSTDonors = async (req, res) => {
     /*
@@ -1112,10 +1112,6 @@ const handleGETDonorsMe = async (req, res) => {
                 }
         */
         await logInterface.addLog(res.locals.middlewareResponse.donor._id, "ENTERED APP", {name: donor.name});
-
-        var agent = useragent.parse(req.headers['user-agent']);
-        console.log(agent.toString());
-        console.log(req.headers['user-agent']);
 
         return res.status(200).send({
             status: 'OK',
