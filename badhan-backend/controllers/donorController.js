@@ -1115,6 +1115,7 @@ const handleGETDonorsMe = async (req, res) => {
 
         var agent = useragent.parse(req.headers['user-agent']);
         console.log(agent.toString());
+        console.log(req.headers['user-agent']);
 
         return res.status(200).send({
             status: 'OK',
