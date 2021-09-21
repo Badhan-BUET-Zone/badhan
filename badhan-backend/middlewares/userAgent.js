@@ -1,6 +1,6 @@
 const useragent = require('useragent');
 const userAgentHandler = (req, res, next) => {
-    let agent = useragent.parse(req.headers['user-agent']).
+    let agent = useragent.parse(req.headers['user-agent'])
     req.userAgent={
         os:agent.os.toString(),
         device: agent.device.toString(),
