@@ -6,6 +6,7 @@ let express = require('express');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
+let device = require('express-device');
 let app = express();
 
 
@@ -35,6 +36,8 @@ app.use(cookieParser());
 app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(logger('dev'));
+
+app.use(device.capture());
 
 app.use((req, res, next) => {
     bodyParser.json()(req, res, err => {

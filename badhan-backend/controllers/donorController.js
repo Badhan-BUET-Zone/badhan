@@ -1112,6 +1112,7 @@ const handleGETDonorsMe = async (req, res) => {
         */
         await logInterface.addLog(res.locals.middlewareResponse.donor._id, "ENTERED APP", {name: donor.name});
 
+        console.log(req.device.type);
         return res.status(200).send({
             status: 'OK',
             message: 'Successfully fetched donor details',
