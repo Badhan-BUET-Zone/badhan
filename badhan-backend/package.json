@@ -21,7 +21,6 @@
     "deep-email-validator": "^0.1.18",
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
-    "express-device": "^0.4.2",
     "express-rate-limit": "^5.2.6",
     "express-validator": "^6.12.1",
     "faker": "^5.5.3",
@@ -37,7 +36,8 @@
     "nodemailer": "^6.6.3",
     "nodemon": "^2.0.7",
     "swagger-autogen": "^2.8.1",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "useragent": "^2.3.0"
   },
   "nodemonConfig": {
     "ignore": [
