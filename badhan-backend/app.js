@@ -37,7 +37,7 @@ app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(logger('dev'));
 
-app.use(device.capture());
+app.use(device.capture({unknownUserAgentDeviceType:"unknown"}));
 
 app.use((req, res, next) => {
     bodyParser.json()(req, res, err => {
