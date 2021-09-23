@@ -41,21 +41,21 @@ const handlePOSTPasswordForgot = async (req, res) => {
         let donor = queryByPhoneResult.data;
         let email = donor.email;
 
-        if(donor.designation===0){
+        if (donor.designation === 0) {
             return res.status(404).send({
                 status: 'ERROR',
                 message: "Account not found"
             });
         }
 
-        if(email===""){
+        if (email === "") {
             return res.status(404).send({
                 status: 'ERROR',
                 message: "No recovery email found for this phone number"
             });
         }
 
-        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id);
+        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
 
         if (tokenInsertResult.status !== 'OK') {
             return res.status(500).send({
@@ -167,7 +167,7 @@ let handlePOSTSignIn = async (req, res) => {
         }, process.env.JWT_SECRET).toString();
 
 
-        let tokenInsertResult = await tokenInterface.addToken(donor._id, token);
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
 
         if (tokenInsertResult.status !== 'OK') {
             return res.status(400).send({
@@ -291,7 +291,7 @@ let handlePOSTRedirection = async (req, res) => {
         }, process.env.JWT_SECRET, {expiresIn: '30s'}).toString();
 
 
-        let tokenInsertResult = await tokenInterface.addToken(donor._id, token);
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
 
         if (tokenInsertResult.status !== 'OK') {
             return res.status(400).send({
@@ -408,7 +408,7 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
         }, process.env.JWT_SECRET).toString();
 
 
-        let tokenInsertResult = await tokenInterface.addToken(donor._id, newToken);
+        let tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent);
 
         if (tokenInsertResult.status !== 'OK') {
             return res.status(400).send({
@@ -464,7 +464,7 @@ const handlePATCHPassword = async (req, res) => {
 
         await tokenInterface.deleteAllTokensByDonorId(donor._id);
 
-        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id)
+        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
 
         await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH USER PASSWORD", {});
 
@@ -492,6 +492,64 @@ const handlePATCHPassword = async (req, res) => {
     }
 }
 
+const handleGETLogins = async (req, res) => {
+    /*
+#swagger.auto = false
+#swagger.tags = ['User']
+#swagger.description = 'Endpoint to get recent logins'
+}
+*/
+    let user = res.locals.middlewareResponse.donor;
+    let token = res.locals.middlewareResponse.token;
+    try {
+        let recentLoginsResult = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token);
+        if (recentLoginsResult.status !== "OK") {
+            return res.status(500).send({
+                status: 'EXCEPTION',
+                message: recentLoginsResult.message,
+            });
+        }
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Recent logins fetched successfully',
+            logins: recentLoginsResult.data
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+const handleDELETELogins = async (req, res) => {
+    /*
+#swagger.auto = false
+#swagger.tags = ['User']
+#swagger.description = 'Endpoint to delete a login from device'
+}
+*/
+    try{
+        let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId);
+        if(deletedTokenResult.status!=="OK"){
+            return res.status(404).send({
+                status: 'ERROR',
+                message: 'Login information not found'
+            });
+        }
+        return res.status(200).send({
+            status: 'OK',
+            message: 'Logged out from specified device',
+        });
+    }catch (e){
+        console.log(e);
+        return res.status(500).send({
+            status: 'EXCEPTION',
+            message: e.message
+        });
+    }
+}
+
 module.exports = {
     //TOKEN HANDLERS
     handlePOSTSignIn,
@@ -500,5 +558,7 @@ module.exports = {
     handlePOSTRedirection,
     handlePATCHRedirectedAuthentication,
     handlePATCHPassword,
-    handlePOSTPasswordForgot
+    handlePOSTPasswordForgot,
+    handleGETLogins,
+    handleDELETELogins
 }

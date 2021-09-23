@@ -4,10 +4,10 @@ const userAgentHandler = (req, res, next) => {
     req.userAgent={
         os:agent.os.toString(),
         device: agent.device.toString(),
-        family: agent.family.toString(),
-        ip: req.headers['x-forwarded-for']?.split(',').shift() || req.socket?.remoteAddress
+        browserFamily: agent.family.toString(),
+        ipAddress: req.headers['x-forwarded-for']?.split(',').shift() || req.socket?.remoteAddress
     }
-    console.log("useragent os->",req.userAgent.os," device->",req.userAgent.device," family->",req.userAgent.family," ip->",req.userAgent.ip);
+    console.log("useragent os->",req.userAgent.os," device->",req.userAgent.device," family->",req.userAgent.browserFamily," ip->",req.userAgent.ipAddress);
     next();
 }
 module.exports={

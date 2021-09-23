@@ -1313,7 +1313,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
 
         let tokenDeleteResult = await tokenInterface.deleteAllTokensByDonorId(donor._id);
 
-        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id);
+        let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
 
         if (tokenInsertResult.status !== 'OK') {
             return res.status(400).send({

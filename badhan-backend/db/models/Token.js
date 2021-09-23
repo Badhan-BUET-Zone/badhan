@@ -15,8 +15,23 @@ const tokenSchema = new mongoose.Schema({
         default: ()=>{
             return new Date().getTime()+60*1000*60*24*30//30days
         },
+    },
+    os:{
+        type: String,
+        required: true,
+    },
+    browserFamily:{
+        type: String,
+        required: true,
+    },
+    device:{
+        type: String,
+        required: true,
+    },
+    ipAddress:{
+        type: String,
+        required: true,
     }
-
 });
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });

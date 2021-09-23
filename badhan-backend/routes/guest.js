@@ -126,4 +126,12 @@ router.delete('/publicContacts',
     guestController.handleDELETEPublicContact
 );
 
+router.get('/users/logins',
+    guestController.handleGETLogins,
+);
+
+router.delete('/users/logins/:tokenId',
+    guestController.handleDELETELogins
+);
+
 module.exports = router;

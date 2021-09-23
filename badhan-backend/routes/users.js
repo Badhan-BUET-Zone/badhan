@@ -56,5 +56,16 @@ router.patch('/password',/*#swagger.path = '/users/password'*/
     userController.handlePATCHPassword
 );
 
+router.get('/logins',/*#swagger.path = '/users/logins'*/
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    userController.handleGETLogins,
+)
+
+router.delete('/logins/:tokenId',
+    userValidator.validateDELETELogins,
+    authenticator.handleAuthentication,
+    userController.handleDELETELogins,
+)
 
 module.exports = router;

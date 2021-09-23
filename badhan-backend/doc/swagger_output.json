@@ -1930,6 +1930,26 @@
         }
       }
     },
+    "/users/logins": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get recent logins",
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/logins/{tokenId}": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to delete a login from device",
+        "parameters": [],
+        "responses": {}
+      }
+    },
     "/callrecords": {
       "post": {
         "tags": [

@@ -2,14 +2,14 @@ const {Token} = require('../models/Token');
 const jwt = require('jsonwebtoken');
 const {cacheExpiryTime} = require('../mongoose');
 const cachegoose = require('cachegoose');
-const insertAndSaveToken = async (donorId) => {
+const insertAndSaveToken = async (donorId,userAgent) => {
     try {
         let access = 'auth';
         let token = await jwt.sign({
             _id: String(donorId),
             access
         }, process.env.JWT_SECRET).toString();
-        let tokenData = new Token({donorId, token});
+        let tokenData = new Token({donorId, token,...userAgent});
         let data = await tokenData.save();
         if (data.nInserted === 0) {
             return {
@@ -35,9 +35,9 @@ const insertAndSaveToken = async (donorId) => {
     }
 }
 
-const addToken = async (donorId, token) => {
+const addToken = async (donorId, token, userAgent) => {
     try {
-        let tokenData = new Token({donorId, token});
+        let tokenData = new Token({donorId, token, ...userAgent});
         let data = await tokenData.save();
         if (data.nInserted === 0) {
             return {
@@ -148,10 +148,65 @@ const deleteAllTokensByDonorId = async (donorId) => {
     }
 }
 
+const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken)=>{
+    try{
+        let tokenDataList = await Token.find({
+            $and:[{
+                donorId: {
+                    $eq: donorId
+                },
+                token: {
+                    $ne: excludedToken
+                }
+            }]
+        },{_id:1,browserFamily: 1,device: 1, ipAddress:1,os:1});
+        return{
+            message: "Recent logins fetched successfully",
+            status: 'OK',
+            data: tokenDataList
+        }
+    }catch (e) {
+        console.log("ERROR")
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
+
+const deleteByTokenId = async (tokenId)=>{
+    try{
+        let deletedToken = await Token.findByIdAndDelete(tokenId);
+        console.log("EXECUTED")
+        if(deletedToken){
+            return{
+                message: "Token successfully removed",
+                status: "OK",
+                data: deletedToken
+            }
+        }
+        return{
+            message: "Token not found",
+            status: "ERROR",
+            data: null
+        }
+    }catch (e) {
+        console.log("ERROR")
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
+
 module.exports = {
     addToken,
     findTokenDataByToken,
     deleteTokenDataByToken,
     deleteAllTokensByDonorId,
-    insertAndSaveToken
+    insertAndSaveToken,
+    findTokenDataExceptSpecifiedToken,
+    deleteByTokenId
 }

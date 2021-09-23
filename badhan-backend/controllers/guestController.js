@@ -516,6 +516,42 @@ const handleGETDonorsDesignation = async(req,res)=>{
     })
 }
 
+const handleGETLogins = (req,res)=>{
+    let logins=[
+        {
+            _id: faker.getId(),
+            os: "Ubuntu 20.04.1",
+            device: "Asus K550VX",
+            browserFamily: "Firefox",
+            ipAddress: "1.2.3.4"
+        },{
+            _id: faker.getId(),
+            os: "Windows 10",
+            device: "Lenovo IP320S",
+            browserFamily: "Chrome 98.2.5",
+            ipAddress: "5.6.7.8",
+        },{
+            _id: faker.getId(),
+            os: "MacOS McMojave",
+            device: "MacBook Pro",
+            browserFamily: "Safari 100.2.3",
+            ipAddress: "9.10.11.12"
+        },
+    ]
+
+    return res.status(200).send({
+        status: "OK",
+        message: "Recent logins fetched successfully",
+        logins: logins
+    })
+}
+const handleDELETELogins = (req,res)=>{
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Logged out from specified device',
+    })
+}
+
 module.exports = {
     handlePOSTLogIn,
     handlePOSTViewDonorDetailsSelf,
@@ -547,5 +583,7 @@ module.exports = {
     handleGETPublicContacts,
     handleDELETEPublicContact,
     handlePOSTPublicContact,
-    handleGETDonorsDesignation
+    handleGETDonorsDesignation,
+    handleGETLogins,
+    handleDELETELogins
 }
