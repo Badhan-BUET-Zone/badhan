@@ -529,8 +529,10 @@ const handleDELETELogins = async (req, res) => {
 #swagger.description = 'Endpoint to delete a login from device'
 }
 */
+
     try{
-        let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId);
+        let user = res.locals.middlewareResponse.donor;
+        let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId,user._id);
         if(deletedTokenResult.status!=="OK"){
             return res.status(404).send({
                 status: 'ERROR',

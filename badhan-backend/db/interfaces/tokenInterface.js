@@ -175,11 +175,11 @@ const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken)=>{
     }
 }
 
-const deleteByTokenId = async (tokenId)=>{
+const deleteByTokenId = async (tokenId,donorId)=>{
     try{
         let deletedToken = await Token.findByIdAndDelete(tokenId);
-        console.log("EXECUTED")
         if(deletedToken){
+            cachegoose.clearCache(`${donorId}_tokens_children`);
             return{
                 message: "Token successfully removed",
                 status: "OK",
