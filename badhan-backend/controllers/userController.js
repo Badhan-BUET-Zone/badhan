@@ -214,7 +214,7 @@ let handleDELETESignOut = async (req, res) => {
         let donor = res.locals.middlewareResponse.donor;
 
         // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token);
+        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token,donor._id);
 
         /*
         #swagger.responses[200] = {
@@ -382,7 +382,7 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
 
         let donor = donorQueryResult.data;
 
-        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token);
+        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id);
 
         if (tokenDeleteResponse.status !== "OK") {
             /*

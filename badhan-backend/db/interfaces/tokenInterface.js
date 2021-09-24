@@ -71,7 +71,6 @@ const addToken = async (donorId, token, userAgent) => {
 
 const findTokenDataByToken = async (token,donorId) => {
     try {
-        // let tokenData = await Token.findOne({token})
         let tokenData = await Token.findOne({token}).cache(0, `${donorId}_tokens_children`)
 
         if (tokenData === null) {
@@ -86,19 +85,6 @@ const findTokenDataByToken = async (token,donorId) => {
             status: 'OK',
             data: tokenData
         }
-        // if (data.nInserted === 0) {
-        //     return {
-        //         message: 'Token insertion failed',
-        //         status: 'ERROR',
-        //         data: data,
-        //     }
-        // } else {
-        //     return {
-        //         message: 'Token insertion successful',
-        //         status: 'OK',
-        //         data: data,
-        //     };
-        // }
     } catch (e) {
         console.log("ERROR")
         return {
@@ -109,12 +95,11 @@ const findTokenDataByToken = async (token,donorId) => {
     }
 }
 
-const deleteTokenDataByToken = async (token) => {
+const deleteTokenDataByToken = async (token,donorId) => {
     try {
+        clearTokenCache(donorId);
         let tokenData = await Token.findOneAndDelete({token});
-
         if (tokenData) {
-            clearTokenCache(tokenData.donorId);
             return {
                 message: "Token successfully removed",
                 status: "OK"
@@ -138,8 +123,8 @@ const deleteTokenDataByToken = async (token) => {
 
 const deleteAllTokensByDonorId = async (donorId) => {
     try {
-        let tokenData = await Token.deleteMany({donorId});
         clearTokenCache(donorId);
+        let tokenData = await Token.deleteMany({donorId});
         return {
             message: "Token successfully removed",
             status: "OK"
@@ -183,9 +168,9 @@ const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken)=>{
 
 const deleteByTokenId = async (tokenId,donorId)=>{
     try{
+        clearTokenCache(donorId);
         let deletedToken = await Token.findByIdAndDelete(tokenId);
         if(deletedToken){
-            clearTokenCache(donorId);
             return{
                 message: "Token successfully removed",
                 status: "OK",
