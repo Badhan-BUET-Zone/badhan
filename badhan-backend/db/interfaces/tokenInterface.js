@@ -69,9 +69,35 @@ const addToken = async (donorId, token, userAgent) => {
     }
 };
 
-const findTokenDataByToken = async (token,donorId) => {
+const findTokenDataByTokenCached = async (token,donorId) => {
     try {
         let tokenData = await Token.findOne({token}).cache(0, `${donorId}_tokens_children`)
+
+        if (tokenData === null) {
+            return {
+                message: 'Token not found',
+                status: 'ERROR'
+            }
+        }
+
+        return {
+            message: 'Token found successfully',
+            status: 'OK',
+            data: tokenData
+        }
+    } catch (e) {
+        console.log("ERROR")
+        return {
+            message: e.message,
+            status: 'ERROR',
+            data: null
+        }
+    }
+}
+
+const findTokenDataByToken = async (token) => {
+    try {
+        let tokenData = await Token.findOne({token})
 
         if (tokenData === null) {
             return {
@@ -194,6 +220,7 @@ const deleteByTokenId = async (tokenId,donorId)=>{
 
 module.exports = {
     addToken,
+    findTokenDataByTokenCached,
     findTokenDataByToken,
     deleteTokenDataByToken,
     deleteAllTokensByDonorId,

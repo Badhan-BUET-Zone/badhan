@@ -509,7 +509,7 @@ const handleGETLogins = async (req, res) => {
                 message: recentLoginsResult.message,
             });
         }
-        let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token,user._id);
+        let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token);
         if(currentTokenDataResult.status!=="OK"){
             return res.status(500).send({
                 status: 'EXCEPTION',

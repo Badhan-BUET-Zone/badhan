@@ -21,7 +21,7 @@ let handleAuthentication = async (req, res, next) => {
             });
         }
 
-        let tokenCheckResult = await tokenInterface.findTokenDataByToken(token,decodedDonor._id);
+        let tokenCheckResult = await tokenInterface.findTokenDataByTokenCached(token,decodedDonor._id);
 
         if (tokenCheckResult.status !== 'OK') {
             return res.status(401).send({
