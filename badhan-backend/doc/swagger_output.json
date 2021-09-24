@@ -245,6 +245,10 @@
                       "type": "string",
                       "example": "1605011"
                     },
+                    "email": {
+                      "type": "string",
+                      "example": "mirmahathir1@gmail.com"
+                    },
                     "lastDonation": {
                       "type": "number",
                       "example": 987876287160
@@ -542,8 +546,12 @@
                       "example": "Mir Mahathir Mohammad"
                     },
                     "studentId": {
-                      "type": "number",
-                      "example": 1605011
+                      "type": "string",
+                      "example": "1605011"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "mirmahathir1@gmail.com"
                     },
                     "lastDonation": {
                       "type": "number",
@@ -1943,13 +1951,32 @@
           }
         ],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "A recovery mail has been sent to your email address"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success response"
+          },
           "404": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
-                  "type": "number",
-                  "example": 404
+                  "type": "string",
+                  "example": "ERROR"
                 },
                 "message": {
                   "type": "string",
@@ -1960,7 +1987,7 @@
                 "name": "main"
               }
             },
-            "description": "When the phone number is not found"
+            "description": "Error responses"
           }
         }
       }
@@ -2026,7 +2053,80 @@
         ],
         "description": "Endpoint to get recent logins",
         "parameters": [],
-        "responses": {},
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Recent logins fetched successfully"
+                },
+                "logins": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "dsgfewosgnwegnhw"
+                      },
+                      "os": {
+                        "type": "string",
+                        "example": "Ubuntu 20.04.1"
+                      },
+                      "device": {
+                        "type": "string",
+                        "example": "Asus K550VX"
+                      },
+                      "browserFamily": {
+                        "type": "string",
+                        "example": "Firefox"
+                      },
+                      "ipAddress": {
+                        "type": "string",
+                        "example": "1.2.3.4"
+                      }
+                    }
+                  }
+                },
+                "currentLogin": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "dsgfewosgnwegnhw"
+                    },
+                    "os": {
+                      "type": "string",
+                      "example": "Ubuntu 20.04.1"
+                    },
+                    "device": {
+                      "type": "string",
+                      "example": "Asus K550VX"
+                    },
+                    "browserFamily": {
+                      "type": "string",
+                      "example": "Firefox"
+                    },
+                    "ipAddress": {
+                      "type": "string",
+                      "example": "1.2.3.4"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success response"
+          }
+        },
         "security": [
           {
             "api_key": []
@@ -2048,7 +2148,46 @@
             "in": "param"
           }
         ],
-        "responses": {},
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logged out from specified device"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success response"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Login information not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Token with specified ID was not found in database"
+          }
+        },
         "security": [
           {
             "api_key": []
@@ -2745,7 +2884,7 @@
           {
             "name": "PublicContactObject",
             "in": "body",
-            "description": "Contains the donor id and assigned bloodgroup of contact",
+            "description": "Contains the donor id and assigned blood group of contact",
             "schema": {
               "type": "object",
               "properties": {
@@ -2762,6 +2901,42 @@
           }
         ],
         "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact added successfully"
+                },
+                "publicContact": {
+                  "type": "object",
+                  "properties": {
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "fwetiubg43t6847gsdffwekt"
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "fwetiubg43t6847gsdffwekt"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success message"
+          },
           "400": {
             "schema": {
               "type": "object",
@@ -2813,7 +2988,63 @@
         ],
         "description": "Endpoint to get public contacts",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All public contacts fetched successfully"
+                },
+                "publicContacts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "contacts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "donorId": {
+                              "type": "string",
+                              "example": "fwetiubg43t6847gsdffwekt"
+                            },
+                            "phone": {
+                              "type": "string",
+                              "example": "8801521438557"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Mahathir"
+                            },
+                            "contactId": {
+                              "type": "string",
+                              "example": "fwetiubg43t6847gsdffwekt"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success message"
+          }
+        }
       },
       "delete": {
         "tags": [
@@ -2822,25 +3053,38 @@
         "description": "Endpoint to delete a public contact",
         "parameters": [
           {
-            "name": "PublicContactObject",
-            "in": "body",
-            "description": "Contains the contact id and donor Id",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "fwetiubg43t6847gsdffwekt"
-                },
-                "contactId": {
-                  "type": "string",
-                  "example": "fwetiubg43t6847gsdffwekt"
-                }
-              }
-            }
+            "name": "donorId",
+            "description": "donorId of public contact",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "contactId",
+            "description": "contactId to be deleted",
+            "type": "string",
+            "in": "query"
           }
         ],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact deleted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success message"
+          },
           "400": {
             "schema": {
               "type": "object",
@@ -2851,14 +3095,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor ID not specified"
+                  "example": "Public contact not consistent with donorId"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "This error will occur if the donor id in body nor param is not found"
+            "description": "If contactId in database does not have the matching donorId"
           },
           "404": {
             "schema": {
@@ -2870,14 +3114,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor not found"
+                  "example": "Public contact not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
+            "description": "Response if the public contact to be deleted is not found"
           }
         },
         "security": [

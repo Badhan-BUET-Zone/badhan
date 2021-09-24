@@ -18,20 +18,27 @@ const handlePOSTPasswordForgot = async (req, res) => {
                 phone: "8801521438557",
             }
         }
+
+            #swagger.responses[404] = {
+                schema: {
+                    status: "ERROR",
+                    message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
+                },
+                description: 'Error responses'
+            }
+            #swagger.responses[200] = {
+                schema: {
+                    status: "OK",
+                    message: "A recovery mail has been sent to your email address",
+                },
+                description: 'Success response'
+            }
     */
     try {
         let phone = req.body.phone;
         let queryByPhoneResult = await donorInterface.findDonorByPhone(phone);
         if (queryByPhoneResult.status !== "OK") {
-            /*
-            #swagger.responses[404] = {
-                schema: {
-                    status: 404,
-                    message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
-                },
-                description: 'When the phone number is not found'
-            }
-             */
+
             return res.status(404).send({
                 status: 'ERROR',
                 message: "Phone number not recognized"
@@ -216,7 +223,7 @@ let handleDELETESignOut = async (req, res) => {
         let donor = res.locals.middlewareResponse.donor;
 
         // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token,donor._id);
+        let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id);
 
         /*
         #swagger.responses[200] = {
@@ -504,15 +511,42 @@ const handlePATCHPassword = async (req, res) => {
 }
 
 const handleGETLogins = async (req, res) => {
-    /*
-#swagger.auto = false
-#swagger.tags = ['User']
-#swagger.description = 'Endpoint to get recent logins'
-#swagger.security = [{
-               "api_key": []
-        }]
-}
-*/
+/*
+    #swagger.auto = false
+    #swagger.tags = ['User']
+    #swagger.description = 'Endpoint to get recent logins'
+    #swagger.security = [{
+        "api_key": []
+    }]
+
+
+    #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            message: 'Recent logins fetched successfully',
+            logins: [
+                {
+                    _id: 'dsgfewosgnwegnhw',
+                    os: "Ubuntu 20.04.1",
+                    device: "Asus K550VX",
+                    browserFamily: "Firefox",
+                    ipAddress: "1.2.3.4"
+                }
+            ],
+            currentLogin: {
+                _id: 'dsgfewosgnwegnhw',
+                os: "Ubuntu 20.04.1",
+                device: "Asus K550VX",
+                browserFamily: "Firefox",
+                ipAddress: "1.2.3.4"
+            },
+        },
+        description: 'Success response'
+    }
+
+ */
+
+
     let user = res.locals.middlewareResponse.donor;
     let token = res.locals.middlewareResponse.token;
     try {
@@ -524,7 +558,7 @@ const handleGETLogins = async (req, res) => {
             });
         }
         let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token);
-        if(currentTokenDataResult.status!=="OK"){
+        if (currentTokenDataResult.status !== "OK") {
             return res.status(500).send({
                 status: 'EXCEPTION',
                 message: currentTokenDataResult.message,
@@ -565,13 +599,27 @@ const handleDELETELogins = async (req, res) => {
         name: 'tokenId',
         in: 'param'
     }
-}
+
+    #swagger.responses[404] = {
+        schema: {
+            status: 'ERROR',
+            message: 'Login information not found'
+        },
+        description: 'Token with specified ID was not found in database'
+    }
+    #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            message: 'Logged out from specified device',
+        },
+        description: 'Success response'
+    }
 */
 
-    try{
+    try {
         let user = res.locals.middlewareResponse.donor;
-        let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId,user._id);
-        if(deletedTokenResult.status!=="OK"){
+        let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId, user._id);
+        if (deletedTokenResult.status !== "OK") {
             return res.status(404).send({
                 status: 'ERROR',
                 message: 'Login information not found'
@@ -581,7 +629,7 @@ const handleDELETELogins = async (req, res) => {
             status: 'OK',
             message: 'Logged out from specified device',
         });
-    }catch (e){
+    } catch (e) {
         console.log(e);
         return res.status(500).send({
             status: 'EXCEPTION',
