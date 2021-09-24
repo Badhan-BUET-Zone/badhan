@@ -25,14 +25,6 @@ router.get('/log/statistics',
     logController.handleGETStatistics
 );
 
-router.delete('/log',
-    deprecatedController
-    // rateLimiter.commonLimiter,
-    // authenticator.handleAuthentication,
-    // authenticator.handleSuperAdminCheck,
-    // logController.handleDELETELogs
-);
-
 router.get('/log/date/:date/donorId/:donorId',
     logValidator.validateGETLogsByDateAndDonor,
     rateLimiter.commonLimiter,

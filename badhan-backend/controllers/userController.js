@@ -205,7 +205,9 @@ let handleDELETESignOut = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Endpoint to logout a user.'
-
+    #swagger.security = [{
+               "api_key": []
+        }]
      */
 
 
@@ -244,6 +246,9 @@ let handleDELETESignOutAll = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Endpoint to logout user from all devices.'
+    #swagger.security = [{
+               "api_key": []
+        }]
 
      */
 
@@ -280,6 +285,9 @@ let handlePOSTRedirection = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Endpoint to request a temporary redirection token'
+    #swagger.security = [{
+               "api_key": []
+        }]
      */
 
     try {
@@ -445,6 +453,9 @@ const handlePATCHPassword = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Route endpoint to change password'
+    #swagger.security = [{
+               "api_key": []
+        }]
     #swagger.parameters['passwordChange'] = {
         in: 'body',
         description: 'New Password',
@@ -497,6 +508,9 @@ const handleGETLogins = async (req, res) => {
 #swagger.auto = false
 #swagger.tags = ['User']
 #swagger.description = 'Endpoint to get recent logins'
+#swagger.security = [{
+               "api_key": []
+        }]
 }
 */
     let user = res.locals.middlewareResponse.donor;
@@ -542,6 +556,15 @@ const handleDELETELogins = async (req, res) => {
 #swagger.auto = false
 #swagger.tags = ['User']
 #swagger.description = 'Endpoint to delete a login from device'
+#swagger.security = [{
+               "api_key": []
+        }]
+ #swagger.parameters['tokenId'] = {
+        description: 'ID of token to be deleted',
+        type: 'string',
+        name: 'tokenId',
+        in: 'param'
+    }
 }
 */
 

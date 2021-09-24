@@ -29,6 +29,9 @@ const handlePOSTDonors = async (req, res) => {
                 availableToAll: true
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -173,6 +176,9 @@ const handleDELETEDonors = async (req, res) => {
             description: 'donor id for deleting donation',
             type: 'string'
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
 
@@ -282,6 +288,9 @@ const handleGETSearchOptimized = async (req, res) => {
             name: 'availableToAll',
             in: 'query'
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
 
@@ -448,6 +457,9 @@ const handlePATCHDonorsComment = async (req, res) => {
                 comment: 'Sample comment about donor'
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
 
@@ -497,6 +509,9 @@ const handlePATCHDonorsPassword = async (req, res) => {
                 password: 'thisisanewpassword'
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -574,6 +589,9 @@ const handlePATCHDonors = async (req, res) => {
                 email: 'mirmahathir1@gmail.com'
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
 
@@ -668,6 +686,9 @@ const handlePATCHDonorsDesignation = async (req, res) => {
                 promoteFlag: true,
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -744,6 +765,9 @@ const handleGETVolunteers = async (req, res) => {
         #swagger.auto = false
         #swagger.tags = ['Donors']
         #swagger.description = 'Handles the fetching of volunteer lists for a hall admin.'
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -828,6 +852,9 @@ const handlePATCHAdmins = async (req, res) => {
                 donorId: 'hdjhd12vhjgj3428569834hth'
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
      */
     try {
         let targetDonor = res.locals.middlewareResponse.targetDonor;
@@ -911,6 +938,9 @@ const handleGETAdmins = async (req, res) => {
         #swagger.auto = false
         #swagger.tags = ['Donors']
         #swagger.description = 'handles the fetching of hall admin list for a super admin.'
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -984,6 +1014,9 @@ const handleGETDonors = async (req, res) => {
             name: 'donorId',
             in: 'query'
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
 
@@ -1082,7 +1115,9 @@ const handleGETDonorsMe = async (req, res) => {
         #swagger.auto = false
         #swagger.tags = ['Donors']
         #swagger.description = 'Handles the fetching of own details.'
-
+        #swagger.security = [{
+               "api_key": []
+        }]
      */
 
     try {
@@ -1132,6 +1167,9 @@ const handleGETVolunteersAll = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['Donors']
     #swagger.description = 'Fetches all volunteers'
+    #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -1196,6 +1234,9 @@ const handleGETDonorsDuplicate = async (req, res) => {
         name: 'phone',
         in: 'query'
     }
+    #swagger.security = [{
+               "api_key": []
+        }]
      */
 
     try {
@@ -1290,6 +1331,9 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
             donorId: 'hdjhd12vhjgj3428569834hth'
         }
     }
+    #swagger.security = [{
+               "api_key": []
+        }]
  */
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
@@ -1347,6 +1391,14 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
 }
 
 const handleGETDonorsDesignation  = async (req, res) => {
+    /*
+#swagger.auto = false
+#swagger.tags = ['Donors']
+#swagger.description = 'Request get list of volunteers of own hall, all hall admins and super admins'
+#swagger.security = [{
+               "api_key": []
+        }]
+*/
     try{
         let authenticatedUser = res.locals.middlewareResponse.donor;
 

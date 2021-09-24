@@ -28,7 +28,10 @@ const doc = {
             "name":"Call Records",
             "description":"Fetch call records of donors"
         },
-
+        {
+            "name":"Public Contacts",
+            "description": "Contacts of Badhan that are available to the public"
+        }
     ],
     securityDefinitions: {
         api_key: {
@@ -36,15 +39,6 @@ const doc = {
             name: "x-auth",
             in: "header"
         },
-        // petstore_auth: {
-        //     type: "oauth2",
-        //     authorizationUrl: "https://petstore.swagger.io/oauth/authorize",
-        //     flow: "implicit",
-        //     scopes: {
-        //         read_pets: "read your pets",
-        //         write_pets: "modify pets in your account"
-        //     }
-        // }
     },
     definitions: {
         Donors: {
@@ -59,13 +53,10 @@ const doc = {
             address: "Azimpur road",
             roomNumber: "ME-103",
             comment: "Designer and developer of Badhan Web and App",
-            tokens:[
-                {
-                    _id: "608f8bb86c080000177c763a",
-                    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTkwMWQ1NmVmZmM1OTAwM...",
-                },
-            ],
-            password: "$2a$10$9B3aSkiguyvukvGQiTMYS89a9vkS"
+            password: "$2a$10$9B3aSkiguyvukvGQiTMYS89a9vkS",
+            commentTime: 1625686709994,
+            availableToAll: true,
+            email: "mirmahathir1@gmail.com",
         },
         Donations: {
             _id: "5e6776166f73f925e22a0574",
@@ -90,12 +81,24 @@ const doc = {
             _id: "5e6776166f73f925e22a0574",
             token: "shgreoinghbedoiughewiutb3outgesiuvberugbgneh",
             donorId: "5e6776166f73f925e22a0574",
+        },
+        PublicContacts:{
+            _id: "5e6776166f73f925e22a0574",
+            bloodGroup: 2,
+            donorId: "5e6776166f73f925e22a0574",
         }
     },
 }
 
 const outputFile = './doc/swagger_output.json'
-const endpointsFiles = ['./routes/donors.js','./routes/users.js','./routes/callRecords.js','./routes/donations.js','./routes/logs.js']
+const endpointsFiles = [
+    './routes/donors.js',
+    './routes/users.js',
+    './routes/callRecords.js',
+    './routes/donations.js',
+    './routes/logs.js',
+    './routes/publicContacts.js'
+]
 
 
 

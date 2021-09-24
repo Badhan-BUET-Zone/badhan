@@ -14,6 +14,9 @@ const handleDELETEPublicContact = async (req, res) => {
             contactId: 'fwetiubg43t6847gsdffwekt',
         }
     }
+    #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -57,6 +60,9 @@ const handlePOSTPublicContact = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
     #swagger.description = 'Endpoint to insert a public contact'
+    #swagger.security = [{
+               "api_key": []
+        }]
     #swagger.parameters['PublicContactObject'] = {
         in: 'body',
         description: 'Contains the donor id and assigned bloodgroup of contact',
@@ -88,6 +94,11 @@ const handlePOSTPublicContact = async (req, res) => {
 }
 
 const handleGETPublicContacts  = async (req, res) => {
+    /*
+#swagger.auto = false
+#swagger.tags = ['Public Contacts']
+#swagger.description = 'Endpoint to get public contacts'
+*/
     try{
         let searchResult = await publicContactInterface.findAllPublicContacts();
         return res.status(200).send({

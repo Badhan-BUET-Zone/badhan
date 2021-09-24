@@ -62,7 +62,8 @@ router.get('/logins',/*#swagger.path = '/users/logins'*/
     userController.handleGETLogins,
 )
 
-router.delete('/logins/:tokenId',
+router.delete('/logins/:tokenId',/*#swagger.path = '/users/logins/{tokenId}'*/
+    rateLimiter.commonLimiter,
     userValidator.validateDELETELogins,
     authenticator.handleAuthentication,
     userController.handleDELETELogins,

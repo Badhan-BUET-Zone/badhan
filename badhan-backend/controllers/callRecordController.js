@@ -13,6 +13,9 @@ const handlePOSTCallRecord = async (req, res) => {
                 donorId: 'fwetiubg43t6847gsdffwekt',
             }
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -75,6 +78,9 @@ const handleDELETECallRecord = async (req, res) => {
             type: 'string',
             name: 'callRecordId'
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
     */
 
     let user = res.locals.middlewareResponse.donor;

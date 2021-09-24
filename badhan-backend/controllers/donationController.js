@@ -15,6 +15,9 @@ const handlePOSTDonations = async (req, res) => {
             date: 1611100800000,
         }
     }
+    #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {
@@ -95,6 +98,9 @@ const handleDELETEDonations = async (req, res) => {
             description: 'donation date for deleting donation',
             type: 'number'
         }
+        #swagger.security = [{
+               "api_key": []
+        }]
 
      */
     try {

@@ -23,6 +23,9 @@ const handleGETStatistics = async (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['Logs']
     #swagger.description = 'Fetch statistics about the current donor count and volunteer count'
+    #swagger.security = [{
+               "api_key": []
+        }]
     */
     try {
         let donorCount = await donorInterface.getCount();
@@ -85,6 +88,9 @@ const handleGETLogs = async (req, res, next) => {
         #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'Get date wise count of api calls'
+        #swagger.security = [{
+               "api_key": []
+        }]
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
@@ -119,6 +125,9 @@ const handleGETLogsByDate = async (req, res, next) => {
         #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'Get user-wise api call counts for specific date'
+        #swagger.security = [{
+               "api_key": []
+        }]
         #swagger.parameters['date'] = {
             description: 'Date of logs',
             type: 'number',
@@ -160,6 +169,9 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
     #swagger.auto = false
     #swagger.tags = ['Logs']
     #swagger.description = 'Get api call details of a donor by date'
+    #swagger.security = [{
+               "api_key": []
+        }]
     #swagger.parameters['date'] = {
         description: 'Date of logs',
         type: 'number',
@@ -187,6 +199,9 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
             ],
         }
     }
+    #swagger.security = [{
+               "api_key": []
+        }]
 */
     try {
         let logsByDateAndDonor = await logInterface.getLogsByDateAndUser(req.params.date, req.params.donorId)
