@@ -374,12 +374,12 @@ const handleGETLogs = async (req, res) => {
 const handleGETLogsByDateAndDonor = async (req, res) => {
     let logs = [];
 
-    for(let i = 0 ; i < faker.getRandomIndex(20);i++){
+    for (let i = 0; i < faker.getRandomIndex(20); i++) {
         logs.push({
             _id: faker.getId(),
             date: faker.getTimestamp(2),
             operation: faker.getOperation(),
-            details:{}
+            details: {}
         })
     }
 
@@ -392,7 +392,7 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
 
 const handleGETLogsByDate = async (req, res) => {
     let logs = [];
-    for(let i = 0 ; i < faker.getRandomIndex(10);i++){
+    for (let i = 0; i < faker.getRandomIndex(10); i++) {
         logs.push({
             name: faker.getName(),
             donorId: faker.getId(),
@@ -407,7 +407,7 @@ const handleGETLogsByDate = async (req, res) => {
     });
 }
 
-const handlePATCHPassword = async (req,res)=>{
+const handlePATCHPassword = async (req, res) => {
     return res.status(201).send({
         status: 'OK',
         message: 'Password changed successfully',
@@ -415,7 +415,7 @@ const handlePATCHPassword = async (req,res)=>{
     });
 }
 
-const handlePOSTPublicContact = async (req,res)=>{
+const handlePOSTPublicContact = async (req, res) => {
     return res.status(201).send({
         status: 'OK',
         message: 'Public contact added successfully',
@@ -427,18 +427,18 @@ const handlePOSTPublicContact = async (req,res)=>{
     })
 }
 
-const handleDELETEPublicContact = async (req,res)=>{
+const handleDELETEPublicContact = async (req, res) => {
     return res.status(200).send({
         status: 'OK',
         message: 'Public contact deleted successfully'
     })
 }
 
-const handleGETPublicContacts = async(req,res)=>{
+const handleGETPublicContacts = async (req, res) => {
     let publicContacts = [];
     let contacts = [];
 
-    for(let i = 0 ; i < 2 ; i++){
+    for (let i = 0; i < 2; i++) {
         contacts.push({
             donorId: faker.getId(),
             phone: faker.getPhone(),
@@ -451,9 +451,9 @@ const handleGETPublicContacts = async(req,res)=>{
         contacts: contacts
     });
 
-    for(let i = 0 ; i < 4;i++){
-        contacts=[];
-        for(let j = 0 ; j < 2; j++){
+    for (let i = 0; i < 4; i++) {
+        contacts = [];
+        for (let j = 0; j < 2; j++) {
             contacts.push({
                 donorId: faker.getId(),
                 phone: faker.getPhone(),
@@ -462,7 +462,7 @@ const handleGETPublicContacts = async(req,res)=>{
             })
         }
         publicContacts.push({
-            bloodGroup: i*2,
+            bloodGroup: i * 2,
             contacts: contacts
         })
     }
@@ -474,12 +474,12 @@ const handleGETPublicContacts = async(req,res)=>{
     })
 }
 
-const handleGETDonorsDesignation = async(req,res)=>{
+const handleGETDonorsDesignation = async (req, res) => {
     let volunteerList = [];
     let adminList = [];
     let superAdminList = [];
 
-    for(let i = 0 ; i < 7; i++){
+    for (let i = 0; i < 7; i++) {
         adminList.push({
             _id: faker.getId(),
             studentId: faker.getStudentId(),
@@ -488,7 +488,7 @@ const handleGETDonorsDesignation = async(req,res)=>{
             hall: i,
         });
     }
-    for(let i = 0 ; i < faker.getRandomIndex(50);i++){
+    for (let i = 0; i < faker.getRandomIndex(50); i++) {
         volunteerList.push({
             roomNumber: faker.getRoom(),
             _id: faker.getId(),
@@ -498,7 +498,7 @@ const handleGETDonorsDesignation = async(req,res)=>{
             phone: faker.getPhone(),
         });
     }
-    for(let i = 0; i < faker.getRandomIndex(20);i++){
+    for (let i = 0; i < faker.getRandomIndex(20); i++) {
         superAdminList.push({
             _id: faker.getId(),
             studentId: faker.getStudentId(),
@@ -516,36 +516,45 @@ const handleGETDonorsDesignation = async(req,res)=>{
     })
 }
 
-const handleGETLogins = (req,res)=>{
-    let logins=[
+const handleGETLogins = (req, res) => {
+    let logins = [
         {
             _id: faker.getId(),
             os: "Ubuntu 20.04.1",
             device: "Asus K550VX",
             browserFamily: "Firefox",
             ipAddress: "1.2.3.4"
-        },{
+        }, {
             _id: faker.getId(),
             os: "Windows 10",
             device: "Lenovo IP320S",
             browserFamily: "Chrome 98.2.5",
             ipAddress: "5.6.7.8",
-        },{
+        }, {
             _id: faker.getId(),
             os: "MacOS McMojave",
             device: "MacBook Pro",
             browserFamily: "Safari 100.2.3",
             ipAddress: "9.10.11.12"
         },
-    ]
+    ];
+
+    let currentLogin = {
+        _id: faker.getId(),
+        os: "MacOS McMojave",
+        device: "MacBook Pro",
+        browserFamily: "Safari 100.2.3",
+        ipAddress: "9.10.11.12"
+    };
 
     return res.status(200).send({
         status: "OK",
         message: "Recent logins fetched successfully",
-        logins: logins
+        logins: logins,
+        currentLogin
     })
 }
-const handleDELETELogins = (req,res)=>{
+const handleDELETELogins = (req, res) => {
     return res.status(200).send({
         status: 'OK',
         message: 'Logged out from specified device',

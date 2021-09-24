@@ -509,10 +509,25 @@ const handleGETLogins = async (req, res) => {
                 message: recentLoginsResult.message,
             });
         }
+        let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token,user._id);
+        if(currentTokenDataResult.status!=="OK"){
+            return res.status(500).send({
+                status: 'EXCEPTION',
+                message: currentTokenDataResult.message,
+            });
+        }
+
+        let currentTokenData = JSON.parse(JSON.stringify(currentTokenDataResult.data));
+        delete currentTokenData.token;
+        delete currentTokenData.expireAt;
+        delete currentTokenData.donorId;
+        delete currentTokenData.__v;
+
         return res.status(200).send({
             status: 'OK',
             message: 'Recent logins fetched successfully',
-            logins: recentLoginsResult.data
+            logins: recentLoginsResult.data,
+            currentLogin: currentTokenData,
         });
     } catch (e) {
         console.log(e);
