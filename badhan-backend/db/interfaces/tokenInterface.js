@@ -2,8 +2,13 @@ const {Token} = require('../models/Token');
 const jwt = require('jsonwebtoken');
 const {cacheExpiryTime} = require('../mongoose');
 const cachegoose = require('cachegoose');
+
+const clearTokenCache = donorId =>{
+    cachegoose.clearCache(`${donorId}_tokens_children`);
+}
 const insertAndSaveToken = async (donorId,userAgent) => {
     try {
+        clearTokenCache(donorId);
         let access = 'auth';
         let token = await jwt.sign({
             _id: String(donorId),
@@ -37,6 +42,7 @@ const insertAndSaveToken = async (donorId,userAgent) => {
 
 const addToken = async (donorId, token, userAgent) => {
     try {
+        clearTokenCache(donorId);
         let tokenData = new Token({donorId, token, ...userAgent});
         let data = await tokenData.save();
         if (data.nInserted === 0) {
@@ -108,7 +114,7 @@ const deleteTokenDataByToken = async (token) => {
         let tokenData = await Token.findOneAndDelete({token});
 
         if (tokenData) {
-            cachegoose.clearCache(`${tokenData.donorId}_tokens_children`);
+            clearTokenCache(tokenData.donorId);
             return {
                 message: "Token successfully removed",
                 status: "OK"
@@ -133,7 +139,7 @@ const deleteTokenDataByToken = async (token) => {
 const deleteAllTokensByDonorId = async (donorId) => {
     try {
         let tokenData = await Token.deleteMany({donorId});
-        cachegoose.clearCache(`${donorId}_tokens_children`);
+        clearTokenCache(donorId);
         return {
             message: "Token successfully removed",
             status: "OK"
@@ -179,7 +185,7 @@ const deleteByTokenId = async (tokenId,donorId)=>{
     try{
         let deletedToken = await Token.findByIdAndDelete(tokenId);
         if(deletedToken){
-            cachegoose.clearCache(`${donorId}_tokens_children`);
+            clearTokenCache(donorId);
             return{
                 message: "Token successfully removed",
                 status: "OK",
