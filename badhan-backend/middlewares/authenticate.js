@@ -9,7 +9,6 @@ let handleAuthentication = async (req, res, next) => {
      */
     try {
         let token = req.header('x-auth');
-
         let decodedDonor;
 
         try {
@@ -56,10 +55,7 @@ let handleAuthentication = async (req, res, next) => {
         };
         return next();
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 };
 

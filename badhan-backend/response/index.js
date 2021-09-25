@@ -1,6 +1,20 @@
 // response status codes are followed using the following documentation
 //https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-class CustomResponse{
+class ErrorResponse extends Error{
+    /**
+     * @param {string} status - OK, ERROR or EXCEPTION, the summary of the response type
+     * @param {number} statusCode - appropriate status code as per the guideline of mozilla
+     * @param {string} message - main message as the response
+     */
+    constructor(status,statusCode,message) {
+        super();
+        this.status = status;
+        this.statusCode = statusCode;
+        this.message = message;
+    }
+}
+
+class BaseSuccessResponse{
     /**
      * @param {string} status - OK, ERROR or EXCEPTION, the summary of the response type
      * @param {number} statusCode - appropriate status code as per the guideline of mozilla
@@ -13,7 +27,7 @@ class CustomResponse{
     }
 }
 
-class DatabaseError extends CustomResponse{
+class DatabaseError extends ErrorResponse{
     /**
      * @param {string} message - Error message that caused database error
      */
@@ -23,7 +37,7 @@ class DatabaseError extends CustomResponse{
     }
 }
 
-class InternalServerError extends CustomResponse{
+class InternalServerError extends ErrorResponse{
     /**
      * @param {string} message - Error message that caused internal server error
      */
@@ -36,7 +50,7 @@ class InternalServerError extends CustomResponse{
     }
 }
 
-class NotFoundError extends CustomResponse{
+class NotFoundError extends ErrorResponse{
     /**
      * @param {string} message - Error message for a not found resource
      */
@@ -52,7 +66,7 @@ class NotFoundError extends CustomResponse{
         super("ERROR",404,message)
     }
 }
-class BadRequestError extends CustomResponse{
+class BadRequestError extends ErrorResponse{
     /**
      * @param {string} message - Error message for a bad request
      */
@@ -64,7 +78,7 @@ class BadRequestError extends CustomResponse{
         super("ERROR",400,message)
     }
 }
-class ForbiddenError extends CustomResponse{
+class ForbiddenError extends ErrorResponse{
     /**
      * @param {string} message - Error message for a forbidden request
      */
@@ -78,7 +92,7 @@ class ForbiddenError extends CustomResponse{
         super("ERROR",403,message)
     }
 }
-class UnauthorizedError extends CustomResponse{
+class UnauthorizedError extends ErrorResponse{
     /**
      * @param {string} message - Error message
      */
@@ -91,7 +105,7 @@ class UnauthorizedError extends CustomResponse{
         super("ERROR",401,message)
     }
 }
-class ConflictError extends CustomResponse{
+class ConflictError extends ErrorResponse{
     /*
     409 Conflict
     This response is sent when a request conflicts with the current state of the server.
@@ -104,7 +118,7 @@ class ConflictError extends CustomResponse{
     }
 }
 
-class SuccessResponse extends CustomResponse{
+class SuccessResponse extends BaseSuccessResponse{
     /**
      * @param {string} message - success response
      * @param {object} payload - response object for the user
@@ -119,18 +133,41 @@ class SuccessResponse extends CustomResponse{
 function sendResponse(responseObject) {
     return this.status(responseObject.statusCode).send(responseObject)
 }
-const routeNotFoundHandler=(req, res, next)=>{return res.sendResponse(new NotFoundError('Route not found'));}
+function sendError(errorObject){
+    if(errorObject instanceof ErrorResponse){
+        return this.status(errorObject.statusCode).send(errorObject)
+    }
+    return this.status(500).send(new InternalServerError(errorObject.message));
+}
+const routeNotFoundHandler=(req, res, next)=>{
+    return res.sendResponse(new NotFoundError('Route not found'));
+}
+const internalServerErrorHandler=(error, req, res, next)=>{
+    return res.sendError(error);
+}
+const unhandledRejectionHandler=(reason, promise) => {
+    console.log("UNHANDLEDREJECTION")
+    console.log(reason);
+}
+const uncaughtExceptionHandler= (error) => {
+    console.log('UNCAUGHTEXCEPTION')
+    console.log(error);
+}
 
 module.exports = {
     DatabaseError,
     InternalServerError,
     NotFoundError,
-    CustomResponse,
+    ErrorResponse,
     BadRequestError,
     SuccessResponse,
     ForbiddenError,
     UnauthorizedError,
     ConflictError,
     sendResponse,
-    routeNotFoundHandler
+    sendError,
+    routeNotFoundHandler,
+    internalServerErrorHandler,
+    unhandledRejectionHandler,
+    uncaughtExceptionHandler
 };
