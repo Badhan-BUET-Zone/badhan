@@ -23,7 +23,7 @@ let logRouter = require('./routes/logs');
 const { mongoose } = require('./db/mongoose');
 // let {responseInterceptor} = require('./middlewares/response');
 const {userAgentHandler} = require('./middlewares/userAgent');
-const {sendError} = require('./response')
+const {sendResponse} = require('./response')
 
 
 app.use(cors());
@@ -38,7 +38,7 @@ app.use(logger('dev'));
 
 app.use(userAgentHandler);
 
-app.response.sendError = sendError;
+app.response.sendResponse = sendResponse;
 
 app.use((req, res, next) => {
     bodyParser.json()(req, res, err => {

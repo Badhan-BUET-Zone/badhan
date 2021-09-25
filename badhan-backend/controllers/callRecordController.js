@@ -1,6 +1,12 @@
 const callRecordInterface = require('../db/interfaces/callRecordInterface');
 const logInterface = require('../db/interfaces/logInterface');
-const {InternalServerError, NotFoundError, BadRequestError} = require('../response/index');
+const {
+    InternalServerError,
+    NotFoundError,
+    BadRequestError,
+    SuccessResponse,
+    ConflictError
+} = require('../response/index');
 
 const handlePOSTCallRecord = async (req, res,next) => {
     /*
@@ -42,18 +48,16 @@ const handlePOSTCallRecord = async (req, res,next) => {
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
         let user = res.locals.middlewareResponse.donor;
-        // let callRecordInsertionResult = await callRecordInterface.insertOne("Blah", donor._id);
         let callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id);
 
         await logInterface.addLog(user._id, "CREATE CALLRECORD", {callee: donor.name});
 
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Call record insertion successful',
-            callRecord: callRecordInsertionResult.data,
-        });
+        return res.sendResponse(new SuccessResponse('Call record insertion successful', {
+            callRecord:callRecordInsertionResult.data
+        }));
+
     } catch (e) {
-        return res.sendError(new InternalServerError(e.message));
+        return res.sendResponse(new InternalServerError(e.message));
     }
 }
 
@@ -98,7 +102,7 @@ const handleDELETECallRecord = async (req, res) => {
         description: 'This error occurs if the call record does not exist'
     }
 
-    #swagger.responses[400] = {
+    #swagger.responses[409] = {
         schema: {
             status: 'ERROR',
             message: 'Target donor does not have the callee of call record'
@@ -107,23 +111,21 @@ const handleDELETECallRecord = async (req, res) => {
     }
 
      */
-
-    let user = res.locals.middlewareResponse.donor;
-
     try {
+        let user = res.locals.middlewareResponse.donor;
         let donor = res.locals.middlewareResponse.targetDonor;
         let callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId);
         if (callRecordSearchResult.status !== 'OK') {
-            return res.sendError(new NotFoundError('Call record not found'));
+            return res.sendResponse(new NotFoundError('Call record not found'));
         }
 
         if (!callRecordSearchResult.data.calleeId.equals(donor._id)) {
-            return res.sendError(new BadRequestError('Target donor does not have the callee of call record'));
+            return res.sendResponse(new ConflictError('Target donor does not have the callee of call record'));
         }
 
         let callRecordDeleteResult = await callRecordInterface.deleteById(req.query.callRecordId);
         if (callRecordDeleteResult.status !== 'OK') {
-            return res.sendError(new InternalServerError(callRecordDeleteResult.message))
+            return res.sendResponse(new InternalServerError(callRecordDeleteResult.message))
         }
 
         await logInterface.addLog(user._id, "DELETE CALLRECORD", {
@@ -131,13 +133,12 @@ const handleDELETECallRecord = async (req, res) => {
             ...callRecordDeleteResult.data
         });
 
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Call record deletion successful',
+        return res.sendResponse(new SuccessResponse('Call record deletion successful',{
             deletedCallRecord: callRecordDeleteResult.data,
-        });
+        }))
+
     } catch (e) {
-        return res.sendError(new InternalServerError(e.message));
+        return res.sendResponse(new InternalServerError(e.message));
     }
 }
 

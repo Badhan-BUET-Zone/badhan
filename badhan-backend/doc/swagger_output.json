@@ -2390,14 +2390,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Target donor does not have the callee of call record"
+                  "example": "Donor ID not specified"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "This error occurs if the call record does not associate with the target donor"
+            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "404": {
             "schema": {
@@ -2417,6 +2417,25 @@
               }
             },
             "description": "This error occurs if the call record does not exist"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Target donor does not have the callee of call record"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error occurs if the call record does not associate with the target donor"
           }
         },
         "security": [

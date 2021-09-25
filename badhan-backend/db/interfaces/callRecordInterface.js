@@ -1,5 +1,5 @@
 const {CallRecord} = require('../models/CallRecord');
-const {DatabaseError} = require('../../response')
+const {InternalServerError} = require('../../response')
 const insertOne = async (callerId,calleeId)=>{
     try {
         let callRecord = new CallRecord(
@@ -11,7 +11,7 @@ const insertOne = async (callerId,calleeId)=>{
             data: data,
         }
     } catch (e) {
-        throw new DatabaseError(e.message);
+        throw new InternalServerError(e.message);
     }
 }
 const findManyByCallee = async (calleeId)=>{
@@ -24,7 +24,7 @@ const findManyByCallee = async (calleeId)=>{
             data: data,
         }
     } catch (e) {
-        throw new DatabaseError(e.message);
+        throw new InternalServerError(e.message);
     }
 }
 
@@ -43,7 +43,7 @@ const deleteById = async (id)=>{
             status: "ERROR"
         }
     } catch (e) {
-        throw new DatabaseError(e.message);
+        throw new InternalServerError(e.message);
     }
 }
 
@@ -64,7 +64,7 @@ const findById = async (id)=>{
             data: data,
         }
     } catch (e) {
-        throw new DatabaseError(e.message);
+        throw new InternalServerError(e.message);
     }
 }
 module.exports = {
