@@ -3,7 +3,6 @@ const logInterface = require('../db/interfaces/logInterface');
 const {
     InternalServerError,
     NotFoundError,
-    BadRequestError,
     SuccessResponse,
     ConflictError
 } = require('../response/index');

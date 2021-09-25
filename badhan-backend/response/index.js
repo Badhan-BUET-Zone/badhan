@@ -1,6 +1,11 @@
 // response status codes are followed using the following documentation
 //https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 class CustomResponse{
+    /**
+     * @param {string} status - OK, ERROR or EXCEPTION, the summary of the response type
+     * @param {number} statusCode - appropriate status code as per the guideline of mozilla
+     * @param {string} message - main message as the response
+     */
     constructor(status,statusCode,message) {
         this.status = status;
         this.statusCode = statusCode;
@@ -114,6 +119,7 @@ class SuccessResponse extends CustomResponse{
 function sendResponse(responseObject) {
     return this.status(responseObject.statusCode).send(responseObject)
 }
+const routeNotFoundHandler=(req, res, next)=>{return res.sendResponse(new NotFoundError('Route not found'));}
 
 module.exports = {
     DatabaseError,
@@ -126,4 +132,5 @@ module.exports = {
     UnauthorizedError,
     ConflictError,
     sendResponse,
+    routeNotFoundHandler
 };
