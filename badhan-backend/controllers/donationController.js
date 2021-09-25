@@ -1,9 +1,8 @@
-const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 
 const handlePOSTDonations = async (req, res) => {
-    /*
+/*
     #swagger.auto = false
     #swagger.tags = ['Donations']
     #swagger.description = 'Endpoint to insert a donation date for a donor'
@@ -16,10 +15,26 @@ const handlePOSTDonations = async (req, res) => {
         }
     }
     #swagger.security = [{
-               "api_key": []
-        }]
+        "api_key": []
+    }]
 
-     */
+
+    #swagger.responses[201] = {
+        schema: {
+            status: 'OK',
+            message: 'Donations inserted successfully',
+            newDonation: {
+                date: 1611100800000,
+                _id: "614ec811e29ab430ddfb119a",
+                phone: 8801521438557,
+                donorId: "5e901d56effc5900177ced73",
+            }
+        },
+        description: 'Donations inserted successfully'
+    }
+
+ */
+
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
 
@@ -30,26 +45,11 @@ const handlePOSTDonations = async (req, res) => {
         });
 
         if (donationInsertionResult.status !== 'OK') {
-            /*
-            #swagger.responses[400] = {
-                schema: {
-                    status: 'ERROR',
-                    message: '(Error message)'
-                },
-                description: 'Donation insertion unsuccessful'
-            }
-
-             */
-            return res.status(400).send({
-                status: 'ERROR',
+            return res.status(500).send({
+                status: 'EXCEPTION',
                 message: donationInsertionResult.message
             });
         }
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONATION", {
-            date: new Date(donationInsertionResult.data.date).toLocaleString(),
-            donor: donor.name
-        });
 
         if (donor.lastDonation < req.body.date) {
             donor.lastDonation = req.body.date;
@@ -58,20 +58,16 @@ const handlePOSTDonations = async (req, res) => {
         donor.donationCount++;
 
         await donor.save();
-        /*
-        #swagger.responses[201] = {
-            schema: {
-                status: 'OK',
-                message: 'Donations inserted successfully'
-            },
-            description: 'Donations inserted successfully'
-        }
 
-         */
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONATION", {
+            ...donationInsertionResult.data,
+            donor: donor.name
+        });
 
         return res.status(201).send({
             status: 'OK',
-            message: 'Donation inserted successfully'
+            message: 'Donation inserted successfully',
+            newDonation: donationInsertionResult.data,
         });
 
 
@@ -101,8 +97,22 @@ const handleDELETEDonations = async (req, res) => {
         #swagger.security = [{
                "api_key": []
         }]
+        #swagger.responses[404] = {
+            schema: {
+                status: 'ERROR',
+                message: 'Matching donation not found'
+            },
+            description: 'Error case'
+        }
+        #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                message: 'Successfully deleted donation'
+            },
+            description: 'Donation deletion successful'
+        }
+ */
 
-     */
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
 
@@ -116,12 +126,10 @@ const handleDELETEDonations = async (req, res) => {
             date: givenDate
         });
 
-        // console.log(donationDeletionResult.data)
-
         if (donationDeletionResult.status !== "OK") {
             return res.status(404).send({
-                status: 'OK',
-                message: 'Donation deletion unsuccessful'
+                status: 'ERROR',
+                message: 'Matching donation not found'
             });
         }
 
@@ -136,19 +144,16 @@ const handleDELETEDonations = async (req, res) => {
         }
 
         await donor.save();
-/*
-        #swagger.responses[200] = {
-            schema: {
-                status: 'OK',
-                message: 'Successfully deleted donation'
-            },
-            description: 'Donation deletion successful'
-        }
 
- */
+        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATION", {
+            ...donationDeletionResult.data,
+            name: donor.name
+        });
+
         return res.status(200).send({
             status: 'OK',
-            message: 'Successfully deleted donation'
+            message: 'Successfully deleted donation',
+            deletedDonation: donationDeletionResult.data,
         });
 
     } catch (e) {

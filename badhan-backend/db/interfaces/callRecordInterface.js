@@ -1,5 +1,5 @@
 const {CallRecord} = require('../models/CallRecord');
-
+const {DatabaseError} = require('../../response')
 const insertOne = async (callerId,calleeId)=>{
     try {
         let callRecord = new CallRecord(
@@ -11,11 +11,7 @@ const insertOne = async (callerId,calleeId)=>{
             data: data,
         }
     } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+        throw new DatabaseError(e.message);
     }
 }
 const findManyByCallee = async (calleeId)=>{
@@ -28,29 +24,26 @@ const findManyByCallee = async (calleeId)=>{
             data: data,
         }
     } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+        throw new DatabaseError(e.message);
     }
 }
 
 const deleteById = async (id)=>{
     try {
         let data = await CallRecord.findByIdAndDelete(id);
-
-        return {
-            message: "Call record deleted successfully",
-            status: 'OK',
-            data: data,
+        if(data){
+            return {
+                message: "Call record deleted successfully",
+                status: 'OK',
+                data: data,
+            }
+        }
+        return{
+            message:"Call record not found",
+            status: "ERROR"
         }
     } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+        throw new DatabaseError(e.message);
     }
 }
 
@@ -71,11 +64,7 @@ const findById = async (id)=>{
             data: data,
         }
     } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+        throw new DatabaseError(e.message);
     }
 }
 module.exports = {

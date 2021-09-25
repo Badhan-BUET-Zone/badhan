@@ -2351,6 +2351,27 @@
                 "message": {
                   "type": "string",
                   "example": "Call record deletion successful"
+                },
+                "deletedCallRecord": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "number",
+                      "example": 1632553859992
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "614ecb83a66ce337f8b484e8"
+                    },
+                    "callerId": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    },
+                    "calleeId": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    }
+                  }
                 }
               },
               "xml": {
@@ -2443,6 +2464,27 @@
                 "message": {
                   "type": "string",
                   "example": "Donations inserted successfully"
+                },
+                "newDonation": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "number",
+                      "example": 1611100800000
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "614ec811e29ab430ddfb119a"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    }
+                  }
                 }
               },
               "xml": {
@@ -2461,14 +2503,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "(Error message)"
+                  "example": "Donor ID not specified"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Donation insertion unsuccessful"
+            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "404": {
             "schema": {
@@ -2564,14 +2606,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor not found"
+                  "example": "Matching donation not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
+            "description": "Error case"
           }
         },
         "security": [
