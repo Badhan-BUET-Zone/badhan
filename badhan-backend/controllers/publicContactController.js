@@ -1,5 +1,6 @@
 const publicContactInterface = require('../db/interfaces/publicContactInterface');
 const logInterface = require('../db/interfaces/logInterface');
+const {InternalServerError} = require('../response/errorTypes');
 
 const handleDELETEPublicContact = async (req, res,next) => {
     /*
@@ -67,20 +68,14 @@ const handleDELETEPublicContact = async (req, res,next) => {
 
         let deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId);
         if (deletionResult.status !== "OK") {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: e.message
-            });
+            return res.respond(new InternalServerError( deletionResult.message));
         }
         return res.status(200).send({
             status: 'OK',
             message: 'Public contact deleted successfully'
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 
 }
@@ -117,10 +112,7 @@ const handlePOSTPublicContact = async (req, res,next) => {
     try {
         let insertionResult = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup);
         if (insertionResult.status !== "OK") {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: insertionResult.message
-            });
+            return res.respond(new InternalServerError(insertionResult.message));
         }
         return res.status(201).send({
             status: 'OK',
@@ -128,10 +120,7 @@ const handlePOSTPublicContact = async (req, res,next) => {
             publicContact: insertionResult.data
         })
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -169,10 +158,7 @@ const handleGETPublicContacts = async (req, res, next) => {
             publicContacts: searchResult.data,
         })
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 

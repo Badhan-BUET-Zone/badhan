@@ -1,5 +1,6 @@
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
+const {InternalServerError}= require('../response/errorTypes')
 
 const handlePOSTDonations = async (req, res,next) => {
 /*
@@ -45,10 +46,7 @@ const handlePOSTDonations = async (req, res,next) => {
         });
 
         if (donationInsertionResult.status !== 'OK') {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: donationInsertionResult.message
-            });
+            return res.respond(new InternalServerError(donationInsertionResult.message));
         }
 
         if (donor.lastDonation < req.body.date) {
@@ -72,10 +70,7 @@ const handlePOSTDonations = async (req, res,next) => {
 
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -157,10 +152,7 @@ const handleDELETEDonations = async (req, res,next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 

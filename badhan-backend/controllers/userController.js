@@ -6,6 +6,8 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 const logInterface = require("../db/interfaces/logInterface");
 const emailInterface = require("../db/interfaces/emailInterface");
 
+const {InternalServerError} = require('../response/errorTypes');
+
 const handlePOSTPasswordForgot = async (req, res, next) => {
     /*
         #swagger.auto = false
@@ -65,30 +67,21 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
         let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
 
         if (tokenInsertResult.status !== 'OK') {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: 'Token insertion failed',
-            });
+            return res.respond(new InternalServerError('Token insertion failed'));
         }
 
         let emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
 
         let result = await emailInterface.sendMail(email, "Password Recovery Email from Badhan", emailHtml);
         if (result.status !== "OK") {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: result.message
-            });
+            return res.respond(new InternalServerError(result.message));
         }
 
         await logInterface.addLog(donor._id, "CREATE USER PASSWORD FORGOT", {});
 
         return res.status(200).send({status: 'OK', message: "A recovery mail has been sent to your email address"});
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -198,10 +191,7 @@ let handlePOSTSignIn = async (req, res, next) => {
 
         return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 
 };
@@ -241,10 +231,7 @@ let handleDELETESignOut = async (req, res, next) => {
             message: 'Logged out successfully'
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
+        next(e);
     }
 };
 
@@ -280,10 +267,7 @@ let handleDELETESignOutAll = async (req, res, next) => {
             message: 'Logged out from all devices successfully'
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
+        next(e);
     }
 };
 
@@ -330,10 +314,7 @@ let handlePOSTRedirection = async (req, res, next) => {
 
         return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
     } catch (e) {
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
+        next(e);
     }
 
 };
@@ -447,11 +428,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         return res.status(201).send({status: 'OK', message: "Redirected login successful", token: newToken});
 
     } catch (e) {
-        console.log(e);
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -502,11 +479,7 @@ const handlePATCHPassword = async (req, res, next) => {
             token: tokenInsertResult.data.token
         });
     } catch (e) {
-        console.log(e);
-        return res.status(500).send({
-            status: 'ERROR',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -552,17 +525,11 @@ const handleGETLogins = async (req, res, next) => {
     try {
         let recentLoginsResult = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token);
         if (recentLoginsResult.status !== "OK") {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: recentLoginsResult.message,
-            });
+            return res.respond(new InternalServerError(recentLoginsResult.message));
         }
         let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token);
         if (currentTokenDataResult.status !== "OK") {
-            return res.status(500).send({
-                status: 'EXCEPTION',
-                message: currentTokenDataResult.message,
-            });
+            return res.respond(new InternalServerError(currentTokenDataResult.message));
         }
 
         let currentTokenData = JSON.parse(JSON.stringify(currentTokenDataResult.data));
@@ -578,11 +545,7 @@ const handleGETLogins = async (req, res, next) => {
             currentLogin: currentTokenData,
         });
     } catch (e) {
-        console.log(e);
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 const handleDELETELogins = async (req, res, next) => {
@@ -631,10 +594,7 @@ const handleDELETELogins = async (req, res, next) => {
         });
     } catch (e) {
         console.log(e);
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 

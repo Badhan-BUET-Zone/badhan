@@ -56,10 +56,7 @@ const handleGETStatistics = async (req, res,next) => {
             }
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 }
 
@@ -113,10 +110,7 @@ const handleGETLogs = async (req, res, next) => {
             logs: logCountsResult.data
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 };
 
@@ -157,10 +151,7 @@ const handleGETLogsByDate = async (req, res, next) => {
             logs: logsByDateResult.data
         })
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 }
 
@@ -211,10 +202,7 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
             logs: logsByDateAndDonor.data
         })
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 }
 

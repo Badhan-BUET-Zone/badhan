@@ -6,6 +6,7 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 const emailInterface = require('../db/interfaces/emailInterface');
 const {halls} = require('../constants')
 const jwt = require('jsonwebtoken');
+const {InternalServerError} = require('../response/errorTypes');
 
 
 const handlePOSTDonors = async (req, res, next) => {
@@ -133,10 +134,7 @@ const handlePOSTDonors = async (req, res, next) => {
 
 
         if (dummyInsertionResult.status !== "OK") {
-            return res.status(500).send({
-                status: 'ERROR',
-                message: 'Dummy donations insertion unsuccessful'
-            });
+            return res.respond(new InternalServerError('Dummy donations insertion unsuccessful'));
         }
 
 
@@ -159,10 +157,7 @@ const handlePOSTDonors = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 }
 
@@ -227,10 +222,7 @@ const handleDELETEDonors = async (req, res, next) => {
 
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        })
+        next(e);
     }
 }
 
@@ -436,11 +428,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
         });
 
     } catch (e) {
-        console.log(e);
-        res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -489,10 +477,7 @@ const handlePATCHDonorsComment = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -561,10 +546,7 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -666,10 +648,7 @@ const handlePATCHDonors = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -753,10 +732,7 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
         });
 
     } catch (e) {
-        res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -833,10 +809,7 @@ const handleGETVolunteers = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -926,10 +899,7 @@ const handlePATCHAdmins = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -962,10 +932,7 @@ const handleGETAdmins = async (req, res, next) => {
             }
 
              */
-            return res.status(500).send({
-                status: adminsQueryResult.status,
-                message: adminsQueryResult.message
-            });
+            return res.respond(new InternalServerError(adminsQueryResult.message));
         }
 
         let admins = adminsQueryResult.data;
@@ -994,10 +961,7 @@ const handleGETAdmins = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 
 }
@@ -1104,10 +1068,7 @@ const handleGETDonors = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -1157,10 +1118,7 @@ const handleGETDonorsMe = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -1216,10 +1174,7 @@ const handleGETVolunteersAll = async (req, res, next) => {
         });
 
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -1314,10 +1269,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
             donor: null,
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -1385,10 +1337,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
             token: tokenInsertResult.data.token
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 }
 
@@ -1407,20 +1356,14 @@ const handleGETDonorsDesignation = async (req, res, next) => {
         let adminsQueryResult = await donorInterface.findAdmins(2);
 
         if (adminsQueryResult.status !== 'OK') {
-            return res.status(500).send({
-                status: adminsQueryResult.status,
-                message: adminsQueryResult.message
-            });
+            return res.respond(new InternalServerError( adminsQueryResult.message));
         }
         let adminList = adminsQueryResult.data;
 
         let donorsQueryResult = await donorInterface.findVolunteersOfHall(authenticatedUser.hall);
 
         if (donorsQueryResult.status !== 'OK') {
-            return res.status(500).send({
-                status: donorsQueryResult.status,
-                message: donorsQueryResult.message
-            });
+            return res.respond(new InternalServerError( donorsQueryResult.message));
         }
 
         let volunteerList = donorsQueryResult.data;
@@ -1428,10 +1371,7 @@ const handleGETDonorsDesignation = async (req, res, next) => {
         let superAdminQuery = await donorInterface.findAdmins(3);
 
         if (superAdminQuery.status !== 'OK') {
-            return res.status(500).send({
-                status: superAdminQuery.status,
-                message: superAdminQuery.message
-            });
+            return res.respond(new InternalServerError( superAdminQuery.message));
         }
         let superAdminList = superAdminQuery.data;
 
@@ -1443,10 +1383,7 @@ const handleGETDonorsDesignation = async (req, res, next) => {
             superAdminList
         });
     } catch (e) {
-        return res.status(500).send({
-            status: 'EXCEPTION',
-            message: e.message
-        });
+        next(e);
     }
 };
 
