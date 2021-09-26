@@ -2,390 +2,259 @@ const {Donor} = require('../models/Donor');
 const {cacheExpiryTime} = require('../mongoose');
 
 const insertDonor = async (donorObject) => {
-    try {
-        let donor = new Donor(donorObject);
-        let data = await donor.save();
+    let donor = new Donor(donorObject);
+    let data = await donor.save();
 
-        if (data.nInserted === 0) {
-            return {
-                message: 'Donor insertion failed',
-                status: 'ERROR',
-                data: data,
-            }
-        } else {
-            return {
-                message: 'Donor insertion successful',
-                status: 'OK',
-                data: data,
-            };
-        }
-    } catch (e) {
+    if (data.nInserted === 0) {
         return {
-            message: e.message,
+            message: 'Donor insertion failed',
             status: 'ERROR',
-            data: null
+            data: data,
         }
+    } else {
+        return {
+            message: 'Donor insertion successful',
+            status: 'OK',
+            data: data,
+        };
     }
 };
 
 const deleteDonor = async (donorID) => {
-    try {
-        let data = await Donor.findOneAndDelete({_id: donorID});
-        if (data) {
-            return {
-                message: 'Donor removed successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                message: 'Could not remove donor',
-                status: 'ERROR'
-            }
-        }
-    } catch (e) {
+    let data = await Donor.findOneAndDelete({_id: donorID});
+    if (data) {
         return {
-            message: e.message,
-            status: 'EXCEPTION'
+            message: 'Donor removed successfully',
+            status: 'OK'
+        }
+    } else {
+        return {
+            message: 'Could not remove donor',
+            status: 'ERROR'
         }
     }
 };
 
 const deleteDonorByPhone = async (donorPhone) => {
-    try {
-        let data = await Donor.findOneAndDelete({phone: donorPhone});
-        if (data) {
-            return {
-                message: 'Donor removed successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                message: 'Could not remove donor',
-                status: 'ERROR'
-            }
-        }
-    } catch (e) {
+    let data = await Donor.findOneAndDelete({phone: donorPhone});
+    if (data) {
         return {
-            message: e.message,
-            status: 'EXCEPTION'
+            message: 'Donor removed successfully',
+            status: 'OK'
+        }
+    } else {
+        return {
+            message: 'Could not remove donor',
+            status: 'ERROR'
         }
     }
 };
 
 
 const deleteDonorById = async (donorId) => {
-    try {
-        let data = await Donor.findOneAndDelete({_id: donorId});
-        if (data) {
-            return {
-                data,
-                message: 'Donor removed successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                message: 'Could not remove donor',
-                status: 'ERROR'
-            }
-        }
-    } catch (e) {
+    let data = await Donor.findOneAndDelete({_id: donorId});
+    if (data) {
         return {
-            message: e.message,
-            status: 'EXCEPTION'
+            data,
+            message: 'Donor removed successfully',
+            status: 'OK'
+        }
+    } else {
+        return {
+            message: 'Could not remove donor',
+            status: 'ERROR'
         }
     }
 };
-const fineDonorById = async (id)=>{
-    try {
-        let data = await Donor.findById(id).cache(0);
-        if (data) {
-            return {
-                data,
-                message: 'Donor found',
-                status: 'OK'
-            }
-        } else {
-            return {
-                data: null,
-                message: 'Donor not found',
-                status: 'ERROR'
-            }
+const fineDonorById = async (id) => {
+    let data = await Donor.findById(id).cache(0);
+    if (data) {
+        return {
+            data,
+            message: 'Donor found',
+            status: 'OK'
         }
-
-    } catch (e) {
+    } else {
         return {
             data: null,
-            message: e.message,
-            status: 'EXCEPTION'
+            message: 'Donor not found',
+            status: 'ERROR'
         }
     }
 }
 
 
-
 const findDonorByQuery = async (query, option) => {
-    try {
-
-        let data = await Donor.findOne(query, option)
-        // let data = await Donor.findOne(query, option);
-        if (data) {
-            return {
-                data,
-                message: 'Donor found',
-                status: 'OK'
-            }
-        } else {
-            return {
-                data: null,
-                message: 'Donor not found',
-                status: 'ERROR'
-            }
+    let data = await Donor.findOne(query, option)
+    // let data = await Donor.findOne(query, option);
+    if (data) {
+        return {
+            data,
+            message: 'Donor found',
+            status: 'OK'
         }
-
-    } catch (e) {
+    } else {
         return {
             data: null,
-            message: e.message,
-            status: 'EXCEPTION'
+            message: 'Donor not found',
+            status: 'ERROR'
         }
     }
 };
 
-const findDonorByPhone = async (phoneNumber)=>{
-    try{
-        let data = await Donor.findOne({
-            phone: phoneNumber
-        });
+const findDonorByPhone = async (phoneNumber) => {
+    let data = await Donor.findOne({
+        phone: phoneNumber
+    });
 
-        if(data){
-            return {
-                data: data,
-                message: 'Donor fetched successfully',
-                status: 'OK'
-            }
-        }
-
+    if (data) {
         return {
             data: data,
-            message: 'Donor not found',
-            status: 'ERROR'
+            message: 'Donor fetched successfully',
+            status: 'OK'
         }
+    }
 
-
-    }catch(e){
-        return {
-            data: null,
-            message: e.message,
-            status: 'EXCEPTION'
-        }
+    return {
+        data: data,
+        message: 'Donor not found',
+        status: 'ERROR'
     }
 }
 
 const findAllVolunteers = async () => {
-    try {
-        let data = await Donor.find({
-            designation: 1
-        },{
-            name: 1,
-            hall: 1,
-            studentId: 1,
-        }).populate({path:'logCount'});
-        return {
-            data,
-            message: 'Volunteers fetched successfully',
-            status: 'OK'
-        }
-    } catch (e) {
-        return {
-            data: null,
-            message: e.message,
-            status: 'EXCEPTION'
-        }
+    let data = await Donor.find({
+        designation: 1
+    }, {
+        name: 1,
+        hall: 1,
+        studentId: 1,
+    }).populate({path: 'logCount'});
+    return {
+        data,
+        message: 'Volunteers fetched successfully',
+        status: 'OK'
     }
 }
 
 
 const findDonorsByQuery = async (query) => {
-    try {
-        let data = await Donor.find(query).populate({path:'callRecords',select:{'_id':1,'date':1,'callerId':1}}).populate({path:'donationCountOptimized'}).sort({lastDonation:-1});
-        let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+    let data = await Donor.find(query).populate({
+        path: 'callRecords',
+        select: {'_id': 1, 'date': 1, 'callerId': 1}
+    }).populate({path: 'donationCountOptimized'}).sort({lastDonation: -1});
+    let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+    return {
+        data,
+        message,
+        status: 'OK'
+    };
+};
+const findDonorByIDAndUpdateCommentTime = async (id, commentTime) => {
+    let data = await Donor.findByIdAndUpdate(id, {
+        $set: {
+            commentTime
+        }
+    });
+
+    if (data) {
         return {
             data,
-            message,
+            message: 'Comment time updated successfully',
             status: 'OK'
-        };
-    } catch (e) {
+        }
+    } else {
         return {
             data: null,
-            message: e.message,
-            status: 'EXCEPTION'
-        }
-    }
-};
-const findDonorByIDAndUpdateCommentTime = async (id, commentTime)=>{
-    try {
-        let data = await Donor.findByIdAndUpdate(id, {
-            $set:{
-                commentTime
-            }
-        });
-
-        if (data) {
-            return {
-                data,
-                message: 'Comment time updated successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                data: null,
-                message: 'Comment time update failed',
-                status: 'ERROR'
-            };
-        }
-
-    } catch (e) {
-        return {
-            data: null,
-            message: e.message,
+            message: 'Comment time update failed',
             status: 'ERROR'
         };
     }
 }
 
 const findDonorByIDAndUpdate = async (id, update) => {
-    try {
-        let data = await Donor.findByIdAndUpdate(id, update);
+    let data = await Donor.findByIdAndUpdate(id, update);
 
-        if (data) {
-            return {
-                data,
-                message: 'Donor updated successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                data: null,
-                message: 'Donor update failed',
-                status: 'ERROR'
-            };
+    if (data) {
+        return {
+            data,
+            message: 'Donor updated successfully',
+            status: 'OK'
         }
-
-    } catch (e) {
+    } else {
         return {
             data: null,
-            message: e.message,
+            message: 'Donor update failed',
             status: 'ERROR'
         };
     }
 };
 
 const findDonorAndUpdate = async (query, donorUpdate) => {
-    try {
-        let data = await Donor.findOneAndUpdate(query, donorUpdate, {
-            returnOriginal: false
-        });
-        if (data) {
-            return {
-                data,
-                status: 'OK',
-                message: 'Donor updated successfully'
-            };
-        } else {
-            return {
-                status: 'ERROR',
-                message: 'Donor not found'
-            }
-        }
-    } catch (e) {
+    let data = await Donor.findOneAndUpdate(query, donorUpdate, {
+        returnOriginal: false
+    });
+    if (data) {
         return {
-            status: 'EXCEPTION',
-            message: e.message
+            data,
+            status: 'OK',
+            message: 'Donor updated successfully'
         };
+    } else {
+        return {
+            status: 'ERROR',
+            message: 'Donor not found'
+        }
     }
 }
 
 const getCount = async () => {
-    try {
-        let donorCount = await Donor.countDocuments();
-        return {
-            message: "Fetched donor count",
-            status: 'OK',
-            data: donorCount
-        }
-    } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+    let donorCount = await Donor.countDocuments();
+    return {
+        message: "Fetched donor count",
+        status: 'OK',
+        data: donorCount
     }
 }
 
 const getVolunteerCount = async () => {
-    try {
-        let volunteerCount = await Donor.find({designation: 1}).countDocuments();
-        return {
-            message: "Fetched volunteer count",
-            status: 'OK',
-            data: volunteerCount
-        }
-    } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+    let volunteerCount = await Donor.find({designation: 1}).countDocuments();
+    return {
+        message: "Fetched volunteer count",
+        status: 'OK',
+        data: volunteerCount
     }
 }
 
 const findAdmins = async (designation) => {
-    try{
-            let data = await Donor.find({designation}, {
-                studentId: 1,
-                name: 1,
-                phone: 1,
-                hall:1,
-            });
-            let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
-            return {
-                data,
-                message,
-                status: 'OK'
-            };
-
-    }catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
-    }
+    let data = await Donor.find({designation}, {
+        studentId: 1,
+        name: 1,
+        phone: 1,
+        hall: 1,
+    });
+    let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+    return {
+        data,
+        message,
+        status: 'OK'
+    };
 }
 
 const findVolunteersOfHall = async (hall) => {
-    try{
-        let data = await Donor.find({designation:1,hall:hall}, {
-            studentId: 1,
-            name: 1,
-            roomNumber: 1,
-            bloodGroup: 1,
-            phone: 1,
-        });
-        let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
-        return {
-            data,
-            message,
-            status: 'OK'
-        };
-
-    }catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
-    }
+    let data = await Donor.find({designation: 1, hall: hall}, {
+        studentId: 1,
+        name: 1,
+        roomNumber: 1,
+        bloodGroup: 1,
+        phone: 1,
+    });
+    let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
+    return {
+        data,
+        message,
+        status: 'OK'
+    };
 }
 module.exports = {
     insertDonor,

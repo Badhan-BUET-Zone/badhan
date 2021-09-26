@@ -16,7 +16,7 @@ let publicContactsRouter = require('./routes/publicContacts');
 let logRouter = require('./routes/logs');
 require('./db/mongoose');
 const {userAgentHandler} = require('./middlewares/userAgent');
-const {sendResponse} = require('./response')
+const {respond} = require('./response')
 const {routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler} = require('./response/errorHandlers')
 
 let app = express();
@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(logger('dev'));
 app.use(userAgentHandler);
-app.response.sendResponse = sendResponse;
+app.response.respond = respond;
 app.use(parseBodyToJSON);
 
 app.use('/users', usersRouter);

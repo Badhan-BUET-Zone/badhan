@@ -1,199 +1,128 @@
 const {Donation} = require('../models/Donation');
 
 const insertDonation = async (donationObject) => {
-    try {
-        let donation = new Donation(donationObject);
-        let data = await donation.save();
-
-        if (data.nInserted === 0) {
-            return {
-
-                message: 'Donation insertion failed',
-                status: 'ERROR'
-            }
-        } else {
-            return {
-                data,
-                message: 'Donation insertion successful',
-                status: 'OK'
-            };
-        }
-    } catch (e) {
+    let donation = new Donation(donationObject);
+    let data = await donation.save();
+    if (data.nInserted === 0) {
         return {
-            message: e.message,
+
+            message: 'Donation insertion failed',
             status: 'ERROR'
         }
+    } else {
+        return {
+            data,
+            message: 'Donation insertion successful',
+            status: 'OK'
+        };
     }
 };
 
 const deleteDonation = async (donationID) => {
-    try {
-        let data = await Donation.findOneAndDelete({_id: donationID});
-        if (data) {
-            return {
-                data,
-                message: 'Donation removed successfully',
-                status: 'OK'
-            }
-        } else {
-            return {
-                message: 'Could not remove donation',
-                status: 'ERROR'
-            }
-        }
-    } catch (e) {
+    let data = await Donation.findOneAndDelete({_id: donationID});
+    if (data) {
         return {
-            message: e.message,
-            status: 'EXCEPTION'
+            data,
+            message: 'Donation removed successfully',
+            status: 'OK'
+        }
+    } else {
+        return {
+            message: 'Could not remove donation',
+            status: 'ERROR'
         }
     }
 };
 
 const deleteDonationByQuery = async (query) => {
-    try {
-        let data = await Donation.findOneAndDelete(query);
-        if (data) {
-            return {
-                data,
-                message: 'Donation removed successfully',
-                status: 'OK'
-            }
-        } else {
-            console.log("ERROR")
-            return {
-                message: 'Could not remove donation',
-                status: 'ERROR'
-            }
-        }
-    } catch (e) {
+    let data = await Donation.findOneAndDelete(query);
+    if (data) {
         return {
-            message: e.message,
-            status: 'EXCEPTION'
+            data,
+            message: 'Donation removed successfully',
+            status: 'OK'
+        }
+    } else {
+        console.log("ERROR")
+        return {
+            message: 'Could not remove donation',
+            status: 'ERROR'
         }
     }
 };
 
 const findMaxDonationByDonorId = async (id) => {
-    try {
-        let data = await Donation.find({donorId: id}).sort({date: -1}).limit(1);
-        if (data.length!==0) {
-            return {
-                message: 'Max donation fetched successfully',
-                status: 'OK',
-                data
-            }
-        }
-
+    let data = await Donation.find({donorId: id}).sort({date: -1}).limit(1);
+    if (data.length !== 0) {
         return {
-            message: 'No donations found',
-            status: 'ERROR'
+            message: 'Max donation fetched successfully',
+            status: 'OK',
+            data
         }
-    } catch (e) {
-        return {
-            message: e.message,
-            status: "EXCEPTION"
-        }
+    }
+    return {
+        message: 'No donations found',
+        status: 'ERROR'
     }
 }
 
 const deleteDonationsByQuery = async (query) => {
-    try {
-        let data = await Donation.deleteMany(query);
-        if (data) {
-            return {
-                message: 'Donations removed successfully',
-                status: 'OK',
-                data
-            }
-        }
+    let data = await Donation.deleteMany(query);
+    if (data) {
         return {
-            message: 'Could not remove donations',
-            status: 'ERROR'
+            message: 'Donations removed successfully',
+            status: 'OK',
+            data
         }
-
-    } catch (e) {
-        return {
-            message: e.message,
-            status: 'EXCEPTION'
-        }
+    }
+    return {
+        message: 'Could not remove donations',
+        status: 'ERROR'
     }
 };
 
 const insertManyDonations = async (donations) => {
-    try {
-        let data = await Donation.insertMany(donations);
-        return {
-            message: 'Donations inserted successfully',
-            status: 'OK',
-            data
-        }
-    } catch (e) {
-        return {
-            data: null,
-            message: e.message,
-            status: 'EXCEPTION'
-        }
+    let data = await Donation.insertMany(donations);
+    return {
+        message: 'Donations inserted successfully',
+        status: 'OK',
+        data
     }
 }
 
 const findDonationByQuery = async (query, option) => {
-    try {
-        let data = await Donation.findOne(query, option);
-        if (data) {
-            return {
-                data,
-                message: 'Donation found',
-                status: 'OK'
-            }
-        } else {
-            return {
-                data: null,
-                message: 'Donation not found',
-                status: 'ERROR'
-            }
+    let data = await Donation.findOne(query, option);
+    if (data) {
+        return {
+            data,
+            message: 'Donation found',
+            status: 'OK'
         }
-
-    } catch (e) {
+    } else {
         return {
             data: null,
-            message: e.message,
-            status: 'EXCEPTION'
+            message: 'Donation not found',
+            status: 'ERROR'
         }
     }
 };
 
 const findDonationsByQuery = async (query, option) => {
-    try {
-        let data = await Donation.find(query, option);
-        let message = data.length > 0 ? 'Donation(s) found' : 'Donation not found';
-        return {
-            data,
-            message,
-            status: 'OK'
-        };
-    } catch (e) {
-        return {
-            data: null,
-            message: e.message,
-            status: 'EXCEPTION'
-        }
-    }
+    let data = await Donation.find(query, option);
+    let message = data.length > 0 ? 'Donation(s) found' : 'Donation not found';
+    return {
+        data,
+        message,
+        status: 'OK'
+    };
 };
 
 const getCount = async () => {
-    try {
-        let donationCount = await Donation.countDocuments();
-        return {
-            message: "Fetched donation count",
-            status: 'OK',
-            data: donationCount
-        }
-    } catch (e) {
-        return {
-            message: e.message,
-            status: 'ERROR',
-            data: null
-        }
+    let donationCount = await Donation.countDocuments();
+    return {
+        message: "Fetched donation count",
+        status: 'OK',
+        data: donationCount
     }
 }
 module.exports = {

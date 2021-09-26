@@ -8,7 +8,7 @@ const {halls} = require('../constants')
 const jwt = require('jsonwebtoken');
 
 
-const handlePOSTDonors = async (req, res) => {
+const handlePOSTDonors = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -166,7 +166,7 @@ const handlePOSTDonors = async (req, res) => {
     }
 }
 
-const handleDELETEDonors = async (req, res) => {
+const handleDELETEDonors = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -235,7 +235,7 @@ const handleDELETEDonors = async (req, res) => {
 }
 
 
-const handleGETSearchOptimized = async (req, res) => {
+const handleGETSearchOptimized = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -444,7 +444,7 @@ const handleGETSearchOptimized = async (req, res) => {
     }
 }
 
-const handlePATCHDonorsComment = async (req, res) => {
+const handlePATCHDonorsComment = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -496,7 +496,7 @@ const handlePATCHDonorsComment = async (req, res) => {
     }
 }
 
-const handlePATCHDonorsPassword = async (req, res) => {
+const handlePATCHDonorsPassword = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -568,7 +568,7 @@ const handlePATCHDonorsPassword = async (req, res) => {
     }
 }
 
-const handlePATCHDonors = async (req, res) => {
+const handlePATCHDonors = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -673,7 +673,7 @@ const handlePATCHDonors = async (req, res) => {
     }
 }
 
-const handlePATCHDonorsDesignation = async (req, res) => {
+const handlePATCHDonorsDesignation = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -760,7 +760,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
     }
 }
 
-const handleGETVolunteers = async (req, res) => {
+const handleGETVolunteers = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -840,7 +840,7 @@ const handleGETVolunteers = async (req, res) => {
     }
 }
 
-const handlePATCHAdmins = async (req, res) => {
+const handlePATCHAdmins = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -933,7 +933,7 @@ const handlePATCHAdmins = async (req, res) => {
     }
 }
 
-const handleGETAdmins = async (req, res) => {
+const handleGETAdmins = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -1002,7 +1002,7 @@ const handleGETAdmins = async (req, res) => {
 
 }
 
-const handleGETDonors = async (req, res) => {
+const handleGETDonors = async (req, res, next) => {
 
     /*
         #swagger.auto = false
@@ -1041,8 +1041,8 @@ const handleGETDonors = async (req, res) => {
         }).populate({
             path: 'publicContacts',
             select: {
-                '_id':1,
-                'bloodGroup':1
+                '_id': 1,
+                'bloodGroup': 1
             }
         }).execPopulate();
         /*
@@ -1111,7 +1111,7 @@ const handleGETDonors = async (req, res) => {
     }
 }
 
-const handleGETDonorsMe = async (req, res) => {
+const handleGETDonorsMe = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -1164,7 +1164,7 @@ const handleGETDonorsMe = async (req, res) => {
     }
 }
 
-const handleGETVolunteersAll = async (req, res) => {
+const handleGETVolunteersAll = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Donors']
@@ -1321,7 +1321,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
     }
 }
 
-const handlePOSTDonorsPasswordRequest = async (req, res) => {
+const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Donors']
@@ -1392,7 +1392,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
     }
 }
 
-const handleGETDonorsDesignation  = async (req, res) => {
+const handleGETDonorsDesignation = async (req, res, next) => {
     /*
 #swagger.auto = false
 #swagger.tags = ['Donors']
@@ -1401,7 +1401,7 @@ const handleGETDonorsDesignation  = async (req, res) => {
                "api_key": []
         }]
 */
-    try{
+    try {
         let authenticatedUser = res.locals.middlewareResponse.donor;
 
         let adminsQueryResult = await donorInterface.findAdmins(2);
@@ -1414,7 +1414,7 @@ const handleGETDonorsDesignation  = async (req, res) => {
         }
         let adminList = adminsQueryResult.data;
 
-        let donorsQueryResult = await donorInterface.findVolunteersOfHall( authenticatedUser.hall);
+        let donorsQueryResult = await donorInterface.findVolunteersOfHall(authenticatedUser.hall);
 
         if (donorsQueryResult.status !== 'OK') {
             return res.status(500).send({
@@ -1442,7 +1442,7 @@ const handleGETDonorsDesignation  = async (req, res) => {
             adminList,
             superAdminList
         });
-    }catch (e) {
+    } catch (e) {
         return res.status(500).send({
             status: 'EXCEPTION',
             message: e.message

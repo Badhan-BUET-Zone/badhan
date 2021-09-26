@@ -2,7 +2,7 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 
-const handleGETOnlineCheck = async (req, res) => {
+const handleGETOnlineCheck = async (req, res,next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
@@ -18,7 +18,7 @@ const handleGETOnlineCheck = async (req, res) => {
     return res.status(200).send("Badhan API is online")
 }
 
-const handleGETStatistics = async (req, res) => {
+const handleGETStatistics = async (req, res,next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Logs']

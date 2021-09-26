@@ -1,7 +1,7 @@
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 
-const handlePOSTDonations = async (req, res) => {
+const handlePOSTDonations = async (req, res,next) => {
 /*
     #swagger.auto = false
     #swagger.tags = ['Donations']
@@ -79,7 +79,7 @@ const handlePOSTDonations = async (req, res) => {
     }
 }
 
-const handleDELETEDonations = async (req, res) => {
+const handleDELETEDonations = async (req, res,next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donations']

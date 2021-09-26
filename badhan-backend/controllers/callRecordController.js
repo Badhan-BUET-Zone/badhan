@@ -1,7 +1,7 @@
 const callRecordInterface = require('../db/interfaces/callRecordInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {InternalServerError, NotFoundError, ConflictError,} = require('../response/errorTypes');
-const {SuccessResponse} = require('../response/successTypes')
+const {OKResponse} = require('../response/successTypes')
 const asyncHandler = require('express-async-handler')
 
 
@@ -48,7 +48,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
 
         await logInterface.addLog(user._id, "CREATE CALLRECORD", {callee: donor.name});
 
-        return res.sendResponse(new SuccessResponse('Call record insertion successful', {
+        return res.respond(new OKResponse('Call record insertion successful', {
             callRecord: callRecordInsertionResult.data
         }));
 
@@ -112,16 +112,16 @@ const handleDELETECallRecord = async (req, res, next) => {
         let donor = res.locals.middlewareResponse.targetDonor;
         let callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId);
         if (callRecordSearchResult.status !== 'OK') {
-            throw new NotFoundError('Call record not found');
+            return res.respond(new NotFoundError('Call record not found'));
         }
 
         if (!callRecordSearchResult.data.calleeId.equals(donor._id)) {
-            throw new ConflictError('Target donor does not have the callee of call record');
+            return res.respond(new ConflictError('Target donor does not have the callee of call record'));
         }
 
         let callRecordDeleteResult = await callRecordInterface.deleteById(req.query.callRecordId);
         if (callRecordDeleteResult.status !== 'OK') {
-            throw new InternalServerError(callRecordDeleteResult.message);
+            return res.respond(new InternalServerError(callRecordDeleteResult.message));
         }
 
         await logInterface.addLog(user._id, "DELETE CALLRECORD", {
@@ -129,7 +129,7 @@ const handleDELETECallRecord = async (req, res, next) => {
             ...callRecordDeleteResult.data
         });
 
-        return res.sendResponse(new SuccessResponse('Call record deletion successful', {
+        return res.respond(new OKResponse('Call record deletion successful', {
             deletedCallRecord: callRecordDeleteResult.data,
         }))
 

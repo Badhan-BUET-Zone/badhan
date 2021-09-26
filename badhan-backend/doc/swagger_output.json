@@ -366,25 +366,6 @@
               }
             },
             "description": "donor info"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -436,14 +417,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "You cannot modify the details of a Badhan member with higher designation"
+                  "example": "You are not authorized to access this donor"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
+            "description": "The user is trying to access or modify data of a different hall"
           },
           "404": {
             "schema": {
@@ -794,25 +775,6 @@
               }
             },
             "description": "In case of successfully saving the comment"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -886,25 +848,6 @@
               }
             },
             "description": "Donor is not a volunteer/ admin"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -1102,25 +1045,6 @@
               }
             },
             "description": "If user cannot promote volunteer or cannot demote donor"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -1436,25 +1360,6 @@
               }
             },
             "description": "If fetched user is not a volunteer , user will get this error message"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -2160,25 +2065,6 @@
               }
             },
             "description": "Call record insertion successful"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -2359,25 +2245,6 @@
               }
             },
             "description": "Donations inserted successfully"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -2807,25 +2674,6 @@
               }
             },
             "description": "Success message"
-          },
-          "404": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor not found"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [

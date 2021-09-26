@@ -6,7 +6,7 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 const logInterface = require("../db/interfaces/logInterface");
 const emailInterface = require("../db/interfaces/emailInterface");
 
-const handlePOSTPasswordForgot = async (req, res) => {
+const handlePOSTPasswordForgot = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['User']
@@ -92,7 +92,7 @@ const handlePOSTPasswordForgot = async (req, res) => {
     }
 }
 
-let handlePOSTSignIn = async (req, res) => {
+let handlePOSTSignIn = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['User']
@@ -207,7 +207,7 @@ let handlePOSTSignIn = async (req, res) => {
 };
 
 
-let handleDELETESignOut = async (req, res) => {
+let handleDELETESignOut = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -248,7 +248,7 @@ let handleDELETESignOut = async (req, res) => {
     }
 };
 
-let handleDELETESignOutAll = async (req, res) => {
+let handleDELETESignOutAll = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -287,7 +287,7 @@ let handleDELETESignOutAll = async (req, res) => {
     }
 };
 
-let handlePOSTRedirection = async (req, res) => {
+let handlePOSTRedirection = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -339,7 +339,7 @@ let handlePOSTRedirection = async (req, res) => {
 };
 
 
-let handlePATCHRedirectedAuthentication = async (req, res) => {
+let handlePATCHRedirectedAuthentication = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -455,7 +455,7 @@ let handlePATCHRedirectedAuthentication = async (req, res) => {
     }
 }
 
-const handlePATCHPassword = async (req, res) => {
+const handlePATCHPassword = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -510,7 +510,7 @@ const handlePATCHPassword = async (req, res) => {
     }
 }
 
-const handleGETLogins = async (req, res) => {
+const handleGETLogins = async (req, res, next) => {
 /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -585,7 +585,7 @@ const handleGETLogins = async (req, res) => {
         });
     }
 }
-const handleDELETELogins = async (req, res) => {
+const handleDELETELogins = async (req, res, next) => {
     /*
 #swagger.auto = false
 #swagger.tags = ['User']

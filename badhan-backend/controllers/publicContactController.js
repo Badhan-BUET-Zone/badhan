@@ -1,7 +1,7 @@
 const publicContactInterface = require('../db/interfaces/publicContactInterface');
 const logInterface = require('../db/interfaces/logInterface');
 
-const handleDELETEPublicContact = async (req, res) => {
+const handleDELETEPublicContact = async (req, res,next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
@@ -85,7 +85,7 @@ const handleDELETEPublicContact = async (req, res) => {
 
 }
 
-const handlePOSTPublicContact = async (req, res) => {
+const handlePOSTPublicContact = async (req, res,next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
@@ -135,7 +135,7 @@ const handlePOSTPublicContact = async (req, res) => {
     }
 }
 
-const handleGETPublicContacts = async (req, res) => {
+const handleGETPublicContacts = async (req, res, next) => {
     /*
 #swagger.auto = false
 #swagger.tags = ['Public Contacts']

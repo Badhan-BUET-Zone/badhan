@@ -7,12 +7,7 @@ const validate = validations => {
         if (errors.isEmpty()) {
             return next();
         }
-        return res.sendResponse(new BadRequestError(errors.array()[0].msg));
-        // return res.status(400).json({
-        //     status:"ERROR",
-        //     message: errors.array()[0].msg,
-        //     errors:errors.array()
-        // });
+        return res.respond(new BadRequestError(errors.array()[0].msg));
     };
 };
 
