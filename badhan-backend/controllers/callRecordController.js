@@ -1,12 +1,7 @@
 const callRecordInterface = require('../db/interfaces/callRecordInterface');
 const logInterface = require('../db/interfaces/logInterface');
-const {
-    InternalServerError,
-    NotFoundError,
-    SuccessResponse,
-    ConflictError,
-} = require('../response/index');
-
+const {InternalServerError, NotFoundError, ConflictError,} = require('../response/errorTypes');
+const {SuccessResponse} = require('../response/successTypes')
 
 const handlePOSTCallRecord = async (req, res, next) => {
     /*
@@ -47,11 +42,9 @@ const handlePOSTCallRecord = async (req, res, next) => {
 
 
     try {
-        // blah = blah;
         let donor = res.locals.middlewareResponse.targetDonor;
         let user = res.locals.middlewareResponse.donor;
         let callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id);
-        // let callRecordInsertionResult = await callRecordInterface.insertOne("blah", donor._id);
 
         await logInterface.addLog(user._id, "CREATE CALLRECORD", {callee: donor.name});
 
