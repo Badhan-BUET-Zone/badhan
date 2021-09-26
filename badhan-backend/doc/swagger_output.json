@@ -367,25 +367,6 @@
             },
             "description": "donor info"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
-          },
           "404": {
             "schema": {
               "type": "object",
@@ -444,25 +425,6 @@
               }
             },
             "description": "Successful donor deletion"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "401": {
             "schema": {
@@ -833,25 +795,6 @@
             },
             "description": "In case of successfully saving the comment"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
-          },
           "404": {
             "schema": {
               "type": "object",
@@ -924,25 +867,6 @@
               }
             },
             "description": "Successfully created recovery link for user"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "401": {
             "schema": {
@@ -1068,25 +992,6 @@
             },
             "description": "Donor info update successful"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
-          },
           "401": {
             "schema": {
               "type": "object",
@@ -1178,25 +1083,6 @@
               }
             },
             "description": "Donor promotion/ demotion successful"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "401": {
             "schema": {
@@ -2275,25 +2161,6 @@
             },
             "description": "Call record insertion successful"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
-          },
           "404": {
             "schema": {
               "type": "object",
@@ -2379,25 +2246,6 @@
               }
             },
             "description": "Call record deletion successful"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "404": {
             "schema": {
@@ -2512,25 +2360,6 @@
             },
             "description": "Donations inserted successfully"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
-          },
           "404": {
             "schema": {
               "type": "object",
@@ -2595,25 +2424,6 @@
               }
             },
             "description": "Donation deletion successful"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "404": {
             "schema": {
@@ -2997,25 +2807,6 @@
               }
             },
             "description": "Success message"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor ID not specified"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "This error will occur if the donor id in body nor param is not found"
           },
           "404": {
             "schema": {

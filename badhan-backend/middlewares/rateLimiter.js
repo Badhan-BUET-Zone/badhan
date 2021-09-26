@@ -1,98 +1,68 @@
 const rateLimit = require("express-rate-limit");
+const {TooManyRequestsError}= require('../response/errorTypes')
 const minute = 60*1000
+const commentRateLimiterError = new TooManyRequestsError("Service unavailable");
+
 const signInLimiter = rateLimit({
     windowMs: 5 * minute,
     max: 3,
-    message:{
-        status: "ERROR",
-        message:"Please try again after 5 minutes"
-    }
+    message:new TooManyRequestsError("Please try again after 5 minutes")
 });
 
 const redirectionSignInLimiter = rateLimit({
     windowMs: 5 * minute,
     max: 3,
-    message:{
-        status: "ERROR",
-        message:"Service unavailable!!"
-    }
+    message:commentRateLimiterError
 });
 
 const donationInsertionLimiter = rateLimit({
     windowMs: minute,
     max: 2,
-    message:{
-        status: "ERROR",
-        message:"Service unavailable!!"
-    }
+    message:commentRateLimiterError
 });
 const donorInsertionLimiter = rateLimit({
     windowMs: minute,
     max: 12,
-    message:{
-        status: "ERROR",
-        message:"Service unavailable!!"
-    }
+    message:commentRateLimiterError
 });
 const donorDeletionLimiter = rateLimit({
     windowMs: minute,
     max: 2,
-    message:{
-        status: "ERROR",
-        message:"Service unavailable!!"
-    }
+    message:commentRateLimiterError
 });
 const deleteDonationLimiter = rateLimit({
     windowMs: minute,
     max: 6,
-    message: {
-        status: "ERROR",
-        message: "Service unavailable!!"
-    }
+    message: commentRateLimiterError
 });
 
 const commonLimiter = rateLimit({
     windowMs: minute,
     max: 12,
-    message: {
-        status: "ERROR",
-        message: "Service unavailable!!"
-    }
+    message: commentRateLimiterError
 });
 
 const passwordRequestLimiter = rateLimit({
     windowMs: minute,
     max: 2,
-    message: {
-        status: "ERROR",
-        message: "Service unavailable!!"
-    }
+    message: commentRateLimiterError
 });
 
 const passwordForgotLimiter = rateLimit({
     windowMs: 3 * minute,
     max: 1,
-    message: {
-        status: "ERROR",
-        message: "Please try again after 3 minutes"
-    }
+    message: new TooManyRequestsError("Please try again after 3 minutes")
 });
 
 const publicContactInsertionLimiter = rateLimit({
     windowMs: minute,
     max: 6,
-    message: {
-        status: "ERROR",
-        message: "Service unavailable!!"
-    }
+    message: commentRateLimiterError
 })
 const publicContactDeletionLimiter = rateLimit({
     windowMs: minute,
     max: 6,
-    message: {
-        status: "ERROR",
-        message: "Service unavailable!!"
-    }
+    message: commentRateLimiterError
 })
 
 module.exports={

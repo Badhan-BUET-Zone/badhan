@@ -2,6 +2,8 @@ const callRecordInterface = require('../db/interfaces/callRecordInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {InternalServerError, NotFoundError, ConflictError,} = require('../response/errorTypes');
 const {SuccessResponse} = require('../response/successTypes')
+const asyncHandler = require('express-async-handler')
+
 
 const handlePOSTCallRecord = async (req, res, next) => {
     /*
@@ -39,8 +41,6 @@ const handlePOSTCallRecord = async (req, res, next) => {
     }
 
      */
-
-
     try {
         let donor = res.locals.middlewareResponse.targetDonor;
         let user = res.locals.middlewareResponse.donor;
@@ -55,7 +55,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
     } catch (e) {
         next(e)
     }
-}
+};
 
 const handleDELETECallRecord = async (req, res, next) => {
     /*

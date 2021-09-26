@@ -104,6 +104,19 @@ class ConflictError extends ErrorResponse{
         super("ERROR",409,message)
     }
 }
+class TooManyRequestsError extends ErrorResponse{
+    /*
+    429 Too Many Requests
+    The user has sent too many requests in a given amount of time ("rate limiting").
+
+     */
+    /**
+     * @param {string} message - Error message
+     */
+    constructor(message) {
+        super("ERROR",429,message)
+    }
+}
 
 module.exports = {
     DatabaseError,
@@ -114,4 +127,5 @@ module.exports = {
     ForbiddenError,
     UnauthorizedError,
     ConflictError,
+    TooManyRequestsError,
 };
