@@ -54,5 +54,6 @@ This is typically the response sent after POST requests, or some PUT requests.
 
 module.exports = {
     OKResponse,
-    CreatedResponse
+    CreatedResponse,
+    BaseSuccessResponse
 };

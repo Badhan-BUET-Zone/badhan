@@ -6,7 +6,15 @@ const tokenInterface = require('../db/interfaces/tokenInterface');
 const logInterface = require("../db/interfaces/logInterface");
 const emailInterface = require("../db/interfaces/emailInterface");
 
-const {InternalServerError} = require('../response/errorTypes');
+const {
+    InternalServerError,
+    BadRequestError,
+    ForbiddenError,
+    NotFoundError,
+    UnauthorizedError,
+    ConflictError
+} = require('../response/errorTypes')
+const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
 const handlePOSTPasswordForgot = async (req, res, next) => {
     /*
@@ -39,28 +47,18 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
     let phone = req.body.phone;
     let queryByPhoneResult = await donorInterface.findDonorByPhone(phone);
     if (queryByPhoneResult.status !== "OK") {
-
-        return res.status(404).send({
-            status: 'ERROR',
-            message: "Phone number not recognized"
-        });
+        return res.respond(new NotFoundError("Phone number not recognized"));
     }
 
     let donor = queryByPhoneResult.data;
     let email = donor.email;
 
     if (donor.designation === 0) {
-        return res.status(404).send({
-            status: 'ERROR',
-            message: "Account not found"
-        });
+        return res.respond(new NotFoundError("Account not found"));
     }
 
     if (email === "") {
-        return res.status(404).send({
-            status: 'ERROR',
-            message: "No recovery email found for this phone number"
-        });
+        return res.respond(new NotFoundError("No recovery email found for this phone number"));
     }
 
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
@@ -78,7 +76,7 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
 
     await logInterface.addLog(donor._id, "CREATE USER PASSWORD FORGOT", {});
 
-    return res.status(200).send({status: 'OK', message: "A recovery mail has been sent to your email address"});
+    return res.respond(new OKResponse("A recovery mail has been sent to your email address"));
 }
 
 let handlePOSTSignIn = async (req, res, next) => {
@@ -111,10 +109,7 @@ let handlePOSTSignIn = async (req, res, next) => {
             description: 'When the donor is not found'
         }
          */
-        return res.status(401).send({
-            status: donorQueryResult.status,
-            message: donorQueryResult.message
-        });
+        return res.respond(new NotFoundError("Account not found"));
     }
 
     let donor = donorQueryResult.data;
@@ -133,10 +128,7 @@ let handlePOSTSignIn = async (req, res, next) => {
             description: 'When the logging user does not have any account'
         }
          */
-        return res.status(401).send({
-            status: "ERROR",
-            message: "You do not have an account",
-        });
+        return res.respond(new NotFoundError("Account not found"));
     }
 
     if (!matched) {
@@ -149,10 +141,7 @@ let handlePOSTSignIn = async (req, res, next) => {
             description: 'When the user provides an invalid password'
         }
          */
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Incorrect phone / password'
-        });
+        return res.respond(new UnauthorizedError('Incorrect phone / password'));
     }
 
     let access = 'auth';
@@ -165,10 +154,7 @@ let handlePOSTSignIn = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.status(400).send({
-            status: 'ERROR',
-            message: 'Token insertion failed'
-        });
+        return res.respond(new InternalServerError('Token insertion failed'));
     }
     /*
     #swagger.responses[201] = {
@@ -183,8 +169,9 @@ let handlePOSTSignIn = async (req, res, next) => {
      */
 
     await logInterface.addLog(donor._id, "CREATE USER SIGN IN", {});
-
-    return res.status(201).send({status: 'OK', message: "Successfully signed in", token: token});
+    return res.respond(new CreatedResponse("Successfully signed in",{
+        token
+    }))
 };
 
 
@@ -215,11 +202,7 @@ let handleDELETESignOut = async (req, res, next) => {
     }
 */
     await logInterface.addLog(donor._id, "DELETE USER SIGN OUT", {});
-
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Logged out successfully'
-    });
+    return res.respond(new OKResponse('Logged out successfully'));
 };
 
 let handleDELETESignOutAll = async (req, res, next) => {
@@ -248,10 +231,7 @@ let handleDELETESignOutAll = async (req, res, next) => {
 
      */
     await logInterface.addLog(donor._id, "DELETE USER SIGN OUT ALL", {});
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Logged out from all devices successfully'
-    });
+    return res.respond(new OKResponse('Logged out from all devices successfully'));
 };
 
 let handlePOSTRedirection = async (req, res, next) => {
@@ -275,10 +255,7 @@ let handlePOSTRedirection = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.status(400).send({
-            status: 'ERROR',
-            message: 'Token insertion failed'
-        });
+        return res.respond(new InternalServerError(tokenInsertResult.message));
     }
     /*
     #swagger.responses[201] = {
@@ -294,7 +271,9 @@ let handlePOSTRedirection = async (req, res, next) => {
 
     await logInterface.addLog(donor._id, "CREATE USER REDIRECTION", {});
 
-    return res.status(201).send({status: 'OK', message: "Redirection token created", token: token});
+    return res.respond(new CreatedResponse("Redirection token created",{
+        token
+    }))
 
 };
 
@@ -329,10 +308,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         }
 
          */
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Session Expired'
-        });
+        return res.respond(new UnauthorizedError('Session Expired'));
     }
 
     let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
@@ -348,10 +324,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         }
 
          */
-        return res.status(404).send({
-            status: 'ERROR',
-            message: 'Donor not found'
-        });
+        return res.respond(new NotFoundError('Donor not found'));
     }
 
     let donor = donorQueryResult.data;
@@ -369,10 +342,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         }
 
          */
-        return res.status(404).send({
-            status: 'OK',
-            message: 'Token not found'
-        });
+        return res.respond(new NotFoundError('Token not found'));
     }
 
     let access = 'auth';
@@ -385,10 +355,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.status(400).send({
-            status: 'ERROR',
-            message: 'Token insertion failed'
-        });
+        return res.respond(new InternalServerError(tokenInsertResult.message));
     }
     /*
             #swagger.responses[201] = {
@@ -403,7 +370,9 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
      */
     await logInterface.addLog(donor._id, "PATCH USER REDIRECTION", {});
 
-    return res.status(201).send({status: 'OK', message: "Redirected login successful", token: newToken});
+    return res.respond(new CreatedResponse("Redirected login successful",{
+        token: newToken
+    }))
 }
 
 const handlePATCHPassword = async (req, res, next) => {
@@ -427,6 +396,7 @@ const handlePATCHPassword = async (req, res, next) => {
     let donor = res.locals.middlewareResponse.donor;
     donor.password = reqBody.password;
     await donor.save();
+
     await tokenInterface.deleteAllTokensByDonorId(donor._id);
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH USER PASSWORD", {});
@@ -441,11 +411,9 @@ const handlePATCHPassword = async (req, res, next) => {
         description: 'Successful password change done'
     }
      */
-    return res.status(201).send({
-        status: 'OK',
-        message: 'Password changed successfully',
+    return res.respond(new CreatedResponse('Password changed successfully',{
         token: tokenInsertResult.data.token
-    });
+    }))
 }
 
 const handleGETLogins = async (req, res, next) => {
@@ -502,14 +470,12 @@ const handleGETLogins = async (req, res, next) => {
     delete currentTokenData.donorId;
     delete currentTokenData.__v;
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Recent logins fetched successfully',
+    return res.respond(new OKResponse('Recent logins fetched successfully'),{
         logins: recentLoginsResult.data,
         currentLogin: currentTokenData,
     });
-
 }
+
 const handleDELETELogins = async (req, res, next) => {
     /*
 #swagger.auto = false
@@ -544,15 +510,10 @@ const handleDELETELogins = async (req, res, next) => {
     let user = res.locals.middlewareResponse.donor;
     let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId, user._id);
     if (deletedTokenResult.status !== "OK") {
-        return res.status(404).send({
-            status: 'ERROR',
-            message: 'Login information not found'
-        });
+        return res.respond(new NotFoundError('Login information not found'));
     }
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Logged out from specified device',
-    });
+
+    return res.respond(new OKResponse('Logged out from specified device'));
 }
 
 module.exports = {

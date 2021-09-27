@@ -1,6 +1,17 @@
 const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
+const {
+    InternalServerError,
+    BadRequestError,
+    ForbiddenError,
+    NotFoundError,
+    UnauthorizedError,
+    TooManyRequestsError,
+    ErrorResponse,
+    ConflictError
+} = require('../response/errorTypes')
+const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
 const handleGETOnlineCheck = async (req, res, next) => {
     /*
@@ -15,7 +26,7 @@ const handleGETOnlineCheck = async (req, res, next) => {
         }
 
      */
-    return res.status(200).send("Badhan API is online")
+    return res.respond(new OKResponse("Badhan API is online"));
 }
 
 const handleGETStatistics = async (req, res, next) => {
@@ -45,15 +56,11 @@ const handleGETStatistics = async (req, res, next) => {
     }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Statistics fetched successfully',
-        statistics: {
-            donorCount: donorCount.data,
-            donationCount: donationCount.data,
-            volunteerCount: volunteerCount.data
-        }
-    });
+    return res.respond('Statistics fetched successfully',{
+        donorCount: donorCount.data,
+        donationCount: donationCount.data,
+        volunteerCount: volunteerCount.data
+    })
 }
 
 const handleGETAppVersion = (req, res, next) => {
@@ -71,9 +78,9 @@ const handleGETAppVersion = (req, res, next) => {
                 description: 'response is the current version number of badhan api'
             }
 */
-    res.status(200).send({
+    return res.respond(new OKResponse("Latest app version fetched",{
         version: "4.5.0"
-    })
+    }))
 }
 
 const handleGETLogs = async (req, res, next) => {
@@ -99,11 +106,9 @@ const handleGETLogs = async (req, res, next) => {
     */
 
     let logCountsResult = await logInterface.getLogCounts();
-    return res.status(200).send({
-        status: 'OK',
-        message: logCountsResult.message,
+    return res.respond(new OKResponse('Log counts fetched successfully',{
         logs: logCountsResult.data
-    });
+    }))
 };
 
 const handleGETLogsByDate = async (req, res, next) => {
@@ -136,12 +141,9 @@ const handleGETLogsByDate = async (req, res, next) => {
         }
     */
     let logsByDateResult = await logInterface.getLogsByDate(req.params.date);
-    return res.status(200).send({
-        status: 'OK',
-        message: "Logs fetched by date successfully",
+    return res.respond(new OKResponse("Logs fetched by date successfully",{
         logs: logsByDateResult.data
-    })
-
+    }));
 }
 
 const handleGETLogsByDateAndDonor = async (req, res, next) => {
@@ -184,12 +186,9 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
             }]
     */
     let logsByDateAndDonor = await logInterface.getLogsByDateAndUser(req.params.date, req.params.donorId)
-    return res.status(200).send({
-        status: 'OK',
-        message: logsByDateAndDonor.message,
+    return res.respond(new OKResponse("Logs fetched by data and donor successfully",{
         logs: logsByDateAndDonor.data
-    })
-
+    }))
 }
 
 module.exports = {

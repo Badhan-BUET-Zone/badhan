@@ -5,8 +5,18 @@ const logInterface = require('../db/interfaces/logInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
 const emailInterface = require('../db/interfaces/emailInterface');
 const {halls} = require('../constants')
-const jwt = require('jsonwebtoken');
-const {InternalServerError} = require('../response/errorTypes');
+
+const {
+    InternalServerError,
+    BadRequestError,
+    ForbiddenError,
+    NotFoundError,
+    UnauthorizedError,
+    TooManyRequestsError,
+    ErrorResponse,
+    ConflictError
+} = require('../response/errorTypes')
+const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
 
 const handlePOSTDonors = async (req, res, next) => {
@@ -58,11 +68,7 @@ const handlePOSTDonors = async (req, res, next) => {
             }
 
              */
-            return res.status(409).send({
-                status: 'ERROR',
-                message: 'Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",
-                donor: duplicateDonorResult.data,
-            });
+            return res.respond(new ConflictError('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall"));
         }
         /*
         #swagger.responses[401] = {
@@ -75,11 +81,7 @@ const handlePOSTDonors = async (req, res, next) => {
         }
 
          */
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",
-            donor: null,
-        });
+        return res.respond(new ConflictError('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor."))
     }
 
     //if the hall is unknown, then the donor must be available to all
@@ -114,10 +116,7 @@ const handlePOSTDonors = async (req, res, next) => {
         }
 
          */
-        return res.status(400).send({
-            status: 'ERROR',
-            message: 'New donor insertion unsuccessful'
-        });
+        return res.respond(new InternalServerError('New donor insertion unsuccessful'));
     }
 
     let dummyDonations = [];
@@ -149,11 +148,9 @@ const handlePOSTDonors = async (req, res, next) => {
             }
 
      */
-    return res.status(201).send({
-        status: 'OK',
-        message: 'New donor inserted successfully',
+    return res.respond(new CreatedResponse('New donor inserted successfully',{
         newDonor: donorInsertionResult.data
-    });
+    }))
 }
 
 const handleDELETEDonors = async (req, res, next) => {
@@ -175,10 +172,7 @@ const handleDELETEDonors = async (req, res, next) => {
     let donor = res.locals.middlewareResponse.targetDonor;
 
     if (donor.designation > 1) {
-        return res.status(401).send({
-            status: 'ERROR',
-            message: "Donor must be demoted for deletion"
-        })
+        return res.respond(new ConflictError("Donor must be demoted for deletion"));
     }
 
     let deleteDonorResult = await donorInterface.deleteDonorById(donor._id);
@@ -192,10 +186,7 @@ const handleDELETEDonors = async (req, res, next) => {
             }
      */
     if (deleteDonorResult.status !== 'OK') {
-        return res.status(404).send({
-            status: 'EXCEPTION',
-            message: "Error occurred in deleting target donor"
-        })
+        return res.respond(new InternalServerError("Error occurred in deleting target donor"));
     }
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONOR", deleteDonorResult.data);
@@ -209,10 +200,7 @@ const handleDELETEDonors = async (req, res, next) => {
             }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Donor deleted successfully'
-    });
+    return res.respond(new OKResponse('Donor deleted successfully'));
 }
 
 
@@ -292,10 +280,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
         }
 
          */
-        return res.status(400).send({
-            status: 'ERROR',
-            message: 'You are not allowed to search donors of other halls'
-        });
+        return res.respond(new ForbiddenError('You are not allowed to search donors of other halls'));
     }
 
     let queryBuilder = {}
@@ -408,12 +393,9 @@ const handleGETSearchOptimized = async (req, res, next) => {
                 description: 'Successful donor deletion'
             }
     */
-
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Donors queried successfully',
+    return res.respond(new OKResponse('Donors queried successfully',{
         filteredDonors: result.data
-    });
+    }))
 }
 
 const handlePATCHDonorsComment = async (req, res, next) => {
@@ -448,16 +430,13 @@ const handlePATCHDonorsComment = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
-                    message: 'Comment posted successfully'
+                    message: 'Comment updated successfully'
                 },
                 description: 'In case of successfully saving the comment'
             }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Comment posted successfully'
-    });
+    return res.respond(new OKResponse('Comment updated successfully'))
 }
 
 const handlePATCHDonorsPassword = async (req, res, next) => {
@@ -493,10 +472,7 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
         }
 
          */
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Target user does not have an account'
-        });
+        return res.respond(new ConflictError('Target user does not have an account'));
     }
 
 
@@ -518,10 +494,7 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
     }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Password changed successfully'
-    });
+    return res.respond(new OKResponse('Password changed successfully'));
 }
 
 const handlePATCHDonors = async (req, res, next) => {
@@ -575,17 +548,11 @@ const handlePATCHDonors = async (req, res, next) => {
     let user = res.locals.middlewareResponse.donor;
 
     if (reqBody.email !== "" && !await emailInterface.checkIfEmailExists(reqBody.email)) {
-        return res.status(404).send({
-            status: 'ERROR',
-            message: 'Email address does not exist'
-        });
+        return res.respond(new NotFoundError('Email address does not exist'));
     }
 
     if (target.email !== reqBody.email && !target._id.equals(user._id)) {
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'You do not have permission to edit email address of another user'
-        });
+        return res.respond(new ForbiddenError('You do not have permission to edit email address of another user'))
     }
 
     target.name = reqBody.name;
@@ -615,10 +582,7 @@ const handlePATCHDonors = async (req, res, next) => {
             }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Donor updated successfully'
-    });
+    return res.respond(new OKResponse('Donor updated successfully'));
 }
 
 const handlePATCHDonorsDesignation = async (req, res, next) => {
@@ -655,17 +619,11 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
         }
 
          */
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Can\'t promote volunteer or can\'t demote donor'
-        });
+        return res.respond(new ConflictError('Can\'t promote volunteer or can\'t demote donor'));
     }
 
     if (donor.hall > 6) {
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Donor does not have a valid hall'
-        });
+        return res.respond(new ConflictError('Donor does not have a valid hall'));
     }
 
     if (req.body.promoteFlag) {
@@ -694,10 +652,7 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
     }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Target user promoted/demoted successfully'
-    });
+    return res.respond(new OKResponse('Target user promoted/demoted successfully'));
 }
 
 const handleGETVolunteers = async (req, res, next) => {
@@ -736,10 +691,7 @@ const handleGETVolunteers = async (req, res, next) => {
         }
 
          */
-        return res.status(400).send({
-            status: donorsQueryResult.status,
-            message: donorsQueryResult.message
-        });
+        return res.respond(new InternalServerError(donorsQueryResult.message));
     }
 
     let volunteerList = donorsQueryResult.data;
@@ -765,11 +717,9 @@ const handleGETVolunteers = async (req, res, next) => {
      */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ VOLUNTEERS", {});
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Volunteer list fetched successfully',
+    return res.respond(new OKResponse('Volunteer list fetched successfully',{
         volunteerList
-    });
+    }))
 }
 
 const handlePATCHAdmins = async (req, res, next) => {
@@ -800,17 +750,11 @@ const handlePATCHAdmins = async (req, res, next) => {
             description: 'If fetched user is not a volunteer , user will get this error message'
         }
          */
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'User is not a volunteer'
-        });
+        return res.respond(new ConflictError('User is not a volunteer'));
     }
 
     if (targetDonor.hall > 6) {
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'User does not have a valid hall'
-        });
+        return res.respond(new ConflictError('User does not have a valid hall'));
     }
 
     let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
@@ -830,10 +774,7 @@ const handlePATCHAdmins = async (req, res, next) => {
             description: 'hall admin change unsuccessful'
         }
          */
-        return res.status(400).send({
-            status: "ERROR",
-            message: 'Could not change hall admin'
-        });
+        return res.respond(new InternalServerError(prevHallAdminUpdateResult.message));
     }
 
     // Make new hall admin
@@ -851,10 +792,7 @@ const handlePATCHAdmins = async (req, res, next) => {
             }
 
      */
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Successfully changed hall admin'
-    });
+    return res.respond(new OKResponse('Successfully changed hall admin'));
 }
 
 const handleGETAdmins = async (req, res, next) => {
@@ -906,16 +844,12 @@ const handleGETAdmins = async (req, res, next) => {
      */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ ADMINS", {});
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Hall admin list fetched successfully',
+    return res.respond(new OKResponse('Hall admin list fetched successfully',{
         admins
-    });
-
+    }))
 }
 
 const handleGETDonors = async (req, res, next) => {
-
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -1007,11 +941,10 @@ const handleGETDonors = async (req, res, next) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ DONOR", {name: donor.name});
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Successfully fetched donor details',
-        donor: donor
-    });
+    return res.respond(new OKResponse('Successfully fetched donor details',{
+        donor
+    }));
+
 }
 
 const handleGETDonorsMe = async (req, res, next) => {
@@ -1052,11 +985,9 @@ const handleGETDonorsMe = async (req, res, next) => {
     */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "ENTERED APP", {name: donor.name});
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Successfully fetched donor details',
-        donor: donor
-    });
+    return res.respond(new OKResponse('Successfully fetched donor details',{
+        donor
+    }))
 }
 
 const handleGETVolunteersAll = async (req, res, next) => {
@@ -1082,10 +1013,7 @@ const handleGETVolunteersAll = async (req, res, next) => {
         }
 
          */
-        return res.status(400).send({
-            status: volunteerResult.status,
-            message: volunteerResult.message
-        });
+        return res.respond(new InternalServerError(volunteerResult.message));
     }
     /*
     #swagger.responses[200] = {
@@ -1102,17 +1030,12 @@ const handleGETVolunteersAll = async (req, res, next) => {
         description: 'Volunteer list fetch successful'
     }
 */
-
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Successfully fetched donor details',
+    return res.respond(new OKResponse('Successfully fetched donor details',{
         data: volunteerResult.data
-    });
+    }))
 }
 
 const handleGETDonorsDuplicate = async (req, res) => {
-
-
     /*
     #swagger.auto = false
     #swagger.tags = ['Donors']
@@ -1151,12 +1074,10 @@ const handleGETDonorsDuplicate = async (req, res) => {
             }
 
              */
-            return res.status(200).send({
-                status: 'OK',
-                message: 'Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",
+            return res.respond(new OKResponse('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",{
                 found: true,
                 donor: duplicateDonorResult.data,
-            });
+            }))
         }
         /*
         #swagger.responses[200] = {
@@ -1170,12 +1091,10 @@ const handleGETDonorsDuplicate = async (req, res) => {
         }
 
          */
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",
+        return res.respond(new OKResponse('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",{
             found: true,
             donor: null,
-        });
+        }))
     }
 
     /*
@@ -1193,13 +1112,10 @@ const handleGETDonorsDuplicate = async (req, res) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DUPLICATE", {phone: req.query.phone});
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'No duplicate donors found',
+    return res.respond(new OKResponse('No duplicate donors found',{
         found: false,
         donor: null,
-    });
-
+    }))
 }
 
 const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
@@ -1230,22 +1146,17 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
             description: 'Donor is not a volunteer/ admin'
         }
         */
-
-        return res.status(401).send({
-            status: 'ERROR',
-            message: 'Donor is not a volunteer/ admin',
-        });
+        return res.respond(new ConflictError('Donor is not a volunteer/ admin'));
     }
 
     let tokenDeleteResult = await tokenInterface.deleteAllTokensByDonorId(donor._id);
+    if (tokenDeleteResult.status !== 'OK') {
+        return res.respond(new InternalServerError(tokenDeleteResult.message));
+    }
 
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
-
     if (tokenInsertResult.status !== 'OK') {
-        return res.status(400).send({
-            status: 'ERROR',
-            message: 'Token insertion failed',
-        });
+        return res.respond(new InternalServerError(tokenInsertResult.message));
     }
     /*
     #swagger.responses[201] = {
@@ -1259,12 +1170,9 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
 */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONOR PASSWORD REQUEST", {name: donor.name});
 
-    return res.status(201).send({
-        status: 'OK',
-        message: "Successfully created recovery link for user",
+    return res.respond(new OKResponse("Successfully created recovery link for user",{
         token: tokenInsertResult.data.token
-    });
-
+    }));
 }
 
 const handleGETDonorsDesignation = async (req, res, next) => {
@@ -1279,14 +1187,12 @@ const handleGETDonorsDesignation = async (req, res, next) => {
     let authenticatedUser = res.locals.middlewareResponse.donor;
 
     let adminsQueryResult = await donorInterface.findAdmins(2);
-
     if (adminsQueryResult.status !== 'OK') {
         return res.respond(new InternalServerError(adminsQueryResult.message));
     }
     let adminList = adminsQueryResult.data;
 
     let donorsQueryResult = await donorInterface.findVolunteersOfHall(authenticatedUser.hall);
-
     if (donorsQueryResult.status !== 'OK') {
         return res.respond(new InternalServerError(donorsQueryResult.message));
     }
@@ -1294,20 +1200,16 @@ const handleGETDonorsDesignation = async (req, res, next) => {
     let volunteerList = donorsQueryResult.data;
 
     let superAdminQuery = await donorInterface.findAdmins(3);
-
     if (superAdminQuery.status !== 'OK') {
         return res.respond(new InternalServerError(superAdminQuery.message));
     }
     let superAdminList = superAdminQuery.data;
 
-    return res.status(200).send({
-        status: 'OK',
-        message: "All designated members fetched",
+    return res.respond(new OKResponse("All designated members fetched",{
         volunteerList,
         adminList,
         superAdminList
-    });
-
+    }));
 };
 
 

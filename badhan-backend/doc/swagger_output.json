@@ -786,7 +786,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Comment posted successfully"
+                  "example": "Comment updated successfully"
                 }
               },
               "xml": {

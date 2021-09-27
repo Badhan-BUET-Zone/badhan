@@ -1,6 +1,10 @@
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
-const {InternalServerError} = require('../response/errorTypes')
+const {
+    InternalServerError,
+    NotFoundError,
+} = require('../response/errorTypes')
+const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
 const handlePOSTDonations = async (req, res, next) => {
     /*
@@ -61,11 +65,9 @@ const handlePOSTDonations = async (req, res, next) => {
         donor: donor.name
     });
 
-    return res.status(201).send({
-        status: 'OK',
-        message: 'Donation inserted successfully',
+    return res.respond(new CreatedResponse('Donation inserted successfully',{
         newDonation: donationInsertionResult.data,
-    });
+    }))
 }
 
 const handleDELETEDonations = async (req, res, next) => {
@@ -115,10 +117,7 @@ const handleDELETEDonations = async (req, res, next) => {
     });
 
     if (donationDeletionResult.status !== "OK") {
-        return res.status(404).send({
-            status: 'ERROR',
-            message: 'Matching donation not found'
-        });
+        return res.respond(new NotFoundError('Matching donation not found'))
     }
 
     donor.donationCount = Math.max(0, donor.donationCount - 1);
@@ -138,11 +137,9 @@ const handleDELETEDonations = async (req, res, next) => {
         name: donor.name
     });
 
-    return res.status(200).send({
-        status: 'OK',
-        message: 'Successfully deleted donation',
+    return res.respond(new OKResponse('Successfully deleted donation'),{
         deletedDonation: donationDeletionResult.data,
-    });
+    })
 }
 
 module.exports = {
