@@ -1,12 +1,10 @@
-let express = require('express');
-let router = express.Router();
+const AsyncRouter = require("express-async-router").AsyncRouter;
+let router = AsyncRouter();
 
 const callRecordController = require('../controllers/callRecordController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
 const callRecordValidator = require('../validations/callRecords');
-
-const asyncHandler = require('express-async-handler')
 
 router.post('/', /*#swagger.path = '/callrecords'*/
     callRecordValidator.validatePOSTCallRecords,

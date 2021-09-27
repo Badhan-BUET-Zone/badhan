@@ -1,5 +1,5 @@
-let express = require('express');
-let router = express.Router();
+const AsyncRouter = require("express-async-router").AsyncRouter;
+let router = AsyncRouter();
 
 const publicContactController = require('../controllers/publicContactController');
 const authenticator = require('../middlewares/authenticate');

@@ -14,16 +14,6 @@ class ErrorResponse extends Error{
     }
 }
 
-class DatabaseError extends ErrorResponse{
-    /**
-     * @param {string} message - Error message that caused database error
-     */
-    constructor(message)
-    {
-        super("EXCEPTION",500,message)
-    }
-}
-
 class InternalServerError extends ErrorResponse{
     /**
      * @param {string} message - Error message that caused internal server error
@@ -119,7 +109,6 @@ class TooManyRequestsError extends ErrorResponse{
 }
 
 module.exports = {
-    DatabaseError,
     InternalServerError,
     NotFoundError,
     ErrorResponse,

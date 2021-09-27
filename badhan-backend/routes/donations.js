@@ -1,5 +1,5 @@
-let express = require('express');
-let router = express.Router();
+const AsyncRouter = require("express-async-router").AsyncRouter;
+let router = AsyncRouter();
 const donationController = require('../controllers/donationController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');

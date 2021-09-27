@@ -3,6 +3,7 @@ const routeNotFoundHandler=(req, res, next)=>{
     return res.respond(new NotFoundError('Route not found'));
 }
 const internalServerErrorHandler=(error, req, res, next)=>{
+    console.log("INTERNAL SERVER ERROR");
     console.log(error);
     return res.respond(new InternalServerError(error.message));
 }

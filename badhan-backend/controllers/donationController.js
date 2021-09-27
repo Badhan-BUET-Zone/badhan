@@ -1,80 +1,74 @@
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
-const {InternalServerError}= require('../response/errorTypes')
+const {InternalServerError} = require('../response/errorTypes')
 
-const handlePOSTDonations = async (req, res,next) => {
-/*
-    #swagger.auto = false
-    #swagger.tags = ['Donations']
-    #swagger.description = 'Endpoint to insert a donation date for a donor'
-    #swagger.parameters['insertDonation'] = {
-        in: 'body',
-        description: 'Donor info for inserting donation',
-        schema: {
-            donorId: 'bhjdekj8923',
-            date: 1611100800000,
-        }
-    }
-    #swagger.security = [{
-        "api_key": []
-    }]
-
-
-    #swagger.responses[201] = {
-        schema: {
-            status: 'OK',
-            message: 'Donations inserted successfully',
-            newDonation: {
+const handlePOSTDonations = async (req, res, next) => {
+    /*
+        #swagger.auto = false
+        #swagger.tags = ['Donations']
+        #swagger.description = 'Endpoint to insert a donation date for a donor'
+        #swagger.parameters['insertDonation'] = {
+            in: 'body',
+            description: 'Donor info for inserting donation',
+            schema: {
+                donorId: 'bhjdekj8923',
                 date: 1611100800000,
-                _id: "614ec811e29ab430ddfb119a",
-                phone: 8801521438557,
-                donorId: "5e901d56effc5900177ced73",
             }
-        },
-        description: 'Donations inserted successfully'
-    }
+        }
+        #swagger.security = [{
+            "api_key": []
+        }]
 
- */
 
-    try {
-        let donor = res.locals.middlewareResponse.targetDonor;
-
-        let donationInsertionResult = await donationInterface.insertDonation({
-            phone: donor.phone,
-            donorId: donor._id,
-            date: req.body.date
-        });
-
-        if (donationInsertionResult.status !== 'OK') {
-            return res.respond(new InternalServerError(donationInsertionResult.message));
+        #swagger.responses[201] = {
+            schema: {
+                status: 'OK',
+                message: 'Donations inserted successfully',
+                newDonation: {
+                    date: 1611100800000,
+                    _id: "614ec811e29ab430ddfb119a",
+                    phone: 8801521438557,
+                    donorId: "5e901d56effc5900177ced73",
+                }
+            },
+            description: 'Donations inserted successfully'
         }
 
-        if (donor.lastDonation < req.body.date) {
-            donor.lastDonation = req.body.date;
-        }
+     */
 
-        donor.donationCount++;
+    let donor = res.locals.middlewareResponse.targetDonor;
 
-        await donor.save();
+    let donationInsertionResult = await donationInterface.insertDonation({
+        phone: donor.phone,
+        donorId: donor._id,
+        date: req.body.date
+    });
 
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONATION", {
-            ...donationInsertionResult.data,
-            donor: donor.name
-        });
-
-        return res.status(201).send({
-            status: 'OK',
-            message: 'Donation inserted successfully',
-            newDonation: donationInsertionResult.data,
-        });
-
-
-    } catch (e) {
-        next(e);
+    if (donationInsertionResult.status !== 'OK') {
+        return res.respond(new InternalServerError(donationInsertionResult.message));
     }
+
+    if (donor.lastDonation < req.body.date) {
+        donor.lastDonation = req.body.date;
+    }
+
+    donor.donationCount++;
+
+    await donor.save();
+
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONATION", {
+        ...donationInsertionResult.data,
+        donor: donor.name
+    });
+
+    return res.status(201).send({
+        status: 'OK',
+        message: 'Donation inserted successfully',
+        newDonation: donationInsertionResult.data,
+    });
 }
 
-const handleDELETEDonations = async (req, res,next) => {
+const handleDELETEDonations = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donations']
@@ -108,52 +102,47 @@ const handleDELETEDonations = async (req, res,next) => {
         }
  */
 
-    try {
-        let donor = res.locals.middlewareResponse.targetDonor;
+    let donor = res.locals.middlewareResponse.targetDonor;
 
-        let reqQuery = req.query;
+    let reqQuery = req.query;
 
-        let givenDate = parseInt(reqQuery.date);
+    let givenDate = parseInt(reqQuery.date);
 
 
-        let donationDeletionResult = await donationInterface.deleteDonationByQuery({
-            donorId: donor._id,
-            date: givenDate
+    let donationDeletionResult = await donationInterface.deleteDonationByQuery({
+        donorId: donor._id,
+        date: givenDate
+    });
+
+    if (donationDeletionResult.status !== "OK") {
+        return res.status(404).send({
+            status: 'ERROR',
+            message: 'Matching donation not found'
         });
-
-        if (donationDeletionResult.status !== "OK") {
-            return res.status(404).send({
-                status: 'ERROR',
-                message: 'Matching donation not found'
-            });
-        }
-
-        donor.donationCount = Math.max(0, donor.donationCount - 1);
-
-        let maxDonationResult = await donationInterface.findMaxDonationByDonorId(donor._id);
-
-        if (maxDonationResult.status === "OK") {
-            donor.lastDonation = maxDonationResult.data[0].date;
-        } else {
-            donor.lastDonation = 0;
-        }
-
-        await donor.save();
-
-        await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATION", {
-            ...donationDeletionResult.data,
-            name: donor.name
-        });
-
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Successfully deleted donation',
-            deletedDonation: donationDeletionResult.data,
-        });
-
-    } catch (e) {
-        next(e);
     }
+
+    donor.donationCount = Math.max(0, donor.donationCount - 1);
+
+    let maxDonationResult = await donationInterface.findMaxDonationByDonorId(donor._id);
+
+    if (maxDonationResult.status === "OK") {
+        donor.lastDonation = maxDonationResult.data[0].date;
+    } else {
+        donor.lastDonation = 0;
+    }
+
+    await donor.save();
+
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATION", {
+        ...donationDeletionResult.data,
+        name: donor.name
+    });
+
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Successfully deleted donation',
+        deletedDonation: donationDeletionResult.data,
+    });
 }
 
 module.exports = {

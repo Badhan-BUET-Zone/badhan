@@ -2,7 +2,7 @@ const publicContactInterface = require('../db/interfaces/publicContactInterface'
 const logInterface = require('../db/interfaces/logInterface');
 const {InternalServerError} = require('../response/errorTypes');
 
-const handleDELETEPublicContact = async (req, res,next) => {
+const handleDELETEPublicContact = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
@@ -50,37 +50,33 @@ const handleDELETEPublicContact = async (req, res,next) => {
 
      */
 
-    try {
-        let searchResult = await publicContactInterface.findPublicContactById(req.query.contactId);
-        if (searchResult.status !== "OK") {
-            return res.status(404).send({
-                status: 'ERROR',
-                message: "Public contact not found"
-            });
-        }
-
-        if (!searchResult.data.donorId.equals(req.query.donorId)) {
-            return res.status(400).send({
-                status: 'ERROR',
-                message: "Public contact not consistent with donorId"
-            });
-        }
-
-        let deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId);
-        if (deletionResult.status !== "OK") {
-            return res.respond(new InternalServerError( deletionResult.message));
-        }
-        return res.status(200).send({
-            status: 'OK',
-            message: 'Public contact deleted successfully'
+    let searchResult = await publicContactInterface.findPublicContactById(req.query.contactId);
+    if (searchResult.status !== "OK") {
+        return res.status(404).send({
+            status: 'ERROR',
+            message: "Public contact not found"
         });
-    } catch (e) {
-        next(e);
     }
+
+    if (!searchResult.data.donorId.equals(req.query.donorId)) {
+        return res.status(400).send({
+            status: 'ERROR',
+            message: "Public contact not consistent with donorId"
+        });
+    }
+
+    let deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId);
+    if (deletionResult.status !== "OK") {
+        return res.respond(new InternalServerError(deletionResult.message));
+    }
+    return res.status(200).send({
+        status: 'OK',
+        message: 'Public contact deleted successfully'
+    });
 
 }
 
-const handlePOSTPublicContact = async (req, res,next) => {
+const handlePOSTPublicContact = async (req, res, next) => {
     /*
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
@@ -109,19 +105,15 @@ const handlePOSTPublicContact = async (req, res,next) => {
         description: 'Success message'
     }
  */
-    try {
-        let insertionResult = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup);
-        if (insertionResult.status !== "OK") {
-            return res.respond(new InternalServerError(insertionResult.message));
-        }
-        return res.status(201).send({
-            status: 'OK',
-            message: 'Public contact added successfully',
-            publicContact: insertionResult.data
-        })
-    } catch (e) {
-        next(e);
+    let insertionResult = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup);
+    if (insertionResult.status !== "OK") {
+        return res.respond(new InternalServerError(insertionResult.message));
     }
+    return res.status(201).send({
+        status: 'OK',
+        message: 'Public contact added successfully',
+        publicContact: insertionResult.data
+    })
 }
 
 const handleGETPublicContacts = async (req, res, next) => {
@@ -150,16 +142,13 @@ const handleGETPublicContacts = async (req, res, next) => {
         description: 'Success message'
     }
 */
-    try {
-        let searchResult = await publicContactInterface.findAllPublicContacts();
-        return res.status(200).send({
-            status: 'OK',
-            message: "All public contacts fetched successfully",
-            publicContacts: searchResult.data,
-        })
-    } catch (e) {
-        next(e);
-    }
+    let searchResult = await publicContactInterface.findAllPublicContacts();
+    return res.status(200).send({
+        status: 'OK',
+        message: "All public contacts fetched successfully",
+        publicContacts: searchResult.data,
+    })
+
 }
 
 

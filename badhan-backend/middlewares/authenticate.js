@@ -2,13 +2,11 @@ const jwt = require('jsonwebtoken');
 const donorInterface = require('../db/interfaces/donorInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
 const {UnauthorizedError, InternalServerError, ForbiddenError, NotFoundError} = require("../response/errorTypes");
-const asyncHandler = require('express-async-handler')
 
-let handleAuthentication = asyncHandler(async (req, res, next) => {
+let handleAuthentication = async (req, res, next) => {
     /*
     #swagger.auto = false
      */
-
     let token = req.header('x-auth');
     let decodedDonor;
 
@@ -40,17 +38,17 @@ let handleAuthentication = asyncHandler(async (req, res, next) => {
     };
     return next();
 
-});
+};
 
 
-let handleSuperAdminCheck = asyncHandler(async (req, res, next) => {
+let handleSuperAdminCheck = async (req, res, next) => {
     if (res.locals.middlewareResponse.donor.designation === 3) {
         return next();
     }
     return res.respond(new ForbiddenError('You are not permitted to access this route'));
-});
+};
 
-let handleHallAdminCheck = asyncHandler(async (req, res, next) => {
+let handleHallAdminCheck = async (req, res, next) => {
     /* #swagger.responses[401] = {
                     schema: {
                     status: 'ERROR',
@@ -62,9 +60,9 @@ let handleHallAdminCheck = asyncHandler(async (req, res, next) => {
         return res.respond(new ForbiddenError('You are not permitted to access this route'));
     }
     next();
-});
+};
 
-let handleHigherDesignationCheck = asyncHandler(async (req, res, next) => {
+let handleHigherDesignationCheck = async (req, res, next) => {
     /* #swagger.responses[401] = {
         schema: {
         status: 'ERROR',
@@ -77,9 +75,9 @@ let handleHigherDesignationCheck = asyncHandler(async (req, res, next) => {
         return res.respond(new ForbiddenError('You cannot modify the details of a Badhan member with higher designation'));
     }
     next();
-});
+};
 
-let handleFetchTargetDonor = asyncHandler(async (req, res, next) => {
+let handleFetchTargetDonor = async (req, res, next) => {
     /* #swagger.responses[404] = {
               schema: {
                 status: 'ERROR',
@@ -108,17 +106,17 @@ let handleFetchTargetDonor = asyncHandler(async (req, res, next) => {
     }
     res.locals.middlewareResponse.targetDonor = donorQueryResult.data;
     return next();
-});
+};
 
-let handleHallPermissionOrCheckAvailableToAll = asyncHandler(async (req, res, next) => {
+let handleHallPermissionOrCheckAvailableToAll = async (req, res, next) => {
     let targetDonor = res.locals.middlewareResponse.targetDonor;
     if (targetDonor.availableToAll) {
         return next();
     }
     await handleHallPermission(req, res, next);
-});
+};
 
-let handleHallPermission = asyncHandler(async (req, res, next) => {
+let handleHallPermission = async (req, res, next) => {
     /*
     A super admin can access the data of any hall.
     Every hall admin and volunteer can only access data of their own halls along with the data of
@@ -139,7 +137,7 @@ let handleHallPermission = asyncHandler(async (req, res, next) => {
         return res.respond(new ForbiddenError('You are not authorized to access a donor of different hall'));
     }
     return next();
-});
+};
 
 module.exports = {
     //CHECK PERMISSIONS
