@@ -44,6 +44,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
     let user = res.locals.middlewareResponse.donor;
     let callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id);
 
+
     await logInterface.addLog(user._id, "CREATE CALLRECORD", {callee: donor.name});
 
     return res.respond(new OKResponse('Call record insertion successful', {

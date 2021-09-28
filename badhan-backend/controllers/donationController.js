@@ -105,11 +105,8 @@ const handleDELETEDonations = async (req, res, next) => {
  */
 
     let donor = res.locals.middlewareResponse.targetDonor;
-
     let reqQuery = req.query;
-
     let givenDate = parseInt(reqQuery.date);
-
 
     let donationDeletionResult = await donationInterface.deleteDonationByQuery({
         donorId: donor._id,

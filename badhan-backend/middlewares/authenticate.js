@@ -17,7 +17,6 @@ let handleAuthentication = async (req, res, next) => {
     }
 
     let tokenCheckResult = await tokenInterface.findTokenDataByTokenCached(token, decodedDonor._id);
-
     if (tokenCheckResult.status !== 'OK') {
         return res.respond(new UnauthorizedError('You have been logged out'));
     }
@@ -25,7 +24,6 @@ let handleAuthentication = async (req, res, next) => {
     let tokenData = tokenCheckResult.data;
 
     let findDonorResult = await donorInterface.fineDonorById(tokenData.donorId);
-
     if (findDonorResult.status !== 'OK') {
         return res.respond(new InternalServerError('No user found associated with token'));
     }
@@ -100,7 +98,6 @@ let handleFetchTargetDonor = async (req, res, next) => {
     let donorQueryResult = await donorInterface.findDonorByQuery({
         _id: donorId
     });
-
     if (donorQueryResult.status !== 'OK') {
         return res.respond(new NotFoundError('Donor not found'));
     }
