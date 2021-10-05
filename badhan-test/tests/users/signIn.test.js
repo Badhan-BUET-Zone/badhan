@@ -11,10 +11,12 @@ test('POST /users/signIn',async()=>{
 
     let validationResult = validate(response.data, {
         "type": "object",
+        "additionalProperties":false,
         "properties": {
             "status":{"type":"string"},
             "statusCode": { "type": "number" },
             "token": { "type": "string" },
+            "message":{"type":"string"}
         },
     });
     expect(validationResult.errors).toEqual([]);
