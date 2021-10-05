@@ -4,7 +4,7 @@ Current active backends are- an express app and firebase realtime database
  */
 const axios = require('axios');
 
-const baseURL = "https://badhan-test.herokuapp.com";
+const baseURL = "https://badhan-web-test.herokuapp.com";
 
 const badhanAxios = axios.create({
     baseURL
