@@ -10,8 +10,6 @@ const badhanAxios = axios.create({
     baseURL
 });
 
-const CancelToken = axios.CancelToken;
-
 const enableGuestAPI = () => {
     badhanAxios.defaults.baseURL += '/guest';
 }
@@ -30,31 +28,12 @@ const firebaseAxios = axios.create({
 
 badhanAxios.interceptors.request.use((config) => {
     // Do something before request is sent
-    console.log("%cREQUEST TO " + config.method + " " + config.url + ": ", 'color: #ff00ff', config.data, config.params);
-
-    store.dispatch('notification/clearNotification');
-
+    // console.log("%cREQUEST TO " + config.method + " " + config.url + ": ", 'color: #ff00ff', config.data, config.params);
+    
     config.headers = {
-        'x-auth': store.getters.getToken
+        'x-auth': null
     }
-
-    if (window.navigator.onLine) {
-        return config;
-    }
-
-    store.dispatch('notification/notifyError', "Network Not Available");
-
-    return {
-        ...config,
-        cancelToken: new CancelToken((cancel) => cancel('Network Unavailable'))
-    };
-    // return {
-    //     headers: {},
-    //     method: config.method,
-    //     url: ""
-    // };
-
-    // return Promise.reject("Network not available");
+    return config;
 }, function (error) {
     // Do something with request error
     return Promise.reject(error);
@@ -62,36 +41,17 @@ badhanAxios.interceptors.request.use((config) => {
 
 badhanAxios.interceptors.response.use((response) => {
     // Do something before request is sent
-    console.log("%cRESPONSE FROM " + response.config.method + " " + response.config.url + ": ", 'color: #00ff00', response);
+    // console.log("%cRESPONSE FROM " + response.config.method + " " + response.config.url + ": ", 'color: #00ff00', response);
 
     return response;
 }, (error) => {
     // Do something with request error
-    let errorNotification;
-    if (error.response && error.response.data) {
-        store.commit('errorStore/addError', {
-            name: "Backend error",
-            message: error.response.data.message,
-            stack: error.response.config.method + " " + error.response.config.url
-        });
-        errorNotification = processError(error);
-    } else if (axios.isCancel(error)) {
-        errorNotification = "Network Unavailable";
-    } else {
-        errorNotification = "Unknown Error Occurred";
-    }
-    console.log("Axios Error:", errorNotification);
-
-    store.dispatch('notification/notifyError', errorNotification)
     return Promise.reject(error);
 });
 
 firebaseAxios.interceptors.request.use((config) => {
     // Do something before request is sent
-    console.log("%cREQUEST TO " + config.url + ": ", 'color: #ff00ff', config.data);
-
-    store.dispatch('notification/clearNotification');
-
+    // console.log("%cREQUEST TO " + config.url + ": ", 'color: #ff00ff', config.data);
     return config;
 }, function (error) {
     // Do something with request error
@@ -100,11 +60,10 @@ firebaseAxios.interceptors.request.use((config) => {
 
 firebaseAxios.interceptors.response.use((response) => {
     // Do something before request is sent
-    console.log("%cRESPONSE FROM " + response.config.url + ": ", 'color: #00ff00', response);
+    // console.log("%cRESPONSE FROM " + response.config.url + ": ", 'color: #00ff00', response);
     return response;
 }, (error) => {
     // Do something with request error
-    store.dispatch('notification/notifyError', processError(error))
     return Promise.reject(error);
 });
 
@@ -120,123 +79,102 @@ CONVENTIONS TO BE FOLLOWED
 
 const handlePATCHDonorsDesignation = async (payload) => {
     try {
-        let response = await badhanAxios.patch("/donors/designation", payload);
-        store.dispatch('notification/notifySuccess', response.data.message, {root: true});
-        return true;
-    } catch (error) {
-        return false;
+        return await badhanAxios.patch("/donors/designation", payload);
+    } catch (e) {
+        return e.response;
     }
 }
 const handlePATCHUsersPassword = async (payload) => {
     try {
-        let response = await badhanAxios.patch("/users/password", payload);
-        store.dispatch('notification/notifySuccess', response.data.message);
-        return response.data;
-    } catch (error) {
-        return null;
+        return await badhanAxios.patch("/users/password", payload);
+    } catch (e) {
+        return e.response;
     }
 }
 const handleDELETEDonors = async (payload) => {
     try {
         return await badhanAxios.delete("/donors", {params: payload});
-    } catch (error) {
-        return error.response;
+    } catch (e) {
+        return e.response;
     }
 }
 
 const handlePOSTDonorsPasswordRequest = async (payload) => {
     try {
-        let response = await badhanAxios.post('/donors/password', payload);
-        store.dispatch('notification/notifySuccess', response.data.message);
-        return response.data.token;
-    } catch (error) {
-        return null;
+        return await badhanAxios.post('/donors/password', payload);
+    } catch (e) {
+        return e.response;
     }
 }
 
 const handleGETDonorsDuplicate = async (payload) => {
     try {
-        let response = await badhanAxios.get('/donors/checkDuplicate', {params: payload});
-        return response.data;
+        return await badhanAxios.get('/donors/checkDuplicate', {params: payload});
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handleGETLogsByDate = async (payload) => {
     try {
-        let response = await badhanAxios.get(`/log/date/${payload.timeStamp}`);
-        return response.data.logs;
+        return await badhanAxios.get(`/log/date/${payload.timeStamp}`);
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handleGETLogs = async () => {
     try {
-        let response = await badhanAxios.get('/log');
-        return response.data.logs;
+        return await badhanAxios.get('/log');
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handleDELETESignOut = async () => {
     try {
-        let response = await badhanAxios.delete('/users/signout', {});
-        return response.data;
+        return await badhanAxios.delete('/users/signout', {});;
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handleDELETESignOutAll = async () => {
     try {
-        let response = await badhanAxios.delete('/users/signout/all');
-        return response.data;
+        return await badhanAxios.delete('/users/signout/all');
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handlePOSTRedirection = async () => {
     try {
-        let response = await badhanAxios.post('/users/redirection');
-        return response.data.token;
+        return await badhanAxios.post('/users/redirection');
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handlePATCHRedirectedAuthentication = async (payload) => {
     try {
-        let response = await badhanAxios.patch('/users/redirection', payload);
-        return response.data.token;
+        return await badhanAxios.patch('/users/redirection', payload);
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handleGETDonorsMe = async () => {
     try {
         return await badhanAxios.get('/donors/me');
     } catch (e) {
-        if (axios.isCancel(e)) {
-            return {
-                status: 503,
-                message: e.message
-            }
-        }
         return e.response;
     }
 }
 const handlePOSTSignIn = async (payload) => {
     try {
-        let response = await badhanAxios.post('/users/signin', payload);
-        return response.data;
+        return await badhanAxios.post('/users/signin', payload);
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handleGETVolunteers = async () => {
     try {
-        let response = await badhanAxios.get('/volunteers');
-        return response.data.volunteerList;
+        return await badhanAxios.get('/volunteers');
     } catch (e) {
-        return null;
+        return e.response;
     }
 }
 const handlePOSTDonors = async (payload) => {
@@ -415,7 +353,7 @@ const handleGETCredits = async () => {
         return e.response;
     }
 }
-export {
+module.exports= {
     badhanAxios,
     firebaseAxios,
     enableGuestAPI,
