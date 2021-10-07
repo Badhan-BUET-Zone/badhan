@@ -4,7 +4,7 @@ const {authenticate}=require('../fixtures/authToken')
 
 beforeEach(authenticate);
 
-test('DELETE/users/signOut',async()=>{
+test('DELETE/users/signOutAll',async()=>{
     let response = await api.handleDELETESignOutAll();
     let validationResult = validate(response.data, {
         "type": "object",
