@@ -1,8 +1,14 @@
 const api = require('../../api');
 const validate = require('jsonschema').validate;
+const {authenticate}=require('../fixtures/authToken')
 
-test('POST/users/password/forgot',async()=>{
-    // let response = await api.handlePOSTPasswordForgot({phone:"8801521438557"});
+beforeEach(authenticate);
+
+test('DELETE/users/logins/{tokenId}',async()=>{
+    let logins = await api.handleGETLogins();
+    console.log(logins.data);
+    // let response = await api.handleDELETELogins();
+    // console.log(response);
     // let validationResult = validate(response.data, {
     //     "type": "object",
     //     "additionalProperties":false,
@@ -12,5 +18,6 @@ test('POST/users/password/forgot',async()=>{
     //         "message":{"type":"string"}
     //     },
     // });
+    // console.log(validationResult.errors);
     // expect(validationResult.errors).toEqual([]);
 })

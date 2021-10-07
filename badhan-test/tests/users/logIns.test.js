@@ -6,6 +6,7 @@ beforeEach(authenticate);
 
 test('GET/users/logins',async()=>{
     let response = await api.handleGETLogins();
+    console.log(response);
     let validationResult = validate(response.data, {
         "type": "object",
         "additionalProperties":false,
@@ -17,6 +18,7 @@ test('GET/users/logins',async()=>{
                 "type":"array",
                 "items":{
                     "types":"object",
+                    additionalProperties:false,
                     "properties":{
                         "_id":{"type":"string"},
                         "os":{"type":"string"},
@@ -26,8 +28,9 @@ test('GET/users/logins',async()=>{
                     }
                 }
             },
-            currentLogins:{
+            "currentLogins":{
                 "type":"object",
+                additionalProperties:false,
                 "properties":{
                     "_id":{"type":"string"},
                     "os":{"type":"string"},
@@ -38,6 +41,5 @@ test('GET/users/logins',async()=>{
             }
         },
     });
-    console.log(validationResult.errors);
     expect(validationResult.errors).toEqual([]);
 })
