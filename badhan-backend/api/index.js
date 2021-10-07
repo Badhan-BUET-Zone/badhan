@@ -367,7 +367,7 @@ module.exports= {
     resetBaseURL,
     isGuestEnabled,
     setToken,
-    getToken
+    getToken,
     ///////////////////ROUTES////////////
     handlePATCHDonorsDesignation,
     handlePATCHUsersPassword,
