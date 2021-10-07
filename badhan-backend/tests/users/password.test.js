@@ -17,6 +17,5 @@ test('PATCH/users/password',async()=>{
             "token":{"type":"string"}
         },
     });
-    console.log(validationResult.errors);
     expect(validationResult.errors).toEqual([]);
 })
