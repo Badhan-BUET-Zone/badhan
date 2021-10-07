@@ -3,6 +3,11 @@ This module handles all necessary tasks to communicate with the backend.
 Current active backends are- an express app and firebase realtime database
  */
 const axios = require('axios');
+let token=null;
+
+const setToken = (authToken) =>{
+    token = authToken;
+}
 
 const baseURL = "https://badhan-web-test.herokuapp.com";
 
@@ -31,7 +36,7 @@ badhanAxios.interceptors.request.use((config) => {
     // console.log("%cREQUEST TO " + config.method + " " + config.url + ": ", 'color: #ff00ff', config.data, config.params);
     
     config.headers = {
-        'x-auth': null
+        'x-auth': token
     }
     return config;
 }, function (error) {
@@ -359,7 +364,7 @@ module.exports= {
     enableGuestAPI,
     resetBaseURL,
     isGuestEnabled,
-
+    setToken,
     ///////////////////ROUTES////////////
     handlePATCHDonorsDesignation,
     handlePATCHUsersPassword,
