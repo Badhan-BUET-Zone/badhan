@@ -5,7 +5,7 @@ const validate = require('jsonschema').validate;
 test('DELETE/users/signOut',async()=>{
     let user = await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
     api.setToken(user.data.token);
-    let response = await api.handleDELETESignOut();
+    let response = await api.handleDELETESignOutAll();
     let validationResult = validate(response.data, {
         "type": "object",
         "additionalProperties":false,
