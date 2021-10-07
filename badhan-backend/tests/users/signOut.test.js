@@ -2,16 +2,15 @@ const api = require('../../api');
 const env = require('../../config/config');
 const validate = require('jsonschema').validate;
 
-test('POST /users/signIn',async()=>{
-    let response = await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
-    //response.body.taaha=true
+test('DELETE /users/signOut',async()=>{
+    let user = await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
+    let response = await api.handleDELETESignOut(user.data.token);
     let validationResult = validate(response.data, {
         "type": "object",
         "additionalProperties":false,
         "properties": {
             "status":{"type":"string"},
             "statusCode": { "type": "number" },
-            "token": { "type": "string" },
             "message":{"type":"string"}
         },
     });

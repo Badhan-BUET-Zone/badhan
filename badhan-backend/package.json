@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --watch"
+  },
+  "jest": {
+    "testTimeout": 15000
   },
   "author": "",
   "license": "ISC",
