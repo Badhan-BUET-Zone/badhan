@@ -15,4 +15,5 @@ test('POST/users/signIn',async()=>{
         },
     });
     expect(validationResult.errors).toEqual([]);
+    api.setToken(response.data.token);
 })

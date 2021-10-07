@@ -1,10 +1,10 @@
 const api = require('../../api');
-const env = require('../../config/config');
 const validate = require('jsonschema').validate;
+const {authenticate}=require('../fixtures/authToken')
+
+beforeEach(authenticate);
 
 test('DELETE/users/signOut',async()=>{
-    let user = await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
-    api.setToken(user.data.token);
     let response = await api.handleDELETESignOutAll();
     let validationResult = validate(response.data, {
         "type": "object",
@@ -16,4 +16,5 @@ test('DELETE/users/signOut',async()=>{
         },
     });
     expect(validationResult.errors).toEqual([]);
+    api.setToken(null);
 })

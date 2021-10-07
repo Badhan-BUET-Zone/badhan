@@ -8,7 +8,9 @@ let token=null;
 const setToken = (authToken) =>{
     token = authToken;
 }
-
+const getToken = (authToken) =>{
+    return token;
+}
 const baseURL = "https://badhan-web-test.herokuapp.com";
 
 const badhanAxios = axios.create({
@@ -365,6 +367,7 @@ module.exports= {
     resetBaseURL,
     isGuestEnabled,
     setToken,
+    getToken,
     ///////////////////ROUTES////////////
     handlePATCHDonorsDesignation,
     handlePATCHUsersPassword,
