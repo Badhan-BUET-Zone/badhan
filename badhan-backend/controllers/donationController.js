@@ -1,7 +1,7 @@
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {
-    InternalServerError,
+    InternalServerError500,
     NotFoundError,
 } = require('../response/errorTypes')
 const {CreatedResponse,OKResponse} = require('../response/successTypes');
@@ -27,6 +27,7 @@ const handlePOSTDonations = async (req, res, next) => {
         #swagger.responses[201] = {
             schema: {
                 status: 'OK',
+                statusCode: 201,
                 message: 'Donations inserted successfully',
                 newDonation: {
                     date: 1611100800000,
@@ -49,7 +50,7 @@ const handlePOSTDonations = async (req, res, next) => {
     });
 
     if (donationInsertionResult.status !== 'OK') {
-        return res.respond(new InternalServerError(donationInsertionResult.message));
+        return res.respond(new InternalServerError500(donationInsertionResult.message));
     }
 
     if (donor.lastDonation < req.body.date) {
@@ -91,6 +92,7 @@ const handleDELETEDonations = async (req, res, next) => {
         #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 404,
                 message: 'Matching donation not found'
             },
             description: 'Error case'
@@ -98,6 +100,7 @@ const handleDELETEDonations = async (req, res, next) => {
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
+                statusCode: 200,
                 message: 'Successfully deleted donation'
             },
             description: 'Donation deletion successful'

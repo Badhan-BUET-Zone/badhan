@@ -1,5 +1,4 @@
 const {Donor} = require('../models/Donor');
-const {cacheExpiryTime} = require('../mongoose');
 
 const insertDonor = async (donorObject) => {
     let donor = new Donor(donorObject);
@@ -66,8 +65,8 @@ const deleteDonorById = async (donorId) => {
         }
     }
 };
-const fineDonorById = async (id) => {
-    let data = await Donor.findById(id).cache(0);
+const findDonorById = async (id) => {
+    let data = await Donor.findById(id);
     if (data) {
         return {
             data,
@@ -270,7 +269,7 @@ module.exports = {
     findAllVolunteers,
     findDonorByPhone,
     findDonorByIDAndUpdateCommentTime,
-    fineDonorById,
+    findDonorById,
     findAdmins,
     findVolunteersOfHall
 }

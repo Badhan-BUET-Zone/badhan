@@ -14,7 +14,7 @@ class ErrorResponse extends Error{
     }
 }
 
-class InternalServerError extends ErrorResponse{
+class InternalServerError500 extends ErrorResponse{
     /**
      * @param {string} message - Error message that caused internal server error
      */
@@ -82,7 +82,7 @@ class UnauthorizedError extends ErrorResponse{
         super("ERROR",401,message)
     }
 }
-class ConflictError extends ErrorResponse{
+class ConflictError409 extends ErrorResponse{
     /*
     409 Conflict
     This response is sent when a request conflicts with the current state of the server.
@@ -109,12 +109,12 @@ class TooManyRequestsError extends ErrorResponse{
 }
 
 module.exports = {
-    InternalServerError,
+    InternalServerError500,
     NotFoundError,
     ErrorResponse,
     BadRequestError,
     ForbiddenError,
     UnauthorizedError,
-    ConflictError,
+    ConflictError409,
     TooManyRequestsError,
 };

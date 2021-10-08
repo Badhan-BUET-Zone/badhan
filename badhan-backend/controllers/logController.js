@@ -2,14 +2,14 @@ const donorInterface = require('../db/interfaces/donorInterface');
 const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {
-    InternalServerError,
+    InternalServerError500,
     BadRequestError,
     ForbiddenError,
     NotFoundError,
     UnauthorizedError,
     TooManyRequestsError,
     ErrorResponse,
-    ConflictError
+    ConflictError409
 } = require('../response/errorTypes')
 const {CreatedResponse,OKResponse} = require('../response/successTypes');
 

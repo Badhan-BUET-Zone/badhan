@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const donorInterface = require('../db/interfaces/donorInterface');
 const tokenInterface = require('../db/interfaces/tokenInterface');
-const {UnauthorizedError, InternalServerError, ForbiddenError, NotFoundError} = require("../response/errorTypes");
+const {UnauthorizedError, InternalServerError500, ForbiddenError, NotFoundError} = require("../response/errorTypes");
 
 let handleAuthentication = async (req, res, next) => {
     /*
@@ -23,9 +23,9 @@ let handleAuthentication = async (req, res, next) => {
 
     let tokenData = tokenCheckResult.data;
 
-    let findDonorResult = await donorInterface.fineDonorById(tokenData.donorId);
+    let findDonorResult = await donorInterface.findDonorById(tokenData.donorId);
     if (findDonorResult.status !== 'OK') {
-        return res.respond(new InternalServerError('No user found associated with token'));
+        return res.respond(new InternalServerError500('No user found associated with token'));
     }
 
     let donor = findDonorResult.data;

@@ -7,14 +7,14 @@ const emailInterface = require('../db/interfaces/emailInterface');
 const {halls} = require('../constants')
 
 const {
-    InternalServerError,
+    InternalServerError500,
     BadRequestError,
     ForbiddenError,
     NotFoundError,
     UnauthorizedError,
     TooManyRequestsError,
     ErrorResponse,
-    ConflictError
+    ConflictError409
 } = require('../response/errorTypes')
 const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
@@ -61,6 +61,7 @@ const handlePOSTDonors = async (req, res, next) => {
             #swagger.responses[409] = {
                 schema: {
                     status: 'ERROR',
+                    statusCode: 409,
                     message: 'Donor found with duplicate phone number',
                     donor: 'donor array'
                 },
@@ -68,12 +69,13 @@ const handlePOSTDonors = async (req, res, next) => {
             }
 
              */
-            return res.respond(new ConflictError('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall"));
+            return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall"));
         }
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[409] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 409,
                 message: 'Donor found with duplicate phone number in another hall',
                 donor: 'this field will return null'
             },
@@ -81,7 +83,7 @@ const handlePOSTDonors = async (req, res, next) => {
         }
 
          */
-        return res.respond(new ConflictError('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor."))
+        return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor."))
     }
 
     //if the hall is unknown, then the donor must be available to all
@@ -116,7 +118,7 @@ const handlePOSTDonors = async (req, res, next) => {
         }
 
          */
-        return res.respond(new InternalServerError('New donor insertion unsuccessful'));
+        return res.respond(new InternalServerError500('New donor insertion unsuccessful'));
     }
 
     let dummyDonations = [];
@@ -132,7 +134,7 @@ const handlePOSTDonors = async (req, res, next) => {
 
 
     if (dummyInsertionResult.status !== "OK") {
-        return res.respond(new InternalServerError('Dummy donations insertion unsuccessful'));
+        return res.respond(new InternalServerError500('Dummy donations insertion unsuccessful'));
     }
 
 
@@ -172,7 +174,7 @@ const handleDELETEDonors = async (req, res, next) => {
     let donor = res.locals.middlewareResponse.targetDonor;
 
     if (donor.designation > 1) {
-        return res.respond(new ConflictError("Donor must be demoted for deletion"));
+        return res.respond(new ConflictError409("Donor must be demoted for deletion"));
     }
 
     let deleteDonorResult = await donorInterface.deleteDonorById(donor._id);
@@ -186,7 +188,7 @@ const handleDELETEDonors = async (req, res, next) => {
             }
      */
     if (deleteDonorResult.status !== 'OK') {
-        return res.respond(new InternalServerError("Error occurred in deleting target donor"));
+        return res.respond(new InternalServerError500("Error occurred in deleting target donor"));
     }
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONOR", deleteDonorResult.data);
@@ -472,7 +474,7 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
         }
 
          */
-        return res.respond(new ConflictError('Target user does not have an account'));
+        return res.respond(new ConflictError409('Target user does not have an account'));
     }
 
 
@@ -619,11 +621,11 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
         }
 
          */
-        return res.respond(new ConflictError('Can\'t promote volunteer or can\'t demote donor'));
+        return res.respond(new ConflictError409('Can\'t promote volunteer or can\'t demote donor'));
     }
 
     if (donor.hall > 6) {
-        return res.respond(new ConflictError('Donor does not have a valid hall'));
+        return res.respond(new ConflictError409('Donor does not have a valid hall'));
     }
 
     if (req.body.promoteFlag) {
@@ -691,7 +693,7 @@ const handleGETVolunteers = async (req, res, next) => {
         }
 
          */
-        return res.respond(new InternalServerError(donorsQueryResult.message));
+        return res.respond(new InternalServerError500(donorsQueryResult.message));
     }
 
     let volunteerList = donorsQueryResult.data;
@@ -750,11 +752,11 @@ const handlePATCHAdmins = async (req, res, next) => {
             description: 'If fetched user is not a volunteer , user will get this error message'
         }
          */
-        return res.respond(new ConflictError('User is not a volunteer'));
+        return res.respond(new ConflictError409('User is not a volunteer'));
     }
 
     if (targetDonor.hall > 6) {
-        return res.respond(new ConflictError('User does not have a valid hall'));
+        return res.respond(new ConflictError409('User does not have a valid hall'));
     }
 
     let prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
@@ -774,7 +776,7 @@ const handlePATCHAdmins = async (req, res, next) => {
             description: 'hall admin change unsuccessful'
         }
          */
-        return res.respond(new InternalServerError(prevHallAdminUpdateResult.message));
+        return res.respond(new InternalServerError500(prevHallAdminUpdateResult.message));
     }
 
     // Make new hall admin
@@ -822,7 +824,7 @@ const handleGETAdmins = async (req, res, next) => {
         }
 
          */
-        return res.respond(new InternalServerError(adminsQueryResult.message));
+        return res.respond(new InternalServerError500(adminsQueryResult.message));
     }
 
     let admins = adminsQueryResult.data;
@@ -1013,7 +1015,7 @@ const handleGETVolunteersAll = async (req, res, next) => {
         }
 
          */
-        return res.respond(new InternalServerError(volunteerResult.message));
+        return res.respond(new InternalServerError500(volunteerResult.message));
     }
     /*
     #swagger.responses[200] = {
@@ -1146,17 +1148,17 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
             description: 'Donor is not a volunteer/ admin'
         }
         */
-        return res.respond(new ConflictError('Donor is not a volunteer/ admin'));
+        return res.respond(new ConflictError409('Donor is not a volunteer/ admin'));
     }
 
     let tokenDeleteResult = await tokenInterface.deleteAllTokensByDonorId(donor._id);
     if (tokenDeleteResult.status !== 'OK') {
-        return res.respond(new InternalServerError(tokenDeleteResult.message));
+        return res.respond(new InternalServerError500(tokenDeleteResult.message));
     }
 
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
     if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError(tokenInsertResult.message));
+        return res.respond(new InternalServerError500(tokenInsertResult.message));
     }
     /*
     #swagger.responses[201] = {
@@ -1188,20 +1190,20 @@ const handleGETDonorsDesignation = async (req, res, next) => {
 
     let adminsQueryResult = await donorInterface.findAdmins(2);
     if (adminsQueryResult.status !== 'OK') {
-        return res.respond(new InternalServerError(adminsQueryResult.message));
+        return res.respond(new InternalServerError500(adminsQueryResult.message));
     }
     let adminList = adminsQueryResult.data;
 
     let donorsQueryResult = await donorInterface.findVolunteersOfHall(authenticatedUser.hall);
     if (donorsQueryResult.status !== 'OK') {
-        return res.respond(new InternalServerError(donorsQueryResult.message));
+        return res.respond(new InternalServerError500(donorsQueryResult.message));
     }
 
     let volunteerList = donorsQueryResult.data;
 
     let superAdminQuery = await donorInterface.findAdmins(3);
     if (superAdminQuery.status !== 'OK') {
-        return res.respond(new InternalServerError(superAdminQuery.message));
+        return res.respond(new InternalServerError500(superAdminQuery.message));
     }
     let superAdminList = superAdminQuery.data;
 

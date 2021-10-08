@@ -7,12 +7,12 @@ const logInterface = require("../db/interfaces/logInterface");
 const emailInterface = require("../db/interfaces/emailInterface");
 
 const {
-    InternalServerError,
+    InternalServerError500,
     BadRequestError,
     ForbiddenError,
     NotFoundError,
     UnauthorizedError,
-    ConflictError
+    ConflictError409
 } = require('../response/errorTypes')
 const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
@@ -64,14 +64,14 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError('Token insertion failed'));
+        return res.respond(new InternalServerError500('Token insertion failed'));
     }
 
     let emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
 
     let result = await emailInterface.sendMail(email, "Password Recovery Email from Badhan", emailHtml);
     if (result.status !== "OK") {
-        return res.respond(new InternalServerError(result.message));
+        return res.respond(new InternalServerError500(result.message));
     }
 
     await logInterface.addLog(donor._id, "CREATE USER PASSWORD FORGOT", {});
@@ -154,7 +154,7 @@ let handlePOSTSignIn = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError('Token insertion failed'));
+        return res.respond(new InternalServerError500('Token insertion failed'));
     }
     /*
     #swagger.responses[201] = {
@@ -255,7 +255,7 @@ let handlePOSTRedirection = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError(tokenInsertResult.message));
+        return res.respond(new InternalServerError500(tokenInsertResult.message));
     }
     /*
     #swagger.responses[201] = {
@@ -355,7 +355,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
     let tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent);
 
     if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError(tokenInsertResult.message));
+        return res.respond(new InternalServerError500(tokenInsertResult.message));
     }
     /*
             #swagger.responses[201] = {
@@ -457,11 +457,11 @@ const handleGETLogins = async (req, res, next) => {
     let token = res.locals.middlewareResponse.token;
     let recentLoginsResult = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token);
     if (recentLoginsResult.status !== "OK") {
-        return res.respond(new InternalServerError(recentLoginsResult.message));
+        return res.respond(new InternalServerError500(recentLoginsResult.message));
     }
     let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token);
     if (currentTokenDataResult.status !== "OK") {
-        return res.respond(new InternalServerError(currentTokenDataResult.message));
+        return res.respond(new InternalServerError500(currentTokenDataResult.message));
     }
 
     let currentTokenData = JSON.parse(JSON.stringify(currentTokenDataResult.data));

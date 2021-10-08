@@ -147,13 +147,17 @@
             },
             "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
           },
-          "401": {
+          "409": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
                 },
                 "message": {
                   "type": "string",
@@ -169,29 +173,6 @@
               }
             },
             "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
-          },
-          "409": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Donor found with duplicate phone number"
-                },
-                "donor": {
-                  "type": "string",
-                  "example": "donor array"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "If the donor already exists in the database, user will get the error message"
           }
         },
         "security": [
@@ -2116,6 +2097,10 @@
                   "type": "string",
                   "example": "Call record insertion successful"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "callRecord": {
                   "type": "object",
                   "properties": {
@@ -2214,6 +2199,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -2328,6 +2317,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
                 "message": {
                   "type": "string",
                   "example": "Donations inserted successfully"
@@ -2414,6 +2407,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Successfully deleted donation"
@@ -2432,6 +2429,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",

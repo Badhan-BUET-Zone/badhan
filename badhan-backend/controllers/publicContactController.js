@@ -1,11 +1,11 @@
 const publicContactInterface = require('../db/interfaces/publicContactInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {
-    InternalServerError,
+    InternalServerError500,
     BadRequestError,
     ForbiddenError,
     NotFoundError,
-    ConflictError
+    ConflictError409
 } = require('../response/errorTypes')
 const {CreatedResponse,OKResponse} = require('../response/successTypes');
 
@@ -63,12 +63,12 @@ const handleDELETEPublicContact = async (req, res, next) => {
     }
 
     if (!searchResult.data.donorId.equals(req.query.donorId)) {
-        return res.respond(new ConflictError("Public contact not consistent with donorId"));
+        return res.respond(new ConflictError409("Public contact not consistent with donorId"));
     }
 
     let deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId);
     if (deletionResult.status !== "OK") {
-        return res.respond(new InternalServerError(deletionResult.message));
+        return res.respond(new InternalServerError500(deletionResult.message));
     }
 
     return res.respond(new OKResponse('Public contact deleted successfully'));
@@ -105,7 +105,7 @@ const handlePOSTPublicContact = async (req, res, next) => {
  */
     let insertionResult = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup);
     if (insertionResult.status !== "OK") {
-        return res.respond(new InternalServerError(insertionResult.message));
+        return res.respond(new InternalServerError500(insertionResult.message));
     }
 
     return res.respond(new CreatedResponse('Public contact added successfully'),{
