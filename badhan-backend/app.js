@@ -42,4 +42,6 @@ app.use(internalServerErrorHandler);
 process.on('unhandledRejection', unhandledRejectionHandler);
 process.on('uncaughtException', uncaughtExceptionHandler);
 
+console.log("server environment: ",process.env.NODE_ENV);
+
 module.exports = app;
