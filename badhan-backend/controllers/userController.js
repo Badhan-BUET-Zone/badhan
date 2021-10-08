@@ -470,10 +470,10 @@ const handleGETLogins = async (req, res, next) => {
     delete currentTokenData.donorId;
     delete currentTokenData.__v;
 
-    return res.respond(new OKResponse('Recent logins fetched successfully'),{
+    return res.respond(new OKResponse('Recent logins fetched successfully',{
         logins: recentLoginsResult.data,
         currentLogin: currentTokenData,
-    });
+    }));
 }
 
 const handleDELETELogins = async (req, res, next) => {
