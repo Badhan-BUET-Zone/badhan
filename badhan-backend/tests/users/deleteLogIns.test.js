@@ -1,29 +1,25 @@
 const api = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
-const {authenticate}=require('../fixtures/authToken')
 
-beforeEach(authenticate);
-
-test('DELETE/users/logins/{tokenId}',async()=>{
-    // console.log("delete/user/logins token-> "+api.getToken());
-    let user=await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
-    api.setToken(user.data.token);
-    let logins = await api.handleGETLogins();
-    // console.log(logins.data.currentLogin["_id"]);
-    console.log(logins.data)
-    // let response = await api.handleDELETELogins({"tokenId":logins.data.cogin["_id"]});
-    // console.log(response);
-    // let validationResult = validate(response.data, {
-    //     "type": "object",
-    //     "additionalProperties":false,
-    //     "properties": {
-    //         "status":{"type":"string"},
-    //         "statusCode": { "const": 200},
-    //         "message":{"type":"string"}
-    //     },
-    // "required":["status","statusCode","token","message"]
-    // });
-    // console.log(validationResult.errors);
-    // expect(validationResult.errors).toEqual([]);
+test('DELETE /users/logins/{tokenId}',async()=>{
+    try{
+    let loginResult=await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
+    let loginResults = await api.badhanAxios.get('/users/logins',{headers:{'x-auth':loginResult.data.token}}); 
+    let currentLoginId = loginResults.data.currentLogin["_id"];
+    let deleteResponse = await api.badhanAxios.delete('/users/logins/'+currentLoginId,{headers:{'x-auth':loginResult.data.token}});
+    let validationResult = validate(deleteResponse.data, {
+        "type": "object",
+        "additionalProperties":false,
+        "properties": {
+            "status":{"type":"string"},
+            "statusCode": { "const": 200},
+            "message":{"type":"string"}
+        },
+    "required":["status","statusCode","message"]
+    });
+    expect(validationResult.errors).toEqual([]);
+}catch(e){
+    throw new Error(e);
+}
 })

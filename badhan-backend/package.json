@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch --runInBand"
+    "test": "jest"
   },
   "jest": {
     "testTimeout": 30000
