@@ -15,7 +15,7 @@ class BaseSuccessResponse {
     }
 }
 
-class OKResponse extends BaseSuccessResponse {
+class OKResponse200 extends BaseSuccessResponse {
     /**
      * @param {string} message - success response
      * @param {object} payload - response object for the user
@@ -36,7 +36,7 @@ class OKResponse extends BaseSuccessResponse {
     }
 }
 
-class CreatedResponse extends BaseSuccessResponse {
+class CreatedResponse201 extends BaseSuccessResponse {
     /**
      * @param {string} message - success response
      * @param {object} payload - response object for the user
@@ -53,7 +53,7 @@ This is typically the response sent after POST requests, or some PUT requests.
 }
 
 module.exports = {
-    OKResponse,
-    CreatedResponse,
+    OKResponse200,
+    CreatedResponse201,
     BaseSuccessResponse
 };

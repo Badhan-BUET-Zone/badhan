@@ -113,6 +113,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
                 "message": {
                   "type": "string",
                   "example": "New donor inserted successfully"
@@ -127,25 +131,6 @@
               }
             },
             "description": "successful donor insertion"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "New donor insertion unsuccessful"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
           },
           "409": {
             "schema": {
@@ -202,6 +187,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -356,6 +345,10 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor not found"
@@ -396,6 +389,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor deleted successfully"
@@ -407,13 +404,17 @@
             },
             "description": "Successful donor deletion"
           },
-          "401": {
+          "403": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
                 },
                 "message": {
                   "type": "string",
@@ -432,18 +433,22 @@
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "EXCEPTION"
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
-                  "example": "Error occurred in deleting target donor"
+                  "example": "Donor not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Error occured when deleting target donor"
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [
@@ -468,6 +473,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -604,6 +613,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor deleted successfully"
@@ -703,13 +716,17 @@
             },
             "description": "Successful donor deletion"
           },
-          "400": {
+          "403": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
                 },
                 "message": {
                   "type": "string",
@@ -765,6 +782,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Comment updated successfully"
@@ -783,6 +804,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -826,13 +851,17 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -849,7 +878,7 @@
             },
             "description": "Successfully created recovery link for user"
           },
-          "401": {
+          "403": {
             "schema": {
               "type": "object",
               "properties": {
@@ -857,16 +886,20 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
                 "message": {
                   "type": "string",
-                  "example": "Donor is not a volunteer/ admin"
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Donor is not a volunteer/ admin"
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
           },
           "404": {
             "schema": {
@@ -875,6 +908,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -886,6 +923,29 @@
               }
             },
             "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor is not a volunteer/ admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor is not a volunteer/ admin"
           }
         },
         "security": [
@@ -962,6 +1022,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor updated successfully"
@@ -973,13 +1037,17 @@
             },
             "description": "Donor info update successful"
           },
-          "401": {
+          "403": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
                 },
                 "message": {
                   "type": "string",
@@ -999,6 +1067,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -1054,6 +1126,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Target user promoted/demoted successfully"
@@ -1065,7 +1141,7 @@
             },
             "description": "Donor promotion/ demotion successful"
           },
-          "401": {
+          "403": {
             "schema": {
               "type": "object",
               "properties": {
@@ -1073,16 +1149,20 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
                 "message": {
                   "type": "string",
-                  "example": "Can not promote volunteer or can not demote donor"
+                  "example": "error message"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "If user cannot promote volunteer or cannot demote donor"
+            "description": "This error will appear if anyone below the designation of hall admin tries to access this route. This middleware assumes that the handleHallPermission middleware is used before and along with this middleware"
           },
           "404": {
             "schema": {
@@ -1091,6 +1171,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -1102,6 +1186,29 @@
               }
             },
             "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Can not promote volunteer or can not demote donor/ Donor does not have a valid hall"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If user cannot promote volunteer or cannot demote donor/ Donor does not have a valid hall"
           }
         },
         "security": [
@@ -1147,6 +1254,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "No duplicate donors found"
@@ -1190,6 +1301,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Volunteer list fetched successfully"
@@ -1232,25 +1347,6 @@
               }
             },
             "description": "An array of volunteers fetched successfully"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "The filter parameters are incorrect"
           }
         },
         "security": [
@@ -1310,25 +1406,6 @@
               }
             },
             "description": "Volunteer list fetch successful"
-          },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Volunteer list fetch unsuccessful"
           }
         },
         "security": [
@@ -1369,6 +1446,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Successfully changed hall admin"
@@ -1380,44 +1461,6 @@
             },
             "description": "Successfully changed hall admin"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "Error status"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Could not change hall admin"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "hall admin change unsuccessful"
-          },
-          "401": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "User is not a volunteer"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "If fetched user is not a volunteer , user will get this error message"
-          },
           "404": {
             "schema": {
               "type": "object",
@@ -1425,6 +1468,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -1436,6 +1483,29 @@
               }
             },
             "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User is not a volunteer"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If fetched user is not a volunteer , user will get this error message"
           }
         },
         "security": [
@@ -1458,6 +1528,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -1493,25 +1567,6 @@
               }
             },
             "description": "Hall admin list fetch successful "
-          },
-          "500": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "(Error message)"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "If user does not exists in database, user will get this error message"
           }
         },
         "security": [
@@ -1564,6 +1619,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
                 "message": {
                   "type": "string",
                   "example": "Successfully signed in"
@@ -1587,6 +1646,10 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 401
+                },
                 "message": {
                   "type": "string",
                   "example": "Incorrect phone / password"
@@ -1597,6 +1660,29 @@
               }
             },
             "description": "When the user provides an invalid password"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You do not have an account"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When the logging user does not have any account"
           }
         }
       }
@@ -1616,6 +1702,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -1652,6 +1742,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Logged out from all devices successfully"
@@ -1686,6 +1780,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
                 },
                 "message": {
                   "type": "string",
@@ -1739,6 +1837,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
                 "message": {
                   "type": "string",
                   "example": "Redirected login successful"
@@ -1762,6 +1864,10 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 401
+                },
                 "message": {
                   "type": "string",
                   "example": "Session Expired"
@@ -1780,6 +1886,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -1826,6 +1936,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "A recovery mail has been sent to your email address"
@@ -1844,6 +1958,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -1890,6 +2008,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
                 "message": {
                   "type": "string",
                   "example": "Password changed successfully"
@@ -1928,6 +2050,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -2024,6 +2150,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Logged out from specified device"
@@ -2042,6 +2172,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -2154,6 +2288,10 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor not found"
@@ -2244,6 +2382,10 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
                 "message": {
                   "type": "string",
                   "example": "Call record not found"
@@ -2262,6 +2404,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
                 },
                 "message": {
                   "type": "string",
@@ -2360,6 +2506,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -2465,9 +2615,17 @@
             "schema": {
               "type": "object",
               "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "version": {
                   "type": "string",
-                  "example": "(App information fetched from google play store)"
+                  "example": "2.5.1"
                 }
               },
               "xml": {
@@ -2491,9 +2649,17 @@
             "schema": {
               "type": "object",
               "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "version": {
                   "type": "string",
-                  "example": "(App information fetched from google play store)"
+                  "example": "2.5.1"
                 }
               },
               "xml": {
@@ -2513,13 +2679,17 @@
         "description": "Fetch statistics about the current donor count and volunteer count",
         "parameters": [],
         "responses": {
-          "201": {
+          "200": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -2585,6 +2755,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -2652,6 +2826,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor deleted successfully"
@@ -2710,6 +2888,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -2781,6 +2963,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
                 "message": {
                   "type": "string",
                   "example": "Public contact added successfully"
@@ -2817,6 +3003,10 @@
                   "type": "string",
                   "example": "ERROR"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
                 "message": {
                   "type": "string",
                   "example": "Donor not found"
@@ -2849,6 +3039,10 @@
                 "status": {
                   "type": "string",
                   "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
                 },
                 "message": {
                   "type": "string",
@@ -2927,6 +3121,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Public contact deleted successfully"
@@ -2938,25 +3136,6 @@
             },
             "description": "Success message"
           },
-          "400": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Public contact not consistent with donorId"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "If contactId in database does not have the matching donorId"
-          },
           "404": {
             "schema": {
               "type": "object",
@@ -2964,6 +3143,10 @@
                 "status": {
                   "type": "string",
                   "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
@@ -2975,6 +3158,29 @@
               }
             },
             "description": "Response if the public contact to be deleted is not found"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact not consistent with donorId"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If contactId in database does not have the matching donorId"
           }
         },
         "security": [

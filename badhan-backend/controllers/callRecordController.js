@@ -1,7 +1,7 @@
 const callRecordInterface = require('../db/interfaces/callRecordInterface');
 const logInterface = require('../db/interfaces/logInterface');
-const {InternalServerError500, NotFoundError, ConflictError409,} = require('../response/errorTypes');
-const {OKResponse} = require('../response/successTypes')
+const {InternalServerError500, NotFoundError404, ConflictError409,} = require('../response/errorTypes');
+const {OKResponse200} = require('../response/successTypes')
 
 const handlePOSTCallRecord = async (req, res, next) => {
     /*
@@ -48,7 +48,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
 
     await logInterface.addLog(user._id, "CREATE CALLRECORD", {callee: donor.name});
 
-    return res.respond(new OKResponse('Call record insertion successful', {
+    return res.respond(new OKResponse200('Call record insertion successful', {
         callRecord: callRecordInsertionResult.data
     }));
 
@@ -91,6 +91,7 @@ const handleDELETECallRecord = async (req, res, next) => {
     #swagger.responses[404] = {
         schema: {
             status: 'ERROR',
+            statusCode: 404,
             message: 'Call record not found'
         },
         description: 'This error occurs if the call record does not exist'
@@ -99,6 +100,7 @@ const handleDELETECallRecord = async (req, res, next) => {
     #swagger.responses[409] = {
         schema: {
             status: 'ERROR',
+            statusCode: 409,
             message: 'Target donor does not have the callee of call record'
         },
         description: 'This error occurs if the call record does not associate with the target donor'
@@ -109,7 +111,7 @@ const handleDELETECallRecord = async (req, res, next) => {
     let donor = res.locals.middlewareResponse.targetDonor;
     let callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId);
     if (callRecordSearchResult.status !== 'OK') {
-        return res.respond(new NotFoundError('Call record not found'));
+        return res.respond(new NotFoundError404('Call record not found'));
     }
 
     if (!callRecordSearchResult.data.calleeId.equals(donor._id)) {
@@ -126,7 +128,7 @@ const handleDELETECallRecord = async (req, res, next) => {
         ...callRecordDeleteResult.data
     });
 
-    return res.respond(new OKResponse('Call record deletion successful', {
+    return res.respond(new OKResponse200('Call record deletion successful', {
         deletedCallRecord: callRecordDeleteResult.data,
     }))
 }

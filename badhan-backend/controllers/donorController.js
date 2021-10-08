@@ -8,15 +8,14 @@ const {halls} = require('../constants')
 
 const {
     InternalServerError500,
-    BadRequestError,
-    ForbiddenError,
-    NotFoundError,
-    UnauthorizedError,
-    TooManyRequestsError,
-    ErrorResponse,
+    BadRequestError400,
+    ForbiddenError403,
+    NotFoundError404,
+    UnauthorizedError401,
+    TooManyRequestsError429,
     ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse,OKResponse} = require('../response/successTypes');
+const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
 
 
 const handlePOSTDonors = async (req, res, next) => {
@@ -108,16 +107,6 @@ const handlePOSTDonors = async (req, res, next) => {
 
     let donorInsertionResult = await donorInterface.insertDonor(donorObject);
     if (donorInsertionResult.status !== 'OK') {
-        /*
-        #swagger.responses[400] = {
-            schema: {
-                status: 'ERROR',
-                message: 'New donor insertion unsuccessful'
-            },
-            description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
-        }
-
-         */
         return res.respond(new InternalServerError500('New donor insertion unsuccessful'));
     }
 
@@ -143,6 +132,7 @@ const handlePOSTDonors = async (req, res, next) => {
             #swagger.responses[201] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 201,
                     message: 'New donor inserted successfully',
                     newDonor: '(new donor data)'
                 },
@@ -150,7 +140,7 @@ const handlePOSTDonors = async (req, res, next) => {
             }
 
      */
-    return res.respond(new CreatedResponse('New donor inserted successfully',{
+    return res.respond(new CreatedResponse201('New donor inserted successfully',{
         newDonor: donorInsertionResult.data
     }))
 }
@@ -178,15 +168,6 @@ const handleDELETEDonors = async (req, res, next) => {
     }
 
     let deleteDonorResult = await donorInterface.deleteDonorById(donor._id);
-    /*
-            #swagger.responses[404] = {
-                schema: {
-                    status: 'EXCEPTION',
-                    message: 'Error occurred in deleting target donor'
-                },
-                description: 'Error occured when deleting target donor'
-            }
-     */
     if (deleteDonorResult.status !== 'OK') {
         return res.respond(new InternalServerError500("Error occurred in deleting target donor"));
     }
@@ -196,13 +177,14 @@ const handleDELETEDonors = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Donor deleted successfully'
                 },
                 description: 'Successful donor deletion'
             }
 
      */
-    return res.respond(new OKResponse('Donor deleted successfully'));
+    return res.respond(new OKResponse200('Donor deleted successfully'));
 }
 
 
@@ -273,16 +255,17 @@ const handleGETSearchOptimized = async (req, res, next) => {
         && reqQuery.hall <= 6
         && res.locals.middlewareResponse.donor.designation !== 3) {
         /*
-        #swagger.responses[400] = {
+        #swagger.responses[403] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 403,
                 message: 'You are not allowed to search donors of other halls'
             },
             description: 'This error will occur if the user tries to search other halls'
         }
 
          */
-        return res.respond(new ForbiddenError('You are not allowed to search donors of other halls'));
+        return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'));
     }
 
     let queryBuilder = {}
@@ -364,6 +347,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Donor deleted successfully',
                     filteredDonors: [
                         {
@@ -395,7 +379,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
                 description: 'Successful donor deletion'
             }
     */
-    return res.respond(new OKResponse('Donors queried successfully',{
+    return res.respond(new OKResponse200('Donors queried successfully',{
         filteredDonors: result.data
     }))
 }
@@ -432,13 +416,14 @@ const handlePATCHDonorsComment = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Comment updated successfully'
                 },
                 description: 'In case of successfully saving the comment'
             }
 
      */
-    return res.respond(new OKResponse('Comment updated successfully'))
+    return res.respond(new OKResponse200('Comment updated successfully'))
 }
 
 const handlePATCHDonorsPassword = async (req, res, next) => {
@@ -465,9 +450,10 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
 
     if (target.designation === 0) {
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[409] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 409,
                 message: 'Target user does not have an account'
             },
             description: 'Target user does not have an account'
@@ -490,13 +476,14 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Password changed successfully'
         },
         description: 'Successful password change done'
     }
 
      */
-    return res.respond(new OKResponse('Password changed successfully'));
+    return res.respond(new OKResponse200('Password changed successfully'));
 }
 
 const handlePATCHDonors = async (req, res, next) => {
@@ -530,14 +517,16 @@ const handlePATCHDonors = async (req, res, next) => {
     #swagger.responses[404] = {
         schema: {
             status: 'ERROR',
+            statusCode: 404,
             message: 'Email address does not exist'
         },
         description: 'Donor info update successful'
     }
 
-    #swagger.responses[401] = {
+    #swagger.responses[403] = {
         schema: {
             status: 'ERROR',
+            statusCode: 403,
             message: 'You do not have permission to edit email address of another user'
         },
         description: 'You do not have permission to edit email address of another user'
@@ -550,11 +539,11 @@ const handlePATCHDonors = async (req, res, next) => {
     let user = res.locals.middlewareResponse.donor;
 
     if (reqBody.email !== "" && !await emailInterface.checkIfEmailExists(reqBody.email)) {
-        return res.respond(new NotFoundError('Email address does not exist'));
+        return res.respond(new NotFoundError404('Email address does not exist'));
     }
 
     if (target.email !== reqBody.email && !target._id.equals(user._id)) {
-        return res.respond(new ForbiddenError('You do not have permission to edit email address of another user'))
+        return res.respond(new ForbiddenError403('You do not have permission to edit email address of another user'))
     }
 
     target.name = reqBody.name;
@@ -578,13 +567,14 @@ const handlePATCHDonors = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Donor updated successfully'
                 },
                 description: 'Donor info update successful'
             }
 
      */
-    return res.respond(new OKResponse('Donor updated successfully'));
+    return res.respond(new OKResponse200('Donor updated successfully'));
 }
 
 const handlePATCHDonorsDesignation = async (req, res, next) => {
@@ -612,12 +602,13 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
     if ((donorDesignation === 1 && req.body.promoteFlag)
         || (donorDesignation === 0 && !req.body.promoteFlag)) {
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[409] = {
             schema: {
                 status: 'ERROR',
-                message: 'Can not promote volunteer or can not demote donor'
+                statusCode: 409,
+                message: 'Can not promote volunteer or can not demote donor/ Donor does not have a valid hall'
             },
-            description: 'If user cannot promote volunteer or cannot demote donor'
+            description: 'If user cannot promote volunteer or cannot demote donor/ Donor does not have a valid hall'
         }
 
          */
@@ -648,13 +639,14 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Target user promoted/demoted successfully'
         },
         description: 'Donor promotion/ demotion successful'
     }
 
      */
-    return res.respond(new OKResponse('Target user promoted/demoted successfully'));
+    return res.respond(new OKResponse200('Target user promoted/demoted successfully'));
 }
 
 const handleGETVolunteers = async (req, res, next) => {
@@ -683,16 +675,6 @@ const handleGETVolunteers = async (req, res, next) => {
     });
 
     if (donorsQueryResult.status !== 'OK') {
-        /*
-        #swagger.responses[400] = {
-            schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-            },
-            description: 'The filter parameters are incorrect'
-        }
-
-         */
         return res.respond(new InternalServerError500(donorsQueryResult.message));
     }
 
@@ -701,6 +683,7 @@ const handleGETVolunteers = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Volunteer list fetched successfully',
             volunteerList: [
                 {
@@ -719,7 +702,7 @@ const handleGETVolunteers = async (req, res, next) => {
      */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ VOLUNTEERS", {});
 
-    return res.respond(new OKResponse('Volunteer list fetched successfully',{
+    return res.respond(new OKResponse200('Volunteer list fetched successfully',{
         volunteerList
     }))
 }
@@ -744,9 +727,10 @@ const handlePATCHAdmins = async (req, res, next) => {
 
     if (targetDonor.designation !== 1) {
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[409] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 409,
                 message: 'User is not a volunteer'
             },
             description: 'If fetched user is not a volunteer , user will get this error message'
@@ -767,15 +751,6 @@ const handlePATCHAdmins = async (req, res, next) => {
     });
 
     if (prevHallAdminUpdateResult.status !== 'OK') {
-        /*
-        #swagger.responses[400] = {
-            schema: {
-                status: 'Error status',
-                message: 'Could not change hall admin'
-            },
-            description: 'hall admin change unsuccessful'
-        }
-         */
         return res.respond(new InternalServerError500(prevHallAdminUpdateResult.message));
     }
 
@@ -788,13 +763,14 @@ const handlePATCHAdmins = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Successfully changed hall admin'
                 },
                 description: 'Successfully changed hall admin'
             }
 
      */
-    return res.respond(new OKResponse('Successfully changed hall admin'));
+    return res.respond(new OKResponse200('Successfully changed hall admin'));
 }
 
 const handleGETAdmins = async (req, res, next) => {
@@ -814,16 +790,6 @@ const handleGETAdmins = async (req, res, next) => {
     });
 
     if (adminsQueryResult.status !== 'OK') {
-        /*
-        #swagger.responses[500] = {
-            schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-            },
-            description: 'If user does not exists in database, user will get this error message'
-        }
-
-         */
         return res.respond(new InternalServerError500(adminsQueryResult.message));
     }
 
@@ -832,6 +798,7 @@ const handleGETAdmins = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Hall admin list fetched successfully',
                     admins: [{
                         _id: "reohrewoihgfsdn",
@@ -846,7 +813,7 @@ const handleGETAdmins = async (req, res, next) => {
      */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ ADMINS", {});
 
-    return res.respond(new OKResponse('Hall admin list fetched successfully',{
+    return res.respond(new OKResponse200('Hall admin list fetched successfully',{
         admins
     }))
 }
@@ -895,6 +862,7 @@ const handleGETDonors = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Successfully fetched donor details',
             donor: {
                 _id: 'abjcguiwefvew',
@@ -943,7 +911,7 @@ const handleGETDonors = async (req, res, next) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ DONOR", {name: donor.name});
 
-    return res.respond(new OKResponse('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details',{
         donor
     }));
 
@@ -965,6 +933,7 @@ const handleGETDonorsMe = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Successfully fetched donor details',
                     donor: {
                         _id: 'abjcguiwefvew',
@@ -987,7 +956,7 @@ const handleGETDonorsMe = async (req, res, next) => {
     */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "ENTERED APP", {name: donor.name});
 
-    return res.respond(new OKResponse('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details',{
         donor
     }))
 }
@@ -1005,16 +974,6 @@ const handleGETVolunteersAll = async (req, res, next) => {
     let volunteerResult = await donorInterface.findAllVolunteers();
 
     if (volunteerResult.status !== 'OK') {
-        /*
-        #swagger.responses[400] = {
-            schema: {
-                status: 'ERROR',
-                message: '(Error message)'
-            },
-            description: 'Volunteer list fetch unsuccessful'
-        }
-
-         */
         return res.respond(new InternalServerError500(volunteerResult.message));
     }
     /*
@@ -1032,7 +991,7 @@ const handleGETVolunteersAll = async (req, res, next) => {
         description: 'Volunteer list fetch successful'
     }
 */
-    return res.respond(new OKResponse('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details',{
         data: volunteerResult.data
     }))
 }
@@ -1068,6 +1027,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Donor found with duplicate phone number in Titumir Hall',
                     found: true,
                     donor: '(donor object)'
@@ -1076,7 +1036,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
             }
 
              */
-            return res.respond(new OKResponse('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",{
+            return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",{
                 found: true,
                 donor: duplicateDonorResult.data,
             }))
@@ -1085,6 +1045,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
+                statusCode: 200,
                 message: 'Donor found with duplicate phone number in Titumir hall. You are not permitted to access this donor. ',
                 found: true,
                 donor: 'this field will return null'
@@ -1093,7 +1054,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
         }
 
          */
-        return res.respond(new OKResponse('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",{
+        return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",{
             found: true,
             donor: null,
         }))
@@ -1103,6 +1064,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'No duplicate donors found',
             found: false,
             donor: '(null)'
@@ -1114,7 +1076,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DUPLICATE", {phone: req.query.phone});
 
-    return res.respond(new OKResponse('No duplicate donors found',{
+    return res.respond(new OKResponse200('No duplicate donors found',{
         found: false,
         donor: null,
     }))
@@ -1140,9 +1102,10 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
 
     if (donor.designation === 0) {
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[409] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 409,
                 message: 'Donor is not a volunteer/ admin',
             },
             description: 'Donor is not a volunteer/ admin'
@@ -1161,9 +1124,10 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
         return res.respond(new InternalServerError500(tokenInsertResult.message));
     }
     /*
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Successfully created recovery link for user',
             token: 'dagwerhgiownbweshgewiugnswieugnwkj',
         },
@@ -1172,7 +1136,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
 */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONOR PASSWORD REQUEST", {name: donor.name});
 
-    return res.respond(new OKResponse("Successfully created recovery link for user",{
+    return res.respond(new OKResponse200("Successfully created recovery link for user",{
         token: tokenInsertResult.data.token
     }));
 }
@@ -1207,7 +1171,7 @@ const handleGETDonorsDesignation = async (req, res, next) => {
     }
     let superAdminList = superAdminQuery.data;
 
-    return res.respond(new OKResponse("All designated members fetched",{
+    return res.respond(new OKResponse200("All designated members fetched",{
         volunteerList,
         adminList,
         superAdminList

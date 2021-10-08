@@ -1,7 +1,7 @@
 const faker = require('../doc/faker');
-const {OKResponse, CreatedResponse}= require('../response/successTypes');
+const {OKResponse200, CreatedResponse201}= require('../response/successTypes');
 const handlePOSTLogIn = async (req, res) => {
-    return res.respond(new CreatedResponse("Guest sign in will not show actual nor accurate data",{
+    return res.respond(new CreatedResponse201("Guest sign in will not show actual nor accurate data",{
         token: faker.getToken(),
     }))
 }
@@ -34,13 +34,13 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         donations: faker.getDonations(),
     }
 
-    return res.respond(new OKResponse('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details',{
         donor: obj
     }))
 };
 
 const handlePOSTInsertDonor = async (req, res) => {
-    return res.respond(new CreatedResponse('New donor inserted successfully',{
+    return res.respond(new CreatedResponse201('New donor inserted successfully',{
         newDonor: {
             address: faker.getAddress(),
             roomNumber: faker.getRoom(),
@@ -61,11 +61,11 @@ const handlePOSTInsertDonor = async (req, res) => {
 }
 
 let handlePOSTLogOut = async (req, res) => {
-    return res.respond(new OKResponse('Logged out successfully'));
+    return res.respond(new OKResponse200('Logged out successfully'));
 };
 
 let handlePOSTLogOutAll = async (req, res) => {
-    return res.respond(new OKResponse('Logged out from all devices successfully'));
+    return res.respond(new OKResponse200('Logged out from all devices successfully'));
 };
 
 const handlePOSTSearchDonors = async (req, res) => {
@@ -101,35 +101,35 @@ const handlePOSTSearchDonors = async (req, res) => {
         })
     }
 
-    return res.respond(new OKResponse('Donors queried successfully',{
+    return res.respond(new OKResponse200('Donors queried successfully',{
         filteredDonors
     }));
 };
 
 const handlePOSTDeleteDonor = async (req, res) => {
-    return res.respond(new OKResponse('Donor deleted successfully'));
+    return res.respond(new OKResponse200('Donor deleted successfully'));
 }
 
 const handlePOSTComment = async (req, res) => {
-    return res.respond(new OKResponse('Comment posted successfully'));
+    return res.respond(new OKResponse200('Comment posted successfully'));
 }
 
 const handlePOSTChangePassword = async (req, res) => {
-    return res.respond(new OKResponse("Successfully created recovery link for user",{
+    return res.respond(new OKResponse200("Successfully created recovery link for user",{
         token: faker.getToken(),
     }))
 };
 
 const handlePOSTEditDonor = async (req, res) => {
-    return res.respond(new OKResponse('Donor updated successfully'))
+    return res.respond(new OKResponse200('Donor updated successfully'))
 }
 
 const handlePOSTPromote = async (req, res) => {
-    return res.respond(new OKResponse('Target user promoted/demoted successfully'));
+    return res.respond(new OKResponse200('Target user promoted/demoted successfully'));
 }
 
 const handlePOSTChangeAdmin = async (req, res) => {
-    return res.respond(new OKResponse('Successfully changed hall admin'));
+    return res.respond(new OKResponse200('Successfully changed hall admin'));
 };
 
 const handleGETViewDonorDetails = async (req, res) => {
@@ -191,7 +191,7 @@ const handleGETViewDonorDetails = async (req, res) => {
         publicContacts: publicContacts
     }
 
-    return res.respond(new OKResponse('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details',{
         donor: obj
     }));
 };
@@ -209,7 +209,7 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
         })
     }
 
-    return res.respond(new OKResponse('Volunteer list fetched successfully',{
+    return res.respond(new OKResponse200('Volunteer list fetched successfully',{
         volunteerList
     }))
 
@@ -225,21 +225,21 @@ const handlePOSTShowHallAdmins = async (req, res) => {
             phone: faker.getPhone(),
         })
     }
-    return res.respond(new OKResponse('Hall admin list fetched successfully',{
+    return res.respond(new OKResponse200('Hall admin list fetched successfully',{
         admins
     }));
 };
 
 const handlePOSTInsertDonation = async (req, res) => {
-    return res.respond(new OKResponse('Donation inserted successfully'));
+    return res.respond(new OKResponse200('Donation inserted successfully'));
 }
 
 const handlePOSTDeleteDonation = async (req, res) => {
-    return res.respond(new OKResponse('Successfully deleted donation'));
+    return res.respond(new OKResponse200('Successfully deleted donation'));
 }
 
 const handleGETStatistics = async (req, res) => {
-    return res.respond(new CreatedResponse('Statistics fetched successfully',{
+    return res.respond(new CreatedResponse201('Statistics fetched successfully',{
         statistics: {
             donorCount: faker.getRandomIndex(2600),
             donationCount: faker.getRandomIndex(1200),
@@ -250,7 +250,7 @@ const handleGETStatistics = async (req, res) => {
 
 
 const handleDELETELogs = async (req, res) => {
-    return res.respond(new CreatedResponse('All logs deleted successfully'));
+    return res.respond(new CreatedResponse201('All logs deleted successfully'));
 }
 
 const handleGETViewAllVolunteers = async (req, res) => {
@@ -264,13 +264,13 @@ const handleGETViewAllVolunteers = async (req, res) => {
         })
     }
 
-    return res.respond(new OKResponse('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details',{
         data: object
     }))
 }
 
 const handlePOSTCallRecord = async (req, res) => {
-    return res.respond(new OKResponse('Call record insertion successful',{
+    return res.respond(new OKResponse200('Call record insertion successful',{
         callRecord: {
             date: faker.getTimestamp(),
             _id: faker.getId(),
@@ -281,11 +281,11 @@ const handlePOSTCallRecord = async (req, res) => {
 };
 
 const handleDELETECallRecord = async (req, res) => {
-    return res.respond(new OKResponse('Call record deletion successful'));
+    return res.respond(new OKResponse200('Call record deletion successful'));
 };
 
 const handleGETDonorsDuplicate = async (req, res) => {
-    return res.respond(new OKResponse('No duplicate donors found',{
+    return res.respond(new OKResponse200('No duplicate donors found',{
         found: false,
         donor: null,
     }))
@@ -299,7 +299,7 @@ const handleGETLogs = async (req, res) => {
             count: faker.getRandomIndex(20)
         })
     }
-    return res.respond(new OKResponse('All logs fetched successfully',{
+    return res.respond(new OKResponse200('All logs fetched successfully',{
         logs
     }))
 }
@@ -315,7 +315,7 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
             details: {}
         })
     }
-    return res.respond(new OKResponse("Logs fetched by user and date",{
+    return res.respond(new OKResponse200("Logs fetched by user and date",{
         logs
     }))
 }
@@ -330,19 +330,19 @@ const handleGETLogsByDate = async (req, res) => {
             count: faker.getRandomIndex(20)
         })
     }
-    return res.respond(new OKResponse("Logs fetched by date successfully",{
+    return res.respond(new OKResponse200("Logs fetched by date successfully",{
         logs
     }))
 }
 
 const handlePATCHPassword = async (req, res) => {
-    return res.respond(new CreatedResponse('Password changed successfully',{
+    return res.respond(new CreatedResponse201('Password changed successfully',{
         token: faker.getToken(),
     }))
 }
 
 const handlePOSTPublicContact = async (req, res) => {
-    return res.respond(new CreatedResponse('Public contact added successfully',{
+    return res.respond(new CreatedResponse201('Public contact added successfully',{
         publicContact: {
             bloodGroup: 2,
             _id: faker.getId(),
@@ -352,7 +352,7 @@ const handlePOSTPublicContact = async (req, res) => {
 }
 
 const handleDELETEPublicContact = async (req, res) => {
-    return res.respond(new OKResponse('Public contact deleted successfully'));
+    return res.respond(new OKResponse200('Public contact deleted successfully'));
 }
 
 const handleGETPublicContacts = async (req, res) => {
@@ -388,7 +388,7 @@ const handleGETPublicContacts = async (req, res) => {
         })
     }
 
-    return res.respond(new OKResponse("All public contacts fetched successfully",{
+    return res.respond(new OKResponse200("All public contacts fetched successfully",{
         publicContacts
     }))
 }
@@ -427,7 +427,7 @@ const handleGETDonorsDesignation = async (req, res) => {
         });
     }
 
-    return res.respond(new OKResponse("All designated members fetched",{
+    return res.respond(new OKResponse200("All designated members fetched",{
         volunteerList,
         adminList,
         superAdminList
@@ -465,13 +465,13 @@ const handleGETLogins = (req, res) => {
         ipAddress: "9.10.11.12"
     };
 
-    return res.respond(new OKResponse("Recent logins fetched successfully",{
+    return res.respond(new OKResponse200("Recent logins fetched successfully",{
         logins,
         currentLogin
     }))
 }
 const handleDELETELogins = (req, res) => {
-    return res.respond(new OKResponse('Logged out from specified device'));
+    return res.respond(new OKResponse200('Logged out from specified device'));
 }
 
 module.exports = {

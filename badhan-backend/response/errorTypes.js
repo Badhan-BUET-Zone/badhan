@@ -28,7 +28,7 @@ class InternalServerError500 extends ErrorResponse{
     }
 }
 
-class NotFoundError extends ErrorResponse{
+class NotFoundError404 extends ErrorResponse{
     /**
      * @param {string} message - Error message for a not found resource
      */
@@ -44,7 +44,7 @@ class NotFoundError extends ErrorResponse{
         super("ERROR",404,message)
     }
 }
-class BadRequestError extends ErrorResponse{
+class BadRequestError400 extends ErrorResponse{
     /**
      * @param {string} message - Error message for a bad request
      */
@@ -56,7 +56,7 @@ class BadRequestError extends ErrorResponse{
         super("ERROR",400,message)
     }
 }
-class ForbiddenError extends ErrorResponse{
+class ForbiddenError403 extends ErrorResponse{
     /**
      * @param {string} message - Error message for a forbidden request
      */
@@ -70,7 +70,7 @@ class ForbiddenError extends ErrorResponse{
         super("ERROR",403,message)
     }
 }
-class UnauthorizedError extends ErrorResponse{
+class UnauthorizedError401 extends ErrorResponse{
     /**
      * @param {string} message - Error message
      */
@@ -95,7 +95,7 @@ class ConflictError409 extends ErrorResponse{
         super("ERROR",409,message)
     }
 }
-class TooManyRequestsError extends ErrorResponse{
+class TooManyRequestsError429 extends ErrorResponse{
     /*
     429 Too Many Requests
     The user has sent too many requests in a given amount of time ("rate limiting").
@@ -111,11 +111,11 @@ class TooManyRequestsError extends ErrorResponse{
 
 module.exports = {
     InternalServerError500,
-    NotFoundError,
+    NotFoundError404,
     ErrorResponse,
-    BadRequestError,
-    ForbiddenError,
-    UnauthorizedError,
+    BadRequestError400,
+    ForbiddenError403,
+    UnauthorizedError401,
     ConflictError409,
-    TooManyRequestsError,
+    TooManyRequestsError429,
 };

@@ -3,15 +3,15 @@ const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {
     InternalServerError500,
-    BadRequestError,
-    ForbiddenError,
-    NotFoundError,
-    UnauthorizedError,
-    TooManyRequestsError,
+    BadRequestError400,
+    ForbiddenError403,
+    NotFoundError404,
+    UnauthorizedError401,
+    TooManyRequestsError429,
     ErrorResponse,
     ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse,OKResponse} = require('../response/successTypes');
+const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
 
 const handleGETOnlineCheck = async (req, res, next) => {
     /*
@@ -20,13 +20,15 @@ const handleGETOnlineCheck = async (req, res, next) => {
         #swagger.description = 'To show current state of the api'
         #swagger.responses[200] = {
             schema: {
+                status: 'OK',
+                statusCode: 200,
                 message: 'Badhan API is online'
             },
             description: 'To check if Badhan api is online'
         }
 
      */
-    return res.respond(new OKResponse("Badhan API is online"));
+    return res.respond(new OKResponse200("Badhan API is online"));
 }
 
 const handleGETStatistics = async (req, res, next) => {
@@ -42,9 +44,10 @@ const handleGETStatistics = async (req, res, next) => {
     let donationCount = await donationInterface.getCount();
     let volunteerCount = await donorInterface.getVolunteerCount();
     /*
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Statistics fetched successfully',
             statistics: {
                 donorCount: 2600,
@@ -56,11 +59,11 @@ const handleGETStatistics = async (req, res, next) => {
     }
 
      */
-    return res.respond('Statistics fetched successfully',{
+    return res.respond(new OKResponse200('Statistics fetched successfully',{
         donorCount: donorCount.data,
         donationCount: donationCount.data,
         volunteerCount: volunteerCount.data
-    })
+    }));
 }
 
 const handleGETAppVersion = (req, res, next) => {
@@ -73,12 +76,14 @@ const handleGETAppVersion = (req, res, next) => {
     /*
             #swagger.responses[200] = {
                 schema: {
-                    version: '(App information fetched from google play store)'
+                    status:'OK',
+                    statusCode: 200,
+                    version: '2.5.1'
                 },
                 description: 'response is the current version number of badhan api'
             }
 */
-    return res.respond(new OKResponse("Latest app version fetched",{
+    return res.respond(new OKResponse200("Latest app version fetched",{
         version: "4.5.0"
     }))
 }
@@ -94,6 +99,7 @@ const handleGETLogs = async (req, res, next) => {
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
+                statusCode: 200,
                 message: 'Donor deleted successfully',
                 "logs": [
                     {
@@ -106,7 +112,7 @@ const handleGETLogs = async (req, res, next) => {
     */
 
     let logCountsResult = await logInterface.getLogCounts();
-    return res.respond(new OKResponse('Log counts fetched successfully',{
+    return res.respond(new OKResponse200('Log counts fetched successfully',{
         logs: logCountsResult.data
     }))
 };
@@ -128,6 +134,7 @@ const handleGETLogsByDate = async (req, res, next) => {
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
+                statusCode: 200,
                 message: 'Donor deleted successfully',
                 "logs": [
                     {
@@ -141,7 +148,7 @@ const handleGETLogsByDate = async (req, res, next) => {
         }
     */
     let logsByDateResult = await logInterface.getLogsByDate(req.params.date);
-    return res.respond(new OKResponse("Logs fetched by date successfully",{
+    return res.respond(new OKResponse200("Logs fetched by date successfully",{
         logs: logsByDateResult.data
     }));
 }
@@ -169,6 +176,7 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
         #swagger.responses[200] = {
             schema: {
                 "status": "OK",
+                "statusCode":200,
                 "message": "Logs fetched by user and date",
                 "logs": [
                     {
@@ -186,7 +194,7 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
             }]
     */
     let logsByDateAndDonor = await logInterface.getLogsByDateAndUser(req.params.date, req.params.donorId)
-    return res.respond(new OKResponse("Logs fetched by data and donor successfully",{
+    return res.respond(new OKResponse200("Logs fetched by data and donor successfully",{
         logs: logsByDateAndDonor.data
     }))
 }

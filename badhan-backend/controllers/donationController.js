@@ -2,9 +2,9 @@ const donationInterface = require('../db/interfaces/donationInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {
     InternalServerError500,
-    NotFoundError,
+    NotFoundError404,
 } = require('../response/errorTypes')
-const {CreatedResponse,OKResponse} = require('../response/successTypes');
+const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
 
 const handlePOSTDonations = async (req, res, next) => {
     /*
@@ -66,7 +66,7 @@ const handlePOSTDonations = async (req, res, next) => {
         donor: donor.name
     });
 
-    return res.respond(new CreatedResponse('Donation inserted successfully',{
+    return res.respond(new CreatedResponse201('Donation inserted successfully',{
         newDonation: donationInsertionResult.data,
     }))
 }
@@ -117,7 +117,7 @@ const handleDELETEDonations = async (req, res, next) => {
     });
 
     if (donationDeletionResult.status !== "OK") {
-        return res.respond(new NotFoundError('Matching donation not found'))
+        return res.respond(new NotFoundError404('Matching donation not found'))
     }
 
     donor.donationCount = Math.max(0, donor.donationCount - 1);
@@ -137,7 +137,7 @@ const handleDELETEDonations = async (req, res, next) => {
         name: donor.name
     });
 
-    return res.respond(new OKResponse('Successfully deleted donation'),{
+    return res.respond(new OKResponse200('Successfully deleted donation'),{
         deletedDonation: donationDeletionResult.data,
     })
 }

@@ -1,6 +1,6 @@
-const {NotFoundError,InternalServerError500} = require('./errorTypes')
+const {NotFoundError404,InternalServerError500} = require('./errorTypes')
 const routeNotFoundHandler=(req, res, next)=>{
-    return res.respond(new NotFoundError('Route not found'));
+    return res.respond(new NotFoundError404('Route not found'));
 }
 const internalServerErrorHandler=(error, req, res, next)=>{
     console.log("INTERNAL SERVER ERROR");

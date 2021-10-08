@@ -1,13 +1,14 @@
 const rateLimit = require("express-rate-limit");
-const {TooManyRequestsError}= require('../response/errorTypes');
+const {TooManyRequestsError429}= require('../response/errorTypes');
+
 const devDisable = process.env.NODE_ENV === 'development'?1000:1;
 const minute = 60*1000;
-const commentRateLimiterError = new TooManyRequestsError("Service unavailable");
+const commentRateLimiterError = new TooManyRequestsError429("Service unavailable");
 
 const signInLimiter = rateLimit({
     windowMs: 5 * minute,
     max: 3*devDisable,
-    message:new TooManyRequestsError("Please try again after 5 minutes")
+    message:new TooManyRequestsError429("Please try again after 5 minutes")
 });
 
 const redirectionSignInLimiter = rateLimit({
@@ -52,7 +53,7 @@ const passwordRequestLimiter = rateLimit({
 const passwordForgotLimiter = rateLimit({
     windowMs: 3 * minute,
     max: 1*devDisable,
-    message: new TooManyRequestsError("Please try again after 3 minutes")
+    message: new TooManyRequestsError429("Please try again after 3 minutes")
 });
 
 const publicContactInsertionLimiter = rateLimit({

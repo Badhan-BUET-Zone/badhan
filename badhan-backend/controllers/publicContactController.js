@@ -2,12 +2,12 @@ const publicContactInterface = require('../db/interfaces/publicContactInterface'
 const logInterface = require('../db/interfaces/logInterface');
 const {
     InternalServerError500,
-    BadRequestError,
-    ForbiddenError,
-    NotFoundError,
+    BadRequestError400,
+    ForbiddenError403,
+    NotFoundError404,
     ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse,OKResponse} = require('../response/successTypes');
+const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
 
 const handleDELETEPublicContact = async (req, res, next) => {
     /*
@@ -36,13 +36,15 @@ const handleDELETEPublicContact = async (req, res, next) => {
     #swagger.responses[404] = {
         schema: {
             status: 'ERROR',
+            statusCode: 404,
             message: "Public contact not found"
         },
         description: 'Response if the public contact to be deleted is not found'
     }
-    #swagger.responses[400] = {
+    #swagger.responses[409] = {
         schema: {
             status: 'ERROR',
+            statusCode: 409,
             message: "Public contact not consistent with donorId"
         },
         description: 'If contactId in database does not have the matching donorId'
@@ -50,6 +52,7 @@ const handleDELETEPublicContact = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Public contact deleted successfully'
         },
         description: 'Success message'
@@ -59,7 +62,7 @@ const handleDELETEPublicContact = async (req, res, next) => {
 
     let searchResult = await publicContactInterface.findPublicContactById(req.query.contactId);
     if (searchResult.status !== "OK") {
-        return res.respond(new NotFoundError("Public contact not found"));
+        return res.respond(new NotFoundError404("Public contact not found"));
     }
 
     if (!searchResult.data.donorId.equals(req.query.donorId)) {
@@ -71,7 +74,7 @@ const handleDELETEPublicContact = async (req, res, next) => {
         return res.respond(new InternalServerError500(deletionResult.message));
     }
 
-    return res.respond(new OKResponse('Public contact deleted successfully'));
+    return res.respond(new OKResponse200('Public contact deleted successfully'));
 }
 
 const handlePOSTPublicContact = async (req, res, next) => {
@@ -93,6 +96,7 @@ const handlePOSTPublicContact = async (req, res, next) => {
     #swagger.responses[201] = {
         schema: {
             status: 'OK',
+            statusCode: 201,
             message: 'Public contact added successfully',
             publicContact:{
                 bloodGroup: 2,
@@ -108,7 +112,7 @@ const handlePOSTPublicContact = async (req, res, next) => {
         return res.respond(new InternalServerError500(insertionResult.message));
     }
 
-    return res.respond(new CreatedResponse('Public contact added successfully'),{
+    return res.respond(new CreatedResponse201('Public contact added successfully'),{
         publicContact: insertionResult.data
     })
 }
@@ -121,6 +125,7 @@ const handleGETPublicContacts = async (req, res, next) => {
 #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: "All public contacts fetched successfully",
             publicContacts:[
                 {
@@ -140,7 +145,7 @@ const handleGETPublicContacts = async (req, res, next) => {
     }
 */
     let searchResult = await publicContactInterface.findAllPublicContacts();
-    return res.respond(new OKResponse("All public contacts fetched successfully",{
+    return res.respond(new OKResponse200("All public contacts fetched successfully",{
         publicContacts: searchResult.data,
     }))
 }

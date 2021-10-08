@@ -8,13 +8,13 @@ const emailInterface = require("../db/interfaces/emailInterface");
 
 const {
     InternalServerError500,
-    BadRequestError,
-    ForbiddenError,
-    NotFoundError,
-    UnauthorizedError,
+    BadRequestError400,
+    ForbiddenError403,
+    NotFoundError404,
+    UnauthorizedError401,
     ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse,OKResponse} = require('../response/successTypes');
+const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
 
 const handlePOSTPasswordForgot = async (req, res, next) => {
     /*
@@ -32,6 +32,7 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
             #swagger.responses[404] = {
                 schema: {
                     status: "ERROR",
+                    statusCode: 404,
                     message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
                 },
                 description: 'Error responses'
@@ -39,6 +40,7 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: "OK",
+                    statusCode: 200,
                     message: "A recovery mail has been sent to your email address",
                 },
                 description: 'Success response'
@@ -47,18 +49,18 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
     let phone = req.body.phone;
     let queryByPhoneResult = await donorInterface.findDonorByPhone(phone);
     if (queryByPhoneResult.status !== "OK") {
-        return res.respond(new NotFoundError("Phone number not recognized"));
+        return res.respond(new NotFoundError404("Phone number not recognized"));
     }
 
     let donor = queryByPhoneResult.data;
     let email = donor.email;
 
     if (donor.designation === 0) {
-        return res.respond(new NotFoundError("Account not found"));
+        return res.respond(new NotFoundError404("Account not found"));
     }
 
     if (email === "") {
-        return res.respond(new NotFoundError("No recovery email found for this phone number"));
+        return res.respond(new NotFoundError404("No recovery email found for this phone number"));
     }
 
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
@@ -76,7 +78,7 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
 
     await logInterface.addLog(donor._id, "CREATE USER PASSWORD FORGOT", {});
 
-    return res.respond(new OKResponse("A recovery mail has been sent to your email address"));
+    return res.respond(new OKResponse200("A recovery mail has been sent to your email address"));
 }
 
 let handlePOSTSignIn = async (req, res, next) => {
@@ -101,15 +103,16 @@ let handlePOSTSignIn = async (req, res, next) => {
 
     if (donorQueryResult.status !== 'OK') {
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[404] = {
             schema: {
-                status: 401,
+                status: "ERROR",
+                statusCode: 404,
                 message: 'Donor not found',
             },
             description: 'When the donor is not found'
         }
          */
-        return res.respond(new NotFoundError("Account not found"));
+        return res.respond(new NotFoundError404("Account not found"));
     }
 
     let donor = donorQueryResult.data;
@@ -120,15 +123,16 @@ let handlePOSTSignIn = async (req, res, next) => {
         matched = await bcrypt.compare(password, donor.password);
     } catch (e) {
         /*
-        #swagger.responses[401] = {
+        #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 404,
                 message: 'You do not have an account'
             },
             description: 'When the logging user does not have any account'
         }
          */
-        return res.respond(new NotFoundError("Account not found"));
+        return res.respond(new NotFoundError404("Account not found"));
     }
 
     if (!matched) {
@@ -136,12 +140,13 @@ let handlePOSTSignIn = async (req, res, next) => {
         #swagger.responses[401] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 401,
                 message: 'Incorrect phone / password'
             },
             description: 'When the user provides an invalid password'
         }
          */
-        return res.respond(new UnauthorizedError('Incorrect phone / password'));
+        return res.respond(new UnauthorizedError401('Incorrect phone / password'));
     }
 
     let access = 'auth';
@@ -160,6 +165,7 @@ let handlePOSTSignIn = async (req, res, next) => {
     #swagger.responses[201] = {
         schema: {
             "status": "OK",
+            statusCode: 201,
             "message": "Successfully signed in",
             token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
         },
@@ -169,7 +175,7 @@ let handlePOSTSignIn = async (req, res, next) => {
      */
 
     await logInterface.addLog(donor._id, "CREATE USER SIGN IN", {});
-    return res.respond(new CreatedResponse("Successfully signed in",{
+    return res.respond(new CreatedResponse201("Successfully signed in",{
         token
     }))
 };
@@ -196,13 +202,14 @@ let handleDELETESignOut = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Logged out successfully'
         },
         description: 'A successful sign out removes the token for the user'
     }
 */
     await logInterface.addLog(donor._id, "DELETE USER SIGN OUT", {});
-    return res.respond(new OKResponse('Logged out successfully'));
+    return res.respond(new OKResponse200('Logged out successfully'));
 };
 
 let handleDELETESignOutAll = async (req, res, next) => {
@@ -224,6 +231,7 @@ let handleDELETESignOutAll = async (req, res, next) => {
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 200,
                     message: 'Logged out from all devices successfully'
                 },
                 description: 'A successful sign out removes all the tokens of the user'
@@ -231,7 +239,7 @@ let handleDELETESignOutAll = async (req, res, next) => {
 
      */
     await logInterface.addLog(donor._id, "DELETE USER SIGN OUT ALL", {});
-    return res.respond(new OKResponse('Logged out from all devices successfully'));
+    return res.respond(new OKResponse200('Logged out from all devices successfully'));
 };
 
 let handlePOSTRedirection = async (req, res, next) => {
@@ -261,6 +269,7 @@ let handlePOSTRedirection = async (req, res, next) => {
     #swagger.responses[201] = {
         schema: {
             status: 'OK',
+            statusCode: 201,
             message: 'Redirection token created',
             token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
         },
@@ -271,7 +280,7 @@ let handlePOSTRedirection = async (req, res, next) => {
 
     await logInterface.addLog(donor._id, "CREATE USER REDIRECTION", {});
 
-    return res.respond(new CreatedResponse("Redirection token created",{
+    return res.respond(new CreatedResponse201("Redirection token created",{
         token
     }))
 
@@ -302,13 +311,14 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         #swagger.responses[401] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 401,
                 message: 'Session Expired'
             },
             description: 'This error will occur if the jwt token is invalid'
         }
 
          */
-        return res.respond(new UnauthorizedError('Session Expired'));
+        return res.respond(new UnauthorizedError401('Session Expired'));
     }
 
     let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
@@ -318,13 +328,14 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 404,
                 message: 'Authentication failed. Invalid authentication token.'
             },
             description: 'This error will occur if the user does not exist'
         }
 
          */
-        return res.respond(new NotFoundError('Donor not found'));
+        return res.respond(new NotFoundError404('Donor not found'));
     }
 
     let donor = donorQueryResult.data;
@@ -336,13 +347,14 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
+                statusCode: 404,
                 message: 'Token not found'
             },
             description: 'This error will occur if the token does not exist'
         }
 
          */
-        return res.respond(new NotFoundError('Token not found'));
+        return res.respond(new NotFoundError404('Token not found'));
     }
 
     let access = 'auth';
@@ -361,6 +373,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
             #swagger.responses[201] = {
                 schema: {
                     status: 'OK',
+                    statusCode: 201,
                     message: 'Redirected login successful',
                     token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
                 },
@@ -370,7 +383,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
      */
     await logInterface.addLog(donor._id, "PATCH USER REDIRECTION", {});
 
-    return res.respond(new CreatedResponse("Redirected login successful",{
+    return res.respond(new CreatedResponse201("Redirected login successful",{
         token: newToken
     }))
 }
@@ -405,13 +418,14 @@ const handlePATCHPassword = async (req, res, next) => {
     #swagger.responses[201] = {
         schema: {
             status: 'OK',
+            statusCode: 201,
             message: 'Password changed successfully',
             token: 'dsgfewosgnwegnhw'
         },
         description: 'Successful password change done'
     }
      */
-    return res.respond(new CreatedResponse('Password changed successfully',{
+    return res.respond(new CreatedResponse201('Password changed successfully',{
         token: tokenInsertResult.data.token
     }))
 }
@@ -429,6 +443,7 @@ const handleGETLogins = async (req, res, next) => {
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
+                statusCode: 200,
                 message: 'Recent logins fetched successfully',
                 logins: [
                     {
@@ -468,7 +483,7 @@ const handleGETLogins = async (req, res, next) => {
     delete currentTokenData.donorId;
     delete currentTokenData.__v;
 
-    return res.respond(new OKResponse('Recent logins fetched successfully',{
+    return res.respond(new OKResponse200('Recent logins fetched successfully',{
         logins: recentLoginsResult.data,
         currentLogin: currentTokenData,
     }));
@@ -492,6 +507,7 @@ const handleDELETELogins = async (req, res, next) => {
     #swagger.responses[404] = {
         schema: {
             status: 'ERROR',
+            statusCode: 404,
             message: 'Login information not found'
         },
         description: 'Token with specified ID was not found in database'
@@ -499,6 +515,7 @@ const handleDELETELogins = async (req, res, next) => {
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
+            statusCode: 200,
             message: 'Logged out from specified device',
         },
         description: 'Success response'
@@ -508,10 +525,10 @@ const handleDELETELogins = async (req, res, next) => {
     let user = res.locals.middlewareResponse.donor;
     let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId, user._id);
     if (deletedTokenResult.status !== "OK") {
-        return res.respond(new NotFoundError('Login information not found'));
+        return res.respond(new NotFoundError404('Login information not found'));
     }
 
-    return res.respond(new OKResponse('Logged out from specified device'));
+    return res.respond(new OKResponse200('Logged out from specified device'));
 }
 
 module.exports = {
