@@ -16,55 +16,55 @@ router.get('/',(req,res)=>{
 
 router.post('/signin', /*#swagger.path = '/users/signin'*/
     userValidator.validateLogin,
-    // rateLimiter.signInLimiter,
+    rateLimiter.signInLimiter,
     userController.handlePOSTSignIn
 );
 
 router.delete('/signout', /*#swagger.path = '/users/signout'*/
-    // rateLimiter.commonLimiter,
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     userController.handleDELETESignOut
 );
 
 router.delete('/signout/all', /*#swagger.path = '/users/signout/all'*/
-    // rateLimiter.commonLimiter,
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     userController.handleDELETESignOutAll
 );
 
 
 router.post('/redirection', /*#swagger.path = '/users/redirection'*/
-    // rateLimiter.commonLimiter,
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     userController.handlePOSTRedirection
 );
 
 router.patch('/redirection', /*#swagger.path = '/users/redirection'*/
-    // rateLimiter.redirectionSignInLimiter,
+    rateLimiter.redirectionSignInLimiter,
     userController.handlePATCHRedirectedAuthentication
 );
 
 router.post('/password/forgot', /*#swagger.path = '/users/password/forgot'*/
-    // rateLimiter.passwordForgotLimiter,
+    rateLimiter.passwordForgotLimiter,
     userValidator.validatePOSTPasswordForgot,
     userController.handlePOSTPasswordForgot
 );
 
 router.patch('/password',/*#swagger.path = '/users/password'*/
-    // rateLimiter.commonLimiter,
+    rateLimiter.commonLimiter,
     userValidator.validatePATCHPassword,
     authenticator.handleAuthentication,
     userController.handlePATCHPassword
 );
 
 router.get('/logins',/*#swagger.path = '/users/logins'*/
-    // rateLimiter.commonLimiter,
+    rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     userController.handleGETLogins,
 )
 
 router.delete('/logins/:tokenId',/*#swagger.path = '/users/logins/{tokenId}'*/
-    // rateLimiter.commonLimiter,
+    rateLimiter.commonLimiter,
     userValidator.validateDELETELogins,
     authenticator.handleAuthentication,
     userController.handleDELETELogins,

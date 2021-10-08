@@ -6,7 +6,7 @@ const clearTokenCache = donorId => {
     cachegoose.clearCache(`${donorId}_tokens_children`);
 }
 const insertAndSaveToken = async (donorId, userAgent) => {
-    // clearTokenCache(donorId);
+    clearTokenCache(donorId);
     let access = 'auth';
     let token = await jwt.sign({
         _id: String(donorId),
@@ -29,7 +29,7 @@ const insertAndSaveToken = async (donorId, userAgent) => {
 }
 
 const addToken = async (donorId, token, userAgent) => {
-    // clearTokenCache(donorId);
+    clearTokenCache(donorId);
     let tokenData = new Token({donorId, token, ...userAgent});
     let data = await tokenData.save();
     if (data.nInserted === 0) {
@@ -48,8 +48,8 @@ const addToken = async (donorId, token, userAgent) => {
 };
 
 const findTokenDataByTokenCached = async (token, donorId) => {
-    // let tokenData = await Token.findOne({token}).cache(0, `${donorId}_tokens_children`)
-    let tokenData = await Token.findOne({token})
+    let tokenData = await Token.findOne({token}).cache(0, `${donorId}_tokens_children`)
+    // let tokenData = await Token.findOne({token})
     if (!tokenData) {
         return {
             message: 'Token not found',
@@ -79,7 +79,7 @@ const findTokenDataByToken = async (token) => {
 }
 
 const deleteTokenDataByToken = async (token, donorId) => {
-    // clearTokenCache(donorId);
+    clearTokenCache(donorId);
     let tokenData = await Token.findOneAndDelete({token});
     if (tokenData) {
         return {
@@ -94,7 +94,7 @@ const deleteTokenDataByToken = async (token, donorId) => {
 }
 
 const deleteAllTokensByDonorId = async (donorId) => {
-    // clearTokenCache(donorId);
+    clearTokenCache(donorId);
     let tokenData = await Token.deleteMany({donorId});
     return {
         message: "Token successfully removed",
@@ -122,7 +122,7 @@ const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken) => {
 }
 
 const deleteByTokenId = async (tokenId, donorId) => {
-    // clearTokenCache(donorId);
+    clearTokenCache(donorId);
     let deletedToken = await Token.findByIdAndDelete(tokenId);
     if (deletedToken) {
         return {
