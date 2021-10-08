@@ -8,7 +8,7 @@ let token=null;
 const setToken = (authToken) =>{
     token = authToken;
 }
-const getToken = (authToken) =>{
+const getToken = () =>{
     return token;
 }
 const baseURL = "https://badhan-web-test.herokuapp.com";
