@@ -50,7 +50,7 @@ const addToken = async (donorId, token, userAgent) => {
 const findTokenDataByTokenCached = async (token, donorId) => {
     // let tokenData = await Token.findOne({token}).cache(0, `${donorId}_tokens_children`)
     let tokenData = await Token.findOne({token})
-    if (tokenData === null) {
+    if (!tokenData) {
         return {
             message: 'Token not found',
             status: 'ERROR'
@@ -65,7 +65,7 @@ const findTokenDataByTokenCached = async (token, donorId) => {
 
 const findTokenDataByToken = async (token) => {
     let tokenData = await Token.findOne({token})
-    if (tokenData === null) {
+    if (!tokenData) {
         return {
             message: 'Token not found',
             status: 'ERROR'

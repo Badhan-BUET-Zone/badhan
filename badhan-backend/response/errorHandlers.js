@@ -5,7 +5,7 @@ const routeNotFoundHandler=(req, res, next)=>{
 const internalServerErrorHandler=(error, req, res, next)=>{
     console.log("INTERNAL SERVER ERROR");
     console.log(error);
-    return res.respond(new InternalServerError500("UNCAUGHT ERROR: "+error.message));
+    return res.respond(new InternalServerError500("UNCAUGHT ERROR: "+error.message,error));
 }
 const unhandledRejectionHandler=(reason, promise) => {
     console.log("UNHANDLED REJECTION")

@@ -22,8 +22,9 @@ class InternalServerError500 extends ErrorResponse{
     500 Internal Server Error
     The server has encountered a situation it doesn't know how to handle.
      */
-    constructor(message) {
+    constructor(message,details) {
         super("EXCEPTION",500,message);
+        this.details = details;
     }
 }
 

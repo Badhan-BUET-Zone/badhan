@@ -25,7 +25,7 @@ let handleAuthentication = async (req, res, next) => {
 
     let findDonorResult = await donorInterface.findDonorById(tokenData.donorId);
     if (findDonorResult.status !== 'OK') {
-        return res.respond(new InternalServerError500('No user found associated with token'));
+        return res.respond(new InternalServerError500('No user found associated with token',"Found in handleAuthentication"));
     }
 
     let donor = findDonorResult.data;
