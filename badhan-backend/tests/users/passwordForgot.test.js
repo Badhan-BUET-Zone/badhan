@@ -11,6 +11,7 @@ test('POST/users/password/forgot',async()=>{
     //         "statusCode": { "const": 200},
     //         "message":{"type":"string"}
     //     },
+    //     "required":["status","statusCode","message"]
     // });
     // expect(validationResult.errors).toEqual([]);
 })

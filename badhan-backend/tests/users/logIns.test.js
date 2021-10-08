@@ -1,12 +1,17 @@
 const api = require('../../api');
 const validate = require('jsonschema').validate;
+const env = require('../../config/config');
 const {authenticate}=require('../fixtures/authToken')
 
-beforeEach(authenticate);
+// beforeEach(authenticate);
 
 test('GET/users/logins',async()=>{
+    let response1 = await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
+    api.setToken(response1.data.token);
+    console.log("inside get logins");
     let response = await api.handleGETLogins();
-    console.log(response);
+    // console.log(response);
+
     let validationResult = validate(response.data, {
         "type": "object",
         "additionalProperties":false,
@@ -28,7 +33,7 @@ test('GET/users/logins',async()=>{
                     }
                 }
             },
-            "currentLogins":{
+            "currentLogin":{
                 "type":"object",
                 additionalProperties:false,
                 "properties":{
@@ -40,6 +45,7 @@ test('GET/users/logins',async()=>{
                 }
             }
         },
+        "required":["status","statusCode","message","logins","currentLogin"]
     });
     expect(validationResult.errors).toEqual([]);
 })

@@ -4,7 +4,6 @@ const validate = require('jsonschema').validate;
 
 test('POST/users/signIn',async()=>{
     let response = await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
-    console.log(response);
     let validationResult = validate(response.data, {
         "type": "object",
         "additionalProperties":false,
@@ -14,6 +13,7 @@ test('POST/users/signIn',async()=>{
             "token": { "type": "string" },
             "message":{"type":"string"}
         },
+        "required":["status","statusCode","token","message"]
     });
     expect(validationResult.errors).toEqual([]);
     api.setToken(response.data.token);

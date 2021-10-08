@@ -16,6 +16,8 @@ test('PATCH/users/password',async()=>{
             "message":{"type":"string"},
             "token":{"type":"string"}
         },
+        "required":["status","statusCode","token","message"]
     });
     expect(validationResult.errors).toEqual([]);
+    api.setToken(response.data.token);
 })
