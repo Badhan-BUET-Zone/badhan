@@ -37,9 +37,9 @@ badhanAxios.interceptors.request.use((config) => {
     // Do something before request is sent
     // console.log("%cREQUEST TO " + config.method + " " + config.url + ": ", 'color: #ff00ff', config.data, config.params);
     
-    config.headers = {
-        'x-auth': token
-    }
+    // config.headers = {
+    //     'x-auth': token
+    // }
     return config;
 }, function (error) {
     // Do something with request error
