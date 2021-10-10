@@ -24,7 +24,7 @@ const donationInsertionLimiter = rateLimit({
 });
 const donorInsertionLimiter = rateLimit({
     windowMs: minute,
-    max: 12*devDisable,
+    max: 24*devDisable,
     message:commentRateLimiterError
 });
 const donorDeletionLimiter = rateLimit({
