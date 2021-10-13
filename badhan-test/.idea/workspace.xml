@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2860c814-3557-4c5f-bfa1-9eae9ef3d614" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/api/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/fixtures/authToken.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/fixtures/authToken.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/deleteLogIns.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/deleteLogIns.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/logIns.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/logIns.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/password.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/password.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/passwordForgot.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/passwordForgot.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/signIn.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/signIn.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/signOut.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/signOut.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/users/signOutAll.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/tests/users/signOutAll.test.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1zAJRCHLV8pVvpIuWGM4Z3aFl3c" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs.jest.jest_package" value="$PROJECT_DIR$/node_modules/jest" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RunManager" selected="Jest.password.test.js">
+    <configuration name="deleteLogIns.test.js" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST_FILE" />
+      <test-file value="$PROJECT_DIR$/tests/users/deleteLogIns.test.js" />
+      <method v="2" />
+    </configuration>
+    <configuration name="logIns.test.js" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST_FILE" />
+      <test-file value="$PROJECT_DIR$/tests/users/logIns.test.js" />
+      <method v="2" />
+    </configuration>
+    <configuration name="password.test.js" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST_FILE" />
+      <test-file value="$PROJECT_DIR$/tests/users/password.test.js" />
+      <method v="2" />
+    </configuration>
+    <configuration name="signIn.test.js" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST_FILE" />
+      <test-file value="$PROJECT_DIR$/tests/users/signIn.test.js" />
+      <method v="2" />
+    </configuration>
+    <configuration name="signOut.test.js" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST_FILE" />
+      <test-file value="$PROJECT_DIR$/tests/users/signOut.test.js" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.password.test.js" />
+        <item itemvalue="Jest.signOut.test.js" />
+        <item itemvalue="Jest.signIn.test.js" />
+        <item itemvalue="Jest.logIns.test.js" />
+        <item itemvalue="Jest.deleteLogIns.test.js" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2860c814-3557-4c5f-bfa1-9eae9ef3d614" name="Default Changelist" comment="" />
+      <created>1633584949065</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1633584949065</updated>
+      <workItem from="1633584950255" duration="4471000" />
+      <workItem from="1633591154256" duration="14423000" />
+      <workItem from="1633665783608" duration="10580000" />
+      <workItem from="1633848033800" duration="2067000" />
+      <workItem from="1634101093085" duration="6594000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="395" y="90" key="#Inspections" timestamp="1633591190806">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="395" y="90" key="#Inspections/0.0.1536.824@0.0.1536.824" timestamp="1633591190806" />
+    <state width="1493" height="279" key="GridCell.Tab.0.bottom" timestamp="1634108737547">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="279" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1634108737547" />
+    <state width="1493" height="279" key="GridCell.Tab.0.center" timestamp="1634108737547">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="279" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1634108737547" />
+    <state width="1493" height="279" key="GridCell.Tab.0.left" timestamp="1634108737547">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="279" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1634108737547" />
+    <state width="1493" height="279" key="GridCell.Tab.0.right" timestamp="1634108737547">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="279" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1634108737547" />
+    <state x="807" y="146" width="579" height="596" key="find.popup" timestamp="1633676761793">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="807" y="146" width="579" height="596" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1633676761793" />
+  </component>
+</project>
