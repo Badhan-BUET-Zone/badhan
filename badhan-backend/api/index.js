@@ -3,7 +3,14 @@ This module handles all necessary tasks to communicate with the backend.
 Current active backends are- an express app and firebase realtime database
  */
 const axios = require('axios');
+let token=null;
 
+const setToken = (authToken) =>{
+    token = authToken;
+}
+const getToken = () =>{
+    return token;
+}
 const baseURL = "https://badhan-web-test.herokuapp.com";
 
 const badhanAxios = axios.create({
@@ -26,18 +33,18 @@ const firebaseAxios = axios.create({
     baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'
 });
 
-badhanAxios.interceptors.request.use((config) => {
+// badhanAxios.interceptors.request.use((config) => {
     // Do something before request is sent
     // console.log("%cREQUEST TO " + config.method + " " + config.url + ": ", 'color: #ff00ff', config.data, config.params);
     
-    config.headers = {
-        'x-auth': null
-    }
-    return config;
-}, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-});
+    // config.headers = {
+    //     'x-auth': token
+    // }
+//     return config;
+// }, function (error) {
+//     // Do something with request error
+//     return Promise.reject(error);
+// });
 
 badhanAxios.interceptors.response.use((response) => {
     // Do something before request is sent
@@ -359,7 +366,8 @@ module.exports= {
     enableGuestAPI,
     resetBaseURL,
     isGuestEnabled,
-
+    setToken,
+    getToken,
     ///////////////////ROUTES////////////
     handlePATCHDonorsDesignation,
     handlePATCHUsersPassword,
