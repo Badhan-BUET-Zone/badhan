@@ -2,9 +2,9 @@ const api = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 
-test('DELETE /users/logins/{tokenId}',async()=>{
+test.skip('DELETE /users/logins/{tokenId}',async()=>{
     try{
-    let loginResult=await api.handlePOSTSignIn({phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
+    let loginResult=await api.badhanAxios.post('/users/signin',{phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
     let loginResults = await api.badhanAxios.get('/users/logins',{headers:{'x-auth':loginResult.data.token}}); 
     let currentLoginId = loginResults.data.currentLogin["_id"];
     let deleteResponse = await api.badhanAxios.delete('/users/logins/'+currentLoginId,{headers:{'x-auth':loginResult.data.token}});
