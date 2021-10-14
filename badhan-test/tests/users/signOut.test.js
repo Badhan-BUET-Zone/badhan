@@ -11,14 +11,14 @@ test('DELETE/users/signOut', async () => {
             }
         });
         let validationResult = validate(signOutResponse.data, {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "status": {"type": "string"},
-                "statusCode": {"const": 200},
-                "message": {"type": "string"}
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 200},
+                "message": {type: "string"}
             },
-            "required": ["status", "statusCode", "message"]
+            required: ["status", "statusCode", "message"]
         });
         expect(validationResult.errors).toEqual([]);
     }catch (e) {

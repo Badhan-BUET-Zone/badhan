@@ -7,15 +7,15 @@ test('POST/users/signIn',async()=>{
     try{
         let signInResponse = await badhanAxios.post('/users/signIn',{phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
         let validationResult = validate(signInResponse.data, {
-            "type": "object",
-            "additionalProperties":false,
-            "properties": {
-                "status":{"type":"string"},
-                "statusCode": { "const": 201},
-                "token": { "type": "string" },
-                "message":{"type":"string"}
+            type: "object",
+            additionalProperties:false,
+            properties: {
+                "status":{type:"string"},
+                "statusCode": { const: 201},
+                "token": { type: "string" },
+                "message":{type:"string"}
             },
-            "required":["status","statusCode","token","message"]
+            required:["status","statusCode","token","message"]
         });
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout',{
