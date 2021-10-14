@@ -66,6 +66,7 @@ test('POST&DELETE/deletion', async () => {
             "required": ["status", "statusCode", "message"]
         });
         expect(validationResult.errors).toEqual([]);
+
         await badhanAxios.delete('/users/signout', {
             headers: {
                 "x-auth": signInResponse.data.token
