@@ -37,9 +37,8 @@ test('POST&DELETE/deletion', async () => {
                         "_id":{type:"string"},
                         "phone":{type:"number"},
                         "donorId":{type:"string"},
-                        "__v":{type:"number"}
                     },
-                    required:["date","_id","phone","donorId","__v"]
+                    required:["date","_id","phone","donorId"]
                 }
             },
             required: ["status", "statusCode", "message", "newDonation"]
