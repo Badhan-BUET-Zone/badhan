@@ -15,15 +15,15 @@ test('PATCH/users/password', async () => {
             }
         });
         let validationResult = validate(passwordResponse.data, {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "status": {"type": "string"},
-                "statusCode": {"const": 201},
-                "message": {"type": "string"},
-                "token": {"type": "string"}
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 201},
+                "message": {type: "string"},
+                "token": {type: "string"}
             },
-            "required": ["status", "statusCode", "token", "message"]
+            required: ["status", "statusCode", "token", "message"]
         });
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout', {

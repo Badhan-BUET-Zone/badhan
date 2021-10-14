@@ -18,15 +18,15 @@ test('POST&PATCH/users/redirection', async () => {
             }
         });
         let validationRedirectionResult = validate(redirectionResponse.data, {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "status": {"type": "string"},
-                "statusCode": {"const": 201},
-                "message": {"type": "string"},
-                "token": {"type": "string"}
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 201},
+                "message": {type: "string"},
+                "token": {type: "string"}
             },
-            "required": ["status", "statusCode", "token", "message"]
+            required: ["status", "statusCode", "token", "message"]
         });
 
         expect(validationRedirectionResult.errors).toEqual([]);
@@ -43,15 +43,15 @@ test('POST&PATCH/users/redirection', async () => {
             "token": redirectionResponse.data.token
         });
         let validationResult = validate(redirectionToWebResponse.data, {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "status": {"type": "string"},
-                "statusCode": {"const": 201},
-                "message": {"type": "string"},
-                "token": {"type": "string"}
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 201},
+                "message": {type: "string"},
+                "token": {type: "string"}
             },
-            "required": ["status", "statusCode", "token", "message"]
+            required: ["status", "statusCode", "token", "message"]
         });
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout', {

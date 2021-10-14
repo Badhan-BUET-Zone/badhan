@@ -23,26 +23,26 @@ test('POST&DELETE/callrecords', async () => {
 
         let validationRecordResult = validate(recordCreationResponse.data, {
             type: "object",
-            "additionalProperties": false,
+            additionalProperties: false,
             properties: {
-                "status": {"type": "string"},
-                "statusCode": {"const": 200},
-                "message": {"type": "string"},
+                "status": {type: "string"},
+                "statusCode": {const: 200},
+                "message": {type: "string"},
                 "callRecord": {
                     type: "object",
                     additionalProperties: false,
                     properties:{
-                        "date":{"type":"number"},
-                        "_id":{"type":"string"},
-                        "callerId":{"type":"string"},
-                        "calleeId":{"type":"string"},
-                        "__v":{"type":"number"},
-                        "expireAt":{"type":"string"}
+                        "date":{type:"number"},
+                        "_id":{type:"string"},
+                        "callerId":{type:"string"},
+                        "calleeId":{type:"string"},
+                        "__v":{type:"number"},
+                        "expireAt":{type:"string"}
                     },
                     required:["date","_id","callerId","calleeId","__v","expireAt"]
                 }
             },
-            "required": ["status", "statusCode", "message", "callRecord"]
+            required: ["status", "statusCode", "message", "callRecord"]
         });
 
         expect(validationRecordResult.errors).toEqual([]);
@@ -56,14 +56,14 @@ test('POST&DELETE/callrecords', async () => {
         // });
         //
         // let validationResult = validate(donationDeletionResponse.data, {
-        //     "type": "object",
-        //     "additionalProperties": false,
-        //     "properties": {
-        //         "status": {"type": "string"},
-        //         "statusCode": {"const": 200},
-        //         "message": {"type": "string"}
+        //     type: "object",
+        //     additionalProperties: false,
+        //     properties: {
+        //         "status": {type: "string"},
+        //         "statusCode": {const: 200},
+        //         "message": {type: "string"}
         //     },
-        //     "required": ["status", "statusCode", "message"]
+        //     required: ["status", "statusCode", "message"]
         // });
         // expect(validationResult.errors).toEqual([]);
 
