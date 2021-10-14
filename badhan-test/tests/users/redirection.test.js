@@ -26,31 +26,31 @@ test('POST&PATCH/users/redirection', async () => {
             "required": ["status", "statusCode", "token", "message"]
         });
         expect(validationRedirectionResult.errors).toEqual([]);
-        // let redirectionToWebResponse = await badhanAxios.patch("/users/redirection",  {
-        //     "token": redirectionResponse.data.token
-        // });
-        // let validationResult = validate(redirectionToWebResponse.data, {
-        //     "type": "object",
-        //     "additionalProperties": false,
-        //     "properties": {
-        //         "status": {"type": "string"},
-        //         "statusCode": {"const": 201},
-        //         "message": {"type": "string"},
-        //         "token": {"type": "string"}
-        //     },
-        //     "required": ["status", "statusCode", "token", "message"]
-        // });
-        // expect(validationResult.errors).toEqual([]);
-        // await badhanAxios.delete('/users/signout', {
-        //     headers: {
-        //         "x-auth": redirectionToWebResponse.data.token
-        //     }
-        // });
-        // await badhanAxios.delete('/users/signout', {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
+        let redirectionToWebResponse = await badhanAxios.patch("/users/redirection",  {
+            "token": redirectionResponse.data.token
+        });
+        let validationResult = validate(redirectionToWebResponse.data, {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "status": {"type": "string"},
+                "statusCode": {"const": 201},
+                "message": {"type": "string"},
+                "token": {"type": "string"}
+            },
+            "required": ["status", "statusCode", "token", "message"]
+        });
+        expect(validationResult.errors).toEqual([]);
+        await badhanAxios.delete('/users/signout', {
+            headers: {
+                "x-auth": redirectionToWebResponse.data.token
+            }
+        });
+        await badhanAxios.delete('/users/signout', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
     }catch (e) {
         throw processError(e);
     }
