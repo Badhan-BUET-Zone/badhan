@@ -15,6 +15,7 @@ const tokenSchema = new mongoose.Schema({
         default: ()=>{
             return new Date().getTime()+60*1000*60*24*30//30days
         },
+        select: false
     },
     os:{
         type: String,
@@ -32,7 +33,7 @@ const tokenSchema = new mongoose.Schema({
         type: String,
         required: true,
     }
-});
+},{ versionKey: false });
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 

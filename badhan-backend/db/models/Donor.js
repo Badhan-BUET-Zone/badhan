@@ -167,7 +167,7 @@ const donorSchema = new mongoose.Schema({
             }, msg: 'DB: Email is not valid'
         }],
     }
-});
+},{ versionKey: false });
 
 donorSchema.virtual('callRecords', {
     ref: 'CallRecords',

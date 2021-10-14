@@ -26,7 +26,7 @@ const donationSchema = new mongoose.Schema({
             }, msg: 'DB: lastDonation must be an integer'
         }],
     }
-});
+},{ versionKey: false });
 
 const Donation = mongoose.model('Donations', donationSchema);
 

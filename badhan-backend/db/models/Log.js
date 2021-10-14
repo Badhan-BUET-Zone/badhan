@@ -30,9 +30,10 @@ const logSchema = new mongoose.Schema({
         default: ()=>{
             return new Date().getTime()+60*1000*60*24*30//30days
         },
+        select: false
     }
 
-});
+},{ versionKey: false });
 
 logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 

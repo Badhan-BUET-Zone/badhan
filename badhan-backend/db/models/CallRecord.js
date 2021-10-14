@@ -27,9 +27,16 @@ const callRecordSchema = new mongoose.Schema({
             return new Date().getTime()+60*1000*60*24*30//30days
         },
     }
-});
+},{ versionKey: false });
 
 callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
+
+// callRecordSchema.methods.toJSON = function () {
+//     const callRecord = this
+//     const callRecordObject = callRecord.toObject()
+//     delete callRecordObject.expireAt
+//     return callRecordObject
+// }
 
 const CallRecord = mongoose.model('CallRecords', callRecordSchema);
 
