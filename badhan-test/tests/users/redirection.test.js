@@ -5,6 +5,9 @@ const {processError}=require('../fixtures/helpers');
 
 test('POST&PATCH/users/redirection', async () => {
     try {
+
+        //post/users/redirection part
+
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: "8801521438557",
             password: env.MAHATHIR_PASSWORD
@@ -25,7 +28,17 @@ test('POST&PATCH/users/redirection', async () => {
             },
             "required": ["status", "statusCode", "token", "message"]
         });
+
         expect(validationRedirectionResult.errors).toEqual([]);
+
+        await badhanAxios.delete('/users/signout', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
+        // patch/users/redirection part
+
         let redirectionToWebResponse = await badhanAxios.patch("/users/redirection",  {
             "token": redirectionResponse.data.token
         });
@@ -46,11 +59,7 @@ test('POST&PATCH/users/redirection', async () => {
                 "x-auth": redirectionToWebResponse.data.token
             }
         });
-        await badhanAxios.delete('/users/signout', {
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
+
     }catch (e) {
         throw processError(e);
     }
