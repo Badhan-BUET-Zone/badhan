@@ -208,8 +208,9 @@ donorSchema.methods.toJSON = function () {
     const donor = this
     const donorObject = donor.toObject()
 
-    delete donorObject.password
-    delete donorObject.tokens
+    delete donorObject.password;
+    delete donorObject.tokens;
+    delete donorObject.id;
 
     return donorObject
 }
