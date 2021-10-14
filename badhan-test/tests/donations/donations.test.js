@@ -12,16 +12,16 @@ test('POST&DELETE/deletion', async () => {
             phone: "8801521438557",
             password: env.MAHATHIR_PASSWORD
         });
-
+        let donationDate=new Date().getTime();
         let donationCreationResponse = await badhanAxios.post("/donations",{
             "donorId":env.DONOR_ID,
-            "date":new Date().getTime()
+            "date":donationDate
         },{
             headers: {
                 "x-auth": signInResponse.data.token
             }
         });
-        console.log(donationCreationResponse.data);
+
         let validationDonationResult = validate(donationCreationResponse.data, {
             "type": "object",
             "additionalProperties": false,
@@ -47,34 +47,30 @@ test('POST&DELETE/deletion', async () => {
 
         expect(validationDonationResult.errors).toEqual([]);
 
-        await badhanAxios.delete('/users/signout', {
+        // delete/donations part
+
+        let donationDeletionResponse = await badhanAxios.delete("/donations?donorId="+env.DONOR_ID+"&date="+donationDate,  {
             headers: {
                 "x-auth": signInResponse.data.token
             }
         });
 
-        // patch/users/redirection part
-
-        // let redirectionToWebResponse = await badhanAxios.patch("/users/redirection",  {
-        //     "token": redirectionResponse.data.token
-        // });
-        // let validationResult = validate(redirectionToWebResponse.data, {
-        //     "type": "object",
-        //     "additionalProperties": false,
-        //     "properties": {
-        //         "status": {"type": "string"},
-        //         "statusCode": {"const": 201},
-        //         "message": {"type": "string"},
-        //         "token": {"type": "string"}
-        //     },
-        //     "required": ["status", "statusCode", "token", "message"]
-        // });
-        // expect(validationResult.errors).toEqual([]);
-        // await badhanAxios.delete('/users/signout', {
-        //     headers: {
-        //         "x-auth": redirectionToWebResponse.data.token
-        //     }
-        // });
+        let validationResult = validate(donationDeletionResponse.data, {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "status": {"type": "string"},
+                "statusCode": {"const": 200},
+                "message": {"type": "string"}
+            },
+            "required": ["status", "statusCode", "message"]
+        });
+        expect(validationResult.errors).toEqual([]);
+        await badhanAxios.delete('/users/signout', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
 
     } catch (e) {
         throw processError(e);
