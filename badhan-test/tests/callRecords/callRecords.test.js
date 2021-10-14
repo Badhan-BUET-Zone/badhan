@@ -46,36 +46,37 @@ test('POST&DELETE/callrecords', async () => {
 
         expect(validationRecordResult.errors).toEqual([]);
 
-        //delete/donations part
+        // delete/donations part
 
-        // let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+env.DONOR_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
-        //
-        // let validationResult = validate(donationDeletionResponse.data, {
-        //     type: "object",
-        //     additionalProperties: false,
-        //     properties: {
-        //         "status": {type: "string"},
-        //         "statusCode": {const: 200},
-        //         "message": {type: "string"},
-        //         "deletedCallRecord": {
-        //             type: "object",
-        //             additionalProperties: false,
-        //             properties:{
-        //                 "date":{type:"number"},
-        //                 "_id":{type:"string"},
-        //                 "callerId":{type:"string"},
-        //                 "calleeId":{type:"string"}
-        //             },
-        //             required:["date","_id","callerId","calleeId"]
-        //         }
-        //     },
-        //     required: ["status", "statusCode", "message","deletedCallRecord"]
-        // });
-        // expect(validationResult.errors).toEqual([]);
+        let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+env.DONOR_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
+        let validationResult = validate(donationDeletionResponse.data, {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 200},
+                "message": {type: "string"},
+                "deletedCallRecord": {
+                    type: "object",
+                    additionalProperties: false,
+                    properties:{
+                        "date":{type:"number"},
+                        "_id":{type:"string"},
+                        "callerId":{type:"string"},
+                        "calleeId":{type:"string"},
+                        "expireAt":{type:"string"}
+                    },
+                    required:["date","_id","callerId","calleeId"]
+                }
+            },
+            required: ["status", "statusCode", "message","deletedCallRecord"]
+        });
+        expect(validationResult.errors).toEqual([]);
 
         await badhanAxios.delete('/users/signout', {
             headers: {
