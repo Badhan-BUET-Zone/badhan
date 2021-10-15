@@ -3,7 +3,7 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
 
-test('GET/log/date/{date}',async()=>{
+test('GET/log/statistics',async()=>{
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: "8801521438557",
