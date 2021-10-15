@@ -23,7 +23,7 @@ test('GET/users/logins',async()=>{
                 "message": {type: "string"},
                 "logins": {
                     type: "array",
-                    "items": {
+                    items: {
                         types: "object",
                         additionalProperties: false,
                         properties: {

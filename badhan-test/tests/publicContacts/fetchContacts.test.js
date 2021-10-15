@@ -3,58 +3,45 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
 
-test('GET/users/logins',async()=>{
+test('GET/publicContacts',async()=>{
     try {
-        let signInResponse = await badhanAxios.post('/users/signIn', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
-        });
-        let logInsResponse = await badhanAxios.get('/users/logins', {
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
-        let validationResult = validate(logInsResponse.data, {
+        let contactResponse = await badhanAxios.get('/publicContacts');
+        let validationResult = validate(contactResponse.data, {
             type: "object",
             additionalProperties: false,
             properties: {
                 "status": {type: "string"},
                 "statusCode": {const: 200},
                 "message": {type: "string"},
-                "logins": {
+                "publicContacts": {
                     type: "array",
-                    "items": {
-                        types: "object",
+                    items: {
+                        type: "object",
                         additionalProperties: false,
                         properties: {
-                            "_id": {type: "string"},
-                            "os": {type: "string"},
-                            "device": {type: "string"},
-                            "browserFamily": {type: "string"},
-                            "ipAddress": {type: "string"}
-                        }
+                            "bloodGroup":{type:"number"},
+                            "contacts":{
+                              type:"array",
+                              items: {
+                                  type:"object",
+                                  additionalProperties:false,
+                                  properties:{
+                                      "donorId":{type:"string"},
+                                      "phone":{type:"number"},
+                                      "name":{type:"string"},
+                                      "contactId":{type:"string"}
+                                  },
+                                  required:["donorId","phone","name","contactId"]
+                              }
+                            }
+                        },
+                        required:["bloodGroup","contacts"]
                     }
                 },
-                "currentLogin": {
-                    type: "object",
-                    additionalProperties: false,
-                    properties: {
-                        "_id": {type: "string"},
-                        "os": {type: "string"},
-                        "device": {type: "string"},
-                        "browserFamily": {type: "string"},
-                        "ipAddress": {type: "string"}
-                    }
-                }
             },
-            required: ["status", "statusCode", "message", "logins", "currentLogin"]
+            required: ["status", "statusCode", "message", "publicContacts"]
         });
         expect(validationResult.errors).toEqual([]);
-        await badhanAxios.delete('/users/signout', {
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
     }catch (e) {
         throw processError(e);
     }
