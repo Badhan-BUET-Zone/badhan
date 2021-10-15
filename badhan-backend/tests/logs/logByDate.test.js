@@ -12,14 +12,14 @@ test('GET/log/date/{date}',async()=>{
 
         const date=new Date().getTime();
 
-        let statisticsResponse = await badhanAxios.get('/log/date/'+date,{
+        let response = await badhanAxios.get('/log/date/'+date,{
             headers:{
                 "x-auth":signInResponse.data.token
             }
         });
 
 
-        let validationResult = validate(statisticsResponse.data, {
+        let validationResult = validate(response.data, {
             type: "object",
             additionalProperties: false,
             properties: {
