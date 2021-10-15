@@ -11,14 +11,14 @@ test('GET/log',async()=>{
         });
 
 
-        let statisticsResponse = await badhanAxios.get('/log',{
+        let response = await badhanAxios.get('/log',{
             headers:{
                 "x-auth":signInResponse.data.token
             }
         });
 
 
-        let validationResult = validate(statisticsResponse.data, {
+        let validationResult = validate(response.data, {
             type: "object",
             additionalProperties: false,
             properties: {
@@ -31,12 +31,10 @@ test('GET/log',async()=>{
                         type:"object",
                         additionalProperties: false,
                         properties: {
-                            "donorId": {type: "string"},
-                            "hall": {type: "number"},
-                            "name": {type: "string"},
+                            "dateString": {type: "string"},
                             "count":{type:"number"}
                         },
-                        required: ["donorId", "hall", "name","count"]
+                        required: ["dateString","count"]
                     }
                 }
             },
