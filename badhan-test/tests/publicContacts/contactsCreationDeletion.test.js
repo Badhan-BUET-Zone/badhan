@@ -3,7 +3,7 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
 
-test.skip('POST&DELETE/publicContacts', async () => {
+test('POST&DELETE/publicContacts', async () => {
     try {
 
         //post/callrecords part
@@ -47,35 +47,23 @@ test.skip('POST&DELETE/publicContacts', async () => {
 
         // delete/donations part
 
-        // let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+env.DONOR_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
-        //
-        // let validationResult = validate(donationDeletionResponse.data, {
-        //     type: "object",
-        //     additionalProperties: false,
-        //     properties: {
-        //         "status": {type: "string"},
-        //         "statusCode": {const: 200},
-        //         "message": {type: "string"},
-        //         "deletedCallRecord": {
-        //             type: "object",
-        //             additionalProperties: false,
-        //             properties:{
-        //                 "date":{type:"number"},
-        //                 "_id":{type:"string"},
-        //                 "callerId":{type:"string"},
-        //                 "calleeId":{type:"string"},
-        //                 "expireAt":{type:"string"}
-        //             },
-        //             required:["date","_id","callerId","calleeId"]
-        //         }
-        //     },
-        //     required: ["status", "statusCode", "message","deletedCallRecord"]
-        // });
-        // expect(validationResult.errors).toEqual([]);
+        let contactDeletionResponse = await badhanAxios.delete("/publicContacts?donorId="+env.DONOR_ID+"&contactId="+contactCreationResponse.data.publicContact["_id"],  {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
+        let validationResult = validate(contactDeletionResponse.data, {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 200},
+                "message": {type: "string"}
+            },
+            required: ["status", "statusCode", "message"]
+        });
+        expect(validationResult.errors).toEqual([]);
 
         await badhanAxios.delete('/users/signout', {
             headers: {
