@@ -3,7 +3,7 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
 
-test('POST&DELETE/callrecords', async () => {
+test.skip('POST&DELETE/publicContacts', async () => {
     try {
 
         //post/callrecords part
