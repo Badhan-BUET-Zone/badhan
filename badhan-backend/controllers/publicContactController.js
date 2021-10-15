@@ -112,9 +112,9 @@ const handlePOSTPublicContact = async (req, res, next) => {
         return res.respond(new InternalServerError500(insertionResult.message));
     }
 
-    return res.respond(new CreatedResponse201('Public contact added successfully'),{
+    return res.respond(new CreatedResponse201('Public contact added successfully',{
         publicContact: insertionResult.data
-    })
+    }))
 }
 
 const handleGETPublicContacts = async (req, res, next) => {
