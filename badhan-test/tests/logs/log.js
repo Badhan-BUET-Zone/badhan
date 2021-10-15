@@ -3,16 +3,15 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
 
-test('GET/log/statistics',async()=>{
+test('GET/log',async()=>{
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: "8801521438557",
             password: env.MAHATHIR_PASSWORD
         });
 
-        const date=new Date().getTime();
 
-        let statisticsResponse = await badhanAxios.get('/log/date/'+date,{
+        let statisticsResponse = await badhanAxios.get('/log',{
             headers:{
                 "x-auth":signInResponse.data.token
             }
