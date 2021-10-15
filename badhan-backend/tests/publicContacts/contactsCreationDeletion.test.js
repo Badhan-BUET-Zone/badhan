@@ -29,20 +29,18 @@ test.skip('POST&DELETE/publicContacts', async () => {
                 "status": {type: "string"},
                 "statusCode": {const: 201},
                 "message": {type: "string"},
-                // "publicContact": {
-                //     type: "object",
-                //     additionalProperties: false,
-                //     properties:{
-                //         "bloodGroup":{type:"number"},
-                //         "_id":{type:"string"},
-                //         "donorId":{type:"string"}
-                //     },
-                //     required:["bloodGroup","_id","donorId"]
-                // }
+                "publicContact": {
+                    type: "object",
+                    additionalProperties: false,
+                    properties:{
+                        "bloodGroup":{type:"number"},
+                        "_id":{type:"string"},
+                        "donorId":{type:"string"}
+                    },
+                    required:["bloodGroup","_id","donorId"]
+                }
             },
-            required: ["status", "statusCode", "message"
-                //, "publicContact"
-            ]
+            required: ["status", "statusCode", "message","publicContact"]
         });
 
         expect(validationContactResult.errors).toEqual([]);
