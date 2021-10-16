@@ -21,7 +21,7 @@ const publicContactSchema = new mongoose.Schema({
         required: true,
     }
 
-},{ versionKey: false });
+},{ versionKey: false, id: false});
 
 const PublicContact = mongoose.model('PublicContacts', publicContactSchema);
 

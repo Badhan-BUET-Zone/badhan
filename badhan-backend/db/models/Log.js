@@ -33,7 +33,7 @@ const logSchema = new mongoose.Schema({
         select: false
     }
 
-},{ versionKey: false });
+},{ versionKey: false, id: false });
 
 logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 

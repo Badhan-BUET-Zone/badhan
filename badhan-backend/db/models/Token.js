@@ -33,7 +33,7 @@ const tokenSchema = new mongoose.Schema({
         type: String,
         required: true,
     }
-},{ versionKey: false });
+},{ versionKey: false, id: false});
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 

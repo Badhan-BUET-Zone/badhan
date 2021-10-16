@@ -166,8 +166,9 @@ const donorSchema = new mongoose.Schema({
                 return checkEmail(email);
             }, msg: 'DB: Email is not valid'
         }],
-    }
-},{ versionKey: false });
+    },
+
+},{ versionKey: false,  id: false  });
 
 donorSchema.virtual('callRecords', {
     ref: 'CallRecords',
@@ -210,7 +211,6 @@ donorSchema.methods.toJSON = function () {
 
     delete donorObject.password;
     delete donorObject.tokens;
-    delete donorObject.id;
 
     return donorObject
 }
