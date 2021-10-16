@@ -30,8 +30,6 @@ test('POST&PATCH&DELETE/donors', async () => {
             }
         });
 
-        console.log(donorCreationResponse.data)
-
         let validationCreationResult = validate(donorCreationResponse.data, {
             type: "object",
             additionalProperties: false,
@@ -68,7 +66,6 @@ test('POST&PATCH&DELETE/donors', async () => {
         expect(validationCreationResult.errors).toEqual([]);
 
         //patch/donors
-        console.log(donorCreationResponse.data.newDonor["_id"])
 
         let donorUpdateResponse = await badhanAxios.patch("/donors/v2", {
             "donorId": donorCreationResponse.data.newDonor["_id"],
@@ -87,7 +84,6 @@ test('POST&PATCH&DELETE/donors', async () => {
             }
         });
 
-        console.log(donorUpdateResponse.data);
 
         let validationUpdateResult = validate(donorUpdateResponse.data, {
             type: "object",
@@ -104,23 +100,23 @@ test('POST&PATCH&DELETE/donors', async () => {
 
         // delete/donations part
 
-        // let donationDeletionResponse = await badhanAxios.delete("/donations?donorId="+env.DONOR_ID+"&date="+donationDate,  {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
-        //
-        // let validationResult = validate(donationDeletionResponse.data, {
-        //     type: "object",
-        //     additionalProperties: false,
-        //     properties: {
-        //         "status": {type: "string"},
-        //         "statusCode": {const: 200},
-        //         "message": {type: "string"}
-        //     },
-        //     required: ["status", "statusCode", "message"]
-        // });
-        // expect(validationResult.errors).toEqual([]);
+        let donationDeletionResponse = await badhanAxios.delete("/donors?donorId="+donorCreationResponse.data.newDonor["_id"],  {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
+        let validationResult = validate(donationDeletionResponse.data, {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                "status": {type: "string"},
+                "statusCode": {const: 200},
+                "message": {type: "string"}
+            },
+            required: ["status", "statusCode", "message"]
+        });
+        expect(validationResult.errors).toEqual([]);
 
         await badhanAxios.delete('/users/signout', {
             headers: {
