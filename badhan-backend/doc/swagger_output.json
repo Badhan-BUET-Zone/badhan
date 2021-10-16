@@ -371,159 +371,13 @@
         "tags": [
           "Donors"
         ],
-        "description": "handles the deletion of an existing donor from the database.\r  \n#swagger.parameters[",
+        "description": "handles the deletion of an existing donor from the database.",
         "parameters": [
           {
             "name": "donorId",
             "in": "query",
             "description": "donor id for deleting donation",
             "type": "string"
-          },
-          {
-            "name": "bloodGroup",
-            "description": "blood group for donors",
-            "type": "number",
-            "in": "query"
-          },
-          {
-            "name": "hall",
-            "description": "hall for donors",
-            "type": "number",
-            "in": "query"
-          },
-          {
-            "name": "batch",
-            "description": "batch for donors",
-            "type": "number",
-            "in": "query"
-          },
-          {
-            "name": "address",
-            "description": "address for donors",
-            "type": "string",
-            "in": "query"
-          },
-          {
-            "name": "isAvailable",
-            "description": "isAvailable for donors",
-            "type": "boolean",
-            "in": "query"
-          },
-          {
-            "name": "isNotAvailable",
-            "description": "isNotAvailable for donors",
-            "type": "boolean",
-            "in": "query"
-          },
-          {
-            "name": "availableToAll",
-            "description": "availableToAll denotes the availability of the donor to the other hall members",
-            "type": "boolean",
-            "in": "query"
-          },
-          {
-            "name": "editDonorComment",
-            "in": "body",
-            "description": "donor info for posting comment",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "hujfsduif783ujh"
-                },
-                "comment": {
-                  "type": "string",
-                  "example": "Sample comment about donor"
-                }
-              }
-            }
-          },
-          {
-            "name": "changePassword",
-            "in": "body",
-            "description": "donor info for changing password",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "ghjdgejhd7623jhs"
-                },
-                "password": {
-                  "type": "string",
-                  "example": "thisisanewpassword"
-                }
-              }
-            }
-          },
-          {
-            "name": "editDonor",
-            "in": "body",
-            "description": "donor info for editing donor",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "ghjdgejhd7623jhs"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "Mir Mahathir Mohammad"
-                },
-                "phone": {
-                  "type": "number",
-                  "example": 8801521438557
-                },
-                "studentId": {
-                  "type": "number",
-                  "example": 1605011
-                },
-                "bloodGroup": {
-                  "type": "number",
-                  "example": 2
-                },
-                "hall": {
-                  "type": "number",
-                  "example": 3
-                },
-                "roomNumber": {
-                  "type": "string",
-                  "example": "3009"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "Azimpur"
-                },
-                "availableToAll": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "email": {
-                  "type": "string",
-                  "example": "mirmahathir1@gmail.com"
-                }
-              }
-            }
-          },
-          {
-            "name": "promote",
-            "in": "body",
-            "description": "If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "donorId": {
-                  "type": "string",
-                  "example": "hjasgd673278"
-                },
-                "promoteFlag": {
-                  "type": "boolean",
-                  "example": true
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -541,14 +395,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor updated successfully"
+                  "example": "Donor deleted successfully"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Donor info update successful"
+            "description": "Successful donor deletion"
           },
           "403": {
             "schema": {
@@ -564,14 +418,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "You do not have permission to edit email address of another user"
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "You do not have permission to edit email address of another user"
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
           },
           "404": {
             "schema": {
@@ -587,37 +441,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Email address does not exist"
+                  "example": "Donor not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Donor info update successful"
-          },
-          "409": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ERROR"
-                },
-                "statusCode": {
-                  "type": "number",
-                  "example": 409
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Can not promote volunteer or can not demote donor/ Donor does not have a valid hall"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "If user cannot promote volunteer or cannot demote donor/ Donor does not have a valid hall"
+            "description": "When no donor with the specified donor id is found, user will get this error message"
           }
         },
         "security": [

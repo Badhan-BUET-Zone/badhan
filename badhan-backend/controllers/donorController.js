@@ -149,7 +149,7 @@ const handleDELETEDonors = async (req, res, next) => {
     /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
-        #swagger.description = 'handles the deletion of an existing donor from the database.
+        #swagger.description = 'handles the deletion of an existing donor from the database.'
         #swagger.parameters['donorId'] = {
             in: 'query',
             description: 'donor id for deleting donation',
