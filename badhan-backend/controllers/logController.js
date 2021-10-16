@@ -60,9 +60,11 @@ const handleGETStatistics = async (req, res, next) => {
 
      */
     return res.respond(new OKResponse200('Statistics fetched successfully',{
+	statistics:{
         donorCount: donorCount.data,
         donationCount: donationCount.data,
         volunteerCount: volunteerCount.data
+	}
     }));
 }
 
