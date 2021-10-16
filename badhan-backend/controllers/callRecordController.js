@@ -34,6 +34,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
                     hall: 4
                 },
                 calleeId: "5e68514546b0e",
+                expireAt: "2021-11-15T11:23:54.231Z",
             }
         },
         description: 'Call record insertion successful'

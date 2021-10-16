@@ -80,7 +80,8 @@ const handleGETAppVersion = (req, res, next) => {
                 schema: {
                     status:'OK',
                     statusCode: 200,
-                    version: '2.5.1'
+                    version: '2.5.1',
+                    message: "Latest app version fetched",
                 },
                 description: 'response is the current version number of badhan api'
             }

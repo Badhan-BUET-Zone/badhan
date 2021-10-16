@@ -15,7 +15,7 @@ const {
     TooManyRequestsError429,
     ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
+const {CreatedResponse201, OKResponse200} = require('../response/successTypes');
 
 
 const handlePOSTDonors = async (req, res, next) => {
@@ -129,18 +129,35 @@ const handlePOSTDonors = async (req, res, next) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONOR", donorInsertionResult.data);
     /*
-            #swagger.responses[201] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 201,
-                    message: 'New donor inserted successfully',
-                    newDonor: '(new donor data)'
-                },
-                description: 'successful donor insertion'
-            }
+        #swagger.responses[201] = {
+            schema: {
+                status: 'OK',
+                statusCode: 201,
+                message: 'New donor inserted successfully',
+                "newDonor": {
+                    "address": "Azimpur Road",
+                    "roomNumber": "4568",
+                    "designation": 0,
+                    "lastDonation": 0,
+                    "comment": "Has Diabetes",
+                    "commentTime": 16547822145,
+                    "donationCount": 4,
+                    "email": "",
+                    "_id": "616ab751fc274715cc504ac7",
+                    "phone": 8801546587552,
+                    "bloodGroup": 1,
+                    "hall": 8,
+                    "name": "Mir Mahathir",
+                    "studentId": "2105011",
+                    "availableToAll": true
+                }
+
+            },
+            description: 'successful donor insertion'
+        }
 
      */
-    return res.respond(new CreatedResponse201('New donor inserted successfully',{
+    return res.respond(new CreatedResponse201('New donor inserted successfully', {
         newDonor: donorInsertionResult.data
     }))
 }
@@ -379,7 +396,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
                 description: 'Successful donor deletion'
             }
     */
-    return res.respond(new OKResponse200('Donors queried successfully',{
+    return res.respond(new OKResponse200('Donors queried successfully', {
         filteredDonors: result.data
     }))
 }
@@ -702,7 +719,7 @@ const handleGETVolunteers = async (req, res, next) => {
      */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ VOLUNTEERS", {});
 
-    return res.respond(new OKResponse200('Volunteer list fetched successfully',{
+    return res.respond(new OKResponse200('Volunteer list fetched successfully', {
         volunteerList
     }))
 }
@@ -813,7 +830,7 @@ const handleGETAdmins = async (req, res, next) => {
      */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ ADMINS", {});
 
-    return res.respond(new OKResponse200('Hall admin list fetched successfully',{
+    return res.respond(new OKResponse200('Hall admin list fetched successfully', {
         admins
     }))
 }
@@ -901,6 +918,13 @@ const handleGETDonors = async (req, res, next) => {
                         phone: 8801724097983,
                         donorId: "5e6781006ecd148aa8cc76d8"
                     }
+                ],
+                "publicContacts": [
+                    {
+                        "bloodGroup": 2,
+                        "_id": "6142dfc11f536f2e2db0f780",
+                        "donorId": "5e901d56effc5900177ced73"
+                    },
                 ]
             }
         },
@@ -911,7 +935,7 @@ const handleGETDonors = async (req, res, next) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ DONOR", {name: donor.name});
 
-    return res.respond(new OKResponse200('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details', {
         donor
     }));
 
@@ -956,7 +980,7 @@ const handleGETDonorsMe = async (req, res, next) => {
     */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "ENTERED APP", {name: donor.name});
 
-    return res.respond(new OKResponse200('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details', {
         donor
     }))
 }
@@ -991,7 +1015,7 @@ const handleGETVolunteersAll = async (req, res, next) => {
         description: 'Volunteer list fetch successful'
     }
 */
-    return res.respond(new OKResponse200('Successfully fetched donor details',{
+    return res.respond(new OKResponse200('Successfully fetched donor details', {
         data: volunteerResult.data
     }))
 }
@@ -1036,7 +1060,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
             }
 
              */
-            return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall",{
+            return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall", {
                 found: true,
                 donor: duplicateDonorResult.data,
             }))
@@ -1054,7 +1078,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
         }
 
          */
-        return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.",{
+        return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.", {
             found: true,
             donor: null,
         }))
@@ -1076,7 +1100,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DUPLICATE", {phone: req.query.phone});
 
-    return res.respond(new OKResponse200('No duplicate donors found',{
+    return res.respond(new OKResponse200('No duplicate donors found', {
         found: false,
         donor: null,
     }))
@@ -1136,7 +1160,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
 */
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONOR PASSWORD REQUEST", {name: donor.name});
 
-    return res.respond(new OKResponse200("Successfully created recovery link for user",{
+    return res.respond(new OKResponse200("Successfully created recovery link for user", {
         token: tokenInsertResult.data.token
     }));
 }
@@ -1150,6 +1174,47 @@ const handleGETDonorsDesignation = async (req, res, next) => {
                "api_key": []
         }]
 */
+
+    /*
+    #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            statusCode: 200,
+            message: "All designated members fetched",
+            "volunteerList": [
+                {
+                    "roomNumber": "4011",
+                    "_id": "5e68514995b0367d81546b29",
+                    "studentId": "1606037",
+                    "name": "Md. Nasim Afroj Taj",
+                    "bloodGroup": 2,
+                    "phone": 8801876834245
+                },
+            ],
+            "adminList": [
+                {
+                    "_id": "5e6776c090b43cdb0ddf347a",
+                    "studentId": "1704194",
+                    "name": "Oyshee Chowdhury",
+                    "phone": 8801997331062,
+                    "hall": 1
+                },
+            ],
+            "superAdminList": [
+                {
+                    "_id": "5e6776166f73f925e22a05e8",
+                    "studentId": "1805064",
+                    "name": "Sanju Basak",
+                    "phone": 8801774377473,
+                    "hall": 0
+                },
+            ]
+        },
+        description: "All designated members fetched"
+    }
+
+     */
+
     let authenticatedUser = res.locals.middlewareResponse.donor;
 
     let adminsQueryResult = await donorInterface.findAdmins(2);
@@ -1171,7 +1236,7 @@ const handleGETDonorsDesignation = async (req, res, next) => {
     }
     let superAdminList = superAdminQuery.data;
 
-    return res.respond(new OKResponse200("All designated members fetched",{
+    return res.respond(new OKResponse200("All designated members fetched", {
         volunteerList,
         adminList,
         superAdminList

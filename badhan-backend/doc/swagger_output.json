@@ -122,8 +122,69 @@
                   "example": "New donor inserted successfully"
                 },
                 "newDonor": {
-                  "type": "string",
-                  "example": "(new donor data)"
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur Road"
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "4568"
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "Has Diabetes"
+                    },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 16547822145
+                    },
+                    "donationCount": {
+                      "type": "number",
+                      "example": 4
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "616ab751fc274715cc504ac7"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801546587552
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 8
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir"
+                    },
+                    "studentId": {
+                      "type": "string",
+                      "example": "2105011"
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
                 }
               },
               "xml": {
@@ -324,6 +385,26 @@
                           "donorId": {
                             "type": "string",
                             "example": "5e6781006ecd148aa8cc76d8"
+                          }
+                        }
+                      }
+                    },
+                    "publicContacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "bloodGroup": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "_id": {
+                            "type": "string",
+                            "example": "6142dfc11f536f2e2db0f780"
+                          },
+                          "donorId": {
+                            "type": "string",
+                            "example": "5e901d56effc5900177ced73"
                           }
                         }
                       }
@@ -1223,7 +1304,119 @@
         ],
         "description": "Request get list of volunteers of own hall, all hall admins and super admins",
         "parameters": [],
-        "responses": {},
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All designated members fetched"
+                },
+                "volunteerList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "4011"
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "5e68514995b0367d81546b29"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1606037"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Md. Nasim Afroj Taj"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801876834245
+                      }
+                    }
+                  }
+                },
+                "adminList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776c090b43cdb0ddf347a"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1704194"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Oyshee Chowdhury"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801997331062
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 1
+                      }
+                    }
+                  }
+                },
+                "superAdminList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a05e8"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1805064"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Sanju Basak"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801774377473
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "All designated members fetched"
+          }
+        },
         "security": [
           {
             "api_key": []
@@ -2270,6 +2463,10 @@
                     "calleeId": {
                       "type": "string",
                       "example": "5e68514546b0e"
+                    },
+                    "expireAt": {
+                      "type": "string",
+                      "example": "2021-11-15T11:23:54.231Z"
                     }
                   }
                 }
@@ -2626,6 +2823,10 @@
                 "version": {
                   "type": "string",
                   "example": "2.5.1"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Latest app version fetched"
                 }
               },
               "xml": {
@@ -2660,6 +2861,10 @@
                 "version": {
                   "type": "string",
                   "example": "2.5.1"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Latest app version fetched"
                 }
               },
               "xml": {
