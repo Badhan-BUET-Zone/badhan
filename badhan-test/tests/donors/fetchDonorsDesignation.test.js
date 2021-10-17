@@ -20,51 +20,51 @@ test('GET/donors/designation', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "volunteerList": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                volunteerList: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "roomNumber": {type: "string"},
-                            "_id": {type: "string"},
-                            "studentId": {type: "string"},
-                            "phone": {type: "number"},
-                            "bloodGroup": {type: "number"},
-                            "name": {type: "string"},
+                            roomNumber: {type: "string"},
+                            _id: {type: "string"},
+                            studentId: {type: "string"},
+                            phone: {type: "number"},
+                            bloodGroup: {type: "number"},
+                            name: {type: "string"},
                         },
                         required: ["roomNumber", "_id", "studentId", "phone", "bloodGroup", "name"]
                     }
                 },
-                "adminList": {
+                adminList: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "_id": {type: "string"},
-                            "studentId": {type: "string"},
-                            "phone": {type: "number"},
-                            "hall": {type: "number"},
-                            "name": {type: "string"},
+                            _id: {type: "string"},
+                            studentId: {type: "string"},
+                            phone: {type: "number"},
+                            hall: {type: "number"},
+                            name: {type: "string"},
                         },
                         required: [ "_id", "studentId", "phone", "hall", "name"]
                     }
                 },
-                "superAdminList": {
+                superAdminList: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "_id": {type: "string"},
-                            "studentId": {type: "string"},
-                            "phone": {type: "number"},
-                            "hall": {type: "number"},
-                            "name": {type: "string"},
+                            _id: {type: "string"},
+                            studentId: {type: "string"},
+                            phone: {type: "number"},
+                            hall: {type: "number"},
+                            name: {type: "string"},
                         },
                         required: [ "_id", "studentId", "phone", "hall", "name"]
                     }

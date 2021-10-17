@@ -20,20 +20,20 @@ test('GET/volunteers/all', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode":{const:200},
-                "message":{type:"string"},
-                "data": {
+                status: {type: "string"},
+                statusCode:{const:200},
+                message:{type:"string"},
+                data: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "_id": {type: "string"},
-                            "studentId": {type: "string"},
-                            "name": {type: "string"},
-                            "logCount": {type: "number"},
-                            "hall": {type: "number"},
+                            _id: {type: "string"},
+                            studentId: {type: "string"},
+                            name: {type: "string"},
+                            logCount: {type: "number"},
+                            hall: {type: "number"},
                         },
                         required: ["_id", "studentId","name", "logCount","hall"]
                     },

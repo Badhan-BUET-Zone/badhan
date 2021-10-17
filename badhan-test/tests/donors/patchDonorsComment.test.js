@@ -11,8 +11,8 @@ test('PATCH/donors/comment', async () => {
         });
 
         let response = await badhanAxios.patch('/donors/comment', {
-            "donorId":env.DONOR_ID,
-            "comment":"Developer of Badhan"
+            donorId:env.DONOR_ID,
+            comment:"Developer of Badhan"
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -23,9 +23,9 @@ test('PATCH/donors/comment', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
             },
             required: ["status", "statusCode", "message"]
         });

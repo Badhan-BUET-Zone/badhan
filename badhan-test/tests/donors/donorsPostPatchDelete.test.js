@@ -14,16 +14,16 @@ test('POST&PATCH&DELETE/donors', async () => {
         });
 
         let donorCreationResponse = await badhanAxios.post("/donors", {
-            "phone": 8801555444777,
-            "bloodGroup": 2,
-            "hall": 5,
-            "name": "Blah Blah",
-            "studentId": 1606060,
-            "address": "Azimpur",
-            "roomNumber": "3009",
-            "comment": "developer of badhan",
-            "extraDonationCount": 2,
-            "availableToAll": true
+            phone: 8801555444777,
+            bloodGroup: 2,
+            hall: 5,
+            name: "Blah Blah",
+            studentId: 1606060,
+            address: "Azimpur",
+            roomNumber: "3009",
+            comment: "developer of badhan",
+            extraDonationCount: 2,
+            availableToAll: true
         }, {
             headers: {
                 "x-auth": signInResponse.data.token
@@ -34,28 +34,28 @@ test('POST&PATCH&DELETE/donors', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 201},
-                "message": {type: "string"},
-                "newDonor": {
+                status: {type: "string"},
+                statusCode: {const: 201},
+                message: {type: "string"},
+                newDonor: {
                     type: "object",
                     additionalProperties: false,
                     properties: {
-                        "address": {type: "string"},
-                        "roomNumber": {type: "string"},
-                        "designation": {type: "number"},
-                        "lastDonation": {type: "number"},
-                        "comment": {type: "string"},
-                        "commentTime": {type: "number"},
-                        "donationCount": {type: "number"},
-                        "email": {type: "string"},
-                        "_id": {type: "string"},
-                        "phone": {type: "number"},
-                        "bloodGroup": {type: "number"},
-                        "hall": {type: "number"},
-                        "name": {type: "string"},
-                        "studentId": {type: "string"},
-                        "availableToAll": {type: "boolean"},
+                        address: {type: "string"},
+                        roomNumber: {type: "string"},
+                        designation: {type: "number"},
+                        lastDonation: {type: "number"},
+                        comment: {type: "string"},
+                        commentTime: {type: "number"},
+                        donationCount: {type: "number"},
+                        email: {type: "string"},
+                        _id: {type: "string"},
+                        phone: {type: "number"},
+                        bloodGroup: {type: "number"},
+                        hall: {type: "number"},
+                        name: {type: "string"},
+                        studentId: {type: "string"},
+                        availableToAll: {type: "boolean"},
                     },
                     required: ["address", "roomNumber", "designation", "lastDonation", "comment", "commentTime", "donationCount", "email", "_id", "phone", "bloodGroup", "hall", "name", "studentId", "availableToAll"]
                 }
@@ -68,15 +68,15 @@ test('POST&PATCH&DELETE/donors', async () => {
         //patch/donors
 
         let donorUpdateResponse = await badhanAxios.patch("/donors/v2", {
-            "donorId": donorCreationResponse.data.newDonor["_id"],
-            "name": "Blah Blah",
-            "phone": 8801555444777,
-            "studentId": 1606060,
-            "bloodGroup": 2,
-            "hall": 5,
-            "roomNumber": "3009",
-            "address": "Azimpur",
-            "availableToAll": true,
+            donorId: donorCreationResponse.data.newDonor["_id"],
+            name: "Blah Blah",
+            phone: 8801555444777,
+            studentId: 1606060,
+            bloodGroup: 2,
+            hall: 5,
+            roomNumber: "3009",
+            address: "Azimpur",
+            availableToAll: true,
             email:""
         }, {
             headers: {
@@ -89,9 +89,9 @@ test('POST&PATCH&DELETE/donors', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"}
             },
             required: ["status", "statusCode", "message"]
         });
@@ -110,9 +110,9 @@ test('POST&PATCH&DELETE/donors', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"}
             },
             required: ["status", "statusCode", "message"]
         });
