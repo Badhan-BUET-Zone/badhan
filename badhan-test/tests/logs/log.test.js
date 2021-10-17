@@ -22,17 +22,17 @@ test('GET/log',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "logs": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                logs: {
                     type:"array",
                     items: {
                         type:"object",
                         additionalProperties: false,
                         properties: {
-                            "dateString": {type: "string"},
-                            "count":{type:"number"}
+                            dateString: {type: "string"},
+                            count:{type:"number"}
                         },
                         required: ["dateString","count"]
                     }

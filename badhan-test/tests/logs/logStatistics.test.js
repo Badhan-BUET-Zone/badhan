@@ -21,16 +21,16 @@ test('GET/log/statistics',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "statistics": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                statistics: {
                     type:"object",
                     additionalProperties:false,
                     properties:{
-                        "donorCount": {type:"number"},
-                        "donationCount": {type:"number"},
-                        "volunteerCount": {type:"number"}
+                        donorCount: {type:"number"},
+                        donationCount: {type:"number"},
+                        volunteerCount: {type:"number"}
                     },
                     required:["donorCount","donationCount","volunteerCount"]
                 }

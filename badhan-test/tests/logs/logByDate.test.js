@@ -23,19 +23,19 @@ test('GET/log/date/{date}',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "logs": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                logs: {
                     type:"array",
                     items: {
                         type:"object",
                         additionalProperties: false,
                         properties: {
-                            "donorId": {type: "string"},
-                            "hall": {type: "number"},
-                            "name": {type: "string"},
-                            "count":{type:"number"}
+                            donorId: {type: "string"},
+                            hall: {type: "number"},
+                            name: {type: "string"},
+                            count:{type:"number"}
                         },
                         required: ["donorId", "hall", "name","count"]
                     }
