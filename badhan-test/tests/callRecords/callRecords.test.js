@@ -14,7 +14,7 @@ test('POST&DELETE/callrecords', async () => {
         });
 
         let recordCreationResponse = await badhanAxios.post("/callrecords",{
-            "donorId":env.DONOR_ID,
+            donorId:env.DONOR_ID,
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -25,18 +25,18 @@ test('POST&DELETE/callrecords', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "callRecord": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                callRecord: {
                     type: "object",
                     additionalProperties: false,
                     properties:{
-                        "date":{type:"number"},
-                        "_id":{type:"string"},
-                        "callerId":{type:"string"},
-                        "calleeId":{type:"string"},
-                        "expireAt":{type:"string"}
+                        date:{type:"number"},
+                        _id:{type:"string"},
+                        callerId:{type:"string"},
+                        calleeId:{type:"string"},
+                        expireAt:{type:"string"}
                     },
                     required:["date","_id","callerId","calleeId","expireAt"]
                 }
@@ -58,18 +58,18 @@ test('POST&DELETE/callrecords', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "deletedCallRecord": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                deletedCallRecord: {
                     type: "object",
                     additionalProperties: false,
                     properties:{
-                        "date":{type:"number"},
-                        "_id":{type:"string"},
-                        "callerId":{type:"string"},
-                        "calleeId":{type:"string"},
-                        "expireAt":{type:"string"}
+                        date:{type:"number"},
+                        _id:{type:"string"},
+                        callerId:{type:"string"},
+                        calleeId:{type:"string"},
+                        expireAt:{type:"string"}
                     },
                     required:["date","_id","callerId","calleeId"]
                 }
