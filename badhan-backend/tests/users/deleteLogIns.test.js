@@ -9,16 +9,24 @@ test('DELETE /users/logins/{tokenId}', async () => {
             phone: "8801521438557",
             password: env.MAHATHIR_PASSWORD
         });
-        let loginResults = await badhanAxios.get('/users/logins', {headers: {'x-auth': loginResult.data.token}});
+        let loginResults = await badhanAxios.get('/users/logins', {
+            headers: {
+                'x-auth': loginResult.data.token
+            }
+        });
         let currentLoginId = loginResults.data.currentLogin["_id"];
-        let deleteResponse = await badhanAxios.delete('/users/logins/' + currentLoginId, {headers: {'x-auth': loginResult.data.token}});
+        let deleteResponse = await badhanAxios.delete('/users/logins/' + currentLoginId, {
+            headers: {
+                'x-auth': loginResult.data.token
+            }
+        });
         let validationResult = validate(deleteResponse.data, {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"}
             },
             required: ["status", "statusCode", "message"]
         });

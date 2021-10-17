@@ -9,9 +9,9 @@ test.skip('POST/users/password/forgot',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"}
             },
             required: ["status", "statusCode", "message"]
         });

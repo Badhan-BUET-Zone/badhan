@@ -10,10 +10,10 @@ test('POST/users/signIn',async()=>{
             type: "object",
             additionalProperties:false,
             properties: {
-                "status":{type:"string"},
-                "statusCode": { const: 201},
-                "token": { type: "string" },
-                "message":{type:"string"}
+                status:{type:"string"},
+                statusCode: { const: 201},
+                token: { type: "string" },
+                message:{type:"string"}
             },
             required:["status","statusCode","token","message"]
         });
