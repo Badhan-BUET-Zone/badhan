@@ -16,8 +16,6 @@ test('GET/search/v2', async () => {
             }
         });
 
-        console.log(searchResponse.data)
-
         let validationResult = validate(searchResponse.data, {
             type: "object",
             additionalProperties: false,
@@ -37,6 +35,8 @@ test('GET/search/v2', async () => {
                             "lastDonation":{type:"number"},
                             "comment":{type:"string"},
                             "commentTime":{type:"number"},
+                            "email":{type:"string"},
+                            "donationCount":{type:"number"},
                             "_id": {type: "string"},
                             "studentId": {type: "string"},
                             "name": {type: "string"},
@@ -60,7 +60,7 @@ test('GET/search/v2', async () => {
                                 }
                             },
                         },
-                        required: ["address","roomNumber","designation","lastDonation","comment","commentTime","_id", "studentId","name", "bloodGroup","hall", "phone","availableToAll","donationCountOptimized","callRecords"]
+                        required: ["address","roomNumber","designation","lastDonation","comment","commentTime","donationCount","email","_id", "studentId","name", "bloodGroup","hall", "phone","availableToAll","donationCountOptimized","callRecords"]
                     },
                 },
             },
