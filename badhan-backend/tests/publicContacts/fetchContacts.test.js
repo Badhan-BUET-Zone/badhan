@@ -1,6 +1,5 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
-const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
 
 test('GET/publicContacts',async()=>{
@@ -10,26 +9,26 @@ test('GET/publicContacts',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "publicContacts": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                publicContacts: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "bloodGroup":{type:"number"},
-                            "contacts":{
+                            bloodGroup:{type:"number"},
+                            contacts:{
                               type:"array",
                               items: {
                                   type:"object",
                                   additionalProperties:false,
                                   properties:{
-                                      "donorId":{type:"string"},
-                                      "phone":{type:"number"},
-                                      "name":{type:"string"},
-                                      "contactId":{type:"string"}
+                                      donorId:{type:"string"},
+                                      phone:{type:"number"},
+                                      name:{type:"string"},
+                                      contactId:{type:"string"}
                                   },
                                   required:["donorId","phone","name","contactId"]
                               }
