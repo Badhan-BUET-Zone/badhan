@@ -3,7 +3,7 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
 
-test('GET/donors/checkDuplicate', async () => {
+test('GET/donors/checkDuplicate', async() => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: "8801521438557",
@@ -47,7 +47,7 @@ test('GET/donors/checkDuplicate', async () => {
                         required: ["address","roomNumber","designation","lastDonation","comment","commentTime","donationCount", "email","_id", "studentId","phone","bloodGroup","hall","name","availableToAll"]
                     },
                 },
-            required:["status","statusCode","message","donor"]
+            required:["status","statusCode","message","donor","found"]
         });
 
         expect(validationResult.errors).toEqual([]);
