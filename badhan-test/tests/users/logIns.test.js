@@ -18,32 +18,32 @@ test('GET/users/logins',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "logins": {
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                logins: {
                     type: "array",
                     items: {
                         types: "object",
                         additionalProperties: false,
                         properties: {
-                            "_id": {type: "string"},
-                            "os": {type: "string"},
-                            "device": {type: "string"},
-                            "browserFamily": {type: "string"},
-                            "ipAddress": {type: "string"}
+                            _id: {type: "string"},
+                            os: {type: "string"},
+                            device: {type: "string"},
+                            browserFamily: {type: "string"},
+                            ipAddress: {type: "string"}
                         }
                     }
                 },
-                "currentLogin": {
+                currentLogin: {
                     type: "object",
                     additionalProperties: false,
                     properties: {
-                        "_id": {type: "string"},
-                        "os": {type: "string"},
-                        "device": {type: "string"},
-                        "browserFamily": {type: "string"},
-                        "ipAddress": {type: "string"}
+                        _id: {type: "string"},
+                        os: {type: "string"},
+                        device: {type: "string"},
+                        browserFamily: {type: "string"},
+                        ipAddress: {type: "string"}
                     }
                 }
             },
