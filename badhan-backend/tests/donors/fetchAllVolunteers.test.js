@@ -21,7 +21,7 @@ test('GET/volunteers/all', async () => {
             additionalProperties: false,
             properties: {
                 "status": {type: "string"},
-                "statusCode":{type:"number"},
+                "statusCode":{const:200},
                 "message":{type:"string"},
                 "data": {
                     type: "array",
