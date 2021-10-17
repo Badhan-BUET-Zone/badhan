@@ -16,32 +16,38 @@ test('GET/donors/checkDuplicate', async () => {
             }
         });
 
-        console.log(duplicateResponse.data);
-
         let validationResult = validate(duplicateResponse.data, {
             type: "object",
             additionalProperties: false,
             properties: {
                 "status": {type: "string"},
-                "statusCode":{type:"number"},
+                "statusCode":{const:200},
                 "message":{type:"string"},
-                "data": {
-                    type: "array",
-                    items: {
+                "found":{type:"boolean"},
+                "donor": {
                         type: "object",
                         additionalProperties: false,
                         properties: {
+                            "address":{type:"string"},
+                            "roomNumber":{type:"string"},
+                            "designation":{type:"number"},
+                            "lastDonation":{type:"number"},
+                            "comment":{type:"string"},
+                            "commentTime":{type:"number"},
+                            "donationCount":{type:"number"},
+                            "email":{type:"string"},
                             "_id": {type: "string"},
                             "studentId": {type: "string"},
-                            "name": {type: "string"},
-                            "logCount": {type: "number"},
+                            "phone": {type: "number"},
+                            "bloodGroup": {type: "number"},
                             "hall": {type: "number"},
+                            "name": {type: "string"},
+                            "availableToAll":{type:"boolean"},
                         },
-                        required: ["_id", "studentId","name", "logCount","hall"]
+                        required: ["address","roomNumber","designation","lastDonation","comment","commentTime","donationCount", "email","_id", "studentId","phone","bloodGroup","hall","name","availableToAll"]
                     },
                 },
-            },
-            required:["status","statusCode","message","data"]
+            required:["status","statusCode","message","donor"]
         });
 
         expect(validationResult.errors).toEqual([]);
