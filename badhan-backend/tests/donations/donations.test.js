@@ -14,8 +14,8 @@ test('POST&DELETE/deletion', async () => {
         });
         let donationDate=new Date().getTime();
         let donationCreationResponse = await badhanAxios.post("/donations",{
-            "donorId":env.DONOR_ID,
-            "date":donationDate
+            donorId:env.DONOR_ID,
+            date:donationDate
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -26,17 +26,17 @@ test('POST&DELETE/deletion', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 201},
-                "message": {type: "string"},
-                "newDonation": {
+                status: {type: "string"},
+                statusCode: {const: 201},
+                message: {type: "string"},
+                newDonation: {
                     type: "object",
                     additionalProperties: false,
                     properties:{
-                        "date":{type:"number"},
-                        "_id":{type:"string"},
-                        "phone":{type:"number"},
-                        "donorId":{type:"string"},
+                        date:{type:"number"},
+                        _id:{type:"string"},
+                        phone:{type:"number"},
+                        donorId:{type:"string"},
                     },
                     required:["date","_id","phone","donorId"]
                 }
@@ -58,8 +58,8 @@ test('POST&DELETE/deletion', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
+                status: {type: "string"},
+                statusCode: {const: 200},
                 "message": {type: "string"}
             },
             required: ["status", "statusCode", "message"]
