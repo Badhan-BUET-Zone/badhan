@@ -14,8 +14,8 @@ test('POST&DELETE/publicContacts', async () => {
         });
 
         let contactCreationResponse = await badhanAxios.post("/publicContacts",{
-            "donorId":env.DONOR_ID,
-            "bloodGroup":2
+            donorId:env.DONOR_ID,
+            bloodGroup:2
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -26,16 +26,16 @@ test('POST&DELETE/publicContacts', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 201},
-                "message": {type: "string"},
-                "publicContact": {
+                status: {type: "string"},
+                statusCode: {const: 201},
+                message: {type: "string"},
+                publicContact: {
                     type: "object",
                     additionalProperties: false,
                     properties:{
-                        "bloodGroup":{type:"number"},
-                        "_id":{type:"string"},
-                        "donorId":{type:"string"}
+                        bloodGroup:{type:"number"},
+                        _id:{type:"string"},
+                        donorId:{type:"string"}
                     },
                     required:["bloodGroup","_id","donorId"]
                 }
@@ -57,9 +57,9 @@ test('POST&DELETE/publicContacts', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"}
             },
             required: ["status", "statusCode", "message"]
         });
