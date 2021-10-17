@@ -60,7 +60,7 @@ test('POST&DELETE/deletion', async () => {
             properties: {
                 status: {type: "string"},
                 statusCode: {const: 200},
-                "message": {type: "string"}
+                message: {type: "string"}
             },
             required: ["status", "statusCode", "message"]
         });
