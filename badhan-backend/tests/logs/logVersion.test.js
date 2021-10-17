@@ -1,6 +1,5 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
-const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
 
 test('GET/log/version',async()=>{
@@ -11,10 +10,10 @@ test('GET/log/version',async()=>{
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "version":{type:"string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                version:{type:"string"}
             },
             required: ["status", "statusCode", "message", "version"]
         });
