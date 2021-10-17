@@ -21,21 +21,21 @@ test.skip('GET/volunteers', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode":{const:200},
-                "message":{type:"string"},
-                "volunteerList": {
+                status: {type: "string"},
+                statusCode:{const:200},
+                message:{type:"string"},
+                volunteerList: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "roomNumber":{type:"string"},
-                            "_id": {type: "string"},
-                            "studentId": {type: "string"},
-                            "name": {type: "string"},
-                            "bloodGroup": {type: "number"},
-                            "phone": {type: "number"},
+                            roomNumber:{type:"string"},
+                            _id: {type: "string"},
+                            studentId: {type: "string"},
+                            name: {type: "string"},
+                            bloodGroup: {type: "number"},
+                            phone: {type: "number"},
                         },
                         required: ["roomNumber","_id", "studentId","name", "bloodGroup","phone"]
                     },

@@ -11,7 +11,7 @@ test('POST/donors/password', async () => {
         });
 
         let response = await badhanAxios.post('/donors/password', {
-            "donorId":env.DONOR_ID
+            donorId:env.DONOR_ID
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -22,10 +22,10 @@ test('POST/donors/password', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode": {const: 200},
-                "message": {type: "string"},
-                "token":{type:"string"}
+                status: {type: "string"},
+                statusCode: {const: 200},
+                message: {type: "string"},
+                token:{type:"string"}
             },
             required: ["status", "statusCode", "message","token"]
         });

@@ -21,42 +21,42 @@ test.skip('GET/admins', async () => {
             type: "object",
             additionalProperties: false,
             properties: {
-                "status": {type: "string"},
-                "statusCode":{const:200},
-                "message":{type:"string"},
-                "admins": {
+                status: {type: "string"},
+                statusCode:{const:200},
+                message:{type:"string"},
+                admins: {
                     type: "array",
                     items: {
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            "address":{type:"string"},
-                            "roomNumber":{type:"string"},
-                            "designation":{type:"number"},
-                            "lastDonation":{type:"number"},
-                            "comment":{type:"string"},
-                            "commentTime":{type:"number"},
-                            "donationCount":{type:"number"},
-                            "email":{type:"string"},
-                            "_id": {type: "string"},
-                            "studentId": {type: "string"},
-                            "name": {type: "string"},
-                            "bloodGroup": {type: "number"},
-                            "phone": {type: "number"},
-                            "hall": {type: "number"},
-                            "availableToAll":{type:"boolean"},
-                            "donationCountOptimized":{type:"number"},
-                            "callRecords": {
+                            address:{type:"string"},
+                            roomNumber:{type:"string"},
+                            designation:{type:"number"},
+                            lastDonation:{type:"number"},
+                            comment:{type:"string"},
+                            commentTime:{type:"number"},
+                            donationCount:{type:"number"},
+                            email:{type:"string"},
+                            _id: {type: "string"},
+                            studentId: {type: "string"},
+                            name: {type: "string"},
+                            bloodGroup: {type: "number"},
+                            phone: {type: "number"},
+                            hall: {type: "number"},
+                            availableToAll:{type:"boolean"},
+                            donationCountOptimized:{type:"number"},
+                            callRecords: {
                                 type: "array",
                                 items: {
                                     type: "object",
                                     additionalProperties: false,
                                     properties: {
-                                        "_id": {type: "string"},
-                                        "callerId": {type: "string"},
-                                        "calleeId": {type: "string"},
-                                        "date": {type: "number"},
-                                        "expireAt": {type: "string"}
+                                        _id: {type: "string"},
+                                        callerId: {type: "string"},
+                                        calleeId: {type: "string"},
+                                        date: {type: "number"},
+                                        expireAt: {type: "string"}
                                     },
                                     required: ["_id","callerId", "calleeId","date", "expireAt"]
                                 }
