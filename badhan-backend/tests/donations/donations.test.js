@@ -79,7 +79,7 @@ test('POST&DELETE/donations', async () => {
     }
 })
 
-test.skip('POST&DELETE/guest/donations', async () => {
+test('POST&DELETE/guest/donations', async () => {
     try {
 
         //post/donation part
