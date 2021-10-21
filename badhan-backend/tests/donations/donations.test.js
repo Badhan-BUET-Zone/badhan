@@ -2,6 +2,37 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
+const postDonationSchema={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 201},
+        message: {type: "string"},
+        newDonation: {
+            type: "object",
+            additionalProperties: false,
+            properties:{
+                date:{type:"number"},
+                _id:{type:"string"},
+                phone:{type:"number"},
+                donorId:{type:"string"},
+            },
+            required:["date","_id","phone","donorId"]
+        }
+    },
+    required: ["status", "statusCode", "message", "newDonation"]
+}
+const deleteDonationSchema={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 200},
+        message: {type: "string"}
+    },
+    required: ["status", "statusCode", "message"]
+}
 
 test('POST&DELETE/deletion', async () => {
     try {
@@ -22,27 +53,7 @@ test('POST&DELETE/deletion', async () => {
             }
         });
 
-        let validationDonationResult = validate(donationCreationResponse.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 201},
-                message: {type: "string"},
-                newDonation: {
-                    type: "object",
-                    additionalProperties: false,
-                    properties:{
-                        date:{type:"number"},
-                        _id:{type:"string"},
-                        phone:{type:"number"},
-                        donorId:{type:"string"},
-                    },
-                    required:["date","_id","phone","donorId"]
-                }
-            },
-            required: ["status", "statusCode", "message", "newDonation"]
-        });
+        let validationDonationResult = validate(donationCreationResponse.data, postDonationSchema);
 
         expect(validationDonationResult.errors).toEqual([]);
 
@@ -54,16 +65,7 @@ test('POST&DELETE/deletion', async () => {
             }
         });
 
-        let validationResult = validate(donationDeletionResponse.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 200},
-                message: {type: "string"}
-            },
-            required: ["status", "statusCode", "message"]
-        });
+        let validationResult = validate(donationDeletionResponse.data, deleteDonationSchema);
         expect(validationResult.errors).toEqual([]);
 
         await badhanAxios.delete('/users/signout', {
@@ -71,6 +73,28 @@ test('POST&DELETE/deletion', async () => {
                 "x-auth": signInResponse.data.token
             }
         });
+
+    } catch (e) {
+        throw processError(e);
+    }
+})
+
+test('POST&DELETE/guest/deletion', async () => {
+    try {
+
+        //post/donation part
+
+        let donationCreationResponse = await badhanAxios.post("/guest/donations");
+        let validationDonationResult = validate(donationCreationResponse.data, postDonationSchema);
+
+        expect(validationDonationResult.errors).toEqual([]);
+
+        // delete/donations part
+
+        // let donationDate=new Date().getTime();
+        // let donationDeletionResponse = await badhanAxios.delete("/guest/donations?donorId="+env.DONOR_ID+"&date="+donationDate);
+        // let validationResult = validate(donationDeletionResponse.data, deleteDonationSchema);
+        // expect(validationResult.errors).toEqual([]);
 
     } catch (e) {
         throw processError(e);
