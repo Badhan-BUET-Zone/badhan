@@ -1565,6 +1565,10 @@
                   "type": "string",
                   "example": "OK"
                 },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
                 "message": {
                   "type": "string",
                   "example": "Successfully fetched donor details"
