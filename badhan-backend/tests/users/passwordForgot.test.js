@@ -4,7 +4,7 @@ const {processError}=require('../fixtures/helpers');
 
 test.skip('POST/users/password/forgot',async()=>{
     try {
-        let response = await badhanAxios.post("/users/password/forgot", {phone: "8801521438557"});
+        let response = await badhanAxios.post("/users/password/forgot", {phone: env.SUPERADMIN_PHONE});
         let validationResult = validate(response.data, {
             type: "object",
             additionalProperties: false,

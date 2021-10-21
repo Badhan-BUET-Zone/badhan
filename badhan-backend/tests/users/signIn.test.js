@@ -16,7 +16,7 @@ const signInSchema={
 
 test('POST/users/signIn',async()=>{
     try{
-        let signInResponse = await badhanAxios.post('/users/signin',{phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
+        let signInResponse = await badhanAxios.post('/users/signin',{phone:env.SUPERADMIN_PHONE,password: env.SUPERADMIN_PASSWORD});
         let validationResult = validate(signInResponse.data, signInSchema);
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout',{

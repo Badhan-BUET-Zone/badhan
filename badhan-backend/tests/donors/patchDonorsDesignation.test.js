@@ -3,12 +3,23 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
 
+const patchDonorsDesignationSchema = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 200},
+        message: {type: "string"},
+    },
+    required: ["status", "statusCode", "message"]
+}
+
 test('PATCH/donors/designation', async () => {
     try {
         //sign in for authorization
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
         //create a new donor
@@ -40,16 +51,7 @@ test('PATCH/donors/designation', async () => {
         });
 
         //validate the promotion response
-        let promotionValidationResult = validate(promotionResponse.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 200},
-                message: {type: "string"},
-            },
-            required: ["status", "statusCode", "message"]
-        });
+        let promotionValidationResult = validate(promotionResponse.data, patchDonorsDesignationSchema);
 
         expect(promotionValidationResult.errors).toEqual([]);
 
@@ -94,3 +96,17 @@ test('PATCH/donors/designation', async () => {
         throw processError(e);
     }
 })
+
+test('PATCH/donors/designation', async () => {
+    let demotionResponse = await badhanAxios.patch('/guest/donors/designation', {
+        donorId:"123456789",
+        promoteFlag:false
+    },{
+
+    });
+
+    // validate the demotion response
+    let demotionValidationResult = validate(demotionResponse.data, patchDonorsDesignationSchema);
+
+    expect(demotionValidationResult.errors).toEqual([]);
+});

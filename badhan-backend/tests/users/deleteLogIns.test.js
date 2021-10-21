@@ -6,8 +6,8 @@ const {processError} = require('../fixtures/helpers');
 test('DELETE /users/logins/{tokenId}', async () => {
     try {
         let loginResult = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
         let loginResults = await badhanAxios.get('/users/logins', {
             headers: {
