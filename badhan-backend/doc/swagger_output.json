@@ -1453,22 +1453,83 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "No duplicate donors found"
+                  "example": "Donor found with duplicate phone number in Titumir Hall"
                 },
                 "found": {
                   "type": "boolean",
-                  "example": false
+                  "example": true
                 },
                 "donor": {
-                  "type": "string",
-                  "example": "(null)"
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur"
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "3009"
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 1634196816955
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "Developer of Badhan"
+                    },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 1634838132020
+                    },
+                    "donationCount": {
+                      "type": "number",
+                      "example": 13
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "mirmahathir1@gmail.com"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir Mohammad"
+                    },
+                    "studentId": {
+                      "type": "string",
+                      "example": "1605011"
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "If the phone number does not exist in database"
+            "description": "If the donor already exists in the database, user will get the error message"
           }
         },
         "security": [

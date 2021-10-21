@@ -1048,56 +1048,47 @@ const handleGETDonorsDuplicate = async (req, res) => {
             duplicateDonorResult.data.hall > 6 ||
             duplicateDonorResult.data.availableToAll === true
         ) {
-            /*
+/*
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
                     statusCode: 200,
                     message: 'Donor found with duplicate phone number in Titumir Hall',
-                    found: true,
-                    donor: '(donor object)'
+                    "found": true,
+                    "donor": {
+                        "address": "Azimpur",
+                        "roomNumber": "3009",
+                        "designation": 3,
+                        "lastDonation": 1634196816955,
+                        "comment": "Developer of Badhan",
+                        "commentTime": 1634838132020,
+                        "donationCount": 13,
+                        "email": "mirmahathir1@gmail.com",
+                        "_id": "5e901d56effc5900177ced73",
+                        "phone": 8801521438557,
+                        "bloodGroup": 2,
+                        "hall": 5,
+                        "name": "Mir Mahathir Mohammad",
+                        "studentId": "1605011",
+                        "availableToAll": true
+                    }
                 },
                 description: 'If the donor already exists in the database, user will get the error message'
             }
 
-             */
+ */
+
             return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall", {
                 found: true,
                 donor: duplicateDonorResult.data,
             }))
         }
-        /*
-        #swagger.responses[200] = {
-            schema: {
-                status: 'OK',
-                statusCode: 200,
-                message: 'Donor found with duplicate phone number in Titumir hall. You are not permitted to access this donor. ',
-                found: true,
-                donor: 'this field will return null'
-            },
-            description: 'If the donor with same phone number already exists in the database with another hall name, user will get the error message'
-        }
 
-         */
         return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall. You are not permitted to access this donor.", {
             found: true,
             donor: null,
         }))
     }
-
-    /*
-    #swagger.responses[200] = {
-        schema: {
-            status: 'OK',
-            statusCode: 200,
-            message: 'No duplicate donors found',
-            found: false,
-            donor: '(null)'
-        },
-        description: 'If the phone number does not exist in database'
-    }
-
-     */
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DUPLICATE", {phone: req.query.phone});
 
