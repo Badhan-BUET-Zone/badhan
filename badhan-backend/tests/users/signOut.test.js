@@ -15,7 +15,7 @@ const signOutSchema={
 
 test('DELETE/users/signOut', async () => {
     try {
-        let signInResponse = await badhanAxios.post('/users/signIn',{
+        let signInResponse = await badhanAxios.post('/users/signin',{
             phone:"8801521438557",password: env.MAHATHIR_PASSWORD
         });
         let signOutResponse = await badhanAxios.delete('/users/signout', {

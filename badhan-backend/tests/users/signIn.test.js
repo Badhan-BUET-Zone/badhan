@@ -16,7 +16,7 @@ const signInSchema={
 
 test('POST/users/signIn',async()=>{
     try{
-        let signInResponse = await badhanAxios.post('/users/signIn',{phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
+        let signInResponse = await badhanAxios.post('/users/signin',{phone:"8801521438557",password: env.MAHATHIR_PASSWORD});
         let validationResult = validate(signInResponse.data, signInSchema);
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout',{
@@ -32,7 +32,7 @@ test('POST/users/signIn',async()=>{
 
 test('POST/guest/users/signIn',async()=>{
     try{
-        let signInResponse = await badhanAxios.post('/guest/users/signIn',{});
+        let signInResponse = await badhanAxios.post('/guest/users/signin',{});
         let validationResult = validate(signInResponse.data, signInSchema);
         expect(validationResult.errors).toEqual([]);
     }catch(e){
