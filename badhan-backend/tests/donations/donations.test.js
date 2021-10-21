@@ -34,7 +34,7 @@ const deleteDonationSchema={
     required: ["status", "statusCode", "message"]
 }
 
-test('POST&DELETE/donation', async () => {
+test('POST&DELETE/donations', async () => {
     try {
 
         //post/donation part
@@ -79,7 +79,7 @@ test('POST&DELETE/donation', async () => {
     }
 })
 
-test('POST&DELETE/guest/donation', async () => {
+test.skip('POST&DELETE/guest/donations', async () => {
     try {
 
         //post/donation part
