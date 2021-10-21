@@ -32,7 +32,7 @@ test('POST/users/signIn',async()=>{
 
 test('POST/guest/users/signIn',async()=>{
     try{
-        let signInResponse = await badhanAxios.post('/guest/users/signin',{});
+        let signInResponse = await badhanAxios.post('/guest/users/signin');
         let validationResult = validate(signInResponse.data, signInSchema);
         expect(validationResult.errors).toEqual([]);
     }catch(e){
