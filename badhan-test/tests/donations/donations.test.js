@@ -91,10 +91,10 @@ test('POST&DELETE/guest/deletion', async () => {
 
         // delete/donations part
 
-        // let donationDate=new Date().getTime();
-        // let donationDeletionResponse = await badhanAxios.delete("/guest/donations?donorId="+env.DONOR_ID+"&date="+donationDate);
-        // let validationResult = validate(donationDeletionResponse.data, deleteDonationSchema);
-        // expect(validationResult.errors).toEqual([]);
+        let donationDate=new Date().getTime();
+        let donationDeletionResponse = await badhanAxios.delete("/guest/donations?donorId="+env.DONOR_ID+"&date="+donationDate);
+        let validationResult = validate(donationDeletionResponse.data, deleteDonationSchema);
+        expect(validationResult.errors).toEqual([]);
 
     } catch (e) {
         throw processError(e);
