@@ -231,7 +231,14 @@ const handlePOSTShowHallAdmins = async (req, res) => {
 };
 
 const handlePOSTInsertDonation = async (req, res) => {
-    return res.respond(new OKResponse200('Donation inserted successfully'));
+    return res.respond(new CreatedResponse201('Donation inserted successfully',{
+        newDonation: {
+            "date": faker.getTimestamp(10),
+            "_id": faker.getId(),
+            "phone": faker.getPhone(),
+            "donorId": faker.getId(),
+        }
+    }));
 }
 
 const handlePOSTDeleteDonation = async (req, res) => {
