@@ -6,8 +6,8 @@ const {processError} = require('../fixtures/helpers');
 test('GET/donors/me', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
         let donorResponse = await badhanAxios.get('/donors/me', {

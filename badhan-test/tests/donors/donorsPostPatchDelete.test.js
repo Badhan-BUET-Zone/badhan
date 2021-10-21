@@ -9,8 +9,8 @@ test('POST&PATCH&DELETE/donors', async () => {
         //post/donors part
 
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
         let donorCreationResponse = await badhanAxios.post("/donors", {

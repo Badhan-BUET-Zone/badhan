@@ -9,12 +9,12 @@ test('POST&DELETE/callrecords', async () => {
         //post/callrecords part
 
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
         let recordCreationResponse = await badhanAxios.post("/callrecords",{
-            donorId:env.DONOR_ID,
+            donorId:env.SUPERADMIN_ID,
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -48,7 +48,7 @@ test('POST&DELETE/callrecords', async () => {
 
         // delete/donations part
 
-        let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+env.DONOR_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
+        let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+env.SUPERADMIN_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
             headers: {
                 "x-auth": signInResponse.data.token
             }

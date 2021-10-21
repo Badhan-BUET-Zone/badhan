@@ -6,11 +6,11 @@ const {processError} = require('../fixtures/helpers');
 test('GET/donors', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
-        let donorsResponse = await badhanAxios.get('/donors?donorId=' + env.DONOR_ID, {
+        let donorsResponse = await badhanAxios.get('/donors?donorId=' + env.SUPERADMIN_ID, {
             headers: {
                 "x-auth": signInResponse.data.token
             }

@@ -6,8 +6,8 @@ const {processError} = require('../fixtures/helpers');
 test('GET/search/v2', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
         let searchResponse = await badhanAxios.get('/search/v2?bloodGroup=2&hall=5&batch=16&name=mahathir&address=&isAvailable=true&isNotAvailable=true&availableToAll=true', {

@@ -6,12 +6,12 @@ const {processError} = require('../fixtures/helpers');
 test('PATCH/donors/comment', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
 
         let response = await badhanAxios.patch('/donors/comment', {
-            donorId:env.DONOR_ID,
+            donorId:env.SUPERADMIN_ID,
             comment:"Developer of Badhan"
         },{
             headers: {

@@ -17,11 +17,11 @@ const patchPasswordSchema={
 test('PATCH/users/password', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
-            phone: "8801521438557",
-            password: env.MAHATHIR_PASSWORD
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
         });
         let passwordResponse = await badhanAxios.patch("/users/password", {
-            "password": env.MAHATHIR_PASSWORD
+            "password": env.SUPERADMIN_PASSWORD
         }, {
             headers: {
                 "x-auth": signInResponse.data.token
