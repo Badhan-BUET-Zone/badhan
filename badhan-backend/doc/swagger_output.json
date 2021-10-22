@@ -606,6 +606,10 @@
                       "type": "string",
                       "example": "Developer of badhan"
                     },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 1634921130787
+                    },
                     "designation": {
                       "type": "number",
                       "example": 3

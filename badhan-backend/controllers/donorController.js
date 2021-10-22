@@ -951,7 +951,6 @@ const handleGETDonorsMe = async (req, res, next) => {
      */
 
     let donor = res.locals.middlewareResponse.donor;
-    await donor.populate({path: 'callRecords'}).populate({path: 'donations'}).execPopulate();
     /*
             #swagger.responses[200] = {
                 schema: {
@@ -970,6 +969,7 @@ const handleGETDonorsMe = async (req, res, next) => {
                         roomNumber: '3009',
                         address: 'Azimpur',
                         comment: 'Developer of badhan',
+                        commentTime: 1634921130787,
                         designation: 3,
                         availableToAll: true
                     }
