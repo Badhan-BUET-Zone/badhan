@@ -58,3 +58,17 @@ test('GET/log/date/{date}',async()=>{
     }
 })
 
+test('GET/guest/log/date/{date}',async()=>{
+    try {
+        const date=new Date().getTime();
+
+        let response = await badhanAxios.get('/guest/log/date/'+date);
+
+        let validationResult = validate(response.data, logResponse);
+
+        expect(validationResult.errors).toEqual([]);
+
+    }catch (e) {
+        throw processError(e);
+    }
+})
