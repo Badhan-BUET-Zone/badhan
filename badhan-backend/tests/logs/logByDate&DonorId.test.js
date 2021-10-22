@@ -58,7 +58,7 @@ test('GET/log/date/{date}/donorId/{donorId}',async()=>{
     }
 })
 
-test('GET/log/date/{date}/donorId/{donorId}',async()=>{
+test('GET/guest/log/date/{date}/donorId/{donorId}',async()=>{
     try {
         const date=new Date().getTime();
 
