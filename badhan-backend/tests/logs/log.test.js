@@ -2,6 +2,28 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
+const logSchema={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 200},
+        message: {type: "string"},
+        logs: {
+            type:"array",
+            items: {
+                type:"object",
+                additionalProperties: false,
+                properties: {
+                    dateString: {type: "string"},
+                    count:{type:"number"}
+                },
+                required: ["dateString","count"]
+            }
+        }
+    },
+    required: ["status", "statusCode", "message","logs"]
+}
 
 test('GET/log',async()=>{
     try {
@@ -18,28 +40,7 @@ test('GET/log',async()=>{
         });
 
 
-        let validationResult = validate(response.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 200},
-                message: {type: "string"},
-                logs: {
-                    type:"array",
-                    items: {
-                        type:"object",
-                        additionalProperties: false,
-                        properties: {
-                            dateString: {type: "string"},
-                            count:{type:"number"}
-                        },
-                        required: ["dateString","count"]
-                    }
-                }
-            },
-            required: ["status", "statusCode", "message","logs"]
-        });
+        let validationResult = validate(response.data, logSchema);
 
         expect(validationResult.errors).toEqual([]);
 
@@ -48,6 +49,20 @@ test('GET/log',async()=>{
                 "x-auth": signInResponse.data.token
             }
         });
+
+    }catch (e) {
+        throw processError(e);
+    }
+})
+
+test('GET/guest/log',async()=>{
+    try {
+
+        let response = await badhanAxios.get('/guest/log');
+
+        let validationResult = validate(response.data, logSchema);
+
+        expect(validationResult.errors).toEqual([]);
 
     }catch (e) {
         throw processError(e);
