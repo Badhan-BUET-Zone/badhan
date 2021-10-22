@@ -91,11 +91,11 @@ test('POST&DELETE/guest/publicContacts', async () => {
         expect(validationContactResult.errors).toEqual([]);
 
         // delete/donations part
-        //
-        // let contactDeletionResponse = await badhanAxios.delete("/guest/publicContacts?donorId="+env.SUPERADMIN_ID+"&contactId="+contactCreationResponse.data.publicContact["_id"]);
-        //
-        // let validationResult = validate(contactDeletionResponse.data, deletePublicContactsSchema);
-        // expect(validationResult.errors).toEqual([]);
+
+        let contactDeletionResponse = await badhanAxios.delete("/guest/publicContacts?donorId="+env.SUPERADMIN_ID+"&contactId="+contactCreationResponse.data.publicContact["_id"]);
+
+        let validationResult = validate(contactDeletionResponse.data, deletePublicContactsSchema);
+        expect(validationResult.errors).toEqual([]);
 
     } catch (e) {
         throw processError(e);
