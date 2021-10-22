@@ -153,20 +153,10 @@ test('POST&PATCH&DELETE/guest/donors', async () => {
 
         // delete/donations part
 
-        // let donationDeletionResponse = await badhanAxios.delete("/donors?donorId="+donorCreationResponse.data.newDonor["_id"],  {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
-        //
-        // let validationResult = validate(donationDeletionResponse.data, deleteDonorSchema);
-        // expect(validationResult.errors).toEqual([]);
-        //
-        // await badhanAxios.delete('/users/signout', {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
+        let donationDeletionResponse = await badhanAxios.delete("/guest/donors?donorId=");
+
+        let validationResult = validate(donationDeletionResponse.data, deleteDonorSchema);
+        expect(validationResult.errors).toEqual([]);
 
     } catch (e) {
         throw processError(e);
