@@ -246,7 +246,7 @@ const handlePOSTDeleteDonation = async (req, res) => {
 }
 
 const handleGETStatistics = async (req, res) => {
-    return res.respond(new CreatedResponse201('Statistics fetched successfully',{
+    return res.respond(new OKResponse200('Statistics fetched successfully',{
         statistics: {
             donorCount: faker.getRandomIndex(2600),
             donationCount: faker.getRandomIndex(1200),
