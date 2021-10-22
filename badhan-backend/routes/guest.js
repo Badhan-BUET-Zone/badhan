@@ -42,7 +42,7 @@ router.post('/donors/password',
     guestController.handlePOSTChangePassword,
 );
 
-router.patch('/donors',
+router.patch('/donors/v2',
     guestController.handlePOSTEditDonor,
 );
 
