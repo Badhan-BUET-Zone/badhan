@@ -45,6 +45,7 @@ const handlePOSTInsertDonor = async (req, res) => {
             name: faker.getName(),
             studentId: faker.getStudentId(),
             availableToAll: faker.getBoolean(),
+            email: faker.getEmail(),
         }
     }));
 }
