@@ -103,6 +103,10 @@ const getFakeDateString = ()=>{
     return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+getRandInt(1,28);
 }
 
+const getEmail = ()=>{
+    return faker.internet.email();
+}
+
 module.exports = {
     getName,
     getId,
@@ -121,7 +125,8 @@ module.exports = {
     getRandomIndex,
     getDonations,
     getOperation,
-    getFakeDateString
+    getFakeDateString,
+    getEmail
 }
 
 

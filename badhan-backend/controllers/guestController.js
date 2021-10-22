@@ -19,6 +19,8 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         comment: faker.getComment(),
         commentTime: faker.getTimestamp(240),
         designation: 3,
+        availableToAll: faker.getBoolean(),
+        email: faker.getEmail()
     }
 
     return res.respond(new OKResponse200('Successfully fetched donor details',{
@@ -172,7 +174,9 @@ const handleGETViewDonorDetails = async (req, res) => {
         commentTime: faker.getTimestamp(240),
         callRecords: callRecords,
         donations: donations,
-        publicContacts: publicContacts
+        publicContacts: publicContacts,
+        availableToAll: faker.getBoolean(),
+        email: faker.getEmail()
     }
 
     return res.respond(new OKResponse200('Successfully fetched donor details',{
