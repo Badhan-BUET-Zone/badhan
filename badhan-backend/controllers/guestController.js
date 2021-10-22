@@ -20,7 +20,8 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         commentTime: faker.getTimestamp(240),
         designation: 3,
         availableToAll: faker.getBoolean(),
-        email: faker.getEmail()
+        email: faker.getEmail(),
+        lastDonation: faker.getTimestamp(240),
     }
 
     return res.respond(new OKResponse200('Successfully fetched donor details',{
