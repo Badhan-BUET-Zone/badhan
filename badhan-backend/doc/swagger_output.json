@@ -1576,6 +1576,10 @@
                   "items": {
                     "type": "object",
                     "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a05aa"
+                      },
                       "name": {
                         "type": "string",
                         "example": "Mahin Azad"
