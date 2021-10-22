@@ -2,6 +2,30 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
+const logResponse={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 200},
+        message: {type: "string"},
+        logs: {
+            type:"array",
+            items: {
+                type:"object",
+                additionalProperties: false,
+                properties: {
+                    donorId: {type: "string"},
+                    hall: {type: "number"},
+                    name: {type: "string"},
+                    count:{type:"number"}
+                },
+                required: ["donorId", "hall", "name","count"]
+            }
+        }
+    },
+    required: ["status", "statusCode", "message","logs"]
+}
 
 test('GET/log/date/{date}',async()=>{
     try {
@@ -19,30 +43,7 @@ test('GET/log/date/{date}',async()=>{
         });
 
 
-        let validationResult = validate(response.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 200},
-                message: {type: "string"},
-                logs: {
-                    type:"array",
-                    items: {
-                        type:"object",
-                        additionalProperties: false,
-                        properties: {
-                            donorId: {type: "string"},
-                            hall: {type: "number"},
-                            name: {type: "string"},
-                            count:{type:"number"}
-                        },
-                        required: ["donorId", "hall", "name","count"]
-                    }
-                }
-            },
-            required: ["status", "statusCode", "message","logs"]
-        });
+        let validationResult = validate(response.data, logResponse);
 
         expect(validationResult.errors).toEqual([]);
 
@@ -56,3 +57,4 @@ test('GET/log/date/{date}',async()=>{
         throw processError(e);
     }
 })
+
