@@ -71,3 +71,5 @@ db.tokens.updateMany({},{$set: {"browserFamily":"Other"}},false,true)
 db.tokens.updateMany({},{$set: {"os":"Other 0.0.0"}},false,true)
 
 //DONE ON PROD DATABASE
+
+db.donors.update({}, {$unset: {donationCount:1}}, false, true);

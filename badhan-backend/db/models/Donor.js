@@ -138,18 +138,18 @@ const donorSchema = new mongoose.Schema({
             }, msg: 'DB: commentTime must be an integer'
         }],
     },
-    donationCount: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 99,
-        required: true,
-        validate: [{
-            validator: (value) => {
-                return Number.isInteger(value);
-            }, msg: 'DB: donationCount must be an integer'
-        }],
-    },
+    // donationCount: {
+    //     type: Number,
+    //     default: 0,
+    //     min: 0,
+    //     max: 99,
+    //     required: true,
+    //     validate: [{
+    //         validator: (value) => {
+    //             return Number.isInteger(value);
+    //         }, msg: 'DB: donationCount must be an integer'
+    //     }],
+    // },
     availableToAll: {
         type: Boolean,
         required: true

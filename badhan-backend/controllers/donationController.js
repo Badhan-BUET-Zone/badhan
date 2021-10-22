@@ -57,7 +57,7 @@ const handlePOSTDonations = async (req, res, next) => {
         donor.lastDonation = req.body.date;
     }
 
-    donor.donationCount++;
+    // donor.donationCount++;
 
     await donor.save();
 
@@ -120,7 +120,7 @@ const handleDELETEDonations = async (req, res, next) => {
         return res.respond(new NotFoundError404('Matching donation not found'))
     }
 
-    donor.donationCount = Math.max(0, donor.donationCount - 1);
+    // donor.donationCount = Math.max(0, donor.donationCount - 1);
 
     let maxDonationResult = await donationInterface.findMaxDonationByDonorId(donor._id);
 

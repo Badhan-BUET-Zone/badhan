@@ -101,7 +101,7 @@ const handlePOSTDonors = async (req, res, next) => {
         roomNumber: req.body.roomNumber,
         lastDonation: 0,
         comment: req.body.comment,
-        donationCount: req.body.extraDonationCount,
+        // donationCount: req.body.extraDonationCount,
         availableToAll: availableToAll,
     };
 
@@ -141,7 +141,6 @@ const handlePOSTDonors = async (req, res, next) => {
                     "lastDonation": 0,
                     "comment": "Has Diabetes",
                     "commentTime": 16547822145,
-                    "donationCount": 4,
                     "email": "",
                     "_id": "616ab751fc274715cc504ac7",
                     "phone": 8801546587552,
@@ -1063,7 +1062,6 @@ const handleGETDonorsDuplicate = async (req, res) => {
                         "lastDonation": 1634196816955,
                         "comment": "Developer of Badhan",
                         "commentTime": 1634838132020,
-                        "donationCount": 13,
                         "email": "mirmahathir1@gmail.com",
                         "_id": "5e901d56effc5900177ced73",
                         "phone": 8801521438557,

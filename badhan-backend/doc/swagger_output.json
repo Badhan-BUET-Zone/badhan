@@ -148,10 +148,6 @@
                       "type": "number",
                       "example": 16547822145
                     },
-                    "donationCount": {
-                      "type": "number",
-                      "example": 4
-                    },
                     "email": {
                       "type": "string",
                       "example": ""
@@ -1485,10 +1481,6 @@
                     "commentTime": {
                       "type": "number",
                       "example": 1634838132020
-                    },
-                    "donationCount": {
-                      "type": "number",
-                      "example": 13
                     },
                     "email": {
                       "type": "string",
