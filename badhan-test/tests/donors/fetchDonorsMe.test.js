@@ -41,37 +41,8 @@ test('GET/donors/me', async () => {
                         commentTime:{type:"number"},
                         designation: {type: "number"},
                         availableToAll: {type: "boolean"},
-                        callRecords: {
-                            type: "array",
-                            items: {
-                                type: "object",
-                                additionalProperties: false,
-                                properties: {
-                                    _id: {type: "string"},
-                                    callerId: {type: "string"},
-                                    calleeId: {type: "string"},
-                                    date: {type: "number"},
-                                    expireAt: {type: "string"}
-                                },
-                                required: ["callerId", "calleeId","date", "expireAt"]
-                            }
-                        },
-                        donations: {
-                            type: "array",
-                            items: {
-                                type: "object",
-                                additionalProperties: false,
-                                properties: {
-                                    _id: {type: "string"},
-                                    donorId: {type: "string"},
-                                    phone: {type: "number"},
-                                    date: {type: "number"}
-                                },
-                                required: ["_id", "donorId","phone", "date"]
-                            }
-                        },
                     },
-                    required: ["_id", "phone","name","studentId","email","lastDonation","bloodGroup","hall","roomNumber","address","comment","commentTime","designation","availableToAll","donations","callRecords"]
+                    required: ["_id", "phone","name","studentId","email","lastDonation","bloodGroup","hall","roomNumber","address","comment","commentTime","designation","availableToAll"]
                 },
             },
             required: ["status", "statusCode", "message", "donor"]
