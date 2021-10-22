@@ -47,7 +47,6 @@ test('POST&PATCH&DELETE/donors', async () => {
                         lastDonation: {type: "number"},
                         comment: {type: "string"},
                         commentTime: {type: "number"},
-                        donationCount: {type: "number"},
                         email: {type: "string"},
                         _id: {type: "string"},
                         phone: {type: "number"},
@@ -57,7 +56,7 @@ test('POST&PATCH&DELETE/donors', async () => {
                         studentId: {type: "string"},
                         availableToAll: {type: "boolean"},
                     },
-                    required: ["address", "roomNumber", "designation", "lastDonation", "comment", "commentTime", "donationCount", "email", "_id", "phone", "bloodGroup", "hall", "name", "studentId", "availableToAll"]
+                    required: ["address", "roomNumber", "designation", "lastDonation", "comment", "commentTime", "email", "_id", "phone", "bloodGroup", "hall", "name", "studentId", "availableToAll"]
                 }
             },
             required: ["status", "statusCode", "message", "newDonor"]

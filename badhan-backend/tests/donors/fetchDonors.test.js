@@ -34,7 +34,6 @@ test('GET/donors', async () => {
                         studentId:{type:"string"},
                         email:{type:"string"},
                         lastDonation: {type: "number"},
-                        donationCount: {type: "number"},
                         bloodGroup: {type: "number"},
                         hall: {type: "number"},
                         roomNumber:{type:"string"},

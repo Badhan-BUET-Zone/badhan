@@ -34,7 +34,6 @@ test('GET/donors/checkDuplicate', async() => {
                             lastDonation:{type:"number"},
                             comment:{type:"string"},
                             commentTime:{type:"number"},
-                            donationCount:{type:"number"},
                             email:{type:"string"},
                             _id: {type: "string"},
                             studentId: {type: "string"},
@@ -44,7 +43,7 @@ test('GET/donors/checkDuplicate', async() => {
                             name: {type: "string"},
                             availableToAll:{type:"boolean"},
                         },
-                        required: ["address","roomNumber","designation","lastDonation","comment","commentTime","donationCount", "email","_id", "studentId","phone","bloodGroup","hall","name","availableToAll"]
+                        required: ["address","roomNumber","designation","lastDonation","comment","commentTime", "email","_id", "studentId","phone","bloodGroup","hall","name","availableToAll"]
                     },
                 },
             required:["status","statusCode","message","donor","found"]
