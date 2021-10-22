@@ -7,17 +7,6 @@ const handlePOSTLogIn = async (req, res) => {
 }
 
 const handlePOSTViewDonorDetailsSelf = async (req, res) => {
-    let callRecords = [];
-    for (let i = 0; i < faker.getRandomIndex(1); i++) {
-        callRecords.push({
-                date: faker.getTimestamp(240),
-                _id: faker.getId(),
-                callerId: faker.getId(),
-                calleeId: faker.getId(),
-            }
-        )
-    }
-
     let obj = {
         _id: faker.getId(),
         phone: faker.getPhone(),
@@ -30,8 +19,6 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
         comment: faker.getComment(),
         commentTime: faker.getTimestamp(240),
         designation: 3,
-        callRecords: callRecords,
-        donations: faker.getDonations(),
     }
 
     return res.respond(new OKResponse200('Successfully fetched donor details',{
