@@ -257,7 +257,7 @@ const handleGETStatistics = async (req, res) => {
 
 
 const handleDELETELogs = async (req, res) => {
-    return res.respond(new CreatedResponse201('All logs deleted successfully'));
+    return res.respond(new OKResponse200('All logs deleted successfully'));
 }
 
 const handleGETViewAllVolunteers = async (req, res) => {
@@ -283,12 +283,21 @@ const handlePOSTCallRecord = async (req, res) => {
             _id: faker.getId(),
             callerId: faker.getId(),
             calleeId: faker.getId(),
+            expireAt: "2021-11-21T09:28:52.764Z",
         }
     }))
 };
 
 const handleDELETECallRecord = async (req, res) => {
-    return res.respond(new OKResponse200('Call record deletion successful'));
+    return res.respond(new OKResponse200('Call record deletion successful',{
+        deletedCallRecord: {
+            date: faker.getTimestamp(10),
+            _id: faker.getId(),
+            callerId: faker.getId(),
+            calleeId: faker.getId(),
+            expireAt: "2021-11-21T09:28:52.764Z"
+        }
+    }));
 };
 
 const handleGETDonorsDuplicate = async (req, res) => {
