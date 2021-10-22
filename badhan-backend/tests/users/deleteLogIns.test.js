@@ -41,7 +41,7 @@ test('DELETE /users/logins/{tokenId}', async () => {
 test('DELETE /guest/users/logins/{tokenId}', async () => {
     try {
 
-        let deleteResponse = await badhanAxios.delete('/guest/users/logins/abcdhdheu' );
+        let deleteResponse = await badhanAxios.delete('/guest/users/logins/abc' );
         let validationResult = validate(deleteResponse.data,deleteLogInsSchema);
         expect(validationResult.errors).toEqual([]);
     } catch (e) {
