@@ -102,9 +102,10 @@ router.get('/donors/checkDuplicate',
 );
 
 router.get('/volunteers',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    donorController.handleGETVolunteers
+    deprecatedController
+    // rateLimiter.commonLimiter,
+    // authenticator.handleAuthentication,
+    // donorController.handleGETVolunteers
 );
 
 router.get('/volunteers/all',
@@ -124,9 +125,10 @@ router.patch('/admins',
 );
 
 router.get('/admins',
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    donorController.handleGETAdmins
+    deprecatedController
+    // rateLimiter.commonLimiter,
+    // authenticator.handleAuthentication,
+    // donorController.handleGETAdmins
 );
 
 
