@@ -92,7 +92,7 @@ test('POST&DELETE/callrecords', async () => {
     }
 })
 
-test.skip('POST&DELETE/guest/callrecords', async () => {
+test('POST&DELETE/guest/callrecords', async () => {
     try {
 
         //post/callrecords part
