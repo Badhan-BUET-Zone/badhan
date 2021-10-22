@@ -144,27 +144,12 @@ test('POST&PATCH&DELETE/guest/donors', async () => {
 
         //patch/donors
 
-        // let donorUpdateResponse = await badhanAxios.patch("/donors/v2", {
-        //     donorId: donorCreationResponse.data.newDonor["_id"],
-        //     name: "Blah Blah",
-        //     phone: 8801555444777,
-        //     studentId: 1606060,
-        //     bloodGroup: 2,
-        //     hall: 5,
-        //     roomNumber: "3009",
-        //     address: "Azimpur",
-        //     availableToAll: true,
-        //     email:""
-        // }, {
-        //     headers: {
-        //         "x-auth": signInResponse.data.token
-        //     }
-        // });
-        //
-        //
-        // let validationUpdateResult = validate(donorUpdateResponse.data, patchDonorSchema);
-        //
-        // expect(validationUpdateResult.errors).toEqual([]);
+        let donorUpdateResponse = await badhanAxios.patch("/guest/donors/v2");
+
+
+        let validationUpdateResult = validate(donorUpdateResponse.data, patchDonorSchema);
+
+        expect(validationUpdateResult.errors).toEqual([]);
 
         // delete/donations part
 
