@@ -108,6 +108,7 @@ test.skip('POST&DELETE/guest/callrecords', async () => {
         let donationDeletionResponse = await badhanAxios.delete("/guest/callrecords?donorId="+env.SUPERADMIN_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"]);
 
         let validationResult = validate(donationDeletionResponse.data,deleteCallRecordsSchema );
+
         expect(validationResult.errors).toEqual([]);
 
 
