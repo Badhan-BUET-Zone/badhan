@@ -44,6 +44,7 @@ test('POST/donors/password', async () => {
 
 test('POST/guest/donors/password', async () => {
     try {
+
         let response = await badhanAxios.post('/guest/donors/password');
 
         let validationResult = validate(response.data, passwordSchema);
