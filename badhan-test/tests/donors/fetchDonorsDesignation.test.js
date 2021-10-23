@@ -86,3 +86,17 @@ test('GET/donors/designation', async () => {
         throw processError(e);
     }
 })
+
+
+test('GET/guest/donors/designation', async () => {
+    try {
+        let designationResponse = await badhanAxios.get('/guest/donors/designation');
+
+        let validationResult = validate(designationResponse.data, designationSchema);
+
+        expect(validationResult.errors).toEqual([]);
+
+    } catch (e) {
+        throw processError(e);
+    }
+})
