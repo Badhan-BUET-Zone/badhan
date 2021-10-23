@@ -113,3 +113,16 @@ test('GET/donors', async () => {
         throw processError(e);
     }
 })
+
+test('GET/guest/donors', async () => {
+    try {
+        let donorsResponse = await badhanAxios.get('/guest/donors?donorId=' + env.SUPERADMIN_ID);
+
+        let validationResult = validate(donorsResponse.data, donorsSchema);
+
+        expect(validationResult.errors).toEqual([]);
+
+    } catch (e) {
+        throw processError(e);
+    }
+})
