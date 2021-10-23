@@ -2,6 +2,31 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
+const volunteersSchema={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode:{const:200},
+        message:{type:"string"},
+        data: {
+            type: "array",
+            items: {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                    _id: {type: "string"},
+                    studentId: {type: "string"},
+                    name: {type: "string"},
+                    logCount: {type: "number"},
+                    hall: {type: "number"},
+                },
+                required: ["_id", "studentId","name", "logCount","hall"]
+            },
+        },
+    },
+    required:["status","statusCode","message","data"]
+}
 
 test('GET/volunteers/all', async () => {
     try {
@@ -16,31 +41,7 @@ test('GET/volunteers/all', async () => {
             }
         });
 
-        let validationResult = validate(allVolunteersResponse.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode:{const:200},
-                message:{type:"string"},
-                data: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        additionalProperties: false,
-                        properties: {
-                            _id: {type: "string"},
-                            studentId: {type: "string"},
-                            name: {type: "string"},
-                            logCount: {type: "number"},
-                            hall: {type: "number"},
-                        },
-                        required: ["_id", "studentId","name", "logCount","hall"]
-                    },
-                },
-            },
-            required:["status","statusCode","message","data"]
-        });
+        let validationResult = validate(allVolunteersResponse.data, volunteersSchema);
 
         expect(validationResult.errors).toEqual([]);
 
