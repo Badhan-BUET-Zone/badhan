@@ -87,7 +87,7 @@ const handleGETAppVersion = (req, res, next) => {
             }
 */
     return res.respond(new OKResponse200("Latest app version fetched",{
-        version: "4.5.1"
+        version: "4.5.2"
     }))
 }
 
