@@ -2,6 +2,17 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
+const passwordSchema={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 200},
+        message: {type: "string"},
+        token:{type:"string"}
+    },
+    required: ["status", "statusCode", "message","token"]
+}
 
 test('POST/donors/password', async () => {
     try {
@@ -18,17 +29,7 @@ test('POST/donors/password', async () => {
             }
         });
 
-        let validationResult = validate(response.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 200},
-                message: {type: "string"},
-                token:{type:"string"}
-            },
-            required: ["status", "statusCode", "message","token"]
-        });
+        let validationResult = validate(response.data, passwordSchema);
 
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout', {
@@ -36,6 +37,19 @@ test('POST/donors/password', async () => {
                 "x-auth": response.data.token
             }
         });
+    } catch (e) {
+        throw processError(e);
+    }
+})
+
+test('POST/guest/donors/password', async () => {
+    try {
+        let response = await badhanAxios.post('/guest/donors/password');
+
+        let validationResult = validate(response.data, passwordSchema);
+
+        expect(validationResult.errors).toEqual([]);
+
     } catch (e) {
         throw processError(e);
     }
