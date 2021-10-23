@@ -2,6 +2,16 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError} = require('../fixtures/helpers');
+const patchCommentSchema={
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 200},
+        message: {type: "string"},
+    },
+    required: ["status", "statusCode", "message"]
+}
 
 test('PATCH/donors/comment', async () => {
     try {
@@ -19,16 +29,7 @@ test('PATCH/donors/comment', async () => {
             }
         });
 
-        let validationResult = validate(response.data, {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                status: {type: "string"},
-                statusCode: {const: 200},
-                message: {type: "string"},
-            },
-            required: ["status", "statusCode", "message"]
-        });
+        let validationResult = validate(response.data, patchCommentSchema);
 
         expect(validationResult.errors).toEqual([]);
         await badhanAxios.delete('/users/signout', {
