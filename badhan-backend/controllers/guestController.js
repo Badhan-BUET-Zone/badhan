@@ -259,6 +259,7 @@ const handleGETViewAllVolunteers = async (req, res) => {
             hall: faker.getHall(),
             studentId: faker.getStudentId(),
             logCount: faker.getRandomIndex(20),
+            _id: faker.getId(),
         })
     }
 
