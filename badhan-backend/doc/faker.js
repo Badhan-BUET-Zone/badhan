@@ -107,6 +107,10 @@ const getEmail = ()=>{
     return faker.internet.email();
 }
 
+const getExpireAt = ()=>{
+    return "2021-11-15T11:23:54.231Z"
+}
+
 module.exports = {
     getName,
     getId,
@@ -126,7 +130,8 @@ module.exports = {
     getDonations,
     getOperation,
     getFakeDateString,
-    getEmail
+    getEmail,
+    getExpireAt
 }
 
 
