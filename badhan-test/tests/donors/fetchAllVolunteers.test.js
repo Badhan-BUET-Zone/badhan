@@ -55,3 +55,16 @@ test('GET/volunteers/all', async () => {
         throw processError(e);
     }
 })
+
+test('GET/guest/volunteers/all', async () => {
+    try {
+        let allVolunteersResponse = await badhanAxios.get('/guest/volunteers/all');
+
+        let validationResult = validate(allVolunteersResponse.data, volunteersSchema);
+
+        expect(validationResult.errors).toEqual([]);
+
+    } catch (e) {
+        throw processError(e);
+    }
+})
