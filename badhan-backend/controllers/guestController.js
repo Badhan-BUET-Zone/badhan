@@ -294,8 +294,23 @@ const handleDELETECallRecord = async (req, res) => {
 
 const handleGETDonorsDuplicate = async (req, res) => {
     return res.respond(new OKResponse200('No duplicate donors found',{
-        found: false,
-        donor: null,
+        found: true,
+        donor: {
+            address: faker.getAddress(),
+            roomNumber: faker.getRoom(),
+            designation: faker.getDesignation(),
+            lastDonation: faker.getTimestamp(30),
+            comment: faker.getComment(),
+            commentTime: faker.getTimestamp(30),
+            email: faker.getEmail(),
+            _id: faker.getId(),
+            phone: faker.getPhone(),
+            bloodGroup: faker.getBloodGroup(),
+            hall: faker.getHall(),
+            name: faker.getName(),
+            studentId: faker.getStudentId(),
+            availableToAll: faker.getBoolean()
+        },
     }))
 }
 
