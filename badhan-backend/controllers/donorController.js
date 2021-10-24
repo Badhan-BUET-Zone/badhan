@@ -354,6 +354,9 @@ const handleGETSearchOptimized = async (req, res, next) => {
 
     let result = await donorInterface.findDonorsByQuery(queryBuilder);
 
+    result.data.sort((donor1,donor2)=>
+        donor1.donationCountOptimized >= donor2.donationCountOptimized?-1:1
+    )
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "SEARCH DONORS", {
         filter: reqQuery,
         resultCount: result.data.length

@@ -141,7 +141,8 @@ const findDonorsByQuery = async (query) => {
     let data = await Donor.find(query).populate({
         path: 'callRecords',
         select: {'_id': 1, 'date': 1, 'callerId': 1}
-    }).populate({path: 'donationCountOptimized'}).sort({lastDonation: -1});
+    }).populate({path: 'donationCountOptimized'});
+
     let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
     return {
         data,
