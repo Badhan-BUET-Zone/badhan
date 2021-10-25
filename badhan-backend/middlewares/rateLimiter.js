@@ -12,41 +12,41 @@ const signInLimiter = rateLimit({
 });
 
 const redirectionSignInLimiter = rateLimit({
-    windowMs: 5 * minute,
-    max: 3*devDisable,
+    windowMs: 10 * minute,
+    max: 240*devDisable,
     message:commentRateLimiterError
 });
 
 const donationInsertionLimiter = rateLimit({
-    windowMs: minute,
-    max: 2*devDisable,
+    windowMs: 10*minute,
+    max: 240*devDisable,
     message:commentRateLimiterError
 });
 const donorInsertionLimiter = rateLimit({
     windowMs: 10*minute,
-    max: 50*devDisable,
+    max: 240*devDisable,
     message:commentRateLimiterError
 });
 const donorDeletionLimiter = rateLimit({
-    windowMs: minute,
-    max: 2*devDisable,
+    windowMs: 10*minute,
+    max: 240*devDisable,
     message:commentRateLimiterError
 });
 const deleteDonationLimiter = rateLimit({
-    windowMs: minute,
-    max: 6*devDisable,
+    windowMs: 10*minute,
+    max: 240*devDisable,
     message: commentRateLimiterError
 });
 
 const commonLimiter = rateLimit({
     windowMs: 10*minute,
-    max: 120*devDisable,
+    max: 240*devDisable,
     message: commentRateLimiterError
 });
 
 const passwordRequestLimiter = rateLimit({
-    windowMs: minute,
-    max: 2*devDisable,
+    windowMs: 10*minute,
+    max: 240*devDisable,
     message: commentRateLimiterError
 });
 
@@ -57,13 +57,13 @@ const passwordForgotLimiter = rateLimit({
 });
 
 const publicContactInsertionLimiter = rateLimit({
-    windowMs: minute,
-    max: 6*devDisable,
+    windowMs: 10*minute,
+    max: 240*devDisable,
     message: commentRateLimiterError
 })
 const publicContactDeletionLimiter = rateLimit({
-    windowMs: minute,
-    max: 6*devDisable,
+    windowMs: 10*minute,
+    max: 240*devDisable,
     message: commentRateLimiterError
 })
 
