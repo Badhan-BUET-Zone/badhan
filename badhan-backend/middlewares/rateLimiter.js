@@ -3,7 +3,7 @@ const {TooManyRequestsError429}= require('../response/errorTypes');
 
 const devDisable = process.env.NODE_ENV === 'development'?1000:1;
 const minute = 60*1000;
-const commentRateLimiterError = new TooManyRequestsError429("Service unavailable");
+const commonRateLimiterError = new TooManyRequestsError429("Service unavailable");
 
 const signInLimiter = rateLimit({
     windowMs: 5 * minute,
@@ -12,42 +12,42 @@ const signInLimiter = rateLimit({
 });
 
 const redirectionSignInLimiter = rateLimit({
-    windowMs: 10 * minute,
-    max: 240*devDisable,
-    message:commentRateLimiterError
+    windowMs: minute,
+    max: 3*devDisable,
+    message:commonRateLimiterError
 });
 
 const donationInsertionLimiter = rateLimit({
     windowMs: 10*minute,
     max: 240*devDisable,
-    message:commentRateLimiterError
+    message:commonRateLimiterError
 });
 const donorInsertionLimiter = rateLimit({
     windowMs: 10*minute,
     max: 240*devDisable,
-    message:commentRateLimiterError
+    message:commonRateLimiterError
 });
 const donorDeletionLimiter = rateLimit({
     windowMs: 10*minute,
     max: 240*devDisable,
-    message:commentRateLimiterError
+    message:commonRateLimiterError
 });
 const deleteDonationLimiter = rateLimit({
     windowMs: 10*minute,
     max: 240*devDisable,
-    message: commentRateLimiterError
+    message: commonRateLimiterError
 });
 
 const commonLimiter = rateLimit({
     windowMs: 10*minute,
     max: 240*devDisable,
-    message: commentRateLimiterError
+    message: commonRateLimiterError
 });
 
 const passwordRequestLimiter = rateLimit({
-    windowMs: 10*minute,
-    max: 240*devDisable,
-    message: commentRateLimiterError
+    windowMs: minute,
+    max: 3*devDisable,
+    message: commonRateLimiterError
 });
 
 const passwordForgotLimiter = rateLimit({
@@ -57,14 +57,14 @@ const passwordForgotLimiter = rateLimit({
 });
 
 const publicContactInsertionLimiter = rateLimit({
-    windowMs: 10*minute,
-    max: 240*devDisable,
-    message: commentRateLimiterError
+    windowMs: minute,
+    max: 12*devDisable,
+    message: commonRateLimiterError
 })
 const publicContactDeletionLimiter = rateLimit({
-    windowMs: 10*minute,
-    max: 240*devDisable,
-    message: commentRateLimiterError
+    windowMs: minute,
+    max: 12*devDisable,
+    message: commonRateLimiterError
 })
 
 module.exports={
