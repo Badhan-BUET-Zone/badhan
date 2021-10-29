@@ -1,7 +1,7 @@
 const rateLimit = require("express-rate-limit");
 const {TooManyRequestsError429}= require('../response/errorTypes');
 
-const rateLimiterEnabled = process.env.RATE_LIMITER_ENABLE === 'true'?1:1000;
+const rateLimiterEnabled = process.env.RATE_LIMITER_ENABLE === 'true'?1:100;
 const minute = 60*1000;
 
 const commonRateLimiterError = new TooManyRequestsError429("Service unavailable");
