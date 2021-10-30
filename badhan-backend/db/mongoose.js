@@ -6,7 +6,7 @@ const cacheExpiryTime = 10*60//seconds;
 
 mongoose.Promise = global.Promise;
 
-console.log("Connecting to "+(String(process.env.MONGODB_URI).includes('Test')?"Test":"Production")+" database...")
+console.log("BADHAN LOG: Connecting to "+(String(process.env.MONGODB_URI).includes('Test')?"Test":"Production")+" database...")
 
 mongoose.connect(process.env.MONGODB_URI, {
     useUnifiedTopology: true,
@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     useCreateIndex: true,
     useFindAndModify: false
 }).then(() => {
-    console.log('You are connected to the database.');
+    console.log('BADHAN LOG: You are connected to the database.');
 }).catch(err => {
     console.log(err.message);
     process.exit();

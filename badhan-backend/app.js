@@ -42,6 +42,7 @@ app.use(internalServerErrorHandler);
 process.on('unhandledRejection', unhandledRejectionHandler);
 process.on('uncaughtException', uncaughtExceptionHandler);
 
-console.log("server environment: ",process.env.NODE_ENV);
+console.log("BADHAN LOG: server environment is",process.env.NODE_ENV);
+console.log("BADHAN LOG: rate limiter",process.env.RATE_LIMITER_ENABLE==='true'?'on':'off');
 
 module.exports = app;

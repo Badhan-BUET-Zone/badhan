@@ -87,6 +87,9 @@ const handlePOSTSearchDonors = async (req, res) => {
             donationCountOptimized: faker.getDonationCount(),
             commentTime: faker.getTimestamp(240),
             callRecords: callRecords,
+            email: faker.getEmail(),
+            designation: faker.getDesignation(),
+            availableToAll: faker.getBoolean(),
         })
     }
 
