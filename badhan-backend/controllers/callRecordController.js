@@ -23,7 +23,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
         schema: {
             status: 'OK',
             message: 'Call record insertion successful',
-            statusCode: 200,
+            statusCode: 201,
             callRecord: {
                 date: 1625755390858,
                 _id: '60e70f42055a83d88',
