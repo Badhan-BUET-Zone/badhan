@@ -7,7 +7,7 @@ const postCallRecordsSchema={
     additionalProperties: false,
     properties: {
         status: {type: "string"},
-        statusCode: {const: 200},
+        statusCode: {const: 201},
         message: {type: "string"},
         callRecord: {
             type: "object",
