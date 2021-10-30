@@ -269,7 +269,7 @@ const handleGETViewAllVolunteers = async (req, res) => {
 }
 
 const handlePOSTCallRecord = async (req, res) => {
-    return res.respond(new OKResponse200('Call record insertion successful',{
+    return res.respond(new CreatedResponse201('Call record insertion successful',{
         callRecord: {
             date: faker.getTimestamp(),
             _id: faker.getId(),
