@@ -47,7 +47,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
     let callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id);
 
 
-    await logInterface.addLog(user._id, "CREATE CALLRECORD", {callee: donor.name});
+    await logInterface.addLog(user._id, "POST CALLRECORDS", {callee: donor.name});
 
     return res.respond(new CreatedResponse201('Call record insertion successful', {
         callRecord: callRecordInsertionResult.data
@@ -124,7 +124,7 @@ const handleDELETECallRecord = async (req, res, next) => {
         return res.respond(new InternalServerError500(callRecordDeleteResult.message));
     }
 
-    await logInterface.addLog(user._id, "DELETE CALLRECORD", {
+    await logInterface.addLog(user._id, "DELETE CALLRECORDS", {
         callee: donor.name,
         ...callRecordDeleteResult.data
     });

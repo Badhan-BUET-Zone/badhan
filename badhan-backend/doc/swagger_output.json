@@ -1535,14 +1535,6 @@
         ]
       }
     },
-    "/volunteers": {
-      "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      }
-    },
     "/volunteers/all": {
       "get": {
         "tags": [
@@ -1708,12 +1700,6 @@
             "api_key": []
           }
         ]
-      },
-      "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
       }
     },
     "/": {

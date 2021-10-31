@@ -76,7 +76,7 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
         return res.respond(new InternalServerError500(result.message,"found in handlePOSTPasswordForgot when emailInterface.sendMail"));
     }
 
-    await logInterface.addLog(donor._id, "CREATE USER PASSWORD FORGOT", {});
+    await logInterface.addLog(donor._id, "POST USERS PASSWORD FORGOT", {});
 
     return res.respond(new OKResponse200("A recovery mail has been sent to your email address"));
 }
@@ -174,7 +174,7 @@ let handlePOSTSignIn = async (req, res, next) => {
 
      */
 
-    await logInterface.addLog(donor._id, "CREATE USER SIGN IN", {});
+    await logInterface.addLog(donor._id, "POST USERS SIGNIN", {});
     return res.respond(new CreatedResponse201("Successfully signed in",{
         token
     }))
@@ -208,7 +208,7 @@ let handleDELETESignOut = async (req, res, next) => {
         description: 'A successful sign out removes the token for the user'
     }
 */
-    await logInterface.addLog(donor._id, "DELETE USER SIGN OUT", {});
+    await logInterface.addLog(donor._id, "DELETE USERS SIGNOUT", {});
     return res.respond(new OKResponse200('Logged out successfully'));
 };
 
@@ -238,7 +238,7 @@ let handleDELETESignOutAll = async (req, res, next) => {
             }
 
      */
-    await logInterface.addLog(donor._id, "DELETE USER SIGN OUT ALL", {});
+    await logInterface.addLog(donor._id, "DELETE USERS SIGNOUT ALL", {});
     return res.respond(new OKResponse200('Logged out from all devices successfully'));
 };
 
@@ -278,7 +278,7 @@ let handlePOSTRedirection = async (req, res, next) => {
 
      */
 
-    await logInterface.addLog(donor._id, "CREATE USER REDIRECTION", {});
+    await logInterface.addLog(donor._id, "POST USERS REDIRECTION", {});
 
     return res.respond(new CreatedResponse201("Redirection token created",{
         token
@@ -381,7 +381,7 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
             }
 
      */
-    await logInterface.addLog(donor._id, "PATCH USER REDIRECTION", {});
+    await logInterface.addLog(donor._id, "PATCH USERS REDIRECTION", {});
 
     return res.respond(new CreatedResponse201("Redirected login successful",{
         token: newToken
@@ -412,7 +412,7 @@ const handlePATCHPassword = async (req, res, next) => {
 
     await tokenInterface.deleteAllTokensByDonorId(donor._id);
     let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH USER PASSWORD", {});
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH USERS PASSWORD", {});
 
     /*
     #swagger.responses[201] = {
@@ -483,6 +483,8 @@ const handleGETLogins = async (req, res, next) => {
     delete currentTokenData.donorId;
     delete currentTokenData.__v;
 
+
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET USERS LOGINS", {});
     return res.respond(new OKResponse200('Recent logins fetched successfully',{
         logins: recentLoginsResult.data,
         currentLogin: currentTokenData,
@@ -528,6 +530,7 @@ const handleDELETELogins = async (req, res, next) => {
         return res.respond(new NotFoundError404('Login information not found'));
     }
 
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE USERS LOGINS", {});
     return res.respond(new OKResponse200('Logged out from specified device'));
 }
 

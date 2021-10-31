@@ -61,7 +61,7 @@ const handlePOSTDonations = async (req, res, next) => {
 
     await donor.save();
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONATION", {
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONATIONS", {
         ...donationInsertionResult.data,
         donor: donor.name
     });
@@ -132,7 +132,7 @@ const handleDELETEDonations = async (req, res, next) => {
 
     await donor.save();
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATION", {
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONATIONS", {
         ...donationDeletionResult.data,
         name: donor.name
     });

@@ -74,6 +74,8 @@ const handleDELETEPublicContact = async (req, res, next) => {
         return res.respond(new InternalServerError500(deletionResult.message));
     }
 
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE PUBLICCONTACTS", {deletedContact: searchResult.data.name});
+
     return res.respond(new OKResponse200('Public contact deleted successfully'));
 }
 
@@ -112,6 +114,7 @@ const handlePOSTPublicContact = async (req, res, next) => {
         return res.respond(new InternalServerError500(insertionResult.message));
     }
 
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST PUBLICCONTACTS", {donorId: req.body.donorId});
     return res.respond(new CreatedResponse201('Public contact added successfully',{
         publicContact: insertionResult.data
     }))

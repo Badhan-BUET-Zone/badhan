@@ -127,7 +127,7 @@ const handlePOSTDonors = async (req, res, next) => {
     }
 
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "CREATE DONOR", donorInsertionResult.data);
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONORS", donorInsertionResult.data);
     /*
         #swagger.responses[201] = {
             schema: {
@@ -188,7 +188,7 @@ const handleDELETEDonors = async (req, res, next) => {
         return res.respond(new InternalServerError500("Error occurred in deleting target donor"));
     }
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONOR", deleteDonorResult.data);
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE DONORS", deleteDonorResult.data);
     /*
             #swagger.responses[200] = {
                 schema: {
@@ -357,7 +357,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
     result.data.sort((donor1,donor2)=>
         donor1.donationCountOptimized >= donor2.donationCountOptimized?-1:1
     )
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "SEARCH DONORS", {
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET SEARCH", {
         filter: reqQuery,
         resultCount: result.data.length
     })
@@ -429,7 +429,7 @@ const handlePATCHDonorsComment = async (req, res, next) => {
     targetDonor.commentTime = new Date().getTime();
     await targetDonor.save();
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR COMMENT", targetDonor);
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH DONORS COMMENT", targetDonor);
 
     /*
             #swagger.responses[200] = {
@@ -489,7 +489,7 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
 
     await tokenInterface.deleteAllTokensByDonorId(target._id);
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR PASSWORD", {name: target.name});
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH DONORS PASSWORD", {name: target.name});
 
     /*
     #swagger.responses[200] = {
@@ -581,7 +581,7 @@ const handlePATCHDonors = async (req, res, next) => {
 
     await target.save();
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR", target);
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH DONORS", target);
     /*
             #swagger.responses[200] = {
                 schema: {
@@ -653,7 +653,7 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
         logOperation = "DEMOTE";
     }
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "UPDATE DONOR DESIGNATION (" + logOperation + ")", donor);
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH DONORS DESIGNATION (" + logOperation + ")", donor);
     /*
     #swagger.responses[200] = {
         schema: {
@@ -666,64 +666,6 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
 
      */
     return res.respond(new OKResponse200('Target user promoted/demoted successfully'));
-}
-
-const handleGETVolunteers = async (req, res, next) => {
-    /*
-        #swagger.auto = false
-        #swagger.tags = ['Donors']
-        #swagger.description = 'Handles the fetching of volunteer lists for a hall admin.'
-        #swagger.security = [{
-               "api_key": []
-        }]
-
-     */
-    let authenticatedUser = res.locals.middlewareResponse.donor;
-
-    let userHall = authenticatedUser.hall;
-
-    let donorsQueryResult = await donorInterface.findDonorsByQuery({
-        hall: userHall,
-        designation: 1
-    }, {
-        studentId: 1,
-        name: 1,
-        roomNumber: 1,
-        bloodGroup: 1,
-        phone: 1,
-    });
-
-    if (donorsQueryResult.status !== 'OK') {
-        return res.respond(new InternalServerError500(donorsQueryResult.message));
-    }
-
-    let volunteerList = donorsQueryResult.data;
-    /*
-    #swagger.responses[200] = {
-        schema: {
-            status: 'OK',
-            statusCode: 200,
-            message: 'Volunteer list fetched successfully',
-            volunteerList: [
-                {
-                    _id: "dskgjhwebkjsdbd",
-                    bloodGroup: 2,
-                    name: "John Doe",
-                    phone: 8801456987445,
-                    roomNumber: "409",
-                    studentId: 1610000,
-                }
-            ]
-        },
-        description: 'An array of volunteers fetched successfully'
-    }
-
-     */
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ VOLUNTEERS", {});
-
-    return res.respond(new OKResponse200('Volunteer list fetched successfully', {
-        volunteerList
-    }))
 }
 
 const handlePATCHAdmins = async (req, res, next) => {
@@ -777,7 +719,7 @@ const handlePATCHAdmins = async (req, res, next) => {
     targetDonor.designation = 2;
     await targetDonor.save();
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PROMOTE VOLUNTEER", {name: targetDonor.name});
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH DONORS DESIGNATION (VOLUNTEER)", {name: targetDonor.name});
     /*
             #swagger.responses[200] = {
                 schema: {
@@ -792,50 +734,6 @@ const handlePATCHAdmins = async (req, res, next) => {
     return res.respond(new OKResponse200('Successfully changed hall admin'));
 }
 
-const handleGETAdmins = async (req, res, next) => {
-    /*
-        #swagger.auto = false
-        #swagger.tags = ['Donors']
-        #swagger.description = 'handles the fetching of hall admin list for a super admin.'
-        #swagger.security = [{
-               "api_key": []
-        }]
-
-     */
-    let adminsQueryResult = await donorInterface.findDonorsByQuery({designation: 2}, {
-        phone: 1,
-        hall: 1,
-        name: 1
-    });
-
-    if (adminsQueryResult.status !== 'OK') {
-        return res.respond(new InternalServerError500(adminsQueryResult.message));
-    }
-
-    let admins = adminsQueryResult.data;
-    /*
-            #swagger.responses[200] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 200,
-                    message: 'Hall admin list fetched successfully',
-                    admins: [{
-                        _id: "reohrewoihgfsdn",
-                        hall: 0,
-                        name: "Salman Khan",
-                        phone: 8801521478996,
-                    }]
-                },
-                description: 'Hall admin list fetch successful '
-            }
-
-     */
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ ADMINS", {});
-
-    return res.respond(new OKResponse200('Hall admin list fetched successfully', {
-        admins
-    }))
-}
 
 const handleGETDonors = async (req, res, next) => {
     /*
@@ -935,7 +833,7 @@ const handleGETDonors = async (req, res, next) => {
 
      */
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "READ DONOR", {name: donor.name});
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS", {name: donor.name});
 
     return res.respond(new OKResponse200('Successfully fetched donor details', {
         donor
@@ -1019,6 +917,9 @@ const handleGETVolunteersAll = async (req, res, next) => {
         description: 'Volunteer list fetch successful'
     }
 */
+
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET VOLUNTEERS ALL", {});
+
     return res.respond(new OKResponse200('Successfully fetched donor details', {
         data: volunteerResult.data
     }))
@@ -1092,7 +993,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
         }))
     }
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DUPLICATE", {phone: req.query.phone});
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS CHECKDUPLICATE", {phone: req.query.phone});
 
     return res.respond(new OKResponse200('No duplicate donors found', {
         found: false,
@@ -1152,7 +1053,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
         description: 'Successfully created recovery link for user'
     }
 */
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONOR PASSWORD REQUEST", {name: donor.name});
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST DONORS PASSWORD (REQUEST)", {name: donor.name});
 
     return res.respond(new OKResponse200("Successfully created recovery link for user", {
         token: tokenInsertResult.data.token
@@ -1230,6 +1131,8 @@ const handleGETDonorsDesignation = async (req, res, next) => {
     }
     let superAdminList = superAdminQuery.data;
 
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS DESIGNATION", {});
+
     return res.respond(new OKResponse200("All designated members fetched", {
         volunteerList,
         adminList,
@@ -1247,9 +1150,7 @@ module.exports = {
     handleGETDonorsDesignation,
     handlePATCHDonors,
     handlePATCHDonorsDesignation,
-    handleGETVolunteers,
     handlePATCHAdmins,
-    handleGETAdmins,
     handleGETDonors,
     handleGETDonorsMe,
     handleGETVolunteersAll,
