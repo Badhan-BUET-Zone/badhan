@@ -81,7 +81,7 @@ test('POST & DELETE /bookmarks/public',async()=>{
         throw processError(e);
     }
 });
-test('POST/guest/bookmarks/public',async()=>{
+test('POST & DELETE /guest/bookmarks/public',async()=>{
     try {
         let createBookmarkResponse = await badhanAxios.post('/guest/bookmarks/public',{
         },{
