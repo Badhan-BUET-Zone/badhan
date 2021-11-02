@@ -96,6 +96,8 @@ let handleFetchTargetDonor = async (req, res, next) => {
         donorId = req.body.donorId
     } else if (req.query.donorId) {
         donorId = req.query.donorId
+    } else if (req.params.donorId){
+        donorId = req.params.donorId
     }
 
     let donorQueryResult = await donorInterface.findDonorByQuery({

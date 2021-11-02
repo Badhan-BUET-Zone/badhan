@@ -31,6 +31,14 @@ const doc = {
         {
             "name":"Public Contacts",
             "description": "Contacts of Badhan that are available to the public"
+        },
+        {
+            "name":"Public Bookmarks",
+            "description": "Management of all public bookmarks"
+        },
+        {
+            "name":"Private Bookmarks",
+            "description":"Management of all private bookmarks"
         }
     ],
     securityDefinitions: {
@@ -97,7 +105,8 @@ const endpointsFiles = [
     './routes/callRecords.js',
     './routes/donations.js',
     './routes/logs.js',
-    './routes/publicContacts.js'
+    './routes/publicContacts.js',
+    './routes/publicBookmarks.js'
 ]
 
 

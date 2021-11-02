@@ -27,6 +27,14 @@
     {
       "name": "Public Contacts",
       "description": "Contacts of Badhan that are available to the public"
+    },
+    {
+      "name": "Public Bookmarks",
+      "description": "Management of all public bookmarks"
+    },
+    {
+      "name": "Private Bookmarks",
+      "description": "Management of all private bookmarks"
     }
   ],
   "schemes": [
@@ -3319,6 +3327,217 @@
               }
             },
             "description": "If contactId in database does not have the matching donorId"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/bookmarks/public": {
+      "post": {
+        "tags": [
+          "Public Bookmarks"
+        ],
+        "description": "Add a bookmark for everyone to see",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "body",
+            "description": "donorId of the user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hdjhd12vhjgj3428569834hth"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public bookmark created"
+                },
+                "newBookmark": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "markerId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "time": {
+                      "type": "number",
+                      "example": 1658974323116
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Public bookmark created"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public bookmark already created"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Public bookmark already created"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/bookmarks/public/{donorId}": {
+      "delete": {
+        "tags": [
+          "Public Bookmarks"
+        ],
+        "description": "Remove a public bookmark",
+        "parameters": [
+          {
+            "name": "donorId",
+            "description": "The donor to be removed from public bookmarks",
+            "type": "string",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public bookmark deleted successfully"
+                },
+                "removedBookmark": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "markerId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "time": {
+                      "type": "number",
+                      "example": 1658974323116
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Public bookmark deleted"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public bookmark not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Public bookmark not found"
           }
         },
         "security": [
