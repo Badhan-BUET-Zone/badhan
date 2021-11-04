@@ -29,12 +29,8 @@
       "description": "Contacts of Badhan that are available to the public"
     },
     {
-      "name": "Public Bookmarks",
-      "description": "Management of all public bookmarks"
-    },
-    {
-      "name": "Private Bookmarks",
-      "description": "Management of all private bookmarks"
+      "name": "Active Donors",
+      "description": "Management of all active donors"
     }
   ],
   "schemes": [
@@ -3336,12 +3332,12 @@
         ]
       }
     },
-    "/bookmarks/public": {
+    "/activeDonors": {
       "post": {
         "tags": [
-          "Public Bookmarks"
+          "Active Donors"
         ],
-        "description": "Add a bookmark for everyone to see",
+        "description": "Add an active donor for everyone to see",
         "parameters": [
           {
             "name": "request",
@@ -3373,9 +3369,9 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Public bookmark created"
+                  "example": "Active donor created"
                 },
-                "newBookmark": {
+                "newActiveDonor": {
                   "type": "object",
                   "properties": {
                     "_id": {
@@ -3401,7 +3397,7 @@
                 "name": "main"
               }
             },
-            "description": "Public bookmark created"
+            "description": "Active donor created"
           },
           "404": {
             "schema": {
@@ -3440,14 +3436,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Public bookmark already created"
+                  "example": "Active donor already created"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Public bookmark already created"
+            "description": "Active donor already created"
           }
         },
         "security": [
@@ -3457,16 +3453,16 @@
         ]
       }
     },
-    "/bookmarks/public/{donorId}": {
+    "/activeBookmarks/{donorId}": {
       "delete": {
         "tags": [
-          "Public Bookmarks"
+          "Active Donors"
         ],
-        "description": "Remove a public bookmark",
+        "description": "Remove an active donor",
         "parameters": [
           {
             "name": "donorId",
-            "description": "The donor to be removed from public bookmarks",
+            "description": "The donor to be removed from active donors",
             "type": "string",
             "in": "param"
           }
@@ -3486,9 +3482,9 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Public bookmark deleted successfully"
+                  "example": "Active donor deleted successfully"
                 },
-                "removedBookmark": {
+                "removedActiveDonor": {
                   "type": "object",
                   "properties": {
                     "_id": {
@@ -3514,7 +3510,7 @@
                 "name": "main"
               }
             },
-            "description": "Public bookmark deleted"
+            "description": "Active donor deleted"
           },
           "404": {
             "schema": {
@@ -3530,14 +3526,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Public bookmark not found"
+                  "example": "Active donor not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Public bookmark not found"
+            "description": "Active donor not found"
           }
         },
         "security": [

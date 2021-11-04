@@ -33,13 +33,9 @@ const doc = {
             "description": "Contacts of Badhan that are available to the public"
         },
         {
-            "name":"Public Bookmarks",
-            "description": "Management of all public bookmarks"
+            "name":"Active Donors",
+            "description": "Management of all active donors"
         },
-        {
-            "name":"Private Bookmarks",
-            "description":"Management of all private bookmarks"
-        }
     ],
     securityDefinitions: {
         api_key: {
@@ -106,7 +102,7 @@ const endpointsFiles = [
     './routes/donations.js',
     './routes/logs.js',
     './routes/publicContacts.js',
-    './routes/publicBookmarks.js'
+    './routes/activeDonors.js'
 ]
 
 

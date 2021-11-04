@@ -14,7 +14,7 @@ let guestRouter = require('./routes/guest')
 let callRecordRouter = require('./routes/callRecords');
 let publicContactsRouter = require('./routes/publicContacts');
 let logRouter = require('./routes/logs');
-let publicBookmarksRouter = require('./routes/publicBookmarks');
+let activeDonorsRouter = require('./routes/activeDonors');
 require('./db/mongoose');
 const {userAgentHandler} = require('./middlewares/userAgent');
 const {respond} = require('./response')
@@ -35,7 +35,7 @@ app.use('/donations',donationsRouter);
 app.use('/guest', guestRouter);
 app.use('/callrecords', callRecordRouter);
 app.use('/publicContacts',publicContactsRouter);
-app.use('/bookmarks/public',publicBookmarksRouter);
+app.use('/activeDonors',activeDonorsRouter);
 app.use('/', apiRouter);
 app.use('/',logRouter);
 app.use('*',routeNotFoundHandler);

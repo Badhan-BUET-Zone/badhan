@@ -1,27 +1,27 @@
 const AsyncRouter = require("express-async-router").AsyncRouter;
 let router = AsyncRouter();
 
-const publicBookmarkController = require('../controllers/publicBookmarkController');
+const activeDonorController = require('../controllers/activeDonorController');
 const authenticator = require('../middlewares/authenticate');
 const rateLimiter = require('../middlewares/rateLimiter');
-const publicBookmarksValidator = require('../validations/publicBookmarks');
+const activeDonorsValidator = require('../validations/activeDonors');
 
-router.post('/', /*#swagger.path = '/bookmarks/public'*/
-    publicBookmarksValidator.validatePOSTPublicBookmarks,
+router.post('/', /*#swagger.path = '/activeDonors'*/
+    activeDonorsValidator.validatePOSTActiveDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
-    publicBookmarkController.handlePOSTPublicBookmarks,
+    activeDonorController.handlePOSTActiveDonors,
 );
 
-router.delete('/:donorId',/*#swagger.path = '/bookmarks/public/{donorId}'*/
-    publicBookmarksValidator.validateDELETEPublicBookmarks,
+router.delete('/:donorId',/*#swagger.path = '/activeBookmarks/{donorId}'*/
+    activeDonorsValidator.validateDELETEActiveDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
     authenticator.handleFetchTargetDonor,
     authenticator.handleHallPermissionOrCheckAvailableToAll,
-    publicBookmarkController.handleDELETEPublicBookmarks
+    activeDonorController.handleDELETEActiveDonors
 );
 
 module.exports = router;

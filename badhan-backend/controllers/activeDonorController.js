@@ -1,13 +1,13 @@
-const publicBookmarkInterface = require('../db/interfaces/publicBookmarkInterface');
+const activeDonorInterface = require('../db/interfaces/activeDonorInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const {InternalServerError500, NotFoundError404, ConflictError409,} = require('../response/errorTypes');
 const {OKResponse200, CreatedResponse201} = require('../response/successTypes')
 
-const handlePOSTPublicBookmarks = async (req, res, next) => {
+const handlePOSTActiveDonors = async (req, res, next) => {
     /*
         #swagger.auto = false
-        #swagger.tags = ['Public Bookmarks']
-        #swagger.description = 'Add a bookmark for everyone to see'
+        #swagger.tags = ['Active Donors']
+        #swagger.description = 'Add an active donor for everyone to see'
         #swagger.parameters['request'] = {
             in: 'body',
             description: 'donorId of the user',
@@ -22,23 +22,23 @@ const handlePOSTPublicBookmarks = async (req, res, next) => {
             schema: {
                 status: 'ERROR',
                 statusCode: 409,
-                message: 'Public bookmark already created',
+                message: 'Active donor already created',
             },
-            description: 'Public bookmark already created'
+            description: 'Active donor already created'
         }
         #swagger.responses[201] = {
             schema: {
                 status: 'OK',
                 statusCode: 201,
-                message: 'Public bookmark created',
-                newBookmark: {
+                message: 'Active donor created',
+                newActiveDonor: {
                     _id: 'hdjhd12vhjgj3428569834hth',
                     donorId: 'hdjhd12vhjgj3428569834hth',
                     markerId: 'hdjhd12vhjgj3428569834hth',
                     time: 1658974323116
                 }
             },
-            description: 'Public bookmark created'
+            description: 'Active donor created'
         }
 
      */
@@ -47,30 +47,30 @@ const handlePOSTPublicBookmarks = async (req, res, next) => {
     let donor = res.locals.middlewareResponse.targetDonor;
     let user = res.locals.middlewareResponse.donor;
 
-    let publicBookmarkSearch = await publicBookmarkInterface.findByDonorId(donor._id);
-    if (publicBookmarkSearch.status === 'OK') {
-        return res.respond(new ConflictError409('Public bookmark already created'));
+    let activeDonorSearch = await activeDonorInterface.findByDonorId(donor._id);
+    if (activeDonorSearch.status === 'OK') {
+        return res.respond(new ConflictError409('Active donor already created'));
     }
 
-    let publicBookmarkInsertResult = await publicBookmarkInterface.add(donor._id, user._id);
+    let activeDonorInsertResult = await activeDonorInterface.add(donor._id, user._id);
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST BOOKMARKS PUBLIC", {
-        ...publicBookmarkInsertResult.data,
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST ACTIVEDONORS", {
+        ...activeDonorInsertResult.data,
         donor: donor.name
     });
-    return res.respond(new CreatedResponse201('Public bookmark created', {
-        newBookmark: publicBookmarkInsertResult.data,
+    return res.respond(new CreatedResponse201('Active donor created', {
+        newActiveDonor: activeDonorInsertResult.data,
     }))
 
 };
 
-const handleDELETEPublicBookmarks = async (req, res, next) => {
+const handleDELETEActiveDonors = async (req, res, next) => {
     /*
     #swagger.auto = false
-    #swagger.tags = ['Public Bookmarks']
-    #swagger.description = 'Remove a public bookmark'
+    #swagger.tags = ['Active Donors']
+    #swagger.description = 'Remove an active donor'
     #swagger.parameters['donorId'] = {
-            description: 'The donor to be removed from public bookmarks',
+            description: 'The donor to be removed from active donors',
             type: 'string',
             name: 'donorId',
             in: 'param'
@@ -82,23 +82,23 @@ const handleDELETEPublicBookmarks = async (req, res, next) => {
         schema: {
             status: 'ERROR',
             statusCode: 404,
-            message: 'Public bookmark not found',
+            message: 'Active donor not found',
         },
-        description: 'Public bookmark not found'
+        description: 'Active donor not found'
     }
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
             statusCode: 200,
-            message: 'Public bookmark deleted successfully',
-            removedBookmark: {
+            message: 'Active donor deleted successfully',
+            removedActiveDonor: {
                 _id: 'hdjhd12vhjgj3428569834hth',
                 donorId: 'hdjhd12vhjgj3428569834hth',
                 markerId: 'hdjhd12vhjgj3428569834hth',
                 time: 1658974323116
             }
         },
-        description: 'Public bookmark deleted'
+        description: 'Active donor deleted'
     }
 
      */
@@ -106,22 +106,22 @@ const handleDELETEPublicBookmarks = async (req, res, next) => {
     let user = res.locals.middlewareResponse.donor;
     let donor = res.locals.middlewareResponse.targetDonor;
 
-    let publicBookmarkRemoveResult = await publicBookmarkInterface.remove(donor._id);
-    if (publicBookmarkRemoveResult.status !== 'OK') {
-        return res.respond(new NotFoundError404('Public bookmark not found'));
+    let activeDonorRemoveResult = await activeDonorInterface.remove(donor._id);
+    if (activeDonorRemoveResult.status !== 'OK') {
+        return res.respond(new NotFoundError404('Active donor not found'));
     }
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE BOOKMARKS PUBLIC", {
-        ...publicBookmarkRemoveResult.data,
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE ACTIVEDONORS", {
+        ...activeDonorRemoveResult.data,
         donor: donor.name
     });
-    return res.respond(new OKResponse200('Public bookmark deleted successfully', {
-        removedBookmark: publicBookmarkRemoveResult.data,
+    return res.respond(new OKResponse200('Active donor deleted successfully', {
+        removedActiveDonor: activeDonorRemoveResult.data,
     }))
 
 }
 
 
 module.exports = {
-    handlePOSTPublicBookmarks,
-    handleDELETEPublicBookmarks
+    handlePOSTActiveDonors,
+    handleDELETEActiveDonors
 }

@@ -2,15 +2,15 @@ const {validate} = require('../validations');
 const {validatePARAMDonorId} = require('./validateRequest/validateParam');
 const {validateBODYDonorId} = require('./validateRequest/validateBody');
 
-const validatePOSTPublicBookmarks = validate([
+const validatePOSTActiveDonors = validate([
     validateBODYDonorId,
 ])
 
-const validateDELETEPublicBookmarks = validate([
+const validateDELETEActiveDonors = validate([
     validatePARAMDonorId,
 ])
 
 module.exports = {
-    validatePOSTPublicBookmarks,
-    validateDELETEPublicBookmarks,
+    validatePOSTActiveDonors,
+    validateDELETEActiveDonors,
 }

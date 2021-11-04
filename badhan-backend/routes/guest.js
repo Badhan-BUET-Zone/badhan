@@ -134,7 +134,7 @@ router.delete('/users/logins/:tokenId',
     guestController.handleDELETELogins
 );
 
-router.post('/bookmarks/public',guestController.handlePOSTPublicBookmarks);
-router.delete('/bookmarks/public/:donorId',guestController.handleDELETEPublicBookmarks);
+router.post('/activeDonors',guestController.handlePOSTActiveDonors);
+router.delete('/activeDonors/:donorId',guestController.handleDELETEActiveDonors);
 
 module.exports = router;

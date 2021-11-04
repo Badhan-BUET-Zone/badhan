@@ -500,9 +500,9 @@ const handleDELETELogins = (req, res) => {
     return res.respond(new OKResponse200('Logged out from specified device'));
 }
 
-const handleDELETEPublicBookmarks = (req, res) => {
-    return res.respond(new OKResponse200('Public bookmark deleted successfully',{
-        removedBookmark: {
+const handleDELETEActiveDonors = (req, res) => {
+    return res.respond(new OKResponse200('Active donor deleted successfully',{
+        removedActiveDonor: {
             _id: faker.getId(),
             donorId: faker.getId(),
             markerId: faker.getId(),
@@ -511,9 +511,9 @@ const handleDELETEPublicBookmarks = (req, res) => {
     }))
 };
 
-const handlePOSTPublicBookmarks = async (req, res, next) => {
-    return res.respond(new CreatedResponse201('Public bookmark created',{
-        newBookmark: {
+const handlePOSTActiveDonors = async (req, res, next) => {
+    return res.respond(new CreatedResponse201('Active donor created',{
+        newActiveDonor: {
             _id: faker.getId(),
             donorId: faker.getId(),
             markerId: faker.getId(),
@@ -555,6 +555,6 @@ module.exports = {
     handleGETDonorsDesignation,
     handleGETLogins,
     handleDELETELogins,
-    handleDELETEPublicBookmarks,
-    handlePOSTPublicBookmarks
+    handleDELETEActiveDonors,
+    handlePOSTActiveDonors
 }

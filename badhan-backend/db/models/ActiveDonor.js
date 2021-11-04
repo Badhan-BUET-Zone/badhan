@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const publicBookmarkSchema = new mongoose.Schema({
+const activeDonorSchema = new mongoose.Schema({
     donorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Donor',
@@ -22,7 +22,7 @@ const publicBookmarkSchema = new mongoose.Schema({
     },
 },{ versionKey: false, id: false   });
 
-const PublicBookmark = mongoose.model('PublicBookmarks', publicBookmarkSchema);
+const ActiveDonor= mongoose.model('PublicBookmarks', activeDonorSchema);
 
 
-module.exports = { PublicBookmark }
+module.exports = { ActiveDonor }
