@@ -1,7 +1,7 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const {processError}=require('../fixtures/helpers');
-
+const env = require('../../config/config');
 test.skip('POST/users/password/forgot',async()=>{
     try {
         let response = await badhanAxios.post("/users/password/forgot", {phone: env.SUPERADMIN_PHONE});
