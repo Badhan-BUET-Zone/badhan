@@ -3,14 +3,14 @@ const validate = require('jsonschema').validate;
 const env = require('../../config/config');
 const {processError}=require('../fixtures/helpers');
 
-const postPublicBookmarkSchema = {
+const postActiveDonorSchema = {
     type: "object",
     additionalProperties: false,
     properties: {
         status: {type: "string"},
         statusCode: {const: 201},
         message: {type: "string"},
-        newBookmark:{
+        newActiveDonor:{
             type:"object",
             additionalProperties: false,
             properties: {
@@ -24,14 +24,14 @@ const postPublicBookmarkSchema = {
 }
 
 
-const deletePublicBookmarkSchema = {
+const deleteActiveDonorSchema = {
     type: "object",
     additionalProperties: false,
     properties: {
         status: {type: "string"},
         statusCode: {const: 200},
         message: {type: "string"},
-        removedBookmark:{
+        removedActiveDonor:{
             type:"object",
             additionalProperties: false,
             properties: {
@@ -44,14 +44,14 @@ const deletePublicBookmarkSchema = {
     }
 }
 
-test('POST & DELETE /bookmarks/public',async()=>{
+test('POST & DELETE /activeDonors',async()=>{
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let createBookmarkResponse = await badhanAxios.post('/bookmarks/public',{
+        let createActiveDonorResponse = await badhanAxios.post('/activeDonors',{
             donorId: env.SUPERADMIN_ID,
         },{
             headers: {
@@ -59,18 +59,18 @@ test('POST & DELETE /bookmarks/public',async()=>{
             }
         })
 
-        let createBookmarkValidationResult = validate(createBookmarkResponse.data, postPublicBookmarkSchema);
+        let createActiveDonorValidationResult = validate(createActiveDonorResponse.data, postActiveDonorSchema);
 
-        expect(createBookmarkValidationResult.errors).toEqual([]);
+        expect(createActiveDonorValidationResult.errors).toEqual([]);
 
-        let deleteBookmarkResponse = await badhanAxios.delete(`/bookmarks/public/${env.SUPERADMIN_ID}`, {
+        let deleteActiveDonorResponse = await badhanAxios.delete(`/activeDonors/${env.SUPERADMIN_ID}`, {
             headers: {
                 "x-auth": signInResponse.data.token
             }
         });
 
-        let deleteBookmarkValidateResult = validate(deleteBookmarkResponse.data,deletePublicBookmarkSchema);
-        expect(deleteBookmarkValidateResult.errors).toEqual([]);
+        let deleteActiveDonorValidateResult = validate(deleteActiveDonorResponse.data,deleteActiveDonorSchema);
+        expect(deleteActiveDonorValidateResult.errors).toEqual([]);
 
         await badhanAxios.delete('/users/signout', {
             headers: {
@@ -81,21 +81,21 @@ test('POST & DELETE /bookmarks/public',async()=>{
         throw processError(e);
     }
 });
-test('POST & DELETE /guest/bookmarks/public',async()=>{
+test('POST & DELETE /guest/activeDonors',async()=>{
     try {
-        let createBookmarkResponse = await badhanAxios.post('/guest/bookmarks/public',{
+        let createActiveDonorResponse = await badhanAxios.post('/guest/activeDonors',{
         },{
         })
 
-        let createBookmarkValidationResult = validate(createBookmarkResponse.data, postPublicBookmarkSchema);
+        let createActiveDonorValidationResult = validate(createActiveDonorResponse.data, postActiveDonorSchema);
 
-        expect(createBookmarkValidationResult.errors).toEqual([]);
+        expect(createActiveDonorValidationResult.errors).toEqual([]);
 
-        let deleteBookmarkResponse = await badhanAxios.delete(`/guest/bookmarks/public/${env.SUPERADMIN_ID}`, {
+        let deleteActiveDonorResponse = await badhanAxios.delete(`/guest/activeDonors/${env.SUPERADMIN_ID}`, {
         });
 
-        let deleteBookmarkValidateResult = validate(deleteBookmarkResponse.data,deletePublicBookmarkSchema);
-        expect(deleteBookmarkValidateResult.errors).toEqual([]);
+        let deleteActiveDonorValidateResult = validate(deleteActiveDonorResponse.data,deleteActiveDonorSchema);
+        expect(deleteActiveDonorValidateResult.errors).toEqual([]);
     }catch (e) {
         throw processError(e);
     }
