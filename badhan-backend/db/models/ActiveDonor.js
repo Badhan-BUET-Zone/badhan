@@ -22,7 +22,7 @@ const activeDonorSchema = new mongoose.Schema({
     },
 },{ versionKey: false, id: false   });
 
-const ActiveDonor= mongoose.model('PublicBookmarks', activeDonorSchema);
+const ActiveDonor= mongoose.model('ActiveDonors', activeDonorSchema);
 
 
 module.exports = { ActiveDonor }

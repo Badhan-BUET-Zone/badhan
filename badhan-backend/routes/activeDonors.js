@@ -15,7 +15,7 @@ router.post('/', /*#swagger.path = '/activeDonors'*/
     activeDonorController.handlePOSTActiveDonors,
 );
 
-router.delete('/:donorId',/*#swagger.path = '/activeBookmarks/{donorId}'*/
+router.delete('/:donorId',/*#swagger.path = '/activeDonors/{donorId}'*/
     activeDonorsValidator.validateDELETEActiveDonors,
     rateLimiter.commonLimiter,
     authenticator.handleAuthentication,
