@@ -354,8 +354,8 @@ const handleGETSearchOptimized = async (req, res, next) => {
 
     let result = await donorInterface.findDonorsByQuery(queryBuilder);
 
-    result.data.sort((donor1,donor2)=>
-        donor1.donationCountOptimized >= donor2.donationCountOptimized?-1:1
+    result.data.sort((donor1, donor2) =>
+        donor1.donationCountOptimized >= donor2.donationCountOptimized ? -1 : 1
     )
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET SEARCH", {
         filter: reqQuery,
@@ -753,28 +753,33 @@ const handleGETDonors = async (req, res, next) => {
      */
 
     let donor = res.locals.middlewareResponse.targetDonor;
-    await donor.populate({
-        path: 'donations',
-        options: {sort: {'date': -1}}
-    }).populate({
-        path: 'callRecords',
-        populate: {
-            path: 'callerId',
+    await donor.populate([
+        {
+            path: 'donations',
+            options: {sort: {'date': -1}}
+        },
+        {
+            path: 'callRecords',
+            populate: {
+                path: 'callerId',
+                select: {
+                    '_id': 1,
+                    'name': 1,
+                    'hall': 1,
+                    'designation': 1
+                }
+            },
+            options: {sort: {'date': -1}}
+        },
+        {
+            path: 'publicContacts',
             select: {
                 '_id': 1,
-                'name': 1,
-                'hall': 1,
-                'designation': 1
+                'bloodGroup': 1
             }
-        },
-        options: {sort: {'date': -1}}
-    }).populate({
-        path: 'publicContacts',
-        select: {
-            '_id': 1,
-            'bloodGroup': 1
         }
-    }).execPopulate();
+    ])
+
     /*
     #swagger.responses[200] = {
         schema: {
@@ -952,34 +957,34 @@ const handleGETDonorsDuplicate = async (req, res) => {
             duplicateDonorResult.data.hall > 6 ||
             duplicateDonorResult.data.availableToAll === true
         ) {
-/*
-            #swagger.responses[200] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 200,
-                    message: 'Donor found with duplicate phone number in Titumir Hall',
-                    "found": true,
-                    "donor": {
-                        "address": "Azimpur",
-                        "roomNumber": "3009",
-                        "designation": 3,
-                        "lastDonation": 1634196816955,
-                        "comment": "Developer of Badhan",
-                        "commentTime": 1634838132020,
-                        "email": "mirmahathir1@gmail.com",
-                        "_id": "5e901d56effc5900177ced73",
-                        "phone": 8801521438557,
-                        "bloodGroup": 2,
-                        "hall": 5,
-                        "name": "Mir Mahathir Mohammad",
-                        "studentId": "1605011",
-                        "availableToAll": true
-                    }
-                },
-                description: 'If the donor already exists in the database, user will get the error message'
-            }
+            /*
+                        #swagger.responses[200] = {
+                            schema: {
+                                status: 'OK',
+                                statusCode: 200,
+                                message: 'Donor found with duplicate phone number in Titumir Hall',
+                                "found": true,
+                                "donor": {
+                                    "address": "Azimpur",
+                                    "roomNumber": "3009",
+                                    "designation": 3,
+                                    "lastDonation": 1634196816955,
+                                    "comment": "Developer of Badhan",
+                                    "commentTime": 1634838132020,
+                                    "email": "mirmahathir1@gmail.com",
+                                    "_id": "5e901d56effc5900177ced73",
+                                    "phone": 8801521438557,
+                                    "bloodGroup": 2,
+                                    "hall": 5,
+                                    "name": "Mir Mahathir Mohammad",
+                                    "studentId": "1605011",
+                                    "availableToAll": true
+                                }
+                            },
+                            description: 'If the donor already exists in the database, user will get the error message'
+                        }
 
- */
+             */
 
             return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + " hall", {
                 found: true,
