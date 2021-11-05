@@ -777,6 +777,18 @@ const handleGETDonors = async (req, res, next) => {
                 '_id': 1,
                 'bloodGroup': 1
             }
+        },
+        {
+            path: 'markedBy',
+            select: {
+                markerId: 1, time: 1, _id: 0
+            },
+            populate: {
+                path: 'markerId',
+                model: 'Donor',
+                select: {'name': 1}
+            }
+
         }
     ])
 

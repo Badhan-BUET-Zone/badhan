@@ -1,5 +1,6 @@
 const {Donor} = require('../models/Donor');
-
+const {CallRecord} = require('../models/CallRecord');
+const {Donation} = require('../models/Donation');
 const insertDonor = async (donorObject) => {
     let donor = new Donor(donorObject);
     let data = await donor.save();
@@ -141,12 +142,21 @@ const findDonorsByQuery = async (query) => {
     let data = await Donor.find(query).populate({
         path: 'callRecords',
         select: {'_id': 1, 'date': 1, 'callerId': 1}
-    }).populate({path: 'donationCountOptimized'});
+    }).populate({
+        path: 'donationCountOptimized'
+    }).populate({
+        path: 'markedBy', select: {
+            markerId: 1, time: 1, _id: 0
+        }, populate: {
+            path: 'markerId',
+            model: 'Donor',
+            select: {'name': 1}
+        }
+    });
 
-    let message = data.length > 0 ? 'Donor(s) found' : 'Donor not found';
     return {
         data,
-        message,
+        message: 'Donors fetched successfully',
         status: 'OK'
     };
 };

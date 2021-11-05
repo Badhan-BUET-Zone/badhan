@@ -202,6 +202,13 @@ donorSchema.virtual('publicContacts',{
     foreignField: 'donorId',
 })
 
+donorSchema.virtual('markedBy',{
+    ref: 'ActiveDonors',
+    localField: '_id',
+    foreignField: 'donorId',
+    justOne: true
+})
+
 donorSchema.set('toObject', {virtuals: true});
 donorSchema.set('toJSON', {virtuals: true});
 
