@@ -6,6 +6,7 @@ const {Donation} = require('./Donation');
 const {Log} = require('./Log');
 const {PublicContact} = require('./PublicContacts');
 const {Token} = require('./Token');
+const {ActiveDonor} = require('./ActiveDonor');
 const {checkEmail} = require('../../validations/validateRequest/others');
 const donorSchema = new mongoose.Schema({
     phone: {
@@ -243,6 +244,8 @@ donorSchema.post('findOneAndDelete', async (donor) => {
     await Log.deleteMany({donorId: donor._id});
     await PublicContact.deleteMany({donorId: donor._id});
     await Token.deleteMany({donorId: donor._id});
+    await ActiveDonor.deleteMany({donorId: donor._id});
+    await ActiveDonor.deleteMany({markerId: donor._id});
 });
 
 const Donor = mongoose.model('Donor', donorSchema);

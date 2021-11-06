@@ -408,6 +408,32 @@
                           }
                         }
                       }
+                    },
+                    "markedBy": {
+                      "type": "object",
+                      "properties": {
+                        "donorId": {
+                          "type": "string",
+                          "example": "bb9dbced70ba9cddedc49e7cc8ed7b85"
+                        },
+                        "markerId": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "7e5aa536cb89198aa20fd13ebf75c97d"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Clarence Cronin"
+                            }
+                          }
+                        },
+                        "time": {
+                          "type": "number",
+                          "example": 1634535727368
+                        }
+                      }
                     }
                   }
                 }
@@ -790,6 +816,32 @@
                       "donationCountOptimized": {
                         "type": "number",
                         "example": 6
+                      },
+                      "markedBy": {
+                        "type": "object",
+                        "properties": {
+                          "donorId": {
+                            "type": "string",
+                            "example": "bb9dbced70ba9cddedc49e7cc8ed7b85"
+                          },
+                          "markerId": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "7e5aa536cb89198aa20fd13ebf75c97d"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Clarence Cronin"
+                              }
+                            }
+                          },
+                          "time": {
+                            "type": "number",
+                            "example": 1634535727368
+                          }
+                        }
                       }
                     }
                   }

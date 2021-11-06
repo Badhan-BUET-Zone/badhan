@@ -363,41 +363,52 @@ const handleGETSearchOptimized = async (req, res, next) => {
     })
 
     /*
-            #swagger.responses[200] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 200,
-                    message: 'Donor deleted successfully',
-                    filteredDonors: [
+    #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            statusCode: 200,
+            message: 'Donor deleted successfully',
+            filteredDonors: [
+                {
+                    "address": "Narayangonj Narayangonj ",
+                    "roomNumber": "249",
+                    "designation": 0,
+                    "lastDonation": 1569974400000,
+                    "comment": "Has diabetes",
+                    "commentTime": 1628521457159,
+                    "_id": "5e6776166f73f925e22a0624",
+                    "studentId": "1606001",
+                    "name": "Swapnil Saha",
+                    "bloodGroup": 2,
+                    "phone": 88014587556,
+                    "hall": 0,
+                    "availableToAll": true,
+                    "callRecords": [
                         {
-                            "address": "Narayangonj Narayangonj ",
-                            "roomNumber": "249",
-                            "designation": 0,
-                            "lastDonation": 1569974400000,
-                            "comment": "Has diabetes",
-                            "commentTime": 1628521457159,
-                            "_id": "5e6776166f73f925e22a0624",
-                            "studentId": "1606001",
-                            "name": "Swapnil Saha",
-                            "bloodGroup": 2,
-                            "phone": 88014587556,
-                            "hall": 0,
-                            "availableToAll": true,
-                            "callRecords": [
-                                {
-                                    "date": 1628520769727,
-                                    "_id": "611141413ac83c0015f851b7",
-                                    "callerId": "5e6776166f73f925e22a05aa",
-                                    "calleeId": "5e6776166f73f925e22a0624"
-                                }
-                            ],
-                            "donationCountOptimized": 6,
+                            "date": 1628520769727,
+                            "_id": "611141413ac83c0015f851b7",
+                            "callerId": "5e6776166f73f925e22a05aa",
+                            "calleeId": "5e6776166f73f925e22a0624"
                         }
-                    ]
-                },
-                description: 'Successful donor deletion'
-            }
-    */
+                    ],
+                    "donationCountOptimized": 6,
+                    "markedBy": {
+
+                        "donorId": "bb9dbced70ba9cddedc49e7cc8ed7b85",
+                        "markerId": {
+                            "_id": "7e5aa536cb89198aa20fd13ebf75c97d",
+                            "name": "Clarence Cronin"
+                        },
+                        "time": 1634535727368
+                    }
+                }
+            ]
+        },
+        description: 'Successful donor deletion'
+    }
+
+     */
+
     return res.respond(new OKResponse200('Donors queried successfully', {
         filteredDonors: result.data
     }))
@@ -803,7 +814,7 @@ const handleGETDonors = async (req, res, next) => {
                 phone: 8801521438557,
                 name: 'Mir Mahathir Mohammad',
                 studentId: '1605011',
-                email:'mirmahathir1@gmail.com',
+                email: 'mirmahathir1@gmail.com',
                 lastDonation: 987876287160,
                 bloodGroup: 2,
                 hall: 5,
@@ -842,13 +853,23 @@ const handleGETDonors = async (req, res, next) => {
                         "_id": "6142dfc11f536f2e2db0f780",
                         "donorId": "5e901d56effc5900177ced73"
                     },
-                ]
+                ],
+                "markedBy": {
+
+                    "donorId": "bb9dbced70ba9cddedc49e7cc8ed7b85",
+                    "markerId": {
+                        "_id": "7e5aa536cb89198aa20fd13ebf75c97d",
+                        "name": "Clarence Cronin"
+                    },
+                    "time": 1634535727368
+                }
             }
         },
         description: 'donor info'
     }
 
      */
+
 
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET DONORS", {name: donor.name});
 
