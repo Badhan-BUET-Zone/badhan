@@ -51,13 +51,24 @@ test('POST & DELETE /activeDonors',async()=>{
             password: env.SUPERADMIN_PASSWORD
         });
 
+        // clear up any existing active donor to begin testing
+        try{
+            await badhanAxios.delete(`/activeDonors/${env.SUPERADMIN_ID}`, {
+                headers: {
+                    "x-auth": signInResponse.data.token
+                }
+            });
+        }catch (e) {
+
+        }
+
         let createActiveDonorResponse = await badhanAxios.post('/activeDonors',{
             donorId: env.SUPERADMIN_ID,
         },{
             headers: {
                 "x-auth": signInResponse.data.token
             }
-        })
+        });
 
         let createActiveDonorValidationResult = validate(createActiveDonorResponse.data, postActiveDonorSchema);
 
