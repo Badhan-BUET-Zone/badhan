@@ -78,9 +78,36 @@ const donorsSchema={
                         },
                         required: ["_id", "bloodGroup","donorId"]
                     }
+                },
+                markedBy: {
+                    type:{
+                        anyOf: [
+                            {
+                                type: "object",
+                                additionalProperties: false,
+                                properties: {
+                                    markerId:{
+                                        type:"object",
+                                        additionalProperties: false,
+                                        required: ["_id", "name"],
+                                        properties: {
+                                            _id:{type:"string"},
+                                            name:{type:"name"},
+                                        }
+                                    },
+                                    donorId:{type:"string",},
+                                    time: {type: "number"},
+                                },
+                                required: ["markerId", "time","donorId"]
+                            },
+                            {
+                                type: "null",
+                            }
+                        ]
+                    },
                 }
             },
-            required: ["_id", "phone","name","studentId","email","lastDonation","bloodGroup","hall","roomNumber","address","comment","commentTime","designation","availableToAll","callRecords","donations","publicContacts"]
+            required: ["_id", "phone","name","studentId","email","lastDonation","bloodGroup","hall","roomNumber","address","comment","commentTime","designation","availableToAll","callRecords","donations","publicContacts","markedBy"]
         },
     },
     required: ["status", "statusCode", "message", "donor"]
