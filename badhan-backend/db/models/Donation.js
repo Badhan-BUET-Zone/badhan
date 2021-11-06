@@ -8,12 +8,9 @@ const donationSchema = new mongoose.Schema({
         minlength: 13
     },
     donorId: {
-        type: String,
-        validate: [{
-            validator: (value) => {
-                return mongoose.Types.ObjectId.isValid(value);
-            }, msg: 'DB: donorId is invalid'
-        }],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Donor',
+        required: true,
     },
     date: {
         type: Number,
