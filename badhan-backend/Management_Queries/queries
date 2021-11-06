@@ -111,3 +111,86 @@ db.donors.aggregate([
 db.donors.find({studentId:{$type:18}}).count()
 db.donors.find({studentId:{$type:16}}).count()
 
+// query for the new GET /activeDonors route
+db.activedonors.aggregate([{
+    $lookup: {
+        from: 'donors',
+        localField: 'donorId',
+        foreignField: '_id',
+        as: 'donorDetails'
+    },
+},
+    {
+        $addFields: {
+            donorDetails: {$first: "$donorDetails"},
+        }
+    },
+    {
+        $project: {
+            markerId: 1,
+            _id: "$donorDetails._id",
+            hall: "$donorDetails.hall",
+            name: "$donorDetails.name",
+            address: "$donorDetails.address",
+            comment: "$donorDetails.comment",
+            lastDonation: "$donorDetails.lastDonation",
+            availableToAll: "$donorDetails.availableToAll",
+            bloodGroup: "$donorDetails.bloodGroup",
+            studentId: "$donorDetails.studentId",
+            phone: "$donorDetails.phone",
+            markedTime: "$time",
+        }
+    },
+    {
+        $match: {
+            studentId: "1910128"
+        }
+    },
+    {
+        $lookup: {
+            from: 'donors',
+            localField: 'markerId',
+            foreignField: '_id',
+            as: 'markerDetails'
+        }
+    },
+    {
+        $addFields: {
+            "markerName": {$first: "$markerDetails.name"},
+        }
+    },
+    {
+        $lookup: {
+            from: 'donations',
+            localField: '_id',
+            foreignField: 'donorId',
+            as: 'donations'
+        },
+    },
+    {
+        $lookup: {
+            from: 'callrecords',
+            localField: '_id',
+            foreignField: 'calleeId',
+            as: 'callRecords'
+        }
+    },
+    {
+        $addFields: {
+            donationCount: {$size: "$donations"},
+        }
+    },
+    {
+        $addFields:{
+            callRecordCount: {$size: "$callRecords"}
+        }
+    },
+    {
+        $project:{
+            markerDetails: 0,
+            markerId:0,
+            donations: 0,
+            callRecords: 0,
+        }
+    }
+])
