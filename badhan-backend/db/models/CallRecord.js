@@ -24,7 +24,7 @@ const callRecordSchema = new mongoose.Schema({
     expireAt: {
         type: Date,
         default: ()=>{
-            return new Date().getTime()+60*1000*60*24*30//30days
+            return new Date().getTime()+60*1000*60*24*3//3days
         },
     }
 },{ versionKey: false, id: false   });

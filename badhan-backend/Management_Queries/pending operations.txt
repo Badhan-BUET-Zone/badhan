@@ -69,7 +69,9 @@ db.tokens.updateMany({},{$set: {"ipAddress":"0.0.0.0"}},false,true)
 db.tokens.updateMany({},{$set: {"device":"Other 0.0.0"}},false,true)
 db.tokens.updateMany({},{$set: {"browserFamily":"Other"}},false,true)
 db.tokens.updateMany({},{$set: {"os":"Other 0.0.0"}},false,true)
+db.donations.updateMany({},
+    [{ $set: { donorId: { $toObjectId: "$donorId" } } }]);
 
+db.donors.updateMany({}, {$unset: {donationCount:1}}, false, true);
 //DONE ON PROD DATABASE
 
-db.donors.update({}, {$unset: {donationCount:1}}, false, true);
