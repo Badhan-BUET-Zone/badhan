@@ -22,8 +22,7 @@ Steps for the backend:
 * Relevant security middlewares
 * Rate limiter
 * Guest API
-* Automated testing for main route
-* Automated testing for guest route
+* Automated testing for main and guest route
 * Swagger documentation
 * Update permission matrix
 
