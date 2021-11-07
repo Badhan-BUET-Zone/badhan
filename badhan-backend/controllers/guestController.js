@@ -541,6 +541,32 @@ const handlePOSTActiveDonors = async (req, res, next) => {
         }
     }));
 }
+
+const handleGETActiveDonors = async(req,res)=>{
+    let filteredActiveDonors = [];
+
+    for (let i = 0; i < faker.getRandomIndex(50); i++) {
+        filteredActiveDonors.push({
+            _id: faker.getId(),
+            hall: faker.getHall(),
+            name: faker.getName(),
+            address: faker.getAddress(),
+            comment: faker.getComment(),
+            lastDonation: faker.getTimestamp(240),
+            availableToAll: faker.getBoolean(),
+            bloodGroup: faker.getBloodGroup(),
+            studentId: faker.getStudentId(),
+            phone: faker.getPhone(),
+            markedTime: faker.getTimestamp(2),
+            markerName: faker.getName(),
+            donationCount: faker.getDonationCount(),
+            callRecordCount: faker.getDonationCount(),
+        })
+    }
+    return res.respond(new OKResponse200('Active donor deleted successfully',{
+        activeDonors:filteredActiveDonors
+    }))
+}
 module.exports = {
     handlePOSTLogIn,
     handlePOSTViewDonorDetailsSelf,
@@ -576,5 +602,6 @@ module.exports = {
     handleGETLogins,
     handleDELETELogins,
     handleDELETEActiveDonors,
-    handlePOSTActiveDonors
+    handlePOSTActiveDonors,
+    handleGETActiveDonors
 }

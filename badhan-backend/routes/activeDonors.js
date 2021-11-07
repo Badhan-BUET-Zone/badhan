@@ -24,4 +24,11 @@ router.delete('/:donorId',/*#swagger.path = '/activeDonors/{donorId}'*/
     activeDonorController.handleDELETEActiveDonors
 );
 
+router.get('/',/*#swagger.path = '/activeDonors'*/
+    activeDonorsValidator.validateGETActiveDonors,
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication,
+    activeDonorController.handleGETActiveDonors
+)
+
 module.exports = router;

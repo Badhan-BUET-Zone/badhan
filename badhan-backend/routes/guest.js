@@ -136,5 +136,5 @@ router.delete('/users/logins/:tokenId',
 
 router.post('/activeDonors',guestController.handlePOSTActiveDonors);
 router.delete('/activeDonors/:donorId',guestController.handleDELETEActiveDonors);
-
+router.get('/activeDonors',guestController.handleGETActiveDonors);
 module.exports = router;

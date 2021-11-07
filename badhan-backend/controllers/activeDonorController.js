@@ -1,6 +1,11 @@
 const activeDonorInterface = require('../db/interfaces/activeDonorInterface');
 const logInterface = require('../db/interfaces/logInterface');
-const {InternalServerError500, NotFoundError404, ConflictError409,} = require('../response/errorTypes');
+const {
+    InternalServerError500,
+    NotFoundError404,
+    ConflictError409,
+    ForbiddenError403,
+} = require('../response/errorTypes');
 const {OKResponse200, CreatedResponse201} = require('../response/successTypes')
 
 const handlePOSTActiveDonors = async (req, res, next) => {
@@ -120,8 +125,190 @@ const handleDELETEActiveDonors = async (req, res, next) => {
 
 }
 
+const handleGETActiveDonors = async (req, res) => {
+    /*
+        #swagger.auto = false
+        #swagger.tags = ['Active Donors']
+        #swagger.description = 'Get list of active donors filtered by search parameters'
+        #swagger.parameters['bloodGroup'] = {
+            description: 'blood group for donors',
+            type: 'number',
+            name: 'bloodGroup',
+            in: 'query'
+        }
+        #swagger.parameters['hall'] = {
+            description: 'hall for donors',
+            type: 'number',
+            name: 'hall',
+            in: 'query'
+        }
+        #swagger.parameters['batch'] = {
+            description: 'batch for donors',
+            type: 'number',
+            name: 'batch',
+            in: 'query'
+        }
+        #swagger.parameters['name'] = {
+            description: 'name for donors',
+            type: 'string',
+            name: 'name',
+            in: 'query'
+        }
+        #swagger.parameters['name'] = {
+            description: 'address for donors',
+            type: 'string',
+            name: 'address',
+            in: 'query'
+        }
+        #swagger.parameters['isAvailable'] = {
+            description: 'isAvailable for donors',
+            type: 'boolean',
+            name: 'isAvailable',
+            in: 'query'
+        }
+        #swagger.parameters['isNotAvailable'] = {
+            description: 'isNotAvailable for donors',
+            type: 'boolean',
+            name: 'isNotAvailable',
+            in: 'query'
+        }
+        #swagger.parameters['availableToAll'] = {
+            description: 'availableToAll denotes the availability of the donor to the other hall members',
+            type: 'boolean',
+            name: 'availableToAll',
+            in: 'query'
+        }
+        #swagger.security = [{
+            "api_key": []
+        }]
+        #swagger.responses[200] = {
+            schema: {
+                status: 'OK',
+                statusCode: 200,
+                message: "Active donor deleted successfully",
+                activeDonors: [
+                    {
+                        _id: "616a692bd2bd480016513b56",
+                        hall: 8,
+                        name: "Mir Mahathir",
+                        address: "(Unknown)",
+                        comment: "(Unknown)",
+                        lastDonation: 0,
+                        availableToAll: true,
+                        bloodGroup: 1,
+                        studentId: "2105011",
+                        phone: 8801524578445,
+                        markedTime: 1636185389668,
+                        markerName: "Ifty",
+                        donationCount: 4,
+                        callRecordCount: 1
+                    }
+                ]
+            },
+
+            description: 'Active donor deleted'
+        }
+    }
+
+     */
+
+
+    let reqQuery = req.query;
+
+    if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall
+        && reqQuery.hall <= 6
+        && res.locals.middlewareResponse.donor.designation !== 3) {
+        /*
+        #swagger.responses[403] = {
+            schema: {
+                status: 'ERROR',
+                statusCode: 403,
+                message: 'You are not allowed to search donors of other halls'
+            },
+            description: 'This error will occur if the user tries to search other halls'
+        }
+
+         */
+        return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'));
+    }
+
+    let queryBuilder = {}
+
+//process blood group
+    if (reqQuery.bloodGroup !== -1) {
+        queryBuilder.bloodGroup = reqQuery.bloodGroup;
+    }
+
+//process hall
+// if the availableToAll is true, then there is no need to search using hall
+// otherwise, hall must be included
+    if (!reqQuery.availableToAll) {
+        queryBuilder.hall = reqQuery.hall;
+    } else {
+        queryBuilder.availableToAll = reqQuery.availableToAll;
+    }
+
+//process batch
+    let batchRegex = "......."
+    if (reqQuery.batch !== "") {
+        batchRegex = reqQuery.batch + ".....";
+    }
+    queryBuilder.studentId = {$regex: batchRegex, $options: 'ix'};
+
+//process name
+    let nameRegex = ".*";
+
+    for (let i = 0; i < reqQuery.name.length; i++) {
+        nameRegex += (reqQuery.name.charAt(i) + ".*");
+    }
+
+    queryBuilder.name = {$regex: nameRegex, $options: 'ix'};
+
+//process address
+    let addressRegex = ".*" + reqQuery.address + ".*";
+
+    queryBuilder.$and = [{
+        $or: [
+            {comment: {$regex: addressRegex, $options: 'ix'}},
+            {address: {$regex: addressRegex, $options: 'ix'}}]
+    },
+    ];
+
+    let availableLimit = new Date().getTime() - 120 * 24 * 3600 * 1000;
+
+    let lastDonationAvailability = [];
+
+    if (reqQuery.isAvailable) {
+        lastDonationAvailability.push({
+            lastDonation: {$lt: availableLimit}
+        })
+    }
+
+    if (reqQuery.isNotAvailable) {
+        lastDonationAvailability.push({
+            lastDonation: {$gt: availableLimit}
+        })
+    }
+
+    if (reqQuery.isNotAvailable || reqQuery.isAvailable) {
+        queryBuilder.$and.push({$or: lastDonationAvailability});
+    }
+
+// console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+
+    let activeDonors = await activeDonorInterface.findByQueryAndPopulate(queryBuilder);
+    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET ACTIVEDONORS", {
+        filter: reqQuery,
+        resultCount: activeDonors.data.length
+    });
+    return res.respond(new OKResponse200('Active donor deleted successfully', {
+        activeDonors: activeDonors.data,
+    }))
+}
+
 
 module.exports = {
     handlePOSTActiveDonors,
-    handleDELETEActiveDonors
+    handleDELETEActiveDonors,
+    handleGETActiveDonors
 }

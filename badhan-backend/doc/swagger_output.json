@@ -3503,6 +3503,150 @@
             "api_key": []
           }
         ]
+      },
+      "get": {
+        "tags": [
+          "Active Donors"
+        ],
+        "description": "Get list of active donors filtered by search parameters",
+        "parameters": [
+          {
+            "name": "bloodGroup",
+            "description": "blood group for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "hall",
+            "description": "hall for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "batch",
+            "description": "batch for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "address",
+            "description": "address for donors",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "isAvailable",
+            "description": "isAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "isNotAvailable",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "availableToAll",
+            "description": "availableToAll denotes the availability of the donor to the other hall members",
+            "type": "boolean",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Active donor deleted successfully"
+                },
+                "activeDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "616a692bd2bd480016513b56"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 8
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mir Mahathir"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "(Unknown)"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "(Unknown)"
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "availableToAll": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "2105011"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801524578445
+                      },
+                      "markedTime": {
+                        "type": "number",
+                        "example": 1636185389668
+                      },
+                      "markerName": {
+                        "type": "string",
+                        "example": "Ifty"
+                      },
+                      "donationCount": {
+                        "type": "number",
+                        "example": 4
+                      },
+                      "callRecordCount": {
+                        "type": "number",
+                        "example": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Active donor deleted"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
       }
     },
     "/activeDonors/{donorId}": {
