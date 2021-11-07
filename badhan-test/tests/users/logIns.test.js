@@ -11,6 +11,7 @@ const logInsSchema={
         message: {type: "string"},
         logins: {
             type: "array",
+            // minItems: 1,
             items: {
                 types: "object",
                 additionalProperties: false,

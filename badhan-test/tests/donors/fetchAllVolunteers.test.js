@@ -11,6 +11,7 @@ const volunteersSchema={
         message:{type:"string"},
         data: {
             type: "array",
+            minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,

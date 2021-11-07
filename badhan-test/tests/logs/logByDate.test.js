@@ -11,6 +11,7 @@ const logResponse={
         message: {type: "string"},
         logs: {
             type:"array",
+            // minItems: 1,
             items: {
                 type:"object",
                 additionalProperties: false,
