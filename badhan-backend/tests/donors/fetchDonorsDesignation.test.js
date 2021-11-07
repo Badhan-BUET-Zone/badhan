@@ -11,6 +11,7 @@ const designationSchema={
         message: {type: "string"},
         volunteerList: {
             type: "array",
+            minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,
@@ -27,6 +28,7 @@ const designationSchema={
         },
         adminList: {
             type: "array",
+            minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,
@@ -42,6 +44,7 @@ const designationSchema={
         },
         superAdminList: {
             type: "array",
+            minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,

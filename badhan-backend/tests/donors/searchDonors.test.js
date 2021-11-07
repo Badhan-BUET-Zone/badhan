@@ -11,6 +11,7 @@ const searchSchema = {
         message: {type: "string"},
         filteredDonors: {
             type: "array",
+            // minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,
@@ -32,6 +33,7 @@ const searchSchema = {
                     donationCountOptimized: {type: "number"},
                     callRecords: {
                         type: "array",
+                        // minItems: 1,
                         items: {
                             type: "object",
                             additionalProperties: false,

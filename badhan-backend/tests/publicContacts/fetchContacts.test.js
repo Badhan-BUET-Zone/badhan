@@ -10,6 +10,7 @@ const publicContactsSchema={
         message: {type: "string"},
         publicContacts: {
             type: "array",
+            // minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,
@@ -17,6 +18,7 @@ const publicContactsSchema={
                     bloodGroup:{type:"number"},
                     contacts:{
                         type:"array",
+                        // minItems: 1,
                         items: {
                             type:"object",
                             additionalProperties:false,
