@@ -1,5 +1,6 @@
 const activeDonorInterface = require('../db/interfaces/activeDonorInterface');
 const logInterface = require('../db/interfaces/logInterface');
+const mongoose = require('mongoose');
 const {
     InternalServerError500,
     NotFoundError404,
@@ -178,6 +179,12 @@ const handleGETActiveDonors = async (req, res) => {
             name: 'availableToAll',
             in: 'query'
         }
+        #swagger.parameters['markedByMe'] = {
+            description: 'Make this true to get all marked donors that were marked by me',
+            type: 'boolean',
+            name: 'markedByMe',
+            in: 'query'
+        }
         #swagger.security = [{
             "api_key": []
         }]
@@ -295,8 +302,96 @@ const handleGETActiveDonors = async (req, res) => {
     }
 
 // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+    let aggregatePipeline=[{
+        $lookup: {
+            from: 'donors',
+            localField: 'donorId',
+            foreignField: '_id',
+            as: 'donorDetails'
+        },
+    },
+        {
+            $addFields: {
+                donorDetails: {$first: "$donorDetails"},
+            }
+        },
+        {
+            $project: {
+                markerId: 1,
+                _id: "$donorDetails._id",
+                hall: "$donorDetails.hall",
+                name: "$donorDetails.name",
+                address: "$donorDetails.address",
+                comment: "$donorDetails.comment",
+                lastDonation: "$donorDetails.lastDonation",
+                availableToAll: "$donorDetails.availableToAll",
+                bloodGroup: "$donorDetails.bloodGroup",
+                studentId: "$donorDetails.studentId",
+                phone: "$donorDetails.phone",
+                markedTime: "$time",
+            }
+        },
+        {
+            $match: queryBuilder
+        },
+        {
+            $lookup: {
+                from: 'donors',
+                localField: 'markerId',
+                foreignField: '_id',
+                as: 'markerDetails'
+            }
+        },
+        {
+            $addFields: {
+                "markerName": {$first: "$markerDetails.name"},
+            }
+        },
+        {
+            $lookup: {
+                from: 'donations',
+                localField: '_id',
+                foreignField: 'donorId',
+                as: 'donations'
+            },
+        },
+        {
+            $lookup: {
+                from: 'callrecords',
+                localField: '_id',
+                foreignField: 'calleeId',
+                as: 'callRecords'
+            }
+        },
+        {
+            $addFields: {
+                donationCount: {$size: "$donations"},
+            }
+        },
+        {
+            $addFields:{
+                callRecordCount: {$size: "$callRecords"}
+            }
+        },
+        {
+            $project:{
+                markerDetails: 0,
+                markerId:0,
+                donations: 0,
+                callRecords: 0,
+            }
+        }
+    ];
 
-    let activeDonors = await activeDonorInterface.findByQueryAndPopulate(queryBuilder);
+    if(reqQuery.markedByMe){
+        aggregatePipeline.splice(0, 0, {
+            $match:{
+                markerId: res.locals.middlewareResponse.donor._id
+            }
+        });
+    }
+
+    let activeDonors = await activeDonorInterface.findByQueryAndPopulate(aggregatePipeline);
     await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET ACTIVEDONORS", {
         filter: reqQuery,
         resultCount: activeDonors.data.length

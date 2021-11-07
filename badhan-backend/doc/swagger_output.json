@@ -3551,6 +3551,12 @@
             "description": "availableToAll denotes the availability of the donor to the other hall members",
             "type": "boolean",
             "in": "query"
+          },
+          {
+            "name": "markedByMe",
+            "description": "Make this true to get all marked donors that were marked by me",
+            "type": "boolean",
+            "in": "query"
           }
         ],
         "responses": {

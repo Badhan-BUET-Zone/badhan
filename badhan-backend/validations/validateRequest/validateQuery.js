@@ -62,6 +62,9 @@ const validateQUERYPublicContactId = query('contactId')
     .customSanitizer(value => String(value))
     .escape().trim().custom(contactId=>mongoose.Types.ObjectId.isValid(contactId)).withMessage('Enter a valid contactId');
 
+const validateQUERYMarkedByMe = query('markedByMe')
+    .exists().withMessage('markedByMe is required')
+    .isBoolean().toBoolean().withMessage("markedByMe must be boolean");
 
 module.exports={
     validateQUERYDonorId,
@@ -76,5 +79,6 @@ module.exports={
     validateQUERYDate,
     validateQUERYCallRecordId,
     validateQUERYPhone,
-    validateQUERYPublicContactId
+    validateQUERYPublicContactId,
+    validateQUERYMarkedByMe
 }
