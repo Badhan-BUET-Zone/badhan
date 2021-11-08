@@ -3601,6 +3601,10 @@
                         "type": "string",
                         "example": "(Unknown)"
                       },
+                      "commentTime": {
+                        "type": "number",
+                        "example": 1636185389668
+                      },
                       "lastDonation": {
                         "type": "number",
                         "example": 0
@@ -3636,6 +3640,10 @@
                       "callRecordCount": {
                         "type": "number",
                         "example": 1
+                      },
+                      "lastCallRecord": {
+                        "type": "number",
+                        "example": 1636185389668
                       }
                     }
                   }

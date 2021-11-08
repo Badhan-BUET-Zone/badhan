@@ -200,6 +200,7 @@ const handleGETActiveDonors = async (req, res) => {
                         name: "Mir Mahathir",
                         address: "(Unknown)",
                         comment: "(Unknown)",
+                        commentTime: 1636185389668,
                         lastDonation: 0,
                         availableToAll: true,
                         bloodGroup: 1,
@@ -208,7 +209,8 @@ const handleGETActiveDonors = async (req, res) => {
                         markedTime: 1636185389668,
                         markerName: "Ifty",
                         donationCount: 4,
-                        callRecordCount: 1
+                        callRecordCount: 1,
+                        lastCallRecord:1636185389668,
                     }
                 ]
             },
@@ -323,6 +325,7 @@ const handleGETActiveDonors = async (req, res) => {
                 name: "$donorDetails.name",
                 address: "$donorDetails.address",
                 comment: "$donorDetails.comment",
+                commentTime: "$donorDetails.commentTime",
                 lastDonation: "$donorDetails.lastDonation",
                 availableToAll: "$donorDetails.availableToAll",
                 bloodGroup: "$donorDetails.bloodGroup",
@@ -370,7 +373,8 @@ const handleGETActiveDonors = async (req, res) => {
         },
         {
             $addFields:{
-                callRecordCount: {$size: "$callRecords"}
+                callRecordCount: {$size: "$callRecords"},
+                lastCallRecord: { $max: "$callRecords.date" },
             }
         },
         {

@@ -552,6 +552,7 @@ const handleGETActiveDonors = async(req,res)=>{
             name: faker.getName(),
             address: faker.getAddress(),
             comment: faker.getComment(),
+            commentTime: faker.getTimestamp(2),
             lastDonation: faker.getTimestamp(240),
             availableToAll: faker.getBoolean(),
             bloodGroup: faker.getBloodGroup(),
@@ -561,9 +562,10 @@ const handleGETActiveDonors = async(req,res)=>{
             markerName: faker.getName(),
             donationCount: faker.getDonationCount(),
             callRecordCount: faker.getDonationCount(),
+            lastCallRecord:faker.getTimestamp(2),
         })
     }
-    return res.respond(new OKResponse200('Active donor deleted successfully',{
+    return res.respond(new OKResponse200('Active donor fetched successfully',{
         activeDonors:filteredActiveDonors
     }))
 }
