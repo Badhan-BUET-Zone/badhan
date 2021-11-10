@@ -3557,6 +3557,12 @@
             "description": "Make this true to get all marked donors that were marked by me",
             "type": "boolean",
             "in": "query"
+          },
+          {
+            "name": "availableToAllOrHall",
+            "description": "Make this true to get all marked donors that are of the specified hall or are marked as available to all.",
+            "type": "boolean",
+            "in": "query"
           }
         ],
         "responses": {

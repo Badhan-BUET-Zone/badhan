@@ -186,6 +186,12 @@ const handleGETActiveDonors = async (req, res) => {
             name: 'markedByMe',
             in: 'query'
         }
+        #swagger.parameters['availableToAllOrHall'] = {
+            description: 'Make this true to get all marked donors that are of the specified hall or are marked as available to all.',
+            type: 'boolean',
+            name: 'availableToAllOrHall',
+            in: 'query'
+        }
         #swagger.security = [{
             "api_key": []
         }]
@@ -295,7 +301,7 @@ const handleGETActiveDonors = async (req, res) => {
                 $or: [{
                     hall: reqQuery.hall,
                 }, {
-                    availableToAll: reqQuery.availableToAll,
+                    availableToAll: true,
                 }]
             }
         );
