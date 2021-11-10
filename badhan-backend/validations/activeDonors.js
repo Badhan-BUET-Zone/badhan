@@ -10,7 +10,8 @@ const {
     validateQUERYIsAvailable,
     validateQEURYIsNotAvailable,
     validateQUERYAvailableToAll,
-    validateQUERYMarkedByMe
+    validateQUERYMarkedByMe,
+    validateQUERYAvailableToAllOrHall
 } = require("../validations/validateRequest/validateQuery");
 
 const validatePOSTActiveDonors = validate([
@@ -29,7 +30,8 @@ const validateGETActiveDonors = validate([
     validateQUERYIsAvailable,
     validateQEURYIsNotAvailable,
     validateQUERYAvailableToAll,
-    validateQUERYMarkedByMe
+    validateQUERYMarkedByMe,
+    validateQUERYAvailableToAllOrHall
 ])
 
 module.exports = {

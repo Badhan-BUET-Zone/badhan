@@ -1,6 +1,7 @@
 const activeDonorInterface = require('../db/interfaces/activeDonorInterface');
 const logInterface = require('../db/interfaces/logInterface');
 const mongoose = require('mongoose');
+const util = require('util')
 const {
     InternalServerError500,
     NotFoundError404,
@@ -251,7 +252,13 @@ const handleGETActiveDonors = async (req, res) => {
 //process hall
 // if the availableToAll is true, then there is no need to search using hall
 // otherwise, hall must be included
-    if (!reqQuery.availableToAll) {
+//     if(reqQuery.availableToAllOrHall){
+//         queryBuilder
+//     }
+
+    if (reqQuery.availableToAllOrHall) {
+        //do something later
+    } else if (!reqQuery.availableToAll) {
         queryBuilder.hall = reqQuery.hall;
     } else {
         queryBuilder.availableToAll = reqQuery.availableToAll;
@@ -283,6 +290,17 @@ const handleGETActiveDonors = async (req, res) => {
     },
     ];
 
+    if (reqQuery.availableToAllOrHall) {
+        queryBuilder.$and.push({
+                $or: [{
+                    hall: reqQuery.hall,
+                }, {
+                    availableToAll: reqQuery.availableToAll,
+                }]
+            }
+        );
+    }
+
     let availableLimit = new Date().getTime() - 120 * 24 * 3600 * 1000;
 
     let lastDonationAvailability = [];
@@ -303,8 +321,8 @@ const handleGETActiveDonors = async (req, res) => {
         queryBuilder.$and.push({$or: lastDonationAvailability});
     }
 
-// console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
-    let aggregatePipeline=[{
+    // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+    let aggregatePipeline = [{
         $lookup: {
             from: 'donors',
             localField: 'donorId',
@@ -372,24 +390,24 @@ const handleGETActiveDonors = async (req, res) => {
             }
         },
         {
-            $addFields:{
+            $addFields: {
                 callRecordCount: {$size: "$callRecords"},
-                lastCallRecord: { $max: "$callRecords.date" },
+                lastCallRecord: {$max: "$callRecords.date"},
             }
         },
         {
-            $project:{
+            $project: {
                 markerDetails: 0,
-                markerId:0,
+                markerId: 0,
                 donations: 0,
                 callRecords: 0,
             }
         }
     ];
 
-    if(reqQuery.markedByMe){
+    if (reqQuery.markedByMe) {
         aggregatePipeline.splice(0, 0, {
-            $match:{
+            $match: {
                 markerId: res.locals.middlewareResponse.donor._id
             }
         });

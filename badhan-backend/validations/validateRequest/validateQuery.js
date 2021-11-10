@@ -66,6 +66,10 @@ const validateQUERYMarkedByMe = query('markedByMe')
     .exists().withMessage('markedByMe is required')
     .isBoolean().toBoolean().withMessage("markedByMe must be boolean");
 
+const validateQUERYAvailableToAllOrHall = query('availableToAllOrHall')
+    .exists().withMessage('availableToAllOrHall is required')
+    .isBoolean().toBoolean().withMessage("availableToAllOrHall must be boolean");
+
 module.exports={
     validateQUERYDonorId,
     validateQUERYBloodGroup,
@@ -80,5 +84,6 @@ module.exports={
     validateQUERYCallRecordId,
     validateQUERYPhone,
     validateQUERYPublicContactId,
-    validateQUERYMarkedByMe
+    validateQUERYMarkedByMe,
+    validateQUERYAvailableToAllOrHall
 }
