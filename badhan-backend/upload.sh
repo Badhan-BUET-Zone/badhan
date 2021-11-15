@@ -20,18 +20,6 @@ git commit -am "$message"
 echo "---pushing master branch to github---"
 git push origin master
 
-# push to remote-aniruddha repo
-#git push remote-aniruddha master
-
-# push to mahathir heroku app
-echo "---pushing master branch to heroku---"
-git push heroku-prod master
-
-#gcloud app deploy --stop-previous-version -q
-
-# push to aniruddha heroku app
-#git push heroku-deprecated master
-
 echo "---switching back to test branch---"
 git checkout test-branch
 

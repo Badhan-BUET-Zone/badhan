@@ -7,4 +7,3 @@ git add .
 git commit -am "$message"
 
 git push origin test-branch
-#git push heroku-test test-branch:master

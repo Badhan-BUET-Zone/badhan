@@ -339,7 +339,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
 
 const handleGETLogs = async (req, res) => {
     let logs = [];
-    for (let i = 0; i < faker.getRandomIndex(20); i++) {
+    for (let i = 0; i < 15; i++) {
         logs.push({
             dateString: faker.getFakeDateString(),
             count: faker.getRandomIndex(20)
@@ -453,7 +453,7 @@ const handleGETDonorsDesignation = async (req, res) => {
             hall: i,
         });
     }
-    for (let i = 0; i < faker.getRandomIndex(50); i++) {
+    for (let i = 0; i < 15; i++) {
         volunteerList.push({
             roomNumber: faker.getRoom(),
             _id: faker.getId(),
@@ -463,7 +463,7 @@ const handleGETDonorsDesignation = async (req, res) => {
             phone: faker.getPhone(),
         });
     }
-    for (let i = 0; i < faker.getRandomIndex(20); i++) {
+    for (let i = 0; i < 5; i++) {
         superAdminList.push({
             _id: faker.getId(),
             studentId: faker.getStudentId(),
