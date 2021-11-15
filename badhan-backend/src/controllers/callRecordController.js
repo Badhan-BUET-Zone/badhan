@@ -1,10 +1,10 @@
-const callRecordInterface = require('../db/interfaces/callRecordInterface');
-const logInterface = require('../db/interfaces/logInterface');
-const {InternalServerError500, NotFoundError404, ConflictError409,} = require('../response/errorTypes');
-const {OKResponse200, CreatedResponse201} = require('../response/successTypes')
+const callRecordInterface = require('../db/interfaces/callRecordInterface')
+const logInterface = require('../db/interfaces/logInterface')
+const { InternalServerError500, NotFoundError404, ConflictError409 } = require('../response/errorTypes')
+const { OKResponse200, CreatedResponse201 } = require('../response/successTypes')
 
 const handlePOSTCallRecord = async (req, res, next) => {
-    /*
+  /*
     #swagger.auto = false
     #swagger.tags = ['Call Records']
     #swagger.description = 'Endpoint to insert a call record'
@@ -42,21 +42,19 @@ const handlePOSTCallRecord = async (req, res, next) => {
 
      */
 
-    let donor = res.locals.middlewareResponse.targetDonor;
-    let user = res.locals.middlewareResponse.donor;
-    let callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id);
+  const donor = res.locals.middlewareResponse.targetDonor
+  const user = res.locals.middlewareResponse.donor
+  const callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id)
 
+  await logInterface.addLog(user._id, 'POST CALLRECORDS', { callee: donor.name })
 
-    await logInterface.addLog(user._id, "POST CALLRECORDS", {callee: donor.name});
-
-    return res.respond(new CreatedResponse201('Call record insertion successful', {
-        callRecord: callRecordInsertionResult.data
-    }));
-
-};
+  return res.respond(new CreatedResponse201('Call record insertion successful', {
+    callRecord: callRecordInsertionResult.data
+  }))
+}
 
 const handleDELETECallRecord = async (req, res, next) => {
-    /*
+  /*
     #swagger.auto = false
     #swagger.tags = ['Call Records']
     #swagger.description = 'handles the deletion of one call history for a particular donor.'
@@ -108,34 +106,33 @@ const handleDELETECallRecord = async (req, res, next) => {
     }
 
      */
-    let user = res.locals.middlewareResponse.donor;
-    let donor = res.locals.middlewareResponse.targetDonor;
-    let callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId);
-    if (callRecordSearchResult.status !== 'OK') {
-        return res.respond(new NotFoundError404('Call record not found'));
-    }
+  const user = res.locals.middlewareResponse.donor
+  const donor = res.locals.middlewareResponse.targetDonor
+  const callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId)
+  if (callRecordSearchResult.status !== 'OK') {
+    return res.respond(new NotFoundError404('Call record not found'))
+  }
 
-    if (!callRecordSearchResult.data.calleeId.equals(donor._id)) {
-        return res.respond(new ConflictError409('Target donor does not have the callee of call record'));
-    }
+  if (!callRecordSearchResult.data.calleeId.equals(donor._id)) {
+    return res.respond(new ConflictError409('Target donor does not have the callee of call record'))
+  }
 
-    let callRecordDeleteResult = await callRecordInterface.deleteById(req.query.callRecordId);
-    if (callRecordDeleteResult.status !== 'OK') {
-        return res.respond(new InternalServerError500(callRecordDeleteResult.message));
-    }
+  const callRecordDeleteResult = await callRecordInterface.deleteById(req.query.callRecordId)
+  if (callRecordDeleteResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(callRecordDeleteResult.message))
+  }
 
-    await logInterface.addLog(user._id, "DELETE CALLRECORDS", {
-        callee: donor.name,
-        ...callRecordDeleteResult.data
-    });
+  await logInterface.addLog(user._id, 'DELETE CALLRECORDS', {
+    callee: donor.name,
+    ...callRecordDeleteResult.data
+  })
 
-    return res.respond(new OKResponse200('Call record deletion successful', {
-        deletedCallRecord: callRecordDeleteResult.data,
-    }))
+  return res.respond(new OKResponse200('Call record deletion successful', {
+    deletedCallRecord: callRecordDeleteResult.data
+  }))
 }
 
-
 module.exports = {
-    handlePOSTCallRecord,
-    handleDELETECallRecord
+  handlePOSTCallRecord,
+  handleDELETECallRecord
 }

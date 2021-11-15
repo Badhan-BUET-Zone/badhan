@@ -1,23 +1,23 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
-const donorInterface = require('../db/interfaces/donorInterface');
-const tokenInterface = require('../db/interfaces/tokenInterface');
-const logInterface = require("../db/interfaces/logInterface");
-const emailInterface = require("../db/interfaces/emailInterface");
+const donorInterface = require('../db/interfaces/donorInterface')
+const tokenInterface = require('../db/interfaces/tokenInterface')
+const logInterface = require('../db/interfaces/logInterface')
+const emailInterface = require('../db/interfaces/emailInterface')
 
 const {
-    InternalServerError500,
-    BadRequestError400,
-    ForbiddenError403,
-    NotFoundError404,
-    UnauthorizedError401,
-    ConflictError409
+  InternalServerError500,
+  BadRequestError400,
+  ForbiddenError403,
+  NotFoundError404,
+  UnauthorizedError401,
+  ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
+const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
 const handlePOSTPasswordForgot = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['User']
         #swagger.description = 'Route if user forgets the password.'
@@ -46,43 +46,43 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
                 description: 'Success response'
             }
     */
-    let phone = req.body.phone;
-    let queryByPhoneResult = await donorInterface.findDonorByPhone(phone);
-    if (queryByPhoneResult.status !== "OK") {
-        return res.respond(new NotFoundError404("Phone number not recognized"));
-    }
+  const phone = req.body.phone
+  const queryByPhoneResult = await donorInterface.findDonorByPhone(phone)
+  if (queryByPhoneResult.status !== 'OK') {
+    return res.respond(new NotFoundError404('Phone number not recognized'))
+  }
 
-    let donor = queryByPhoneResult.data;
-    let email = donor.email;
+  const donor = queryByPhoneResult.data
+  const email = donor.email
 
-    if (donor.designation === 0) {
-        return res.respond(new NotFoundError404("Account not found"));
-    }
+  if (donor.designation === 0) {
+    return res.respond(new NotFoundError404('Account not found'))
+  }
 
-    if (email === "") {
-        return res.respond(new NotFoundError404("No recovery email found for this phone number"));
-    }
+  if (email === '') {
+    return res.respond(new NotFoundError404('No recovery email found for this phone number'))
+  }
 
-    let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent);
+  const tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
 
-    if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError500('Token insertion failed',"found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken"));
-    }
+  if (tokenInsertResult.status !== 'OK') {
+    return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken'))
+  }
 
-    let emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
+  const emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
 
-    let result = await emailInterface.sendMail(email, "Password Recovery Email from Badhan", emailHtml);
-    if (result.status !== "OK") {
-        return res.respond(new InternalServerError500(result.message,"found in handlePOSTPasswordForgot when emailInterface.sendMail"));
-    }
+  const result = await emailInterface.sendMail(email, 'Password Recovery Email from Badhan', emailHtml)
+  if (result.status !== 'OK') {
+    return res.respond(new InternalServerError500(result.message, 'found in handlePOSTPasswordForgot when emailInterface.sendMail'))
+  }
 
-    await logInterface.addLog(donor._id, "POST USERS PASSWORD FORGOT", {});
+  await logInterface.addLog(donor._id, 'POST USERS PASSWORD FORGOT', {})
 
-    return res.respond(new OKResponse200("A recovery mail has been sent to your email address"));
+  return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
 
-let handlePOSTSignIn = async (req, res, next) => {
-    /*
+const handlePOSTSignIn = async (req, res, next) => {
+  /*
         #swagger.auto = false
         #swagger.tags = ['User']
         #swagger.description = 'Endpoint to login a user.'
@@ -96,13 +96,12 @@ let handlePOSTSignIn = async (req, res, next) => {
         }
         */
 
-    let donorPhone = req.body.phone;
-    let password = req.body.password;
-    let donorQueryResult = await donorInterface.findDonorByQuery({phone: donorPhone}, {});
+  const donorPhone = req.body.phone
+  const password = req.body.password
+  const donorQueryResult = await donorInterface.findDonorByQuery({ phone: donorPhone }, {})
 
-
-    if (donorQueryResult.status !== 'OK') {
-        /*
+  if (donorQueryResult.status !== 'OK') {
+    /*
         #swagger.responses[404] = {
             schema: {
                 status: "ERROR",
@@ -112,17 +111,17 @@ let handlePOSTSignIn = async (req, res, next) => {
             description: 'When the donor is not found'
         }
          */
-        return res.respond(new NotFoundError404("Account not found"));
-    }
+    return res.respond(new NotFoundError404('Account not found'))
+  }
 
-    let donor = donorQueryResult.data;
+  const donor = donorQueryResult.data
 
-    let matched;
+  let matched
 
-    try {
-        matched = await bcrypt.compare(password, donor.password);
-    } catch (e) {
-        /*
+  try {
+    matched = await bcrypt.compare(password, donor.password)
+  } catch (e) {
+    /*
         #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
@@ -132,11 +131,11 @@ let handlePOSTSignIn = async (req, res, next) => {
             description: 'When the logging user does not have any account'
         }
          */
-        return res.respond(new NotFoundError404("Account not found"));
-    }
+    return res.respond(new NotFoundError404('Account not found'))
+  }
 
-    if (!matched) {
-        /*
+  if (!matched) {
+    /*
         #swagger.responses[401] = {
             schema: {
                 status: 'ERROR',
@@ -146,22 +145,21 @@ let handlePOSTSignIn = async (req, res, next) => {
             description: 'When the user provides an invalid password'
         }
          */
-        return res.respond(new UnauthorizedError401('Incorrect phone / password'));
-    }
+    return res.respond(new UnauthorizedError401('Incorrect phone / password'))
+  }
 
-    let access = 'auth';
-    let token = await jwt.sign({
-        _id: donor._id.toString(),
-        access
-    }, process.env.JWT_SECRET).toString();
+  const access = 'auth'
+  const token = await jwt.sign({
+    _id: donor._id.toString(),
+    access
+  }, process.env.JWT_SECRET).toString()
 
+  const tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent)
 
-    let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
-
-    if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError500('Token insertion failed',"found in handlePOSTSignIn when tokenInterface.addToken"));
-    }
-    /*
+  if (tokenInsertResult.status !== 'OK') {
+    return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTSignIn when tokenInterface.addToken'))
+  }
+  /*
     #swagger.responses[201] = {
         schema: {
             "status": "OK",
@@ -174,15 +172,14 @@ let handlePOSTSignIn = async (req, res, next) => {
 
      */
 
-    await logInterface.addLog(donor._id, "POST USERS SIGNIN", {});
-    return res.respond(new CreatedResponse201("Successfully signed in",{
-        token
-    }))
-};
+  await logInterface.addLog(donor._id, 'POST USERS SIGNIN', {})
+  return res.respond(new CreatedResponse201('Successfully signed in', {
+    token
+  }))
+}
 
-
-let handleDELETESignOut = async (req, res, next) => {
-    /*
+const handleDELETESignOut = async (req, res, next) => {
+  /*
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Endpoint to logout a user.'
@@ -191,14 +188,13 @@ let handleDELETESignOut = async (req, res, next) => {
         }]
      */
 
+  const token = res.locals.middlewareResponse.token
+  const donor = res.locals.middlewareResponse.donor
 
-    let token = res.locals.middlewareResponse.token;
-    let donor = res.locals.middlewareResponse.donor;
+  // did not analyze the result because the route wouldn't reach this point if the token was not in the database
+  const tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id)
 
-    // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-    let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id);
-
-    /*
+  /*
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
@@ -208,12 +204,12 @@ let handleDELETESignOut = async (req, res, next) => {
         description: 'A successful sign out removes the token for the user'
     }
 */
-    await logInterface.addLog(donor._id, "DELETE USERS SIGNOUT", {});
-    return res.respond(new OKResponse200('Logged out successfully'));
-};
+  await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT', {})
+  return res.respond(new OKResponse200('Logged out successfully'))
+}
 
-let handleDELETESignOutAll = async (req, res, next) => {
-    /*
+const handleDELETESignOutAll = async (req, res, next) => {
+  /*
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Endpoint to logout user from all devices.'
@@ -223,11 +219,11 @@ let handleDELETESignOutAll = async (req, res, next) => {
 
      */
 
-    let donor = res.locals.middlewareResponse.donor;
+  const donor = res.locals.middlewareResponse.donor
 
-    // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-    let deleteTokensResponse = await tokenInterface.deleteAllTokensByDonorId(donor._id);
-    /*
+  // did not analyze the result because the route wouldn't reach this point if the token was not in the database
+  const deleteTokensResponse = await tokenInterface.deleteAllTokensByDonorId(donor._id)
+  /*
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
@@ -238,12 +234,12 @@ let handleDELETESignOutAll = async (req, res, next) => {
             }
 
      */
-    await logInterface.addLog(donor._id, "DELETE USERS SIGNOUT ALL", {});
-    return res.respond(new OKResponse200('Logged out from all devices successfully'));
-};
+  await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT ALL', {})
+  return res.respond(new OKResponse200('Logged out from all devices successfully'))
+}
 
-let handlePOSTRedirection = async (req, res, next) => {
-    /*
+const handlePOSTRedirection = async (req, res, next) => {
+  /*
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Endpoint to request a temporary redirection token'
@@ -252,20 +248,19 @@ let handlePOSTRedirection = async (req, res, next) => {
         }]
      */
 
-    let donor = res.locals.middlewareResponse.donor;
-    let access = 'auth';
-    let token = await jwt.sign({
-        _id: donor._id.toString(),
-        access
-    }, process.env.JWT_SECRET, {expiresIn: '30s'}).toString();
+  const donor = res.locals.middlewareResponse.donor
+  const access = 'auth'
+  const token = await jwt.sign({
+    _id: donor._id.toString(),
+    access
+  }, process.env.JWT_SECRET, { expiresIn: '30s' }).toString()
 
+  const tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent)
 
-    let tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent);
-
-    if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError500(tokenInsertResult.message,"found in handlePOSTRedirection when tokenInterface.addToken"));
-    }
-    /*
+  if (tokenInsertResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(tokenInsertResult.message, 'found in handlePOSTRedirection when tokenInterface.addToken'))
+  }
+  /*
     #swagger.responses[201] = {
         schema: {
             status: 'OK',
@@ -278,17 +273,15 @@ let handlePOSTRedirection = async (req, res, next) => {
 
      */
 
-    await logInterface.addLog(donor._id, "POST USERS REDIRECTION", {});
+  await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
 
-    return res.respond(new CreatedResponse201("Redirection token created",{
-        token
-    }))
+  return res.respond(new CreatedResponse201('Redirection token created', {
+    token
+  }))
+}
 
-};
-
-
-let handlePATCHRedirectedAuthentication = async (req, res, next) => {
-    /*
+const handlePATCHRedirectedAuthentication = async (req, res, next) => {
+  /*
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Route endpoint to redirect user from app to web.'
@@ -301,13 +294,13 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
     }
 
      */
-    let token = req.body.token;
+  const token = req.body.token
 
-    let decodedDonor;
-    try {
-        decodedDonor = await jwt.verify(token, process.env.JWT_SECRET);
-    } catch (e) {
-        /*
+  let decodedDonor
+  try {
+    decodedDonor = await jwt.verify(token, process.env.JWT_SECRET)
+  } catch (e) {
+    /*
         #swagger.responses[401] = {
             schema: {
                 status: 'ERROR',
@@ -318,13 +311,13 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         }
 
          */
-        return res.respond(new UnauthorizedError401('Session Expired'));
-    }
+    return res.respond(new UnauthorizedError401('Session Expired'))
+  }
 
-    let donorQueryResult = await donorInterface.findDonorByQuery({_id: decodedDonor._id}, {});
+  const donorQueryResult = await donorInterface.findDonorByQuery({ _id: decodedDonor._id }, {})
 
-    if (donorQueryResult.status !== 'OK') {
-        /*
+  if (donorQueryResult.status !== 'OK') {
+    /*
         #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
@@ -335,15 +328,15 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         }
 
          */
-        return res.respond(new NotFoundError404('Donor not found'));
-    }
+    return res.respond(new NotFoundError404('Donor not found'))
+  }
 
-    let donor = donorQueryResult.data;
+  const donor = donorQueryResult.data
 
-    let tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id);
+  const tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id)
 
-    if (tokenDeleteResponse.status !== "OK") {
-        /*
+  if (tokenDeleteResponse.status !== 'OK') {
+    /*
         #swagger.responses[404] = {
             schema: {
                 status: 'ERROR',
@@ -354,22 +347,21 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
         }
 
          */
-        return res.respond(new NotFoundError404('Token not found'));
-    }
+    return res.respond(new NotFoundError404('Token not found'))
+  }
 
-    let access = 'auth';
-    let newToken = await jwt.sign({
-        _id: donor._id.toString(),
-        access
-    }, process.env.JWT_SECRET).toString();
+  const access = 'auth'
+  const newToken = await jwt.sign({
+    _id: donor._id.toString(),
+    access
+  }, process.env.JWT_SECRET).toString()
 
+  const tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent)
 
-    let tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent);
-
-    if (tokenInsertResult.status !== 'OK') {
-        return res.respond(new InternalServerError500(tokenInsertResult.message,"found in handlePATCHRedirectedAuthentication when tokenInterface.addToken"));
-    }
-    /*
+  if (tokenInsertResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(tokenInsertResult.message, 'found in handlePATCHRedirectedAuthentication when tokenInterface.addToken'))
+  }
+  /*
             #swagger.responses[201] = {
                 schema: {
                     status: 'OK',
@@ -381,15 +373,15 @@ let handlePATCHRedirectedAuthentication = async (req, res, next) => {
             }
 
      */
-    await logInterface.addLog(donor._id, "PATCH USERS REDIRECTION", {});
+  await logInterface.addLog(donor._id, 'PATCH USERS REDIRECTION', {})
 
-    return res.respond(new CreatedResponse201("Redirected login successful",{
-        token: newToken
-    }))
+  return res.respond(new CreatedResponse201('Redirected login successful', {
+    token: newToken
+  }))
 }
 
 const handlePATCHPassword = async (req, res, next) => {
-    /*
+  /*
     #swagger.auto = false
     #swagger.tags = ['User']
     #swagger.description = 'Route endpoint to change password'
@@ -405,16 +397,16 @@ const handlePATCHPassword = async (req, res, next) => {
     }
 */
 
-    let reqBody = req.body;
-    let donor = res.locals.middlewareResponse.donor;
-    donor.password = reqBody.password;
-    await donor.save();
+  const reqBody = req.body
+  const donor = res.locals.middlewareResponse.donor
+  donor.password = reqBody.password
+  await donor.save()
 
-    await tokenInterface.deleteAllTokensByDonorId(donor._id);
-    let tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "PATCH USERS PASSWORD", {});
+  await tokenInterface.deleteAllTokensByDonorId(donor._id)
+  const tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH USERS PASSWORD', {})
 
-    /*
+  /*
     #swagger.responses[201] = {
         schema: {
             status: 'OK',
@@ -425,20 +417,19 @@ const handlePATCHPassword = async (req, res, next) => {
         description: 'Successful password change done'
     }
      */
-    return res.respond(new CreatedResponse201('Password changed successfully',{
-        token: tokenInsertResult.data.token
-    }))
+  return res.respond(new CreatedResponse201('Password changed successfully', {
+    token: tokenInsertResult.data.token
+  }))
 }
 
 const handleGETLogins = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['User']
         #swagger.description = 'Endpoint to get recent logins'
         #swagger.security = [{
             "api_key": []
         }]
-
 
         #swagger.responses[200] = {
             schema: {
@@ -467,32 +458,30 @@ const handleGETLogins = async (req, res, next) => {
 
      */
 
+  const user = res.locals.middlewareResponse.donor
+  const token = res.locals.middlewareResponse.token
+  const recentLoginsResult = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token)
 
-    let user = res.locals.middlewareResponse.donor;
-    let token = res.locals.middlewareResponse.token;
-    let recentLoginsResult = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token);
+  const currentTokenDataResult = await tokenInterface.findTokenDataByToken(token)
+  if (currentTokenDataResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(currentTokenDataResult.message, 'found in handleGETLogins when tokenInterface.findTokenDataByToken'))
+  }
 
-    let currentTokenDataResult = await tokenInterface.findTokenDataByToken(token);
-    if (currentTokenDataResult.status !== "OK") {
-        return res.respond(new InternalServerError500(currentTokenDataResult.message,"found in handleGETLogins when tokenInterface.findTokenDataByToken"));
-    }
+  const currentTokenData = JSON.parse(JSON.stringify(currentTokenDataResult.data))
+  delete currentTokenData.token
+  delete currentTokenData.expireAt
+  delete currentTokenData.donorId
+  delete currentTokenData.__v
 
-    let currentTokenData = JSON.parse(JSON.stringify(currentTokenDataResult.data));
-    delete currentTokenData.token;
-    delete currentTokenData.expireAt;
-    delete currentTokenData.donorId;
-    delete currentTokenData.__v;
-
-
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET USERS LOGINS", {});
-    return res.respond(new OKResponse200('Recent logins fetched successfully',{
-        logins: recentLoginsResult.data,
-        currentLogin: currentTokenData,
-    }));
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET USERS LOGINS', {})
+  return res.respond(new OKResponse200('Recent logins fetched successfully', {
+    logins: recentLoginsResult.data,
+    currentLogin: currentTokenData
+  }))
 }
 
 const handleDELETELogins = async (req, res, next) => {
-    /*
+  /*
 #swagger.auto = false
 #swagger.tags = ['User']
 #swagger.description = 'Endpoint to delete a login from device'
@@ -524,25 +513,25 @@ const handleDELETELogins = async (req, res, next) => {
     }
 */
 
-    let user = res.locals.middlewareResponse.donor;
-    let deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId, user._id);
-    if (deletedTokenResult.status !== "OK") {
-        return res.respond(new NotFoundError404('Login information not found'));
-    }
+  const user = res.locals.middlewareResponse.donor
+  const deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId, user._id)
+  if (deletedTokenResult.status !== 'OK') {
+    return res.respond(new NotFoundError404('Login information not found'))
+  }
 
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE USERS LOGINS", {});
-    return res.respond(new OKResponse200('Logged out from specified device'));
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE USERS LOGINS', {})
+  return res.respond(new OKResponse200('Logged out from specified device'))
 }
 
 module.exports = {
-    //TOKEN HANDLERS
-    handlePOSTSignIn,
-    handleDELETESignOut,
-    handleDELETESignOutAll,
-    handlePOSTRedirection,
-    handlePATCHRedirectedAuthentication,
-    handlePATCHPassword,
-    handlePOSTPasswordForgot,
-    handleGETLogins,
-    handleDELETELogins
+  // TOKEN HANDLERS
+  handlePOSTSignIn,
+  handleDELETESignOut,
+  handleDELETESignOutAll,
+  handlePOSTRedirection,
+  handlePATCHRedirectedAuthentication,
+  handlePATCHPassword,
+  handlePOSTPasswordForgot,
+  handleGETLogins,
+  handleDELETELogins
 }

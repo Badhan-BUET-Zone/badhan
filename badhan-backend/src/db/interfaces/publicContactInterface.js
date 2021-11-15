@@ -1,107 +1,107 @@
-const {PublicContact} = require('../models/PublicContacts');
+const { PublicContact } = require('../models/PublicContacts')
 
 const insertPublicContact = async (donorId, bloodGroup) => {
-    let publicContact = new PublicContact({donorId, bloodGroup});
-    let data = await publicContact.save();
+  const publicContact = new PublicContact({ donorId, bloodGroup })
+  const data = await publicContact.save()
 
-    if (data.nInserted === 0) {
-        return {
+  if (data.nInserted === 0) {
+    return {
 
-            message: 'Public contact insertion failed',
-            status: 'ERROR'
-        }
-    } else {
-        return {
-            data,
-            message: 'Public contact insertion successful',
-            status: 'OK'
-        };
+      message: 'Public contact insertion failed',
+      status: 'ERROR'
     }
-};
+  } else {
+    return {
+      data,
+      message: 'Public contact insertion successful',
+      status: 'OK'
+    }
+  }
+}
 
 const deletePublicContactById = async (publicContactId) => {
-    let data = await PublicContact.findByIdAndDelete(publicContactId);
-    if (data) {
-        return {
-            message: 'Public contact removed successfully',
-            status: 'OK',
-            data
-        }
-    }
+  const data = await PublicContact.findByIdAndDelete(publicContactId)
+  if (data) {
     return {
-        message: 'Could not remove public contact',
-        status: 'ERROR'
+      message: 'Public contact removed successfully',
+      status: 'OK',
+      data
     }
-};
+  }
+  return {
+    message: 'Could not remove public contact',
+    status: 'ERROR'
+  }
+}
 
 const findPublicContactById = async (publicContactId) => {
-    let data = await PublicContact.findOne({
-        _id: publicContactId
-    });
-    if (data) {
-        return {
-            data: data,
-            message: 'Contact fetched successfully',
-            status: 'OK'
-        }
-    }
+  const data = await PublicContact.findOne({
+    _id: publicContactId
+  })
+  if (data) {
     return {
-        data: data,
-        message: 'Contact not found',
-        status: 'ERROR'
+      data: data,
+      message: 'Contact fetched successfully',
+      status: 'OK'
     }
+  }
+  return {
+    data: data,
+    message: 'Contact not found',
+    status: 'ERROR'
+  }
 }
 
 const findAllPublicContacts = async () => {
-    let data = await PublicContact.aggregate([
-        {
-            $lookup: {
-                from: 'donors',
-                localField: 'donorId',
-                foreignField: '_id',
-                as: 'donorDetails'
-            }
+  const data = await PublicContact.aggregate([
+    {
+      $lookup: {
+        from: 'donors',
+        localField: 'donorId',
+        foreignField: '_id',
+        as: 'donorDetails'
+      }
+    },
+    {
+      $project: {
+        name: { $arrayElemAt: ['$donorDetails.name', 0] },
+        donorId: '$donorId',
+        bloodGroup: '$bloodGroup',
+        contactId: '$_id',
+        phone: { $arrayElemAt: ['$donorDetails.phone', 0] }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          bloodGroup: '$bloodGroup'
         },
-        {
-            $project: {
-                name: {$arrayElemAt: ["$donorDetails.name", 0]},
-                donorId: "$donorId",
-                bloodGroup: "$bloodGroup",
-                contactId: "$_id",
-                phone: {$arrayElemAt: ["$donorDetails.phone", 0]},
-            }
-        },
-        {
-            $group: {
-                _id: {
-                    bloodGroup: "$bloodGroup"
-                },
-                contacts: {$push: {donorId: "$donorId", phone: "$phone", name: "$name", contactId: "$contactId"}}
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                bloodGroup: "$_id.bloodGroup",
-                contacts: "$contacts"
-            }
-        },
-        {
-            $sort: {
-                bloodGroup: 1
-            }
-        }
-    ])
-    return {
-        data: data,
-        message: 'All public contacts fetched',
-        status: 'ERROR'
+        contacts: { $push: { donorId: '$donorId', phone: '$phone', name: '$name', contactId: '$contactId' } }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        bloodGroup: '$_id.bloodGroup',
+        contacts: '$contacts'
+      }
+    },
+    {
+      $sort: {
+        bloodGroup: 1
+      }
     }
+  ])
+  return {
+    data: data,
+    message: 'All public contacts fetched',
+    status: 'ERROR'
+  }
 }
 
 module.exports = {
-    insertPublicContact,
-    deletePublicContactById,
-    findPublicContactById,
-    findAllPublicContacts
+  insertPublicContact,
+  deletePublicContactById,
+  findPublicContactById,
+  findAllPublicContacts
 }

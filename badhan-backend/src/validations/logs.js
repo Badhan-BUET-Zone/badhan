@@ -1,16 +1,16 @@
-const {validate} = require('../validations');
-const {validatePARAMDate,validatePARAMDonorId} = require('../validations/validateRequest/validateParam');
+const { validate } = require('../validations')
+const { validatePARAMDate, validatePARAMDonorId } = require('../validations/validateRequest/validateParam')
 
 const validateGETLogsByDate = validate([
-    validatePARAMDate
-]);
+  validatePARAMDate
+])
 
 const validateGETLogsByDateAndDonor = validate([
-    validatePARAMDonorId,
-    validatePARAMDate
+  validatePARAMDonorId,
+  validatePARAMDate
 ])
 
 module.exports = {
-    validateGETLogsByDate,
-    validateGETLogsByDateAndDonor
+  validateGETLogsByDate,
+  validateGETLogsByDateAndDonor
 }

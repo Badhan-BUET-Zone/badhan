@@ -1,140 +1,140 @@
-const AsyncRouter = require("express-async-router").AsyncRouter;
-let router = AsyncRouter();
+const AsyncRouter = require('express-async-router').AsyncRouter
+const router = AsyncRouter()
 
 const guestController = require('../controllers/guestController')
 
 router.post('/users/signin',
-    guestController.handlePOSTLogIn
-);
+  guestController.handlePOSTLogIn
+)
 
 router.delete('/users/signout',
-    guestController.handlePOSTLogOut
-);
+  guestController.handlePOSTLogOut
+)
 
 router.delete('/users/signout/all',
-    guestController.handlePOSTLogOutAll
-);
+  guestController.handlePOSTLogOutAll
+)
 router.patch('/users/password',
-    guestController.handlePATCHPassword
-);
+  guestController.handlePATCHPassword
+)
 
 router.get('/donors/me',
-    guestController.handlePOSTViewDonorDetailsSelf
-);
+  guestController.handlePOSTViewDonorDetailsSelf
+)
 
 router.post('/donors',
-    guestController.handlePOSTInsertDonor
-);
+  guestController.handlePOSTInsertDonor
+)
 
 router.get('/search/v2',
-    guestController.handlePOSTSearchDonors
-);
+  guestController.handlePOSTSearchDonors
+)
 
 router.delete('/donors',
-    guestController.handlePOSTDeleteDonor,
-);
+  guestController.handlePOSTDeleteDonor
+)
 
 router.patch('/donors/comment',
-    guestController.handlePOSTComment,
-);
+  guestController.handlePOSTComment
+)
 
 router.post('/donors/password',
-    guestController.handlePOSTChangePassword,
-);
+  guestController.handlePOSTChangePassword
+)
 
 router.patch('/donors/v2',
-    guestController.handlePOSTEditDonor,
-);
+  guestController.handlePOSTEditDonor
+)
 
 router.patch('/donors/designation',
-    guestController.handlePOSTPromote
-);
+  guestController.handlePOSTPromote
+)
 
 router.patch('/admins',
-    guestController.handlePOSTChangeAdmin
-);
+  guestController.handlePOSTChangeAdmin
+)
 
 router.get('/donors',
-    guestController.handleGETViewDonorDetails
-);
+  guestController.handleGETViewDonorDetails
+)
 
 router.get('/donors/designation',
-    guestController.handleGETDonorsDesignation
-);
+  guestController.handleGETDonorsDesignation
+)
 
 router.get('/donors/checkDuplicate',
-    guestController.handleGETDonorsDuplicate
-);
+  guestController.handleGETDonorsDuplicate
+)
 
 router.get('/volunteers',
-    guestController.handlePOSTViewVolunteersOfOwnHall
-);
+  guestController.handlePOSTViewVolunteersOfOwnHall
+)
 
 router.get('/admins',
-    guestController.handlePOSTShowHallAdmins
-);
+  guestController.handlePOSTShowHallAdmins
+)
 
 router.get('/volunteers/all',
-    guestController.handleGETViewAllVolunteers,
+  guestController.handleGETViewAllVolunteers
 )
 
 router.post('/donations',
-    guestController.handlePOSTInsertDonation
-);
+  guestController.handlePOSTInsertDonation
+)
 
 router.delete('/donations',
-    guestController.handlePOSTDeleteDonation
-);
+  guestController.handlePOSTDeleteDonation
+)
 
 router.get('/log/statistics',
-    guestController.handleGETStatistics
-);
+  guestController.handleGETStatistics
+)
 
 router.delete('/log',
-    guestController.handleDELETELogs
-);
+  guestController.handleDELETELogs
+)
 
 router.post('/callrecords',
-    guestController.handlePOSTCallRecord
-);
+  guestController.handlePOSTCallRecord
+)
 
 router.delete('/callrecords',
-    guestController.handleDELETECallRecord
-);
+  guestController.handleDELETECallRecord
+)
 
 router.get('/log/date/:date/donorId/:donorId',
-    guestController.handleGETLogsByDateAndDonor
-);
+  guestController.handleGETLogsByDateAndDonor
+)
 
 router.get('/log/date/:date',
-    guestController.handleGETLogsByDate
-);
+  guestController.handleGETLogsByDate
+)
 
 router.get('/log',
-    guestController.handleGETLogs
-);
+  guestController.handleGETLogs
+)
 
 router.get('/publicContacts',
-    guestController.handleGETPublicContacts
-);
+  guestController.handleGETPublicContacts
+)
 
 router.post('/publicContacts',
-    guestController.handlePOSTPublicContact,
-);
+  guestController.handlePOSTPublicContact
+)
 
 router.delete('/publicContacts',
-    guestController.handleDELETEPublicContact
-);
+  guestController.handleDELETEPublicContact
+)
 
 router.get('/users/logins',
-    guestController.handleGETLogins,
-);
+  guestController.handleGETLogins
+)
 
 router.delete('/users/logins/:tokenId',
-    guestController.handleDELETELogins
-);
+  guestController.handleDELETELogins
+)
 
-router.post('/activeDonors',guestController.handlePOSTActiveDonors);
-router.delete('/activeDonors/:donorId',guestController.handleDELETEActiveDonors);
-router.get('/activeDonors',guestController.handleGETActiveDonors);
-module.exports = router;
+router.post('/activeDonors', guestController.handlePOSTActiveDonors)
+router.delete('/activeDonors/:donorId', guestController.handleDELETEActiveDonors)
+router.get('/activeDonors', guestController.handleGETActiveDonors)
+module.exports = router

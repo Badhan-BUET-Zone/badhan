@@ -1,20 +1,20 @@
-const donorInterface = require('../db/interfaces/donorInterface');
-const donationInterface = require('../db/interfaces/donationInterface');
-const logInterface = require('../db/interfaces/logInterface');
+const donorInterface = require('../db/interfaces/donorInterface')
+const donationInterface = require('../db/interfaces/donationInterface')
+const logInterface = require('../db/interfaces/logInterface')
 const {
-    InternalServerError500,
-    BadRequestError400,
-    ForbiddenError403,
-    NotFoundError404,
-    UnauthorizedError401,
-    TooManyRequestsError429,
-    ErrorResponse,
-    ConflictError409
+  InternalServerError500,
+  BadRequestError400,
+  ForbiddenError403,
+  NotFoundError404,
+  UnauthorizedError401,
+  TooManyRequestsError429,
+  ErrorResponse,
+  ConflictError409
 } = require('../response/errorTypes')
-const {CreatedResponse201,OKResponse200} = require('../response/successTypes');
+const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
 const handleGETOnlineCheck = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'To show current state of the api'
@@ -28,11 +28,11 @@ const handleGETOnlineCheck = async (req, res, next) => {
         }
 
      */
-    return res.respond(new OKResponse200("Badhan API is online"));
+  return res.respond(new OKResponse200('Badhan API is online'))
 }
 
 const handleGETStatistics = async (req, res, next) => {
-    /*
+  /*
     #swagger.auto = false
     #swagger.tags = ['Logs']
     #swagger.description = 'Fetch statistics about the current donor count and volunteer count'
@@ -40,10 +40,10 @@ const handleGETStatistics = async (req, res, next) => {
                "api_key": []
         }]
     */
-    let donorCount = await donorInterface.getCount();
-    let donationCount = await donationInterface.getCount();
-    let volunteerCount = await donorInterface.getVolunteerCount();
-    /*
+  const donorCount = await donorInterface.getCount()
+  const donationCount = await donationInterface.getCount()
+  const volunteerCount = await donorInterface.getVolunteerCount()
+  /*
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
@@ -59,23 +59,23 @@ const handleGETStatistics = async (req, res, next) => {
     }
 
      */
-    return res.respond(new OKResponse200('Statistics fetched successfully',{
-	statistics:{
-        donorCount: donorCount.data,
-        donationCount: donationCount.data,
-        volunteerCount: volunteerCount.data
-	}
-    }));
+  return res.respond(new OKResponse200('Statistics fetched successfully', {
+    statistics: {
+      donorCount: donorCount.data,
+      donationCount: donationCount.data,
+      volunteerCount: volunteerCount.data
+    }
+  }))
 }
 
 const handleGETAppVersion = (req, res, next) => {
-    /*
+  /*
     #swagger.auto = false
     #swagger.tags = ['Logs']
     #swagger.description = 'Get app info deployed to play store'
     */
 
-    /*
+  /*
             #swagger.responses[200] = {
                 schema: {
                     status:'OK',
@@ -86,13 +86,13 @@ const handleGETAppVersion = (req, res, next) => {
                 description: 'response is the current version number of badhan api'
             }
 */
-    return res.respond(new OKResponse200("Latest app version fetched",{
-        version: "4.5.2"
-    }))
+  return res.respond(new OKResponse200('Latest app version fetched', {
+    version: '4.5.2'
+  }))
 }
 
 const handleGETLogs = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'Get date wise count of api calls'
@@ -114,14 +114,14 @@ const handleGETLogs = async (req, res, next) => {
         }
     */
 
-    let logCountsResult = await logInterface.getLogCounts();
-    return res.respond(new OKResponse200('Log counts fetched successfully',{
-        logs: logCountsResult.data
-    }))
-};
+  const logCountsResult = await logInterface.getLogCounts()
+  return res.respond(new OKResponse200('Log counts fetched successfully', {
+    logs: logCountsResult.data
+  }))
+}
 
 const handleGETLogsByDate = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'Get user-wise api call counts for specific date'
@@ -150,14 +150,14 @@ const handleGETLogsByDate = async (req, res, next) => {
             }
         }
     */
-    let logsByDateResult = await logInterface.getLogsByDate(req.params.date);
-    return res.respond(new OKResponse200("Logs fetched by date successfully",{
-        logs: logsByDateResult.data
-    }));
+  const logsByDateResult = await logInterface.getLogsByDate(req.params.date)
+  return res.respond(new OKResponse200('Logs fetched by date successfully', {
+    logs: logsByDateResult.data
+  }))
 }
 
 const handleGETLogsByDateAndDonor = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
         #swagger.description = 'Get api call details of a donor by date'
@@ -196,17 +196,17 @@ const handleGETLogsByDateAndDonor = async (req, res, next) => {
                    "api_key": []
             }]
     */
-    let logsByDateAndDonor = await logInterface.getLogsByDateAndUser(req.params.date, req.params.donorId)
-    return res.respond(new OKResponse200("Logs fetched by data and donor successfully",{
-        logs: logsByDateAndDonor.data
-    }))
+  const logsByDateAndDonor = await logInterface.getLogsByDateAndUser(req.params.date, req.params.donorId)
+  return res.respond(new OKResponse200('Logs fetched by data and donor successfully', {
+    logs: logsByDateAndDonor.data
+  }))
 }
 
 module.exports = {
-    handleGETStatistics,
-    handleGETOnlineCheck,
-    handleGETAppVersion,
-    handleGETLogs,
-    handleGETLogsByDate,
-    handleGETLogsByDateAndDonor
+  handleGETStatistics,
+  handleGETOnlineCheck,
+  handleGETAppVersion,
+  handleGETLogs,
+  handleGETLogsByDate,
+  handleGETLogsByDateAndDonor
 }

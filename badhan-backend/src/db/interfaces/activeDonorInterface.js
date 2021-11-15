@@ -1,64 +1,63 @@
-const {ActiveDonor} = require('../models/ActiveDonor');
+const { ActiveDonor } = require('../models/ActiveDonor')
 
 const add = async (donorId, markerId) => {
-    let addedActiveDonor = new ActiveDonor({donorId, markerId});
-    let data = await addedActiveDonor.save();
-    if (data.nInserted === 0) {
-        return {
-            message: 'Active donor insertion failed',
-            status: 'ERROR'
-        }
-    }
+  const addedActiveDonor = new ActiveDonor({ donorId, markerId })
+  const data = await addedActiveDonor.save()
+  if (data.nInserted === 0) {
     return {
-        data,
-        message: 'Active donor insertion successful',
-        status: 'OK'
-    };
-};
-
-const remove = async(donorId)=>{
-    let removedActiveDonor = await ActiveDonor.findOneAndDelete({donorId});
-    if(removedActiveDonor){
-        return{
-            data:removedActiveDonor,
-            message:'Active donor removed successfully',
-            status: 'OK'
-        }
+      message: 'Active donor insertion failed',
+      status: 'ERROR'
     }
-
-    return{
-        message: 'Active donor not found',
-        status: 'ERROR'
-    }
+  }
+  return {
+    data,
+    message: 'Active donor insertion successful',
+    status: 'OK'
+  }
 }
 
-const findByDonorId= async (donorId)=>{
-    let activeDonors = await ActiveDonor.find({donorId});
-    if(activeDonors.length===0){
-        return {
-            message: 'Active donor not found',
-            status: 'ERROR',
-        }
+const remove = async (donorId) => {
+  const removedActiveDonor = await ActiveDonor.findOneAndDelete({ donorId })
+  if (removedActiveDonor) {
+    return {
+      data: removedActiveDonor,
+      message: 'Active donor removed successfully',
+      status: 'OK'
     }
-    return{
-        data:activeDonors,
-        status:'OK',
-        message:'Active donor found'
-    }
+  }
+
+  return {
+    message: 'Active donor not found',
+    status: 'ERROR'
+  }
 }
-const findByQueryAndPopulate = async(aggregatePipeline)=>{
-    let activeDonors = await ActiveDonor.aggregate(aggregatePipeline);
-    return{
-        message: 'Active donors fetched with details',
-        status:'OK',
-        data: activeDonors
+
+const findByDonorId = async (donorId) => {
+  const activeDonors = await ActiveDonor.find({ donorId })
+  if (activeDonors.length === 0) {
+    return {
+      message: 'Active donor not found',
+      status: 'ERROR'
     }
+  }
+  return {
+    data: activeDonors,
+    status: 'OK',
+    message: 'Active donor found'
+  }
+}
+const findByQueryAndPopulate = async (aggregatePipeline) => {
+  const activeDonors = await ActiveDonor.aggregate(aggregatePipeline)
+  return {
+    message: 'Active donors fetched with details',
+    status: 'OK',
+    data: activeDonors
+  }
 }
 
 module.exports = {
-    add,
-    remove,
-    findByDonorId,
-    findByQueryAndPopulate
+  add,
+  remove,
+  findByDonorId,
+  findByQueryAndPopulate
 }
-

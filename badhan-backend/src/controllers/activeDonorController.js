@@ -1,17 +1,17 @@
-const activeDonorInterface = require('../db/interfaces/activeDonorInterface');
-const logInterface = require('../db/interfaces/logInterface');
-const mongoose = require('mongoose');
+const activeDonorInterface = require('../db/interfaces/activeDonorInterface')
+const logInterface = require('../db/interfaces/logInterface')
+const mongoose = require('mongoose')
 const util = require('util')
 const {
-    InternalServerError500,
-    NotFoundError404,
-    ConflictError409,
-    ForbiddenError403,
-} = require('../response/errorTypes');
-const {OKResponse200, CreatedResponse201} = require('../response/successTypes')
+  InternalServerError500,
+  NotFoundError404,
+  ConflictError409,
+  ForbiddenError403
+} = require('../response/errorTypes')
+const { OKResponse200, CreatedResponse201 } = require('../response/successTypes')
 
 const handlePOSTActiveDonors = async (req, res, next) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['Active Donors']
         #swagger.description = 'Add an active donor for everyone to see'
@@ -50,29 +50,27 @@ const handlePOSTActiveDonors = async (req, res, next) => {
 
      */
 
+  const donor = res.locals.middlewareResponse.targetDonor
+  const user = res.locals.middlewareResponse.donor
 
-    let donor = res.locals.middlewareResponse.targetDonor;
-    let user = res.locals.middlewareResponse.donor;
+  const activeDonorSearch = await activeDonorInterface.findByDonorId(donor._id)
+  if (activeDonorSearch.status === 'OK') {
+    return res.respond(new ConflictError409('Active donor already created'))
+  }
 
-    let activeDonorSearch = await activeDonorInterface.findByDonorId(donor._id);
-    if (activeDonorSearch.status === 'OK') {
-        return res.respond(new ConflictError409('Active donor already created'));
-    }
+  const activeDonorInsertResult = await activeDonorInterface.add(donor._id, user._id)
 
-    let activeDonorInsertResult = await activeDonorInterface.add(donor._id, user._id);
-
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "POST ACTIVEDONORS", {
-        ...activeDonorInsertResult.data,
-        donor: donor.name
-    });
-    return res.respond(new CreatedResponse201('Active donor created', {
-        newActiveDonor: activeDonorInsertResult.data,
-    }))
-
-};
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST ACTIVEDONORS', {
+    ...activeDonorInsertResult.data,
+    donor: donor.name
+  })
+  return res.respond(new CreatedResponse201('Active donor created', {
+    newActiveDonor: activeDonorInsertResult.data
+  }))
+}
 
 const handleDELETEActiveDonors = async (req, res, next) => {
-    /*
+  /*
     #swagger.auto = false
     #swagger.tags = ['Active Donors']
     #swagger.description = 'Remove an active donor'
@@ -110,25 +108,24 @@ const handleDELETEActiveDonors = async (req, res, next) => {
 
      */
 
-    let user = res.locals.middlewareResponse.donor;
-    let donor = res.locals.middlewareResponse.targetDonor;
+  const user = res.locals.middlewareResponse.donor
+  const donor = res.locals.middlewareResponse.targetDonor
 
-    let activeDonorRemoveResult = await activeDonorInterface.remove(donor._id);
-    if (activeDonorRemoveResult.status !== 'OK') {
-        return res.respond(new NotFoundError404('Active donor not found'));
-    }
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "DELETE ACTIVEDONORS", {
-        ...activeDonorRemoveResult.data,
-        donor: donor.name
-    });
-    return res.respond(new OKResponse200('Active donor deleted successfully', {
-        removedActiveDonor: activeDonorRemoveResult.data,
-    }))
-
+  const activeDonorRemoveResult = await activeDonorInterface.remove(donor._id)
+  if (activeDonorRemoveResult.status !== 'OK') {
+    return res.respond(new NotFoundError404('Active donor not found'))
+  }
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE ACTIVEDONORS', {
+    ...activeDonorRemoveResult.data,
+    donor: donor.name
+  })
+  return res.respond(new OKResponse200('Active donor deleted successfully', {
+    removedActiveDonor: activeDonorRemoveResult.data
+  }))
 }
 
 const handleGETActiveDonors = async (req, res) => {
-    /*
+  /*
         #swagger.auto = false
         #swagger.tags = ['Active Donors']
         #swagger.description = 'Get list of active donors filtered by search parameters'
@@ -228,13 +225,12 @@ const handleGETActiveDonors = async (req, res) => {
 
      */
 
+  const reqQuery = req.query
 
-    let reqQuery = req.query;
-
-    if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall
-        && reqQuery.hall <= 6
-        && res.locals.middlewareResponse.donor.designation !== 3) {
-        /*
+  if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
+        reqQuery.hall <= 6 &&
+        res.locals.middlewareResponse.donor.designation !== 3) {
+    /*
         #swagger.responses[403] = {
             schema: {
                 status: 'ERROR',
@@ -245,193 +241,192 @@ const handleGETActiveDonors = async (req, res) => {
         }
 
          */
-        return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'));
+    return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'))
+  }
+
+  const queryBuilder = {}
+
+  // process blood group
+  if (reqQuery.bloodGroup !== -1) {
+    queryBuilder.bloodGroup = reqQuery.bloodGroup
+  }
+
+  // process hall
+  // if the availableToAll is true, then there is no need to search using hall
+  // otherwise, hall must be included
+  //     if(reqQuery.availableToAllOrHall){
+  //         queryBuilder
+  //     }
+
+  if (reqQuery.availableToAllOrHall) {
+    // do something later
+  } else if (!reqQuery.availableToAll) {
+    queryBuilder.hall = reqQuery.hall
+  } else {
+    queryBuilder.availableToAll = reqQuery.availableToAll
+  }
+
+  // process batch
+  let batchRegex = '.......'
+  if (reqQuery.batch !== '') {
+    batchRegex = reqQuery.batch + '.....'
+  }
+  queryBuilder.studentId = { $regex: batchRegex, $options: 'ix' }
+
+  // process name
+  let nameRegex = '.*'
+
+  for (let i = 0; i < reqQuery.name.length; i++) {
+    nameRegex += (reqQuery.name.charAt(i) + '.*')
+  }
+
+  queryBuilder.name = { $regex: nameRegex, $options: 'ix' }
+
+  // process address
+  const addressRegex = '.*' + reqQuery.address + '.*'
+
+  queryBuilder.$and = [{
+    $or: [
+      { comment: { $regex: addressRegex, $options: 'ix' } },
+      { address: { $regex: addressRegex, $options: 'ix' } }]
+  }
+  ]
+
+  if (reqQuery.availableToAllOrHall) {
+    queryBuilder.$and.push({
+      $or: [{
+        hall: reqQuery.hall
+      }, {
+        availableToAll: true
+      }]
     }
+    )
+  }
 
-    let queryBuilder = {}
+  const availableLimit = new Date().getTime() - 120 * 24 * 3600 * 1000
 
-//process blood group
-    if (reqQuery.bloodGroup !== -1) {
-        queryBuilder.bloodGroup = reqQuery.bloodGroup;
+  const lastDonationAvailability = []
+
+  if (reqQuery.isAvailable) {
+    lastDonationAvailability.push({
+      lastDonation: { $lt: availableLimit }
+    })
+  }
+
+  if (reqQuery.isNotAvailable) {
+    lastDonationAvailability.push({
+      lastDonation: { $gt: availableLimit }
+    })
+  }
+
+  if (reqQuery.isNotAvailable || reqQuery.isAvailable) {
+    queryBuilder.$and.push({ $or: lastDonationAvailability })
+  }
+
+  // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+  const aggregatePipeline = [{
+    $lookup: {
+      from: 'donors',
+      localField: 'donorId',
+      foreignField: '_id',
+      as: 'donorDetails'
     }
-
-//process hall
-// if the availableToAll is true, then there is no need to search using hall
-// otherwise, hall must be included
-//     if(reqQuery.availableToAllOrHall){
-//         queryBuilder
-//     }
-
-    if (reqQuery.availableToAllOrHall) {
-        //do something later
-    } else if (!reqQuery.availableToAll) {
-        queryBuilder.hall = reqQuery.hall;
-    } else {
-        queryBuilder.availableToAll = reqQuery.availableToAll;
+  },
+  {
+    $addFields: {
+      donorDetails: { $first: '$donorDetails' }
     }
-
-//process batch
-    let batchRegex = "......."
-    if (reqQuery.batch !== "") {
-        batchRegex = reqQuery.batch + ".....";
+  },
+  {
+    $project: {
+      markerId: 1,
+      _id: '$donorDetails._id',
+      hall: '$donorDetails.hall',
+      name: '$donorDetails.name',
+      address: '$donorDetails.address',
+      comment: '$donorDetails.comment',
+      commentTime: '$donorDetails.commentTime',
+      lastDonation: '$donorDetails.lastDonation',
+      availableToAll: '$donorDetails.availableToAll',
+      bloodGroup: '$donorDetails.bloodGroup',
+      studentId: '$donorDetails.studentId',
+      phone: '$donorDetails.phone',
+      markedTime: '$time'
     }
-    queryBuilder.studentId = {$regex: batchRegex, $options: 'ix'};
-
-//process name
-    let nameRegex = ".*";
-
-    for (let i = 0; i < reqQuery.name.length; i++) {
-        nameRegex += (reqQuery.name.charAt(i) + ".*");
+  },
+  {
+    $match: queryBuilder
+  },
+  {
+    $lookup: {
+      from: 'donors',
+      localField: 'markerId',
+      foreignField: '_id',
+      as: 'markerDetails'
     }
-
-    queryBuilder.name = {$regex: nameRegex, $options: 'ix'};
-
-//process address
-    let addressRegex = ".*" + reqQuery.address + ".*";
-
-    queryBuilder.$and = [{
-        $or: [
-            {comment: {$regex: addressRegex, $options: 'ix'}},
-            {address: {$regex: addressRegex, $options: 'ix'}}]
-    },
-    ];
-
-    if (reqQuery.availableToAllOrHall) {
-        queryBuilder.$and.push({
-                $or: [{
-                    hall: reqQuery.hall,
-                }, {
-                    availableToAll: true,
-                }]
-            }
-        );
+  },
+  {
+    $addFields: {
+      markerName: { $first: '$markerDetails.name' }
     }
-
-    let availableLimit = new Date().getTime() - 120 * 24 * 3600 * 1000;
-
-    let lastDonationAvailability = [];
-
-    if (reqQuery.isAvailable) {
-        lastDonationAvailability.push({
-            lastDonation: {$lt: availableLimit}
-        })
+  },
+  {
+    $lookup: {
+      from: 'donations',
+      localField: '_id',
+      foreignField: 'donorId',
+      as: 'donations'
     }
-
-    if (reqQuery.isNotAvailable) {
-        lastDonationAvailability.push({
-            lastDonation: {$gt: availableLimit}
-        })
+  },
+  {
+    $lookup: {
+      from: 'callrecords',
+      localField: '_id',
+      foreignField: 'calleeId',
+      as: 'callRecords'
     }
-
-    if (reqQuery.isNotAvailable || reqQuery.isAvailable) {
-        queryBuilder.$and.push({$or: lastDonationAvailability});
+  },
+  {
+    $addFields: {
+      donationCount: { $size: '$donations' }
     }
-
-    // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
-    let aggregatePipeline = [{
-        $lookup: {
-            from: 'donors',
-            localField: 'donorId',
-            foreignField: '_id',
-            as: 'donorDetails'
-        },
-    },
-        {
-            $addFields: {
-                donorDetails: {$first: "$donorDetails"},
-            }
-        },
-        {
-            $project: {
-                markerId: 1,
-                _id: "$donorDetails._id",
-                hall: "$donorDetails.hall",
-                name: "$donorDetails.name",
-                address: "$donorDetails.address",
-                comment: "$donorDetails.comment",
-                commentTime: "$donorDetails.commentTime",
-                lastDonation: "$donorDetails.lastDonation",
-                availableToAll: "$donorDetails.availableToAll",
-                bloodGroup: "$donorDetails.bloodGroup",
-                studentId: "$donorDetails.studentId",
-                phone: "$donorDetails.phone",
-                markedTime: "$time",
-            }
-        },
-        {
-            $match: queryBuilder
-        },
-        {
-            $lookup: {
-                from: 'donors',
-                localField: 'markerId',
-                foreignField: '_id',
-                as: 'markerDetails'
-            }
-        },
-        {
-            $addFields: {
-                "markerName": {$first: "$markerDetails.name"},
-            }
-        },
-        {
-            $lookup: {
-                from: 'donations',
-                localField: '_id',
-                foreignField: 'donorId',
-                as: 'donations'
-            },
-        },
-        {
-            $lookup: {
-                from: 'callrecords',
-                localField: '_id',
-                foreignField: 'calleeId',
-                as: 'callRecords'
-            }
-        },
-        {
-            $addFields: {
-                donationCount: {$size: "$donations"},
-            }
-        },
-        {
-            $addFields: {
-                callRecordCount: {$size: "$callRecords"},
-                lastCallRecord: {$max: "$callRecords.date"},
-            }
-        },
-        {
-            $project: {
-                markerDetails: 0,
-                markerId: 0,
-                donations: 0,
-                callRecords: 0,
-            }
-        }
-    ];
-
-    if (reqQuery.markedByMe) {
-        aggregatePipeline.splice(0, 0, {
-            $match: {
-                markerId: res.locals.middlewareResponse.donor._id
-            }
-        });
+  },
+  {
+    $addFields: {
+      callRecordCount: { $size: '$callRecords' },
+      lastCallRecord: { $max: '$callRecords.date' }
     }
+  },
+  {
+    $project: {
+      markerDetails: 0,
+      markerId: 0,
+      donations: 0,
+      callRecords: 0
+    }
+  }
+  ]
 
-    let activeDonors = await activeDonorInterface.findByQueryAndPopulate(aggregatePipeline);
-    await logInterface.addLog(res.locals.middlewareResponse.donor._id, "GET ACTIVEDONORS", {
-        filter: reqQuery,
-        resultCount: activeDonors.data.length
-    });
-    return res.respond(new OKResponse200('Active donor deleted successfully', {
-        activeDonors: activeDonors.data,
-    }))
+  if (reqQuery.markedByMe) {
+    aggregatePipeline.splice(0, 0, {
+      $match: {
+        markerId: res.locals.middlewareResponse.donor._id
+      }
+    })
+  }
+
+  const activeDonors = await activeDonorInterface.findByQueryAndPopulate(aggregatePipeline)
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET ACTIVEDONORS', {
+    filter: reqQuery,
+    resultCount: activeDonors.data.length
+  })
+  return res.respond(new OKResponse200('Active donor deleted successfully', {
+    activeDonors: activeDonors.data
+  }))
 }
 
-
 module.exports = {
-    handlePOSTActiveDonors,
-    handleDELETEActiveDonors,
-    handleGETActiveDonors
+  handlePOSTActiveDonors,
+  handleDELETEActiveDonors,
+  handleGETActiveDonors
 }

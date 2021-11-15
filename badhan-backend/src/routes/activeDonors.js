@@ -1,34 +1,34 @@
-const AsyncRouter = require("express-async-router").AsyncRouter;
-let router = AsyncRouter();
+const AsyncRouter = require('express-async-router').AsyncRouter
+const router = AsyncRouter()
 
-const activeDonorController = require('../controllers/activeDonorController');
-const authenticator = require('../middlewares/authenticate');
-const rateLimiter = require('../middlewares/rateLimiter');
-const activeDonorsValidator = require('../validations/activeDonors');
+const activeDonorController = require('../controllers/activeDonorController')
+const authenticator = require('../middlewares/authenticate')
+const rateLimiter = require('../middlewares/rateLimiter')
+const activeDonorsValidator = require('../validations/activeDonors')
 
-router.post('/', /*#swagger.path = '/activeDonors'*/
-    activeDonorsValidator.validatePOSTActiveDonors,
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
-    activeDonorController.handlePOSTActiveDonors,
-);
-
-router.delete('/:donorId',/*#swagger.path = '/activeDonors/{donorId}'*/
-    activeDonorsValidator.validateDELETEActiveDonors,
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    authenticator.handleFetchTargetDonor,
-    authenticator.handleHallPermissionOrCheckAvailableToAll,
-    activeDonorController.handleDELETEActiveDonors
-);
-
-router.get('/',/*#swagger.path = '/activeDonors'*/
-    activeDonorsValidator.validateGETActiveDonors,
-    rateLimiter.commonLimiter,
-    authenticator.handleAuthentication,
-    activeDonorController.handleGETActiveDonors
+router.post('/', /* #swagger.path = '/activeDonors' */
+  activeDonorsValidator.validatePOSTActiveDonors,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  authenticator.handleFetchTargetDonor,
+  authenticator.handleHallPermissionOrCheckAvailableToAll,
+  activeDonorController.handlePOSTActiveDonors
 )
 
-module.exports = router;
+router.delete('/:donorId', /* #swagger.path = '/activeDonors/{donorId}' */
+  activeDonorsValidator.validateDELETEActiveDonors,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  authenticator.handleFetchTargetDonor,
+  authenticator.handleHallPermissionOrCheckAvailableToAll,
+  activeDonorController.handleDELETEActiveDonors
+)
+
+router.get('/', /* #swagger.path = '/activeDonors' */
+  activeDonorsValidator.validateGETActiveDonors,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  activeDonorController.handleGETActiveDonors
+)
+
+module.exports = router

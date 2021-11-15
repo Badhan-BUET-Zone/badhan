@@ -1,145 +1,140 @@
-const {Token} = require('../models/Token');
-const jwt = require('jsonwebtoken');
+const { Token } = require('../models/Token')
+const jwt = require('jsonwebtoken')
 
 const insertAndSaveToken = async (donorId, userAgent) => {
-
-    let access = 'auth';
-    let token = await jwt.sign({
-        _id: String(donorId),
-        access
-    }, process.env.JWT_SECRET).toString();
-    let tokenData = new Token({donorId, token, ...userAgent});
-    let data = await tokenData.save();
-    if (data.nInserted === 0) {
-        return {
-            message: 'Token insertion failed',
-            status: 'ERROR',
-            data: data,
-        }
-    }
+  const access = 'auth'
+  const token = await jwt.sign({
+    _id: String(donorId),
+    access
+  }, process.env.JWT_SECRET).toString()
+  const tokenData = new Token({ donorId, token, ...userAgent })
+  const data = await tokenData.save()
+  if (data.nInserted === 0) {
     return {
-        message: 'Token insertion successful',
-        status: 'OK',
-        data: data,
-    };
+      message: 'Token insertion failed',
+      status: 'ERROR',
+      data: data
+    }
+  }
+  return {
+    message: 'Token insertion successful',
+    status: 'OK',
+    data: data
+  }
 }
 
 const addToken = async (donorId, token, userAgent) => {
-
-    let tokenData = new Token({donorId, token, ...userAgent});
-    let data = await tokenData.save();
-    if (data.nInserted === 0) {
-        return {
-            message: 'Token insertion failed',
-            status: 'ERROR',
-            data: data,
-        }
-    } else {
-        return {
-            message: 'Token insertion successful',
-            status: 'OK',
-            data: data,
-        };
+  const tokenData = new Token({ donorId, token, ...userAgent })
+  const data = await tokenData.save()
+  if (data.nInserted === 0) {
+    return {
+      message: 'Token insertion failed',
+      status: 'ERROR',
+      data: data
     }
-};
+  } else {
+    return {
+      message: 'Token insertion successful',
+      status: 'OK',
+      data: data
+    }
+  }
+}
 
 const findTokenDataByTokenCached = async (token, donorId) => {
-    let tokenData = await Token.findOne({token})
-    if (!tokenData) {
-        return {
-            message: 'Token not found',
-            status: 'ERROR'
-        }
-    }
+  const tokenData = await Token.findOne({ token })
+  if (!tokenData) {
     return {
-        message: 'Token found successfully',
-        status: 'OK',
-        data: tokenData
+      message: 'Token not found',
+      status: 'ERROR'
     }
+  }
+  return {
+    message: 'Token found successfully',
+    status: 'OK',
+    data: tokenData
+  }
 }
 
 const findTokenDataByToken = async (token) => {
-    let tokenData = await Token.findOne({token})
-    if (!tokenData) {
-        return {
-            message: 'Token not found',
-            status: 'ERROR'
-        }
-    }
+  const tokenData = await Token.findOne({ token })
+  if (!tokenData) {
     return {
-        message: 'Token found successfully',
-        status: 'OK',
-        data: tokenData
+      message: 'Token not found',
+      status: 'ERROR'
     }
+  }
+  return {
+    message: 'Token found successfully',
+    status: 'OK',
+    data: tokenData
+  }
 }
 
 const deleteTokenDataByToken = async (token, donorId) => {
-
-    let tokenData = await Token.findOneAndDelete({token});
-    if (tokenData) {
-        return {
-            message: "Token successfully removed",
-            status: "OK"
-        }
-    }
+  const tokenData = await Token.findOneAndDelete({ token })
+  if (tokenData) {
     return {
-        message: "Token not found",
-        status: "ERROR"
+      message: 'Token successfully removed',
+      status: 'OK'
     }
+  }
+  return {
+    message: 'Token not found',
+    status: 'ERROR'
+  }
 }
 
 const deleteAllTokensByDonorId = async (donorId) => {
-
-    let tokenData = await Token.deleteMany({donorId});
-    return {
-        message: "Token successfully removed",
-        status: "OK",
-        data: tokenData,
-    }
+  const tokenData = await Token.deleteMany({ donorId })
+  return {
+    message: 'Token successfully removed',
+    status: 'OK',
+    data: tokenData
+  }
 }
 
 const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken) => {
-    let tokenDataList = await Token.find({
-        $and: [{
-            donorId: {
-                $eq: donorId
-            },
-            token: {
-                $ne: excludedToken
-            }
-        }]
-    }, {_id: 1, browserFamily: 1, device: 1, ipAddress: 1, os: 1});
-    return {
-        message: "Recent logins fetched successfully",
-        status: 'OK',
-        data: tokenDataList
-    }
+  const tokenDataList = await Token.find({
+    $and: [{
+      donorId: {
+        $eq: donorId
+      },
+      token: {
+        $ne: excludedToken
+      }
+    }]
+  }, { _id: 1, browserFamily: 1, device: 1, ipAddress: 1, os: 1 })
+  return {
+    message: 'Recent logins fetched successfully',
+    status: 'OK',
+    data: tokenDataList
+  }
 }
 
 const deleteByTokenId = async (tokenId, donorId) => {
-
-    let deletedToken = await Token.findByIdAndDelete(tokenId);
-    if (deletedToken) {
-        return {
-            message: "Token successfully removed",
-            status: "OK",
-            data: deletedToken
-        }
-    }
+  const deletedToken = await Token.findByIdAndDelete(tokenId)
+  if (deletedToken) {
     return {
-        message: "Token not found",
-        status: "ERROR",
-        data: null
+      message: 'Token successfully removed',
+      status: 'OK',
+      data: deletedToken
     }
+  }
+  return {
+    message: 'Token not found',
+    status: 'ERROR',
+    data: null
+  }
 }
 
 module.exports = {
-    addToken,
-    findTokenDataByTokenCached,
-    findTokenDataByToken,
-    deleteTokenDataByToken,
-    deleteAllTokensByDonorId,
-    insertAndSaveToken,
-    findTokenDataExceptSpecifiedToken,
-    deleteByTokenId
+  addToken,
+  findTokenDataByTokenCached,
+  findTokenDataByToken,
+  deleteTokenDataByToken,
+  deleteAllTokensByDonorId,
+  insertAndSaveToken,
+  findTokenDataExceptSpecifiedToken,
+  deleteByTokenId
 }

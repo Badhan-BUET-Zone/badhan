@@ -1,18 +1,18 @@
-const {validate} = require('../validations');
-const {validateBODYDate,validateBODYDonorId} = require('../validations/validateRequest/validateBody')
-const {validateQUERYDonorId, validateQUERYDate} = require('../validations/validateRequest/validateQuery');
+const { validate } = require('../validations')
+const { validateBODYDate, validateBODYDonorId } = require('../validations/validateRequest/validateBody')
+const { validateQUERYDonorId, validateQUERYDate } = require('../validations/validateRequest/validateQuery')
 
 const validatePOSTDonations = validate([
-    validateBODYDonorId,
-    validateBODYDate,
-]);
+  validateBODYDonorId,
+  validateBODYDate
+])
 
 const validateDELETEDonations = validate([
-    validateQUERYDonorId,
-    validateQUERYDate,
+  validateQUERYDonorId,
+  validateQUERYDate
 ])
 
 module.exports = {
-    validatePOSTDonations,
-    validateDELETEDonations
+  validatePOSTDonations,
+  validateDELETEDonations
 }

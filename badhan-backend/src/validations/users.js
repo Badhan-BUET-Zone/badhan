@@ -1,26 +1,26 @@
-const {validate} = require('../validations');
-const {validateBODYPhone, validateBODYPassword} = require('../validations/validateRequest/validateBody')
-const {validatePARAMTokenId} = require('../validations/validateRequest/validateParam')
+const { validate } = require('../validations')
+const { validateBODYPhone, validateBODYPassword } = require('../validations/validateRequest/validateBody')
+const { validatePARAMTokenId } = require('../validations/validateRequest/validateParam')
 const validateLogin = validate([
-    validateBODYPhone,
-    validateBODYPassword,
-]);
+  validateBODYPhone,
+  validateBODYPassword
+])
 
 const validatePATCHPassword = validate([
-   validateBODYPassword
-]);
+  validateBODYPassword
+])
 
 const validatePOSTPasswordForgot = validate([
-    validateBODYPhone
+  validateBODYPhone
 ])
 
 const validateDELETELogins = validate([
-   validatePARAMTokenId
-]);
+  validatePARAMTokenId
+])
 
 module.exports = {
-    validateLogin,
-    validatePATCHPassword,
-    validatePOSTPasswordForgot,
-    validateDELETELogins
+  validateLogin,
+  validatePATCHPassword,
+  validatePOSTPasswordForgot,
+  validateDELETELogins
 }
