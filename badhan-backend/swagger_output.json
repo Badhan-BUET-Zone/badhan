@@ -1,0 +1,3931 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "3.0.0",
+    "title": "Badhan API",
+    "description": "Automatically generated documentation of Badhan API. The backend is documented and currently maintained by Sumaiya Azad"
+  },
+  "host": "badhan-web-test.herokuapp.com",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "User",
+      "description": "Authentication Endpoints"
+    },
+    {
+      "name": "Donors",
+      "description": "Routes to handle donors"
+    },
+    {
+      "name": "Logs",
+      "description": "Fetch statistics about backend"
+    },
+    {
+      "name": "Call Records",
+      "description": "Fetch call records of donors"
+    },
+    {
+      "name": "Public Contacts",
+      "description": "Contacts of Badhan that are available to the public"
+    },
+    {
+      "name": "Active Donors",
+      "description": "Management of all active donors"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "x-auth",
+      "in": "header"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/donors": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the insertion of a new donor into the database.",
+        "parameters": [
+          {
+            "name": "insertDonor",
+            "in": "body",
+            "description": "donor info for inserting donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "number",
+                  "example": 8801521438557
+                },
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "hall": {
+                  "type": "number",
+                  "example": 5
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "studentId": {
+                  "type": "number",
+                  "example": 1605011
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
+                },
+                "roomNumber": {
+                  "type": "string",
+                  "example": "3009"
+                },
+                "comment": {
+                  "type": "string",
+                  "example": "developer of badhan"
+                },
+                "extraDonationCount": {
+                  "type": "number",
+                  "example": 2
+                },
+                "availableToAll": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "New donor inserted successfully"
+                },
+                "newDonor": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur Road"
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "4568"
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "Has Diabetes"
+                    },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 16547822145
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "616ab751fc274715cc504ac7"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801546587552
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 8
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir"
+                    },
+                    "studentId": {
+                      "type": "string",
+                      "example": "2105011"
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "successful donor insertion"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor found with duplicate phone number in another hall"
+                },
+                "donor": {
+                  "type": "string",
+                  "example": "this field will return null"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the fetching of donor details.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "description": "Donor id for donor details",
+            "type": "string",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                },
+                "donor": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "abjcguiwefvew"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir Mohammad"
+                    },
+                    "studentId": {
+                      "type": "string",
+                      "example": "1605011"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "mirmahathir1@gmail.com"
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 987876287160
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "3009"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "developer of badhan"
+                    },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "callRecords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "61018f6f49904a07f010d0c8"
+                          },
+                          "callerId": {
+                            "type": "object",
+                            "properties": {
+                              "designation": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "_id": {
+                                "type": "string",
+                                "example": "61011bd99bf18c82b9e56209"
+                              },
+                              "hall": {
+                                "type": "number",
+                                "example": 5
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Mir Mahathir (Volunteer)"
+                              }
+                            }
+                          },
+                          "calleeId": {
+                            "type": "string",
+                            "example": "5e6781006ecd148aa8cc76d8"
+                          },
+                          "date": {
+                            "type": "number",
+                            "example": 1627492207064
+                          },
+                          "expireAt": {
+                            "type": "string",
+                            "example": "2021-08-27T17:10:07.066Z"
+                          },
+                          "__v": {
+                            "type": "number",
+                            "example": 0
+                          }
+                        }
+                      }
+                    },
+                    "donations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "number",
+                            "example": 1546300800000
+                          },
+                          "_id": {
+                            "type": "string",
+                            "example": "5e6781006ecd148aa8cc76d8"
+                          },
+                          "phone": {
+                            "type": "number",
+                            "example": 8801724097983
+                          },
+                          "donorId": {
+                            "type": "string",
+                            "example": "5e6781006ecd148aa8cc76d8"
+                          }
+                        }
+                      }
+                    },
+                    "publicContacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "bloodGroup": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "_id": {
+                            "type": "string",
+                            "example": "6142dfc11f536f2e2db0f780"
+                          },
+                          "donorId": {
+                            "type": "string",
+                            "example": "5e901d56effc5900177ced73"
+                          }
+                        }
+                      }
+                    },
+                    "markedBy": {
+                      "type": "object",
+                      "properties": {
+                        "donorId": {
+                          "type": "string",
+                          "example": "bb9dbced70ba9cddedc49e7cc8ed7b85"
+                        },
+                        "markerId": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "7e5aa536cb89198aa20fd13ebf75c97d"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Clarence Cronin"
+                            }
+                          }
+                        },
+                        "time": {
+                          "type": "number",
+                          "example": 1634535727368
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "donor info"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "handles the deletion of an existing donor from the database.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "description": "donor id for deleting donation",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successful donor deletion"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donors/me": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Handles the fetching of own details.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                },
+                "donor": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "abjcguiwefvew"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir Mohammad"
+                    },
+                    "studentId": {
+                      "type": "string",
+                      "example": "1605011"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "mirmahathir1@gmail.com"
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 987876287160
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "3009"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "Developer of badhan"
+                    },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 1634921130787
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Info of the logged in user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/search/v2": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Searches for donors that matches the filters",
+        "parameters": [
+          {
+            "name": "bloodGroup",
+            "description": "blood group for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "hall",
+            "description": "hall for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "batch",
+            "description": "batch for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "address",
+            "description": "address for donors",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "isAvailable",
+            "description": "isAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "isNotAvailable",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "availableToAll",
+            "description": "availableToAll denotes the availability of the donor to the other hall members",
+            "type": "boolean",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "filteredDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "address": {
+                        "type": "string",
+                        "example": "Narayangonj Narayangonj "
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "249"
+                      },
+                      "designation": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 1569974400000
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "Has diabetes"
+                      },
+                      "commentTime": {
+                        "type": "number",
+                        "example": 1628521457159
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a0624"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1606001"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Swapnil Saha"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 88014587556
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "availableToAll": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "callRecords": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "date": {
+                              "type": "number",
+                              "example": 1628520769727
+                            },
+                            "_id": {
+                              "type": "string",
+                              "example": "611141413ac83c0015f851b7"
+                            },
+                            "callerId": {
+                              "type": "string",
+                              "example": "5e6776166f73f925e22a05aa"
+                            },
+                            "calleeId": {
+                              "type": "string",
+                              "example": "5e6776166f73f925e22a0624"
+                            }
+                          }
+                        }
+                      },
+                      "donationCountOptimized": {
+                        "type": "number",
+                        "example": 6
+                      },
+                      "markedBy": {
+                        "type": "object",
+                        "properties": {
+                          "donorId": {
+                            "type": "string",
+                            "example": "bb9dbced70ba9cddedc49e7cc8ed7b85"
+                          },
+                          "markerId": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "7e5aa536cb89198aa20fd13ebf75c97d"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Clarence Cronin"
+                              }
+                            }
+                          },
+                          "time": {
+                            "type": "number",
+                            "example": 1634535727368
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successful donor deletion"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not allowed to search donors of other halls"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the user tries to search other halls"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donors/comment": {
+      "patch": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Adds a comment to a donors profile.",
+        "parameters": [
+          {
+            "name": "editDonorComment",
+            "in": "body",
+            "description": "donor info for posting comment",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hujfsduif783ujh"
+                },
+                "comment": {
+                  "type": "string",
+                  "example": "Sample comment about donor"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Comment updated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "In case of successfully saving the comment"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donors/password": {
+      "post": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Request for password reset link for a user",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "body",
+            "description": "donorId of the user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hdjhd12vhjgj3428569834hth"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully created recovery link for user"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "dagwerhgiownbweshgewiugnswieugnwkj"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successfully created recovery link for user"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You cannot modify the details of a Badhan member with higher designation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This middleware is used to block the manipulation of data of a member with higher designation"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor is not a volunteer/ admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor is not a volunteer/ admin"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donors/v2": {
+      "patch": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Handles the update of donor information.",
+        "parameters": [
+          {
+            "name": "editDonor",
+            "in": "body",
+            "description": "donor info for editing donor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "ghjdgejhd7623jhs"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mir Mahathir Mohammad"
+                },
+                "phone": {
+                  "type": "number",
+                  "example": 8801521438557
+                },
+                "studentId": {
+                  "type": "number",
+                  "example": 1605011
+                },
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                },
+                "hall": {
+                  "type": "number",
+                  "example": 3
+                },
+                "roomNumber": {
+                  "type": "string",
+                  "example": "3009"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Azimpur"
+                },
+                "availableToAll": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "email": {
+                  "type": "string",
+                  "example": "mirmahathir1@gmail.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor updated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor info update successful"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You do not have permission to edit email address of another user"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "You do not have permission to edit email address of another user"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email address does not exist"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor info update successful"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donors/designation": {
+      "patch": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Handles the promotion or demotion of users.",
+        "parameters": [
+          {
+            "name": "promote",
+            "in": "body",
+            "description": "If the user wants to promote the target donor, promoteFlag should be true and a new password is needed to be set. If the target donor needs to be demoted, the promoteFlag should be false.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hjasgd673278"
+                },
+                "promoteFlag": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Target user promoted/demoted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donor promotion/ demotion successful"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "error message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will appear if anyone below the designation of hall admin tries to access this route. This middleware assumes that the handleHallPermission middleware is used before and along with this middleware"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Can not promote volunteer or can not demote donor/ Donor does not have a valid hall"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If user cannot promote volunteer or cannot demote donor/ Donor does not have a valid hall"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Request get list of volunteers of own hall, all hall admins and super admins",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All designated members fetched"
+                },
+                "volunteerList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "4011"
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "5e68514995b0367d81546b29"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1606037"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Md. Nasim Afroj Taj"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801876834245
+                      }
+                    }
+                  }
+                },
+                "adminList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776c090b43cdb0ddf347a"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1704194"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Oyshee Chowdhury"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801997331062
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 1
+                      }
+                    }
+                  }
+                },
+                "superAdminList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a05e8"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1805064"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Sanju Basak"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801774377473
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "All designated members fetched"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donors/checkDuplicate": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Check whether phone number already exists",
+        "parameters": [
+          {
+            "name": "phone",
+            "description": "Phone number of donor",
+            "type": "number",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor found with duplicate phone number in Titumir Hall"
+                },
+                "found": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "donor": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "example": "Azimpur"
+                    },
+                    "roomNumber": {
+                      "type": "string",
+                      "example": "3009"
+                    },
+                    "designation": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "lastDonation": {
+                      "type": "number",
+                      "example": 1634196816955
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "Developer of Badhan"
+                    },
+                    "commentTime": {
+                      "type": "number",
+                      "example": 1634838132020
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "mirmahathir1@gmail.com"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "hall": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mir Mahathir Mohammad"
+                    },
+                    "studentId": {
+                      "type": "string",
+                      "example": "1605011"
+                    },
+                    "availableToAll": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If the donor already exists in the database, user will get the error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/volunteers/all": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Fetches all volunteers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully fetched donor details"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a05aa"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mahin Azad"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 4
+                      },
+                      "studentId": {
+                        "type": "number",
+                        "example": 1905081
+                      },
+                      "logCount": {
+                        "type": "number",
+                        "example": 11
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Volunteer list fetch successful"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/admins": {
+      "patch": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer",
+        "parameters": [
+          {
+            "name": "admin",
+            "in": "body",
+            "description": "donor info for changing admin",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hdjhd12vhjgj3428569834hth"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully changed hall admin"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successfully changed hall admin"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User is not a volunteer"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If fetched user is not a volunteer , user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/users/signin": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to login a user.",
+        "parameters": [
+          {
+            "name": "signIn",
+            "in": "body",
+            "description": "Phone number of a logging user.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string",
+                  "example": "8801521438557"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully signed in"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "A successful sign in returns a token for the user"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Incorrect phone / password"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When the user provides an invalid password"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You do not have an account"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When the logging user does not have any account"
+          }
+        }
+      }
+    },
+    "/users/signout": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to logout a user.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logged out successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "A successful sign out removes the token for the user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users/signout/all": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to logout user from all devices.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logged out from all devices successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "A successful sign out removes all the tokens of the user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users/redirection": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to request a temporary redirection token",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Redirection token created"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Redirection token created"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "description": "Route endpoint to redirect user from app to web.",
+        "parameters": [
+          {
+            "name": "logIn",
+            "in": "body",
+            "description": "The temporary token generated by /user/requestRedirection",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "example": "sdlfkhgoenguiehgfudsnbvsiugkb"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Redirected login successful"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Redirection token created"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Session Expired"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the jwt token is invalid"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the token does not exist"
+          }
+        }
+      }
+    },
+    "/users/password/forgot": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Route if user forgets the password.",
+        "parameters": [
+          {
+            "name": "signIn",
+            "in": "body",
+            "description": "Phone number of user who forgot his/her password",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string",
+                  "example": "8801521438557"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "A recovery mail has been sent to your email address"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success response"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Phone number not recognized/ Account not found/ No recovery email found for this phone number"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Error responses"
+          }
+        }
+      }
+    },
+    "/users/password": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "description": "Route endpoint to change password",
+        "parameters": [
+          {
+            "name": "passwordChange",
+            "in": "body",
+            "description": "New Password",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "type": "string",
+                  "example": "mynewpassword"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Password changed successfully"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "dsgfewosgnwegnhw"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successful password change done"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users/logins": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to get recent logins",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Recent logins fetched successfully"
+                },
+                "logins": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "dsgfewosgnwegnhw"
+                      },
+                      "os": {
+                        "type": "string",
+                        "example": "Ubuntu 20.04.1"
+                      },
+                      "device": {
+                        "type": "string",
+                        "example": "Asus K550VX"
+                      },
+                      "browserFamily": {
+                        "type": "string",
+                        "example": "Firefox"
+                      },
+                      "ipAddress": {
+                        "type": "string",
+                        "example": "1.2.3.4"
+                      }
+                    }
+                  }
+                },
+                "currentLogin": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "dsgfewosgnwegnhw"
+                    },
+                    "os": {
+                      "type": "string",
+                      "example": "Ubuntu 20.04.1"
+                    },
+                    "device": {
+                      "type": "string",
+                      "example": "Asus K550VX"
+                    },
+                    "browserFamily": {
+                      "type": "string",
+                      "example": "Firefox"
+                    },
+                    "ipAddress": {
+                      "type": "string",
+                      "example": "1.2.3.4"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success response"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users/logins/{tokenId}": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "description": "Endpoint to delete a login from device",
+        "parameters": [
+          {
+            "name": "tokenId",
+            "description": "ID of token to be deleted",
+            "type": "string",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logged out from specified device"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success response"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Login information not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Token with specified ID was not found in database"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/callrecords": {
+      "post": {
+        "tags": [
+          "Call Records"
+        ],
+        "description": "Endpoint to insert a call record",
+        "parameters": [
+          {
+            "name": "CallRecordObject",
+            "in": "body",
+            "description": "Contains the donor id of callee",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "fwetiubg43t6847gsdffwekt"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Call record insertion successful"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "callRecord": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "number",
+                      "example": 1625755390858
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "60e70f42055a83d88"
+                    },
+                    "callerId": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "5e901d56e0177ced73"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Mir Mahathir Mohammad"
+                        },
+                        "designation": {
+                          "type": "number",
+                          "example": 3
+                        },
+                        "hall": {
+                          "type": "number",
+                          "example": 4
+                        }
+                      }
+                    },
+                    "calleeId": {
+                      "type": "string",
+                      "example": "5e68514546b0e"
+                    },
+                    "expireAt": {
+                      "type": "string",
+                      "example": "2021-11-15T11:23:54.231Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Call record insertion successful"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Call Records"
+        ],
+        "description": "handles the deletion of one call history for a particular donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "description": "Id of donor for call history",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "callRecordId",
+            "description": "Id of call record that is going to be deleted ",
+            "type": "string",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Call record deletion successful"
+                },
+                "deletedCallRecord": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "number",
+                      "example": 1632553859992
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "614ecb83a66ce337f8b484e8"
+                    },
+                    "callerId": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    },
+                    "calleeId": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Call record deletion successful"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Call record not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error occurs if the call record does not exist"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Target donor does not have the callee of call record"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error occurs if the call record does not associate with the target donor"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/donations": {
+      "post": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "Endpoint to insert a donation date for a donor",
+        "parameters": [
+          {
+            "name": "insertDonation",
+            "in": "body",
+            "description": "Donor info for inserting donation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "bhjdekj8923"
+                },
+                "date": {
+                  "type": "number",
+                  "example": 1611100800000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donations inserted successfully"
+                },
+                "newDonation": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "number",
+                      "example": 1611100800000
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "614ec811e29ab430ddfb119a"
+                    },
+                    "phone": {
+                      "type": "number",
+                      "example": 8801521438557
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "5e901d56effc5900177ced73"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donations inserted successfully"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Donations"
+        ],
+        "description": "handles the deletion of a donation for a donor.",
+        "parameters": [
+          {
+            "name": "donorId",
+            "in": "query",
+            "description": "donor id for deleting donation",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "donation date for deleting donation",
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully deleted donation"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donation deletion successful"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Matching donation not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Error case"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/v3/log/version": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get app info deployed to play store",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "version": {
+                  "type": "string",
+                  "example": "2.5.1"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Latest app version fetched"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "response is the current version number of badhan api"
+          }
+        }
+      }
+    },
+    "/log/version": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get app info deployed to play store",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "version": {
+                  "type": "string",
+                  "example": "2.5.1"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Latest app version fetched"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "response is the current version number of badhan api"
+          }
+        }
+      }
+    },
+    "/log/statistics": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Fetch statistics about the current donor count and volunteer count",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Statistics fetched successfully"
+                },
+                "statistics": {
+                  "type": "object",
+                  "properties": {
+                    "donorCount": {
+                      "type": "number",
+                      "example": 2600
+                    },
+                    "donationCount": {
+                      "type": "number",
+                      "example": 1200
+                    },
+                    "volunteerCount": {
+                      "type": "number",
+                      "example": 130
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Donation statistics fetch successful"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/log/date/{date}/donorId/{donorId}": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get api call details of a donor by date",
+        "parameters": [
+          {
+            "name": "date",
+            "description": "Date of logs",
+            "type": "number",
+            "in": "param"
+          },
+          {
+            "name": "donorId",
+            "description": "donorId of the target donor",
+            "type": "string",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logs fetched by user and date"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "611559f87be47bc8ca89b8a1"
+                      },
+                      "date": {
+                        "type": "number",
+                        "example": 1628789240641
+                      },
+                      "operation": {
+                        "type": "string",
+                        "example": "SEARCH DONORS"
+                      },
+                      "details": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/log/date/{date}": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get user-wise api call counts for specific date",
+        "parameters": [
+          {
+            "name": "date",
+            "description": "Date of logs",
+            "type": "number",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "Mir Mahathir Mohammad"
+                      },
+                      "donorId": {
+                        "type": "string",
+                        "example": "5e901d56effc5900177ced73"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 5
+                      },
+                      "count": {
+                        "type": "number",
+                        "example": 32
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/log": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "description": "Get date wise count of api calls",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "logs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "dateString": {
+                        "type": "string",
+                        "example": "2021-08-14"
+                      },
+                      "count": {
+                        "type": "number",
+                        "example": 2
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/publicContacts": {
+      "post": {
+        "tags": [
+          "Public Contacts"
+        ],
+        "description": "Endpoint to insert a public contact",
+        "parameters": [
+          {
+            "name": "PublicContactObject",
+            "in": "body",
+            "description": "Contains the donor id and assigned blood group of contact",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "fwetiubg43t6847gsdffwekt"
+                },
+                "bloodGroup": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact added successfully"
+                },
+                "publicContact": {
+                  "type": "object",
+                  "properties": {
+                    "bloodGroup": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "fwetiubg43t6847gsdffwekt"
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "fwetiubg43t6847gsdffwekt"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success message"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Public Contacts"
+        ],
+        "description": "Endpoint to get public contacts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "All public contacts fetched successfully"
+                },
+                "publicContacts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "contacts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "donorId": {
+                              "type": "string",
+                              "example": "fwetiubg43t6847gsdffwekt"
+                            },
+                            "phone": {
+                              "type": "string",
+                              "example": "8801521438557"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Mahathir"
+                            },
+                            "contactId": {
+                              "type": "string",
+                              "example": "fwetiubg43t6847gsdffwekt"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success message"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Public Contacts"
+        ],
+        "description": "Endpoint to delete a public contact",
+        "parameters": [
+          {
+            "name": "donorId",
+            "description": "donorId of public contact",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "contactId",
+            "description": "contactId to be deleted",
+            "type": "string",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact deleted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success message"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Response if the public contact to be deleted is not found"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Public contact not consistent with donorId"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If contactId in database does not have the matching donorId"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/activeDonors": {
+      "post": {
+        "tags": [
+          "Active Donors"
+        ],
+        "description": "Add an active donor for everyone to see",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "body",
+            "description": "donorId of the user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "donorId": {
+                  "type": "string",
+                  "example": "hdjhd12vhjgj3428569834hth"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Active donor created"
+                },
+                "newActiveDonor": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "markerId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "time": {
+                      "type": "number",
+                      "example": 1658974323116
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Active donor created"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Active donor already created"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Active donor already created"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Active Donors"
+        ],
+        "description": "Get list of active donors filtered by search parameters",
+        "parameters": [
+          {
+            "name": "bloodGroup",
+            "description": "blood group for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "hall",
+            "description": "hall for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "batch",
+            "description": "batch for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "address",
+            "description": "address for donors",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "isAvailable",
+            "description": "isAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "isNotAvailable",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "availableToAll",
+            "description": "availableToAll denotes the availability of the donor to the other hall members",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "markedByMe",
+            "description": "Make this true to get all marked donors that were marked by me",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "availableToAllOrHall",
+            "description": "Make this true to get all marked donors that are of the specified hall or are marked as available to all.",
+            "type": "boolean",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Active donor deleted successfully"
+                },
+                "activeDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "616a692bd2bd480016513b56"
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 8
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mir Mahathir"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "(Unknown)"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "(Unknown)"
+                      },
+                      "commentTime": {
+                        "type": "number",
+                        "example": 1636185389668
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "availableToAll": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "2105011"
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 8801524578445
+                      },
+                      "markedTime": {
+                        "type": "number",
+                        "example": 1636185389668
+                      },
+                      "markerName": {
+                        "type": "string",
+                        "example": "Ifty"
+                      },
+                      "donationCount": {
+                        "type": "number",
+                        "example": 4
+                      },
+                      "callRecordCount": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "lastCallRecord": {
+                        "type": "number",
+                        "example": 1636185389668
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Active donor deleted"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/activeDonors/{donorId}": {
+      "delete": {
+        "tags": [
+          "Active Donors"
+        ],
+        "description": "Remove an active donor",
+        "parameters": [
+          {
+            "name": "donorId",
+            "description": "The donor to be removed from active donors",
+            "type": "string",
+            "in": "param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Active donor deleted successfully"
+                },
+                "removedActiveDonor": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "donorId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "markerId": {
+                      "type": "string",
+                      "example": "hdjhd12vhjgj3428569834hth"
+                    },
+                    "time": {
+                      "type": "number",
+                      "example": 1658974323116
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Active donor deleted"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Active donor not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Active donor not found"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Donors": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e901d56effc5900177ced73"
+        },
+        "designation": {
+          "type": "number",
+          "example": 3
+        },
+        "lastDonation": {
+          "type": "number",
+          "example": 0
+        },
+        "phone": {
+          "type": "number",
+          "example": 8801521438557
+        },
+        "bloodGroup": {
+          "type": "number",
+          "example": 2
+        },
+        "hall": {
+          "type": "number",
+          "example": 5
+        },
+        "name": {
+          "type": "string",
+          "example": "Mir Mahathir Mohammad"
+        },
+        "studentId": {
+          "type": "string",
+          "example": "1605011"
+        },
+        "address": {
+          "type": "string",
+          "example": "Azimpur road"
+        },
+        "roomNumber": {
+          "type": "string",
+          "example": "ME-103"
+        },
+        "comment": {
+          "type": "string",
+          "example": "Designer and developer of Badhan Web and App"
+        },
+        "password": {
+          "type": "string",
+          "example": "$2a$10$9B3aSkiguyvukvGQiTMYS89a9vkS"
+        },
+        "commentTime": {
+          "type": "number",
+          "example": 1625686709994
+        },
+        "availableToAll": {
+          "type": "boolean",
+          "example": true
+        },
+        "email": {
+          "type": "string",
+          "example": "mirmahathir1@gmail.com"
+        }
+      }
+    },
+    "Donations": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "phone": {
+          "type": "number",
+          "example": 8801746027313
+        },
+        "date": {
+          "type": "number",
+          "example": 1514764800000
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    },
+    "CallRecords": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "date": {
+          "type": "number",
+          "example": 1514764800000
+        },
+        "callerId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "calleeId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    },
+    "Logs": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "operation": {
+          "type": "string",
+          "example": "CREATE DONOR"
+        },
+        "date": {
+          "type": "number",
+          "example": 1514764800000
+        },
+        "details": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "Tokens": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "token": {
+          "type": "string",
+          "example": "shgreoinghbedoiughewiutb3outgesiuvberugbgneh"
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    },
+    "PublicContacts": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "bloodGroup": {
+          "type": "number",
+          "example": 2
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        }
+      }
+    }
+  }
+}
