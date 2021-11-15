@@ -1,6 +1,7 @@
 require('./dotenv');
-const {parseBodyToJSON} = require('./response/bodyParser')
-let express = require('express');
+// const {parseBodyToJSON} = require('./response/bodyParser')
+// let express = require('express');
+import express from 'express'
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
@@ -27,7 +28,8 @@ app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(logger('dev'));
 app.use(userAgentHandler);
 app.response.respond = respond;
-app.use(parseBodyToJSON);
+// app.use(parseBodyToJSON);
+app.use(express.json());
 
 app.use('/users', usersRouter);
 app.use('/donations',donationsRouter);
@@ -39,6 +41,7 @@ app.use('/', apiRouter);
 app.use('/',logRouter);
 app.use('*',routeNotFoundHandler);
 app.use(internalServerErrorHandler);
+
 
 process.on('unhandledRejection', unhandledRejectionHandler);
 process.on('uncaughtException', uncaughtExceptionHandler);

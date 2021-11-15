@@ -1,5 +1,5 @@
 {
-  "exec": "npm run server",
+  "exec": "npm run dev",
   "watch": ["*"],
-  "ext": "js, html, css, json"
+  "ext": "js, html, css, env"
 }
