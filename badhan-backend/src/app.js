@@ -1,5 +1,5 @@
 require('./dotenv');
-// const {parseBodyToJSON} = require('./response/bodyParser')
+const {handleJsonBodyParseFailures} = require('./response/bodyParser')
 // let express = require('express');
 import express from 'express'
 let cookieParser = require('cookie-parser');
@@ -28,8 +28,8 @@ app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(logger('dev'));
 app.use(userAgentHandler);
 app.response.respond = respond;
-// app.use(parseBodyToJSON);
 app.use(express.json());
+app.use(handleJsonBodyParseFailures)
 
 app.use('/users', usersRouter);
 app.use('/donations',donationsRouter);
