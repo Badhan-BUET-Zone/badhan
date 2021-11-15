@@ -1,9 +1,7 @@
 const activeDonorInterface = require('../db/interfaces/activeDonorInterface')
 const logInterface = require('../db/interfaces/logInterface')
-const mongoose = require('mongoose')
-const util = require('util')
+// const util = require('util')
 const {
-  InternalServerError500,
   NotFoundError404,
   ConflictError409,
   ForbiddenError403
@@ -108,7 +106,6 @@ const handleDELETEActiveDonors = async (req, res, next) => {
 
      */
 
-  const user = res.locals.middlewareResponse.donor
   const donor = res.locals.middlewareResponse.targetDonor
 
   const activeDonorRemoveResult = await activeDonorInterface.remove(donor._id)

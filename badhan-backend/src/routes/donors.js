@@ -6,8 +6,6 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const donorValidator = require('../validations/donors')
 
-const { deprecatedController } = require('../controllers/otherControllers')
-
 router.post('/donors',
   donorValidator.validatePOSTDonors,
   rateLimiter.donorInsertionLimiter,

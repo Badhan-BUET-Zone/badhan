@@ -1,17 +1,7 @@
 const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
-const {
-  InternalServerError500,
-  BadRequestError400,
-  ForbiddenError403,
-  NotFoundError404,
-  UnauthorizedError401,
-  TooManyRequestsError429,
-  ErrorResponse,
-  ConflictError409
-} = require('../response/errorTypes')
-const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
+const { OKResponse200 } = require('../response/successTypes')
 
 const handleGETOnlineCheck = async (req, res, next) => {
   /*

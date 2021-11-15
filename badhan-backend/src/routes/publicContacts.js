@@ -6,8 +6,6 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const publicContactValidator = require('../validations/publicContacts')
 
-const { deprecatedController } = require('../controllers/otherControllers')
-
 router.post('/', /* #swagger.path = '/publicContacts' */
   rateLimiter.publicContactInsertionLimiter,
   publicContactValidator.validatePOSTPublicContact,

@@ -1,6 +1,4 @@
 const { Donor } = require('../models/Donor')
-const { CallRecord } = require('../models/CallRecord')
-const { Donation } = require('../models/Donation')
 const insertDonor = async (donorObject) => {
   const donor = new Donor(donorObject)
   const data = await donor.save()

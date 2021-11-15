@@ -1,4 +1,4 @@
-const util = require('util')
+// const util = require('util')
 const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
@@ -8,11 +8,8 @@ const { halls } = require('../constants')
 
 const {
   InternalServerError500,
-  BadRequestError400,
   ForbiddenError403,
   NotFoundError404,
-  UnauthorizedError401,
-  TooManyRequestsError429,
   ConflictError409
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')

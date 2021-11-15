@@ -2,8 +2,6 @@ const publicContactInterface = require('../db/interfaces/publicContactInterface'
 const logInterface = require('../db/interfaces/logInterface')
 const {
   InternalServerError500,
-  BadRequestError400,
-  ForbiddenError403,
   NotFoundError404,
   ConflictError409
 } = require('../response/errorTypes')

@@ -5,7 +5,6 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 
 const logValidator = require('../validations/logs')
-const { deprecatedController } = require('../controllers/otherControllers')
 
 router.get('/v3/log/version',
   rateLimiter.commonLimiter,

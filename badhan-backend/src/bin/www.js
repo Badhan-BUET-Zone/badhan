@@ -66,11 +66,15 @@ function onError (error) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges')
       process.exit(1)
+      /* eslint-disable no-unreachable */
       break
+      /* eslint-enable no-unreachable */
     case 'EADDRINUSE':
       console.error(bind + ' is already in use')
       process.exit(1)
+      /* eslint-disable no-unreachable */
       break
+      /* eslint-enable no-unreachable */
     default:
       throw error
   }

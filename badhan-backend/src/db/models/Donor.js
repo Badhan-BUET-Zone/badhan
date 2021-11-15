@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const { CallRecord } = require('./CallRecord')
 const { Donation } = require('./Donation')
@@ -238,7 +237,9 @@ donorSchema.pre('save', function (next) {
   const donor = this
   if (donor.isModified('password')) {
     bcrypt.genSalt(10, (err, salt) => {
+      console.log(err)
       bcrypt.hash(donor.password, salt, (err, hash) => {
+        console.log(err)
         donor.password = hash
         next()
       })

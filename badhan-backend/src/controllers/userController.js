@@ -8,11 +8,8 @@ const emailInterface = require('../db/interfaces/emailInterface')
 
 const {
   InternalServerError500,
-  BadRequestError400,
-  ForbiddenError403,
   NotFoundError404,
-  UnauthorizedError401,
-  ConflictError409
+  UnauthorizedError401
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
@@ -192,7 +189,7 @@ const handleDELETESignOut = async (req, res, next) => {
   const donor = res.locals.middlewareResponse.donor
 
   // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-  const tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id)
+  await tokenInterface.deleteTokenDataByToken(token, donor._id)
 
   /*
     #swagger.responses[200] = {
@@ -222,7 +219,7 @@ const handleDELETESignOutAll = async (req, res, next) => {
   const donor = res.locals.middlewareResponse.donor
 
   // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-  const deleteTokensResponse = await tokenInterface.deleteAllTokensByDonorId(donor._id)
+  await tokenInterface.deleteAllTokensByDonorId(donor._id)
   /*
             #swagger.responses[200] = {
                 schema: {

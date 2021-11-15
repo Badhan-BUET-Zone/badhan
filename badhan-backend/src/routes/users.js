@@ -5,7 +5,6 @@ const authenticator = require('../middlewares/authenticate')
 const userController = require('../controllers/userController')
 const rateLimiter = require('../middlewares/rateLimiter')
 const userValidator = require('../validations/users')
-const { deprecatedController } = require('../controllers/otherControllers')
 
 const { OKResponse200 } = require('../response/successTypes')
 
