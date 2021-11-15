@@ -94,15 +94,15 @@ const doc = {
     },
 }
 
-const outputFile = './doc/swagger_output.json'
+const outputFile = './swagger_output.json'
 const endpointsFiles = [
-    './routes/donors.js',
-    './routes/users.js',
-    './routes/callRecords.js',
-    './routes/donations.js',
-    './routes/logs.js',
-    './routes/publicContacts.js',
-    './routes/activeDonors.js'
+    './src/routes/donors.js',
+    './src/routes/users.js',
+    './src/routes/callRecords.js',
+    './src/routes/donations.js',
+    './src/routes/logs.js',
+    './src/routes/publicContacts.js',
+    './src/routes/activeDonors.js'
 ]
 
 

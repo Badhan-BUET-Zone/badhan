@@ -8,7 +8,7 @@ read -r message
 echo "The commit message is: $message"
 
 echo "---generate swagger documentation---"
-node doc/swagger.js
+npm run doc
 
 echo "---adding changed files to staging---"
 git add .

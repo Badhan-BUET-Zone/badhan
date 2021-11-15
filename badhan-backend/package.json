@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "server": "node ./bin/www",
-    "server:prod": "node ./bin/www",
-    "doc": "node doc/swagger.js",
+    "start": "node ./src/bin/www",
+    "server": "node ./src/bin/www",
+    "server:prod": "node ./src/bin/www",
+    "doc": "node ./src/doc/swagger.js",
     "serve": "nodemon"
   },
   "engines": {

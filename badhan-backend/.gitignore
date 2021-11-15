@@ -5,3 +5,4 @@ dotenv/config.json
 app.yml
 .env.production
 .env.development
+swagger_output.json
