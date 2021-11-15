@@ -1,6 +1,7 @@
 node_modules/
 playground/
-config/config.json
-config/config.env
+dotenv/config.json
 .idea/
 app.yml
+.env.production
+.env.development

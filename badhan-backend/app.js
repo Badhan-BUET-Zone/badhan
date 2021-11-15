@@ -1,5 +1,4 @@
-const dotenv = require('dotenv')
-dotenv.config( { path : './config/config.env'} )
+require('./dotenv');
 const {parseBodyToJSON} = require('./response/bodyParser')
 let express = require('express');
 let cookieParser = require('cookie-parser');
