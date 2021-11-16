@@ -1,4 +1,4 @@
-// import tokenCache from '../cache/tokenCache'
+import tokenCache from '../cache/tokenCache'
 const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
@@ -16,14 +16,14 @@ const handleAuthentication = async (req, res, next) => {
   }
 
   // check whether donor is already in cache
-  // const cachedUser = tokenCache.get(token)
-  // if (cachedUser) {
-  //   res.locals.middlewareResponse = {
-  //     donor: cachedUser,
-  //     token
-  //   }
-  //   return next()
-  // }
+  const cachedUser = tokenCache.get(token)
+  if (cachedUser) {
+    res.locals.middlewareResponse = {
+      donor: cachedUser,
+      token
+    }
+    return next()
+  }
 
   const tokenCheckResult = await tokenInterface.findTokenDataByToken(token)
   if (tokenCheckResult.status !== 'OK') {
@@ -39,7 +39,7 @@ const handleAuthentication = async (req, res, next) => {
 
   const donor = findDonorResult.data
   // save the donor to cache
-  // tokenCache.add(token, donor)
+  tokenCache.add(token, donor)
   res.locals.middlewareResponse = {
     donor,
     token

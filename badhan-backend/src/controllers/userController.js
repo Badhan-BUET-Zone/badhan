@@ -1,3 +1,4 @@
+import tokenCache from '../cache/tokenCache'
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -156,6 +157,8 @@ const handlePOSTSignIn = async (req, res, next) => {
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTSignIn when tokenInterface.addToken'))
   }
+  // add new token to cache
+  tokenCache.add(token, donor)
   /*
     #swagger.responses[201] = {
         schema: {
