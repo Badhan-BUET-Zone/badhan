@@ -1,22 +1,31 @@
+// import tokenCache from '../cache/tokenCache'
 const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
 const { UnauthorizedError401, InternalServerError500, ForbiddenError403, NotFoundError404 } = require('../response/errorTypes')
-
 const handleAuthentication = async (req, res, next) => {
   /*
     #swagger.auto = false
      */
   const token = req.header('x-auth')
-  let decodedDonor
 
   try {
-    decodedDonor = await jwt.verify(token, process.env.JWT_SECRET)
+    await jwt.verify(token, process.env.JWT_SECRET)
   } catch (e) {
     return res.respond(new UnauthorizedError401('Invalid Authentication'))
   }
 
-  const tokenCheckResult = await tokenInterface.findTokenDataByTokenCached(token, decodedDonor._id)
+  // check whether donor is already in cache
+  // const cachedUser = tokenCache.get(token)
+  // if (cachedUser) {
+  //   res.locals.middlewareResponse = {
+  //     donor: cachedUser,
+  //     token
+  //   }
+  //   return next()
+  // }
+
+  const tokenCheckResult = await tokenInterface.findTokenDataByToken(token)
   if (tokenCheckResult.status !== 'OK') {
     return res.respond(new UnauthorizedError401('You have been logged out'))
   }
@@ -29,7 +38,8 @@ const handleAuthentication = async (req, res, next) => {
   }
 
   const donor = findDonorResult.data
-
+  // save the donor to cache
+  // tokenCache.add(token, donor)
   res.locals.middlewareResponse = {
     donor,
     token

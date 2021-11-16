@@ -236,14 +236,14 @@ donorSchema.methods.toJSON = function () {
 donorSchema.pre('save', function (next) {
   const donor = this
   if (donor.isModified('password')) {
+    /* eslint-disable node/handle-callback-err */
     bcrypt.genSalt(10, (err, salt) => {
-      console.log(err)
       bcrypt.hash(donor.password, salt, (err, hash) => {
-        console.log(err)
         donor.password = hash
         next()
       })
     })
+    /* eslint-enable node/handle-callback-err */
   } else {
     next()
   }

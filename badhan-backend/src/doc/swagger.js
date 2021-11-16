@@ -90,6 +90,12 @@ const doc = {
       _id: '5e6776166f73f925e22a0574',
       bloodGroup: 2,
       donorId: '5e6776166f73f925e22a0574'
+    },
+    ActiveDonor: {
+      _id: '5e6776166f73f925e22a0574',
+      donorId: '5e6776166f73f925e22a0574',
+      markerId: '5e6776166f73f925e22a0574',
+      time: 123654789
     }
   }
 }

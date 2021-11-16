@@ -510,8 +510,7 @@ const handleDELETELogins = async (req, res, next) => {
     }
 */
 
-  const user = res.locals.middlewareResponse.donor
-  const deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId, user._id)
+  const deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId)
   if (deletedTokenResult.status !== 'OK') {
     return res.respond(new NotFoundError404('Login information not found'))
   }

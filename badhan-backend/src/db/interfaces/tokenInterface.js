@@ -1,3 +1,4 @@
+import tokenCache from '../../cache/tokenCache'
 const { Token } = require('../models/Token')
 const jwt = require('jsonwebtoken')
 
@@ -41,21 +42,6 @@ const addToken = async (donorId, token, userAgent) => {
   }
 }
 
-const findTokenDataByTokenCached = async (token, donorId) => {
-  const tokenData = await Token.findOne({ token })
-  if (!tokenData) {
-    return {
-      message: 'Token not found',
-      status: 'ERROR'
-    }
-  }
-  return {
-    message: 'Token found successfully',
-    status: 'OK',
-    data: tokenData
-  }
-}
-
 const findTokenDataByToken = async (token) => {
   const tokenData = await Token.findOne({ token })
   if (!tokenData) {
@@ -71,9 +57,10 @@ const findTokenDataByToken = async (token) => {
   }
 }
 
-const deleteTokenDataByToken = async (token, donorId) => {
+const deleteTokenDataByToken = async (token) => {
   const tokenData = await Token.findOneAndDelete({ token })
   if (tokenData) {
+    tokenCache.clear(token)
     return {
       message: 'Token successfully removed',
       status: 'OK'
@@ -87,6 +74,7 @@ const deleteTokenDataByToken = async (token, donorId) => {
 
 const deleteAllTokensByDonorId = async (donorId) => {
   const tokenData = await Token.deleteMany({ donorId })
+  tokenCache.clearAll()
   return {
     message: 'Token successfully removed',
     status: 'OK',
@@ -112,8 +100,9 @@ const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken) => {
   }
 }
 
-const deleteByTokenId = async (tokenId, donorId) => {
+const deleteByTokenId = async (tokenId) => {
   const deletedToken = await Token.findByIdAndDelete(tokenId)
+  tokenCache.clearAll()
   if (deletedToken) {
     return {
       message: 'Token successfully removed',
@@ -130,7 +119,6 @@ const deleteByTokenId = async (tokenId, donorId) => {
 
 module.exports = {
   addToken,
-  findTokenDataByTokenCached,
   findTokenDataByToken,
   deleteTokenDataByToken,
   deleteAllTokensByDonorId,

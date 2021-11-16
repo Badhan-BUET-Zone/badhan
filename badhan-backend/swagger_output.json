@@ -3926,6 +3926,27 @@
           "example": "5e6776166f73f925e22a0574"
         }
       }
+    },
+    "ActiveDonor": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "donorId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "markerId": {
+          "type": "string",
+          "example": "5e6776166f73f925e22a0574"
+        },
+        "time": {
+          "type": "number",
+          "example": 123654789
+        }
+      }
     }
   }
 }
