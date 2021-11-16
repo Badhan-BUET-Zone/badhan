@@ -3,16 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "doc": "node ./src/doc/swagger.js",
     "serve": "nodemon",
     "start": "npm run server:prod",
     "server": "NODE_ENV=development babel-node ./src/bin/www",
     "server:prod": "NODE_ENV=production node ./dist/bin/www",
     "dev": "npm-run-all lint doc server",
+    "prod": "npm-run-all lint doc clean babel server:prod",
     "clean": "rimraf dist",
-    "build": "babel ./src --out-dir dist",
-    "prod": "npm-run-all clean build server:prod",
-    "lint": "eslint src"
+    "build": "npm-run-all lint doc clean babel",
+    "babel": "babel ./src --out-dir dist",
+    "lint": "eslint src",
+    "doc": "node ./src/doc/swagger.js"
   },
   "engines": {
     "node": "14.x.x"

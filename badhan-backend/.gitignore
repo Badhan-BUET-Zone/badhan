@@ -6,3 +6,4 @@ app.yml
 .env.production
 .env.development
 dist
+swagger_output.json
