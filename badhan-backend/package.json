@@ -8,10 +8,9 @@
     "server": "NODE_ENV=development babel-node ./src/bin/www",
     "server:prod": "NODE_ENV=production node ./dist/bin/www",
     "dev": "npm-run-all lint doc server",
-    "prod": "npm-run-all lint doc clean babel server:prod",
     "clean": "rimraf dist",
-    "build": "npm-run-all lint doc clean babel",
-    "babel": "babel ./src --out-dir dist",
+    "build": "babel ./src --out-dir dist",
+    "prod": "npm-run-all lint doc clean build server:prod",
     "lint": "eslint src",
     "doc": "node ./src/doc/swagger.js"
   },
