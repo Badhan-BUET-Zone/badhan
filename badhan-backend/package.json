@@ -5,13 +5,13 @@
   "scripts": {
     "doc": "node ./src/doc/swagger.js",
     "serve": "nodemon",
-    "start": "npm run prod",
-    "server": "babel-node ./src/bin/www",
-    "server:prod": "node ./dist/bin/www",
-    "dev": "NODE_ENV=development npm-run-all lint doc server",
+    "start": "npm run server:prod",
+    "server": "NODE_ENV=development babel-node ./src/bin/www",
+    "server:prod": "NODE_ENV=production node ./dist/bin/www",
+    "dev": "npm-run-all lint doc server",
     "clean": "rimraf dist",
     "build": "babel ./src --out-dir dist",
-    "prod": "NODE_ENV=production npm-run-all clean build server:prod",
+    "prod": "npm-run-all clean build server:prod",
     "lint": "eslint src"
   },
   "engines": {
