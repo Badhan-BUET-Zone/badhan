@@ -93,6 +93,32 @@ const handlePOSTSignIn = async (req, res) => {
                 password: "123456"
             }
         }
+                #swagger.responses[404] = {
+            schema: {
+                status: "ERROR",
+                statusCode: 404,
+                message: 'Donor not found/ You do not have an account',
+            },
+            description: 'When the donor is not found/ When the logging user does not have any account'
+        }
+
+        #swagger.responses[401] = {
+            schema: {
+                status: 'ERROR',
+                statusCode: 401,
+                message: 'Incorrect phone / password'
+            },
+            description: 'When the user provides an invalid password'
+        }
+            #swagger.responses[201] = {
+        schema: {
+            "status": "OK",
+            statusCode: 201,
+            "message": "Successfully signed in",
+            token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+        },
+        description: 'A successful sign in returns a token for the user'
+    }
         */
 
   const donorPhone = req.body.phone
@@ -100,16 +126,6 @@ const handlePOSTSignIn = async (req, res) => {
   const donorQueryResult = await donorInterface.findDonorByQuery({ phone: donorPhone }, {})
 
   if (donorQueryResult.status !== 'OK') {
-    /*
-        #swagger.responses[404] = {
-            schema: {
-                status: "ERROR",
-                statusCode: 404,
-                message: 'Donor not found',
-            },
-            description: 'When the donor is not found'
-        }
-         */
     return res.respond(new NotFoundError404('Account not found'))
   }
 
@@ -120,30 +136,10 @@ const handlePOSTSignIn = async (req, res) => {
   try {
     matched = await bcrypt.compare(password, donor.password)
   } catch (e) {
-    /*
-        #swagger.responses[404] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 404,
-                message: 'You do not have an account'
-            },
-            description: 'When the logging user does not have any account'
-        }
-         */
     return res.respond(new NotFoundError404('Account not found'))
   }
 
   if (!matched) {
-    /*
-        #swagger.responses[401] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 401,
-                message: 'Incorrect phone / password'
-            },
-            description: 'When the user provides an invalid password'
-        }
-         */
     return res.respond(new UnauthorizedError401('Incorrect phone / password'))
   }
 
@@ -160,19 +156,6 @@ const handlePOSTSignIn = async (req, res) => {
   }
   // add new token to cache
   tokenCache.add(token, donor)
-  /*
-    #swagger.responses[201] = {
-        schema: {
-            "status": "OK",
-            statusCode: 201,
-            "message": "Successfully signed in",
-            token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-        },
-        description: 'A successful sign in returns a token for the user'
-    }
-
-     */
-
   await logInterface.addLog(donor._id, 'POST USERS SIGNIN', {})
   return res.respond(new CreatedResponse201('Successfully signed in', {
     token
@@ -187,16 +170,7 @@ const handleDELETESignOut = async (req, res) => {
     #swagger.security = [{
                "api_key": []
         }]
-     */
-
-  const token = res.locals.middlewareResponse.token
-  const donor = res.locals.middlewareResponse.donor
-
-  // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-  await tokenInterface.deleteTokenDataByToken(token, donor._id)
-
-  /*
-    #swagger.responses[200] = {
+            #swagger.responses[200] = {
         schema: {
             status: 'OK',
             statusCode: 200,
@@ -204,7 +178,13 @@ const handleDELETESignOut = async (req, res) => {
         },
         description: 'A successful sign out removes the token for the user'
     }
-*/
+     */
+
+  const token = res.locals.middlewareResponse.token
+  const donor = res.locals.middlewareResponse.donor
+
+  // did not analyze the result because the route wouldn't reach this point if the token was not in the database
+  await tokenInterface.deleteTokenDataByToken(token, donor._id)
   await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT', {})
   return res.respond(new OKResponse200('Logged out successfully'))
 }
@@ -217,14 +197,6 @@ const handleDELETESignOutAll = async (req, res) => {
     #swagger.security = [{
                "api_key": []
         }]
-
-     */
-
-  const donor = res.locals.middlewareResponse.donor
-
-  // did not analyze the result because the route wouldn't reach this point if the token was not in the database
-  await tokenInterface.deleteAllTokensByDonorId(donor._id)
-  /*
             #swagger.responses[200] = {
                 schema: {
                     status: 'OK',
@@ -233,8 +205,13 @@ const handleDELETESignOutAll = async (req, res) => {
                 },
                 description: 'A successful sign out removes all the tokens of the user'
             }
-
      */
+
+  const donor = res.locals.middlewareResponse.donor
+
+  // did not analyze the result because the route wouldn't reach this point if the token was not in the database
+  await tokenInterface.deleteAllTokensByDonorId(donor._id)
+
   await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT ALL', {})
   return res.respond(new OKResponse200('Logged out from all devices successfully'))
 }
@@ -247,6 +224,15 @@ const handlePOSTRedirection = async (req, res) => {
     #swagger.security = [{
                "api_key": []
         }]
+    #swagger.responses[201] = {
+        schema: {
+            status: 'OK',
+            statusCode: 201,
+            message: 'Redirection token created',
+            token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+        },
+        description: 'Redirection token created'
+    }
      */
 
   const donor = res.locals.middlewareResponse.donor
@@ -261,18 +247,6 @@ const handlePOSTRedirection = async (req, res) => {
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500(tokenInsertResult.message, 'found in handlePOSTRedirection when tokenInterface.addToken'))
   }
-  /*
-    #swagger.responses[201] = {
-        schema: {
-            status: 'OK',
-            statusCode: 201,
-            message: 'Redirection token created',
-            token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-        },
-        description: 'Redirection token created'
-    }
-
-     */
 
   await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
 
@@ -293,15 +267,6 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
             token: "sdlfkhgoenguiehgfudsnbvsiugkb"
         }
     }
-
-     */
-  const token = req.body.token
-
-  let decodedDonor
-  try {
-    decodedDonor = await jwt.verify(token, dotenv.JWT_SECRET)
-  } catch (e) {
-    /*
         #swagger.responses[401] = {
             schema: {
                 status: 'ERROR',
@@ -310,25 +275,37 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
             },
             description: 'This error will occur if the jwt token is invalid'
         }
+     #swagger.responses[404] = {
+            schema: {
+                status: 'ERROR',
+                statusCode: 404,
+                message: 'Authentication failed. Invalid authentication token./ Token not found'
+            },
+            description: 'This error will occur if the user does not exist/ This error will occur if the token does not exist'
+        }
 
-         */
+            #swagger.responses[201] = {
+                schema: {
+                    status: 'OK',
+                    statusCode: 201,
+                    message: 'Redirected login successful',
+                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
+                },
+                description: 'Redirection token created'
+            }
+     */
+  const token = req.body.token
+
+  let decodedDonor
+  try {
+    decodedDonor = await jwt.verify(token, dotenv.JWT_SECRET)
+  } catch (e) {
     return res.respond(new UnauthorizedError401('Session Expired'))
   }
 
   const donorQueryResult = await donorInterface.findDonorByQuery({ _id: decodedDonor._id }, {})
 
   if (donorQueryResult.status !== 'OK') {
-    /*
-        #swagger.responses[404] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 404,
-                message: 'Authentication failed. Invalid authentication token.'
-            },
-            description: 'This error will occur if the user does not exist'
-        }
-
-         */
     return res.respond(new NotFoundError404('Donor not found'))
   }
 
@@ -337,17 +314,6 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
   const tokenDeleteResponse = await tokenInterface.deleteTokenDataByToken(token, donor._id)
 
   if (tokenDeleteResponse.status !== 'OK') {
-    /*
-        #swagger.responses[404] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 404,
-                message: 'Token not found'
-            },
-            description: 'This error will occur if the token does not exist'
-        }
-
-         */
     return res.respond(new NotFoundError404('Token not found'))
   }
 
@@ -362,18 +328,6 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500(tokenInsertResult.message, 'found in handlePATCHRedirectedAuthentication when tokenInterface.addToken'))
   }
-  /*
-            #swagger.responses[201] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 201,
-                    message: 'Redirected login successful',
-                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-                },
-                description: 'Redirection token created'
-            }
-
-     */
   await logInterface.addLog(donor._id, 'PATCH USERS REDIRECTION', {})
 
   return res.respond(new CreatedResponse201('Redirected login successful', {
@@ -396,6 +350,15 @@ const handlePATCHPassword = async (req, res) => {
             password: "mynewpassword"
         }
     }
+        #swagger.responses[201] = {
+        schema: {
+            status: 'OK',
+            statusCode: 201,
+            message: 'Password changed successfully',
+            token: 'dsgfewosgnwegnhw'
+        },
+        description: 'Successful password change done'
+    }
 */
 
   const reqBody = req.body
@@ -407,17 +370,6 @@ const handlePATCHPassword = async (req, res) => {
   const tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH USERS PASSWORD', {})
 
-  /*
-    #swagger.responses[201] = {
-        schema: {
-            status: 'OK',
-            statusCode: 201,
-            message: 'Password changed successfully',
-            token: 'dsgfewosgnwegnhw'
-        },
-        description: 'Successful password change done'
-    }
-     */
   return res.respond(new CreatedResponse201('Password changed successfully', {
     token: tokenInsertResult.data.token
   }))

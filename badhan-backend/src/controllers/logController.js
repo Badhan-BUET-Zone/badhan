@@ -29,12 +29,7 @@ const handleGETStatistics = async (req, res) => {
     #swagger.security = [{
                "api_key": []
         }]
-    */
-  const donorCount = await donorInterface.getCount()
-  const donationCount = await donationInterface.getCount()
-  const volunteerCount = await donorInterface.getVolunteerCount()
-  /*
-    #swagger.responses[200] = {
+        #swagger.responses[200] = {
         schema: {
             status: 'OK',
             statusCode: 200,
@@ -47,8 +42,10 @@ const handleGETStatistics = async (req, res) => {
         },
         description: 'Donation statistics fetch successful'
     }
-
-     */
+    */
+  const donorCount = await donorInterface.getCount()
+  const donationCount = await donationInterface.getCount()
+  const volunteerCount = await donorInterface.getVolunteerCount()
   return res.respond(new OKResponse200('Statistics fetched successfully', {
     statistics: {
       donorCount: donorCount.data,
@@ -63,9 +60,7 @@ const handleGETAppVersion = (req, res) => {
     #swagger.auto = false
     #swagger.tags = ['Logs']
     #swagger.description = 'Get app info deployed to play store'
-    */
 
-  /*
             #swagger.responses[200] = {
                 schema: {
                     status:'OK',

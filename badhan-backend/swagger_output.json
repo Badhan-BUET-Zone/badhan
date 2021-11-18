@@ -207,18 +207,18 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor found with duplicate phone number in another hall"
+                  "example": "Donor found with duplicate phone number/ Donor found with duplicate phone number in another hall"
                 },
                 "donor": {
                   "type": "string",
-                  "example": "this field will return null"
+                  "example": "(donor array)/(this field will return null) "
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "If the donor with same phone number already exists in the database with another hall name, user will get the error message"
+            "description": "If the donor already exists in the database, user will get the error message."
           }
         },
         "security": [
@@ -556,6 +556,29 @@
               }
             },
             "description": "When no donor with the specified donor id is found, user will get this error message"
+          },
+          "409": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor must be demoted for deletion"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "If the donor is a volunteer, hall admin or super admin, then he/she cannot be deleted"
           }
         },
         "security": [
@@ -1509,7 +1532,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor found with duplicate phone number in Titumir Hall"
+                  "example": "Donor found with duplicate phone number in Titumir Hall/ Donor found with duplicate phone number in Titumir Hall. You are not permitted to access this donor."
                 },
                 "found": {
                   "type": "boolean",
@@ -1741,14 +1764,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "User is not a volunteer"
+                  "example": "User is not a volunteer/ User does not have a valid hall"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "If fetched user is not a volunteer , user will get this error message"
+            "description": "If fetched user is not a volunteer/ user does not have a valid hall , user will get this error message"
           }
         },
         "security": [
@@ -1857,14 +1880,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "You do not have an account"
+                  "example": "Donor not found/ You do not have an account"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "When the logging user does not have any account"
+            "description": "When the donor is not found/ When the logging user does not have any account"
           }
         }
       }
@@ -2075,14 +2098,14 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Token not found"
+                  "example": "Authentication failed. Invalid authentication token./ Token not found"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "This error will occur if the token does not exist"
+            "description": "This error will occur if the user does not exist/ This error will occur if the token does not exist"
           }
         }
       }
@@ -3660,6 +3683,29 @@
               }
             },
             "description": "Active donor deleted"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not allowed to search donors of other halls"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the user tries to search other halls"
           }
         },
         "security": [

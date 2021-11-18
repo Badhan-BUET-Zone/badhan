@@ -189,6 +189,14 @@ const handleGETActiveDonors = async (req, res) => {
         #swagger.security = [{
             "api_key": []
         }]
+                #swagger.responses[403] = {
+            schema: {
+                status: 'ERROR',
+                statusCode: 403,
+                message: 'You are not allowed to search donors of other halls'
+            },
+            description: 'This error will occur if the user tries to search other halls'
+        }
         #swagger.responses[200] = {
             schema: {
                 status: 'OK',
@@ -225,19 +233,8 @@ const handleGETActiveDonors = async (req, res) => {
   const reqQuery = req.query
 
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
-        reqQuery.hall <= 6 &&
-        res.locals.middlewareResponse.donor.designation !== 3) {
-    /*
-        #swagger.responses[403] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 403,
-                message: 'You are not allowed to search donors of other halls'
-            },
-            description: 'This error will occur if the user tries to search other halls'
-        }
-
-         */
+    reqQuery.hall <= 6 &&
+    res.locals.middlewareResponse.donor.designation !== 3) {
     return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'))
   }
 

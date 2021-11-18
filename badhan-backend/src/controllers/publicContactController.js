@@ -28,9 +28,6 @@ const handleDELETEPublicContact = async (req, res) => {
                "api_key": []
         }]
 
-     */
-
-  /*
     #swagger.responses[404] = {
         schema: {
             status: 'ERROR',
