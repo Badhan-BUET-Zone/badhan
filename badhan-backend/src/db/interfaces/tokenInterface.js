@@ -1,3 +1,4 @@
+import dotenv from '../../dotenv'
 import tokenCache from '../../cache/tokenCache'
 const { Token } = require('../models/Token')
 const jwt = require('jsonwebtoken')
@@ -7,7 +8,7 @@ const insertAndSaveToken = async (donorId, userAgent) => {
   const token = await jwt.sign({
     _id: String(donorId),
     access
-  }, process.env.JWT_SECRET).toString()
+  }, dotenv.JWT_SECRET).toString()
   const tokenData = new Token({ donorId, token, ...userAgent })
   const data = await tokenData.save()
   if (data.nInserted === 0) {

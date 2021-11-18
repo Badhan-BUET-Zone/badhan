@@ -1,6 +1,6 @@
 // let express = require('express');
 import express from 'express'
-require('./dotenv')
+import dotenv from './dotenv'
 const { handleJsonBodyParseFailures } = require('./response/bodyParser')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
@@ -45,7 +45,7 @@ app.use(internalServerErrorHandler)
 process.on('unhandledRejection', unhandledRejectionHandler)
 process.on('uncaughtException', uncaughtExceptionHandler)
 
-console.log('BADHAN LOG: server environment is', process.env.NODE_ENV)
-console.log('BADHAN LOG: rate limiter', process.env.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
+console.log('BADHAN LOG: server environment is', dotenv.NODE_ENV)
+console.log('BADHAN LOG: rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
 
 module.exports = app

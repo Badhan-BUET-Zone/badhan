@@ -1,7 +1,8 @@
+import dotenv from '../dotenv'
 const rateLimit = require('express-rate-limit')
 const { TooManyRequestsError429 } = require('../response/errorTypes')
 
-const rateLimiterEnabled = process.env.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
+const rateLimiterEnabled = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
 const minute = 60 * 1000
 
 const commonRateLimiterError = new TooManyRequestsError429('Service unavailable')

@@ -1,4 +1,5 @@
 import tokenCache from '../cache/tokenCache'
+import dotenv from '../dotenv'
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -150,7 +151,7 @@ const handlePOSTSignIn = async (req, res, next) => {
   const token = await jwt.sign({
     _id: donor._id.toString(),
     access
-  }, process.env.JWT_SECRET).toString()
+  }, dotenv.JWT_SECRET).toString()
 
   const tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent)
 
@@ -253,7 +254,7 @@ const handlePOSTRedirection = async (req, res, next) => {
   const token = await jwt.sign({
     _id: donor._id.toString(),
     access
-  }, process.env.JWT_SECRET, { expiresIn: '30s' }).toString()
+  }, dotenv.JWT_SECRET, { expiresIn: '30s' }).toString()
 
   const tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent)
 
@@ -298,7 +299,7 @@ const handlePATCHRedirectedAuthentication = async (req, res, next) => {
 
   let decodedDonor
   try {
-    decodedDonor = await jwt.verify(token, process.env.JWT_SECRET)
+    decodedDonor = await jwt.verify(token, dotenv.JWT_SECRET)
   } catch (e) {
     /*
         #swagger.responses[401] = {
@@ -354,7 +355,7 @@ const handlePATCHRedirectedAuthentication = async (req, res, next) => {
   const newToken = await jwt.sign({
     _id: donor._id.toString(),
     access
-  }, process.env.JWT_SECRET).toString()
+  }, dotenv.JWT_SECRET).toString()
 
   const tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent)
 

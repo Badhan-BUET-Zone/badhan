@@ -1,3 +1,4 @@
+import dotenv from '../dotenv'
 import tokenCache from '../cache/tokenCache'
 const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
@@ -10,7 +11,7 @@ const handleAuthentication = async (req, res, next) => {
   const token = req.header('x-auth')
 
   try {
-    await jwt.verify(token, process.env.JWT_SECRET)
+    await jwt.verify(token, dotenv.JWT_SECRET)
   } catch (e) {
     return res.respond(new UnauthorizedError401('Invalid Authentication'))
   }
