@@ -6,7 +6,7 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
-const handlePOSTDonations = async (req, res, next) => {
+const handlePOSTDonations = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donations']
@@ -70,7 +70,7 @@ const handlePOSTDonations = async (req, res, next) => {
   }))
 }
 
-const handleDELETEDonations = async (req, res, next) => {
+const handleDELETEDonations = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donations']

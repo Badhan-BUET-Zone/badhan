@@ -3,7 +3,7 @@ const logInterface = require('../db/interfaces/logInterface')
 const { InternalServerError500, NotFoundError404, ConflictError409 } = require('../response/errorTypes')
 const { OKResponse200, CreatedResponse201 } = require('../response/successTypes')
 
-const handlePOSTCallRecord = async (req, res, next) => {
+const handlePOSTCallRecord = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Call Records']
@@ -53,7 +53,7 @@ const handlePOSTCallRecord = async (req, res, next) => {
   }))
 }
 
-const handleDELETECallRecord = async (req, res, next) => {
+const handleDELETECallRecord = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Call Records']

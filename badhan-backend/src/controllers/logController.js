@@ -3,7 +3,7 @@ const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const { OKResponse200 } = require('../response/successTypes')
 
-const handleGETOnlineCheck = async (req, res, next) => {
+const handleGETOnlineCheck = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
@@ -21,7 +21,7 @@ const handleGETOnlineCheck = async (req, res, next) => {
   return res.respond(new OKResponse200('Badhan API is online'))
 }
 
-const handleGETStatistics = async (req, res, next) => {
+const handleGETStatistics = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Logs']
@@ -58,7 +58,7 @@ const handleGETStatistics = async (req, res, next) => {
   }))
 }
 
-const handleGETAppVersion = (req, res, next) => {
+const handleGETAppVersion = (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Logs']
@@ -81,7 +81,7 @@ const handleGETAppVersion = (req, res, next) => {
   }))
 }
 
-const handleGETLogs = async (req, res, next) => {
+const handleGETLogs = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
@@ -110,7 +110,7 @@ const handleGETLogs = async (req, res, next) => {
   }))
 }
 
-const handleGETLogsByDate = async (req, res, next) => {
+const handleGETLogsByDate = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Logs']
@@ -146,7 +146,7 @@ const handleGETLogsByDate = async (req, res, next) => {
   }))
 }
 
-const handleGETLogsByDateAndDonor = async (req, res, next) => {
+const handleGETLogsByDateAndDonor = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Logs']

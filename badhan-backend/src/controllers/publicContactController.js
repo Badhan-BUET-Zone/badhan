@@ -7,7 +7,7 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
-const handleDELETEPublicContact = async (req, res, next) => {
+const handleDELETEPublicContact = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
@@ -77,7 +77,7 @@ const handleDELETEPublicContact = async (req, res, next) => {
   return res.respond(new OKResponse200('Public contact deleted successfully'))
 }
 
-const handlePOSTPublicContact = async (req, res, next) => {
+const handlePOSTPublicContact = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Public Contacts']
@@ -118,7 +118,7 @@ const handlePOSTPublicContact = async (req, res, next) => {
   }))
 }
 
-const handleGETPublicContacts = async (req, res, next) => {
+const handleGETPublicContacts = async (req, res) => {
   /*
 #swagger.auto = false
 #swagger.tags = ['Public Contacts']

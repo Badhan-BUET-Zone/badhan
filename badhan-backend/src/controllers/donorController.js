@@ -14,7 +14,7 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
-const handlePOSTDonors = async (req, res, next) => {
+const handlePOSTDonors = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -154,7 +154,7 @@ const handlePOSTDonors = async (req, res, next) => {
   }))
 }
 
-const handleDELETEDonors = async (req, res, next) => {
+const handleDELETEDonors = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -196,7 +196,7 @@ const handleDELETEDonors = async (req, res, next) => {
   return res.respond(new OKResponse200('Donor deleted successfully'))
 }
 
-const handleGETSearchOptimized = async (req, res, next) => {
+const handleGETSearchOptimized = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -406,7 +406,7 @@ const handleGETSearchOptimized = async (req, res, next) => {
   }))
 }
 
-const handlePATCHDonorsComment = async (req, res, next) => {
+const handlePATCHDonorsComment = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -447,7 +447,7 @@ const handlePATCHDonorsComment = async (req, res, next) => {
   return res.respond(new OKResponse200('Comment updated successfully'))
 }
 
-const handlePATCHDonorsPassword = async (req, res, next) => {
+const handlePATCHDonorsPassword = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -506,7 +506,7 @@ const handlePATCHDonorsPassword = async (req, res, next) => {
   return res.respond(new OKResponse200('Password changed successfully'))
 }
 
-const handlePATCHDonors = async (req, res, next) => {
+const handlePATCHDonors = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -597,7 +597,7 @@ const handlePATCHDonors = async (req, res, next) => {
   return res.respond(new OKResponse200('Donor updated successfully'))
 }
 
-const handlePATCHDonorsDesignation = async (req, res, next) => {
+const handlePATCHDonorsDesignation = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -668,7 +668,7 @@ const handlePATCHDonorsDesignation = async (req, res, next) => {
   return res.respond(new OKResponse200('Target user promoted/demoted successfully'))
 }
 
-const handlePATCHAdmins = async (req, res, next) => {
+const handlePATCHAdmins = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -734,7 +734,7 @@ const handlePATCHAdmins = async (req, res, next) => {
   return res.respond(new OKResponse200('Successfully changed hall admin'))
 }
 
-const handleGETDonors = async (req, res, next) => {
+const handleGETDonors = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -865,7 +865,7 @@ const handleGETDonors = async (req, res, next) => {
   }))
 }
 
-const handleGETDonorsMe = async (req, res, next) => {
+const handleGETDonorsMe = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['Donors']
@@ -909,7 +909,7 @@ const handleGETDonorsMe = async (req, res, next) => {
   }))
 }
 
-const handleGETVolunteersAll = async (req, res, next) => {
+const handleGETVolunteersAll = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Donors']
@@ -1025,7 +1025,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
   }))
 }
 
-const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
+const handlePOSTDonorsPasswordRequest = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['Donors']
@@ -1084,7 +1084,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res, next) => {
   }))
 }
 
-const handleGETDonorsDesignation = async (req, res, next) => {
+const handleGETDonorsDesignation = async (req, res) => {
   /*
 #swagger.auto = false
 #swagger.tags = ['Donors']

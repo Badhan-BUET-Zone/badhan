@@ -532,7 +532,7 @@ const handleDELETEActiveDonors = (req, res) => {
   }))
 }
 
-const handlePOSTActiveDonors = async (req, res, next) => {
+const handlePOSTActiveDonors = async (req, res) => {
   return res.respond(new CreatedResponse201('Active donor created', {
     newActiveDonor: {
       _id: faker.getId(),

@@ -15,7 +15,7 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
-const handlePOSTPasswordForgot = async (req, res, next) => {
+const handlePOSTPasswordForgot = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['User']
@@ -80,7 +80,7 @@ const handlePOSTPasswordForgot = async (req, res, next) => {
   return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
 
-const handlePOSTSignIn = async (req, res, next) => {
+const handlePOSTSignIn = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['User']
@@ -179,7 +179,7 @@ const handlePOSTSignIn = async (req, res, next) => {
   }))
 }
 
-const handleDELETESignOut = async (req, res, next) => {
+const handleDELETESignOut = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -209,7 +209,7 @@ const handleDELETESignOut = async (req, res, next) => {
   return res.respond(new OKResponse200('Logged out successfully'))
 }
 
-const handleDELETESignOutAll = async (req, res, next) => {
+const handleDELETESignOutAll = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -239,7 +239,7 @@ const handleDELETESignOutAll = async (req, res, next) => {
   return res.respond(new OKResponse200('Logged out from all devices successfully'))
 }
 
-const handlePOSTRedirection = async (req, res, next) => {
+const handlePOSTRedirection = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -281,7 +281,7 @@ const handlePOSTRedirection = async (req, res, next) => {
   }))
 }
 
-const handlePATCHRedirectedAuthentication = async (req, res, next) => {
+const handlePATCHRedirectedAuthentication = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -381,7 +381,7 @@ const handlePATCHRedirectedAuthentication = async (req, res, next) => {
   }))
 }
 
-const handlePATCHPassword = async (req, res, next) => {
+const handlePATCHPassword = async (req, res) => {
   /*
     #swagger.auto = false
     #swagger.tags = ['User']
@@ -423,7 +423,7 @@ const handlePATCHPassword = async (req, res, next) => {
   }))
 }
 
-const handleGETLogins = async (req, res, next) => {
+const handleGETLogins = async (req, res) => {
   /*
         #swagger.auto = false
         #swagger.tags = ['User']
@@ -481,7 +481,7 @@ const handleGETLogins = async (req, res, next) => {
   }))
 }
 
-const handleDELETELogins = async (req, res, next) => {
+const handleDELETELogins = async (req, res) => {
   /*
 #swagger.auto = false
 #swagger.tags = ['User']
