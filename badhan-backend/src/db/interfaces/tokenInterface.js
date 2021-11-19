@@ -2,30 +2,15 @@ import dotenv from '../../dotenv'
 import tokenCache from '../../cache/tokenCache'
 const { Token } = require('../models/Token')
 const jwt = require('jsonwebtoken')
-
-const insertAndSaveToken = async (donorId, userAgent) => {
-  const access = 'auth'
+const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
+  let options = {}
+  if (expiresIn) {
+    options = { expiresIn }
+  }
   const token = await jwt.sign({
     _id: String(donorId),
-    access
-  }, dotenv.JWT_SECRET).toString()
-  const tokenData = new Token({ donorId, token, ...userAgent })
-  const data = await tokenData.save()
-  if (data.nInserted === 0) {
-    return {
-      message: 'Token insertion failed',
-      status: 'ERROR',
-      data: data
-    }
-  }
-  return {
-    message: 'Token insertion successful',
-    status: 'OK',
-    data: data
-  }
-}
-
-const addToken = async (donorId, token, userAgent) => {
+    access: 'auth'
+  }, dotenv.JWT_SECRET, options).toString()
   const tokenData = new Token({ donorId, token, ...userAgent })
   const data = await tokenData.save()
   if (data.nInserted === 0) {
@@ -119,11 +104,10 @@ const deleteByTokenId = async (tokenId) => {
 }
 
 module.exports = {
-  addToken,
   findTokenDataByToken,
   deleteTokenDataByToken,
   deleteAllTokensByDonorId,
-  insertAndSaveToken,
+  insertAndSaveTokenWithExpiry,
   findTokenDataExceptSpecifiedToken,
   deleteByTokenId
 }

@@ -62,7 +62,7 @@ const handlePOSTPasswordForgot = async (req, res) => {
     return res.respond(new NotFoundError404('No recovery email found for this phone number'))
   }
 
-  const tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
 
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken'))
@@ -142,23 +142,16 @@ const handlePOSTSignIn = async (req, res) => {
   if (!matched) {
     return res.respond(new UnauthorizedError401('Incorrect phone / password'))
   }
-
-  const access = 'auth'
-  const token = await jwt.sign({
-    _id: donor._id.toString(),
-    access
-  }, dotenv.JWT_SECRET).toString()
-
-  const tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
 
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTSignIn when tokenInterface.addToken'))
   }
   // add new token to cache
-  tokenCache.add(token, donor)
+  tokenCache.add(tokenInsertResult.data.token, donor)
   await logInterface.addLog(donor._id, 'POST USERS SIGNIN', {})
   return res.respond(new CreatedResponse201('Successfully signed in', {
-    token
+    token: tokenInsertResult.data.token
   }))
 }
 
@@ -236,13 +229,7 @@ const handlePOSTRedirection = async (req, res) => {
      */
 
   const donor = res.locals.middlewareResponse.donor
-  const access = 'auth'
-  const token = await jwt.sign({
-    _id: donor._id.toString(),
-    access
-  }, dotenv.JWT_SECRET, { expiresIn: '30s' }).toString()
-
-  const tokenInsertResult = await tokenInterface.addToken(donor._id, token, req.userAgent)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, '30s')
 
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500(tokenInsertResult.message, 'found in handlePOSTRedirection when tokenInterface.addToken'))
@@ -251,7 +238,7 @@ const handlePOSTRedirection = async (req, res) => {
   await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
 
   return res.respond(new CreatedResponse201('Redirection token created', {
-    token
+    token: tokenInsertResult.data.token
   }))
 }
 
@@ -316,14 +303,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
   if (tokenDeleteResponse.status !== 'OK') {
     return res.respond(new NotFoundError404('Token not found'))
   }
-
-  const access = 'auth'
-  const newToken = await jwt.sign({
-    _id: donor._id.toString(),
-    access
-  }, dotenv.JWT_SECRET).toString()
-
-  const tokenInsertResult = await tokenInterface.addToken(donor._id, newToken, req.userAgent)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
 
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500(tokenInsertResult.message, 'found in handlePATCHRedirectedAuthentication when tokenInterface.addToken'))
@@ -331,7 +311,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
   await logInterface.addLog(donor._id, 'PATCH USERS REDIRECTION', {})
 
   return res.respond(new CreatedResponse201('Redirected login successful', {
-    token: newToken
+    token: tokenInsertResult.data.token
   }))
 }
 
@@ -367,7 +347,7 @@ const handlePATCHPassword = async (req, res) => {
   await donor.save()
 
   await tokenInterface.deleteAllTokensByDonorId(donor._id)
-  const tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH USERS PASSWORD', {})
 
   return res.respond(new CreatedResponse201('Password changed successfully', {

@@ -1015,7 +1015,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
     return res.respond(new InternalServerError500(tokenDeleteResult.message))
   }
 
-  const tokenInsertResult = await tokenInterface.insertAndSaveToken(donor._id, req.userAgent)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
   if (tokenInsertResult.status !== 'OK') {
     return res.respond(new InternalServerError500(tokenInsertResult.message))
   }
