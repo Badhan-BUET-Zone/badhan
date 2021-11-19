@@ -1,6 +1,6 @@
-// let express = require('express');
 import express from 'express'
 import dotenv from './dotenv'
+import swaggerJsDoc from './doc/swaggerJsDoc'
 const { handleJsonBodyParseFailures } = require('./response/bodyParser')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
@@ -24,7 +24,8 @@ const app = express()
 app.use(cors())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use('/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use('/doc/v2/', swaggerUi.serveFiles(swaggerJsDoc.openapiSpecification), swaggerUi.setup(swaggerJsDoc.openapiSpecification))
+app.use('/doc/', swaggerUi.serveFiles(swaggerFile), swaggerUi.setup(swaggerFile))
 app.use(logger('dev'))
 app.use(userAgentHandler)
 app.response.respond = respond

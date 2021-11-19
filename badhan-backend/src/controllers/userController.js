@@ -80,6 +80,15 @@ const handlePOSTPasswordForgot = async (req, res) => {
   return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
 
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     description: Welcome to swagger-jsdoc!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
 const handlePOSTSignIn = async (req, res) => {
   /*
         #swagger.auto = false
