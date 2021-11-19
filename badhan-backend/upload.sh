@@ -10,6 +10,9 @@ echo "The commit message is: $message"
 echo "---generate swagger documentation---"
 npm run doc
 
+echo "---build---"
+npm run build
+
 echo "---adding changed files to staging---"
 git add .
 
@@ -22,6 +25,9 @@ git push origin master
 
 echo "---switching back to test branch---"
 git checkout test-branch
+
+echo "---deploying to gcloud---"
+gcloud app deploy
 
 echo "---checking secret file changes---"
 cd ../secrets
