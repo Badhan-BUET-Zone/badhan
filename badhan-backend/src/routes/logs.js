@@ -46,4 +46,11 @@ router.get('/log',
   logController.handleGETLogs
 )
 
+router.delete('/log',
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  authenticator.handleSuperAdminCheck,
+  logController.handleDELETELogs
+)
+
 module.exports = router

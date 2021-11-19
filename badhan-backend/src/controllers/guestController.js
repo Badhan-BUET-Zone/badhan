@@ -138,7 +138,7 @@ const handlePOSTChangeAdmin = async (req, res) => {
 
 const handleGETViewDonorDetails = async (req, res) => {
   const callRecords = []
-  for (let i = 0; i < faker.getRandomIndex(3); i++) {
+  for (let i = 0; i < 2; i++) {
     callRecords.push({
       date: faker.getTimestamp(240),
       _id: faker.getId(),
@@ -154,7 +154,7 @@ const handleGETViewDonorDetails = async (req, res) => {
     )
   }
   const donations = []
-  for (let i = 0; i < faker.getRandomIndex(10); i++) {
+  for (let i = 0; i < 2; i++) {
     donations.push({
       date: faker.getTimestamp(240),
       _id: faker.getId(),
@@ -354,7 +354,7 @@ const handleGETLogs = async (req, res) => {
 const handleGETLogsByDateAndDonor = async (req, res) => {
   const logs = []
 
-  for (let i = 0; i < faker.getRandomIndex(20); i++) {
+  for (let i = 0; i < 15; i++) {
     logs.push({
       _id: faker.getId(),
       date: faker.getTimestamp(2),
@@ -369,7 +369,7 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
 
 const handleGETLogsByDate = async (req, res) => {
   const logs = []
-  for (let i = 0; i < faker.getRandomIndex(10); i++) {
+  for (let i = 0; i < 15; i++) {
     logs.push({
       name: faker.getName(),
       donorId: faker.getId(),

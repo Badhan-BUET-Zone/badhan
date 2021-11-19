@@ -187,11 +187,36 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
   }))
 }
 
+const handleDELETELogs = async (req, res) => {
+  /*
+        #swagger.auto = false
+        #swagger.tags = ['Logs']
+        #swagger.description = 'Delete all logs'
+        #swagger.security = [{
+                   "api_key": []
+            }]
+        #swagger.responses[200] = {
+            schema: {
+                "status": "OK",
+                "statusCode":200,
+                "message": "All logs deleted successfully",
+            }
+        }
+        #swagger.security = [{
+                   "api_key": []
+            }]
+    */
+  await logInterface.deleteLogs()
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE LOGS', {})
+  return res.respond(new OKResponse200('All logs deleted successfully'))
+}
+
 module.exports = {
   handleGETStatistics,
   handleGETOnlineCheck,
   handleGETAppVersion,
   handleGETLogs,
   handleGETLogsByDate,
-  handleGETLogsByDateAndDonor
+  handleGETLogsByDateAndDonor,
+  handleDELETELogs
 }
