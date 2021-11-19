@@ -33,6 +33,16 @@ test('GET/log',async()=>{
             password: env.SUPERADMIN_PASSWORD
         });
 
+        let volunteerSignInResponse = await badhanAxios.post('/users/signin', {
+            phone: env.VOLUNTEER_PHONE,
+            password: env.VOLUNTEER_PASSWORD
+        })
+        await badhanAxios.delete('/users/signout', {
+            headers: {
+                'x-auth': volunteerSignInResponse.data.token
+            }
+        })
+
 
         let response = await badhanAxios.get('/log',{
             headers:{

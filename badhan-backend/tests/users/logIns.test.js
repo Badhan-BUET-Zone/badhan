@@ -11,7 +11,7 @@ const logInsSchema={
         message: {type: "string"},
         logins: {
             type: "array",
-            // minItems: 1,
+            minItems: 1,
             items: {
                 types: "object",
                 additionalProperties: false,
@@ -45,6 +45,11 @@ test('GET/users/logins',async()=>{
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
+        await badhanAxios.post('/users/signIn', {
+            phone: env.SUPERADMIN_PHONE,
+            password: env.SUPERADMIN_PASSWORD
+        });
+
         let logInsResponse = await badhanAxios.get('/users/logins', {
             headers: {
                 "x-auth": signInResponse.data.token
