@@ -29,7 +29,7 @@ const donorsSchema={
                 availableToAll: {type: "boolean"},
                 callRecords: {
                     type: "array",
-                    // minItems: 1,
+                    minItems: 1,
                     items: {
                         type: "object",
                         additionalProperties: false,
@@ -55,7 +55,7 @@ const donorsSchema={
                 },
                 donations: {
                     type: "array",
-                    // minItems: 1,
+                    minItems: 1,
                     items: {
                         type: "object",
                         additionalProperties: false,
@@ -70,7 +70,7 @@ const donorsSchema={
                 },
                 publicContacts: {
                     type: "array",
-                    // minItems: 1,
+                    minItems: 1,
                     items: {
                         type: "object",
                         additionalProperties: false,

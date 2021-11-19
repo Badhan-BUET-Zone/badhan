@@ -11,7 +11,7 @@ const searchSchema = {
         message: {type: "string"},
         filteredDonors: {
             type: "array",
-            // minItems: 1,
+            minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,
