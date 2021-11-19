@@ -309,75 +309,9 @@ const handleGETSearchOptimized = async (req, res) => {
     return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'))
   }
 
-  const queryBuilder = {}
-
-  // process blood group
-  if (reqQuery.bloodGroup !== -1) {
-    queryBuilder.bloodGroup = reqQuery.bloodGroup
-  }
-
-  // process hall
-  // if the availableToAll is true, then there is no need to search using hall
-  // otherwise, hall must be included
-  if (!reqQuery.availableToAll) {
-    queryBuilder.hall = reqQuery.hall
-  } else {
-    queryBuilder.availableToAll = reqQuery.availableToAll
-  }
-
-  // process batch
-  let batchRegex = '.......'
-  if (reqQuery.batch !== '') {
-    batchRegex = reqQuery.batch + '.....'
-  }
-  queryBuilder.studentId = { $regex: batchRegex, $options: 'ix' }
-
-  // process name
-  let nameRegex = '.*'
-
-  for (let i = 0; i < reqQuery.name.length; i++) {
-    nameRegex += (reqQuery.name.charAt(i) + '.*')
-  }
-
-  queryBuilder.name = { $regex: nameRegex, $options: 'ix' }
-
-  // process address
-  const addressRegex = '.*' + reqQuery.address + '.*'
-
-  // for (let i = 0; i < reqQuery.address.length; i++) {
-  //     addressRegex += (reqQuery.address.charAt(i) + ".*");
-  // }
-
-  queryBuilder.$and = [{
-    $or: [
-      { comment: { $regex: addressRegex, $options: 'ix' } },
-      { address: { $regex: addressRegex, $options: 'ix' } }]
-  }
-  ]
-
-  const availableLimit = new Date().getTime() - 120 * 24 * 3600 * 1000
-
-  const lastDonationAvailability = []
-
-  if (reqQuery.isAvailable) {
-    lastDonationAvailability.push({
-      lastDonation: { $lt: availableLimit }
-    })
-  }
-
-  if (reqQuery.isNotAvailable) {
-    lastDonationAvailability.push({
-      lastDonation: { $gt: availableLimit }
-    })
-  }
-
-  if (reqQuery.isNotAvailable || reqQuery.isAvailable) {
-    queryBuilder.$and.push({ $or: lastDonationAvailability })
-  }
-
   // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
 
-  const result = await donorInterface.findDonorsByQuery(queryBuilder)
+  const result = await donorInterface.findDonorsByQuery(reqQuery)
 
   result.data.sort((donor1, donor2) =>
     donor1.donationCountOptimized >= donor2.donationCountOptimized ? -1 : 1

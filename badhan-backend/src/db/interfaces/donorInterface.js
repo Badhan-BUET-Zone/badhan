@@ -1,3 +1,4 @@
+import dbHelpers from '../dbHelpers'
 const { Donor } = require('../models/Donor')
 const insertDonor = async (donorObject) => {
   const donor = new Donor(donorObject)
@@ -82,7 +83,6 @@ const findDonorById = async (id) => {
 
 const findDonorByQuery = async (query, option) => {
   const data = await Donor.findOne(query, option)
-  // let data = await Donor.findOne(query, option);
   if (data) {
     return {
       data,
@@ -133,8 +133,9 @@ const findAllVolunteers = async () => {
   }
 }
 
-const findDonorsByQuery = async (query) => {
-  const data = await Donor.find(query).populate({
+const findDonorsByQuery = async (reqQuery) => {
+  const queryBuilder = dbHelpers.generateSearchQuery(reqQuery)
+  const data = await Donor.find(queryBuilder).populate({
     path: 'callRecords',
     select: { _id: 1, date: 1, callerId: 1 }
   }).populate({

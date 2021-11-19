@@ -1,3 +1,4 @@
+import dbHelpers from '../dbHelpers'
 const { ActiveDonor } = require('../models/ActiveDonor')
 
 const add = async (donorId, markerId) => {
@@ -46,7 +47,8 @@ const findByDonorId = async (donorId) => {
     message: 'Active donor found'
   }
 }
-const findByQueryAndPopulate = async (aggregatePipeline) => {
+const findByQueryAndPopulate = async (reqQuery, donorId) => {
+  const aggregatePipeline = dbHelpers.generateAggregatePipeline(reqQuery, donorId)
   const activeDonors = await ActiveDonor.aggregate(aggregatePipeline)
   return {
     message: 'Active donors fetched with details',
