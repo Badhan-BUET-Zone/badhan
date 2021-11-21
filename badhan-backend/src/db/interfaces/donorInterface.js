@@ -250,13 +250,45 @@ const findAdmins = async (designation) => {
 }
 
 const findVolunteersOfHall = async (hall) => {
-  const data = await Donor.find({ designation: 1, hall: hall }, {
-    studentId: 1,
-    name: 1,
-    roomNumber: 1,
-    bloodGroup: 1,
-    phone: 1
-  })
+  // const data = await Donor.find({ designation: 1, hall: hall }, {
+  //   studentId: 1,
+  //   name: 1,
+  //   roomNumber: 1,
+  //   bloodGroup: 1,
+  //   phone: 1
+  // })
+  const data = await Donor.aggregate([{
+    $match: {
+      hall: hall,
+      designation: 1
+    }
+  }, {
+    $lookup: {
+      from: 'logs',
+      localField: '_id',
+      foreignField: 'donorId',
+      as: 'logs'
+    }
+  }, {
+    $addFields: {
+      logCount: { $size: '$logs' }
+    }
+  },
+  {
+    $sort: {
+      logCount: -1
+    }
+  },
+  {
+    $project: {
+      studentId: 1,
+      name: 1,
+      roomNumber: 1,
+      bloodGroup: 1,
+      phone: 1
+    }
+  }
+  ])
   const message = data.length > 0 ? 'Donor(s) found' : 'Donor not found'
   return {
     data,

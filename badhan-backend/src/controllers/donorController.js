@@ -969,9 +969,7 @@ const handleGETDonorsDesignation = async (req, res) => {
 #swagger.security = [{
                "api_key": []
         }]
-*/
 
-  /*
     #swagger.responses[200] = {
         schema: {
             status: 'OK',
