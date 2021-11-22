@@ -13,7 +13,7 @@ const clearAll = () => {
   cache = {}
 }
 
-export default {
+module.exports = {
   add,
   clear,
   get,

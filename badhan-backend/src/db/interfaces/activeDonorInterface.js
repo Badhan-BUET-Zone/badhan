@@ -1,4 +1,5 @@
-import dbHelpers from '../dbHelpers'
+// import dbHelpers from '../dbHelpers'
+const dbHelpers = require('../dbHelpers')
 const { ActiveDonor } = require('../models/ActiveDonor')
 
 const add = async (donorId, markerId) => {

@@ -21,4 +21,4 @@ Object.keys(config).forEach((key) => {
   }
 })
 
-export default config
+module.exports = config

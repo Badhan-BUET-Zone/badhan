@@ -1,5 +1,7 @@
-import tokenCache from '../cache/tokenCache'
-import dotenv from '../dotenv'
+// import tokenCache from '../cache/tokenCache'
+const tokenCache = require('../cache/tokenCache')
+// import dotenv from '../dotenv'
+const dotenv = require('../dotenv')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 

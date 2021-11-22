@@ -1,6 +1,6 @@
-import express from 'express'
-import dotenv from './dotenv'
 import swaggerJsDoc from './doc/swaggerJsDoc'
+const express = require('express')
+const dotenv = require('./dotenv')
 const { handleJsonBodyParseFailures } = require('./response/bodyParser')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')

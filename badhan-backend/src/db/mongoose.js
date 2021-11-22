@@ -1,4 +1,4 @@
-import dotenv from '../dotenv'
+const dotenv = require('../dotenv')
 const mongoose = require('mongoose')
 
 mongoose.Promise = global.Promise

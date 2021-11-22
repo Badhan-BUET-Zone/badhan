@@ -1,5 +1,5 @@
-import dotenv from '../../dotenv'
-import tokenCache from '../../cache/tokenCache'
+const dotenv = require('../../dotenv')
+const tokenCache = require('../../cache/tokenCache')
 const { Token } = require('../models/Token')
 const jwt = require('jsonwebtoken')
 const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {

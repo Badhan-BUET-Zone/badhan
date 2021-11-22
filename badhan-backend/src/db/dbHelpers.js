@@ -175,7 +175,7 @@ const generateSearchQuery = (reqQuery) => {
   return queryBuilder
 }
 
-export default {
+module.exports = {
   generateAggregatePipeline,
   generateSearchQuery
 }

@@ -1,5 +1,5 @@
-import dotenv from '../dotenv'
-import tokenCache from '../cache/tokenCache'
+const dotenv = require('../dotenv')
+const tokenCache = require('../cache/tokenCache')
 const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')

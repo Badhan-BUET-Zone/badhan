@@ -1,5 +1,5 @@
-import dbHelpers from '../dbHelpers'
-
+// import dbHelpers from '../dbHelpers'
+const dbHelpers = require('../dbHelpers')
 const { Donor } = require('../models/Donor')
 const insertDonor = async (donorObject) => {
   const donor = new Donor(donorObject)
@@ -164,8 +164,7 @@ const findDonorsByAggregate = async (reqQuery) => {
     $addFields: {
       donationCount: { $size: '$donations' },
       callRecordCount: { $size: '$callRecords' },
-      markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] },
-      markedTime: { $arrayElemAt: ['$activeDonors.time', 0] }
+      markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] }
     }
   },
   {
@@ -178,13 +177,13 @@ const findDonorsByAggregate = async (reqQuery) => {
   },
   {
     $addFields: {
-      markerName: { $arrayElemAt: ['$markerDetails.name', 0] }
+      'marker.name': { $arrayElemAt: ['$markerDetails.name', 0] },
+      'marker.time': { $arrayElemAt: ['$activeDonors.time', 0] }
     }
   },
   {
     $sort: {
       donationCount: -1,
-      activeDonorMarker: -1,
       callRecordCount: -1
     }
   },

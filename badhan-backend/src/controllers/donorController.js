@@ -437,7 +437,6 @@ const handleGETSearchV3 = async (req, res) => {
      */
 
   const reqQuery = req.query
-
   // console.log(util.inspect(reqQuery, false, null, true /* enable colors */))
 
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&

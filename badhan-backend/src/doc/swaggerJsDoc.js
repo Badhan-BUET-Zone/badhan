@@ -12,6 +12,6 @@ const options = {
 }
 
 const openapiSpecification = swaggerJsdoc(options)
-export default {
+module.exports = {
   openapiSpecification
 }

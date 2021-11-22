@@ -1,4 +1,5 @@
-import dotenv from '../../dotenv'
+// import dotenv from '../../dotenv'
+const dotenv = require('../../dotenv')
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const emailValidator = require('deep-email-validator')
