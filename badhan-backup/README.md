@@ -24,6 +24,7 @@ Steps for the backend:
 * Guest API
 * Automated testing for main and guest route
 * Swagger documentation
+* New openapi documentation
 * Update permission matrix
 
 Steps for the frontend:
