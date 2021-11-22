@@ -907,6 +907,225 @@
         ]
       }
     },
+    "/search/v3": {
+      "get": {
+        "tags": [
+          "Donors"
+        ],
+        "description": "Searches for donors that matches the filters",
+        "parameters": [
+          {
+            "name": "bloodGroup",
+            "description": "blood group for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "hall",
+            "description": "hall for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "batch",
+            "description": "batch for donors",
+            "type": "number",
+            "in": "query"
+          },
+          {
+            "name": "address",
+            "description": "address for donors",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "name": "isAvailable",
+            "description": "isAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "isNotAvailable",
+            "description": "isNotAvailable for donors",
+            "type": "boolean",
+            "in": "query"
+          },
+          {
+            "name": "availableToAll",
+            "description": "availableToAll denotes the availability of the donor to the other hall members",
+            "type": "boolean",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "OK"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Donor deleted successfully"
+                },
+                "filteredDonors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "address": {
+                        "type": "string",
+                        "example": "Narayangonj Narayangonj "
+                      },
+                      "roomNumber": {
+                        "type": "string",
+                        "example": "249"
+                      },
+                      "designation": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "lastDonation": {
+                        "type": "number",
+                        "example": 1569974400000
+                      },
+                      "comment": {
+                        "type": "string",
+                        "example": "Has diabetes"
+                      },
+                      "commentTime": {
+                        "type": "number",
+                        "example": 1628521457159
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "5e6776166f73f925e22a0624"
+                      },
+                      "studentId": {
+                        "type": "string",
+                        "example": "1606001"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Swapnil Saha"
+                      },
+                      "bloodGroup": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "phone": {
+                        "type": "number",
+                        "example": 88014587556
+                      },
+                      "hall": {
+                        "type": "number",
+                        "example": 0
+                      },
+                      "availableToAll": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "callRecords": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "date": {
+                              "type": "number",
+                              "example": 1628520769727
+                            },
+                            "_id": {
+                              "type": "string",
+                              "example": "611141413ac83c0015f851b7"
+                            },
+                            "callerId": {
+                              "type": "string",
+                              "example": "5e6776166f73f925e22a05aa"
+                            },
+                            "calleeId": {
+                              "type": "string",
+                              "example": "5e6776166f73f925e22a0624"
+                            }
+                          }
+                        }
+                      },
+                      "donationCountOptimized": {
+                        "type": "number",
+                        "example": 6
+                      },
+                      "markedBy": {
+                        "type": "object",
+                        "properties": {
+                          "donorId": {
+                            "type": "string",
+                            "example": "bb9dbced70ba9cddedc49e7cc8ed7b85"
+                          },
+                          "markerId": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "7e5aa536cb89198aa20fd13ebf75c97d"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Clarence Cronin"
+                              }
+                            }
+                          },
+                          "time": {
+                            "type": "number",
+                            "example": 1634535727368
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Successful donor deletion"
+          },
+          "403": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ERROR"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not allowed to search donors of other halls"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "This error will occur if the user tries to search other halls"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/donors/comment": {
       "patch": {
         "tags": [

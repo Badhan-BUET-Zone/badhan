@@ -1,4 +1,5 @@
 import dbHelpers from '../dbHelpers'
+
 const { Donor } = require('../models/Donor')
 const insertDonor = async (donorObject) => {
   const donor = new Donor(donorObject)
@@ -129,6 +130,80 @@ const findAllVolunteers = async () => {
   return {
     data,
     message: 'Volunteers fetched successfully',
+    status: 'OK'
+  }
+}
+
+const findDonorsByAggregate = async (reqQuery) => {
+  const queryBuilder = dbHelpers.generateSearchQuery(reqQuery)
+  const data = await Donor.aggregate([{
+    $match: queryBuilder
+  }, {
+    $lookup: {
+      from: 'donations',
+      localField: '_id',
+      foreignField: 'donorId',
+      as: 'donations'
+    }
+  }, {
+    $lookup: {
+      from: 'callrecords',
+      localField: '_id',
+      foreignField: 'calleeId',
+      as: 'callRecords'
+    }
+  }, {
+    $lookup: {
+      from: 'activedonors',
+      localField: '_id',
+      foreignField: 'donorId',
+      as: 'activeDonors'
+    }
+  },
+  {
+    $addFields: {
+      donationCount: { $size: '$donations' },
+      callRecordCount: { $size: '$callRecords' },
+      markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] },
+      markedTime: { $arrayElemAt: ['$activeDonors.time', 0] }
+    }
+  },
+  {
+    $lookup: {
+      from: 'donors',
+      localField: 'markerId',
+      foreignField: '_id',
+      as: 'markerDetails'
+    }
+  },
+  {
+    $addFields: {
+      markerName: { $arrayElemAt: ['$markerDetails.name', 0] }
+    }
+  },
+  {
+    $sort: {
+      donationCount: -1,
+      activeDonorMarker: -1,
+      callRecordCount: -1
+    }
+  },
+  {
+    $project: {
+      activeDonors: 0,
+      callRecords: 0,
+      donations: 0,
+      email: 0,
+      markerDetails: 0,
+      designation: 0,
+      markerId: 0,
+      password: 0
+    }
+  }
+  ])
+  return {
+    data,
+    message: 'Donors fetched successfully',
     status: 'OK'
   }
 }
@@ -312,5 +387,6 @@ module.exports = {
   findDonorByIDAndUpdateCommentTime,
   findDonorById,
   findAdmins,
-  findVolunteersOfHall
+  findVolunteersOfHall,
+  findDonorsByAggregate
 }

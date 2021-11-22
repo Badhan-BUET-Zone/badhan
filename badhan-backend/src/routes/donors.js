@@ -35,6 +35,13 @@ router.get('/search/v2',
   donorController.handleGETSearchOptimized
 )
 
+router.get('/search/v3',
+  donorValidator.validateGETSearchDonors,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  donorController.handleGETSearchV3
+)
+
 router.patch('/donors/comment',
   donorValidator.validatePATCHDonorsComment,
   rateLimiter.commonLimiter,

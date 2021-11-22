@@ -326,6 +326,139 @@ const handleGETSearchOptimized = async (req, res) => {
   }))
 }
 
+const handleGETSearchV3 = async (req, res) => {
+  /*
+        #swagger.auto = false
+        #swagger.tags = ['Donors']
+        #swagger.description = 'Searches for donors that matches the filters'
+        #swagger.parameters['bloodGroup'] = {
+            description: 'blood group for donors',
+            type: 'number',
+            name: 'bloodGroup',
+            in: 'query'
+        }
+        #swagger.parameters['hall'] = {
+            description: 'hall for donors',
+            type: 'number',
+            name: 'hall',
+            in: 'query'
+        }
+        #swagger.parameters['batch'] = {
+            description: 'batch for donors',
+            type: 'number',
+            name: 'batch',
+            in: 'query'
+        }
+        #swagger.parameters['name'] = {
+            description: 'name for donors',
+            type: 'string',
+            name: 'name',
+            in: 'query'
+        }
+        #swagger.parameters['name'] = {
+            description: 'address for donors',
+            type: 'string',
+            name: 'address',
+            in: 'query'
+        }
+        #swagger.parameters['isAvailable'] = {
+            description: 'isAvailable for donors',
+            type: 'boolean',
+            name: 'isAvailable',
+            in: 'query'
+        }
+        #swagger.parameters['isNotAvailable'] = {
+            description: 'isNotAvailable for donors',
+            type: 'boolean',
+            name: 'isNotAvailable',
+            in: 'query'
+        }
+        #swagger.parameters['availableToAll'] = {
+            description: 'availableToAll denotes the availability of the donor to the other hall members',
+            type: 'boolean',
+            name: 'availableToAll',
+            in: 'query'
+        }
+        #swagger.security = [{
+               "api_key": []
+        }]
+        #swagger.responses[403] = {
+            schema: {
+                status: 'ERROR',
+                statusCode: 403,
+                message: 'You are not allowed to search donors of other halls'
+            },
+            description: 'This error will occur if the user tries to search other halls'
+        }
+        #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            statusCode: 200,
+            message: 'Donor deleted successfully',
+            filteredDonors: [
+                {
+                    "address": "Narayangonj Narayangonj ",
+                    "roomNumber": "249",
+                    "designation": 0,
+                    "lastDonation": 1569974400000,
+                    "comment": "Has diabetes",
+                    "commentTime": 1628521457159,
+                    "_id": "5e6776166f73f925e22a0624",
+                    "studentId": "1606001",
+                    "name": "Swapnil Saha",
+                    "bloodGroup": 2,
+                    "phone": 88014587556,
+                    "hall": 0,
+                    "availableToAll": true,
+                    "callRecords": [
+                        {
+                            "date": 1628520769727,
+                            "_id": "611141413ac83c0015f851b7",
+                            "callerId": "5e6776166f73f925e22a05aa",
+                            "calleeId": "5e6776166f73f925e22a0624"
+                        }
+                    ],
+                    "donationCountOptimized": 6,
+                    "markedBy": {
+
+                        "donorId": "bb9dbced70ba9cddedc49e7cc8ed7b85",
+                        "markerId": {
+                            "_id": "7e5aa536cb89198aa20fd13ebf75c97d",
+                            "name": "Clarence Cronin"
+                        },
+                        "time": 1634535727368
+                    }
+                }
+            ]
+        },
+        description: 'Successful donor deletion'
+    }
+
+     */
+
+  const reqQuery = req.query
+
+  // console.log(util.inspect(reqQuery, false, null, true /* enable colors */))
+
+  if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
+    reqQuery.hall <= 6 &&
+    res.locals.middlewareResponse.donor.designation !== 3) {
+    return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'))
+  }
+
+  // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
+
+  const result = await donorInterface.findDonorsByAggregate(reqQuery)
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET SEARCH V3', {
+    filter: reqQuery,
+    resultCount: result.data.length
+  })
+
+  return res.respond(new OKResponse200('Donors queried successfully', {
+    filteredDonors: result.data
+  }))
+}
+
 const handlePATCHDonorsComment = async (req, res) => {
   /*
         #swagger.auto = false
@@ -1053,5 +1186,6 @@ module.exports = {
   handleGETDonorsMe,
   handleGETVolunteersAll,
   handleGETDonorsDuplicate,
-  handlePOSTDonorsPasswordRequest
+  handlePOSTDonorsPasswordRequest,
+  handleGETSearchV3
 }
