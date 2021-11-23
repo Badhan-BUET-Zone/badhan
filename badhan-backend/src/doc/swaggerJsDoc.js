@@ -2,10 +2,22 @@ const swaggerJsdoc = require('swagger-jsdoc')
 // https://dev.to/kabartolo/how-to-document-an-express-api-with-swagger-ui-and-jsdoc-50do
 const controllerDocs = [
   './src/controllers/userController.js',
-  './src/controllers/donorController.js'
+  './src/controllers/donorController.js',
+  './src/controllers/activeDonorController.js',
+  './src/controllers/callRecordController.js',
+  './src/controllers/donationController.js',
+  './src/controllers/logController.js',
+  './src/controllers/publicContactController.js',
+  './src/controllers/userController.js'
 ]
 const dbModelDocs = [
-  './src/db/models/Donor.js'
+  './src/db/models/Donor.js',
+  './src/db/models/Donation.js',
+  './src/db/models/ActiveDonor.js',
+  './src/db/models/CallRecord.js',
+  './src/db/models/Log.js',
+  './src/db/models/PublicContacts.js',
+  './src/db/models/Token.js'
 ]
 
 const options = {

@@ -21,7 +21,55 @@ const { checkEmail } = require('../../validations/validateRequest/others')
  *         password:
  *           type: string
  *           description: Donor password. Will be empty if the donor does not have an account.
- *           example: Leanne Graham
+ *           example: password123
+ *         studentId:
+ *           type: string
+ *           description: Six digit student ID of BUET students
+ *           example: 1605011
+ *         bloodGroup:
+ *           type: integer
+ *           description: Blood group of donor
+ *           example: 3
+ *         hall:
+ *           type: integer
+ *           description: hall number of donor
+ *           example: 5
+ *         address:
+ *           type: string
+ *           description: address of donor
+ *           example: Azimpur Road
+ *         roomNumber:
+ *           type: string
+ *           description: hall room number of donor
+ *           example: 3009
+ *         designation:
+ *           type: integer
+ *           description: designation of donor in Badhan platform
+ *           example: 3
+ *         lastDonation:
+ *           type: integer
+ *           description: timestamp of last donation by donor
+ *           example: 1234578161648
+ *         name:
+ *           type: string
+ *           description: name of donor
+ *           example: Mir Mahathir Mohammad
+ *         comment:
+ *           type: string
+ *           description: additional information of the donor
+ *           example: Has high blood pressure
+ *         commentTime:
+ *           type: integer
+ *           description: timestamp of the latest update on comment
+ *           example: 13216465164
+ *         availableToAll:
+ *           type: boolean
+ *           description: if this flag is true, then the donor will be made available for all the halls
+ *           example: true
+ *         email:
+ *           type: string
+ *           description: email address of a donor
+ *           example: mirmahathir1@gmail.com
  */
 const donorSchema = new mongoose.Schema({
   phone: {

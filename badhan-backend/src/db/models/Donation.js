@@ -1,5 +1,20 @@
 const mongoose = require('mongoose')
-
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Donations:
+ *       type: object
+ *       properties:
+ *         donorId:
+ *           type: string
+ *           description: id of donor
+ *           example: abcdef123456789
+ *         date:
+ *           type: integer
+ *           description: timestamp of donation
+ *           example: 1234578161648
+ */
 const donationSchema = new mongoose.Schema({
   phone: {
     type: Number,
