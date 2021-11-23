@@ -7,6 +7,22 @@ const { PublicContact } = require('./PublicContacts')
 const { Token } = require('./Token')
 const { ActiveDonor } = require('./ActiveDonor')
 const { checkEmail } = require('../../validations/validateRequest/others')
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Donors:
+ *       type: object
+ *       properties:
+ *         phone:
+ *           type: integer
+ *           description: Phone number of donor.
+ *           example: 8801521438557
+ *         password:
+ *           type: string
+ *           description: Donor password. Will be empty if the donor does not have an account.
+ *           example: Leanne Graham
+ */
 const donorSchema = new mongoose.Schema({
   phone: {
     unique: true,

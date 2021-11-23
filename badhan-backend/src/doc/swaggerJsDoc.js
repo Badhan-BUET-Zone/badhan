@@ -1,5 +1,13 @@
 const swaggerJsdoc = require('swagger-jsdoc')
 // https://dev.to/kabartolo/how-to-document-an-express-api-with-swagger-ui-and-jsdoc-50do
+const controllerDocs = [
+  './src/controllers/userController.js',
+  './src/controllers/donorController.js'
+]
+const dbModelDocs = [
+  './src/db/models/Donor.js'
+]
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -108,7 +116,7 @@ const options = {
       }
     }
   },
-  apis: ['./src/controllers/userController.js', './src/controllers/donorController.js'] // files containing annotations as above
+  apis: [...controllerDocs, ...dbModelDocs] // files containing annotations as above
 }
 
 const openapiSpecification = swaggerJsdoc(options)
