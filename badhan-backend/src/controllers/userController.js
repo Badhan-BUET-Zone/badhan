@@ -91,6 +91,82 @@ const handlePOSTPasswordForgot = async (req, res) => {
  *       200:
  *         description: Returns a mysterious string.
  */
+
+/**
+ * @openapi
+ * /users/signin:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Sign In route
+ *     description: Sign in to Badhan Platform using phone and password
+ *     requestBody:
+ *       description: The JSON consisting of phone and password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: 8801521438557
+ *               password:
+ *                 type: string
+ *                 example: 123456789
+ *     responses:
+ *       201:
+ *         description: Donors queried successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Successfully signed in
+ *                 token:
+ *                   type: string
+ *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ *       404:
+ *         description: When the donor is not found/ When the logging user does not have any account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Donor not found/ You do not have an account
+ *       401:
+ *         description: When the user provides an invalid password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   example: Incorrect phone / password
+ */
 const handlePOSTSignIn = async (req, res) => {
   /*
         #swagger.auto = false

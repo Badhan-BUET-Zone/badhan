@@ -333,6 +333,8 @@ const handleGETSearchOptimized = async (req, res) => {
  *     tags:
  *       - Donors
  *     summary: Get list of donors
+ *     security:
+ *       - ApiKeyAuth: []
  *     description: Searches for donors that matches the filters
  *     parameters:
  *       - in: query

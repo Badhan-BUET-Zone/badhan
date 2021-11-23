@@ -20,6 +20,8 @@ const dbModelDocs = [
   './src/db/models/Token.js'
 ]
 
+const authDocs = './src/middlewares/authenticate.js'
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -42,7 +44,7 @@ const options = {
     },
     tags: [
       {
-        name: 'User',
+        name: 'Users',
         description: 'Authentication Endpoints'
       },
       {
@@ -128,7 +130,7 @@ const options = {
       }
     }
   },
-  apis: [...controllerDocs, ...dbModelDocs] // files containing annotations as above
+  apis: [authDocs, ...controllerDocs, ...dbModelDocs] // files containing annotations as above
 }
 
 const openapiSpecification = swaggerJsdoc(options)
