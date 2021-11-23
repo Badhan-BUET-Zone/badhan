@@ -23,8 +23,8 @@ Steps for the backend:
 * Rate limiter
 * Guest API
 * Automated testing for main and guest route
-* Swagger documentation
 * New openapi documentation
+* Testing from openapi documentation
 * Update permission matrix
 
 Steps for the frontend:
