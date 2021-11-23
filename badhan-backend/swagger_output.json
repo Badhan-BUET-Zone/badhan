@@ -972,7 +972,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Donor deleted successfully"
+                  "example": "Donors queried successfully"
                 },
                 "filteredDonors": {
                   "type": "array",
@@ -986,10 +986,6 @@
                       "roomNumber": {
                         "type": "string",
                         "example": "249"
-                      },
-                      "designation": {
-                        "type": "number",
-                        "example": 0
                       },
                       "lastDonation": {
                         "type": "number",
@@ -1031,53 +1027,20 @@
                         "type": "boolean",
                         "example": true
                       },
-                      "callRecords": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "date": {
-                              "type": "number",
-                              "example": 1628520769727
-                            },
-                            "_id": {
-                              "type": "string",
-                              "example": "611141413ac83c0015f851b7"
-                            },
-                            "callerId": {
-                              "type": "string",
-                              "example": "5e6776166f73f925e22a05aa"
-                            },
-                            "calleeId": {
-                              "type": "string",
-                              "example": "5e6776166f73f925e22a0624"
-                            }
-                          }
-                        }
+                      "callRecordCount": {
+                        "type": "number",
+                        "example": 3
                       },
-                      "donationCountOptimized": {
+                      "donationCount": {
                         "type": "number",
                         "example": 6
                       },
-                      "markedBy": {
+                      "marker": {
                         "type": "object",
                         "properties": {
-                          "donorId": {
+                          "name": {
                             "type": "string",
-                            "example": "bb9dbced70ba9cddedc49e7cc8ed7b85"
-                          },
-                          "markerId": {
-                            "type": "object",
-                            "properties": {
-                              "_id": {
-                                "type": "string",
-                                "example": "7e5aa536cb89198aa20fd13ebf75c97d"
-                              },
-                              "name": {
-                                "type": "string",
-                                "example": "Clarence Cronin"
-                              }
-                            }
+                            "example": "Mir Mahathir Mohammad"
                           },
                           "time": {
                             "type": "number",
@@ -1093,7 +1056,7 @@
                 "name": "main"
               }
             },
-            "description": "Successful donor deletion"
+            "description": "Donors queried successfully"
           },
           "403": {
             "schema": {

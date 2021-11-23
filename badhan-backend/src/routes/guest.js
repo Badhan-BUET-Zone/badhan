@@ -26,7 +26,7 @@ router.post('/donors',
   guestController.handlePOSTInsertDonor
 )
 
-router.get('/search/v2',
+router.get('/search/v3',
   guestController.handlePOSTSearchDonors
 )
 

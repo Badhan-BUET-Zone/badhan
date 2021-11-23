@@ -326,6 +326,161 @@ const handleGETSearchOptimized = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /search/v3:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get list of donors
+ *     description: Searches for donors that matches the filters
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         description: A string that will be matched using subsequence search on the name field
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: maha
+ *       - in: query
+ *         name: bloodGroup
+ *         required: true
+ *         description: Bloodgroup must be between 0 to 7. -1 will denote any blood group
+ *         schema:
+ *           type: integer
+ *           example: 3
+ *       - in: query
+ *         name: hall
+ *         required: true
+ *         description: Hall must be between 0 to 6 or 8
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *       - in: query
+ *         name: batch
+ *         required: true
+ *         description: Batch must be the two digit batch number of a student. Leave it empty to include all batches
+ *         schema:
+ *           type: integer
+ *           example: 16
+ *       - in: query
+ *         name: address
+ *         required: true
+ *         description: Searches the address field using substring search. Leave it empty to include all addresses
+ *         schema:
+ *           type: string
+ *           example: azimpur
+ *       - in: query
+ *         name: isAvailable
+ *         required: true
+ *         description: make this true if you want to get the donors who have not donated blood in the last 120 days
+ *         schema:
+ *           type: boolean
+ *           example: true
+ *       - in: query
+ *         name: isNotAvailable
+ *         required: true
+ *         description: make this false if you want to get the donors who have donated blood in the last 120 days
+ *         schema:
+ *           type: boolean
+ *           example: false
+ *       - in: query
+ *         name: availableToAll
+ *         required: true
+ *         description: make this true to get the donors who are marked as public data
+ *         schema:
+ *           type: boolean
+ *           example: true
+ *     responses:
+ *       200:
+ *         description: Donors queried successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donors queried successfully
+ *                 filteredDonors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       address:
+ *                         type: string
+ *                         example: Azimpur Road
+ *                       roomNumber:
+ *                         type: string
+ *                         example: 249
+ *                       lastDonation:
+ *                         type: integer
+ *                         example: 1235478524412
+ *                       comment:
+ *                         type: string
+ *                         example: Has diabetes
+ *                       commentTime:
+ *                         type: integer
+ *                         example: 154782512254
+ *                       _id:
+ *                         type: string
+ *                         example: 584abcde6744144441
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir Mohammad
+ *                       studentId:
+ *                         type: string
+ *                         example: 1605011
+ *                       bloodGroup:
+ *                         type: integer
+ *                         example: 2
+ *                       phone:
+ *                         type: integer
+ *                         example: 8801521438557
+ *                       hall:
+ *                         type: integer
+ *                         example: 5
+ *                       availableToAll:
+ *                         type: boolean
+ *                         example: true
+ *                       callRecordCount:
+ *                         type: integer
+ *                         example: 3
+ *                       donationCount:
+ *                         type: integer
+ *                         example: 8
+ *                       marker:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                             example: Mir Mahathir Mohammad
+ *                           time:
+ *                             type: integer
+ *                             example: 154875221458
+ *       403:
+ *         description: This error will occur if the suer tries to search other halls
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 403
+ *                 message:
+ *                   type: string
+ *                   example: You are not allowed to search donors of other halls
+ */
 const handleGETSearchV3 = async (req, res) => {
   /*
         #swagger.auto = false
@@ -394,12 +549,11 @@ const handleGETSearchV3 = async (req, res) => {
         schema: {
             status: 'OK',
             statusCode: 200,
-            message: 'Donor deleted successfully',
+            message: 'Donors queried successfully',
             filteredDonors: [
                 {
                     "address": "Narayangonj Narayangonj ",
                     "roomNumber": "249",
-                    "designation": 0,
                     "lastDonation": 1569974400000,
                     "comment": "Has diabetes",
                     "commentTime": 1628521457159,
@@ -410,28 +564,16 @@ const handleGETSearchV3 = async (req, res) => {
                     "phone": 88014587556,
                     "hall": 0,
                     "availableToAll": true,
-                    "callRecords": [
-                        {
-                            "date": 1628520769727,
-                            "_id": "611141413ac83c0015f851b7",
-                            "callerId": "5e6776166f73f925e22a05aa",
-                            "calleeId": "5e6776166f73f925e22a0624"
-                        }
-                    ],
-                    "donationCountOptimized": 6,
-                    "markedBy": {
-
-                        "donorId": "bb9dbced70ba9cddedc49e7cc8ed7b85",
-                        "markerId": {
-                            "_id": "7e5aa536cb89198aa20fd13ebf75c97d",
-                            "name": "Clarence Cronin"
-                        },
+                    "callRecordCount": 3,
+                    "donationCount": 6,
+                    "marker": {
+                        "name":"Mir Mahathir Mohammad",
                         "time": 1634535727368
                     }
                 }
             ]
         },
-        description: 'Successful donor deletion'
+        description: 'Donors queried successfully'
     }
 
      */

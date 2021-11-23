@@ -75,14 +75,10 @@ const handlePOSTSearchDonors = async (req, res) => {
 
     const randomMarker = faker.getBoolean()
       ? {
-          donorId: faker.getId(),
-          markerId: {
-            _id: faker.getId(),
-            name: faker.getName()
-          },
+          name: faker.getName(),
           time: faker.getTimestamp(20)
         }
-      : null
+      : {}
 
     filteredDonors.push({
       _id: faker.getId(),
@@ -95,13 +91,11 @@ const handlePOSTSearchDonors = async (req, res) => {
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       comment: faker.getComment(),
-      donationCountOptimized: faker.getDonationCount(),
+      donationCount: faker.getDonationCount(),
       commentTime: faker.getTimestamp(240),
-      callRecords: callRecords,
-      email: faker.getEmail(),
-      designation: faker.getDesignation(),
       availableToAll: faker.getBoolean(),
-      markedBy: randomMarker
+      callRecordCount: faker.getRandomIndex(3),
+      marker: randomMarker
     })
   }
 
