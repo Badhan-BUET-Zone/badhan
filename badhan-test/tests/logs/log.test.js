@@ -17,7 +17,7 @@ const logSchema={
                 additionalProperties: false,
                 properties: {
                     dateString: {type: "string"},
-                    count:{type:"number"}
+                    count:{type:"integer"}
                 },
                 required: ["dateString","count"]
             }

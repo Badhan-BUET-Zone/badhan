@@ -14,18 +14,18 @@ const donorsSchema={
             additionalProperties: false,
             properties: {
                 _id:{type:"string"},
-                phone: {type: "number"},
+                phone: {type: "integer"},
                 name:{type:"string"},
                 studentId:{type:"string"},
                 email:{type:"string"},
-                lastDonation: {type: "number"},
-                bloodGroup: {type: "number"},
-                hall: {type: "number"},
+                lastDonation: {type: "integer"},
+                bloodGroup: {type: "integer"},
+                hall: {type: "integer"},
                 roomNumber:{type:"string"},
                 address:{type:"string"},
                 comment:{type:"string"},
-                commentTime: {type: "number"},
-                designation: {type: "number"},
+                commentTime: {type: "integer"},
+                designation: {type: "integer"},
                 availableToAll: {type: "boolean"},
                 callRecords: {
                     type: "array",
@@ -39,15 +39,15 @@ const donorsSchema={
                                 type: "object",
                                 additionalProperties:false,
                                 properties:{
-                                    designation:{type:"number"},
+                                    designation:{type:"integer"},
                                     _id:{type:"string"},
                                     name:{type:"string"},
-                                    hall:{type:"number"},
+                                    hall:{type:"integer"},
                                 },
                                 required:["designation","_id","name","hall"]
                             },
                             calleeId: {type: "string"},
-                            date: {type: "number"},
+                            date: {type: "integer"},
                             expireAt: {type: "string"}
                         },
                         required: ["callerId", "calleeId","date", "expireAt"]
@@ -62,8 +62,8 @@ const donorsSchema={
                         properties: {
                             _id: {type: "string"},
                             donorId: {type: "string"},
-                            phone: {type: "number"},
-                            date: {type: "number"}
+                            phone: {type: "integer"},
+                            date: {type: "integer"}
                         },
                         required: ["_id", "donorId","phone", "date"]
                     }
@@ -75,7 +75,7 @@ const donorsSchema={
                         type: "object",
                         additionalProperties: false,
                         properties: {
-                            bloodGroup: {type: "number"},
+                            bloodGroup: {type: "integer"},
                             _id: {type: "string"},
                             donorId: {type: "string"}
                         },
@@ -99,7 +99,7 @@ const donorsSchema={
                                         }
                                     },
                                     donorId:{type:"string",},
-                                    time: {type: "number"},
+                                    time: {type: "integer"},
                                 },
                                 required: ["markerId", "time","donorId"]
                             },

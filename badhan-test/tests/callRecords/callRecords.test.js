@@ -13,7 +13,7 @@ const postCallRecordsSchema={
             type: "object",
             additionalProperties: false,
             properties:{
-                date:{type:"number"},
+                date:{type:"integer"},
                 _id:{type:"string"},
                 callerId:{type:"string"},
                 calleeId:{type:"string"},
@@ -36,7 +36,7 @@ const deleteCallRecordsSchema={
             type: "object",
             additionalProperties: false,
             properties:{
-                date:{type:"number"},
+                date:{type:"integer"},
                 _id:{type:"string"},
                 callerId:{type:"string"},
                 calleeId:{type:"string"},

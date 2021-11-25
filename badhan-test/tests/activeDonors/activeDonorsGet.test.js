@@ -18,23 +18,23 @@ const activeDonorSearchResultSchema = {
                 additionalProperties: false,
                 properties: {
                     _id: {type: "string"},
-                    hall: {type: "number"},
+                    hall: {type: "integer"},
                     name: {type: "string"},
                     address: {type: "string"},
                     comment: {type: "string"},
-                    commentTime: {type: "number"},
-                    lastDonation: {type: "number"},
+                    commentTime: {type: "integer"},
+                    lastDonation: {type: "integer"},
                     availableToAll: {type: "boolean"},
-                    bloodGroup: {type: "number"},
+                    bloodGroup: {type: "integer"},
                     studentId: {type: "string"},
-                    phone: {type: "number"},
-                    markedTime: {type: "number"},
+                    phone: {type: "integer"},
+                    markedTime: {type: "integer"},
                     markerName: {type: "string"},
-                    donationCount: {type: "number"},
-                    callRecordCount: {type: "number"},
+                    donationCount: {type: "integer"},
+                    callRecordCount: {type: "integer"},
                     lastCallRecord: {
                         type: {
-                            anyOf: [{type: "number"},{type:"null"}],
+                            anyOf: [{type: "integer"},{type:"null"}],
                         }
                     }
                 },

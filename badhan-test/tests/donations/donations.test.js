@@ -13,9 +13,9 @@ const postDonationSchema={
             type: "object",
             additionalProperties: false,
             properties:{
-                date:{type:"number"},
+                date:{type:"integer"},
                 _id:{type:"string"},
-                phone:{type:"number"},
+                phone:{type:"integer"},
                 donorId:{type:"string"},
             },
             required:["date","_id","phone","donorId"]

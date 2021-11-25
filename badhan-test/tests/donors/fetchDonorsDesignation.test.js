@@ -19,8 +19,8 @@ const designationSchema={
                     roomNumber: {type: "string"},
                     _id: {type: "string"},
                     studentId: {type: "string"},
-                    phone: {type: "number"},
-                    bloodGroup: {type: "number"},
+                    phone: {type: "integer"},
+                    bloodGroup: {type: "integer"},
                     name: {type: "string"},
                 },
                 required: ["roomNumber", "_id", "studentId", "phone", "bloodGroup", "name"]
@@ -35,8 +35,8 @@ const designationSchema={
                 properties: {
                     _id: {type: "string"},
                     studentId: {type: "string"},
-                    phone: {type: "number"},
-                    hall: {type: "number"},
+                    phone: {type: "integer"},
+                    hall: {type: "integer"},
                     name: {type: "string"},
                 },
                 required: [ "_id", "studentId", "phone", "hall", "name"]
@@ -51,8 +51,8 @@ const designationSchema={
                 properties: {
                     _id: {type: "string"},
                     studentId: {type: "string"},
-                    phone: {type: "number"},
-                    hall: {type: "number"},
+                    phone: {type: "integer"},
+                    hall: {type: "integer"},
                     name: {type: "string"},
                 },
                 required: [ "_id", "studentId", "phone", "hall", "name"]
