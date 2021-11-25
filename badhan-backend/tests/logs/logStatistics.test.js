@@ -13,9 +13,9 @@ const statisticsSchema={
             type:"object",
             additionalProperties:false,
             properties:{
-                donorCount: {type:"number"},
-                donationCount: {type:"number"},
-                volunteerCount: {type:"number"}
+                donorCount: {type:"integer"},
+                donationCount: {type:"integer"},
+                volunteerCount: {type:"integer"}
             },
             required:["donorCount","donationCount","volunteerCount"]
         }

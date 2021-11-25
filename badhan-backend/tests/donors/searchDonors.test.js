@@ -18,18 +18,30 @@ const searchSchema = {
                 properties: {
                     address: {type: "string"},
                     roomNumber: {type: "string"},
-                    lastDonation: {type: "number"},
+                    lastDonation: {type: "integer"},
                     comment: {type: "string"},
-                    commentTime: {type: "number"},
+                    commentTime: {type: "integer"},
                     _id: {type: "string"},
                     studentId: {type: "string"},
                     name: {type: "string"},
-                    bloodGroup: {type: "number"},
-                    phone: {type: "number"},
-                    hall: {type: "number"},
+                    bloodGroup: {type: "integer"},
+                    phone: {type: "integer"},
+                    hall: {type: "integer"},
                     availableToAll: {type: "boolean"},
-                    donationCount: {type: "number"},
-                    callRecordCount: {type: "number"},
+                    donationCount: {type: "integer"},
+                    callRecordCount: {type: "integer"},
+                    lastCalled: {
+                        type:{
+                            anyOf: [
+                                {
+                                    type: "integer",
+                                },
+                                {
+                                    type: "null"
+                                }
+                            ]
+                        },
+                    },
                     marker: {
                         type:{
                             anyOf: [
@@ -38,7 +50,7 @@ const searchSchema = {
                                     additionalProperties: false,
                                     properties: {
                                         name:{type:"string",},
-                                        time: {type: "number"},
+                                        time: {type: "integer"},
                                     },
                                     required: ["name", "time"]
                                 },

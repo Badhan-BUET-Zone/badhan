@@ -17,7 +17,7 @@ const postActiveDonorSchema = {
                 _id:{type:"string"},
                 donorId:{type: "string"},
                 markerId:{type: "string"},
-                time:{type:"number"},
+                time:{type:"integer"},
             }
         }
     }
@@ -38,7 +38,7 @@ const deleteActiveDonorSchema = {
                 _id:{type:"string"},
                 donorId:{type: "string"},
                 markerId:{type: "string"},
-                time:{type:"number"},
+                time:{type:"integer"},
             }
         }
     }

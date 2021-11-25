@@ -15,7 +15,7 @@ const publicContactsSchema={
                 type: "object",
                 additionalProperties: false,
                 properties: {
-                    bloodGroup:{type:"number"},
+                    bloodGroup:{type:"integer"},
                     contacts:{
                         type:"array",
                         minItems: 1,
@@ -24,7 +24,7 @@ const publicContactsSchema={
                             additionalProperties:false,
                             properties:{
                                 donorId:{type:"string"},
-                                phone:{type:"number"},
+                                phone:{type:"integer"},
                                 name:{type:"string"},
                                 contactId:{type:"string"}
                             },

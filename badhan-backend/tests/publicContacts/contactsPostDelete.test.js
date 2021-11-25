@@ -13,7 +13,7 @@ const postPublicContactsSchema={
             type: "object",
             additionalProperties: false,
             properties:{
-                bloodGroup:{type:"number"},
+                bloodGroup:{type:"integer"},
                 _id:{type:"string"},
                 donorId:{type:"string"}
             },

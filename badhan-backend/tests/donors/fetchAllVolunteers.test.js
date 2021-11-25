@@ -19,8 +19,8 @@ const volunteersSchema={
                     _id: {type: "string"},
                     studentId: {type: "string"},
                     name: {type: "string"},
-                    logCount: {type: "number"},
-                    hall: {type: "number"},
+                    logCount: {type: "integer"},
+                    hall: {type: "integer"},
                 },
                 required: ["_id", "studentId","name", "logCount","hall"]
             },
