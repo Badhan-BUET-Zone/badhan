@@ -95,6 +95,7 @@ const handlePOSTSearchDonors = async (req, res) => {
       commentTime: faker.getTimestamp(240),
       availableToAll: faker.getBoolean(),
       callRecordCount: faker.getRandomIndex(3),
+      lastCalled: faker.getTimestamp(10),
       marker: randomMarker
     })
   }

@@ -457,6 +457,9 @@ const handleGETSearchOptimized = async (req, res) => {
  *                       donationCount:
  *                         type: integer
  *                         example: 8
+ *                       lastCalled:
+ *                         type: integer
+ *                         example: 135496813489
  *                       marker:
  *                         type: object
  *                         properties:

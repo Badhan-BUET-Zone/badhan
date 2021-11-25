@@ -164,7 +164,8 @@ const findDonorsByAggregate = async (reqQuery) => {
     $addFields: {
       donationCount: { $size: '$donations' },
       callRecordCount: { $size: '$callRecords' },
-      markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] }
+      markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] },
+      lastCalled: { $min: '$callRecords.date' }
     }
   },
   {
