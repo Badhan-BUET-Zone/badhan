@@ -1,9 +1,12 @@
 const dotenv = require('dotenv')
 const yargs = require('yargs');
+const fsExtra = require('fs-extra')
+const controllers = require('./controllers');
 
 dotenv.config( { path : './config/config.env'} )
 
-const controllers = require('./controllers');
+fsExtra.emptyDirSync('backup')
+
 yargs.command({
     command: 'backup',
     describe: 'Backup the mongodb database to firebase storage',
@@ -45,5 +48,25 @@ yargs.command({
         }
     },
     handler: controllers.restoreController
+})
+
+yargs.command({
+    command: 'prune',
+    describe: 'Keep latest maximum 3 backups and delete the remaining backups',
+    handler: controllers.pruneController
+
+})
+
+yargs.command({
+    command: 'restoreLatest',
+    describe: 'Restore the last backup to database',
+    builder:{
+        production: {
+            describe: 'If true, then the backup will be restored to the production database',
+            type: 'boolean',
+            default: false,
+        }
+    },
+    handler: controllers.restoreLatestController
 })
 yargs.parse();

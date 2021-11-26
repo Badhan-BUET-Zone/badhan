@@ -1,174 +1,157 @@
-const fs = require('fs');
-var archiver = require('archiver');
-var unzipper = require('unzipper');
-var admin = require("firebase-admin");
-var serviceAccount = require("./storage/badhan-buet-2177eeab149f.json");
+const fs = require('fs')
+const archiver = require('archiver')
+const extract = require('extract-zip')
+const resolve = require('path').resolve
+const child_process = require('child_process')
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: "badhan-buet.appspot.com"
-});
-
-var bucket = admin.storage().bucket();
+const firebaseStorage = require('./storage');
 
 const backupController = async () => {
-    console.log("backup command initiated");
-    let folderName = new Date().getTime()
+  console.log('backup command initiated')
+  let folderName = new Date().getTime()
 
-    console.log("fetching database...")
-    spawn = require('child_process').spawn
-    let backupProcess = spawn('./mongodump', [
-        '--out=backup/' + folderName,
-        process.env.MONGODB_URI_PROD
-    ]);
+  console.log('fetching database...')
+  var child = child_process.spawnSync('./mongodump', ['--out=backup/' + folderName,
+    process.env.MONGODB_URI_PROD], { encoding: 'utf8' })
+  console.log('Process finished.')
+  if (child.error) {
+    console.log('ERROR: ', child.error)
+    return
+  }
+  console.log('stdout: ', child.stdout)
+  console.log('stderr: ', child.stderr)
+  console.log('exit code: ', child.status)
 
-    backupProcess.on('exit', async (code, signal) => {
-        if (code) {
-            console.log('Backup process exited with code ', code);
-        } else if (signal) {
-            console.error('Backup process was killed with singal ', signal);
-        } else {
-            console.log("fetching database completed.")
+  console.log('fetching database completed.')
 
-            console.log("compressing database files...")
-            var output = fs.createWriteStream('backup/' + folderName + '.zip');
-            var archive = archiver('zip');
+  var output = fs.createWriteStream('backup/' + folderName + '.zip')
+  var archive = archiver('zip')
 
-            output.on('close', async () => {
-                // console.log(archive.pointer() + ' total bytes');
-                // console.log('archiver has been finalized and the output file descriptor has closed.');
-                console.log("compressing database files completed")
+  output.on('close', async () => {
+    console.log('compressing database files completed')
 
-                console.log("uploading to cloud...");
-                await bucket.upload('backup/' + folderName + '.zip', {
-                    destination: 'backup/' + folderName + '.zip'
-                });
-                console.log("uploading to cloud completed");
+    console.log('uploading to cloud...')
+    await firebaseStorage.uploadFile(`backup/${folderName}.zip`,`backup/${folderName}.zip`)
+    console.log('uploading to cloud completed')
+  })
 
-                console.log("cleaning up...")
-                fs.rmSync('./backup/' + folderName, {recursive: true});
-                fs.rmSync('./backup/' + folderName + '.zip', {recursive: true});
-                console.log("cleaning up completed")
-            });
+  archive.on('error', function (err) {
+    throw err
+  })
+  archive.pipe(output)
+  archive.directory('./backup/' + folderName, false)
+  await archive.finalize()
 
-            archive.on('error', function (err) {
-                throw err;
-            });
-
-            archive.pipe(output);
-
-            archive.directory('./backup/' + folderName, false);
-
-            archive.finalize();
-        }
-    });
 }
 const deleteController = async (argv) => {
-    console.log("delete command initiated");
-    console.log("time: ", argv.time);
+  console.log('delete command initiated')
+  console.log('time: ', argv.time)
 
-    console.log("fetching backups from cloud...")
-    let backupList = await getBackupList();
-    console.log("fetching backups from cloud completed")
+  console.log('fetching backups from cloud...')
+  let backupList = await firebaseStorage.getBackupList()
+  console.log('fetching backups from cloud completed')
 
-    if (!backupList.includes(argv.time)){
-        console.log("backup with specified timestamp not found");
-        return;
-    }
-    console.log("backup found with specified timestamp");
+  if (!backupList.includes(argv.time)) {
+    console.log('backup with specified timestamp not found')
+    return
+  }
+  console.log('backup found with specified timestamp')
 
-    console.log('deleting backup...');
-    await bucket.deleteFiles({
-        prefix: 'backup/'+argv.time+'.zip'
-    }, (err)=>{
-        if (!err) {
-            // All files in the `images` directory have been deleted.
-        }
-    });
-    console.log("successfully deleted backup")
+  console.log('deleting backup...')
+  await firebaseStorage.deleteFile(`backup/${argv.time}.zip`)
+
+  console.log('successfully deleted backup')
 }
 const listController = async () => {
-    console.log("list command initiated");
+  console.log('list command initiated')
 
-    console.log("fetching backups from cloud...")
-    let backupList = await getBackupList();
-    console.log("fetching backups from cloud completed")
+  console.log('fetching backups from cloud...')
+  let backupList = await firebaseStorage.getBackupList()
+  console.log('fetching backups from cloud completed')
 
-    console.log('found backups:');
-    backupList.forEach((timeStamp)=>{
-        console.log(new Date(timeStamp).toLocaleString()," (timestamp: ",timeStamp,")")
-    })
+  console.log('found backups:')
+  backupList.forEach((timeStamp) => {
+    console.log(new Date(timeStamp).toLocaleString(), ' (timestamp: ', timeStamp, ')')
+  })
 }
 
-const getBackupList = async ()=>{
-    const [files] = await bucket.getFiles({ prefix: 'backup/'});
-
-    let newFileList = [];
-    files.forEach(file => {
-        if(file.name.endsWith('.zip') && file.name.startsWith('backup/'))
-        {
-            newFileList.push(parseInt(file.name.substr(7).split('.').slice(0, -1).join('.')));
-        }
-    });
-    return newFileList;
-}
 const restoreController = async (argv) => {
-    console.log("restore command initiated");
-    console.log("time: ",argv.time);
-    console.log("restore to production: ",argv.production);
+  console.log('restore command initiated')
+  console.log('time: ', argv.time)
+  console.log('restore to production: ', argv.production)
 
-    let mongoURI = process.env.MONGODB_URI_TEST;
+  let mongoURI = process.env.MONGODB_URI_TEST
 
-    if(argv.production===true){
-        mongoURI = process.env.MONGODB_URI_PROD;
-    }
+  if (argv.production === true) {
+    mongoURI = process.env.MONGODB_URI_PROD
+  }
 
-    console.log("fetching backups from cloud...")
-    let backupList = await getBackupList();
-    console.log("fetching backups from cloud completed")
+  console.log('fetching backups from cloud...')
+  let backupList = await firebaseStorage.getBackupList()
+  console.log('fetching backups from cloud completed')
 
-    if (!backupList.includes(argv.time)){
-        console.log("backup with specified timestamp not found");
-        return;
-    }
-    console.log("backup found with specified timestamp");
+  if (!backupList.includes(argv.time)) {
+    console.log('backup with specified timestamp not found')
+    return
+  }
+  console.log('backup found with specified timestamp')
 
-    console.log("downloading backup...")
-    await bucket.file('backup/'+argv.time+'.zip').download({destination:'./backup/'+argv.time+'.zip'});
-    console.log("backup downloaded");
+  console.log('downloading backup...')
+  await firebaseStorage.downloadFile(`backup/${argv.time}.zip`,`./backup/${argv.time}.zip`)
+  console.log('backup downloaded')
 
-    console.log("extracting backup...");
-    fs.createReadStream('./backup/'+argv.time+'.zip')
-        .pipe(unzipper.Extract({ path: './backup/'+argv.time }));
-    console.log("extracting backup completed");
+  console.log('extracting backup...')
+  const targetPath = `./backup/${argv.time}.zip`
+  const unpackPath = `./backup/${argv.time}`
+  const resolvedUnpackPath = resolve(unpackPath)
+  console.log('extracting ' + targetPath + ' to ' + resolvedUnpackPath)
 
-    console.log("restoring backup...");
-    spawn = require('child_process').spawn
-    let backupProcess = spawn('./mongorestore', [
-        '--drop',
-        '--dir=backup/'+argv.time+'/Badhan',
-        mongoURI
-    ]);
+  await extract(targetPath, { dir: resolvedUnpackPath })
+  console.log('extracting backup completed')
 
-    backupProcess.on('exit', async (code, signal) => {
-        if (code) {
-            console.log('Backup process exited with code ', code);
-        } else if (signal) {
-            console.error('Backup process was killed with singal ', signal);
-        } else {
-            console.log('Successfully restored the database');
+  console.log('restoring backup...')
+  const child = child_process.spawnSync('./mongorestore', ['--drop', `--dir=backup/${argv.time}/Badhan`, mongoURI], { encoding: 'utf8' })
+  console.log('Process finished.')
+  if (child.error) {
+    console.log('ERROR: ', child.error)
+  }
+  console.log('stdout: ', child.stdout)
+  console.log('stderr: ', child.stderr)
+  console.log('exit code: ', child.status)
+}
 
-            console.log('cleaning up...')
-            fs.rmSync('./backup/' + argv.time, {recursive: true});
-            fs.rmSync('./backup/' + argv.time + '.zip', {recursive: true});
-        }
-    });
+const pruneController = async()=>{
+  console.log("prune command initiated")
+  console.log('fetching backup list from cloud...')
+  let backupList = await firebaseStorage.getBackupList()
+  console.log('fetching backup list from cloud completed')
+  backupList = backupList.reverse().slice(3)
 
+  for(let i = 0 ; i < backupList.length; i++){
+    console.log(`deleting backup ${backupList[i]}`)
+    await firebaseStorage.deleteFile(`backup/${backupList[i]}.zip`)
+  }
+}
+
+const restoreLatestController = async(argv)=>{
+  console.log("restoreLatest command initiated")
+  console.log('fetching backup list from cloud...')
+  let backupList = await firebaseStorage.getBackupList()
+  console.log('fetching backup list from cloud completed')
+  if(backupList.length===0){
+    console.log("No backups found")
+    return
+  }
+
+  argv.time = backupList[backupList.length-1]
+  await restoreController(argv)
 }
 
 module.exports = {
-    backupController,
-    deleteController,
-    listController,
-    restoreController
+  backupController,
+  deleteController,
+  listController,
+  restoreController,
+  pruneController,
+  restoreLatestController
 }
