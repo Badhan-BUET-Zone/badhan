@@ -1,12 +1,32 @@
+const constants = require('../../constants')
 const { Log } = require('../models/Log')
 const mongoose = require('mongoose')
 
 const addLog = async (donorId, operation, details) => {
-  if (donorId.equals('5e901d56effc5900177ced73')) {
+  if (donorId.equals(constants.MASTER_ADMIN_ID)) {
     return
   }
 
   const log = new Log({ donorId, operation, details })
+  const data = await log.save()
+
+  if (data.nInserted === 0) {
+    return {
+      message: 'Log insertion failed',
+      status: 'ERROR',
+      data: data
+    }
+  } else {
+    return {
+      message: 'Log insertion successful',
+      status: 'OK',
+      data: data
+    }
+  }
+}
+
+const addLogOfMasterAdmin = async (operation, details) => {
+  const log = new Log({ donorId: constants.MASTER_ADMIN_ID, operation, details })
   const data = await log.save()
 
   if (data.nInserted === 0) {
@@ -180,5 +200,6 @@ module.exports = {
   deleteLogs,
   getLogCounts,
   getLogsByDate,
-  getLogsByDateAndUser
+  getLogsByDateAndUser,
+  addLogOfMasterAdmin
 }

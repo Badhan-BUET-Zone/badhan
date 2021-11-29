@@ -2,6 +2,8 @@ const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const { OKResponse200 } = require('../response/successTypes')
+const constants = require('../constants')
+const { ForbiddenError403 } = require('../response/errorTypes')
 
 const handleGETOnlineCheck = async (req, res) => {
   /*
@@ -206,8 +208,11 @@ const handleDELETELogs = async (req, res) => {
                    "api_key": []
             }]
     */
+  if (!res.locals.middlewareResponse.donor._id.equals(constants.MASTER_ADMIN_ID)) {
+    return res.respond(new ForbiddenError403('Only Master Admin is allowed to access this route'))
+  }
   await logInterface.deleteLogs()
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE LOGS', {})
+  await logInterface.addLogOfMasterAdmin('DELETE LOGS', {})
   return res.respond(new OKResponse200('All logs deleted successfully'))
 }
 
