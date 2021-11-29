@@ -2,7 +2,29 @@ const { badhanAxios } = require('../../api')
 const validate = require('jsonschema').validate
 const env = require('../../config/config')
 const { processError } = require('../fixtures/helpers')
-
+const logSchema={
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    status: {type: "string"},
+    statusCode: {const: 200},
+    message: {type: "string"},
+    logs: {
+      type:"array",
+      minItems: 1,
+      items: {
+        type:"object",
+        additionalProperties: false,
+        properties: {
+          dateString: {type: "string"},
+          count:{type:"integer"}
+        },
+        required: ["dateString","count"]
+      }
+    }
+  },
+  required: ["status", "statusCode", "message","logs"]
+}
 const logByDateSchema = {
   type: 'object',
   additionalProperties: false,
@@ -60,22 +82,38 @@ test('GET/log/date/{date}/donorId/{donorId}', async () => {
       password: env.SUPERADMIN_PASSWORD
     })
 
-    let volunteerSignInResponse = await badhanAxios.post('/users/signin', {
-      phone: env.VOLUNTEER_PHONE,
-      password: env.VOLUNTEER_PASSWORD
-    })
-    await badhanAxios.delete('/users/signout', {
-      headers: {
-        'x-auth': volunteerSignInResponse.data.token
-      }
-    })
-
-    let logResponse = await badhanAxios.get('/log', {
+    let designatedDonors = await badhanAxios.get('/donors/designation', {
       headers: {
         'x-auth': signInResponse.data.token
       }
     })
-    let splitDate = logResponse.data.logs[0].dateString.split('-')
+    let volunteerId = designatedDonors.data.volunteerList[0]._id
+    let passwordResetTokenResult = await badhanAxios.post('/donors/password', {
+      donorId: volunteerId,
+    },{
+      headers: {
+        'x-auth': signInResponse.data.token
+      }
+    })
+
+    await badhanAxios.delete('/users/signout', {
+      headers: {
+        'x-auth': passwordResetTokenResult.data.token
+      }
+    })
+
+    let getLogResponse = await badhanAxios.get('/log',{
+      headers:{
+        "x-auth":signInResponse.data.token
+      }
+    });
+
+
+    let getLogResponseValidationResult = validate(getLogResponse.data, logSchema);
+
+    expect(getLogResponseValidationResult.errors).toEqual([]);
+
+    let splitDate = getLogResponse.data.logs[0].dateString.split('-')
     let timeStamp = new Date(parseInt(splitDate[0]), parseInt(splitDate[1]) - 1, parseInt(splitDate[2])).getTime()
 
     let logByDateOnlyResponse = await badhanAxios.get('/log/date/' + timeStamp, {
@@ -112,6 +150,12 @@ test('GET/log/date/{date}/donorId/{donorId}', async () => {
 
 test('GET/guest/log/date/{date}/donorId/{donorId}', async () => {
   try {
+    let getLogsResponse = await badhanAxios.get('/guest/log');
+
+    let logsResponseValidationResult = validate(getLogsResponse.data, logSchema);
+
+    expect(logsResponseValidationResult.errors).toEqual([]);
+
     let logByDateOnlyResponse = await badhanAxios.get('/guest/log/date/' + 123456)
 
     let logByDateOnlyValidationResult = validate(logByDateOnlyResponse.data, logByDateSchema)
