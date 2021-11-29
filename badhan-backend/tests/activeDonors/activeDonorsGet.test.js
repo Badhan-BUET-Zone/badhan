@@ -54,7 +54,7 @@ test('GET/activeDonors', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let response = await badhanAxios.get('/activeDonors?bloodGroup=1&hall=5&batch=&name=mahathir&address=&isAvailable=true&isNotAvailable=true&availableToAll=true&markedByMe=false&availableToAllOrHall=false', {
+        let response = await badhanAxios.get('/activeDonors?bloodGroup=-1&hall=5&batch=&name=&address=&isAvailable=true&isNotAvailable=true&availableToAll=true&markedByMe=false&availableToAllOrHall=false', {
             headers: {
                 "x-auth": signInResponse.data.token
             }
