@@ -75,25 +75,41 @@ const getLogCounts = async () => {
               },
               timezone: '+06:00'
             }
-          }
+          },
+          donorId: '$donorId'
         }
       },
       {
         $group: {
           _id: {
-            dateString: '$dateString'
+            dateString: '$dateString',
+            donorId: '$donorId'
           },
           count: { $sum: 1 }
         }
       },
       {
-        $project: {
-          _id: 0,
-          dateString: '$_id.dateString',
-          count: '$count'
+        $group: {
+          _id: {
+            dateString: '$_id.dateString'
+          },
+          activeUserCount: { $sum: 1 },
+          totalLogCount: { $sum: '$count' }
         }
       },
-      { $sort: { dateString: -1 } }
+      {
+        $project: {
+          dateString: '$_id.dateString',
+          activeUserCount: 1,
+          totalLogCount: 1,
+          _id: 0
+        }
+      },
+      {
+        $sort: {
+          dateString: -1
+        }
+      }
     ]
   )
 

@@ -4,8 +4,6 @@ const departments = [
   'IPE (08)', 'NULL', 'ME (10)', 'MME (11)',
   'NAME (12)', 'NULL', 'NULL', 'URP (15)',
   'WRE (16)', 'NULL', 'BME (18)']
-// covid support
-// export const halls=['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir','Attached'];
 
 const halls = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 const designations = ['Donor', 'Volunteer', 'Hall Admin', 'Super Admin']

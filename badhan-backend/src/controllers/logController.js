@@ -78,6 +78,48 @@ const handleGETAppVersion = (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /log:
+ *   get:
+ *     tags:
+ *       - Logs
+ *     summary: Get count of logged in user and logs
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Get date wise count of api calls
+ *     responses:
+ *       200:
+ *         description: Log counts fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Log counts fetched successfully
+ *                 logs:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       dateString:
+ *                         type: string
+ *                         example: 2021-05-06
+ *                       activeUserCount:
+ *                         type: integer
+ *                         example: 23
+ *                       totalLogCount:
+ *                         type: integer
+ *                         example: 256
+ */
 const handleGETLogs = async (req, res) => {
   /*
         #swagger.auto = false

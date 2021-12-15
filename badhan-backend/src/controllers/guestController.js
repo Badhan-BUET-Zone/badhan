@@ -61,9 +61,9 @@ const handlePOSTLogOutAll = async (req, res) => {
 const handlePOSTSearchDonors = async (req, res) => {
   const filteredDonors = []
 
-  for (let i = 0; i < faker.getRandomIndex(50); i++) {
+  for (let i = 0; i < faker.getRandInt(1, 50); i++) {
     const callRecords = []
-    for (let i = 0; i < faker.getRandomIndex(3); i++) {
+    for (let i = 0; i < faker.getRandInt(1, 3); i++) {
       callRecords.push({
         date: faker.getTimestamp(5),
         _id: faker.getId(),
@@ -338,7 +338,8 @@ const handleGETLogs = async (req, res) => {
   for (let i = 0; i < 15; i++) {
     logs.push({
       dateString: faker.getFakeDateString(),
-      count: faker.getRandomIndex(20)
+      activeUserCount: faker.getRandomIndex(20),
+      totalLogCount: faker.getRandomIndex(20)
     })
   }
   return res.respond(new OKResponse200('All logs fetched successfully', {
@@ -541,7 +542,7 @@ const handlePOSTActiveDonors = async (req, res) => {
 const handleGETActiveDonors = async (req, res) => {
   const filteredActiveDonors = []
 
-  for (let i = 0; i < faker.getRandomIndex(50); i++) {
+  for (let i = 0; i < faker.getRandInt(1, 50); i++) {
     filteredActiveDonors.push({
       _id: faker.getId(),
       hall: faker.getHall(),

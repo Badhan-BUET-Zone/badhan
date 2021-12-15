@@ -1,6 +1,4 @@
-// import tokenCache from '../cache/tokenCache'
 const tokenCache = require('../cache/tokenCache')
-// import dotenv from '../dotenv'
 const dotenv = require('../dotenv')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -81,16 +79,6 @@ const handlePOSTPasswordForgot = async (req, res) => {
 
   return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
-
-/**
- * @openapi
- * /:
- *   get:
- *     description: Welcome to swagger-jsdoc!
- *     responses:
- *       200:
- *         description: Returns a mysterious string.
- */
 
 /**
  * @openapi

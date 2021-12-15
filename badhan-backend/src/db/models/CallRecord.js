@@ -52,13 +52,6 @@ const callRecordSchema = new mongoose.Schema({
 
 callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-// callRecordSchema.methods.toJSON = function () {
-//     const callRecord = this
-//     const callRecordObject = callRecord.toObject()
-//     delete callRecordObject.expireAt
-//     return callRecordObject
-// }
-
 const CallRecord = mongoose.model('CallRecords', callRecordSchema)
 
 module.exports = { CallRecord, callRecordSchema }

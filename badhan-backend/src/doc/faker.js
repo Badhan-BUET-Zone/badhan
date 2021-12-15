@@ -131,5 +131,6 @@ module.exports = {
   getOperation,
   getFakeDateString,
   getEmail,
-  getExpireAt
+  getExpireAt,
+  getRandInt
 }

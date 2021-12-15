@@ -104,9 +104,6 @@ const generateSearchQuery = (reqQuery) => {
   // process hall
   // if the availableToAll is true, then there is no need to search using hall
   // otherwise, hall must be included
-  //     if(reqQuery.availableToAllOrHall){
-  //         queryBuilder
-  //     }
 
   if (reqQuery.availableToAllOrHall) {
     // do something later

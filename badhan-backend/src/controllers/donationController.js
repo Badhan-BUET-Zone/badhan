@@ -56,8 +56,6 @@ const handlePOSTDonations = async (req, res) => {
     donor.lastDonation = req.body.date
   }
 
-  // donor.donationCount++;
-
   await donor.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONATIONS', {
@@ -118,8 +116,6 @@ const handleDELETEDonations = async (req, res) => {
   if (donationDeletionResult.status !== 'OK') {
     return res.respond(new NotFoundError404('Matching donation not found'))
   }
-
-  // donor.donationCount = Math.max(0, donor.donationCount - 1);
 
   const maxDonationResult = await donationInterface.findMaxDonationByDonorId(donor._id)
 
