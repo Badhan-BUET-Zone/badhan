@@ -476,86 +476,6 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
 }
 /**
  * @openapi
- * /users/password:
- *   patch:
- *     tags:
- *       - Users
- *     summary: Patch password route
- *     description: Route endpoint to change password
- *     requestBody:
- *       description: The JSON consisting of the new password
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               password:
- *                 type: string
- *                 example: mynewpassword
- *     responses:
- *       201:
- *         description: Successful password change done
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 201
- *                 message:
- *                   type: string
- *                   example: Password changed successfully
- *                 token:
- *                   type: string
- *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
- */
-const handlePATCHPassword = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['User']
-    #swagger.description = 'Route endpoint to change password'
-    #swagger.security = [{
-               "api_key": []
-        }]
-    #swagger.parameters['passwordChange'] = {
-        in: 'body',
-        description: 'New Password',
-        schema: {
-            password: "mynewpassword"
-        }
-    }
-        #swagger.responses[201] = {
-        schema: {
-            status: 'OK',
-            statusCode: 201,
-            message: 'Password changed successfully',
-            token: 'dsgfewosgnwegnhw'
-        },
-        description: 'Successful password change done'
-    }
-*/
-
-  const reqBody = req.body
-  const donor = res.locals.middlewareResponse.donor
-  donor.password = reqBody.password
-  await donor.save()
-
-  await tokenInterface.deleteAllTokensByDonorId(donor._id)
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH USERS PASSWORD', {})
-
-  return res.respond(new CreatedResponse201('Password changed successfully', {
-    token: tokenInsertResult.data.token
-  }))
-}
-
-/**
- * @openapi
  * /users/password/forgot:
  *   post:
  *     tags:
@@ -674,7 +594,151 @@ const handlePOSTPasswordForgot = async (req, res) => {
 
   return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
+/**
+ * @openapi
+ * /users/password:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Patch password route
+ *     description: Route endpoint to change password
+ *     requestBody:
+ *       description: The JSON consisting of the new password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: mynewpassword
+ *     responses:
+ *       201:
+ *         description: Successful password change done
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Password changed successfully
+ *                 token:
+ *                   type: string
+ *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ */
+const handlePATCHPassword = async (req, res) => {
+  /*
+    #swagger.auto = false
+    #swagger.tags = ['User']
+    #swagger.description = 'Route endpoint to change password'
+    #swagger.security = [{
+               "api_key": []
+        }]
+    #swagger.parameters['passwordChange'] = {
+        in: 'body',
+        description: 'New Password',
+        schema: {
+            password: "mynewpassword"
+        }
+    }
+        #swagger.responses[201] = {
+        schema: {
+            status: 'OK',
+            statusCode: 201,
+            message: 'Password changed successfully',
+            token: 'dsgfewosgnwegnhw'
+        },
+        description: 'Successful password change done'
+    }
+*/
 
+  const reqBody = req.body
+  const donor = res.locals.middlewareResponse.donor
+  donor.password = reqBody.password
+  await donor.save()
+
+  await tokenInterface.deleteAllTokensByDonorId(donor._id)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH USERS PASSWORD', {})
+
+  return res.respond(new CreatedResponse201('Password changed successfully', {
+    token: tokenInsertResult.data.token
+  }))
+}
+/**
+ * @openapi
+ * /users/logins:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Fetch users login route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Endpoint to get recent logins
+ *     responses:
+ *       200:
+ *         description: Donors queried successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Recent logins fetched successfully
+ *                 logins:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       ipAddress:
+ *                         type: string
+ *                         example: 1.2.3.4
+ *                       browserFamily:
+ *                         type: string
+ *                         example: Firefox
+ *                       device:
+ *                         type: string
+ *                         example: Asus K550VX
+ *                       os:
+ *                         type: string
+ *                         example: Ubuntu 20.04.1
+ *                       _id:
+ *                         type: string
+ *                         example: 584abcde6744144441
+ *                 currentLogin:
+ *                   type: object
+ *                   properties:
+ *                     ipAddress:
+ *                       type: string
+ *                       example: 1.2.3.4
+ *                     browserFamily:
+ *                       type: string
+ *                       example: Firefox
+ *                     device:
+ *                       type: string
+ *                       example: Asus K550VX
+ *                     os:
+ *                       type: string
+ *                       example: Ubuntu 20.04.1
+ *                     _id:
+ *                       type: string
+ *                       example: 584abcde6744144441
+ */
 const handleGETLogins = async (req, res) => {
   /*
         #swagger.auto = false
