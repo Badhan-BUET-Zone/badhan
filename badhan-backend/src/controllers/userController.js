@@ -14,126 +14,7 @@ const {
   UnauthorizedError401
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
-/**
- * @openapi
- * /users/password/forgot:
- *   post:
- *     tags:
- *       - Users
- *     summary: Password forgot route
- *     description: Route if user forgets the password
- *     requestBody:
- *       description: Phone number of user who forgot his/her password
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone:
- *                 type: string
- *                 example: 8801521438557
- *     responses:
- *       200:
- *         description:  Success Response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: A recovery mail has been sent to your email address
- *                 token:
- *                   type: string
- *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
- *       404:
- *         description: Error responses
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ERROR
- *                 statusCode:
- *                   type: integer
- *                   example: 404
- *                 message:
- *                   type: string
- *                   example: Phone number not recognized/ Account not found/ No recovery email found for this phone number
- */
-const handlePOSTPasswordForgot = async (req, res) => {
-  /*
-        #swagger.auto = false
-        #swagger.tags = ['User']
-        #swagger.description = 'Route if user forgets the password.'
-        #swagger.parameters['signIn'] = {
-            in: 'body',
-            description: 'Phone number of user who forgot his/her password',
-            schema: {
-                phone: "8801521438557",
-            }
-        }
 
-            #swagger.responses[404] = {
-                schema: {
-                    status: "ERROR",
-                    statusCode: 404,
-                    message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
-                },
-                description: 'Error responses'
-            }
-            #swagger.responses[200] = {
-                schema: {
-                    status: "OK",
-                    statusCode: 200,
-                    message: "A recovery mail has been sent to your email address",
-                },
-                description: 'Success response'
-            }
-    */
-  const phone = req.body.phone
-  const queryByPhoneResult = await donorInterface.findDonorByPhone(phone)
-  if (queryByPhoneResult.status !== 'OK') {
-    return res.respond(new NotFoundError404('Phone number not recognized'))
-  }
-
-  const donor = queryByPhoneResult.data
-  const email = donor.email
-
-  if (donor.designation === 0) {
-    return res.respond(new NotFoundError404('Account not found'))
-  }
-
-  if (email === '') {
-    return res.respond(new NotFoundError404('No recovery email found for this phone number'))
-  }
-
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
-
-  if (tokenInsertResult.status !== 'OK') {
-    return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken'))
-  }
-
-  const emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
-
-  const result = await emailInterface.sendMail(email, 'Password Recovery Email from Badhan', emailHtml)
-  if (result.status !== 'OK') {
-    return res.respond(new InternalServerError500(result.message, 'found in handlePOSTPasswordForgot when emailInterface.sendMail'))
-  }
-
-  await logInterface.addLog(donor._id, 'POST USERS PASSWORD FORGOT', {})
-
-  return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
-}
 
 /**
  * @openapi
@@ -671,6 +552,127 @@ const handlePATCHPassword = async (req, res) => {
   return res.respond(new CreatedResponse201('Password changed successfully', {
     token: tokenInsertResult.data.token
   }))
+}
+
+/**
+ * @openapi
+ * /users/password/forgot:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Password forgot route
+ *     description: Route if user forgets the password
+ *     requestBody:
+ *       description: Phone number of user who forgot his/her password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: 8801521438557
+ *     responses:
+ *       200:
+ *         description:  Success Response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: A recovery mail has been sent to your email address
+ *                 token:
+ *                   type: string
+ *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ *       404:
+ *         description: Error responses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Phone number not recognized/ Account not found/ No recovery email found for this phone number
+ */
+const handlePOSTPasswordForgot = async (req, res) => {
+  /*
+        #swagger.auto = false
+        #swagger.tags = ['User']
+        #swagger.description = 'Route if user forgets the password.'
+        #swagger.parameters['signIn'] = {
+            in: 'body',
+            description: 'Phone number of user who forgot his/her password',
+            schema: {
+                phone: "8801521438557",
+            }
+        }
+
+            #swagger.responses[404] = {
+                schema: {
+                    status: "ERROR",
+                    statusCode: 404,
+                    message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
+                },
+                description: 'Error responses'
+            }
+            #swagger.responses[200] = {
+                schema: {
+                    status: "OK",
+                    statusCode: 200,
+                    message: "A recovery mail has been sent to your email address",
+                },
+                description: 'Success response'
+            }
+    */
+  const phone = req.body.phone
+  const queryByPhoneResult = await donorInterface.findDonorByPhone(phone)
+  if (queryByPhoneResult.status !== 'OK') {
+    return res.respond(new NotFoundError404('Phone number not recognized'))
+  }
+
+  const donor = queryByPhoneResult.data
+  const email = donor.email
+
+  if (donor.designation === 0) {
+    return res.respond(new NotFoundError404('Account not found'))
+  }
+
+  if (email === '') {
+    return res.respond(new NotFoundError404('No recovery email found for this phone number'))
+  }
+
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+
+  if (tokenInsertResult.status !== 'OK') {
+    return res.respond(new InternalServerError500('Token insertion failed', 'found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken'))
+  }
+
+  const emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
+
+  const result = await emailInterface.sendMail(email, 'Password Recovery Email from Badhan', emailHtml)
+  if (result.status !== 'OK') {
+    return res.respond(new InternalServerError500(result.message, 'found in handlePOSTPasswordForgot when emailInterface.sendMail'))
+  }
+
+  await logInterface.addLog(donor._id, 'POST USERS PASSWORD FORGOT', {})
+
+  return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
 
 const handleGETLogins = async (req, res) => {
