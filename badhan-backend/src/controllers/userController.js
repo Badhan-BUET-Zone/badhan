@@ -593,7 +593,46 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-
+/**
+ * @openapi
+ * /users/password:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Patch password route
+ *     description: Route endpoint to change password
+ *     requestBody:
+ *       description: The JSON consisting of the new password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: mynewpassword
+ *     responses:
+ *       201:
+ *         description: Successful password change done
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Password changed successfully
+ *                 token:
+ *                   type: string
+ *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ */
 const handlePATCHPassword = async (req, res) => {
   /*
     #swagger.auto = false
