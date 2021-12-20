@@ -333,7 +333,35 @@ const handleDELETESignOutAll = async (req, res) => {
   await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT ALL', {})
   return res.respond(new OKResponse200('Logged out from all devices successfully'))
 }
-
+/**
+ * @openapi
+ * /users/redirection:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Redirection route
+ *     description: Endpoint to request a temporary redirection token
+ *     responses:
+ *       201:
+ *         description: Redirection token created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Redirection token created
+ *                 token:
+ *                   type: string
+ *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ */
 const handlePOSTRedirection = async (req, res) => {
   /*
     #swagger.auto = false
