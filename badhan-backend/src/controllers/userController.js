@@ -86,7 +86,7 @@ const handlePOSTPasswordForgot = async (req, res) => {
  *   post:
  *     tags:
  *       - Users
- *     summary: Sign In route
+ *     summary: Sign in route
  *     description: Sign in to Badhan Platform using phone and password
  *     requestBody:
  *       description: The JSON consisting of phone and password
@@ -229,7 +229,32 @@ const handlePOSTSignIn = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-
+/**
+ * @openapi
+ * /users/signout:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     summary: Sign out route
+ *     description: Sign out user from Badhan Platform
+ *     responses:
+ *       200:
+ *         description: A successful sign out removes the token for the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Logged out successfully
+ */
 const handleDELETESignOut = async (req, res) => {
   /*
     #swagger.auto = false
