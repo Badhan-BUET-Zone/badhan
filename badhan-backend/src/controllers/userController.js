@@ -281,7 +281,32 @@ const handleDELETESignOut = async (req, res) => {
   await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT', {})
   return res.respond(new OKResponse200('Logged out successfully'))
 }
-
+/**
+ * @openapi
+ * /users/signout/all:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     summary: Sign out all route
+ *     description: Sign out user from all devices
+ *     responses:
+ *       200:
+ *         description: Endpoint to logout user from all devices
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Logged out from all devices successfully
+ */
 const handleDELETESignOutAll = async (req, res) => {
   /*
     #swagger.auto = false
