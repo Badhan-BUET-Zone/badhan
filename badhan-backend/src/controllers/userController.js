@@ -487,8 +487,6 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
  *     tags:
  *       - Users
  *     summary: Password forgot route
- *     security:
- *       - ApiKeyAuth: []
  *     description: Route if user forgets the password
  *     requestBody:
  *       description: Phone number of user who forgot his/her password
