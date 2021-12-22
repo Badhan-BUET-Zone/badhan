@@ -1,5 +1,5 @@
 # badhan-backup
-badhan-backup is a command line tool written with Node.JS to backup and restore the development and production databases of Badhan, BUET Zone App and Website.
+badhan-backup is a command line tool written with Node.JS to backup and restore the development and production databases of Badhan, BUET Zone Android app (https://play.google.com/store/apps/details?id=com.mmmbadhan) and Website (https://badhan-buet.web.app)
 
 `Badhan-Logo` directory contains the python code to generate splash screen images from the base icon for the android app.
 ### Run the code
