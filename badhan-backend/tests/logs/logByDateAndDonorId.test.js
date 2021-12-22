@@ -17,9 +17,10 @@ const logSchema={
         additionalProperties: false,
         properties: {
           dateString: {type: "string"},
-          count:{type:"integer"}
+          activeUserCount:{type:"integer"},
+          totalLogCount:{type:"integer"}
         },
-        required: ["dateString","count"]
+        required: ["dateString","activeUserCount","totalLogCount"]
       }
     }
   },
