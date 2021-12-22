@@ -1,4 +1,11 @@
 const admin = require('firebase-admin')
+const fs = require("fs");
+
+if (!fs.existsSync('./config/badhan-buet-2177eeab149f.json')) {
+  console.log("LOG: config/badhan-buet-2177eeab149f.json does not exist");
+  process.exit(1)
+}
+
 const serviceAccount = require('../config/badhan-buet-2177eeab149f.json')
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

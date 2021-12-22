@@ -1,8 +1,8 @@
-const dotenv = require('dotenv')
+require('./dotenv')
 const yargs = require('yargs');
 const fsExtra = require('fs-extra')
 const controllers = require('./controllers');
-dotenv.config( { path : './config/config.env'} )
+
 fsExtra.emptyDirSync('backup')
 
 yargs.command({

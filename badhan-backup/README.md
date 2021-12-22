@@ -1,15 +1,33 @@
 # badhan-backup
-Backup codes for badhan
+badhan-backup is a command line tool written with Node.JS to backup and restore the development and production databases of Badhan, BUET Zone App and Website.
 
-The dependency graph of all the tasks and issues we are going to solve:
+`Badhan-Logo` directory contains the python code to generate splash screen images from the base icon for the android app.
+### Run the code
+* Run `npm i` to install all dependencies.
+* Create `config` folder and paste `badhan-buet-2177eeab149f.json` and `config.env` in it (Ask system administrator for these files)
 
-https://drive.google.com/file/d/1XoiB2ToBsIpsylozd4EOdRIYct7_A-bK/view?usp=sharing
+### Available commands:
 
-Permission Matrix of Routes:
+`node badhan backup  `       Backup the mongodb database to firebase storage
+
+`node badhan list   `        Get the list of backups of mongodb database from
+firebase storage
+
+`node badhan delete`         Remove a backup using timestamp
+
+`node badhan restore`        Restore a backup using timestamp
+
+`node badhan prune`          Keep latest maximum 3 backups and delete the remaining
+backups
+
+`node badhan restoreLatest`  Restore the last backup to database
+
+
+### Permission Matrix of Routes:
 
 https://docs.google.com/spreadsheets/d/11jBcFWn9-E6lY-l0PFHv5Mc_DyAvjb6po_BYZXtVHRk/edit?usp=sharing
 
-# steps required for new feature
+### Steps required for new feature
 Steps for the design
 * Design new UI in Figma
 * Meetings
