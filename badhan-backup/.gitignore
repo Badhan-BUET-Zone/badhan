@@ -3,3 +3,4 @@ mongodump
 mongorestore
 .idea/
 backup
+package-lock.json
