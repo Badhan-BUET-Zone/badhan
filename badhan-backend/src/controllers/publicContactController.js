@@ -109,8 +109,6 @@ const handlePOSTPublicContact = async (req, res) => {
  *     tags:
  *       - Public Contacts
  *     summary: Get list of public contacts
- *     security:
- *       - ApiKeyAuth: []
  *     description: Endpoint to get public contacts
  *     responses:
  *       200:
@@ -138,64 +136,22 @@ const handlePOSTPublicContact = async (req, res) => {
  *                         type: integer
  *                         example: 2
  *                       contacts:
- *
- *                       _id:
- *                         type: string
- *                         example: 584abcde6744144441
- *                       hall:
- *                         type: integer
- *                         example: 5
- *                       name:
- *                         type: string
- *                         example: Mir Mahathir Mohammad
- *                       address:
- *                         type: string
- *                         example: Azimpur Road
- *                       comment:
- *                         type: string
- *                         example: Has diabetes
- *                       commentTime:
- *                         type: integer
- *                         example: 154782512254
- *                       lastDonation:
- *                         type: integer
- *                         example: 1235478524412
- *                       availableToAll:
- *                         type: boolean
- *                         example: true
- *                       studentId:
- *                         type: string
- *                         example: 1605011
- *                       phone:
- *                         type: number
- *                         example: 8801521438557
- *                       markedTime:
- *                         type: number
- *                         example: 135496813489
- *                       markedName:
- *                         type: string
- *                         example: Ifty
- *                       donationCount:
- *                         type: integer
- *                         example: 8
- *                       callRecordCount:
- *                         type: integer
- *                         example: 3
- *                       lastCallRecord:
- *                         type: number
- *                         example: 135496813489
- *                       lastCalled:
- *                         type: integer
- *                         example: 135496813489
- *                       marker:
- *                         type: object
- *                         properties:
- *                           name:
- *                             type: string
- *                             example: Mir Mahathir Mohammad
- *                           time:
- *                             type: integer
- *                             example: 154875221458
+ *                          type: array
+ *                          items:
+ *                            type: object
+ *                            properties:
+ *                              donorId:
+ *                                type: string
+ *                                example: 584abcde6744144441
+ *                              contactId:
+ *                                type: string
+ *                                example: 584abcde6744144441
+ *                              name:
+ *                                type: string
+ *                                example: Mir Mahathir Mohammad
+ *                              phone:
+ *                                type: number
+ *                                example: 8801521438557
  */
 const handleGETPublicContacts = async (req, res) => {
   /*
