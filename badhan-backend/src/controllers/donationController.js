@@ -51,7 +51,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                   type: object
  *                   properties:
  *                     date:
- *                       type: timestamp
+ *                       type: number
  *                       example: 1611100800000
  *                     _id:
  *                       type: string
