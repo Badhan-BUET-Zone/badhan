@@ -6,6 +6,63 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
+/**
+ * @openapi
+ * /donations:
+ *   post:
+ *     tags:
+ *       - Donations
+ *     summary: Post donations route
+ *     description: Endpoint to insert a donation date for a donor
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       description: The JSON consisting of donor info for inserting donation
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: bhjdekj8923
+ *               date:
+ *                 type: timestamp
+ *                 example: 1611100800000
+ *     responses:
+ *       201:
+ *         description: Donations inserted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Donations inserted successfully
+ *                 newDonation:
+ *                   type: object
+ *                   properties:
+ *                     date:
+ *                       type: timestamp
+ *                       example: 1611100800000
+ *                     _id:
+ *                       type: string
+ *                       example: 614ec811e29ab430ddfb119a
+ *                     phone:
+ *                       type: string
+ *                       example: 8801521438557
+ *                     donorId:
+ *                       type: string
+ *                       example: 5e901d56effc5900177ced73
+ */
 const handlePOSTDonations = async (req, res) => {
   /*
         #swagger.auto = false
