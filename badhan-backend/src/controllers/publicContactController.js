@@ -7,6 +7,73 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
+/**
+ * @openapi
+ * /publicContacts:
+ *   delete:
+ *     tags:
+ *       - Public Contacts
+ *     summary: Delete public contact route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Remove an active donor
+ *     parameters:
+ *       - in: path
+ *         name: donorId
+ *         description: The donor to be removed from active donors
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *     responses:
+ *       200:
+ *         description: Active donor deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Active donor deleted successfully
+ *                 removeActiveDonor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 614ec811e29ab430ddfb119a
+ *                     donorId:
+ *                       type: string
+ *                       example: 5e901d56effc5900177ced73
+ *                     markerId:
+ *                       type: string
+ *                       example: 5e901d56effc5900177ced73
+ *                     time:
+ *                       type: number
+ *                       example: 1658974323116
+ *       404:
+ *         description: ERROR
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Active donor not found
+ */
 const handleDELETEPublicContact = async (req, res) => {
   /*
     #swagger.auto = false
@@ -74,6 +141,60 @@ const handleDELETEPublicContact = async (req, res) => {
   return res.respond(new OKResponse200('Public contact deleted successfully'))
 }
 
+/**
+ * @openapi
+ * /publicContacts:
+ *   post:
+ *     tags:
+ *       - Public Contacts
+ *     summary: Post public contact route
+ *     description: Endpoint to insert a public contact
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       description: The JSON contains the donor id and assigned blood group of contact
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: bhjdekj8923
+ *               bloodGroup:
+ *                 type: number
+ *                 example: 2
+ *     responses:
+ *       201:
+ *         description: Success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Public contact added successfully
+ *                 newActiveDonor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 614ec811e29ab430ddfb119a
+ *                     donorId:
+ *                       type: string
+ *                       example: 5e901d56effc5900177ced73
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ */
 const handlePOSTPublicContact = async (req, res) => {
   /*
     #swagger.auto = false
