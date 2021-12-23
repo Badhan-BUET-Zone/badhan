@@ -8,6 +8,76 @@ const {
 } = require('../response/errorTypes')
 const { OKResponse200, CreatedResponse201 } = require('../response/successTypes')
 
+/**
+ * @openapi
+ * /activeDonors:
+ *   post:
+ *     tags:
+ *       - Active Donors
+ *     summary: Post active donor route
+ *     description: Add an active donor for everyone to see
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       description: The JSON consisting of donor info for inserting donation
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: bhjdekj8923
+ *     responses:
+ *       201:
+ *         description: Active donor created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Active donor created
+ *                 newActiveDonor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 614ec811e29ab430ddfb119a
+ *                     donorId:
+ *                       type: string
+ *                       example: 5e901d56effc5900177ced73
+ *                     markerId:
+ *                       type: string
+ *                       example: 5e901d56effc5900177ced73
+ *                     time:
+ *                       type: string
+ *                       example: 8801521438557
+ *       409:
+ *         description: Active donor already created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Active donor already created
+ */
 const handlePOSTActiveDonors = async (req, res) => {
   /*
         #swagger.auto = false
