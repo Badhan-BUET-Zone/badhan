@@ -179,7 +179,7 @@ const handlePOSTDonations = async (req, res) => {
  *                   example: OK
  *                 statusCode:
  *                   type: integer
- *                   example: 200
+ *                   example: 404
  *                 message:
  *                   type: string
  *                   example: Matching donation not found
