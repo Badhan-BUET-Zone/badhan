@@ -10,140 +10,6 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
 /**
  * @openapi
  * /publicContacts:
- *   delete:
- *     tags:
- *       - Public Contacts
- *     summary: Delete public contact route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Remove an active donor
- *     parameters:
- *       - in: path
- *         name: donorId
- *         description: The donor to be removed from active donors
- *         required: true
- *         schema:
- *           type: string
- *           example: 5e901d56effc590017712345
- *     responses:
- *       200:
- *         description: Active donor deleted
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Active donor deleted successfully
- *                 removeActiveDonor:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: 614ec811e29ab430ddfb119a
- *                     donorId:
- *                       type: string
- *                       example: 5e901d56effc5900177ced73
- *                     markerId:
- *                       type: string
- *                       example: 5e901d56effc5900177ced73
- *                     time:
- *                       type: number
- *                       example: 1658974323116
- *       404:
- *         description: ERROR
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 404
- *                 message:
- *                   type: string
- *                   example: Active donor not found
- */
-const handleDELETEPublicContact = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['Public Contacts']
-    #swagger.description = 'Endpoint to delete a public contact'
-    #swagger.parameters['donorId'] = {
-            description: 'donorId of public contact',
-            type: 'string',
-            name: 'donorId',
-            in: 'query'
-    }
-    #swagger.parameters['contactId'] = {
-            description: 'contactId to be deleted',
-            type: 'string',
-            name: 'contactId',
-            in: 'query'
-    }
-    #swagger.security = [{
-               "api_key": []
-        }]
-
-    #swagger.responses[404] = {
-        schema: {
-            status: 'ERROR',
-            statusCode: 404,
-            message: "Public contact not found"
-        },
-        description: 'Response if the public contact to be deleted is not found'
-    }
-    #swagger.responses[409] = {
-        schema: {
-            status: 'ERROR',
-            statusCode: 409,
-            message: "Public contact not consistent with donorId"
-        },
-        description: 'If contactId in database does not have the matching donorId'
-    }
-    #swagger.responses[200] = {
-        schema: {
-            status: 'OK',
-            statusCode: 200,
-            message: 'Public contact deleted successfully'
-        },
-        description: 'Success message'
-    }
-
-     */
-
-  const searchResult = await publicContactInterface.findPublicContactById(req.query.contactId)
-  if (searchResult.status !== 'OK') {
-    return res.respond(new NotFoundError404('Public contact not found'))
-  }
-
-  if (!searchResult.data.donorId.equals(req.query.donorId)) {
-    return res.respond(new ConflictError409('Public contact not consistent with donorId'))
-  }
-
-  const deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId)
-  if (deletionResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(deletionResult.message))
-  }
-
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE PUBLICCONTACTS', { deletedContact: searchResult.data.name })
-
-  return res.respond(new OKResponse200('Public contact deleted successfully'))
-}
-
-/**
- * @openapi
- * /publicContacts:
  *   post:
  *     tags:
  *       - Public Contacts
@@ -236,6 +102,101 @@ const handlePOSTPublicContact = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /publicContacts:
+ *   get:
+ *     tags:
+ *       - Public Contacts
+ *     summary: Get list of public contacts
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Endpoint to get public contacts
+ *     responses:
+ *       200:
+ *         description: Success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: All public contacts fetched successfully
+ *                 publicContacts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       bloodGroup:
+ *                         type: integer
+ *                         example: 2
+ *                       contacts:
+ *
+ *                       _id:
+ *                         type: string
+ *                         example: 584abcde6744144441
+ *                       hall:
+ *                         type: integer
+ *                         example: 5
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir Mohammad
+ *                       address:
+ *                         type: string
+ *                         example: Azimpur Road
+ *                       comment:
+ *                         type: string
+ *                         example: Has diabetes
+ *                       commentTime:
+ *                         type: integer
+ *                         example: 154782512254
+ *                       lastDonation:
+ *                         type: integer
+ *                         example: 1235478524412
+ *                       availableToAll:
+ *                         type: boolean
+ *                         example: true
+ *                       studentId:
+ *                         type: string
+ *                         example: 1605011
+ *                       phone:
+ *                         type: number
+ *                         example: 8801521438557
+ *                       markedTime:
+ *                         type: number
+ *                         example: 135496813489
+ *                       markedName:
+ *                         type: string
+ *                         example: Ifty
+ *                       donationCount:
+ *                         type: integer
+ *                         example: 8
+ *                       callRecordCount:
+ *                         type: integer
+ *                         example: 3
+ *                       lastCallRecord:
+ *                         type: number
+ *                         example: 135496813489
+ *                       lastCalled:
+ *                         type: integer
+ *                         example: 135496813489
+ *                       marker:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                             example: Mir Mahathir Mohammad
+ *                           time:
+ *                             type: integer
+ *                             example: 154875221458
+ */
 const handleGETPublicContacts = async (req, res) => {
   /*
 #swagger.auto = false
@@ -268,7 +229,147 @@ const handleGETPublicContacts = async (req, res) => {
     publicContacts: searchResult.data
   }))
 }
+/**
+ * @openapi
+ * /publicContacts:
+ *   delete:
+ *     tags:
+ *       - Public Contacts
+ *     summary: Delete public contact route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Endpoint to delete a public contact
+ *     parameters:
+ *       - in: query
+ *         name: donorId
+ *         description: DonorId of public contact
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *       - in: query
+ *         name: contactId
+ *         description: ContactId of public contact
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *     responses:
+ *       200:
+ *         description: Success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Public contact deleted successfully
+ *       404:
+ *         description: Response if the public contact to be deleted is not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Public contact not found
+ *       409:
+ *         description: If contactId in database does not have the matching donorId
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Public contact not consistent with donorId
+ */
+const handleDELETEPublicContact = async (req, res) => {
+  /*
+    #swagger.auto = false
+    #swagger.tags = ['Public Contacts']
+    #swagger.description = 'Endpoint to delete a public contact'
+    #swagger.parameters['donorId'] = {
+            description: 'donorId of public contact',
+            type: 'string',
+            name: 'donorId',
+            in: 'query'
+    }
+    #swagger.parameters['contactId'] = {
+            description: 'contactId to be deleted',
+            type: 'string',
+            name: 'contactId',
+            in: 'query'
+    }
+    #swagger.security = [{
+               "api_key": []
+        }]
 
+    #swagger.responses[404] = {
+        schema: {
+            status: 'ERROR',
+            statusCode: 404,
+            message: "Public contact not found"
+        },
+        description: 'Response if the public contact to be deleted is not found'
+    }
+    #swagger.responses[409] = {
+        schema: {
+            status: 'ERROR',
+            statusCode: 409,
+            message: "Public contact not consistent with donorId"
+        },
+        description: 'If contactId in database does not have the matching donorId'
+    }
+    #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            statusCode: 200,
+            message: 'Public contact deleted successfully'
+        },
+        description: 'Success message'
+    }
+
+     */
+
+  const searchResult = await publicContactInterface.findPublicContactById(req.query.contactId)
+  if (searchResult.status !== 'OK') {
+    return res.respond(new NotFoundError404('Public contact not found'))
+  }
+
+  if (!searchResult.data.donorId.equals(req.query.donorId)) {
+    return res.respond(new ConflictError409('Public contact not consistent with donorId'))
+  }
+
+  const deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId)
+  if (deletionResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(deletionResult.message))
+  }
+
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE PUBLICCONTACTS', { deletedContact: searchResult.data.name })
+
+  return res.respond(new OKResponse200('Public contact deleted successfully'))
+}
 module.exports = {
   handlePOSTPublicContact,
   handleDELETEPublicContact,

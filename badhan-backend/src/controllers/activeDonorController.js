@@ -196,7 +196,7 @@ const handlePOSTActiveDonors = async (req, res) => {
  *               properties:
  *                 status:
  *                   type: string
- *                   example: OK
+ *                   example: ERROR
  *                 statusCode:
  *                   type: integer
  *                   example: 404
