@@ -28,7 +28,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                 type: string
  *                 example: bhjdekj8923
  *               date:
- *                 type: timestamp
+ *                 type: number
  *                 example: 1611100800000
  *     responses:
  *       201:
@@ -125,6 +125,65 @@ const handlePOSTDonations = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /donations:
+ *   delete:
+ *     tags:
+ *       - Donations
+ *     summary: Delete users login route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: handles the deletion of a donation for a donor
+ *     parameters:
+ *       - in: query
+ *         name: donorId
+ *         description: Donor id for deleting donations
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *       - in: query
+ *         name: date
+ *         description: Donation date for deleting donation
+ *         required: true
+ *         schema:
+ *           type: number
+ *           example: 1611100800000
+ *     responses:
+ *       200:
+ *         description: Donation deletion successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Successfully deleted donation
+ *       404:
+ *         description: Error case
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Matching donation not found
+ */
 const handleDELETEDonations = async (req, res) => {
   /*
         #swagger.auto = false
