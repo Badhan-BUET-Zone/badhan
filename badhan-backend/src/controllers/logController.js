@@ -22,41 +22,6 @@ const handleGETOnlineCheck = async (req, res) => {
      */
   return res.respond(new OKResponse200('Badhan API is online'))
 }
-
-const handleGETStatistics = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['Logs']
-    #swagger.description = 'Fetch statistics about the current donor count and volunteer count'
-    #swagger.security = [{
-               "api_key": []
-        }]
-        #swagger.responses[200] = {
-        schema: {
-            status: 'OK',
-            statusCode: 200,
-            message: 'Statistics fetched successfully',
-            statistics: {
-                donorCount: 2600,
-                donationCount: 1200,
-                volunteerCount: 130
-            }
-        },
-        description: 'Donation statistics fetch successful'
-    }
-    */
-  const donorCount = await donorInterface.getCount()
-  const donationCount = await donationInterface.getCount()
-  const volunteerCount = await donorInterface.getVolunteerCount()
-  return res.respond(new OKResponse200('Statistics fetched successfully', {
-    statistics: {
-      donorCount: donorCount.data,
-      donationCount: donationCount.data,
-      volunteerCount: volunteerCount.data
-    }
-  }))
-}
-
 /**
  * @openapi
  * /log/version:
@@ -104,6 +69,80 @@ const handleGETAppVersion = (req, res) => {
 */
   return res.respond(new OKResponse200('Latest app version fetched', {
     version: '4.5.2'
+  }))
+}
+
+/**
+ * @openapi
+ * /log/statistics:
+ *   get:
+ *     tags:
+ *       - Logs
+ *     summary: Endpoint for fetching donation statistics
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Fetch statistics about the current donor count and volunteer count
+ *     responses:
+ *       200:
+ *         description: Donation statistics fetch successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Statistics fetched successfully
+ *                 statistics:
+ *                   type: object
+ *                   properties:
+ *                     donorCount:
+ *                       type: number
+ *                       example: 2600
+ *                     donationCount:
+ *                       type: number
+ *                       example: 1200
+ *                     volunteerCount:
+ *                       type: number
+ *                       example: 130
+ */
+const handleGETStatistics = async (req, res) => {
+  /*
+    #swagger.auto = false
+    #swagger.tags = ['Logs']
+    #swagger.description = 'Fetch statistics about the current donor count and volunteer count'
+    #swagger.security = [{
+               "api_key": []
+        }]
+        #swagger.responses[200] = {
+        schema: {
+            status: 'OK',
+            statusCode: 200,
+            message: 'Statistics fetched successfully',
+            statistics: {
+                donorCount: 2600,
+                donationCount: 1200,
+                volunteerCount: 130
+            }
+        },
+        description: 'Donation statistics fetch successful'
+    }
+    */
+  const donorCount = await donorInterface.getCount()
+  const donationCount = await donationInterface.getCount()
+  const volunteerCount = await donorInterface.getVolunteerCount()
+  return res.respond(new OKResponse200('Statistics fetched successfully', {
+    statistics: {
+      donorCount: donorCount.data,
+      donationCount: donationCount.data,
+      volunteerCount: volunteerCount.data
+    }
   }))
 }
 
