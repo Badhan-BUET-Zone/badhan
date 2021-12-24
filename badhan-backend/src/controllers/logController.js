@@ -100,7 +100,7 @@ const handleGETAppVersion = (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -114,10 +114,10 @@ const handleGETAppVersion = (req, res) => {
  *                         type: string
  *                         example: 2021-05-06
  *                       activeUserCount:
- *                         type: integer
+ *                         type: number
  *                         example: 23
  *                       totalLogCount:
- *                         type: integer
+ *                         type: number
  *                         example: 256
  */
 const handleGETLogs = async (req, res) => {

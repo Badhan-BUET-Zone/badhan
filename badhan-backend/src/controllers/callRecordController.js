@@ -36,7 +36,7 @@ const { OKResponse200, CreatedResponse201 } = require('../response/successTypes'
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 201
  *                 message:
  *                   type: string
@@ -113,6 +113,81 @@ const handlePOSTCallRecord = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /callrecords:
+ *   delete:
+ *     tags:
+ *       - Call Records
+ *     summary: Delete call record route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Handles the deletion of one call history for a particular donor
+ *     parameters:
+ *       - in: query
+ *         name: donorId
+ *         description: Id of donor for call history
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *       - in: query
+ *         name: callRecordId
+ *         description: Id of call record that is going to be deleted
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *     responses:
+ *       200:
+ *         description: Success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Public contact deleted successfully
+ *       404:
+ *         description: This error occurs if the call record does not exist
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Call record not found
+ *       409:
+ *         description: This error occurs if the call record does not associate with the target donor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Target donor does not have the callee of call record
+ */
 const handleDELETECallRecord = async (req, res) => {
   /*
     #swagger.auto = false

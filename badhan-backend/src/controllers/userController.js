@@ -50,7 +50,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 201
  *                 message:
  *                   type: string
@@ -69,7 +69,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 404
  *                 message:
  *                   type: string
@@ -85,7 +85,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 401
  *                 message:
  *                   type: string
@@ -187,7 +187,7 @@ const handlePOSTSignIn = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -241,7 +241,7 @@ const handleDELETESignOut = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -295,7 +295,7 @@ const handleDELETESignOutAll = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 201
  *                 message:
  *                   type: string
@@ -367,7 +367,7 @@ const handlePOSTRedirection = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 201
  *                 message:
  *                   type: string
@@ -386,7 +386,7 @@ const handlePOSTRedirection = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 404
  *                 message:
  *                   type: string
@@ -402,7 +402,7 @@ const handlePOSTRedirection = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 401
  *                 message:
  *                   type: string
@@ -511,7 +511,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -527,7 +527,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 404
  *                 message:
  *                   type: string

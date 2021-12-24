@@ -15,7 +15,7 @@ const mongoose = require('mongoose')
  *           description: id of the badhan member who marked the donor
  *           example: dabcd6465166516
  *         time:
- *           type: integer
+ *           type: number
  *           description: timestamp of marking
  *           example: 1234578161648
  */

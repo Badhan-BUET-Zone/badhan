@@ -41,7 +41,7 @@ const { OKResponse200, CreatedResponse201 } = require('../response/successTypes'
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 201
  *                 message:
  *                   type: string
@@ -72,7 +72,7 @@ const { OKResponse200, CreatedResponse201 } = require('../response/successTypes'
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 409
  *                 message:
  *                   type: string
@@ -167,7 +167,7 @@ const handlePOSTActiveDonors = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -198,7 +198,7 @@ const handlePOSTActiveDonors = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 404
  *                 message:
  *                   type: string
@@ -280,14 +280,14 @@ const handleDELETEActiveDonors = async (req, res) => {
  *         required: true
  *         description: Hall must be between 0 to 6 or 8
  *         schema:
- *           type: integer
+ *           type: number
  *           example: 5
  *       - in: query
  *         name: batch
  *         required: true
  *         description: Batch must be the two digit batch number of a student. Leave it empty to include all batches
  *         schema:
- *           type: integer
+ *           type: number
  *           example: 16
  *       - in: query
  *         name: name
@@ -350,7 +350,7 @@ const handleDELETEActiveDonors = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -364,7 +364,7 @@ const handleDELETEActiveDonors = async (req, res) => {
  *                         type: string
  *                         example: 584abcde6744144441
  *                       hall:
- *                         type: integer
+ *                         type: number
  *                         example: 5
  *                       name:
  *                         type: string
@@ -376,16 +376,16 @@ const handleDELETEActiveDonors = async (req, res) => {
  *                         type: string
  *                         example: Has diabetes
  *                       commentTime:
- *                         type: integer
+ *                         type: number
  *                         example: 154782512254
  *                       lastDonation:
- *                         type: integer
+ *                         type: number
  *                         example: 1235478524412
  *                       availableToAll:
  *                         type: boolean
  *                         example: true
  *                       bloodGroup:
- *                         type: integer
+ *                         type: number
  *                         example: 2
  *                       studentId:
  *                         type: string
@@ -400,16 +400,16 @@ const handleDELETEActiveDonors = async (req, res) => {
  *                         type: string
  *                         example: Ifty
  *                       donationCount:
- *                         type: integer
+ *                         type: number
  *                         example: 8
  *                       callRecordCount:
- *                         type: integer
+ *                         type: number
  *                         example: 3
  *                       lastCallRecord:
  *                         type: number
  *                         example: 135496813489
  *                       lastCalled:
- *                         type: integer
+ *                         type: number
  *                         example: 135496813489
  *                       marker:
  *                         type: object
@@ -418,7 +418,7 @@ const handleDELETEActiveDonors = async (req, res) => {
  *                             type: string
  *                             example: Mir Mahathir Mohammad
  *                           time:
- *                             type: integer
+ *                             type: number
  *                             example: 154875221458
  *       403:
  *         description: This error will occur if the user tries to search other halls
@@ -431,7 +431,7 @@ const handleDELETEActiveDonors = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 403
  *                 message:
  *                   type: string

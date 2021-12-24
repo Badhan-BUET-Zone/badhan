@@ -43,7 +43,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 201
  *                 message:
  *                   type: string
@@ -122,7 +122,7 @@ const handlePOSTPublicContact = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -133,7 +133,7 @@ const handlePOSTPublicContact = async (req, res) => {
  *                     type: object
  *                     properties:
  *                       bloodGroup:
- *                         type: integer
+ *                         type: number
  *                         example: 2
  *                       contacts:
  *                          type: array
@@ -222,7 +222,7 @@ const handleGETPublicContacts = async (req, res) => {
  *                   type: string
  *                   example: OK
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 200
  *                 message:
  *                   type: string
@@ -238,7 +238,7 @@ const handleGETPublicContacts = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 404
  *                 message:
  *                   type: string
@@ -254,7 +254,7 @@ const handleGETPublicContacts = async (req, res) => {
  *                   type: string
  *                   example: ERROR
  *                 statusCode:
- *                   type: integer
+ *                   type: number
  *                   example: 409
  *                 message:
  *                   type: string

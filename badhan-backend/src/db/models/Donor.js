@@ -15,7 +15,7 @@ const { checkEmail } = require('../../validations/validateRequest/others')
  *       type: object
  *       properties:
  *         phone:
- *           type: integer
+ *           type: number
  *           description: Phone number of donor.
  *           example: 8801521438557
  *         password:
@@ -27,11 +27,11 @@ const { checkEmail } = require('../../validations/validateRequest/others')
  *           description: Six digit student ID of BUET students
  *           example: 1605011
  *         bloodGroup:
- *           type: integer
+ *           type: number
  *           description: Blood group of donor
  *           example: 3
  *         hall:
- *           type: integer
+ *           type: number
  *           description: hall number of donor
  *           example: 5
  *         address:
@@ -43,11 +43,11 @@ const { checkEmail } = require('../../validations/validateRequest/others')
  *           description: hall room number of donor
  *           example: 3009
  *         designation:
- *           type: integer
+ *           type: number
  *           description: designation of donor in Badhan platform
  *           example: 3
  *         lastDonation:
- *           type: integer
+ *           type: number
  *           description: timestamp of last donation by donor
  *           example: 1234578161648
  *         name:
@@ -59,7 +59,7 @@ const { checkEmail } = require('../../validations/validateRequest/others')
  *           description: additional information of the donor
  *           example: Has high blood pressure
  *         commentTime:
- *           type: integer
+ *           type: number
  *           description: timestamp of the latest update on comment
  *           example: 13216465164
  *         availableToAll:

@@ -11,7 +11,7 @@ const mongoose = require('mongoose')
  *           description: id of donor who accessed an api
  *           example: abcdef123456789
  *         date:
- *           type: integer
+ *           type: number
  *           description: timestamp of api access
  *           example: 1234578161648
  *         operation:

@@ -15,7 +15,7 @@ const mongoose = require('mongoose')
  *           description: id of callee
  *           example: abcd123456798
  *         date:
- *           type: integer
+ *           type: number
  *           description: timestamp of donation
  *           example: 1234578161648
  */
