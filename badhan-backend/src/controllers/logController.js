@@ -171,7 +171,7 @@ const handleGETLogsByDate = async (req, res) => {
                 "logs": [
                     {
                         "name": "Mir Mahathir Mohammad",
-                        "donorId": "5e901d56effc5900177ced73",
+                        "donorId": "5e901d56effc590017712345",
                         "hall": 5,
                         "count": 32
                     }

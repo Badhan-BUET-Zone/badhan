@@ -61,7 +61,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                       example: 8801521438557
  *                     donorId:
  *                       type: string
- *                       example: 5e901d56effc5900177ced73
+ *                       example: 5e901d56effc590017712345
  */
 const handlePOSTDonations = async (req, res) => {
   /*
@@ -89,7 +89,7 @@ const handlePOSTDonations = async (req, res) => {
                     date: 1611100800000,
                     _id: "614ec811e29ab430ddfb119a",
                     phone: 8801521438557,
-                    donorId: "5e901d56effc5900177ced73",
+                    donorId: "5e901d56effc590017712345",
                 }
             },
             description: 'Donations inserted successfully'

@@ -3,6 +3,66 @@ const logInterface = require('../db/interfaces/logInterface')
 const { InternalServerError500, NotFoundError404, ConflictError409 } = require('../response/errorTypes')
 const { OKResponse200, CreatedResponse201 } = require('../response/successTypes')
 
+/**
+ * @openapi
+ * /callrecords:
+ *   post:
+ *     tags:
+ *       - Call Records
+ *     summary: Post public contact route
+ *     description: Endpoint to insert a public contact
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       description: The JSON contains the donor id of callee
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: bhjdekj8923
+ *     responses:
+ *       201:
+ *         description: Call record insertion successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Call record insertion successful
+ *                 calleeId:
+ *                   type: string
+ *                   example: 5e68514546b0e
+ *                 expireAt:
+ *                   type: string
+ *                   example: 2021-11-15T11:23:54.231Z
+ *                 callRecord:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 614ec811e29ab430ddfb119a
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     hall:
+ *                       type: number
+ *                       example: 4
+ */
 const handlePOSTCallRecord = async (req, res) => {
   /*
     #swagger.auto = false
@@ -80,8 +140,8 @@ const handleDELETECallRecord = async (req, res) => {
             deletedCallRecord: {
                 date: 1632553859992,
                 _id: "614ecb83a66ce337f8b484e8",
-                callerId: "5e901d56effc5900177ced73",
-                calleeId: "5e901d56effc5900177ced73",
+                callerId: "5e901d56effc590017712345",
+                calleeId: "5e901d56effc590017712345",
             }
         },
         description: 'Call record deletion successful'

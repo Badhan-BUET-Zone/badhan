@@ -56,7 +56,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *                       example: 614ec811e29ab430ddfb119a
  *                     donorId:
  *                       type: string
- *                       example: 5e901d56effc5900177ced73
+ *                       example: 5e901d56effc590017712345
  *                     bloodGroup:
  *                       type: number
  *                       example: 2

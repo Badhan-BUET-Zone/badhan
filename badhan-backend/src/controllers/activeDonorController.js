@@ -54,10 +54,10 @@ const { OKResponse200, CreatedResponse201 } = require('../response/successTypes'
  *                       example: 614ec811e29ab430ddfb119a
  *                     donorId:
  *                       type: string
- *                       example: 5e901d56effc5900177ced73
+ *                       example: 5e901d56effc590017712345
  *                     markerId:
  *                       type: string
- *                       example: 5e901d56effc5900177ced73
+ *                       example: 5e901d56effc590017712345
  *                     time:
  *                       type: string
  *                       example: 8801521438557
@@ -180,10 +180,10 @@ const handlePOSTActiveDonors = async (req, res) => {
  *                       example: 614ec811e29ab430ddfb119a
  *                     donorId:
  *                       type: string
- *                       example: 5e901d56effc5900177ced73
+ *                       example: 5e901d56effc590017712345
  *                     markerId:
  *                       type: string
- *                       example: 5e901d56effc5900177ced73
+ *                       example: 5e901d56effc590017712345
  *                     time:
  *                       type: number
  *                       example: 1658974323116
