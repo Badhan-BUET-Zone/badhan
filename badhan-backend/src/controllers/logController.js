@@ -302,7 +302,59 @@ const handleGETLogsByDate = async (req, res) => {
     logs: logsByDateResult.data
   }))
 }
-
+/**
+ * @openapi
+ * /log/date/{date}/donorId/{donorId}:
+ *   get:
+ *     tags:
+ *       - Logs
+ *     summary: Get logs of a specific date and donorId
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Get api call details of a donor by date
+ *     parameters:
+ *       - in: path
+ *         name: date
+ *         required: true
+ *         description: Date of logs
+ *       - in: path
+ *         name: donorId
+ *         required: true
+ *         description: DonorId of the target donor
+ *     responses:
+ *       200:
+ *         description: Successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Log counts fetched successfully
+ *                 logs:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 567jhgjkg
+ *                       date:
+ *                         type: number
+ *                         example: 1628789240641
+ *                       operation:
+ *                         type: string
+ *                         example: Search donors
+ *                       details:
+ *                         type: object
+ */
 const handleGETLogsByDateAndDonor = async (req, res) => {
   /*
         #swagger.auto = false
