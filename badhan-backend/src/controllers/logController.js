@@ -57,6 +57,35 @@ const handleGETStatistics = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /log/version:
+ *   get:
+ *     tags:
+ *       - Logs
+ *     summary: Get info about current version
+ *     description: Get app info deployed to play store
+ *     responses:
+ *       200:
+ *         description: Response is the current version number of badhan api
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Latest app version fetched
+ *                 version:
+ *                   type: string
+ *                   example: '2.5.1'
+ */
 const handleGETAppVersion = (req, res) => {
   /*
     #swagger.auto = false
