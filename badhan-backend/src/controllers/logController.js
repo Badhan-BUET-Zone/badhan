@@ -78,7 +78,7 @@ const handleGETAppVersion = (req, res) => {
  *   get:
  *     tags:
  *       - Logs
- *     summary: Endpoint for fetching donation statistics
+ *     summary: Endpoint to fetch donation statistics
  *     security:
  *       - ApiKeyAuth: []
  *     description: Fetch statistics about the current donor count and volunteer count
@@ -217,6 +217,56 @@ const handleGETLogs = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /log/date/{date}:
+ *   get:
+ *     tags:
+ *       - Logs
+ *     summary: Get logs of a specific date
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Get user-wise api call counts for specific date
+ *     parameters:
+ *       - in: path
+ *         name: date
+ *         required: true
+ *         description: Date of logs
+ *     responses:
+ *       200:
+ *         description: Successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Log counts fetched successfully
+ *                 logs:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       donorId:
+ *                         type: string
+ *                         example: herfg395890
+ *                       hall:
+ *                         type: number
+ *                         example: 5
+ *                       count:
+ *                         type: number
+ *                         example: 8
+ */
 const handleGETLogsByDate = async (req, res) => {
   /*
         #swagger.auto = false
@@ -299,6 +349,34 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /log:
+ *   delete:
+ *     tags:
+ *       - Logs
+ *     summary: Endpoint to delete logs
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Delete all logs
+ *     responses:
+ *       200:
+ *         description: All logs deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: All logs deleted successfully
+ */
 const handleDELETELogs = async (req, res) => {
   /*
         #swagger.auto = false
