@@ -14,6 +14,133 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
+/**
+ * @openapi
+ * /donors:
+ *   post:
+ *     tags:
+ *       - Donors
+ *     summary: Post public contact route
+ *     description: Endpoint to insert a public contact
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       description: The JSON contains the donor id and assigned blood group of contact
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: 8801521438557
+ *               bloodGroup:
+ *                 type: number
+ *                 example: 2
+ *               hall:
+ *                 type: number
+ *                 example: 5
+ *               name:
+ *                 type: string
+ *                 example: Mir Mahathir
+ *               studentId:
+ *                 type: number
+ *                 example: 1605011
+ *               address:
+ *                 type: string
+ *                 example: Azimpur
+ *               roomNumber:
+ *                 type: string
+ *                 example: 3009
+ *               comment:
+ *                 type: string
+ *                 example: Developer of badhan
+ *               extraDonationCount:
+ *                 type: number
+ *                 example: 1605011
+ *               availableToAll:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       201:
+ *         description: Successful donor insertion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: New donor inserted successfully
+ *                 newDonor:
+ *                   type: object
+ *                   properties:
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur road
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     designation:
+ *                       type: number
+ *                       example: 2
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 2
+ *                     comment:
+ *                       type: string
+ *                       example: Has diabetes
+ *                     commentTime:
+ *                       type: number
+ *                       example: 16547822145
+ *                     email:
+ *                       type: string
+ *                       example: azadsumaiya00@gmail.com
+ *                     _id:
+ *                       type: string
+ *                       example: 616ab751fc274715cc504ac7
+ *                     phone:
+ *                       type: number
+ *                       example: 8801546587552
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 2
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
+ *       409:
+ *         description: If the donor already exists in the database, user will get the error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Donor found with duplicate phone number/ Donor found with duplicate phone number in another hall
+ */
 const handlePOSTDonors = async (req, res) => {
   /*
         #swagger.auto = false
