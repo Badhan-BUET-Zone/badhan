@@ -1099,7 +1099,163 @@ const handlePATCHAdmins = async (req, res) => {
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (VOLUNTEER)', { name: targetDonor.name })
   return res.respond(new OKResponse200('Successfully changed hall admin'))
 }
-
+/**
+ * @openapi
+ * /donors:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get list of donors
+ *     description: Handles the fetching of donor details
+ *     parameters:
+ *       - in: query
+ *         name: donorId
+ *         description: DonorId for donor details
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 678236478ywuy728
+ *     responses:
+ *       200:
+ *         description: Success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: All public contacts fetched successfully
+ *                 donor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     email:
+ *                       type: string
+ *                       example: mirmahathir1@gmail.com
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 786534785
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur
+ *                     comment:
+ *                       type: string
+ *                       example: Developer of badhan
+ *                     commentTime:
+ *                       type: number
+ *                       example: 0
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
+ *                     callRecords:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                           callerId:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 584abcde6744144441
+ *                               hall:
+ *                                 type: number
+ *                                 example: 5
+ *                               name:
+ *                                 type: string
+ *                                 example: Mir Mahathir
+ *                           calleeId:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                           date:
+ *                             type: number
+ *                             example: 1627492207064
+ *                           expireAt:
+ *                             type: string
+ *                             example: 2021-08-27T17:10:07.0662
+ *                     donations:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           date:
+ *                             type: number
+ *                             example: 1543764822
+ *                           _id:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                           phone:
+ *                             type: number
+ *                             example: 881521438557
+ *                           donorId:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                     publicContacts:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           bloodGroup:
+ *                             type: number
+ *                             example: 2
+ *                           _id:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                           donorId:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                     markedBy:
+ *                       type: object
+ *                       properties:
+ *                         donorId:
+ *                           type: string
+ *                           example: 584abcde6744144441
+ *                         markerId:
+ *                           type: object
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                               example: 584abcde6744144441
+ *                             name:
+ *                               type: string
+ *                               example: Mir
+ *                         time:
+ *                           type: number
+ *                           example: 1782934242842
+ */
 const handleGETDonors = async (req, res) => {
   /*
         #swagger.auto = false

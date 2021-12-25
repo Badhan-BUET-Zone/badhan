@@ -33,6 +33,9 @@ const options = {
     servers: [{
       url: 'https://badhan-web-test.herokuapp.com',
       description: 'Development server'
+    },{
+      url: 'localhost',
+      description: 'Local development server'
     }],
     license: {
       name: 'Licensed Under MIT',

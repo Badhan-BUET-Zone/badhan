@@ -28,12 +28,12 @@ router.get('/donors/me',
   donorController.handleGETDonorsMe
 )
 
-router.get('/search/v2',
-  donorValidator.validateGETSearchDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  donorController.handleGETSearchOptimized
-)
+// router.get('/search/v2',
+//   donorValidator.validateGETSearchDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   donorController.handleGETSearchOptimized
+// )
 
 router.get('/search/v3',
   donorValidator.validateGETSearchDonors,
