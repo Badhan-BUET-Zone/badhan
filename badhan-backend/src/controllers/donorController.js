@@ -20,7 +20,7 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *   post:
  *     tags:
  *       - Donors
- *     summary: Post donors route
+ *     summary: Post donor route
  *     description: Handles the insertion of a new donor into the database
  *     security:
  *       - ApiKeyAuth: []
@@ -269,11 +269,11 @@ const handlePOSTDonors = async (req, res) => {
 }
 /**
  * @openapi
- * /publicContacts:
+ * /donors:
  *   delete:
  *     tags:
- *       - Public Contacts
- *     summary: Delete public contact route
+ *       - Donors
+ *     summary: Delete donor route
  *     security:
  *       - ApiKeyAuth: []
  *     description: Endpoint to delete a public contact
@@ -287,7 +287,7 @@ const handlePOSTDonors = async (req, res) => {
  *           example: 5e901d56effc590017712345
  *     responses:
  *       200:
- *         description: Success message
+ *         description: Successful donor deletion
  *         content:
  *           application/json:
  *             schema:
@@ -317,9 +317,9 @@ const handlePOSTDonors = async (req, res) => {
  *                   example: 404
  *                 message:
  *                   type: string
- *                   example: Public contact not found
+ *                   example: Donor deleted successfully
  *       409:
- *         description: If contactId in database does not have the matching donorId
+ *         description: If the donor is a volunteer, hall admin or super admin, then he/she cannot be deleted
  *         content:
  *           application/json:
  *             schema:
@@ -333,7 +333,7 @@ const handlePOSTDonors = async (req, res) => {
  *                   example: 409
  *                 message:
  *                   type: string
- *                   example: Public contact not consistent with donorId
+ *                   example: Donor must be demoted for deletion
  */
 const handleDELETEDonors = async (req, res) => {
   /*
