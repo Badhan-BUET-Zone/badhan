@@ -1106,6 +1106,8 @@ const handlePATCHAdmins = async (req, res) => {
  *     tags:
  *       - Donors
  *     summary: Get list of donors
+ *     security:
+ *       - ApiKeyAuth: []
  *     description: Handles the fetching of donor details
  *     parameters:
  *       - in: query

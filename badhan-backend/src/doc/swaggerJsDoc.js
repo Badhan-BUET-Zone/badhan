@@ -34,7 +34,7 @@ const options = {
       url: 'https://badhan-web-test.herokuapp.com',
       description: 'Development server'
     },{
-      url: 'localhost',
+      url: 'http://localhost:3000',
       description: 'Local development server'
     }],
     license: {
