@@ -20,12 +20,12 @@ const { CreatedResponse201, OKResponse200 } = require('../response/successTypes'
  *   post:
  *     tags:
  *       - Donors
- *     summary: Post public contact route
- *     description: Endpoint to insert a public contact
+ *     summary: Post donors route
+ *     description: Handles the insertion of a new donor into the database
  *     security:
  *       - ApiKeyAuth: []
  *     requestBody:
- *       description: The JSON contains the donor id and assigned blood group of contact
+ *       description: Donor info for inserting donor
  *       required: true
  *       content:
  *         application/json:
@@ -267,7 +267,74 @@ const handlePOSTDonors = async (req, res) => {
     newDonor: donorInsertionResult.data
   }))
 }
-
+/**
+ * @openapi
+ * /publicContacts:
+ *   delete:
+ *     tags:
+ *       - Public Contacts
+ *     summary: Delete public contact route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Endpoint to delete a public contact
+ *     parameters:
+ *       - in: query
+ *         name: donorId
+ *         description: DonorId of public contact
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 5e901d56effc590017712345
+ *     responses:
+ *       200:
+ *         description: Success message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Public contact deleted successfully
+ *       404:
+ *         description: Response if the public contact to be deleted is not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Public contact not found
+ *       409:
+ *         description: If contactId in database does not have the matching donorId
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Public contact not consistent with donorId
+ */
 const handleDELETEDonors = async (req, res) => {
   /*
         #swagger.auto = false
