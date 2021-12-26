@@ -1853,7 +1853,87 @@ const handleGETVolunteersAll = async (req, res) => {
     data: volunteerResult.data
   }))
 }
-
+/**
+ * @openapi
+ * /donors/checkDuplicate:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get list of duplicate donors
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Check whether phone number already exists
+ *     parameters:
+ *       - in: query
+ *         name: phone
+ *         description: Phone number of donor
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 8801521438557
+ *     responses:
+ *       200:
+ *         description: If the donor already exists in the database, user will get the error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donor found with duplicate phone number in Titumir Hall/ Donor found with duplicate phone number in Titumir Hall. You are not permitted to access this donor
+ *                 donor:
+ *                   type: object
+ *                   properties:
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 786534785
+ *                     comment:
+ *                       type: string
+ *                       example: Developer of badhan
+ *                     commentTime:
+ *                       type: number
+ *                       example: 0
+ *                     email:
+ *                       type: string
+ *                       example: mirmahathir1@gmail.com
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
+ */
 const handleGETDonorsDuplicate = async (req, res) => {
   /*
     #swagger.auto = false
