@@ -1815,7 +1815,54 @@ const handleGETDonorsMe = async (req, res) => {
     donor
   }))
 }
-
+/**
+ * @openapi
+ * /volunteers/all:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get list of volunteers
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Fetches all volunteers
+ *     responses:
+ *       200:
+ *         description: Volunteer list fetch successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Successfully fetched donor details
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: jhdwiurh837921
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       hall:
+ *                         type: number
+ *                         example: 5
+ *                       studentId:
+ *                         type: number
+ *                         example: 1605011
+ *                       logCount:
+ *                         type: number
+ *                         example: 3
+ */
 const handleGETVolunteersAll = async (req, res) => {
   /*
     #swagger.auto = false
