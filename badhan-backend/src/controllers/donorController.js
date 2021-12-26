@@ -2039,7 +2039,91 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-
+/**
+ * @openapi
+ * /donors/designation:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get list of donors designation
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Get list of volunteers of own hall, all hall admins and super admins
+ *     responses:
+ *       200:
+ *         description: All designated members fetched
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: All designated members fetched
+ *                 volunteerList:
+ *                   type: object
+ *                   properties:
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                 adminList:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                 superAdminList:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ */
 const handleGETDonorsDesignation = async (req, res) => {
   /*
 #swagger.auto = false
