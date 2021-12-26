@@ -1398,17 +1398,12 @@ const handlePATCHAdmins = async (req, res) => {
   if (targetDonor.hall > 6) {
     return res.respond(new ConflictError409('User does not have a valid hall'))
   }
-
-  const prevHallAdminUpdateResult = await donorInterface.findDonorAndUpdate({
+  await donorInterface.findDonorAndUpdate({
     hall: targetDonor.hall,
     designation: 2
   }, {
     $set: { designation: 1 }
   })
-
-  if (prevHallAdminUpdateResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(prevHallAdminUpdateResult.message))
-  }
 
   // Make new hall admin
   targetDonor.designation = 2
