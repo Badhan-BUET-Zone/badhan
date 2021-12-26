@@ -844,7 +844,7 @@ const handleGETSearchV3 = async (req, res) => {
  *                   type: string
  *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
  *       404:
- *         description: In case of successfully saving the comment
+ *         description: Donor not found
  *         content:
  *           application/json:
  *             schema:
@@ -946,7 +946,104 @@ const handlePATCHDonorsPassword = async (req, res) => {
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS PASSWORD', { name: target.name })
   return res.respond(new OKResponse200('Password changed successfully'))
 }
-
+/**
+ * @openapi
+ * /donors/v2:
+ *   patch:
+ *     tags:
+ *       - Donors
+ *     summary: Patch donor route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Handles the update of donor information
+ *     requestBody:
+ *       description: Donor info for editing donor
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: 563ghefqwr763
+ *               name:
+ *                 type: string
+ *                 example: Mir Mahathir
+ *               phone:
+ *                 type: number
+ *                 example: 8801521438557
+ *               studentId:
+ *                 type: number
+ *                 example: 1605011
+ *               bloodGroup:
+ *                 type: number
+ *                 example: 2
+ *               hall:
+ *                 type: number
+ *                 example: 2
+ *               roomNumber:
+ *                 type: string
+ *                 example: 3009
+ *               address:
+ *                 type: string
+ *                 example: Azimpur
+ *               availableToAll:
+ *                 type: boolean
+ *                 example: true
+ *               email:
+ *                 type: string
+ *                 example: mirmahathir@gmail.com
+ *     responses:
+ *       200:
+ *         description: Donor info updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donor updated successfully
+ *       404:
+ *         description: Email address does not exist
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Email address does not exist
+ *       403:
+ *         description: You do not have permission to edit email address of another user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 403
+ *                 message:
+ *                   type: string
+ *                   example: You do not have permission to edit email address of another user
+ */
 const handlePATCHDonors = async (req, res) => {
   /*
         #swagger.auto = false
@@ -1035,6 +1132,96 @@ const handlePATCHDonors = async (req, res) => {
   return res.respond(new OKResponse200('Donor updated successfully'))
 }
 
+/**
+ * @openapi
+ * /donors/designation:
+ *   patch:
+ *     tags:
+ *       - Donors
+ *     summary: Patch donor designation route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Handles the promotion or demotion of users
+ *     requestBody:
+ *       description: Donor info for editing donor
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: 563ghefqwr763
+ *               promoteFlag:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Donor promotion/ demotion successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Target user promoted/demoted successfully
+ *       404:
+ *         description: When no donor with the specified donor id is found, user will get this error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Donor not found
+ *       409:
+ *         description: If user cannot promote volunteer or cannot demote donor/ Donor does not have a valid hall
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Can not promote volunteer or can not demote donor/ Donor does not have a valid hall
+ *       403:
+ *         description: This error will appear if anyone below the designation of hall admin tries to access this route. This middleware assumes that the handleHallPermission middleware is used before and along with this middleware
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 403
+ *                 message:
+ *                   type: string
+ *                   example: error message
+ */
 const handlePATCHDonorsDesignation = async (req, res) => {
   /*
         #swagger.auto = false
