@@ -808,21 +808,24 @@ const handleGETSearchV3 = async (req, res) => {
  *     summary: Patch donor comment route
  *     security:
  *       - ApiKeyAuth: []
- *     description: Route endpoint to change password
+ *     description: Adds a comment to a donors profile
  *     requestBody:
- *       description: The JSON consisting of the new password
+ *       description: Donor info for posting comment
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               password:
+ *               donorId:
  *                 type: string
- *                 example: mynewpassword
+ *                 example: 563ghefqwr763
+ *               comment:
+ *                 type: string
+ *                 example: Sample comment about donor
  *     responses:
- *       201:
- *         description: Successful password change done
+ *       200:
+ *         description: In case of successfully saving the comment
  *         content:
  *           application/json:
  *             schema:
@@ -833,13 +836,29 @@ const handleGETSearchV3 = async (req, res) => {
  *                   example: OK
  *                 statusCode:
  *                   type: integer
- *                   example: 201
+ *                   example: 200
  *                 message:
  *                   type: string
- *                   example: Password changed successfully
+ *                   example: Comment updated successfully
  *                 token:
  *                   type: string
  *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ *       404:
+ *         description: In case of successfully saving the comment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Donor not found
  */
 const handlePATCHDonorsComment = async (req, res) => {
   /*
@@ -1650,6 +1669,64 @@ const handleGETDonorsDuplicate = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /donors/password:
+ *   post:
+ *     tags:
+ *       - Donors
+ *     summary: Post donor password route
+ *     description: Request for password reset link for a user
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       description: Donor info for inserting donor
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: 8734uir2895709
+ *     responses:
+ *       200:
+ *         description: Successfully created recovery link for user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Successfully created recovery link for user
+ *                 token:
+ *                   type: string
+ *                   example: 5894jkrth89490
+ *       409:
+ *         description: Donor is not a volunteer/ admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Donor is not a volunteer/ admin
+ */
 const handlePOSTDonorsPasswordRequest = async (req, res) => {
   /*
     #swagger.auto = false
