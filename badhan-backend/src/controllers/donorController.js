@@ -799,6 +799,48 @@ const handleGETSearchV3 = async (req, res) => {
   }))
 }
 
+/**
+ * @openapi
+ * /donors/comment:
+ *   patch:
+ *     tags:
+ *       - Donors
+ *     summary: Patch donor comment route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Route endpoint to change password
+ *     requestBody:
+ *       description: The JSON consisting of the new password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: mynewpassword
+ *     responses:
+ *       201:
+ *         description: Successful password change done
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Password changed successfully
+ *                 token:
+ *                   type: string
+ *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ */
 const handlePATCHDonorsComment = async (req, res) => {
   /*
         #swagger.auto = false
@@ -1382,7 +1424,79 @@ const handleGETDonors = async (req, res) => {
     donor
   }))
 }
-
+/**
+ * @openapi
+ * /donors/me:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get list of donors
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Handles the fetching of own details
+ *     responses:
+ *       200:
+ *         description: Info of the logged in user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Successfully fetched donor details
+ *                 donor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     email:
+ *                       type: string
+ *                       example: mirmahathir1@gmail.com
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 786534785
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur
+ *                     comment:
+ *                       type: string
+ *                       example: Developer of badhan
+ *                     commentTime:
+ *                       type: number
+ *                       example: 0
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
+ */
 const handleGETDonorsMe = async (req, res) => {
   /*
         #swagger.auto = false
