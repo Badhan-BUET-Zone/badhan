@@ -1201,7 +1201,7 @@ const handlePATCHDonors = async (req, res) => {
  *                   example: ERROR
  *                 statusCode:
  *                   type: integer
- *                   example: 404
+ *                   example: 409
  *                 message:
  *                   type: string
  *                   example: Can not promote volunteer or can not demote donor/ Donor does not have a valid hall
@@ -1286,7 +1286,77 @@ const handlePATCHDonorsDesignation = async (req, res) => {
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (' + logOperation + ')', donor)
   return res.respond(new OKResponse200('Target user promoted/demoted successfully'))
 }
-
+/**
+ * @openapi
+ * /admins:
+ *   patch:
+ *     tags:
+ *       - Donors
+ *     summary: Patch admin route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Promotes a volunteer to hall admin and demotes the existing hall admin to volunteer
+ *     requestBody:
+ *       description: Donor info for changing admin
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: 563ghefqwr763
+ *     responses:
+ *       200:
+ *         description: Successfully changed hall admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Successfully changed hall admin
+ *       404:
+ *         description: When no donor with the specified donor id is found, user will get this error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Donor not found
+ *       409:
+ *         description: If fetched user is not a volunteer/ user does not have a valid hall , user will get this error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: User is not a volunteer/ User does not have a valid hall
+ */
 const handlePATCHAdmins = async (req, res) => {
   /*
         #swagger.auto = false
