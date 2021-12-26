@@ -29,39 +29,11 @@ test('PATCH/admins', async () => {
             }
         });
 
-        let sampleHallAdminID = designatedDonorsResponse.data.adminList[0]._id;
-        let sampleHallAdminHall = designatedDonorsResponse.data.adminList[0].hall;
-        //create a new donor
-        let donorCreationResponse = await badhanAxios.post("/donors", {
-            phone: 8801555444777,
-            bloodGroup: 2,
-            hall: sampleHallAdminHall,
-            name: "Blah Blah",
-            studentId: 1606060,
-            address: "Azimpur",
-            roomNumber: "3009",
-            comment: "developer of badhan",
-            extraDonationCount: 2,
-            availableToAll: true
-        }, {
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
-
-        // promote that newly created donor to volunteer
-        await badhanAxios.patch('/donors/designation', {
-            donorId:donorCreationResponse.data.newDonor._id,
-            promoteFlag:true
-        },{
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
+        let sampleVolunteerID = designatedDonorsResponse.data.volunteerList[0]._id;
 
         // promote to hall admin
         let hallAdminPromotionResult = await badhanAxios.patch('/admins',{
-            donorId: donorCreationResponse.data.newDonor._id
+            donorId: sampleVolunteerID
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -72,32 +44,6 @@ test('PATCH/admins', async () => {
         let hallAdminPromotionValidation = validate(hallAdminPromotionResult.data, patchAdminsSchema);
 
         expect(hallAdminPromotionValidation.errors).toEqual([]);
-
-        // make the old hall admin
-        await badhanAxios.patch('/admins',{
-            donorId: sampleHallAdminID
-        },{
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        })
-
-        //demote the newly promoted volunteer to a normal donor
-        await badhanAxios.patch('/donors/designation', {
-            donorId:donorCreationResponse.data.newDonor._id,
-            promoteFlag:false
-        },{
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
-
-        //delete the new donor
-        await badhanAxios.delete("/donors?donorId="+donorCreationResponse.data.newDonor._id,  {
-            headers: {
-                "x-auth": signInResponse.data.token
-            }
-        });
 
         //logout to remove token
         await badhanAxios.delete('/users/signout', {
