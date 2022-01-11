@@ -1,20 +1,5 @@
 const mongoose = require('mongoose')
-/**
- * @swagger
- * components:
- *   schemas:
- *     PublicContacts:
- *       type: object
- *       properties:
- *         donorId:
- *           type: string
- *           description: id of donor who is published as public contact
- *           example: abcdef123456789
- *         bloodGroup:
- *           type: integer
- *           description: bloodgroup for which the donor is available to contact
- *           example: 2
- */
+
 const publicContactSchema = new mongoose.Schema({
   donorId: {
     type: mongoose.Schema.Types.ObjectId,

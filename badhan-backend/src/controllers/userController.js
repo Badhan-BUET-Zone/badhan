@@ -15,123 +15,7 @@ const {
 } = require('../response/errorTypes')
 const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
 
-
-/**
- * @openapi
- * /users/signin:
- *   post:
- *     tags:
- *       - Users
- *     summary: Sign in route
- *     description: Sign in to Badhan Platform using phone and password
- *     requestBody:
- *       description: The JSON consisting of phone and password
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone:
- *                 type: string
- *                 example: 8801521438557
- *               password:
- *                 type: string
- *                 example: 123456789
- *     responses:
- *       201:
- *         description: A successful sign in returns a token for the user
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 201
- *                 message:
- *                   type: string
- *                   example: Successfully signed in
- *                 token:
- *                   type: string
- *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
- *       404:
- *         description: When the donor is not found/ When the logging user does not have any account
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ERROR
- *                 statusCode:
- *                   type: number
- *                   example: 404
- *                 message:
- *                   type: string
- *                   example: Donor not found/ You do not have an account
- *       401:
- *         description: When the user provides an invalid password
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ERROR
- *                 statusCode:
- *                   type: number
- *                   example: 401
- *                 message:
- *                   type: string
- *                   example: Incorrect phone / password
- */
 const handlePOSTSignIn = async (req, res) => {
-  /*
-        #swagger.auto = false
-        #swagger.tags = ['User']
-        #swagger.description = 'Endpoint to login a user.'
-        #swagger.parameters['signIn'] = {
-            in: 'body',
-            description: 'Phone number of a logging user.',
-            schema: {
-                phone: "8801521438557",
-                password: "123456"
-            }
-        }
-                #swagger.responses[404] = {
-            schema: {
-                status: "ERROR",
-                statusCode: 404,
-                message: 'Donor not found/ You do not have an account',
-            },
-            description: 'When the donor is not found/ When the logging user does not have any account'
-        }
-
-        #swagger.responses[401] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 401,
-                message: 'Incorrect phone / password'
-            },
-            description: 'When the user provides an invalid password'
-        }
-            #swagger.responses[201] = {
-        schema: {
-            "status": "OK",
-            statusCode: 201,
-            "message": "Successfully signed in",
-            token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-        },
-        description: 'A successful sign in returns a token for the user'
-    }
-        */
-
   const donorPhone = req.body.phone
   const password = req.body.password
   const donorQueryResult = await donorInterface.findDonorByQuery({ phone: donorPhone }, {})
@@ -165,52 +49,8 @@ const handlePOSTSignIn = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-/**
- * @openapi
- * /users/signout:
- *   delete:
- *     tags:
- *       - Users
- *     summary: Sign out route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Sign out user from Badhan Platform
- *     responses:
- *       200:
- *         description: A successful sign out removes the token for the user
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Logged out successfully
- */
-const handleDELETESignOut = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['User']
-    #swagger.description = 'Endpoint to logout a user.'
-    #swagger.security = [{
-               "api_key": []
-        }]
-            #swagger.responses[200] = {
-        schema: {
-            status: 'OK',
-            statusCode: 200,
-            message: 'Logged out successfully'
-        },
-        description: 'A successful sign out removes the token for the user'
-    }
-     */
 
+const handleDELETESignOut = async (req, res) => {
   const token = res.locals.middlewareResponse.token
   const donor = res.locals.middlewareResponse.donor
 
@@ -219,52 +59,8 @@ const handleDELETESignOut = async (req, res) => {
   await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT', {})
   return res.respond(new OKResponse200('Logged out successfully'))
 }
-/**
- * @openapi
- * /users/signout/all:
- *   delete:
- *     tags:
- *       - Users
- *     summary: Sign out all route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Sign out user from all devices
- *     responses:
- *       200:
- *         description: Endpoint to logout user from all devices
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Logged out from all devices successfully
- */
-const handleDELETESignOutAll = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['User']
-    #swagger.description = 'Endpoint to logout user from all devices.'
-    #swagger.security = [{
-               "api_key": []
-        }]
-            #swagger.responses[200] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 200,
-                    message: 'Logged out from all devices successfully'
-                },
-                description: 'A successful sign out removes all the tokens of the user'
-            }
-     */
 
+const handleDELETESignOutAll = async (req, res) => {
   const donor = res.locals.middlewareResponse.donor
 
   // did not analyze the result because the route wouldn't reach this point if the token was not in the database
@@ -273,56 +69,8 @@ const handleDELETESignOutAll = async (req, res) => {
   await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT ALL', {})
   return res.respond(new OKResponse200('Logged out from all devices successfully'))
 }
-/**
- * @openapi
- * /users/redirection:
- *   post:
- *     tags:
- *       - Users
- *     summary: Redirection route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Endpoint to request a temporary redirection token
- *     responses:
- *       201:
- *         description: Redirection token created
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 201
- *                 message:
- *                   type: string
- *                   example: Redirection token created
- *                 token:
- *                   type: string
- *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
- */
-const handlePOSTRedirection = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['User']
-    #swagger.description = 'Endpoint to request a temporary redirection token'
-    #swagger.security = [{
-               "api_key": []
-        }]
-    #swagger.responses[201] = {
-        schema: {
-            status: 'OK',
-            statusCode: 201,
-            message: 'Redirection token created',
-            token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-        },
-        description: 'Redirection token created'
-    }
-     */
 
+const handlePOSTRedirection = async (req, res) => {
   const donor = res.locals.middlewareResponse.donor
   const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, '30s')
 
@@ -336,117 +84,8 @@ const handlePOSTRedirection = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-/**
- * @openapi
- * /users/redirection:
- *   patch:
- *     tags:
- *       - Users
- *     summary: Patch redirection route
- *     description: Route endpoint to redirect user from app to web
- *     requestBody:
- *       description: The JSON consisting of the temporary token generated by /users/requestRedirection
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               token:
- *                 type: string
- *                 example: dvsoigneoihegoiwsngoisngoiswgnbon
- *     responses:
- *       201:
- *         description: Redirection token created
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 201
- *                 message:
- *                   type: string
- *                   example: Redirected login successful
- *                 token:
- *                   type: string
- *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
- *       404:
- *         description: This error will occur if the user does not exist/ This error will occur if the token does not exist
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ERROR
- *                 statusCode:
- *                   type: number
- *                   example: 404
- *                 message:
- *                   type: string
- *                   example: Authentication failed. Invalid authentication token./ Token not found
- *       401:
- *         description: This error will occur if the jwt token is invalid
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ERROR
- *                 statusCode:
- *                   type: number
- *                   example: 401
- *                 message:
- *                   type: string
- *                   example: Session Expired
- */
-const handlePATCHRedirectedAuthentication = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['User']
-    #swagger.description = 'Route endpoint to redirect user from app to web.'
-    #swagger.parameters['logIn'] = {
-        in: 'body',
-        description: 'The temporary token generated by /user/requestRedirection',
-        schema: {
-            token: "sdlfkhgoenguiehgfudsnbvsiugkb"
-        }
-    }
-        #swagger.responses[401] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 401,
-                message: 'Session Expired'
-            },
-            description: 'This error will occur if the jwt token is invalid'
-        }
-     #swagger.responses[404] = {
-            schema: {
-                status: 'ERROR',
-                statusCode: 404,
-                message: 'Authentication failed. Invalid authentication token./ Token not found'
-            },
-            description: 'This error will occur if the user does not exist/ This error will occur if the token does not exist'
-        }
 
-            #swagger.responses[201] = {
-                schema: {
-                    status: 'OK',
-                    statusCode: 201,
-                    message: 'Redirected login successful',
-                    token: "lksjaopirnboishbnoiwergnbsdiobhsiognkghesuiog"
-                },
-                description: 'Redirection token created'
-            }
-     */
+const handlePATCHRedirectedAuthentication = async (req, res) => {
   const token = req.body.token
 
   let decodedDonor
@@ -480,89 +119,8 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-/**
- * @openapi
- * /users/password/forgot:
- *   post:
- *     tags:
- *       - Users
- *     summary: Password forgot route
- *     description: Route if user forgets the password
- *     requestBody:
- *       description: Phone number of user who forgot his/her password
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone:
- *                 type: string
- *                 example: 8801521438557
- *     responses:
- *       200:
- *         description:  Success Response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: A recovery mail has been sent to your email address
- *       404:
- *         description: Error responses
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ERROR
- *                 statusCode:
- *                   type: number
- *                   example: 404
- *                 message:
- *                   type: string
- *                   example: Phone number not recognized/ Account not found/ No recovery email found for this phone number
- */
-const handlePOSTPasswordForgot = async (req, res) => {
-  /*
-        #swagger.auto = false
-        #swagger.tags = ['User']
-        #swagger.description = 'Route if user forgets the password.'
-        #swagger.parameters['signIn'] = {
-            in: 'body',
-            description: 'Phone number of user who forgot his/her password',
-            schema: {
-                phone: "8801521438557",
-            }
-        }
 
-            #swagger.responses[404] = {
-                schema: {
-                    status: "ERROR",
-                    statusCode: 404,
-                    message: "Phone number not recognized/ Account not found/ No recovery email found for this phone number",
-                },
-                description: 'Error responses'
-            }
-            #swagger.responses[200] = {
-                schema: {
-                    status: "OK",
-                    statusCode: 200,
-                    message: "A recovery mail has been sent to your email address",
-                },
-                description: 'Success response'
-            }
-    */
+const handlePOSTPasswordForgot = async (req, res) => {
   const phone = req.body.phone
   const queryByPhoneResult = await donorInterface.findDonorByPhone(phone)
   if (queryByPhoneResult.status !== 'OK') {
@@ -597,74 +155,8 @@ const handlePOSTPasswordForgot = async (req, res) => {
 
   return res.respond(new OKResponse200('A recovery mail has been sent to your email address'))
 }
-/**
- * @openapi
- * /users/password:
- *   patch:
- *     tags:
- *       - Users
- *     summary: Patch password route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Route endpoint to change password
- *     requestBody:
- *       description: The JSON consisting of the new password
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               password:
- *                 type: string
- *                 example: mynewpassword
- *     responses:
- *       201:
- *         description: Successful password change done
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 201
- *                 message:
- *                   type: string
- *                   example: Password changed successfully
- *                 token:
- *                   type: string
- *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
- */
-const handlePATCHPassword = async (req, res) => {
-  /*
-    #swagger.auto = false
-    #swagger.tags = ['User']
-    #swagger.description = 'Route endpoint to change password'
-    #swagger.security = [{
-               "api_key": []
-        }]
-    #swagger.parameters['passwordChange'] = {
-        in: 'body',
-        description: 'New Password',
-        schema: {
-            password: "mynewpassword"
-        }
-    }
-        #swagger.responses[201] = {
-        schema: {
-            status: 'OK',
-            statusCode: 201,
-            message: 'Password changed successfully',
-            token: 'dsgfewosgnwegnhw'
-        },
-        description: 'Successful password change done'
-    }
-*/
 
+const handlePATCHPassword = async (req, res) => {
   const reqBody = req.body
   const donor = res.locals.middlewareResponse.donor
   donor.password = reqBody.password
@@ -678,108 +170,8 @@ const handlePATCHPassword = async (req, res) => {
     token: tokenInsertResult.data.token
   }))
 }
-/**
- * @openapi
- * /users/logins:
- *   get:
- *     tags:
- *       - Users
- *     summary: Fetch users login route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Endpoint to get recent logins
- *     responses:
- *       200:
- *         description: Success response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Recent logins fetched successfully
- *                 logins:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       ipAddress:
- *                         type: string
- *                         example: 1.2.3.4
- *                       browserFamily:
- *                         type: string
- *                         example: Firefox
- *                       device:
- *                         type: string
- *                         example: Asus K550VX
- *                       os:
- *                         type: string
- *                         example: Ubuntu 20.04.1
- *                       _id:
- *                         type: string
- *                         example: 584abcde6744144441
- *                 currentLogin:
- *                   type: object
- *                   properties:
- *                     ipAddress:
- *                       type: string
- *                       example: 1.2.3.4
- *                     browserFamily:
- *                       type: string
- *                       example: Firefox
- *                     device:
- *                       type: string
- *                       example: Asus K550VX
- *                     os:
- *                       type: string
- *                       example: Ubuntu 20.04.1
- *                     _id:
- *                       type: string
- *                       example: 584abcde6744144441
- */
+
 const handleGETLogins = async (req, res) => {
-  /*
-        #swagger.auto = false
-        #swagger.tags = ['User']
-        #swagger.description = 'Endpoint to get recent logins'
-        #swagger.security = [{
-            "api_key": []
-        }]
-
-        #swagger.responses[200] = {
-            schema: {
-                status: 'OK',
-                statusCode: 200,
-                message: 'Recent logins fetched successfully',
-                logins: [
-                    {
-                        _id: 'dsgfewosgnwegnhw',
-                        os: "Ubuntu 20.04.1",
-                        device: "Asus K550VX",
-                        browserFamily: "Firefox",
-                        ipAddress: "1.2.3.4"
-                    }
-                ],
-                currentLogin: {
-                    _id: 'dsgfewosgnwegnhw',
-                    os: "Ubuntu 20.04.1",
-                    device: "Asus K550VX",
-                    browserFamily: "Firefox",
-                    ipAddress: "1.2.3.4"
-                },
-            },
-            description: 'Success response'
-        }
-
-     */
-
   const user = res.locals.middlewareResponse.donor
   const token = res.locals.middlewareResponse.token
   const recentLoginsResult = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token)
@@ -802,91 +194,7 @@ const handleGETLogins = async (req, res) => {
   }))
 }
 
-/**
- * @openapi
- * /users/logins/{tokenId}:
- *   delete:
- *     tags:
- *       - Users
- *     summary: Delete users login route
- *     security:
- *       - ApiKeyAuth: []
- *     description: Endpoint to delete a login from device
- *     parameters:
- *       - in: path
- *         name: tokenId
- *         description: tokenId to be deleted
- *         required: true
- *         schema:
- *           type: string
- *           example: kfsdhf7834y9282
- *     responses:
- *       200:
- *         description: Success response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Logged out from specified device
- *       404:
- *         description: Token with specified ID was not found in database
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Login information not found
- */
 const handleDELETELogins = async (req, res) => {
-  /*
-#swagger.auto = false
-#swagger.tags = ['User']
-#swagger.description = 'Endpoint to delete a login from device'
-#swagger.security = [{
-               "api_key": []
-        }]
- #swagger.parameters['tokenId'] = {
-        description: 'ID of token to be deleted',
-        type: 'string',
-        name: 'tokenId',
-        in: 'param'
-    }
-
-    #swagger.responses[404] = {
-        schema: {
-            status: 'ERROR',
-            statusCode: 404,
-            message: 'Login information not found'
-        },
-        description: 'Token with specified ID was not found in database'
-    }
-    #swagger.responses[200] = {
-        schema: {
-            status: 'OK',
-            statusCode: 200,
-            message: 'Logged out from specified device',
-        },
-        description: 'Success response'
-    }
-*/
-
   const deletedTokenResult = await tokenInterface.deleteByTokenId(req.params.tokenId)
   if (deletedTokenResult.status !== 'OK') {
     return res.respond(new NotFoundError404('Login information not found'))

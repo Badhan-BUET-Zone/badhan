@@ -7,70 +7,7 @@ const { PublicContact } = require('./PublicContacts')
 const { Token } = require('./Token')
 const { ActiveDonor } = require('./ActiveDonor')
 const { checkEmail } = require('../../validations/validateRequest/others')
-/**
- * @swagger
- * components:
- *   schemas:
- *     Donors:
- *       type: object
- *       properties:
- *         phone:
- *           type: number
- *           description: Phone number of donor.
- *           example: 8801521438557
- *         password:
- *           type: string
- *           description: Donor password. Will be empty if the donor does not have an account.
- *           example: password123
- *         studentId:
- *           type: string
- *           description: Six digit student ID of BUET students
- *           example: 1605011
- *         bloodGroup:
- *           type: number
- *           description: Blood group of donor
- *           example: 3
- *         hall:
- *           type: number
- *           description: hall number of donor
- *           example: 5
- *         address:
- *           type: string
- *           description: address of donor
- *           example: Azimpur Road
- *         roomNumber:
- *           type: string
- *           description: hall room number of donor
- *           example: 3009
- *         designation:
- *           type: number
- *           description: designation of donor in Badhan platform
- *           example: 3
- *         lastDonation:
- *           type: number
- *           description: timestamp of last donation by donor
- *           example: 1234578161648
- *         name:
- *           type: string
- *           description: name of donor
- *           example: Mir Mahathir Mohammad
- *         comment:
- *           type: string
- *           description: additional information of the donor
- *           example: Has high blood pressure
- *         commentTime:
- *           type: number
- *           description: timestamp of the latest update on comment
- *           example: 13216465164
- *         availableToAll:
- *           type: boolean
- *           description: if this flag is true, then the donor will be made available for all the halls
- *           example: true
- *         email:
- *           type: string
- *           description: email address of a donor
- *           example: mirmahathir1@gmail.com
- */
+
 const donorSchema = new mongoose.Schema({
   phone: {
     unique: true,

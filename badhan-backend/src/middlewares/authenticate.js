@@ -4,16 +4,7 @@ const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
 const { UnauthorizedError401, InternalServerError500, ForbiddenError403, NotFoundError404 } = require('../response/errorTypes')
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     ApiKeyAuth:
- *       type: apiKey
- *       in: header
- *       name: x-auth
- *
- */
+
 const handleAuthentication = async (req, res, next) => {
   /*
     #swagger.auto = false

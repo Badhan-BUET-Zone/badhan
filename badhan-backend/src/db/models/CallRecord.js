@@ -1,24 +1,5 @@
 const mongoose = require('mongoose')
-/**
- * @swagger
- * components:
- *   schemas:
- *     CallRecords:
- *       type: object
- *       properties:
- *         callerId:
- *           type: string
- *           description: id of caller
- *           example: abcd123456798
- *         calleeId:
- *           type: string
- *           description: id of callee
- *           example: abcd123456798
- *         date:
- *           type: number
- *           description: timestamp of donation
- *           example: 1234578161648
- */
+
 const callRecordSchema = new mongoose.Schema({
   callerId: {
     type: mongoose.Schema.Types.ObjectId,

@@ -20,7 +20,6 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
-    "colors": "^1.4.0",
     "connect-history-api-fallback": "^1.6.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -33,7 +32,6 @@
     "express-rate-limit": "^5.2.6",
     "express-validator": "^6.12.1",
     "faker": "^5.5.3",
-    "google-play-scraper": "^8.0.2",
     "googleapis": "^85.0.0",
     "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
@@ -44,9 +42,6 @@
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "swagger-autogen": "^2.8.1",
-    "swagger-jsdoc": "^6.1.0",
-    "swagger-ui-express": "^4.1.6",
     "useragent": "^2.3.0"
   },
   "devDependencies": {
