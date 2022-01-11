@@ -6,7 +6,7 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const activeDonorsValidator = require('../validations/activeDonors')
 
-router.post('/', /* #swagger.path = '/activeDonors' */
+router.post('/',
   activeDonorsValidator.validatePOSTActiveDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
@@ -15,7 +15,7 @@ router.post('/', /* #swagger.path = '/activeDonors' */
   activeDonorController.handlePOSTActiveDonors
 )
 
-router.delete('/:donorId', /* #swagger.path = '/activeDonors/{donorId}' */
+router.delete('/:donorId',
   activeDonorsValidator.validateDELETEActiveDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
@@ -24,7 +24,7 @@ router.delete('/:donorId', /* #swagger.path = '/activeDonors/{donorId}' */
   activeDonorController.handleDELETEActiveDonors
 )
 
-router.get('/', /* #swagger.path = '/activeDonors' */
+router.get('/',
   activeDonorsValidator.validateGETActiveDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,

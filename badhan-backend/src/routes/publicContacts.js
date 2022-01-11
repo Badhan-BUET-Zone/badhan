@@ -6,7 +6,7 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const publicContactValidator = require('../validations/publicContacts')
 
-router.post('/', /* #swagger.path = '/publicContacts' */
+router.post('/',
   rateLimiter.publicContactInsertionLimiter,
   publicContactValidator.validatePOSTPublicContact,
   authenticator.handleAuthentication,
@@ -15,12 +15,12 @@ router.post('/', /* #swagger.path = '/publicContacts' */
   publicContactController.handlePOSTPublicContact
 )
 
-router.get('/', /* #swagger.path = '/publicContacts' */
+router.get('/',
   rateLimiter.commonLimiter,
   publicContactController.handleGETPublicContacts
 )
 
-router.delete('/', /* #swagger.path = '/publicContacts' */
+router.delete('/',
   rateLimiter.publicContactDeletionLimiter,
   publicContactValidator.validateDELETEPublicContact,
   authenticator.handleAuthentication,

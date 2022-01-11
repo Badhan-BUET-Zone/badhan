@@ -12,55 +12,55 @@ router.get('/', (req, res) => {
   return res.respond(new OKResponse200('Backend active'))
 })
 
-router.post('/signin', /* #swagger.path = '/users/signin' */
+router.post('/signin',
   userValidator.validateLogin,
   rateLimiter.signInLimiter,
   userController.handlePOSTSignIn
 )
 
-router.delete('/signout', /* #swagger.path = '/users/signout' */
+router.delete('/signout',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
   userController.handleDELETESignOut
 )
 
-router.delete('/signout/all', /* #swagger.path = '/users/signout/all' */
+router.delete('/signout/all',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
   userController.handleDELETESignOutAll
 )
 
-router.post('/redirection', /* #swagger.path = '/users/redirection' */
+router.post('/redirection',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
   userController.handlePOSTRedirection
 )
 
-router.patch('/redirection', /* #swagger.path = '/users/redirection' */
+router.patch('/redirection',
   rateLimiter.redirectionSignInLimiter,
   userController.handlePATCHRedirectedAuthentication
 )
 
-router.post('/password/forgot', /* #swagger.path = '/users/password/forgot' */
+router.post('/password/forgot',
   rateLimiter.passwordForgotLimiter,
   userValidator.validatePOSTPasswordForgot,
   userController.handlePOSTPasswordForgot
 )
 
-router.patch('/password', /* #swagger.path = '/users/password' */
+router.patch('/password',
   rateLimiter.commonLimiter,
   userValidator.validatePATCHPassword,
   authenticator.handleAuthentication,
   userController.handlePATCHPassword
 )
 
-router.get('/logins', /* #swagger.path = '/users/logins' */
+router.get('/logins',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
   userController.handleGETLogins
 )
 
-router.delete('/logins/:tokenId', /* #swagger.path = '/users/logins/{tokenId}' */
+router.delete('/logins/:tokenId',
   rateLimiter.commonLimiter,
   userValidator.validateDELETELogins,
   authenticator.handleAuthentication,

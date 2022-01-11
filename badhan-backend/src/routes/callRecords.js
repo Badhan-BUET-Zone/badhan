@@ -6,7 +6,7 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const callRecordValidator = require('../validations/callRecords')
 
-router.post('/', /* #swagger.path = '/callrecords' */
+router.post('/',
   callRecordValidator.validatePOSTCallRecords,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
@@ -15,7 +15,7 @@ router.post('/', /* #swagger.path = '/callrecords' */
   callRecordController.handlePOSTCallRecord
 )
 
-router.delete('/', /* #swagger.path = '/callrecords' */
+router.delete('/',
   callRecordValidator.validateDELETECallRecords,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,

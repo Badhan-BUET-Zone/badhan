@@ -5,7 +5,7 @@ const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const donationValidator = require('../validations/donations')
 
-router.post('/', /* #swagger.path = '/donations' */
+router.post('/',
   donationValidator.validatePOSTDonations,
   rateLimiter.donationInsertionLimiter,
   authenticator.handleAuthentication,
@@ -14,7 +14,7 @@ router.post('/', /* #swagger.path = '/donations' */
   donationController.handlePOSTDonations
 )
 
-router.delete('/', /* #swagger.path = '/donations' */
+router.delete('/',
   donationValidator.validateDELETEDonations,
   rateLimiter.deleteDonationLimiter,
   authenticator.handleAuthentication,
