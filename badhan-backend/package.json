@@ -4,13 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "nodemon",
-    "start": "npm run server:prod",
-    "server": "cross-env NODE_ENV=development babel-node ./src/bin/www",
-    "server:prod": "NODE_ENV=production node ./dist/bin/www",
-    "dev": "cross-env NODE_ENV=development babel-node ./src/bin/www",
-    "clean": "rimraf dist",
-    "build": "babel ./src --out-dir dist",
-    "prod": "npm-run-all lint clean build server:prod",
+    "start": "NODE_ENV=production node ./src/bin/www",
+    "dev": "NODE_ENV=development node ./src/bin/www",
     "lint": "eslint src"
   },
   "engines": {
@@ -44,10 +39,6 @@
     "useragent": "^2.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@babel/node": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.3",
