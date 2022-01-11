@@ -7,9 +7,6 @@ echo "Enter commit message: "
 read -r message
 echo "The commit message is: $message"
 
-echo "---build---"
-npm run build
-
 echo "---adding changed files to staging---"
 git add .
 
