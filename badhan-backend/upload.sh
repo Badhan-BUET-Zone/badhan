@@ -7,9 +7,6 @@ echo "Enter commit message: "
 read -r message
 echo "The commit message is: $message"
 
-echo "---generate swagger documentation---"
-npm run doc
-
 echo "---build---"
 npm run build
 

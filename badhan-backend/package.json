@@ -10,9 +10,8 @@
     "dev": "cross-env NODE_ENV=development babel-node ./src/bin/www",
     "clean": "rimraf dist",
     "build": "babel ./src --out-dir dist",
-    "prod": "npm-run-all lint doc clean build server:prod",
-    "lint": "eslint src",
-    "doc": "node ./src/doc/swagger.js"
+    "prod": "npm-run-all lint clean build server:prod",
+    "lint": "eslint src"
   },
   "engines": {
     "node": "14.x.x"
