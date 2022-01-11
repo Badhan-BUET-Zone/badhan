@@ -18,6 +18,7 @@ const { respond } = require('./response')
 const { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } = require('./response/errorHandlers')
 const { redirectToDoc } = require('./doc/redirection')
 const app = express()
+
 app.use(cors())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
