@@ -139,7 +139,7 @@
  *   get:
  *     tags:
  *       - Users
- *     summary: Get list of donors
+ *     summary: Get own profile info
  *     security:
  *       - ApiKeyAuth: []
  *     description: Handles the fetching of own details
