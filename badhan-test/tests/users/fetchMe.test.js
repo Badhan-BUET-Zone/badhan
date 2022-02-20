@@ -34,14 +34,14 @@ const donorSchema={
     required: ["status", "statusCode", "message", "donor"]
 }
 
-test('GET/donors/me', async () => {
+test('GET/users/me', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let donorResponse = await badhanAxios.get('/donors/me', {
+        let donorResponse = await badhanAxios.get('/users/me', {
             headers: {
                 "x-auth": signInResponse.data.token
             }
@@ -59,10 +59,10 @@ test('GET/donors/me', async () => {
     }
 })
 
-test('GET/guest/donors/me', async () => {
+test('GET/guest/users/me', async () => {
     try {
 
-        let donorResponse = await badhanAxios.get('/guest/donors/me');
+        let donorResponse = await badhanAxios.get('/guest/users/me');
         let validationResult = validate(donorResponse.data, donorSchema);
         expect(validationResult.errors).toEqual([]);
     } catch (e) {
