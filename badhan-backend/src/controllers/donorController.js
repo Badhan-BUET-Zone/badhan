@@ -309,16 +309,6 @@ const handleGETDonors = async (req, res) => {
   }))
 }
 
-const handleGETDonorsMe = async (req, res) => {
-  const donor = res.locals.middlewareResponse.donor
-
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'ENTERED APP', { name: donor.name })
-
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
-    donor
-  }))
-}
-
 const handleGETVolunteersAll = async (req, res) => {
   const volunteerResult = await donorInterface.findAllVolunteers()
 
@@ -431,7 +421,6 @@ module.exports = {
   handlePATCHDonorsDesignation,
   handlePATCHAdmins,
   handleGETDonors,
-  handleGETDonorsMe,
   handleGETVolunteersAll,
   handleGETDonorsDuplicate,
   handlePOSTDonorsPasswordRequest,

@@ -18,7 +18,7 @@ router.patch('/users/password',
   guestController.handlePATCHPassword
 )
 
-router.get('/donors/me',
+router.get('/users/me',
   guestController.handlePOSTViewDonorDetailsSelf
 )
 

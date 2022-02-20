@@ -30,6 +30,12 @@ router.delete('/signout/all',
   userController.handleDELETESignOutAll
 )
 
+router.get('/me',
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  userController.handleGETMe
+)
+
 router.post('/redirection',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,

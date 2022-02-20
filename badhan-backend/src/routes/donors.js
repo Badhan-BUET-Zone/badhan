@@ -1,6 +1,7 @@
 const AsyncRouter = require('express-async-router').AsyncRouter
 const router = AsyncRouter()
 
+const userController = require('../controllers/userController')
 const donorController = require('../controllers/donorController')
 const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
@@ -25,15 +26,8 @@ router.get('/donors',
 router.get('/donors/me',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  donorController.handleGETDonorsMe
+  userController.handleGETMe
 )
-
-// router.get('/search/v2',
-//   donorValidator.validateGETSearchDonors,
-//   rateLimiter.commonLimiter,
-//   authenticator.handleAuthentication,
-//   donorController.handleGETSearchOptimized
-// )
 
 router.get('/search/v3',
   donorValidator.validateGETSearchDonors,
