@@ -1,3 +1,4 @@
+echo "Automatic build is enabled"
 git checkout test-branch
 echo "Enter commit message: "
 read -r message

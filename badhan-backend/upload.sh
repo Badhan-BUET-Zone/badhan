@@ -1,3 +1,4 @@
+echo "Automatic build is enabled"
 echo "---switching to master---"
 git checkout master
 echo "---merge test branch---"
