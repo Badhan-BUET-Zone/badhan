@@ -43,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.all(20),
           child: Center(
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FutureBuilder(
@@ -71,16 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
                 const SizedBox(height: 30),
-                Text(msg)
+                const AddExcelWidget(),
               ],
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _uploadFile,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
@@ -91,17 +87,64 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!isAuthenticated) {
       response = await Provider.of<UserDataProvider>(context, listen: false)
           .redirectUser(widget.token);
-      isAuthenticated = response.success;
+
+      if (response.success) {
+        isAuthenticated = true;
+        return response.data;
+      }
     }
 
-    response = await Provider.of<UserDataProvider>(context, listen: false)
-        .getProfileData();
-    if (response.success) {
-      isAuthenticated = true;
-      return response.data;
+    if (!isAuthenticated) {
+      response = await Provider.of<UserDataProvider>(context, listen: false)
+          .getProfileData();
+      if (response.success) {
+        isAuthenticated = true;
+        return response.data;
+      }
     }
 
     return null;
+  }
+}
+
+class AddExcelWidget extends StatefulWidget {
+  const AddExcelWidget({Key? key}) : super(key: key);
+
+  @override
+  _AddExcelWidgetState createState() => _AddExcelWidgetState();
+}
+
+class _AddExcelWidgetState extends State<AddExcelWidget> {
+  static String tag = "AddExcelWidget";
+  String msg = "No data";
+
+  @override
+  Widget build(BuildContext context) {
+    /* return Scaffold(
+      body: Text(msg),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _uploadFile,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+    ); */
+    return Container(
+      color: Colors.amber,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          Text(msg),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: _uploadFile,
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   // see: https://pub.dev/packages/file_picker
@@ -110,16 +153,16 @@ class _MyHomePageState extends State<MyHomePage> {
         .pickFiles(allowedExtensions: ['xlsx'], type: FileType.custom);
 
     if (result == null) {
-      Log.d(TAG, "No file Picked");
+      Log.d(tag, "No file Picked");
       return;
     }
 
     PlatformFile file = result.files.first;
 
-    Log.d(TAG, "file name: ${file.name}");
+    Log.d(tag, "file name: ${file.name}");
     //Log.d(TAG, "file bytes: ${file.bytes}");
-    Log.d(TAG, "file size: ${file.size}");
-    Log.d(TAG, "file extension: ${file.extension}");
+    Log.d(tag, "file size: ${file.size}");
+    Log.d(tag, "file extension: ${file.extension}");
     //Log.d(TAG, "file path: ${file.path}");
 
     // https: //stackoverflow.com/questions/45924474/how-do-you-detect-the-host-platform-from-dart-code
@@ -137,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     StringBuffer buffer = StringBuffer();
     for (String sheetName in excel.tables.keys) {
-      Log.d(TAG, "$fName $sheetName"); //sheet Name
+      Log.d(tag, "$fName $sheetName"); //sheet Name
       buffer.writeln("Sheet name: $sheetName");
       /* print(excel.tables[table]!.maxCols);
       print(excel.tables[table]!.maxRows); */
@@ -158,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
         r++;
       }
     }
-    Log.d(TAG, buffer.toString());
+    Log.d(tag, buffer.toString());
     setState(() {
       msg = buffer.toString();
     });
@@ -166,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _openFile(String filePath) {
     String fName = "_openFile():";
-    Log.d(TAG, "opening file from : $filePath");
+    Log.d(tag, "opening file from : $filePath");
     List<int> bytes = File(filePath).readAsBytesSync();
     _openFileFromByte(bytes);
   }

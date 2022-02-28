@@ -36,10 +36,11 @@ class UserDataProvider with ChangeNotifier {
       if (data['statusCode'] == HttpSatusCode.CREATED) {
         AuthToken.saveToken(data["token"] ?? "");
         Log.d(TAG, "$fName : new token ${data['token'] ?? ""}");
+        ProfileData profileData = ProfileData.fromJson(data["donor"]);
         return ProviderResponse(
           success: true,
           message: "ok",
-          //data: donationList,
+          data: profileData,
         );
       } else {
         Log.d(TAG, "$fName not http 200");
@@ -69,6 +70,7 @@ class UserDataProvider with ChangeNotifier {
       Map data = json.decode(response.body);
       if (data['statusCode'] == HttpSatusCode.OK) {
         ProfileData profileData = ProfileData.fromJson(data["donor"]);
+        Log.d(TAG, "$fName User name: ${profileData.name}");
         return ProviderResponse(
           success: true,
           message: "ok",
