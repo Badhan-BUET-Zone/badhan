@@ -278,6 +278,51 @@
  *                 token:
  *                   type: string
  *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
+ *                 donor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: number
+ *                       example: 1605011
+ *                     email:
+ *                       type: string
+ *                       example: mirmahathir1@gmail.com
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 786534785
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur
+ *                     comment:
+ *                       type: string
+ *                       example: Developer of badhan
+ *                     commentTime:
+ *                       type: number
+ *                       example: 0
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
  *       404:
  *         description: This error will occur if the user does not exist/ This error will occur if the token does not exist
  *         content:
