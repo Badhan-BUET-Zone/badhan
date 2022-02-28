@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:badhandatainput/model/profile_data_model.dart';
 import 'package:badhandatainput/model/provider_response_model.dart';
 import 'package:badhandatainput/provider/user_data_provider.dart';
@@ -12,8 +12,11 @@ import '../util/auth_token_util.dart';
 import '../util/debug.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, required this.token})
+      : super(key: key);
+  static String param_route = "/home";
   final String title;
+  final String token;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -23,24 +26,11 @@ class _MyHomePageState extends State<MyHomePage> {
   static String TAG = "MyHomePage";
 
   String msg = "No data";
+  String profileDataStr = "";
 
   @override
   Widget build(BuildContext context) {
-    /* String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTY3NzcxNmNhMmRjODU3OTM4ZDdjNzMiLCJhY2Nlc3MiOiJhdXRoIiwiaWF0IjoxNjQ2MDM0NDI2fQ.PjsIV7392TsOmMU84Q5fxZJgwfZXjOR3o1kACiJhfd0";
-    Provider.of<UserDataProvider>(context, listen: false)
-        .redirectUser(token)
-        .then(((value) {
-      
-    })); */
-    Provider.of<UserDataProvider>(context, listen: false)
-        .getProfileData()
-        .then(((ProviderResponse value) {
-      if (value.success) {
-        ProfileData profileData = value.data;
-        Log.d(TAG, "user name: ${profileData.name}");
-      }
-    }));
+    Log.d(TAG, "home page building");
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +43,40 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[Text(msg)],
+              children: <Widget>[
+                FutureBuilder(
+                  future: Provider.of<UserDataProvider>(context, listen: false)
+                      .getProfileData(),
+                  builder: (context, AsyncSnapshot<ProviderResponse> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData ||
+                        snapshot.data == null) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    ProfileData? profileData = snapshot.data!.data;
+
+                    if (profileData == null) {
+                      return Text("Failed Authentication!");
+                    }
+
+                    Log.d(TAG, "user name: ${profileData.name}");
+                    setState(() {
+                      StringBuffer buffer = StringBuffer();
+                      buffer.writeln("Username: ${profileData.name}");
+                      buffer.writeln("Phone ${profileData.phone}");
+                      buffer.writeln("profile data: ");
+                      buffer.writeln(profileData.toJson());
+
+                      profileDataStr = buffer.toString();
+                    });
+
+                    return Text(profileDataStr);
+                  },
+                ),
+                const SizedBox(height: 30),
+                Text(msg)
+              ],
             ),
           ),
         ),
@@ -79,18 +102,21 @@ class _MyHomePageState extends State<MyHomePage> {
     PlatformFile file = result.files.first;
 
     Log.d(TAG, "file name: ${file.name}");
-    Log.d(TAG, "file bytes: ${file.bytes}");
+    //Log.d(TAG, "file bytes: ${file.bytes}");
     Log.d(TAG, "file size: ${file.size}");
     Log.d(TAG, "file extension: ${file.extension}");
-    Log.d(TAG, "file path: ${file.path}");
+    //Log.d(TAG, "file path: ${file.path}");
 
-    _openFile(file.path!);
+    if (kIsWeb && file.bytes != null) {
+      _openFileFromByte(file.bytes!);
+    } else if(file.path != null) {
+      _openFile(file.path!);
+    }
   }
 
-  void _openFile(String filePath) {
-    String fName = "_openFile():";
-    Log.d(TAG, "opening file from : $filePath");
-    List<int> bytes = File(filePath).readAsBytesSync();
+  void _openFileFromByte(List<int> bytes) {
+    String fName = "_openFileFromByte():";
+
     Excel excel = Excel.decodeBytes(bytes);
 
     StringBuffer buffer = StringBuffer();
@@ -120,5 +146,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       msg = buffer.toString();
     });
+  }
+
+  void _openFile(String filePath) {
+    String fName = "_openFile():";
+    Log.d(TAG, "opening file from : $filePath");
+    List<int> bytes = File(filePath).readAsBytesSync();
+    _openFileFromByte(bytes);
   }
 }
