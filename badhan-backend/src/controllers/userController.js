@@ -116,7 +116,8 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
   await logInterface.addLog(donor._id, 'PATCH USERS REDIRECTION', {})
 
   return res.respond(new CreatedResponse201('Redirected login successful', {
-    token: tokenInsertResult.data.token
+    token: tokenInsertResult.data.token,
+    donor
   }))
 }
 
