@@ -17,14 +17,16 @@ class UserDataProvider with ChangeNotifier {
     String url = "${Environment.API_URL}/users/redirection";
     String fName = "redirectUser():";
     Log.d(TAG, "$fName fetching from: $url");
+    Log.d(TAG, "$fName token: $token");
 
     try {
       final body = {"token": token};
-      final headers = await AuthToken.getHeaders();
-      Log.d(TAG, "$headers");
       Response response = await patch(
         Uri.parse(url),
-        headers: headers,
+        headers: {
+          'access-control-allow-origin': '*',
+          'content-type': 'application/json',
+        },
         body: json.encode(body),
       );
 

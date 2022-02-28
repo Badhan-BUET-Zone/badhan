@@ -27,6 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String msg = "No data";
   String profileDataStr = "";
+  bool isAuthenticated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -45,31 +46,26 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FutureBuilder(
-                  future: Provider.of<UserDataProvider>(context, listen: false)
-                      .getProfileData(),
-                  builder: (context, AsyncSnapshot<ProviderResponse> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        !snapshot.hasData ||
-                        snapshot.data == null) {
+                  future: _fetchProfileData(),
+                  builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
                     }
 
-                    ProfileData? profileData = snapshot.data!.data;
+                    ProfileData? profileData = snapshot.data;
 
                     if (profileData == null) {
                       return Text("Failed Authentication!");
                     }
 
                     Log.d(TAG, "user name: ${profileData.name}");
-                    setState(() {
-                      StringBuffer buffer = StringBuffer();
-                      buffer.writeln("Username: ${profileData.name}");
-                      buffer.writeln("Phone ${profileData.phone}");
-                      buffer.writeln("profile data: ");
-                      buffer.writeln(profileData.toJson());
+                    StringBuffer buffer = StringBuffer();
+                    buffer.writeln("Username: ${profileData.name}");
+                    buffer.writeln("Phone ${profileData.phone}");
+                    buffer.writeln("profile data: ");
+                    buffer.writeln(profileData.toJson());
 
-                      profileDataStr = buffer.toString();
-                    });
+                    profileDataStr = buffer.toString();
 
                     return Text(profileDataStr);
                   },
@@ -87,6 +83,25 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Future<ProfileData?> _fetchProfileData() async {
+    ProviderResponse response;
+
+    if (!isAuthenticated) {
+      response = await Provider.of<UserDataProvider>(context, listen: false)
+          .redirectUser(widget.token);
+      isAuthenticated = response.success;
+    }
+
+    response = await Provider.of<UserDataProvider>(context, listen: false)
+        .getProfileData();
+    if (response.success) {
+      isAuthenticated = true;
+      return response.data;
+    }
+
+    return null;
   }
 
   // see: https://pub.dev/packages/file_picker
@@ -107,9 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Log.d(TAG, "file extension: ${file.extension}");
     //Log.d(TAG, "file path: ${file.path}");
 
+    // https: //stackoverflow.com/questions/45924474/how-do-you-detect-the-host-platform-from-dart-code
     if (kIsWeb && file.bytes != null) {
       _openFileFromByte(file.bytes!);
-    } else if(file.path != null) {
+    } else if (file.path != null) {
       _openFile(file.path!);
     }
   }

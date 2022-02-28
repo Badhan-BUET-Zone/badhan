@@ -2,15 +2,20 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthToken {
+  static String _token = "";
+
   static void saveToken(String token) async {
+    _token = token;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', token);
   }
 
   static Future<String> getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString("token") as String;
-    return token;
+    if (_token == "") {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      _token = prefs.getString("token") as String;
+    }
+    return _token;
   }
 
   static Future<Map<String, String>> getHeaders() async {

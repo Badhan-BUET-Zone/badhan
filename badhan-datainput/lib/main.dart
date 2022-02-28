@@ -1,4 +1,5 @@
 import 'package:badhandatainput/provider/user_data_provider.dart';
+import 'package:badhandatainput/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,6 +10,7 @@ import 'pages/home_page.dart';
 Future<void> main() async {
   await dotenv.load(fileName: "dotenv");
   print(dotenv.env['TEST_API_URL']);
+  MyFluroRouter.setUpRouter();
   runApp(const MyApp());
 }
 
@@ -27,16 +29,8 @@ class MyApp extends StatelessWidget {
           fontFamily: GoogleFonts.openSans().fontFamily,
           primarySwatch: Colors.red,
         ),
-        home: const MyHomePage(
-          title: 'Badhan Data Input',
-          token: "",
-        ),
-        routes: {
-          MyHomePage.param_route: (ctx) => MyHomePage(
-                title: 'Badhan Data Input',
-                token: "",
-              ),
-        },
+        initialRoute: "/",
+        onGenerateRoute: MyFluroRouter.router.generator,
       ),
     );
   }
