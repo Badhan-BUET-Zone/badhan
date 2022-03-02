@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:badhandatainput/widget/home_page/excel_widget.dart';
+import 'package:badhandatainput/widget/home_page/side_menu.dart';
+import 'package:badhandatainput/widget/responsive.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:badhandatainput/model/profile_data_model.dart';
 import 'package:badhandatainput/model/provider_response_model.dart';
@@ -36,181 +39,42 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        automaticallyImplyLeading: Responsive.isMobile(context),
       ),
-      body: SingleChildScrollView(
-        controller: ScrollController(),
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FutureBuilder(
-                  future: _fetchProfileData(),
-                  builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-
-                    ProfileData? profileData = snapshot.data;
-
-                    if (profileData == null) {
-                      return Text("Failed Authentication!");
-                    }
-
-                    Log.d(TAG, "user name: ${profileData.name}");
-                    StringBuffer buffer = StringBuffer();
-                    buffer.writeln("Username: ${profileData.name}");
-                    buffer.writeln("Phone ${profileData.phone}");
-                    buffer.writeln("profile data: ");
-                    buffer.writeln(profileData.toJson());
-
-                    profileDataStr = buffer.toString();
-
-                    return Text(profileDataStr);
-                  },
-                ),
-                const SizedBox(height: 30),
-                const AddExcelWidget(),
-              ],
-            ),
-          ),
+      drawer: Responsive.isMobile(context)
+          ? Drawer(
+              child: SideMenu(token: widget.token),
+            )
+          : null,
+      body: Responsive(
+        mobile: const ExcelWidget(),
+        tablet: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+                flex: 4,
+                child: SideMenu(token: widget.token)),
+            const VerticalDivider(),
+            const Expanded(
+                flex: 8 ,
+                child: ExcelWidget()),
+          ],
+        ),
+        desktop: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+                flex: 2,
+                child: SideMenu(token: widget.token)),
+            const VerticalDivider(),
+            const Expanded(
+                flex: 10 ,
+                child: ExcelWidget()),
+          ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  Future<ProfileData?> _fetchProfileData() async {
-    ProviderResponse response;
-
-    if (!isAuthenticated) {
-      response = await Provider.of<UserDataProvider>(context, listen: false)
-          .redirectUser(widget.token);
-
-      if (response.success) {
-        isAuthenticated = true;
-        return response.data;
-      }
-    }
-
-    if (!isAuthenticated) {
-      response = await Provider.of<UserDataProvider>(context, listen: false)
-          .getProfileData();
-      if (response.success) {
-        isAuthenticated = true;
-        return response.data;
-      }
-    }
-
-    return null;
-  }
-}
-
-class AddExcelWidget extends StatefulWidget {
-  const AddExcelWidget({Key? key}) : super(key: key);
-
-  @override
-  _AddExcelWidgetState createState() => _AddExcelWidgetState();
-}
-
-class _AddExcelWidgetState extends State<AddExcelWidget> {
-  static String tag = "AddExcelWidget";
-  String msg = "No data";
-
-  @override
-  Widget build(BuildContext context) {
-    /* return Scaffold(
-      body: Text(msg),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _uploadFile,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    ); */
-    return Container(
-      color: Colors.amber,
-      width: double.infinity,
-      child: Stack(
-        children: [
-          Text(msg),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: _uploadFile,
-              tooltip: 'Increment',
-              child: const Icon(Icons.add),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  // see: https://pub.dev/packages/file_picker
-  void _uploadFile() async {
-    final result = await FilePicker.platform
-        .pickFiles(allowedExtensions: ['xlsx'], type: FileType.custom);
-
-    if (result == null) {
-      Log.d(tag, "No file Picked");
-      return;
-    }
-
-    PlatformFile file = result.files.first;
-
-    Log.d(tag, "file name: ${file.name}");
-    //Log.d(TAG, "file bytes: ${file.bytes}");
-    Log.d(tag, "file size: ${file.size}");
-    Log.d(tag, "file extension: ${file.extension}");
-    //Log.d(TAG, "file path: ${file.path}");
-
-    // https: //stackoverflow.com/questions/45924474/how-do-you-detect-the-host-platform-from-dart-code
-    if (kIsWeb && file.bytes != null) {
-      _openFileFromByte(file.bytes!);
-    } else if (file.path != null) {
-      _openFile(file.path!);
-    }
-  }
-
-  void _openFileFromByte(List<int> bytes) {
-    String fName = "_openFileFromByte():";
-
-    Excel excel = Excel.decodeBytes(bytes);
-
-    StringBuffer buffer = StringBuffer();
-    for (String sheetName in excel.tables.keys) {
-      Log.d(tag, "$fName $sheetName"); //sheet Name
-      buffer.writeln("Sheet name: $sheetName");
-      /* print(excel.tables[table]!.maxCols);
-      print(excel.tables[table]!.maxRows); */
-      int r = 1;
-      List<String> header = [];
-      for (List<Data?> row in excel.tables[sheetName]!.rows) {
-        int c = 0;
-        for (Data? data in row) {
-          if (data == null) continue;
-          if (r == 1) {
-            header.add("${data.value}");
-          } else {
-            buffer.writeln("${header[c]}: ${data.value} ");
-          }
-          c++;
-        }
-        buffer.writeln("\n");
-        r++;
-      }
-    }
-    Log.d(tag, buffer.toString());
-    setState(() {
-      msg = buffer.toString();
-    });
-  }
-
-  void _openFile(String filePath) {
-    String fName = "_openFile():";
-    Log.d(tag, "opening file from : $filePath");
-    List<int> bytes = File(filePath).readAsBytesSync();
-    _openFileFromByte(bytes);
   }
 }

@@ -1,4 +1,5 @@
 .env
+api-test.rest
 
 # Miscellaneous
 *.class
