@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:badhandatainput/model/donor_model.dart';
+import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/widget/home_page/donor_card.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +22,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   static String tag = "AddExcelWidget";
   String msg = "No data";
 
+  List<NewDonor> newDonorList = [];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,9 +34,17 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       child: Stack(
         children: [
           Container(
-              //color: Colors.red,
-              width: double.infinity,
-              child: SingleChildScrollView(child: Text(msg))),
+            //color: Colors.red,
+            width: double.infinity,
+            //child: SingleChildScrollView(child: SelectableText(msg))),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: newDonorList.length,
+              itemBuilder: (context, index) {
+                return DonorCard(newDonor: newDonorList[index]);
+              },
+            ),
+          ),
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.only(right: 10, bottom: 10),
@@ -74,6 +88,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   void _openFileFromByte(List<int> bytes) {
     String fName = "_openFileFromByte():";
 
+    newDonorList.clear();
+
     Excel excel = Excel.decodeBytes(bytes);
 
     StringBuffer buffer = StringBuffer();
@@ -84,16 +100,24 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       print(excel.tables[table]!.maxRows); */
       int r = 1;
       List<String> header = [];
+      Map<String, dynamic> dataMap = {};
       for (List<Data?> row in excel.tables[sheetName]!.rows) {
         int c = 0;
         for (Data? data in row) {
           if (data == null) continue;
           if (r == 1) {
-            header.add("${data.value}");
+            header.add(headerMap("${data.value}"));
           } else {
-            buffer.writeln("${header[c]}: ${data.value} ");
+            //buffer.writeln("${header[c]}: ${data.value} ");
+            dataMap[header[c]] = _dataMap(header[c], data.value);
           }
           c++;
+        }
+        if (r > 1) {
+          //buffer.writeln(json.encode(dataMap));
+          NewDonor newDonor = NewDonor.fromJson(dataMap);
+          newDonorList.add(newDonor);
+          buffer.writeln(newDonor.toJson());
         }
         buffer.writeln("\n");
         r++;
@@ -103,6 +127,38 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     setState(() {
       msg = buffer.toString();
     });
+  }
+
+  String headerMap(String old) {
+    switch (old) {
+      case "Phone":
+        return "phone";
+      case "BloodGroup":
+        return "bloodGroup";
+      case "Room Number":
+        return "roomNumber";
+      case "Student ID":
+        return "studentId";
+      case "Total Donations":
+        return "extraDonationCount";
+      case "Available To All":
+        return "availableToAll";
+      default: // name, hall , address, comment
+        return old.toLowerCase();
+    }
+  }
+
+  dynamic _dataMap(String header, dynamic data) {
+    switch (header) {
+      case "phone":
+        return data.toString();
+      case "bloodGroup":
+        return BadhanConst.bloodGroupId(data as String);
+      case "hall":
+        return BadhanConst.hallId(data);
+      default:
+        return data;
+    }
   }
 
   void _openFile(String filePath) {

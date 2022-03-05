@@ -9,13 +9,15 @@ class ProfilePictureFromName extends StatelessWidget {
       required this.radius,
       required this.fontsize,
       required this.characterCount,
-      this.random})
+      this.random,
+      this.defaultColor})
       : super(key: key);
 
   String name;
   double radius;
   double fontsize;
   int characterCount;
+  Color? defaultColor;
 
   bool? random;
 
@@ -38,13 +40,14 @@ class ProfilePictureFromName extends StatelessWidget {
       // default color, random, and fixed color
       // default color if name is empty
       // random color to make the background color change every time the page is refreshed
-      backgroundColor: random == true
-          ? randomColor()
-          : name == ''
-              ? ColorName.colorDefault
-              : fixedColor(
-                  InitialName.parseName(name, characterCount),
-                ),
+      backgroundColor: defaultColor ??
+          (random == true
+              ? randomColor()
+              : name == ''
+                  ? ColorName.colorDefault
+                  : fixedColor(
+                      InitialName.parseName(name, characterCount),
+                    )),
       foregroundColor: Colors.white,
     );
     ;
@@ -375,16 +378,6 @@ class Avatar extends StatelessWidget {
         : WithImage(radius: radius, img: img!);
   }
 }
-
-
-
-
-
-
-
-
-
-
 
 // if image available
 class WithImage extends StatelessWidget {
