@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           fontFamily: GoogleFonts.openSans().fontFamily,
           primarySwatch: Colors.red,
         ),
-        initialRoute: "/",
+        initialRoute: "/home",
         onGenerateRoute: MyFluroRouter.router.generator,
       ),
     );

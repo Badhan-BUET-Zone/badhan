@@ -1,4 +1,5 @@
 import 'package:badhandatainput/widget/common/profile_picture.dart';
+import 'package:badhandatainput/widget/home_page/add_donor_dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,13 +34,13 @@ class _SideMenuState extends State<SideMenu> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
-    
+
           ProfileData? profileData = snapshot.data;
-    
+
           if (profileData == null) {
             return const Text("Failed Authentication!");
           }
-    
+
           /* Log.d(tag, "user name: ${profileData.name}");
           StringBuffer buffer = StringBuffer();
           buffer.writeln("Username: ${profileData.name}");
@@ -48,7 +49,7 @@ class _SideMenuState extends State<SideMenu> {
           buffer.writeln(profileData.toJson());
     
           profileDataStr = buffer.toString(); */
-    
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -80,6 +81,32 @@ class _SideMenuState extends State<SideMenu> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10,),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        //side: BorderSide(color: Colors.red)
+                      ),
+                    ),
+                  ),
+                  onPressed: () async {
+                    final result = await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const AlertDialog(
+                            content: AddDonorDialog(),
+                          );
+                        });
+                  },
+                  child: const Text("Add donor"),
+                ),
+              )
             ],
           );
         },

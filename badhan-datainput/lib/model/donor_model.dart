@@ -56,16 +56,16 @@ class DonorBasicInfo {
 
 /*
 {
-  "phone": "8801521438557",
+  "phone": "8801572342835",
   "bloodGroup": 2,
-  "hall": 5,
-  "name": "Mir Mahathir",
-  "studentId": 1605011,
-  "address": "Azimpur",
-  "roomNumber": "3009",
+  "hall": 6,
+  "name": "Hasan masum",
+  "studentId": 1805052,
+  "address": "Chittagong",
+  "roomNumber": "3007",
   "availableToAll": true,
   "comment": "Developer of badhan",
-  "extraDonationCount": 1605011
+  "extraDonationCount": 1
 }
 */
 
@@ -120,7 +120,6 @@ class NewDonor extends DonorBasicInfo {
   }
 }
 
-
 /*
 {
     "_id": "5e677716ca2dc857938d7c73",
@@ -169,7 +168,7 @@ class Donor extends DonorBasicInfo {
     required this.callRecords,
     required this.donations,
     required this.publicContacts,
-  }):super(
+  }) : super(
           phone: phone,
           bloodGroup: bloodGroup,
           hall: hall,
@@ -232,4 +231,3 @@ class Donor extends DonorBasicInfo {
         "publicContacts": List<dynamic>.from(publicContacts.map((x) => x)),
       };
 }
-
