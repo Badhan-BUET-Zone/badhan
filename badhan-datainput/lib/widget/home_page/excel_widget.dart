@@ -4,10 +4,13 @@ import 'dart:io';
 import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/widget/home_page/donor_card.dart';
+import 'package:badhandatainput/widget/responsive.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:http/http.dart';
 
 import '../../util/debug.dart';
 
@@ -26,6 +29,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = Responsive.isMobile(context);
     return Container(
       padding: const EdgeInsets.all(10),
       //color: Colors.amber,
@@ -34,17 +38,23 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       child: Stack(
         children: [
           Container(
-            //color: Colors.red,
-            width: double.infinity,
-            //child: SingleChildScrollView(child: SelectableText(msg))),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: newDonorList.length,
-              itemBuilder: (context, index) {
-                return DonorCard(newDonor: newDonorList[index]);
-              },
-            ),
-          ),
+              //color: Colors.red,
+              width: double.infinity,
+              //child: SingleChildScrollView(child: SelectableText(msg))),
+              child: isMobile
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: newDonorList.length,
+                      itemBuilder: (context, index) {
+                        return DonorCard(newDonor: newDonorList[index]);
+                      },
+                    )
+                  : StaggeredGrid.count(
+                      crossAxisCount: 2,
+                      children: newDonorList.map((e) {
+                        return DonorCard(newDonor: e);
+                      }).toList(),
+                    )),
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.only(right: 10, bottom: 10),
@@ -115,6 +125,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
         }
         if (r > 1) {
           //buffer.writeln(json.encode(dataMap));
+          //Log.d(tag, "data: ${json.encode(dataMap)}");
           NewDonor newDonor = NewDonor.fromJson(dataMap);
           newDonorList.add(newDonor);
           buffer.writeln(newDonor.toJson());
@@ -151,11 +162,15 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   dynamic _dataMap(String header, dynamic data) {
     switch (header) {
       case "phone":
-        return data.toString();
+        double d = data;
+        return (d.toInt()).toString();
       case "bloodGroup":
         return BadhanConst.bloodGroupId(data as String);
       case "hall":
         return BadhanConst.hallId(data);
+      case "studentId":
+      case "extraDonationCount":
+        return data.toInt();
       default:
         return data;
     }

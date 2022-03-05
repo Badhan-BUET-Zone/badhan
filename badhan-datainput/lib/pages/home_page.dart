@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Flexible(
-                flex: 2,
+                flex: 3,
                 child: SideMenu(token: widget.token)),
             const VerticalDivider(),
             const Expanded(

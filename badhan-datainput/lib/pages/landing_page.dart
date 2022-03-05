@@ -1,6 +1,5 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -45,8 +44,11 @@ class LandingPage extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {
-              window.open("https://badhan-buet.web.app/#/about", "_blank");
+            onPressed: () async {
+              String url = "https://badhan-buet.web.app/#/about";
+              //window.open("https://badhan-buet.web.app/#/about", "_blank");
+
+              if (!await launch(url)) throw 'Could not launch $url';
             },
             child: Text("VISIT OFFICIAL WEBSITE"),
           ),
