@@ -1,6 +1,6 @@
 import 'package:badhandatainput/config/color_palette.dart';
 import 'package:badhandatainput/provider/user_data_provider.dart';
-import 'package:badhandatainput/routes.dart';
+import 'package:badhandatainput/config/routes.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
