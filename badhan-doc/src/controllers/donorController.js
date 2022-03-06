@@ -6,7 +6,7 @@
  *     tags:
  *       - Donors
  *     summary: Post donor route
- *     description: Handles the insertion of a new donor into the database
+ *     description: Handles the insertion of a new donor into the database.
  *     security:
  *       - ApiKeyAuth: []
  *     requestBody:
@@ -110,7 +110,7 @@
  *                       type: boolean
  *                       example: true
  *       409:
- *         description: If the donor already exists in the database, user will get the error message
+ *         description: If the donor already exists in the database, user will get the error message. If the user is of the same hall or is super admin, he/she will also get the donorId of the existing donor with the duplicate phone number. Otherwise, donorId will be left as undefined
  *         content:
  *           application/json:
  *             schema:
@@ -125,6 +125,9 @@
  *                 message:
  *                   type: string
  *                   example: Donor found with duplicate phone number/ Donor found with duplicate phone number in another hall
+ *                 donorId:
+ *                   type: string
+ *                   example: 65dabcdef68796116465
  */
 
 /**
