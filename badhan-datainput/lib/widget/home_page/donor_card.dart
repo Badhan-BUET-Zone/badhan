@@ -35,8 +35,9 @@ class _DonorCardState extends State<DonorCard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ProfilePictureFromName(
-                    name: makeTwoWordBloodGroup(widget.newDonor.bloodGroup),
-                    radius: 18,
+                    showFullText: true,
+                    name: BadhanConst.bloodGroup(widget.newDonor.bloodGroup),
+                    radius: 20,
                     fontsize: 12.0,
                     characterCount: 2,
                     random: false,
@@ -155,12 +156,5 @@ class _DonorCardState extends State<DonorCard> {
         ),
       ),
     );
-  }
-
-  String makeTwoWordBloodGroup(int bdId) {
-    String bg = BadhanConst.bloodGroup(widget.newDonor.bloodGroup);
-    int idx = bg.indexOf(RegExp("[+-]"));
-    bg = bg.substring(0, idx) + " " + bg.substring(idx);
-    return bg;
   }
 }

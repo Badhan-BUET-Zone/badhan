@@ -41,6 +41,7 @@ class _SideMenuState extends State<SideMenu> {
           Row(
             children: [
               ProfilePictureFromName(
+                  showFullText: false,
                   name: widget.profileData.name,
                   radius: 30,
                   fontsize: 15,

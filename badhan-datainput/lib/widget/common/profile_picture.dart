@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class ProfilePictureFromName extends StatelessWidget {
   ProfilePictureFromName(
       {Key? key,
+      required this.showFullText,
       required this.name,
       required this.radius,
       required this.fontsize,
@@ -14,6 +15,7 @@ class ProfilePictureFromName extends StatelessWidget {
       this.defaultColor})
       : super(key: key);
 
+  final bool showFullText;
   final String name;
   final double radius;
   final double fontsize;
@@ -23,15 +25,20 @@ class ProfilePictureFromName extends StatelessWidget {
 
   bool? random;
 
+  String _getName() {
+    return name == ""
+        ? ""
+        : showFullText
+            ? name
+            : InitialName.parseName(name, characterCount).toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: radius,
       child: Text(
-        name == ''
-            ? ''
-            : InitialName.parseName(name, characterCount)
-                .toUpperCase(), // get initial name and set to UpperCase to all letter
+        _getName(), // get initial name and set to UpperCase to all letter
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: fontsize,
@@ -189,7 +196,8 @@ class MyTooltip extends StatelessWidget {
   final Widget child;
   final String message;
 
-  const MyTooltip({Key? key, required this.message, required this.child}) : super(key: key);
+  const MyTooltip({Key? key, required this.message, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +209,7 @@ class MyTooltip extends StatelessWidget {
         color: Colors.white,
         shape: TooltipBorder(arrowArc: 0.1),
       ),
-      textStyle:const TextStyle(
+      textStyle: const TextStyle(
         color: Colors.black,
         fontSize: 10,
       ),
