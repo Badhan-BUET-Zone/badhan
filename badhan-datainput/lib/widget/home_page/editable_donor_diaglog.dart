@@ -30,7 +30,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
   @override
   void initState() {
     super.initState();
-    if(widget.donorData!=null){
+    if (widget.donorData != null) {
       newDonor = NewDonor(
           phone: widget.donorData!.phone,
           bloodGroup: widget.donorData!.bloodGroup,
@@ -149,6 +149,19 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
                 newDonor.extraDonationCount = int.parse(cnt);
               },
               vanishTextOnSubmit: false),
+          const SizedBox(
+            height: padding,
+          ),
+          MyDropDown(
+              hint: "Visibility",
+              selectedValue: editable()
+                  ? BadhanConst
+                      .visibilites[widget.donorData!.availableToAll ? 1 : 0]
+                  : null,
+              onSelected: (String visibility) {
+                newDonor.availableToAll = visibility == BadhanConst.visibilites[1];
+              },
+              list: BadhanConst.visibilites),
           const SizedBox(
             height: padding,
           ),

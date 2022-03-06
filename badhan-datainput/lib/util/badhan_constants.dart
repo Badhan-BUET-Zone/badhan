@@ -40,6 +40,8 @@ class BadhanConst {
   ];
   static const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
+  static const visibilites = ["Hall", "Public"];
+
   static String designation(int id) {
     return designations[id];
   }
@@ -47,17 +49,17 @@ class BadhanConst {
   static String bloodGroup(int id) {
     return bloodGroups[id];
   }
-  
+
   static String hall(int id) {
     return halls[id];
   }
+
   static int hallId(String name) {
     for (int i = 0; i < halls.length; i++) {
       if (halls[i] == name) return i;
     }
     return -1;
   }
-  
 
   static int bloodGroupId(String bg) {
     for (int i = 0; i < bloodGroups.length; i++) {
