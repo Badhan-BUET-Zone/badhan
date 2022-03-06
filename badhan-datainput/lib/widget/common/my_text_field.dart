@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../util/debug.dart';
+import 'package:flutter/services.dart';
 // ignore: must_be_immutable
 class MyTextField extends StatelessWidget {
   static const String tag = "MyTextField";
@@ -11,6 +10,7 @@ class MyTextField extends StatelessWidget {
     required this.onSubmitText,
     this.suffixIcon,
     required this.vanishTextOnSubmit,
+    this.inputFormat,
   }) : super(key: key) {
     msgController = initalText != null
         ? TextEditingController(text: initalText)
@@ -23,15 +23,28 @@ class MyTextField extends StatelessWidget {
   final Function onSubmitText;
   Icon? suffixIcon;
   final bool vanishTextOnSubmit;
+  RegExp? inputFormat;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      inputFormatters: [
+        if (inputFormat != null)
+          FilteringTextInputFormatter.allow(inputFormat!),
+      ],
       style: Theme.of(context).textTheme.subtitle1,
       cursorColor: Theme.of(context).primaryColor,
       controller: msgController,
       onSubmitted: (value) {
-        Log.d(tag, value);
+       // Log.d(tag, value);
+        if (value != "") {
+          onSubmitText(value);
+          if (vanishTextOnSubmit) {
+            msgController.text = "";
+          }
+        }
+      },
+      onChanged: (value) {
         if (value != "") {
           onSubmitText(value);
           if (vanishTextOnSubmit) {

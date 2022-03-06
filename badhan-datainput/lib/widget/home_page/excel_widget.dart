@@ -26,11 +26,12 @@ class ExcelWidget extends StatefulWidget {
 
 class _AddExcelWidgetState extends State<ExcelWidget> {
   static String tag = "AddExcelWidget";
-  String msg = "No data";
+  String defaultMsg = "Import an excel file.";
+  String msg = "Import an excel file.";
 
   @override
   Widget build(BuildContext context) {
-    bool isMobile = Responsive.isMobile(context);
+    bool isDesktop = Responsive.isDesktop(context);
     return Container(
       padding: const EdgeInsets.all(10),
       //color: Colors.amber,
@@ -38,24 +39,60 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       height: double.infinity,
       child: Stack(
         children: [
-          SizedBox(
-              //color: Colors.red,
-              width: double.infinity,
-              //child: SingleChildScrollView(child: SelectableText(msg))),
-              child: isMobile
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: widget.newDonorList.length,
-                      itemBuilder: (context, index) {
-                        return DonorCard(newDonor: widget.newDonorList[index]);
-                      },
-                    )
-                  : StaggeredGrid.count(
-                      crossAxisCount: 2,
-                      children: widget.newDonorList.map((e) {
-                        return DonorCard(newDonor: e);
-                      }).toList(),
-                    )),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      msg,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            msg = defaultMsg;
+                            widget.newDonorList.clear();
+                          });
+                        },
+                        child: const Text("Clear all"))
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Expanded(
+                child: SizedBox(
+                    //color: Colors.red,
+                    width: double.infinity,
+                    //child: SingleChildScrollView(child: SelectableText(msg))),
+                    child: !isDesktop
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: widget.newDonorList.length,
+                            itemBuilder: (context, index) {
+                              return DonorCard(
+                                  newDonor: widget.newDonorList[index]);
+                            },
+                          )
+                        : SingleChildScrollView(
+                            child: StaggeredGrid.count(
+                              crossAxisCount: 2,
+                              children: widget.newDonorList.map((e) {
+                                return DonorCard(newDonor: e);
+                              }).toList(),
+                            ),
+                          )),
+              ),
+            ],
+          ),
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.only(right: 10, bottom: 10),
@@ -83,6 +120,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     PlatformFile file = result.files.first;
 
     Log.d(tag, "file name: ${file.name}");
+    msg = "File name: ${file.name}, ";
     //Log.d(TAG, "file bytes: ${file.bytes}");
     Log.d(tag, "file size: ${file.size}");
     Log.d(tag, "file extension: ${file.extension}");
@@ -107,6 +145,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     for (String sheetName in excel.tables.keys) {
       Log.d(tag, "$fName $sheetName"); //sheet Name
       buffer.writeln("Sheet name: $sheetName");
+      msg += "Sheet: $sheetName";
       /* print(excel.tables[table]!.maxCols);
       print(excel.tables[table]!.maxRows); */
       int r = 1;
@@ -137,7 +176,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     }
     //Log.d(tag, buffer.toString());
     setState(() {
-      msg = buffer.toString();
+      //msg = buffer.toString();
     });
   }
 

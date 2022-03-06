@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Flexible(flex: 4, child: SideMenu(profileData: _profileData!)),
+                Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
                 const VerticalDivider(),
                 Expanded(
                     flex: 8, child: ExcelWidget(newDonorList: _newDonorList)),

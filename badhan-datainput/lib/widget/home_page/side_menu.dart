@@ -1,5 +1,5 @@
 import 'package:badhandatainput/widget/common/profile_picture.dart';
-import 'package:badhandatainput/widget/home_page/add_donor_dialog_widget.dart';
+import 'package:badhandatainput/widget/home_page/editable_donor_diaglog.dart';
 import 'package:flutter/material.dart';
 import '../../model/profile_data_model.dart';
 class SideMenu extends StatefulWidget {
@@ -76,7 +76,7 @@ class _SideMenuState extends State<SideMenu> {
                         context: context,
                         builder: (context) {
                           return const AlertDialog(
-                            content: AddDonorDialog(),
+                            content: EditableDonorDialog(),
                           );
                         });
                   },

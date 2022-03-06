@@ -71,14 +71,14 @@ class DonorBasicInfo {
 
 class NewDonor extends DonorBasicInfo {
   NewDonor({
-    phone,
-    bloodGroup,
-    hall,
-    name,
-    studentId,
-    address,
-    roomNumber,
-    availableToAll,
+    required phone,
+    required bloodGroup,
+    required hall,
+    required name,
+    required studentId,
+    required address,
+    required roomNumber,
+    required availableToAll,
     required this.comment,
     required this.extraDonationCount,
   }) : super(
