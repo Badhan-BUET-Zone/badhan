@@ -14,9 +14,11 @@ import '../../util/debug.dart';
 
 // ignore: must_be_immutable
 class ExcelWidget extends StatefulWidget {
-  ExcelWidget({Key? key, required this.newDonorList}) : super(key: key);
+  ExcelWidget({Key? key, required this.newDonorList, required this.msg})
+      : super(key: key);
 
   List<NewDonor> newDonorList;
+  StringBuffer msg;
 
   @override
   _AddExcelWidgetState createState() {
@@ -27,7 +29,6 @@ class ExcelWidget extends StatefulWidget {
 class _AddExcelWidgetState extends State<ExcelWidget> {
   static String tag = "AddExcelWidget";
   String defaultMsg = "Import an excel file.";
-  String msg = "Import an excel file.";
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +51,17 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      msg,
-                      style: Theme.of(context).textTheme.titleSmall,
+                    Expanded(
+                      child: Text(
+                        widget.msg.toString(),
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                     ),
                     TextButton(
                         onPressed: () {
                           setState(() {
-                            msg = defaultMsg;
+                            widget.msg.clear();
+                            widget.msg.write(defaultMsg);
                             widget.newDonorList.clear();
                           });
                         },
@@ -120,7 +124,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     PlatformFile file = result.files.first;
 
     Log.d(tag, "file name: ${file.name}");
-    msg = "File name: ${file.name}, ";
+    widget.msg.clear();
+    widget.msg.write("File name: ${file.name}, ");
     //Log.d(TAG, "file bytes: ${file.bytes}");
     Log.d(tag, "file size: ${file.size}");
     Log.d(tag, "file extension: ${file.extension}");
@@ -144,8 +149,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     StringBuffer buffer = StringBuffer();
     for (String sheetName in excel.tables.keys) {
       Log.d(tag, "$fName $sheetName"); //sheet Name
+      widget.msg.write("Sheet: $sheetName");
       buffer.writeln("Sheet name: $sheetName");
-      msg += "Sheet: $sheetName";
       /* print(excel.tables[table]!.maxCols);
       print(excel.tables[table]!.maxRows); */
       int r = 1;

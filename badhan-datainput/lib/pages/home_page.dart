@@ -24,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   //static String tag = "MyHomePage";
 
-  String msg = "No data";
+  final StringBuffer _msg = StringBuffer("Import an excel file.");
   String profileDataStr = "";
   bool isAuthenticated = false;
   final List<NewDonor> _newDonorList = [];
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
 
           return Responsive(
-            mobile: ExcelWidget(newDonorList: _newDonorList),
+            mobile: ExcelWidget(newDonorList: _newDonorList, msg: _msg,),
             tablet: Row(
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
                 const VerticalDivider(),
                 Expanded(
-                    flex: 8, child: ExcelWidget(newDonorList: _newDonorList)),
+                    flex: 8, child: ExcelWidget(newDonorList: _newDonorList,msg: _msg,)),
               ],
             ),
             desktop: Row(
@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
                 const VerticalDivider(),
                 Expanded(
-                    flex: 10, child: ExcelWidget(newDonorList: _newDonorList)),
+                    flex: 10, child: ExcelWidget(newDonorList: _newDonorList,msg: _msg,)),
               ],
             ),
           );
