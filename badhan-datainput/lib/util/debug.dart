@@ -1,7 +1,9 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class Log {
-  static void d(String TAG, String msg) {
-    print("${DateTime.now()}: $TAG -> $msg");
+  static void d(String tag, String msg) {
+    if (kDebugMode) {
+      print("${DateTime.now()}: $tag -> $msg");
+    }
   }
 }

@@ -211,6 +211,7 @@ class Donor extends DonorBasicInfo {
             List<dynamic>.from(json["publicContacts"].map((x) => x)),
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         "_id": id,
         "studentId": studentId,

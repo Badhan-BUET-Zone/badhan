@@ -11,13 +11,13 @@ import '../util/environment.dart';
 import '../util/http_status_code.dart';
 
 class UserDataProvider with ChangeNotifier {
-  static String TAG = "UserDataProvider";
+  static String tag = "UserDataProvider";
 
   Future<ProviderResponse> redirectUser(String token) async {
-    String url = "${Environment.API_URL}/users/redirection";
+    String url = "${Environment.apiUrl}/users/redirection";
     String fName = "redirectUser():";
-    Log.d(TAG, "$fName fetching from: $url");
-    Log.d(TAG, "$fName token: $token");
+    Log.d(tag, "$fName fetching from: $url");
+    Log.d(tag, "$fName token: $token");
 
     try {
       final body = {"token": token};
@@ -30,12 +30,12 @@ class UserDataProvider with ChangeNotifier {
         body: json.encode(body),
       );
 
-      Log.d(TAG, "$fName  ${response.body}");
+      Log.d(tag, "$fName  ${response.body}");
 
       Map data = json.decode(response.body);
-      if (data['statusCode'] == HttpSatusCode.CREATED) {
+      if (data['statusCode'] == HttpSatusCode.created) {
         AuthToken.saveToken(data["token"] ?? "");
-        Log.d(TAG, "$fName : new token ${data['token'] ?? ""}");
+        Log.d(tag, "$fName : new token ${data['token'] ?? ""}");
         ProfileData profileData = ProfileData.fromJson(data["donor"]);
         return ProviderResponse(
           success: true,
@@ -43,47 +43,47 @@ class UserDataProvider with ChangeNotifier {
           data: profileData,
         );
       } else {
-        Log.d(TAG, "$fName not http 200");
+        Log.d(tag, "$fName not http 200");
         return ProviderResponse(
             success: false, message: "error fetching donation");
       }
     } catch (e) {
-      Log.d(TAG, "$fName error");
-      Log.d(TAG, "$fName $e");
+      Log.d(tag, "$fName error");
+      Log.d(tag, "$fName $e");
       return ProviderResponse(success: false, message: "error");
     }
   }
 
   Future<ProviderResponse> getProfileData() async {
-    String url = "${Environment.API_URL}/users/me";
+    String url = "${Environment.apiUrl}/users/me";
     String fName = "getProfileData():";
-    Log.d(TAG, "$fName fetching from: $url");
+    Log.d(tag, "$fName fetching from: $url");
 
     try {
       Response response = await get(
         Uri.parse(url),
-        headers: await await AuthToken.getHeaders(),
+        headers: await AuthToken.getHeaders(),
       );
 
       //Log.d(TAG, "$fName  ${response.body}");
 
       Map data = json.decode(response.body);
-      if (data['statusCode'] == HttpSatusCode.OK) {
+      if (data['statusCode'] == HttpSatusCode.ok) {
         ProfileData profileData = ProfileData.fromJson(data["donor"]);
-        Log.d(TAG, "$fName User name: ${profileData.name}");
+        Log.d(tag, "$fName User name: ${profileData.name}");
         return ProviderResponse(
           success: true,
           message: "ok",
           data: profileData,
         );
       } else {
-        Log.d(TAG, "$fName not http 200");
+        Log.d(tag, "$fName not http 200");
         return ProviderResponse(
             success: false, message: "error fetching donation");
       }
     } catch (e) {
-      Log.d(TAG, "$fName error");
-      Log.d(TAG, "$fName $e");
+      Log.d(tag, "$fName error");
+      Log.d(tag, "$fName $e");
       return ProviderResponse(success: false, message: "error");
     }
   }

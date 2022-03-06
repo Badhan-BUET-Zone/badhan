@@ -2,7 +2,6 @@ import 'package:badhandatainput/pages/home_page.dart';
 import 'package:badhandatainput/pages/landing_page.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:fluro/fluro.dart';
-import 'package:flutter/cupertino.dart';
 
 class MyFluroRouter {
   static const String tag = "MyFluroRouter";

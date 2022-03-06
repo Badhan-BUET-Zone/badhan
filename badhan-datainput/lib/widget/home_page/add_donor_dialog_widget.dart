@@ -5,6 +5,7 @@ import 'package:badhandatainput/widget/common/my_dropdown_list.dart';
 import 'package:badhandatainput/widget/common/my_text_field.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class AddOrEditDonorWidget extends StatefulWidget {
   AddOrEditDonorWidget({Key? key, this.newDonor}) : super(key: key);
 
@@ -49,7 +50,7 @@ class _AddDonorDialogState extends State<AddDonorDialog> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     const double padding = 10;
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * .3,
       child: Column(
         mainAxisSize: MainAxisSize.min,

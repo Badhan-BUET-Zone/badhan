@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:badhandatainput/model/donor_model.dart';
@@ -10,22 +9,24 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:http/http.dart';
 
 import '../../util/debug.dart';
 
+// ignore: must_be_immutable
 class ExcelWidget extends StatefulWidget {
-  const ExcelWidget({Key? key}) : super(key: key);
+  ExcelWidget({Key? key, required this.newDonorList}) : super(key: key);
+
+  List<NewDonor> newDonorList;
 
   @override
-  _AddExcelWidgetState createState() => _AddExcelWidgetState();
+  _AddExcelWidgetState createState() {
+    return _AddExcelWidgetState();
+  }
 }
 
 class _AddExcelWidgetState extends State<ExcelWidget> {
   static String tag = "AddExcelWidget";
   String msg = "No data";
-
-  List<NewDonor> newDonorList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -37,21 +38,21 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       height: double.infinity,
       child: Stack(
         children: [
-          Container(
+          SizedBox(
               //color: Colors.red,
               width: double.infinity,
               //child: SingleChildScrollView(child: SelectableText(msg))),
               child: isMobile
                   ? ListView.builder(
                       shrinkWrap: true,
-                      itemCount: newDonorList.length,
+                      itemCount: widget.newDonorList.length,
                       itemBuilder: (context, index) {
-                        return DonorCard(newDonor: newDonorList[index]);
+                        return DonorCard(newDonor: widget.newDonorList[index]);
                       },
                     )
                   : StaggeredGrid.count(
                       crossAxisCount: 2,
-                      children: newDonorList.map((e) {
+                      children: widget.newDonorList.map((e) {
                         return DonorCard(newDonor: e);
                       }).toList(),
                     )),
@@ -98,7 +99,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   void _openFileFromByte(List<int> bytes) {
     String fName = "_openFileFromByte():";
 
-    newDonorList.clear();
+    widget.newDonorList.clear();
 
     Excel excel = Excel.decodeBytes(bytes);
 
@@ -127,14 +128,14 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           //buffer.writeln(json.encode(dataMap));
           //Log.d(tag, "data: ${json.encode(dataMap)}");
           NewDonor newDonor = NewDonor.fromJson(dataMap);
-          newDonorList.add(newDonor);
+          widget.newDonorList.add(newDonor);
           buffer.writeln(newDonor.toJson());
         }
         buffer.writeln("\n");
         r++;
       }
     }
-    Log.d(tag, buffer.toString());
+    //Log.d(tag, buffer.toString());
     setState(() {
       msg = buffer.toString();
     });
@@ -177,7 +178,6 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   }
 
   void _openFile(String filePath) {
-    String fName = "_openFile():";
     Log.d(tag, "opening file from : $filePath");
     List<int> bytes = File(filePath).readAsBytesSync();
     _openFileFromByte(bytes);

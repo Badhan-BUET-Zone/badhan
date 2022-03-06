@@ -7,8 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'pages/home_page.dart';
-
 Future<void> main() async {
   await dotenv.load(fileName: "dotenv");
   Log.d("main", "${dotenv.env['TEST_API_URL']}");

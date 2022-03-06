@@ -50,7 +50,7 @@ class LandingPage extends StatelessWidget {
 
               if (!await launch(url)) throw 'Could not launch $url';
             },
-            child: Text("VISIT OFFICIAL WEBSITE"),
+            child: const Text("VISIT OFFICIAL WEBSITE"),
           ),
         ],
       )),

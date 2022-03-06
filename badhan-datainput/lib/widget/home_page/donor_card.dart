@@ -2,7 +2,6 @@ import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DonorCard extends StatelessWidget {
   const DonorCard({Key? key, required this.newDonor}) : super(key: key);

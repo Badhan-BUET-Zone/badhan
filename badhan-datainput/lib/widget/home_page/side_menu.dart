@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../model/profile_data_model.dart';
 import '../../model/provider_response_model.dart';
 import '../../provider/user_data_provider.dart';
-import '../../util/debug.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({Key? key, required this.token}) : super(key: key);
@@ -18,7 +17,7 @@ class SideMenu extends StatefulWidget {
 }
 
 class _SideMenuState extends State<SideMenu> {
-  static String tag = "SideMenu";
+  //static String tag = "SideMenu";
 
   String profileDataStr = "";
   bool isAuthenticated = false;
@@ -96,7 +95,8 @@ class _SideMenuState extends State<SideMenu> {
                     ),
                   ),
                   onPressed: () async {
-                    final result = await showDialog(
+                    //final result =
+                    await showDialog(
                         context: context,
                         builder: (context) {
                           return const AlertDialog(

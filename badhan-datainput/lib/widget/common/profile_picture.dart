@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class ProfilePictureFromName extends StatelessWidget {
   ProfilePictureFromName(
       {Key? key,
@@ -13,10 +14,11 @@ class ProfilePictureFromName extends StatelessWidget {
       this.defaultColor})
       : super(key: key);
 
-  String name;
-  double radius;
-  double fontsize;
-  int characterCount;
+  final String name;
+  final double radius;
+  final double fontsize;
+  final int characterCount;
+
   Color? defaultColor;
 
   bool? random;
@@ -44,20 +46,19 @@ class ProfilePictureFromName extends StatelessWidget {
           (random == true
               ? randomColor()
               : name == ''
-                  ? ColorName.colorDefault
+                  ? colorName.colorDefault
                   : fixedColor(
                       InitialName.parseName(name, characterCount),
                     )),
       foregroundColor: Colors.white,
     );
-    ;
   }
 }
 
 class InitialName {
   // @string name
   // @int count (optional) to limit the number of letters that appear
-  static String parseName(String name, int count) {
+  static String parseName(String name, int? count) {
     // separate each word
     var parts = name.split(' ');
     var initial = '';
@@ -82,7 +83,7 @@ class InitialName {
   }
 }
 
-const ColorName = ConstantColor();
+const colorName = ConstantColor();
 
 // generate random color
 randomColor() {
@@ -92,61 +93,61 @@ randomColor() {
 // fixed color based on first leter
 fixedColor(String text) {
   var split = text[0].toUpperCase();
-  var data;
+  Color data;
   if (split == 'A') {
-    data = ColorName.colorNameA;
+    data = colorName.colorNameA;
   } else if (split == 'B') {
-    data = ColorName.colorNameB;
+    data = colorName.colorNameB;
   } else if (split == 'C') {
-    data = ColorName.colorNameC;
+    data = colorName.colorNameC;
   } else if (split == 'D') {
-    data = ColorName.colorNameD;
+    data = colorName.colorNameD;
   } else if (split == 'E') {
-    data = ColorName.colorNameE;
+    data = colorName.colorNameE;
   } else if (split == 'F') {
-    data = ColorName.colorNameF;
+    data = colorName.colorNameF;
   } else if (split == 'G') {
-    data = ColorName.colorNameG;
+    data = colorName.colorNameG;
   } else if (split == 'H') {
-    data = ColorName.colorNameH;
+    data = colorName.colorNameH;
   } else if (split == 'I') {
-    data = ColorName.colorNameI;
+    data = colorName.colorNameI;
   } else if (split == 'J') {
-    data = ColorName.colorNameJ;
+    data = colorName.colorNameJ;
   } else if (split == 'K') {
-    data = ColorName.colorNameK;
+    data = colorName.colorNameK;
   } else if (split == 'L') {
-    data = ColorName.colorNameL;
+    data = colorName.colorNameL;
   } else if (split == 'M') {
-    data = ColorName.colorNameM;
+    data = colorName.colorNameM;
   } else if (split == 'N') {
-    data = ColorName.colorNameN;
+    data = colorName.colorNameN;
   } else if (split == 'O') {
-    data = ColorName.colorNameO;
+    data = colorName.colorNameO;
   } else if (split == 'P') {
-    data = ColorName.colorNameP;
+    data = colorName.colorNameP;
   } else if (split == 'Q') {
-    data = ColorName.colorNameQ;
+    data = colorName.colorNameQ;
   } else if (split == 'R') {
-    data = ColorName.colorNameR;
+    data = colorName.colorNameR;
   } else if (split == 'S') {
-    data = ColorName.colorNameS;
+    data = colorName.colorNameS;
   } else if (split == 'T') {
-    data = ColorName.colorNameT;
+    data = colorName.colorNameT;
   } else if (split == 'U') {
-    data = ColorName.colorNameU;
+    data = colorName.colorNameU;
   } else if (split == 'V') {
-    data = ColorName.colorNameV;
+    data = colorName.colorNameV;
   } else if (split == 'W') {
-    data = ColorName.colorNameW;
+    data = colorName.colorNameW;
   } else if (split == 'X') {
-    data = ColorName.colorNameX;
+    data = colorName.colorNameX;
   } else if (split == 'Y') {
-    data = ColorName.colorNameY;
+    data = colorName.colorNameY;
   } else if (split == 'Z') {
-    data = ColorName.colorNameY;
+    data = colorName.colorNameY;
   } else {
-    data = ColorName.colorDefault;
+    data = colorName.colorDefault;
   }
   return data;
 }
@@ -188,7 +189,7 @@ class MyTooltip extends StatelessWidget {
   final Widget child;
   final String message;
 
-  MyTooltip({required this.message, required this.child});
+  const MyTooltip({Key? key, required this.message, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -196,15 +197,15 @@ class MyTooltip extends StatelessWidget {
     return Tooltip(
       key: key,
       // use shape decoration for tooltip border
-      decoration: ShapeDecoration(
+      decoration: const ShapeDecoration(
         color: Colors.white,
         shape: TooltipBorder(arrowArc: 0.1),
       ),
-      textStyle: TextStyle(
+      textStyle:const TextStyle(
         color: Colors.black,
         fontSize: 10,
       ),
-      padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
       message: message,
       verticalOffset: 25,
       waitDuration: const Duration(seconds: 10),
@@ -230,7 +231,7 @@ class TooltipBorder extends ShapeBorder {
   final double arrowArc;
   final double radius;
 
-  TooltipBorder({
+  const TooltipBorder({
     this.radius = 6.0,
     this.arrowWidth = 20.0,
     this.arrowHeight = 10.0,
@@ -263,7 +264,7 @@ class TooltipBorder extends ShapeBorder {
 // set stroke color
   @override
   void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
-    Paint paint = new Paint()
+    Paint paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
@@ -276,6 +277,7 @@ class TooltipBorder extends ShapeBorder {
   ShapeBorder scale(double t) => this;
 }
 
+// ignore: must_be_immutable
 class ProfilePicture extends StatelessWidget {
   String name;
 
@@ -347,6 +349,7 @@ class ProfilePicture extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class Avatar extends StatelessWidget {
   Avatar({
     Key? key,
@@ -443,7 +446,7 @@ class NoImage extends StatelessWidget {
       backgroundColor: random == true
           ? randomColor()
           : name == ''
-              ? ColorName.colorDefault
+              ? colorName.colorDefault
               : fixedColor(
                   InitialName.parseName(name, count),
                 ),
