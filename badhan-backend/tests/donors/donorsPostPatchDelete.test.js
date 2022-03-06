@@ -1,7 +1,18 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
-const env = require('../../config/config');
+const env = require('../../config');
 const {processError} = require('../fixtures/helpers');
+const duplicateDonorSchema = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: {type: "string"},
+        statusCode: {const: 201},
+        message: {type: "string"},
+        donorId: {type: "string",}
+    },
+    required: ["status", "statusCode", "message", "donorId"]
+}
 const postDonorSchema={
     type: "object",
     additionalProperties: false,

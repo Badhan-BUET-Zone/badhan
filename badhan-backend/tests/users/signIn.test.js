@@ -1,5 +1,5 @@
 const {badhanAxios} = require('../../api');
-const env = require('../../config/config');
+const env = require('../../config');
 const validate = require('jsonschema').validate;
 const {processError}=require('../fixtures/helpers');
 const signInSchema={

@@ -1,5 +1,5 @@
 const api = require('../../api');
-const env = require('../../config/config');
+const env = require('../../config');
 
 const authenticate=async()=>{
     if(api.getToken()===null){
