@@ -26,9 +26,11 @@ const handlePOSTDonors = async (req, res) => {
       duplicateDonorResult.data.hall > 6 ||
       duplicateDonorResult.data.availableToAll === true
     ) {
-      return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall'))
+      return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall', {
+        donorId: duplicateDonorResult.data._id
+      }))
     }
-    return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall. You are not permitted to access this donor.'))
+    return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall. You are not permitted to access this donor.', {}))
   }
 
   // if the hall is unknown, then the donor must be available to all
@@ -80,7 +82,7 @@ const handleDELETEDonors = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   if (donor.designation > 1) {
-    return res.respond(new ConflictError409('Donor must be demoted for deletion'))
+    return res.respond(new ConflictError409('Donor must be demoted for deletion', {}))
   }
 
   const deleteDonorResult = await donorInterface.deleteDonorById(donor._id)
@@ -158,7 +160,7 @@ const handlePATCHDonorsPassword = async (req, res) => {
   const reqBody = req.body
   const target = res.locals.middlewareResponse.targetDonor
   if (target.designation === 0) {
-    return res.respond(new ConflictError409('Target user does not have an account'))
+    return res.respond(new ConflictError409('Target user does not have an account', {}))
   }
 
   target.password = reqBody.password

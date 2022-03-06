@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "nodemon",
-    "start": "NODE_ENV=production node ./src/bin/www",
-    "dev": "NODE_ENV=development node ./src/bin/www",
+    "start": "cross-env NODE_ENV=production node ./src/bin/www",
+    "dev": "cross-env NODE_ENV=development node ./src/bin/www",
     "lint": "eslint src"
   },
   "engines": {
@@ -17,7 +17,6 @@
     "connect-history-api-fallback": "^1.6.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
     "debug": "~2.6.9",
     "deep-email-validator": "^0.1.18",
     "dotenv": "^8.2.0",
@@ -36,7 +35,8 @@
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "useragent": "^2.3.0"
+    "useragent": "^2.3.0",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
