@@ -81,10 +81,13 @@ class _DonorCardState extends State<DonorCard> {
                               });
                             }
                           },
-                          child: Icon(
-                            FontAwesomeIcons.edit,
-                            color: Colors.grey[600],
-                            size: 20,
+                          child: Tooltip(
+                            message: "Edit donor info",
+                            child: Icon(
+                              FontAwesomeIcons.edit,
+                              color: Colors.grey[600],
+                              size: 20,
+                            ),
                           ),
                         )
                       ],

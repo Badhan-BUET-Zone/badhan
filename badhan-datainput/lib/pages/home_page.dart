@@ -34,10 +34,50 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.title),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _msg.clear();
+                  _msg.write("Import an excel file.");
+                  _newDonorList.clear();
+                });
+              },
+              icon: const Icon(Icons.clear_all_rounded),
+              tooltip: "Clear All",
+            )
+          ],
+        ),
         automaticallyImplyLeading: Responsive.isMobile(context),
       ),
       drawer: Responsive.isMobile(context)
+          ? _profileData == null
+              ? FutureBuilder(
+                  future: _fetchProfileData(),
+                  builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    _profileData = snapshot.data;
+
+                    if (_profileData == null) {
+                      return const Center(
+                          child: Text("Failed Authentication!"));
+                    }
+                    return Drawer(
+                      child: SideMenu(profileData: _profileData!),
+                    );
+                  },
+                )
+              : Drawer(
+                  child: SideMenu(profileData: _profileData!),
+                )
+          : null,
+      body: _profileData == null
           ? FutureBuilder(
               future: _fetchProfileData(),
               builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
@@ -50,50 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (_profileData == null) {
                   return const Center(child: Text("Failed Authentication!"));
                 }
-                return Drawer(
-                  child: SideMenu(profileData: _profileData!),
-                );
+
+                return _ResponsiveHomePage(
+                    newDonorList: _newDonorList,
+                    msg: _msg,
+                    profileData: _profileData);
               },
             )
-          : null,
-      body: FutureBuilder(
-        future: _fetchProfileData(),
-        builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          _profileData = snapshot.data;
-
-          if (_profileData == null) {
-            return const Center(child: Text("Failed Authentication!"));
-          }
-
-          return Responsive(
-            mobile: ExcelWidget(newDonorList: _newDonorList, msg: _msg,),
-            tablet: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
-                const VerticalDivider(),
-                Expanded(
-                    flex: 8, child: ExcelWidget(newDonorList: _newDonorList,msg: _msg,)),
-              ],
-            ),
-            desktop: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
-                const VerticalDivider(),
-                Expanded(
-                    flex: 10, child: ExcelWidget(newDonorList: _newDonorList,msg: _msg,)),
-              ],
-            ),
-          );
-        },
-      ),
+          : _ResponsiveHomePage(
+              newDonorList: _newDonorList,
+              msg: _msg,
+              profileData: _profileData),
     );
   }
 
@@ -122,5 +129,59 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return null;
+  }
+}
+
+class _ResponsiveHomePage extends StatelessWidget {
+  const _ResponsiveHomePage({
+    Key? key,
+    required List<NewDonor> newDonorList,
+    required StringBuffer msg,
+    required ProfileData? profileData,
+  })  : _newDonorList = newDonorList,
+        _msg = msg,
+        _profileData = profileData,
+        super(key: key);
+
+  final List<NewDonor> _newDonorList;
+  final StringBuffer _msg;
+  final ProfileData? _profileData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Responsive(
+      mobile: ExcelWidget(
+        newDonorList: _newDonorList,
+        msg: _msg,
+      ),
+      tablet: Row(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
+          const VerticalDivider(),
+          Expanded(
+              flex: 8,
+              child: ExcelWidget(
+                newDonorList: _newDonorList,
+                msg: _msg,
+              )),
+        ],
+      ),
+      desktop: Row(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
+          const VerticalDivider(),
+          Expanded(
+              flex: 10,
+              child: ExcelWidget(
+                newDonorList: _newDonorList,
+                msg: _msg,
+              )),
+        ],
+      ),
+    );
   }
 }

@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: UserDataProvider()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Badhan Data Input',
         theme: ThemeData(
           fontFamily: GoogleFonts.openSans().fontFamily,

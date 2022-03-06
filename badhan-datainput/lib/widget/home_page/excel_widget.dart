@@ -43,36 +43,42 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.msg.toString(),
-                        style: Theme.of(context).textTheme.titleSmall,
+              Card(
+                child: Container(
+                  // top upload all bar
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.msg.toString(),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            widget.msg.clear();
-                            widget.msg.write(defaultMsg);
-                            widget.newDonorList.clear();
-                          });
-                        },
-                        child: const Text("Clear all"))
-                  ],
+                      Tooltip(
+                        message: "Upload all the donors",
+                        child: TextButton.icon(
+                          icon: const Icon(Icons.file_upload_outlined),
+                          label: const Text("Upload all"),
+                          onPressed: () {},
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
                 height: 5,
               ),
               Expanded(
+                // list of all donors
                 child: SizedBox(
                     //color: Colors.red,
                     width: double.infinity,
