@@ -1,6 +1,6 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
-const env = require('../../config/config');
+const env = require('../../config');
 const {processError}=require('../fixtures/helpers');
 const deleteLogsSchema={
   type: "object",

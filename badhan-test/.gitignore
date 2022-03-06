@@ -1,5 +1,4 @@
 node_modules
-config
 .idea
 dist
 package-lock.json

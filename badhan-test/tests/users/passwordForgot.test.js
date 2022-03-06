@@ -1,7 +1,7 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const {processError}=require('../fixtures/helpers');
-const env = require('../../config/config');
+const env = require('../../config');
 test('POST/users/password/forgot',async()=>{
 // test.skip('POST/users/password/forgot',async()=>{
     try {
