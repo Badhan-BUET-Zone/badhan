@@ -40,7 +40,7 @@ class BadhanConst {
   ];
   static const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
-  static const visibilites = ["Hall", "Public"];
+  static const visibilites = ["Private", "Public"];
 
   static String designation(int id) {
     return designations[id];

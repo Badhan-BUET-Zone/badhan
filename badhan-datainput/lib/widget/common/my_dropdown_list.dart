@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 // ignore: must_be_immutable
 class MyDropDown extends StatefulWidget {
   String? selectedValue;
@@ -23,32 +24,41 @@ class _MyDropDownState extends State<MyDropDown> {
   // https://www.youtube.com/watch?v=-6GBAGj-h4Q
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      decoration: BoxDecoration(
-          border: Border.all(
-            width: 0.5,
-            //color: Theme.of(context).primaryColor,
+      child: DropdownButtonFormField(
+        hint: Text(widget.hint),
+        value: widget.selectedValue,
+        items: widget.list.map((String items) {
+          return DropdownMenuItem(
+            value: items,
+            child: Text(items),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          setState(() {
+            widget.selectedValue = newValue!;
+            widget.onSelected(newValue);
+          });
+        },
+        decoration: InputDecoration(
+          labelText: widget.hint,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+          labelStyle: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontSize: Theme.of(context).textTheme.subtitle2?.fontSize,
           ),
-          borderRadius: BorderRadius.circular(8)),
-      child: DropdownButtonHideUnderline(
-        child: ButtonTheme(
-          alignedDropdown: true,
-          child: DropdownButton(
-            hint: Text(widget.hint),
-            value: widget.selectedValue,
-            items: widget.list.map((String items) {
-              return DropdownMenuItem(
-                value: items,
-                child: Text(items),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                widget.selectedValue = newValue!;
-                widget.onSelected(newValue);
-              });
-            },
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor,
+            ),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor,
+            ),
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ),
