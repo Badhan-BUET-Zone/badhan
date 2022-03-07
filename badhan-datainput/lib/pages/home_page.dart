@@ -40,14 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(widget.title),
             IconButton(
               onPressed: () {
-                setState(() {
-                  _msg.clear();
-                  _msg.write("Import an excel file.");
-                  _newDonorList.clear();
-                });
+                
               },
-              icon: const Icon(Icons.clear_all_rounded),
-              tooltip: "Clear All",
+              icon: const Icon(Icons.login),
+              tooltip: "Logout",
             )
           ],
         ),

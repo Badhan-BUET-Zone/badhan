@@ -8,6 +8,7 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../util/debug.dart';
@@ -63,11 +64,11 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                         ),
                       ),
                       Tooltip(
-                        message: "Upload all the donors",
+                        message: "Import a formatted excel. Follow instructions.",
                         child: TextButton.icon(
                           icon: const Icon(Icons.file_upload_outlined),
-                          label: const Text("Upload all"),
-                          onPressed: () {},
+                          label: const Text("Import Excel"),
+                          onPressed: _uploadFile,
                         ),
                       )
                     ],
@@ -106,15 +107,45 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.only(right: 10, bottom: 10),
-            child: FloatingActionButton(
-              onPressed: _uploadFile,
-              tooltip: 'Add Excel file',
-              child: const Icon(Icons.add),
+            child: SpeedDial(
+              animatedIcon: AnimatedIcons.menu_close,
+              overlayOpacity: 0,
+              children: [
+                SpeedDialChild(
+                    onTap: _uploadFile,
+                    //tooltip: 'Add Excel file',
+                    label: "Import Excel",
+                    child: const Icon(Icons.file_upload),
+                    backgroundColor: Colors.amber,
+                    labelBackgroundColor: Colors.amber),
+                if (widget.newDonorList.isNotEmpty)
+                  SpeedDialChild(
+                      onTap: () {},
+                      label: "Upload all",
+                      child: const Icon(Icons.file_upload_outlined),
+                      backgroundColor: Colors.amber,
+                      labelBackgroundColor: Colors.amber),
+                if (widget.newDonorList.isNotEmpty)
+                  SpeedDialChild(
+                      onTap: _clearAll,
+                      label: "Clear all",
+                      child: const Icon(Icons.clear_rounded),
+                      backgroundColor: Colors.amber,
+                      labelBackgroundColor: Colors.amber)
+              ],
             ),
           )
         ],
       ),
     );
+  }
+
+  void _clearAll() {
+    setState(() {
+      widget.msg.clear();
+      widget.msg.write("Import an excel file.");
+      widget.newDonorList.clear();
+    });
   }
 
   // see: https://pub.dev/packages/file_picker
