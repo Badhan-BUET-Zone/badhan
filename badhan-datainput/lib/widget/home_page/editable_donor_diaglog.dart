@@ -20,7 +20,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
       bloodGroup: -1,
       hall: -1,
       name: "name",
-      studentId: 0,
+      studentId: "0",
       address: "address",
       roomNumber: "roomNumber",
       availableToAll: false,
@@ -79,9 +79,9 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
           MyTextField(
               hint: "Student Id",
               inputFormat: RegExp(r'[0-9]'),
-              initalText: editable() ? "${widget.donorData!.studentId}" : "",
+              initalText: editable() ? widget.donorData!.studentId : "",
               onSubmitText: (String studentId) {
-                newDonor.studentId = int.parse(studentId);
+                newDonor.studentId = studentId;
               },
               vanishTextOnSubmit: false),
           const SizedBox(

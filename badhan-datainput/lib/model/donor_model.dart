@@ -26,7 +26,7 @@ class DonorBasicInfo {
   int bloodGroup;
   int hall;
   String name;
-  int studentId;
+  String studentId;
   String address;
   String roomNumber;
   bool availableToAll;
@@ -152,18 +152,18 @@ class NewDonor extends DonorBasicInfo {
 class Donor extends DonorBasicInfo {
   Donor({
     required this.id,
-    studentId,
-    name,
-    roomNumber,
-    bloodGroup,
-    phone,
+    required studentId,
+    required name,
+    required roomNumber,
+    required bloodGroup,
+    required phone,
     required this.lastDonation,
     required this.comment,
-    hall,
+    required hall,
     required this.designation,
-    address,
+    required address,
     required this.commentTime,
-    availableToAll,
+    required availableToAll,
     required this.email,
     required this.callRecords,
     required this.donations,

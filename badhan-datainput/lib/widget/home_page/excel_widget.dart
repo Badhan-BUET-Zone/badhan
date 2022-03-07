@@ -64,7 +64,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                         ),
                       ),
                       Tooltip(
-                        message: "Import a formatted excel. Follow instructions.",
+                        message:
+                            "Import a formatted excel. Follow instructions.",
                         child: TextButton.icon(
                           icon: const Icon(Icons.file_upload_outlined),
                           label: const Text("Import Excel"),
@@ -251,8 +252,12 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       case "hall":
         return BadhanConst.hallId(data);
       case "studentId":
+        return data.toInt().toString();
       case "extraDonationCount":
         return data.toInt();
+      case "comment":
+        String comment = data;
+        return comment.trim() == "" ? "no comments" : comment.trim();
       default:
         return data;
     }
