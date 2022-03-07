@@ -173,7 +173,7 @@
  *                       type: string
  *                       example: Mir Mahathir
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     email:
  *                       type: string
@@ -291,7 +291,7 @@
  *                       type: string
  *                       example: Mir Mahathir
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     email:
  *                       type: string

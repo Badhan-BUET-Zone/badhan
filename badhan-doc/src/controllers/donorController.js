@@ -30,7 +30,7 @@
  *                 type: string
  *                 example: Mir Mahathir
  *               studentId:
- *                 type: number
+ *                 type: string
  *                 example: 1605011
  *               address:
  *                 type: string
@@ -104,7 +104,7 @@
  *                       type: string
  *                       example: Mir Mahathir
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     availableToAll:
  *                       type: boolean
@@ -450,7 +450,7 @@
  *                 type: number
  *                 example: 8801521438557
  *               studentId:
- *                 type: number
+ *                 type: string
  *                 example: 1605011
  *               bloodGroup:
  *                 type: number
@@ -732,7 +732,7 @@
  *                       type: string
  *                       example: Mir Mahathir
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     email:
  *                       type: string
@@ -886,7 +886,7 @@
  *                         type: number
  *                         example: 5
  *                       studentId:
- *                         type: number
+ *                         type: string
  *                         example: 1605011
  *                       logCount:
  *                         type: number
@@ -968,7 +968,7 @@
  *                       type: string
  *                       example: Mir Mahathir
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     availableToAll:
  *                       type: boolean
@@ -1071,7 +1071,7 @@
  *                       type: string
  *                       example: jhdwiurh837921
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     name:
  *                       type: string
@@ -1089,7 +1089,7 @@
  *                       type: string
  *                       example: jhdwiurh837921
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     name:
  *                       type: string
@@ -1107,7 +1107,7 @@
  *                       type: string
  *                       example: jhdwiurh837921
  *                     studentId:
- *                       type: number
+ *                       type: string
  *                       example: 1605011
  *                     name:
  *                       type: string
