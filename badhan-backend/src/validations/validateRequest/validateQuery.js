@@ -70,6 +70,16 @@ const validateQUERYAvailableToAllOrHall = query('availableToAllOrHall')
   .exists().withMessage('availableToAllOrHall is required')
   .isBoolean().toBoolean().withMessage('availableToAllOrHall must be boolean')
 
+const validateQUERYPhoneList = query('phoneList').exists().withMessage('phoneList is required')
+  .toArray().custom((phoneList) => {
+    return phoneList.every((phone) => {
+      return phone.length === 13 && !isNaN(phone) && phone.substr(0, 3) === '880'
+    })
+  }).withMessage('phoneList must be of minimum length 1 where elements must be integers of 13 digits starting with 880')
+  .customSanitizer((phoneList) => {
+    return phoneList.map((phone) => parseInt(phone))
+  }).withMessage('Error occurred at phoneList element parseInt')
+
 module.exports = {
   validateQUERYDonorId,
   validateQUERYBloodGroup,
@@ -85,5 +95,6 @@ module.exports = {
   validateQUERYPhone,
   validateQUERYPublicContactId,
   validateQUERYMarkedByMe,
-  validateQUERYAvailableToAllOrHall
+  validateQUERYAvailableToAllOrHall,
+  validateQUERYPhoneList
 }

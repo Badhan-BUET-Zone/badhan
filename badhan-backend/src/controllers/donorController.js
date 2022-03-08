@@ -12,7 +12,10 @@ const {
   NotFoundError404,
   ConflictError409
 } = require('../response/errorTypes')
-const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
+const {
+  CreatedResponse201,
+  OKResponse200
+} = require('../response/successTypes')
 
 const handlePOSTDonors = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
@@ -294,7 +297,9 @@ const handleGETDonors = async (req, res) => {
     {
       path: 'markedBy',
       select: {
-        markerId: 1, time: 1, _id: 0
+        markerId: 1,
+        time: 1,
+        _id: 0
       },
       populate: {
         path: 'markerId',
@@ -412,6 +417,15 @@ const handleGETDonorsDesignation = async (req, res) => {
   }))
 }
 
+const handleGETDonorsDuplicateMany = async (req, res) => {
+  const authenticatedUser = res.locals.middlewareResponse.donor
+  const existingDonorsResult = await donorInterface.findDonorIdsByPhone(authenticatedUser.designation, authenticatedUser.hall, req.query.phoneList)
+  await logInterface.addLog(authenticatedUser._id, 'GET DONORS CHECKDUPLICATE MANY', { phones: req.query.phoneList })
+  return res.respond(new OKResponse200(existingDonorsResult.message, {
+    donors: existingDonorsResult.donors
+  }))
+}
+
 module.exports = {
   handlePOSTDonors,
   handleDELETEDonors,
@@ -426,5 +440,6 @@ module.exports = {
   handleGETVolunteersAll,
   handleGETDonorsDuplicate,
   handlePOSTDonorsPasswordRequest,
-  handleGETSearchV3
+  handleGETSearchV3,
+  handleGETDonorsDuplicateMany
 }

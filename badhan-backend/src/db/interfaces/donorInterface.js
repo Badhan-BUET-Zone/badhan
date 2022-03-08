@@ -544,8 +544,64 @@ const generateSearchQuery = (reqQuery) => {
   }
   return queryBuilder
 }
+const findDonorIdsByPhone = async (userDesignation, userHall, phoneList) => {
+  // phoneList = [8801521438557, 8801786433743, 8801627151097]
+  let existingDonors
+  if (userDesignation === 3) {
+    existingDonors = await Donor.aggregate([
+      {
+        $match: {
+          phone: { $in: phoneList }
+        }
+      },
+      {
+        $project: {
+          phone: 1,
+          _id: 0,
+          donorId: '$_id'
+        }
+      }
+    ])
+  } else {
+    existingDonors = await Donor.aggregate([
+      {
+        $match: {
+          phone: { $in: phoneList }
+        }
+      },
+      {
+        $project: {
+          phone: 1,
+          _id: 0,
+          donorId: {
+            $cond: [
+              {
+                $or: [
+                  {
+                    $eq: ['$hall', userHall]
+                  },
+                  {
+                    $gt: ['$hall', 6]
+                  },
+                  {
+                    $eq: ['$availableToAll', true]
+                  }]
+              }, '$_id', 'FORBIDDEN'
+            ]
+          }
+        }
+      }
+    ])
+  }
+  return {
+    message: 'Existing donors fetched successfully',
+    status: 'OK',
+    donors: existingDonors
+  }
+}
 
 module.exports = {
+  findDonorIdsByPhone,
   insertDonor,
   deleteDonor,
   deleteDonorByPhone,

@@ -1,6 +1,6 @@
 const { validate } = require('../validations')
 const { validateBODYEmail, validateBODYPromoteFlag, validateBODYPassword, validateBODYDonorId, validateBODYAddress, validateBODYRoomNumber, validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId } = require('../validations/validateRequest/validateBody')
-const { validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName } = require('../validations/validateRequest/validateQuery')
+const { validateQUERYPhoneList, validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName } = require('../validations/validateRequest/validateQuery')
 
 const validatePOSTDonors = validate([
   validateBODYPhone,
@@ -74,6 +74,11 @@ const validateGETDonorsDuplicate = validate([
   validateQUERYPhone
 ])
 
+const validateGETDonorsDuplicateMany = validate([
+  validateQUERYPhoneList
+  // validateQUERYPhoneListElement
+])
+
 module.exports = {
   validatePOSTDonors,
   validatePATCHDonors,
@@ -85,5 +90,6 @@ module.exports = {
   validateGETSearchDonors,
   validateDELETEDonors,
   validateGETDonorsDuplicate,
-  validatePOSTDonorsPasswordRequest
+  validatePOSTDonorsPasswordRequest,
+  validateGETDonorsDuplicateMany
 }

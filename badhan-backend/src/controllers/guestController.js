@@ -1,5 +1,8 @@
 const faker = require('../doc/faker')
-const { OKResponse200, CreatedResponse201 } = require('../response/successTypes')
+const {
+  OKResponse200,
+  CreatedResponse201
+} = require('../response/successTypes')
 const handlePOSTLogIn = async (req, res) => {
   return res.respond(new CreatedResponse201('Guest sign in will not show actual nor accurate data', {
     token: faker.getToken()
@@ -65,19 +68,19 @@ const handlePOSTSearchDonors = async (req, res) => {
     const callRecords = []
     for (let i = 0; i < faker.getRandInt(1, 3); i++) {
       callRecords.push({
-        date: faker.getTimestamp(5),
-        _id: faker.getId(),
-        callerId: faker.getId(),
-        calleeId: faker.getId()
-      }
+          date: faker.getTimestamp(5),
+          _id: faker.getId(),
+          callerId: faker.getId(),
+          calleeId: faker.getId()
+        }
       )
     }
 
     const randomMarker = faker.getBoolean()
       ? {
-          name: faker.getName(),
-          time: faker.getTimestamp(20)
-        }
+        name: faker.getName(),
+        time: faker.getTimestamp(20)
+      }
       : {}
 
     filteredDonors.push({
@@ -135,27 +138,27 @@ const handleGETViewDonorDetails = async (req, res) => {
   const callRecords = []
   for (let i = 0; i < 2; i++) {
     callRecords.push({
-      date: faker.getTimestamp(240),
-      _id: faker.getId(),
-      callerId: {
-        designation: faker.getDesignation(),
+        date: faker.getTimestamp(240),
         _id: faker.getId(),
-        hall: faker.getHall(),
-        name: faker.getName()
-      },
-      calleeId: faker.getId(),
-      expireAt: faker.getExpireAt()
-    }
+        callerId: {
+          designation: faker.getDesignation(),
+          _id: faker.getId(),
+          hall: faker.getHall(),
+          name: faker.getName()
+        },
+        calleeId: faker.getId(),
+        expireAt: faker.getExpireAt()
+      }
     )
   }
   const donations = []
   for (let i = 0; i < 2; i++) {
     donations.push({
-      date: faker.getTimestamp(240),
-      _id: faker.getId(),
-      phone: faker.getPhone(),
-      donorId: faker.getId()
-    }
+        date: faker.getTimestamp(240),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId()
+      }
     )
   }
   const publicContacts = [
@@ -173,13 +176,13 @@ const handleGETViewDonorDetails = async (req, res) => {
 
   const randomMarker = faker.getBoolean()
     ? {
-        donorId: faker.getId(),
-        markerId: {
-          _id: faker.getId(),
-          name: faker.getName()
-        },
-        time: faker.getTimestamp(20)
-      }
+      donorId: faker.getId(),
+      markerId: {
+        _id: faker.getId(),
+        name: faker.getName()
+      },
+      time: faker.getTimestamp(20)
+    }
     : null
 
   const obj = {
@@ -566,6 +569,7 @@ const handleGETActiveDonors = async (req, res) => {
     activeDonors: filteredActiveDonors
   }))
 }
+
 module.exports = {
   handlePOSTLogIn,
   handlePOSTViewDonorDetailsSelf,

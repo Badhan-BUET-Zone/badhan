@@ -98,6 +98,13 @@ router.get('/donors/checkDuplicate',
   donorController.handleGETDonorsDuplicate
 )
 
+router.get('/donors/checkDuplicate/many',
+  rateLimiter.commonLimiter,
+  donorValidator.validateGETDonorsDuplicateMany,
+  authenticator.handleAuthentication,
+  donorController.handleGETDonorsDuplicateMany
+)
+
 router.get('/volunteers/all',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
