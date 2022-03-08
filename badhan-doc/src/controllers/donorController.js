@@ -690,7 +690,7 @@
  *   get:
  *     tags:
  *       - Donors
- *     summary: Get list of donors
+ *     summary: Get donor details
  *     security:
  *       - ApiKeyAuth: []
  *     description: Handles the fetching of donor details
@@ -844,6 +844,64 @@
  *                           example: 1782934242842
  */
 
+
+/**
+ * @openapi
+ * /donors/phone:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Check whether list of phone numbers exist in database
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Request using a list of phone numbers to check whether these numbers exist in database.
+ *     parameters:
+ *       - in: query
+ *         name: phoneList
+ *         description: phone number to be checked. To send multiple phone numbers, just add more phone numbers using the same query parameter
+ *         required: true
+ *         schema:
+ *           type: number
+ *           example: 8801521438557
+ *       - in: query
+ *         name: phoneList
+ *         description: phone number to be checked. To send multiple phone numbers, just add more phone numbers using the same query parameter
+ *         required: true
+ *         schema:
+ *           type: number
+ *           example: 8801627151097
+ *     responses:
+ *       200:
+ *         description: Among the list of phone numbers, if a phone number exists in database- no corresponding response will be sent for that phone. If a phone number exists in the database but the user is forbidden to get any further information, only the phone number will be sent along with a FORBIDDEN donorId as response. If the phone number exists in database and the user is permitted to view that donor, then the donorId will be sent as the corresponding response.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Existing donors fetched successfully
+ *                 donors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       donorId:
+ *                         type: string
+ *                         example: FORBIDDEN
+ *                       phone:
+ *                         type: number
+ *                         example: 8801521438557
+ *
+ *
+ */
+
 /**
  * @openapi
  * /volunteers/all:
@@ -975,62 +1033,7 @@
  *                       example: true
  */
 
-/**
- * @openapi
- * /donors/checkDuplicate/many:
- *   get:
- *     tags:
- *       - Donors
- *     summary: Check whether list of phone numbers exist in database
- *     security:
- *       - ApiKeyAuth: []
- *     description: Request using a list of phone numbers to check whether these numbers exist in database.
- *     parameters:
- *       - in: query
- *         name: phoneList
- *         description: phone number to be checked. To send multiple phone numbers, just add more phone numbers using the same query parameter
- *         required: true
- *         schema:
- *           type: number
- *           example: 8801521438557
- *       - in: query
- *         name: phoneList
- *         description: phone number to be checked. To send multiple phone numbers, just add more phone numbers using the same query parameter
- *         required: true
- *         schema:
- *           type: number
- *           example: 8801627151097
- *     responses:
- *       200:
- *         description: Among the list of phone numbers, if a phone number exists in database- no corresponding response will be sent for that phone. If a phone number exists in the database but the user is forbidden to get any further information, only the phone number will be sent along with a FORBIDDEN donorId as response. If the phone number exists in database and the user is permitted to view that donor, then the donorId will be sent as the corresponding response.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Existing donors fetched successfully
- *                 donors:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       donorId:
- *                         type: string
- *                         example: FORBIDDEN
- *                       phone:
- *                         type: number
- *                         example: 8801521438557
- *
- *
- */
+
 
 /**
  * @openapi
