@@ -43,7 +43,6 @@ Steps for the backend:
 * Automated testing for main and guest route
 * New openapi documentation
 * Testing from openapi documentation
-* Update permission matrix
 
 Steps for the frontend:
 * Build UI
