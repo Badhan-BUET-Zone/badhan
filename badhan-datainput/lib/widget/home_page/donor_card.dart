@@ -174,7 +174,7 @@ class _SubmitButtonState extends State<_SubmitButton> {
           // then open url in main site
           // home/details?id=5e677716ca2dc857938d7c73
           String url =
-              "${Environment.mainWebsite}/home/details?id=${duplicateDonorData!.id}";
+              "${Environment.mainWebsite}/#/home/details?id=${duplicateDonorData!.id}";
           Log.d(tag, "opening: $url");
           if (!await launch(url)) throw 'Could not launch $url';
           return;
