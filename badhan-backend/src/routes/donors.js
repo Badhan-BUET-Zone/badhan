@@ -98,7 +98,7 @@ router.get('/donors/checkDuplicate',
   donorController.handleGETDonorsDuplicate
 )
 
-router.get('/donors/checkDuplicate/many',
+router.get('/donors/phone',
   rateLimiter.commonLimiter,
   donorValidator.validateGETDonorsDuplicateMany,
   authenticator.handleAuthentication,

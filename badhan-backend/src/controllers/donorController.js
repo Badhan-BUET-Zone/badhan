@@ -420,7 +420,7 @@ const handleGETDonorsDesignation = async (req, res) => {
 const handleGETDonorsDuplicateMany = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
   const existingDonorsResult = await donorInterface.findDonorIdsByPhone(authenticatedUser.designation, authenticatedUser.hall, req.query.phoneList)
-  await logInterface.addLog(authenticatedUser._id, 'GET DONORS CHECKDUPLICATE MANY', { phones: req.query.phoneList })
+  await logInterface.addLog(authenticatedUser._id, 'GET DONORS PHONE', { phones: req.query.phoneList })
   return res.respond(new OKResponse200(existingDonorsResult.message, {
     donors: existingDonorsResult.donors
   }))
