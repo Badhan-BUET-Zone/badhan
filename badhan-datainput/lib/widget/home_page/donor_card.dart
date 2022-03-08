@@ -1,10 +1,15 @@
 import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/util/debug.dart';
+import 'package:badhandatainput/util/environment.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../model/provider_response_model.dart';
+import '../../provider/donor_data_provider.dart';
 import 'editable_donor_diaglog.dart';
 
 // ignore: must_be_immutable
@@ -126,32 +131,8 @@ class _DonorCardState extends State<DonorCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                /* TextButton(onPressed: () {}, child: const Text("Delete")),
-                const SizedBox(
-                  width: 8,
-                ), */
-                OutlinedButton(
-                  onPressed: () {
-                    //Log.d(DonorCard.tag, 'hi');
-                  },
-                  child: const Text(
-                    "Submit",
-                    style: TextStyle(color: Colors.green),
-                  ),
-                  style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.hovered)) {
-                          return Colors.green.withOpacity(0.04);
-                        }
-                        if (states.contains(MaterialState.focused) ||
-                            states.contains(MaterialState.pressed)) {
-                          return Colors.green.withOpacity(0.12);
-                        }
-                        return null; // Defer to the widget's default.
-                      },
-                    ),
-                  ),
+                _SubmitButton(
+                  newDonor: widget.newDonor,
                 ),
               ],
             ),
@@ -159,5 +140,94 @@ class _DonorCardState extends State<DonorCard> {
         ),
       ),
     );
+  }
+}
+
+class _SubmitButton extends StatefulWidget {
+  const _SubmitButton({
+    Key? key,
+    required this.newDonor,
+  }) : super(key: key);
+
+  final NewDonor newDonor;
+
+  @override
+  State<_SubmitButton> createState() => _SubmitButtonState();
+}
+
+class _SubmitButtonState extends State<_SubmitButton> {
+  static String tag = "SubmitButton";
+  bool isLoding = false;
+  bool foundDuplicate = false;
+  DonorData? duplicateDonorData;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: () async {
+        if (isLoding) {
+          return;
+        }
+        
+        // if duplicate donor found
+        if (foundDuplicate) {
+          // then open url in main site
+          // home/details?id=5e677716ca2dc857938d7c73
+          String url =
+              "${Environment.mainWebsite}/home/details?id=${duplicateDonorData!.id}";
+          Log.d(tag, "opening: $url");
+          if (!await launch(url)) throw 'Could not launch $url';
+          return;
+        }
+
+        setState(() {
+          isLoding = true;
+        });
+        duplicateDonorData = await _checkDuplicate(widget.newDonor.phone);
+        setState(() {
+          isLoding = false;
+          foundDuplicate = duplicateDonorData != null;
+        });
+      },
+      icon: isLoding
+          ? const SizedBox(
+              child: CircularProgressIndicator(
+                color: Colors.green,
+                strokeWidth: 2.0,
+              ),
+              height: 10,
+              width: 10,
+            )
+          : Icon(
+              foundDuplicate ? Icons.copy : Icons.file_upload_outlined,
+              color: Colors.green,
+              size: 17.0,
+            ),
+      label: Text(
+        foundDuplicate ? "See duplicate" : "Submit",
+        style: const TextStyle(color: Colors.green),
+      ),
+      style: ButtonStyle(
+        overlayColor: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+            if (states.contains(MaterialState.hovered)) {
+              return Colors.green.withOpacity(0.04);
+            }
+            if (states.contains(MaterialState.focused) ||
+                states.contains(MaterialState.pressed)) {
+              return Colors.green.withOpacity(0.12);
+            }
+            return null; // Defer to the widget's default.
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<DonorData?> _checkDuplicate(String phone) async {
+    ProviderResponse providerResponse =
+        await Provider.of<DonorDataProvider>(context, listen: false)
+            .checkDuplicate(phone);
+    return providerResponse.success ? providerResponse.data : null;
   }
 }

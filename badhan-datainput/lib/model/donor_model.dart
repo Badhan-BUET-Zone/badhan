@@ -123,6 +123,94 @@ class NewDonor extends DonorBasicInfo {
 /*
 {
     "_id": "5e677716ca2dc857938d7c73",
+    "email": "",
+    "comment": "Interested: Yes; Any Physical Problem : ; Weight : 60; Any Additional Info :",
+    "commentTime": 1635189458740,
+    "lastDonation": 1636934400000,
+    "designation": 3,
+    
+    "studentId": "1805052",
+    "name": "Hasan masum",
+    "roomNumber": "3007",
+    "bloodGroup": 2,
+    "phone": 8801572342835,
+    "hall": 6,
+    "address": "(Unknown)",
+    "availableToAll": false
+  }
+*/
+class DonorData extends DonorBasicInfo {
+  String id;
+  String email;
+  String comment;
+  int commentTime;
+  int lastDonation;
+  int designation;
+
+  DonorData(
+      {required this.id,
+      required this.email,
+      required this.comment,
+      required this.commentTime,
+      required this.lastDonation,
+      required this.designation,
+      required String phone,
+      required int bloodGroup,
+      required int hall,
+      required String name,
+      required String studentId,
+      required String address,
+      required String roomNumber,
+      required bool availableToAll})
+      : super(
+            phone: phone,
+            bloodGroup: bloodGroup,
+            hall: hall,
+            name: name,
+            studentId: studentId,
+            address: address,
+            roomNumber: roomNumber,
+            availableToAll: availableToAll);
+
+  factory DonorData.fromJson(Map<String, dynamic> json) => DonorData(
+        id: json["_id"],
+        email: json["email"],
+        comment: json["comment"],
+        commentTime: json["commentTime"],
+        lastDonation: json["lastDonation"],
+        studentId: json["studentId"],
+        name: json["name"],
+        roomNumber: json["roomNumber"],
+        bloodGroup: json["bloodGroup"],
+        phone: json["phone"].toString(),
+        hall: json["hall"],
+        designation: json["designation"],
+        address: json["address"],
+        availableToAll: json["availableToAll"],
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "email": email,
+        "comment": comment,
+        "commentTime": commentTime,
+        "lastDonation": lastDonation,
+        "studentId": studentId,
+        "name": name,
+        "roomNumber": roomNumber,
+        "bloodGroup": bloodGroup,
+        "phone": phone,
+        "hall": hall,
+        "designation": designation,
+        "address": address,
+        "availableToAll": availableToAll,
+      };
+}
+
+/*
+{
+    "_id": "5e677716ca2dc857938d7c73",
     "studentId": "1805052",
     "name": "Hasan masum",
     "roomNumber": "3007",
@@ -149,8 +237,8 @@ class NewDonor extends DonorBasicInfo {
     "markedBy": null
   }
 */
-class Donor extends DonorBasicInfo {
-  Donor({
+class DonorProfileData extends DonorBasicInfo {
+  DonorProfileData({
     required this.id,
     required studentId,
     required name,
@@ -189,13 +277,14 @@ class Donor extends DonorBasicInfo {
   List<Donation> donations;
   List<dynamic> publicContacts;
 
-  factory Donor.fromJson(Map<String, dynamic> json) => Donor(
+  factory DonorProfileData.fromJson(Map<String, dynamic> json) =>
+      DonorProfileData(
         id: json["_id"],
         studentId: json["studentId"],
         name: json["name"],
         roomNumber: json["roomNumber"],
         bloodGroup: json["bloodGroup"],
-        phone: json["phone"],
+        phone: json["phone"].toString(),
         lastDonation: json["lastDonation"],
         comment: json["comment"],
         hall: json["hall"],

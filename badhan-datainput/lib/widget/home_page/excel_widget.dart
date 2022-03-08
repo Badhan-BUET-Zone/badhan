@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:badhandatainput/model/donor_model.dart';
+import 'package:badhandatainput/model/provider_response_model.dart';
+import 'package:badhandatainput/provider/donor_data_provider.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/widget/home_page/donor_card.dart';
 import 'package:badhandatainput/widget/responsive.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
 import '../../util/debug.dart';
 
@@ -177,18 +180,18 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     }
   }
 
-  void _openFileFromByte(List<int> bytes) {
+  void _openFileFromByte(List<int> bytes) async {
     String fName = "_openFileFromByte():";
 
     widget.newDonorList.clear();
 
     Excel excel = Excel.decodeBytes(bytes);
 
-    StringBuffer buffer = StringBuffer();
+    //StringBuffer buffer = StringBuffer();
     for (String sheetName in excel.tables.keys) {
       Log.d(tag, "$fName $sheetName"); //sheet Name
       widget.msg.write("Sheet: $sheetName");
-      buffer.writeln("Sheet name: $sheetName");
+      // buffer.writeln("Sheet name: $sheetName");
       /* print(excel.tables[table]!.maxCols);
       print(excel.tables[table]!.maxRows); */
       int r = 1;
@@ -204,22 +207,24 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
             //buffer.writeln("${header[c]}: ${data.value} ");
             dataMap[header[c]] = _dataMap(header[c], data.value);
           }
-          c++;
+          c++; // next column
         }
         if (r > 1) {
           //buffer.writeln(json.encode(dataMap));
           //Log.d(tag, "data: ${json.encode(dataMap)}");
           NewDonor newDonor = NewDonor.fromJson(dataMap);
-          widget.newDonorList.add(newDonor);
-          buffer.writeln(newDonor.toJson());
+          //DonorData? duplicateDonor = await _checkDuplicate(newDonor.phone);
+          //if (duplicateDonor == null) {
+            widget.newDonorList.add(newDonor);
+          //}
+          // buffer.writeln(newDonor.toJson());
         }
-        buffer.writeln("\n");
-        r++;
+        //buffer.writeln("\n");
+        r++; // new row
       }
     }
-    //Log.d(tag, buffer.toString());
     setState(() {
-      //msg = buffer.toString();
+      
     });
   }
 
@@ -245,8 +250,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   dynamic _dataMap(String header, dynamic data) {
     switch (header) {
       case "phone":
-        double d = data;
-        return (d.toInt()).toString();
+        return (data.toInt()).toString();
       case "bloodGroup":
         return BadhanConst.bloodGroupId(data as String);
       case "hall":

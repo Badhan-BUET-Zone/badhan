@@ -17,19 +17,23 @@ class ProfileData {
   });
 
   String id;
+  String email;
+  int designation;
+
   String studentId;
   String name;
   String roomNumber;
   int bloodGroup;
   int phone;
-  int lastDonation;
-  String comment;
   int hall;
-  int designation;
   String address;
-  int commentTime;
   bool availableToAll;
-  String email;
+
+  String comment;
+
+  int lastDonation;
+  int commentTime;
+  
 
   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
         id: json["_id"],

@@ -1,4 +1,5 @@
 import 'package:badhandatainput/config/color_palette.dart';
+import 'package:badhandatainput/provider/donor_data_provider.dart';
 import 'package:badhandatainput/provider/user_data_provider.dart';
 import 'package:badhandatainput/config/routes.dart';
 import 'package:badhandatainput/util/debug.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: UserDataProvider()),
+        ChangeNotifierProvider.value(value: DonorDataProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
