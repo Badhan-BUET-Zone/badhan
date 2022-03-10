@@ -5,6 +5,7 @@ import 'package:badhandatainput/util/environment.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,9 +15,11 @@ import 'editable_donor_diaglog.dart';
 
 // ignore: must_be_immutable
 class DonorCard extends StatefulWidget {
-  DonorCard({Key? key, required this.newDonor}) : super(key: key);
+  DonorCard({Key? key, required this.newDonor, required this.lastDonation})
+      : super(key: key);
 
-  NewDonor newDonor;
+  NewDonor newDonor; // can't be final as it is editable here
+  final DateTime? lastDonation;
 
   @override
   State<DonorCard> createState() => _DonorCardState();
@@ -24,6 +27,8 @@ class DonorCard extends StatefulWidget {
 
 class _DonorCardState extends State<DonorCard> {
   static String tag = "DonorCard";
+  final DateFormat _dateFormat = DateFormat("dd MMM yyyy");
+
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
@@ -121,6 +126,8 @@ class _DonorCardState extends State<DonorCard> {
                     Text("Address: ${widget.newDonor.address}"),
                     Text("Contact: ${widget.newDonor.phone}"),
                     Text("Comment: ${widget.newDonor.comment}"),
+                    if (widget.lastDonation != null)
+                      Text("Last Donation: ${_dateFormat.format(widget.lastDonation!)}"),
                     const SizedBox(
                       height: 8,
                     ),
@@ -168,7 +175,7 @@ class _SubmitButtonState extends State<_SubmitButton> {
         if (isLoding) {
           return;
         }
-        
+
         // if duplicate donor found
         if (foundDuplicate) {
           // then open url in main site

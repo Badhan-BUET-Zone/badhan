@@ -28,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String profileDataStr = "";
   bool isAuthenticated = false;
   final List<NewDonor> _newDonorList = [];
+  final Map<String, DateTime> _lastDonationMap = {};
   ProfileData? _profileData;
 
   @override
@@ -39,9 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Text(widget.title),
             IconButton(
-              onPressed: () {
-                
-              },
+              onPressed: () {},
               icon: const Icon(Icons.login),
               tooltip: "Logout",
             )
@@ -88,15 +87,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
 
                 return _ResponsiveHomePage(
-                    newDonorList: _newDonorList,
-                    msg: _msg,
-                    profileData: _profileData);
+                  newDonorList: _newDonorList,
+                  msg: _msg,
+                  profileData: _profileData,
+                  lastDonationMap: _lastDonationMap,
+                );
               },
             )
           : _ResponsiveHomePage(
               newDonorList: _newDonorList,
               msg: _msg,
-              profileData: _profileData),
+              profileData: _profileData,
+              lastDonationMap: _lastDonationMap,
+            ),
     );
   }
 
@@ -134,12 +137,15 @@ class _ResponsiveHomePage extends StatelessWidget {
     required List<NewDonor> newDonorList,
     required StringBuffer msg,
     required ProfileData? profileData,
+    required Map<String, DateTime> lastDonationMap,
   })  : _newDonorList = newDonorList,
         _msg = msg,
         _profileData = profileData,
+        _lastDonationMap = lastDonationMap,
         super(key: key);
 
   final List<NewDonor> _newDonorList;
+  final Map<String, DateTime> _lastDonationMap;
   final StringBuffer _msg;
   final ProfileData? _profileData;
 
@@ -149,6 +155,7 @@ class _ResponsiveHomePage extends StatelessWidget {
       mobile: ExcelWidget(
         newDonorList: _newDonorList,
         msg: _msg,
+        lastDonationMap: _lastDonationMap,
       ),
       tablet: Row(
         mainAxisSize: MainAxisSize.max,
@@ -161,6 +168,7 @@ class _ResponsiveHomePage extends StatelessWidget {
               child: ExcelWidget(
                 newDonorList: _newDonorList,
                 msg: _msg,
+                lastDonationMap: _lastDonationMap,
               )),
         ],
       ),
@@ -175,6 +183,7 @@ class _ResponsiveHomePage extends StatelessWidget {
               child: ExcelWidget(
                 newDonorList: _newDonorList,
                 msg: _msg,
+                lastDonationMap: _lastDonationMap,
               )),
         ],
       ),

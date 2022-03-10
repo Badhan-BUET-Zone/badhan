@@ -20,7 +20,7 @@ class _SideMenuState extends State<SideMenu> {
 
   List<String> instructions = [
     "1) Phone : text",
-    "2) BloodGroup : text",
+    "2) Blood Group : text",
     "3) Hall Name : text",
     "4) Student ID : number",
     "5) Address : text",

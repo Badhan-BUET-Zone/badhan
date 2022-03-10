@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:badhandatainput/model/donor_model.dart';
-import 'package:badhandatainput/model/provider_response_model.dart';
-import 'package:badhandatainput/provider/donor_data_provider.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/widget/home_page/donor_card.dart';
 import 'package:badhandatainput/widget/responsive.dart';
@@ -12,17 +10,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:provider/provider.dart';
 
 import '../../util/debug.dart';
 
 // ignore: must_be_immutable
 class ExcelWidget extends StatefulWidget {
-  ExcelWidget({Key? key, required this.newDonorList, required this.msg})
+  ExcelWidget(
+      {Key? key,
+      required this.newDonorList,
+      required this.msg,
+      required this.lastDonationMap})
       : super(key: key);
 
   List<NewDonor> newDonorList;
   StringBuffer msg;
+  final Map<String, DateTime> lastDonationMap;
 
   @override
   _AddExcelWidgetState createState() {
@@ -93,15 +95,22 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                             shrinkWrap: true,
                             itemCount: widget.newDonorList.length,
                             itemBuilder: (context, index) {
+                              NewDonor donor = widget.newDonorList[index];
                               return DonorCard(
-                                  newDonor: widget.newDonorList[index]);
+                                newDonor: donor,
+                                lastDonation:
+                                    widget.lastDonationMap[donor.phone],
+                              );
                             },
                           )
                         : SingleChildScrollView(
                             child: StaggeredGrid.count(
                               crossAxisCount: 2,
                               children: widget.newDonorList.map((e) {
-                                return DonorCard(newDonor: e);
+                                return DonorCard(
+                                  newDonor: e,
+                                  lastDonation: widget.lastDonationMap[e.phone],
+                                );
                               }).toList(),
                             ),
                           )),
@@ -205,7 +214,19 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
             header.add(headerMap("${data.value}"));
           } else {
             //buffer.writeln("${header[c]}: ${data.value} ");
-            dataMap[header[c]] = _dataMap(header[c], data.value);
+            if (header[c] == "lastDonation") {
+              try {
+                if (data.value.toString() != "0") {
+                  DateTime dateTime = DateTime.parse(data.value);
+                  widget.lastDonationMap[dataMap['phone']] = dateTime;
+                  Log.d(tag, "${dataMap['phone']} : $dateTime");
+                }
+              } catch (e) {
+                Log.d(tag, e.toString());
+              }
+            } else {
+              dataMap[header[c]] = _dataMap(header[c], data.value);
+            }
           }
           c++; // next column
         }
@@ -215,7 +236,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           NewDonor newDonor = NewDonor.fromJson(dataMap);
           //DonorData? duplicateDonor = await _checkDuplicate(newDonor.phone);
           //if (duplicateDonor == null) {
-            widget.newDonorList.add(newDonor);
+          widget.newDonorList.add(newDonor);
           //}
           // buffer.writeln(newDonor.toJson());
         }
@@ -223,25 +244,25 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
         r++; // new row
       }
     }
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   String headerMap(String old) {
-    switch (old) {
-      case "Phone":
+    switch (old.toLowerCase()) {
+      case "phone":
         return "phone";
-      case "BloodGroup":
+      case "blood group":
         return "bloodGroup";
-      case "Room Number":
+      case "room number":
         return "roomNumber";
-      case "Student ID":
+      case "student id":
         return "studentId";
-      case "Total Donations":
+      case "total donations":
         return "extraDonationCount";
-      case "Available To All":
+      case "available to all":
         return "availableToAll";
+      case "last donation":
+        return "lastDonation";
       default: // name, hall , address, comment
         return old.toLowerCase();
     }
