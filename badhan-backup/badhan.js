@@ -3,6 +3,8 @@ const yargs = require('yargs');
 const fsExtra = require('fs-extra')
 const controllers = require('./controllers');
 
+require('./mongotools')
+
 fsExtra.emptyDirSync('backup')
 
 yargs.command({

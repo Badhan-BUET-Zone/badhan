@@ -4,6 +4,8 @@ const extract = require('extract-zip')
 const resolve = require('path').resolve
 const child_process = require('child_process')
 
+const mongotools = require('./mongotools')
+
 const firebaseStorage = require('./storage');
 
 const backupController = async () => {
@@ -11,7 +13,7 @@ const backupController = async () => {
   let folderName = new Date().getTime()
 
   console.log('fetching database...')
-  var child = child_process.spawnSync('./mongodump', ['--out=backup/' + folderName,
+  var child = child_process.spawnSync(mongotools.mongodumpPath, ['--out=backup/' + folderName,
     process.env.MONGODB_URI_PROD], { encoding: 'utf8' })
   console.log('Process finished.')
   if (child.error) {
@@ -110,7 +112,7 @@ const restoreController = async (argv) => {
   console.log('extracting backup completed')
 
   console.log('restoring backup...')
-  const child = child_process.spawnSync('./mongorestore', ['--drop', `--dir=backup/${argv.time}/Badhan`, mongoURI], { encoding: 'utf8' })
+  const child = child_process.spawnSync(mongotools.mongorestorePath, ['--drop', `--dir=backup/${argv.time}/Badhan`, mongoURI], { encoding: 'utf8' })
   console.log('Process finished.')
   if (child.error) {
     console.log('ERROR: ', child.error)

@@ -1,12 +1,14 @@
 const admin = require('firebase-admin')
 const fs = require("fs");
+// https://cloud.google.com/iam/docs/creating-managing-service-account-keys
+const json_file_key = 'badhan-buet-1d20b088a755.json'
 
-if (!fs.existsSync('./config/badhan-buet-2177eeab149f.json')) {
-  console.log("LOG: config/badhan-buet-2177eeab149f.json does not exist");
+if (!fs.existsSync(`./config/${json_file_key}`)) {
+  console.log(`LOG: config/${json_file_key} does not exist`);
   process.exit(1)
 }
 
-const serviceAccount = require('../config/badhan-buet-2177eeab149f.json')
+const serviceAccount = require(`../config/${json_file_key}`)
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: 'badhan-buet.appspot.com'

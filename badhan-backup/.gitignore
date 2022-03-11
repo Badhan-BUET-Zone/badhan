@@ -1,6 +1,8 @@
 node_modules/
 mongodump
 mongorestore
+mongodump.exe
+mongorestore.exe
 .idea/
 backup
 package-lock.json
