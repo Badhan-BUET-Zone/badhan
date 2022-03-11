@@ -192,17 +192,12 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   void _openFileFromByte(List<int> bytes) async {
     String fName = "_openFileFromByte():";
 
-    widget.newDonorList.clear();
+    widget.newDonorList.clear(); // clear the list to show new data
 
     Excel excel = Excel.decodeBytes(bytes);
-
-    //StringBuffer buffer = StringBuffer();
     for (String sheetName in excel.tables.keys) {
       Log.d(tag, "$fName $sheetName"); //sheet Name
       widget.msg.write("Sheet: $sheetName");
-      // buffer.writeln("Sheet name: $sheetName");
-      /* print(excel.tables[table]!.maxCols);
-      print(excel.tables[table]!.maxRows); */
       int r = 1;
       List<String> header = [];
       Map<String, dynamic> dataMap = {};
@@ -213,7 +208,6 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           if (r == 1) {
             header.add(headerMap("${data.value}"));
           } else {
-            //buffer.writeln("${header[c]}: ${data.value} ");
             if (header[c] == "lastDonation") {
               try {
                 if (data.value.toString() != "0") {
@@ -231,16 +225,9 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           c++; // next column
         }
         if (r > 1) {
-          //buffer.writeln(json.encode(dataMap));
-          //Log.d(tag, "data: ${json.encode(dataMap)}");
           NewDonor newDonor = NewDonor.fromJson(dataMap);
-          //DonorData? duplicateDonor = await _checkDuplicate(newDonor.phone);
-          //if (duplicateDonor == null) {
           widget.newDonorList.add(newDonor);
-          //}
-          // buffer.writeln(newDonor.toJson());
         }
-        //buffer.writeln("\n");
         r++; // new row
       }
     }
