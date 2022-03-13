@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   await dotenv.load(fileName: "dotenv");
   Log.d("main", "${dotenv.env['TEST_API_URL']}");
+  //AuthToken.saveToken(dotenv.env['TEST_TOKEN']??"");
   MyFluroRouter.setUpRouter();
   runApp(const MyApp());
 }
@@ -29,10 +30,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Badhan Data Input',
         theme: ThemeData(
-          fontFamily: GoogleFonts.openSans().fontFamily,
-          primarySwatch: Colors.red,
-          scaffoldBackgroundColor: Palette.scaffold
-        ),
+            fontFamily: GoogleFonts.openSans().fontFamily,
+            primarySwatch: Colors.red,
+            scaffoldBackgroundColor: Palette.scaffold),
         initialRoute: "/home",
         onGenerateRoute: MyFluroRouter.router.generator,
       ),

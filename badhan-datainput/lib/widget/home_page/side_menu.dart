@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:badhandatainput/widget/home_page/editable_donor_diaglog.dart';
 import 'package:flutter/material.dart';
@@ -32,53 +33,62 @@ class _SideMenuState extends State<SideMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Center(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              ProfilePictureFromName(
-                  showFullText: false,
-                  name: widget.profileData.name,
-                  radius: 30,
-                  fontsize: 15,
-                  characterCount: 2),
-              const SizedBox(
-                width: 15,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.profileData.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Center(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ProfilePictureFromName(
+                    showFullText: false,
+                    name: widget.profileData.name,
+                    radius: 30,
+                    fontsize: 15,
+                    characterCount: 2),
+                const SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  child: Container(
+                    //color: Colors.red,
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        AutoSizeText(
+                          widget.profileData.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        AutoSizeText(
+                          designation(widget.profileData.designation),
+                          style: Theme.of(context).textTheme.subtitle1,
+                        )
+                      ],
+                    ),
                   ),
-                  Text(
-                    designation(widget.profileData.designation),
-                    style: Theme.of(context).textTheme.subtitle1,
-                  )
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          /* const AddDonorButtonWidget(), */
-          const Text(
-              "Instructions : Your excel sheet must have the following columns"),
-          const SizedBox(
-            height: 5,
-          ),
-          ...instructions.map((e) => Text(e)),
-        ],
-      )),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            /* const AddDonorButtonWidget(), */
+            const Text(
+                "Instructions : Your excel sheet must have the following columns"),
+            const SizedBox(
+              height: 5,
+            ),
+            ...instructions.map((e) => Text(e)),
+          ],
+        )),
+      ),
     );
   }
 

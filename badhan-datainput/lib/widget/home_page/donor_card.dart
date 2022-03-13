@@ -6,7 +6,6 @@ import 'package:badhandatainput/widget/common/date_time_pickers.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,7 +27,6 @@ class DonorCard extends StatefulWidget {
 
 class _DonorCardState extends State<DonorCard> {
   static String tag = "DonorCard";
-  final DateFormat _dateFormat = DateFormat("dd-MMM-yyyy");
 
   @override
   Widget build(BuildContext context) {

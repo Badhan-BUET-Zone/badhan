@@ -22,7 +22,7 @@ class DateInputWidget extends StatefulWidget {
 class _DateInputWidgetState extends State<DateInputWidget> {
   static String tag = "DateInput";
   late String dateString;
-  DateFormat _dateFormat = DateFormat("dd-MMM-yyyy");
+  final DateFormat _dateFormat = DateFormat("dd-MMM-yyyy");
 
   @override
   void initState() {

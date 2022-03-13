@@ -1,4 +1,5 @@
 .env
+dotenv
 api-test.rest
 
 # Miscellaneous
