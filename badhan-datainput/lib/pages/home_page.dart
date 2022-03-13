@@ -1,4 +1,5 @@
 import 'package:badhandatainput/model/donor_model.dart';
+import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
 import 'package:badhandatainput/widget/home_page/excel_widget.dart';
 import 'package:badhandatainput/widget/home_page/side_menu.dart';
 import 'package:badhandatainput/widget/responsive.dart';
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 _profileData = snapshot.data;
 
                 if (_profileData == null) {
-                  return const Center(child: Text("Failed Authentication!"));
+                  return const AuthFailedWidget();
                 }
 
                 return _ResponsiveHomePage(
