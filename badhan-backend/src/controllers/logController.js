@@ -3,15 +3,34 @@ const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const { OKResponse200 } = require('../response/successTypes')
 const constants = require('../constants')
-const { ForbiddenError403 } = require('../response/errorTypes')
+const { ForbiddenError403, InternalServerError500 } = require('../response/errorTypes')
+const githubAPI = require('../microservices/githubAPI')
+const firebaseAPI = require('../microservices/firebaseAPI')
 
 const handleGETOnlineCheck = async (req, res) => {
   return res.respond(new OKResponse200('Badhan API is online'))
 }
 
-const handleGETAppVersion = (req, res) => {
-  return res.respond(new OKResponse200('Latest app version fetched', {
-    version: '4.5.2'
+const handleGETAppVersions = async (req, res) => {
+  const githubResponse = await githubAPI.handleGETGitReleaseInfo()
+  if (githubResponse.status !== 200) {
+    return new InternalServerError500('Failed to connect to github API')
+  }
+  let browserDownloadURL, githubReleaseVersion
+  try {
+    browserDownloadURL = githubResponse.data.assets[0].browser_download_url
+    githubReleaseVersion = githubResponse.data.tag_name
+    if (!browserDownloadURL || !githubReleaseVersion || githubReleaseVersion.split('.').length !== 3) {
+      return res.respond(new InternalServerError500('Browser download URL/ version not properly formatted'))
+    }
+  } catch (e) {
+    return res.respond(new InternalServerError500('Browser download URL/ version not found from github releases'))
+  }
+  const firebaseResponse = await firebaseAPI.handleGETFirebaseGooglePlayVersion()
+  return res.respond(new OKResponse200('Github and firebase latest app version fetched', {
+    githubReleaseVersion: githubReleaseVersion,
+    githubReleaseDownloadURL: browserDownloadURL,
+    firebaseVersion: firebaseResponse.data.version
   }))
 }
 
@@ -60,7 +79,7 @@ const handleDELETELogs = async (req, res) => {
 module.exports = {
   handleGETStatistics,
   handleGETOnlineCheck,
-  handleGETAppVersion,
+  handleGETAppVersions,
   handleGETLogs,
   handleGETLogsByDate,
   handleGETLogsByDateAndDonor,
