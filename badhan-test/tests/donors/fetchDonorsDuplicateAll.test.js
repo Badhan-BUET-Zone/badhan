@@ -32,12 +32,13 @@ const duplicateDonorsManySchema = {
     required: ["status", "statusCode", "message", "donors"]
 }
 
-test('GET/donors/checkDuplicate/many',async()=>{
+test('GET/donors/phone',async()=>{
     try{
         let superAdminSignInResponse = await badhanAxios.post('/users/signin', {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
+
         let volunteerSignInResponse = await badhanAxios.post('/users/signin',{
             phone: env.VOLUNTEER_PHONE,
             password: env.VOLUNTEER_PASSWORD,
@@ -94,7 +95,7 @@ test('GET/donors/checkDuplicate/many',async()=>{
         listOfPhones.push(...superAdminSearchResultsForVolunteersHall.data.filteredDonors.map(donor=>donor.phone))
 
         let phoneListQuery = '?phoneList='+listOfPhones.join('&phoneList=')
-        let existingDonorsResponse = await badhanAxios.get(`/donors/checkDuplicate/many${phoneListQuery}`,{
+        let existingDonorsResponse = await badhanAxios.get(`/donors/phone${phoneListQuery}`,{
             headers: {
                 "x-auth": volunteerSignInResponse.data.token
             }
