@@ -7,26 +7,73 @@ const { ForbiddenError403, InternalServerError500 } = require('../response/error
 const githubAPI = require('../microservices/githubAPI')
 const firebaseAPI = require('../microservices/firebaseAPI')
 
-const handleGETOnlineCheck = async (req, res) => {
-  return res.respond(new OKResponse200('Badhan API is online'))
+const validate = require('jsonschema').validate
+
+const githubResponseSchema = {
+  type: 'object',
+  additionalProperties: true,
+  properties: {
+    tag_name: { type: 'string' },
+    assets: {
+      type: 'array',
+      minItems: 1,
+      items: {
+        types: 'object',
+        additionalProperties: true,
+        properties: {
+          browser_download_url: { type: 'string' }
+        },
+        required: ['browser_download_url']
+      }
+    }
+  },
+  required: ['tag_name']
+}
+
+const firebaseResponseSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    backendBaseURL: { type: 'string' },
+    backendTestBaseURL: { type: 'string' },
+    version: { type: 'string' }
+  },
+  required: ['backendBaseURL', 'backendTestBaseURL', 'version']
+}
+
+function isValidHttpUrl (string) {
+  let url
+  try {
+    url = new URL(string)
+  } catch (_) {
+    return false
+  }
+  return url.protocol === 'http:' || url.protocol === 'https:'
+}
+
+function isValidVersion (string) {
+  return /^\d{1,2}\.\d{1,2}\.\d{1,2}$/.test(string)
 }
 
 const handleGETAppVersions = async (req, res) => {
   const githubResponse = await githubAPI.handleGETGitReleaseInfo()
-  if (githubResponse.status !== 200) {
-    return new InternalServerError500('Failed to connect to github API')
+
+  const githubValidationResult = validate(githubResponse.data, githubResponseSchema)
+  if (githubValidationResult.errors.length !== 0) {
+    return res.respond(new InternalServerError500('Github API response format not valid'))
   }
-  let browserDownloadURL, githubReleaseVersion
-  try {
-    browserDownloadURL = githubResponse.data.assets[0].browser_download_url
-    githubReleaseVersion = githubResponse.data.tag_name
-    if (!browserDownloadURL || !githubReleaseVersion || githubReleaseVersion.split('.').length !== 3) {
-      return res.respond(new InternalServerError500('Browser download URL/ version not properly formatted'))
-    }
-  } catch (e) {
-    return res.respond(new InternalServerError500('Browser download URL/ version not found from github releases'))
+  const browserDownloadURL = githubResponse.data.assets[0].browser_download_url
+  const githubReleaseVersion = githubResponse.data.tag_name
+
+  if (!isValidHttpUrl(browserDownloadURL) || !isValidVersion(githubReleaseVersion)) {
+    return res.respond(new InternalServerError500('Github release browser download URL/ version is not valid'))
   }
+
   const firebaseResponse = await firebaseAPI.handleGETFirebaseGooglePlayVersion()
+  const firebaseValidationResult = validate(firebaseResponse.data, firebaseResponseSchema)
+  if (firebaseValidationResult.errors.length !== 0 || !isValidVersion(firebaseResponse.data.version)) {
+    return res.respond(new InternalServerError500('Firebase frontendSettings has invalid format'))
+  }
   return res.respond(new OKResponse200('Github and firebase latest app version fetched', {
     githubReleaseVersion: githubReleaseVersion,
     githubReleaseDownloadURL: browserDownloadURL,
@@ -78,7 +125,6 @@ const handleDELETELogs = async (req, res) => {
 
 module.exports = {
   handleGETStatistics,
-  handleGETOnlineCheck,
   handleGETAppVersions,
   handleGETLogs,
   handleGETLogsByDate,

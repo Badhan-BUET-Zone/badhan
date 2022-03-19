@@ -6,12 +6,6 @@ const userController = require('../controllers/userController')
 const rateLimiter = require('../middlewares/rateLimiter')
 const userValidator = require('../validations/users')
 
-const { OKResponse200 } = require('../response/successTypes')
-
-router.get('/', (req, res) => {
-  return res.respond(new OKResponse200('Backend active'))
-})
-
 router.post('/signin',
   userValidator.validateLogin,
   rateLimiter.signInLimiter,
