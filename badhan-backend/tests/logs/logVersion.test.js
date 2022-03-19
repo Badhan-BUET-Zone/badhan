@@ -2,10 +2,10 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const {processError}=require('../fixtures/helpers');
 
-test('GET/log/version',async()=>{
+test('GET/log/version/v5',async()=>{
     try {
 
-        let logVersionResponse = await badhanAxios.get('/log/version');
+        let logVersionResponse = await badhanAxios.get('/log/version/v5');
         let validationResult = validate(logVersionResponse.data, {
             type: "object",
             additionalProperties: false,
@@ -13,9 +13,11 @@ test('GET/log/version',async()=>{
                 status: {type: "string"},
                 statusCode: {const: 200},
                 message: {type: "string"},
-                version:{type:"string"}
+                githubReleaseVersion :{type:"string"},
+                githubReleaseDownloadURL :{type:"string"},
+                firebaseVersion :{type:"string"}
             },
-            required: ["status", "statusCode", "message", "version"]
+            required: ["status", "statusCode", "message", "githubReleaseVersion", "githubReleaseDownloadURL", "firebaseVersion"]
         });
         expect(validationResult.errors).toEqual([]);
 
