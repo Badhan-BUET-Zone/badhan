@@ -134,6 +134,10 @@ router.delete('/users/logins/:tokenId',
   guestController.handleDELETELogins
 )
 
+router.get('/log/version/v5',
+  guestController.handleGETAppVersions
+)
+
 router.post('/activeDonors', guestController.handlePOSTActiveDonors)
 router.delete('/activeDonors/:donorId', guestController.handleDELETEActiveDonors)
 router.get('/activeDonors', guestController.handleGETActiveDonors)
