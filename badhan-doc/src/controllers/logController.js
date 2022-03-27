@@ -1,10 +1,10 @@
 /**
  * @openapi
- * /log/version:
+ * /log/version/v5:
  *   get:
  *     tags:
  *       - Logs
- *     summary: Get info about current version
+ *     summary: Get info about current version of app from firebase and github
  *     description: Get app info deployed to play store
  *     responses:
  *       200:
@@ -22,10 +22,16 @@
  *                   example: 200
  *                 message:
  *                   type: string
- *                   example: Latest app version fetched
- *                 version:
+ *                   example: Github and firebase latest app version fetched
+ *                 githubReleaseVersion:
  *                   type: string
- *                   example: '2.5.1'
+ *                   example: 4.7.4
+ *                 githubReleaseDownloadURL:
+ *                   type: string
+ *                   example: https://github.com/Badhan-BUET-Zone/badhan-web/releases/download/4.7.4/Badhan-release-4.7.4.apk
+ *                 firebaseVersion:
+ *                   type: string
+ *                   example: 4.7.3
  */
 
 /**
