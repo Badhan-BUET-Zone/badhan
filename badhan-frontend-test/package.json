@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "test": "cypress run --spec 'cypress/integration/**/*'"
   },
   "author": "",
   "license": "ISC",
