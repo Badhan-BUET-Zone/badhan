@@ -64,7 +64,7 @@ const handleDELETEDonations = async (req, res) => {
     name: donor.name
   })
 
-  return res.respond(new OKResponse200('Successfully deleted donation'), {
+  return res.respond(new OKResponse200('Deleted donation successfully'), {
     deletedDonation: donationDeletionResult.data
   })
 }

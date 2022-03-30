@@ -264,7 +264,7 @@ const handlePATCHAdmins = async (req, res) => {
   await targetDonor.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (VOLUNTEER)', { name: targetDonor.name })
-  return res.respond(new OKResponse200('Successfully changed hall admin'))
+  return res.respond(new OKResponse200('Changed hall admin successfully'))
 }
 
 const handleGETDonors = async (req, res) => {
@@ -311,7 +311,7 @@ const handleGETDonors = async (req, res) => {
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS', { name: donor.name })
 
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
+  return res.respond(new OKResponse200('Fetched donor details successfully', {
     donor
   }))
 }
@@ -325,7 +325,7 @@ const handleGETVolunteersAll = async (req, res) => {
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET VOLUNTEERS ALL', {})
 
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
+  return res.respond(new OKResponse200('Fetched donor details successfully', {
     data: volunteerResult.data
   }))
 }
@@ -381,7 +381,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONORS PASSWORD (REQUEST)', { name: donor.name })
 
-  return res.respond(new OKResponse200('Successfully created recovery link for user', {
+  return res.respond(new OKResponse200('Created recovery link for user successfully', {
     token: tokenInsertResult.data.token
   }))
 }

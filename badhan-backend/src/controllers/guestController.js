@@ -30,7 +30,7 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     lastDonation: faker.getTimestamp(240)
   }
 
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
+  return res.respond(new OKResponse200('Fetched donor details successfully', {
     donor: obj
   }))
 }
@@ -120,7 +120,7 @@ const handlePOSTComment = async (req, res) => {
 }
 
 const handlePOSTChangePassword = async (req, res) => {
-  return res.respond(new OKResponse200('Successfully created recovery link for user', {
+  return res.respond(new OKResponse200('Created recovery link for user successfully', {
     token: faker.getToken()
   }))
 }
@@ -134,7 +134,7 @@ const handlePOSTPromote = async (req, res) => {
 }
 
 const handlePOSTChangeAdmin = async (req, res) => {
-  return res.respond(new OKResponse200('Successfully changed hall admin'))
+  return res.respond(new OKResponse200('Changed hall admin successfully'))
 }
 
 const handleGETViewDonorDetails = async (req, res) => {
@@ -209,7 +209,7 @@ const handleGETViewDonorDetails = async (req, res) => {
     markedBy: randomMarker
   }
 
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
+  return res.respond(new OKResponse200('Fetched donor details successfully', {
     donor: obj
   }))
 }
@@ -259,7 +259,7 @@ const handlePOSTInsertDonation = async (req, res) => {
 }
 
 const handlePOSTDeleteDonation = async (req, res) => {
-  return res.respond(new OKResponse200('Successfully deleted donation'))
+  return res.respond(new OKResponse200('Deleted donation successfully'))
 }
 
 const handleGETStatistics = async (req, res) => {
@@ -288,7 +288,7 @@ const handleGETViewAllVolunteers = async (req, res) => {
     })
   }
 
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
+  return res.respond(new OKResponse200('Fetched donor details successfully', {
     data: object
   }))
 }

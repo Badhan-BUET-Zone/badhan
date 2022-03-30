@@ -45,7 +45,7 @@ const handlePOSTSignIn = async (req, res) => {
   // add new token to cache
   tokenCache.add(tokenInsertResult.data.token, donor)
   await logInterface.addLog(donor._id, 'POST USERS SIGNIN', {})
-  return res.respond(new CreatedResponse201('Successfully signed in', {
+  return res.respond(new CreatedResponse201('Signed in successfully', {
     token: tokenInsertResult.data.token
   }))
 }
@@ -210,7 +210,7 @@ const handleGETMe = async (req, res) => {
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'ENTERED APP', { name: donor.name })
 
-  return res.respond(new OKResponse200('Successfully fetched donor details', {
+  return res.respond(new OKResponse200('Fetched donor details successfully', {
     donor
   }))
 }
