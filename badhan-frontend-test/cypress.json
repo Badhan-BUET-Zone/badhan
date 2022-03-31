@@ -2,5 +2,6 @@
   "video": false,
   "viewportHeight": 851,
   "viewportWidth": 393,
-  "scrollBehavior" : "center"
+  "scrollBehavior" : "center",
+  "defaultCommandTimeout": 10000
 }
