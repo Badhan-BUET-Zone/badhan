@@ -1,3 +1,6 @@
 {
-  "video": false
+  "video": false,
+  "viewportHeight": 851,
+  "viewportWidth": 393,
+  "scrollBehavior" : "center"
 }
