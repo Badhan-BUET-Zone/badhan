@@ -10,7 +10,7 @@ describe('Designated Donors', () => {
         cy.get(idStart("volunteerId_"))
         cy.get(idStart("hallAdminId_"))
         cy.get(idStart("superAdminId_"))
-        cy.get(id("topBarVerticalDotsId")).click();
-        cy.contains('Sign Out').click();
-        cy.get(id("confirmationBoxButtonId")).click();
+        cy.get(id("topBarVerticalDotsId")).click()
+        cy.contains('Sign Out').click()
+        cy.get(id("confirmationBoxButtonId")).click()
     })})
