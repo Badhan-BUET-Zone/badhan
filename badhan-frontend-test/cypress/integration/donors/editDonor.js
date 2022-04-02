@@ -1,4 +1,4 @@
-import { id, idStart } from '../../plugins/helpers'
+import { idStart } from '../../plugins/helpers'
 describe('Designated Donors', () => {
     it('should get all designated donors', () => {
         cy.visit('http://localhost:8080')
@@ -63,6 +63,6 @@ describe('Designated Donors', () => {
         cy.contains("Successfully changed comment")
 
         cy.get("#topBarVerticalDotsId").click()
-        cy.contains('Sign Out').click()
+        cy.get("#signOutButtonId").click();
         cy.get("#confirmationBoxButtonId").click()
     })})

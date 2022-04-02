@@ -1,3 +1,5 @@
+import { idStart } from "../../plugins/helpers";
+
 function getResponseFromAPI(interceptor){
     return new Promise((resolve,reject)=>{
         /// here if  ele exists or not
@@ -10,26 +12,22 @@ function getResponseFromAPI(interceptor){
 describe('List of logins Test', () => {
         it('should get my profile, click for login records and delete a login', async () => {
             cy.visit('http://localhost:8080')
-            cy.get('[id="signInPhoneTextBox"]').type(Cypress.env('SUPERADMIN_PHONE'))
-            cy.get('[id="signInPasswordTextBox"').type(Cypress.env('SUPERADMIN_PASSWORD'))
-            cy.intercept({
-                method: "POST",
-                url: "http://localhost:3000/users/signin",
-            }).as("signInRouteInterceptor");
-            cy.get('[id="signInButton"').click()
-            cy.wait("@signInRouteInterceptor")
-            cy.get('[id="hamburgerButtonId"').click()
+            cy.get('#signInPhoneTextBox').type(Cypress.env('SUPERADMIN_PHONE'))
+            cy.get('#signInPasswordTextBox').type(Cypress.env('SUPERADMIN_PASSWORD'))
+            cy.get("#signInButton").click()
+            cy.contains("success")
+            cy.get("#hamburgerButtonId").click()
             cy.intercept({
                 method: "GET",
                 url: /http:\/\/localhost:3000\/donors\?donorId=*/,
             }).as("getMyProfileInterceptor");
-            cy.get('[id="myProfileNavigationId"]').click()
+            cy.get("#myProfileNavigationId").click()
             cy.wait("@getMyProfileInterceptor")
             cy.intercept({
                 method: "GET",
                 url: "http://localhost:3000/users/logins",
             }).as("getLoginsInterceptor");
-            cy.get('[id="getListOfLoginButtonId"]').click()
+            cy.get("#getListOfLoginButtonId").click()
 
             const interceptionBody = await getResponseFromAPI('@getLoginsInterceptor')
 
@@ -40,19 +38,19 @@ describe('List of logins Test', () => {
                     method: "DELETE",
                     url: /http:\/\/localhost:3000\/users\/logins\/*/,
                 }).as("deleteLoginIntercepter");
-                cy.get('[id^=loginDeleteButtonId]').first().click()
+                cy.get(idStart("loginDeleteButtonId")).first().click()
                 cy.wait("@deleteLoginIntercepter")
             }else{
                 cy.contains('This is the only logged in device for your account')
             }
 
-            cy.get('[id="topBarVerticalDotsId"').click();
-            cy.contains('Sign Out').click();
+            cy.get("#topBarVerticalDotsId").click();
+            cy.get("#signOutButtonId").click();
             cy.intercept({
                 method: "DELETE",
                 url: "http://localhost:3000/users/signout",
             }).as("signOutRouteInterceptor");
-            cy.get('[id="confirmationBoxButtonId"]').click();
+            cy.get("#confirmationBoxButtonId").click();
             cy.wait("@signOutRouteInterceptor")
         })
     }
