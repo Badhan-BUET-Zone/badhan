@@ -1,12 +1,4 @@
-import { idStart } from '../../plugins/helpers'
-
-const getTextFromIdStart = async (id, index) => {
-    return new Promise((resolve => {
-        cy.get(idStart(id)).eq(index) .invoke('text').then((text)=>{
-            resolve(text)
-        })
-    }))
-}
+import { idStart, getTextFromIdStart } from '../../plugins/helpers'
 
 describe('Admin Promotion', () => {
     it('should promote volunteer to admin', async () => {
