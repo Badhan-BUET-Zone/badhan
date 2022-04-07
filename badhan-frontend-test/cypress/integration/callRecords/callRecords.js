@@ -1,7 +1,7 @@
 import {idStart, getTextFromIdStart} from "../../plugins/helpers";
 
-describe('Admin Promotion', () => {
-    it('should promote volunteer to admin', async () => {
+describe('Call Records', () => {
+    it('should create and delete a call record', async () => {
         cy.visit('http://localhost:8080')
         cy.get("#signInPhoneTextBox").type(Cypress.env('SUPERADMIN_PHONE'))
         cy.get("#signInPasswordTextBox").type(Cypress.env('SUPERADMIN_PASSWORD'))
