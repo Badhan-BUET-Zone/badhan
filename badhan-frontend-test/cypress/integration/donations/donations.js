@@ -26,6 +26,9 @@ describe('Donations', () => {
         cy.get("#personDetailsNewDonationDatePickerOkButtonId").click()
         cy.get("#personDetailsNewDonationOkButtonId").click()
         cy.contains("Added donation")
+        cy.get(idStart("donationCardDeleteButtonId_")).first().click()
+        cy.get("#confirmationBoxButtonId").click()
+        cy.contains("Successfully deleted donation")
         cy.get("#pageTitleBackButtonId").click()
         cy.get("#topBarVerticalDotsId").click();
         cy.get("#signOutButtonId").click()
