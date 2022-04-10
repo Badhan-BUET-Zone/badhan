@@ -1,11 +1,12 @@
+import env from '../../plugins/env'
 describe('Forgot Password Test', () => {
     it('checks feature to recover password', () => {
-        cy.visit('http://localhost:8080')
+        cy.visit(env.FRONTEND_URL)
         cy.get("#forgotPasswordButtonId").click()
-        cy.get("#forgotPasswordPhoneId").type(Cypress.env('SUPERADMIN_PHONE'))
+        cy.get("#forgotPasswordPhoneId").type(env.SUPERADMIN_PHONE)
         cy.intercept({
             method: "POST",
-            url: "http://localhost:3000/users/password/forgot",
+            url: env.BACKEND_URL+"/users/password/forgot",
         }).as("passwordForgotInterceptor");
         cy.get("#forgotPasswordButtonConfirmedId").click()
         cy.wait('@passwordForgotInterceptor').its('response.statusCode').should('equal', 200)

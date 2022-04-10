@@ -1,10 +1,10 @@
 import { idStart, getTextFromIdStart } from '../../plugins/helpers'
-
+import env from '../../plugins/env'
 describe('Admin Promotion', () => {
     it('should promote volunteer to admin', async () => {
-        cy.visit('http://localhost:8080')
-        cy.get("#signInPhoneTextBox").type(Cypress.env('SUPERADMIN_PHONE'))
-        cy.get("#signInPasswordTextBox").type(Cypress.env('SUPERADMIN_PASSWORD'))
+        cy.visit(env.FRONTEND_URL)
+        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
+        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
         cy.get("#signInButton").click()
         cy.get("#hamburgerButtonId").click()
         cy.get('#membersNavigationId').click()

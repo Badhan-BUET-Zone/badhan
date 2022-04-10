@@ -1,10 +1,10 @@
 import {idStart, getTextFromIdStart} from "../../plugins/helpers";
-
+import env from '../../plugins/env'
 describe('Donations', () => {
     it('should create a donation from person card', async () => {
-        cy.visit('http://localhost:8080')
-        cy.get("#signInPhoneTextBox").type(Cypress.env('SUPERADMIN_PHONE'))
-        cy.get("#signInPasswordTextBox").type(Cypress.env('SUPERADMIN_PASSWORD'))
+        cy.visit(env.FRONTEND_URL)
+        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
+        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
         cy.get("#signInButton").click()
         cy.get('#filterNameTextboxId').type("mr")
         cy.get("#filterPublicDataRadioId").parent().click()
