@@ -9,3 +9,12 @@ export const getTextFromIdStart = async (id, index) => {
         })
     }))
 }
+
+export const getResponseFromAPI = async (interceptor)=>{
+    return new Promise((resolve,reject)=>{
+        /// here if  ele exists or not
+        cy.wait(interceptor).then((interception)=>{
+            resolve(interception.response.body)
+        })
+    })
+}

@@ -1,4 +1,4 @@
-import {idStart, getTextFromIdStart} from "../../plugins/helpers";
+import {idStart, getTextFromIdStart, getResponseFromAPI} from "../../plugins/helpers";
 import env from '../../plugins/env'
 describe('Call Records', () => {
     it('should create and delete a call record', async () => {
@@ -9,16 +9,23 @@ describe('Call Records', () => {
         cy.get('#filterNameTextboxId').type("mr")
         cy.get("#filterPublicDataRadioId").parent().click()
         cy.get("#filterNotAvailableCheckboxId").parent().click()
+
+        cy.intercept({
+            method: "GET",
+            url: env.BACKEND_URL+'/search/v3*',
+        }).as("getSearchResultsInterceptor");
         cy.get("#filterSearchButtonId").click()
-        cy.get(idStart("personCardId_")).first().click()
-        const callCount = parseInt(await getTextFromIdStart("callCountId_",0))
-        cy.get(idStart("personCardCallButtonId_")).first().click()
+        const searchResultBody = await getResponseFromAPI("@getSearchResultsInterceptor")
+
+        const sampleDonorId = searchResultBody.filteredDonors[0]._id
+        const previousCallCount =  searchResultBody.filteredDonors[0].callRecordCount
+        cy.get("#personCardId_"+sampleDonorId).click()
+        cy.get('#callCountId_'+sampleDonorId).should('have.text', String(previousCallCount))
+        cy.get("#personCardCallButtonId_"+sampleDonorId).click()
         cy.contains("Added call record")
-        cy.get("#filterSearchButtonId").click()
-        cy.get(idStart("personCardId_")).first().click()
-        const updatedCallCount = parseInt(await getTextFromIdStart("callCountId_",0))
-        expect(updatedCallCount).equal(callCount+1,"call count updated")
-        cy.get(idStart("personCardSeeProfileButtonId_")).click()
+        cy.get("#personCardId_"+sampleDonorId).click()
+        cy.get('#callCountId_'+sampleDonorId).should('have.text', String(previousCallCount+1))
+        cy.get("#personCardSeeProfileButtonId_"+sampleDonorId).click()
         cy.get("#personDetailsCallRecordButtonId").click()
         cy.get(idStart("callRecordDeleteButtonId_")).first().click()
         cy.get("#confirmationBoxButtonId").click()

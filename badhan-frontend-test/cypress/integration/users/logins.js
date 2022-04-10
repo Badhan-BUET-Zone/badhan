@@ -1,13 +1,5 @@
-import { idStart } from "../../plugins/helpers";
+import { idStart, getResponseFromAPI } from "../../plugins/helpers";
 import env from '../../plugins/env'
-function getResponseFromAPI(interceptor){
-    return new Promise((resolve,reject)=>{
-        /// here if  ele exists or not
-        cy.wait(interceptor).then((interception)=>{
-            resolve(interception.response.body)
-        })
-    })
-}
 
 describe('List of logins Test', () => {
         it('should get my profile, click for login records and delete a login', async () => {
