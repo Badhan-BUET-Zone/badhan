@@ -6,3 +6,7 @@ We present our end to end UI testing code. To run the code, follow the instructi
 * Change the line
 `import env from '../../env/env.development'` of `/cypress/plugins/env.js` to `import env from '../../env/env.testing'`
 * Run `npm run cypress:open`
+
+A video demonstration can be found in the following link:
+
+https://www.youtube.com/watch?v=ucAffOi29vs

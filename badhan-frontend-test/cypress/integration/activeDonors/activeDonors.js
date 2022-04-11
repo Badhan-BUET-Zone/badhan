@@ -27,3 +27,4 @@ describe('Active Donors', () => {
         cy.get("#signOutButtonId").click()
         cy.get("#confirmationBoxButtonId").click();
     })})
+

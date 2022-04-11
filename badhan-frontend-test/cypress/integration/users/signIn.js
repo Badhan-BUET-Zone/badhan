@@ -13,4 +13,14 @@ describe('Login Test', () => {
   })
 })
 
+describe('Login Test Guest', () => {
+  it('login as guest', () => {
+    cy.visit(env.FRONTEND_URL)
+    cy.get("#guestSignInButtonId").click()
+    cy.get("#topBarVerticalDotsId").click();
+    cy.get("#signOutButtonId").click()
+    cy.get("#confirmationBoxButtonId").click();
+  })})
+
+
 
