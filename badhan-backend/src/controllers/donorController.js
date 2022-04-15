@@ -316,17 +316,17 @@ const handleGETDonors = async (req, res) => {
   }))
 }
 
-const handleGETVolunteersAll = async (req, res) => {
-  const volunteerResult = await donorInterface.findAllVolunteers()
+const handleGETDesignatedDonorsAll = async (req, res) => {
+  const allDesignatedDonorResult = await donorInterface.findAllDesignatedDonors()
 
-  if (volunteerResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(volunteerResult.message))
+  if (allDesignatedDonorResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(allDesignatedDonorResult.message))
   }
 
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET VOLUNTEERS ALL', {})
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS DESIGNATION ALL', {})
 
   return res.respond(new OKResponse200('Fetched donor details successfully', {
-    data: volunteerResult.data
+    data: allDesignatedDonorResult.data
   }))
 }
 
@@ -437,7 +437,7 @@ module.exports = {
   handlePATCHDonorsDesignation,
   handlePATCHAdmins,
   handleGETDonors,
-  handleGETVolunteersAll,
+  handleGETDesignatedDonorsAll,
   handleGETDonorsDuplicate,
   handlePOSTDonorsPasswordRequest,
   handleGETSearchV3,

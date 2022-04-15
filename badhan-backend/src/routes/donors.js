@@ -105,11 +105,19 @@ router.get('/donors/phone',
   donorController.handleGETDonorsDuplicateMany
 )
 
+// ROUTE TO BE DEPRECATED
 router.get('/volunteers/all',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
   authenticator.handleSuperAdminCheck,
-  donorController.handleGETVolunteersAll
+  donorController.handleGETDesignatedDonorsAll
+)
+
+router.get('/donors/designation/all',
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  authenticator.handleSuperAdminCheck,
+  donorController.handleGETDesignatedDonorsAll
 )
 
 router.patch('/admins',

@@ -74,7 +74,7 @@ router.get('/admins',
   guestController.handlePOSTShowHallAdmins
 )
 
-router.get('/volunteers/all',
+router.get('/donors/designation/all',
   guestController.handleGETViewAllVolunteers
 )
 

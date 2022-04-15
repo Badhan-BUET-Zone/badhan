@@ -118,9 +118,8 @@ const findDonorByPhone = async (phoneNumber) => {
   }
 }
 
-const findAllVolunteers = async () => {
+const findAllDesignatedDonors = async () => {
   const data = await Donor.find({
-    designation: 1
   }, {
     name: 1,
     hall: 1,
@@ -612,7 +611,7 @@ module.exports = {
   findDonorAndUpdate,
   getCount,
   getVolunteerCount,
-  findAllVolunteers,
+  findAllDesignatedDonors,
   findDonorByPhone,
   findDonorByIDAndUpdateCommentTime,
   findDonorById,
