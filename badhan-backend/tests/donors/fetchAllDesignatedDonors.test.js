@@ -2,7 +2,7 @@ const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config');
 const {processError} = require('../fixtures/helpers');
-const volunteersSchema={
+const allDesignatedDonorSchema={
     type: "object",
     additionalProperties: false,
     properties: {
@@ -29,20 +29,20 @@ const volunteersSchema={
     required:["status","statusCode","message","data"]
 }
 
-test('GET/volunteers/all', async () => {
+test('GET/donors/designation/all', async () => {
     try {
         let signInResponse = await badhanAxios.post('/users/signin', {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let allVolunteersResponse = await badhanAxios.get('/volunteers/all', {
+        let allDesignatedDonorResponse = await badhanAxios.get('/donors/designation/all', {
             headers: {
                 "x-auth": signInResponse.data.token
             }
         });
 
-        let validationResult = validate(allVolunteersResponse.data, volunteersSchema);
+        let validationResult = validate(allDesignatedDonorResponse.data, allDesignatedDonorSchema);
 
         expect(validationResult.errors).toEqual([]);
 
@@ -57,11 +57,11 @@ test('GET/volunteers/all', async () => {
     }
 })
 
-test('GET/guest/volunteers/all', async () => {
+test('GET/guest/donors/designation/all', async () => {
     try {
-        let allVolunteersResponse = await badhanAxios.get('/guest/volunteers/all');
+        let allDesignatedDonorResponse = await badhanAxios.get('/guest/donors/designation/all');
 
-        let validationResult = validate(allVolunteersResponse.data, volunteersSchema);
+        let validationResult = validate(allDesignatedDonorResponse.data, allDesignatedDonorSchema);
 
         expect(validationResult.errors).toEqual([]);
 

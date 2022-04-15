@@ -39,10 +39,39 @@ test('GET/donors/phone',async()=>{
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let volunteerSignInResponse = await badhanAxios.post('/users/signin',{
-            phone: env.VOLUNTEER_PHONE,
-            password: env.VOLUNTEER_PASSWORD,
+        let donorCreationResponse = await badhanAxios.post("/donors", {
+            phone: 8801555444777,
+            bloodGroup: 2,
+            hall: 5,
+            name: "Blah Blah",
+            studentId: 1606060,
+            address: "Azimpur",
+            roomNumber: "3009",
+            comment: "developer of badhan",
+            extraDonationCount: 2,
+            availableToAll: true
+        }, {
+            headers: {
+                "x-auth": superAdminSignInResponse.data.token
+            }
+        });
+
+        // promote that newly created donor to volunteer
+        let promotionResponse = await badhanAxios.patch('/donors/designation', {
+            donorId:donorCreationResponse.data.newDonor._id,
+            promoteFlag:true
+        },{
+            headers: {
+                "x-auth": superAdminSignInResponse.data.token
+            }
+        });
+
+        let donorsPasswordPostResponse = await badhanAxios.post('/donors/password',{donorId:donorCreationResponse.data.newDonor._id},{
+            headers: {
+                "x-auth": superAdminSignInResponse.data.token
+            }
         })
+        let volunteerToken = donorsPasswordPostResponse.data.token
 
         let searchQuery
         searchQuery = {
@@ -97,7 +126,7 @@ test('GET/donors/phone',async()=>{
         let phoneListQuery = '?phoneList='+listOfPhones.join('&phoneList=')
         let existingDonorsResponse = await badhanAxios.get(`/donors/phone${phoneListQuery}`,{
             headers: {
-                "x-auth": volunteerSignInResponse.data.token
+                "x-auth": volunteerToken
             }
         })
         let existingDonorValidationResult = validate(existingDonorsResponse.data, duplicateDonorsManySchema)
@@ -106,9 +135,16 @@ test('GET/donors/phone',async()=>{
 
         await badhanAxios.delete('/users/signout', {
             headers: {
-                "x-auth": volunteerSignInResponse.data.token
+                "x-auth": volunteerToken
             }
         });
+
+        await badhanAxios.delete("/donors?donorId="+donorCreationResponse.data.newDonor._id,  {
+            headers: {
+                "x-auth": superAdminSignInResponse.data.token
+            }
+        });
+
         await badhanAxios.delete('/users/signout', {
             headers: {
                 "x-auth": superAdminSignInResponse.data.token
