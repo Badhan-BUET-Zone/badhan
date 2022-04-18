@@ -146,8 +146,11 @@ class _DonorCardState extends State<DonorCard> {
               )
             ]),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const Padding(
+                    padding: EdgeInsets.only(left: 54),
+                    child:  Text("Hello")),
                 _SubmitButton(
                   newDonor: widget.newDonor,
                 ),
