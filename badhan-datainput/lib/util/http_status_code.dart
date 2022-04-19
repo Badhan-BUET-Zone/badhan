@@ -3,4 +3,5 @@ class HttpSatusCode {
   static int ok = 200;
   static int notFound = 404;
   static int deleted = 202;
+  static int conflict = 409;
 }

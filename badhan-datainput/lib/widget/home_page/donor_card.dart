@@ -145,17 +145,7 @@ class _DonorCardState extends State<DonorCard> {
                 ),
               )
             ]),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Padding(
-                    padding: EdgeInsets.only(left: 54),
-                    child:  Text("Hello")),
-                _SubmitButton(
-                  newDonor: widget.newDonor,
-                ),
-              ],
-            ),
+            SubmissionSection(newDonor: widget.newDonor),
           ],
         ),
       ),
@@ -163,8 +153,8 @@ class _DonorCardState extends State<DonorCard> {
   }
 }
 
-class _SubmitButton extends StatefulWidget {
-  const _SubmitButton({
+class SubmissionSection extends StatefulWidget {
+  const SubmissionSection({
     Key? key,
     required this.newDonor,
   }) : super(key: key);
@@ -172,82 +162,122 @@ class _SubmitButton extends StatefulWidget {
   final NewDonor newDonor;
 
   @override
-  State<_SubmitButton> createState() => _SubmitButtonState();
+  State<SubmissionSection> createState() => _SubmissionSectionState();
 }
 
-class _SubmitButtonState extends State<_SubmitButton> {
-  static String tag = "SubmitButton";
+class _SubmissionSectionState extends State<SubmissionSection> {
+  static String tag = "SubmissionSection";
+
+  String submissionStatusText = "";
+  String buttonText = "Submit";
+
   bool isLoding = false;
   bool foundDuplicate = false;
+  String? donorId;
   DonorData? duplicateDonorData;
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () async {
-        if (isLoding) {
-          return;
-        }
-
-        // if duplicate donor found
-        if (foundDuplicate) {
-          // then open url in main site
-          // home/details?id=5e677716ca2dc857938d7c73
-          String url =
-              "${Environment.mainWebsite}/#/home/details?id=${duplicateDonorData!.id}";
-          Log.d(tag, "opening: $url");
-          if (!await launch(url)) throw 'Could not launch $url';
-          return;
-        }
-
-        setState(() {
-          isLoding = true;
-        });
-        duplicateDonorData = await _checkDuplicate(widget.newDonor.phone);
-        setState(() {
-          isLoding = false;
-          foundDuplicate = duplicateDonorData != null;
-        });
-      },
-      icon: isLoding
-          ? const SizedBox(
-              child: CircularProgressIndicator(
-                color: Colors.green,
-                strokeWidth: 2.0,
-              ),
-              height: 10,
-              width: 10,
-            )
-          : Icon(
-              foundDuplicate ? Icons.copy : Icons.file_upload_outlined,
-              color: Colors.green,
-              size: 17.0,
-            ),
-      label: Text(
-        foundDuplicate ? "See duplicate" : "Submit",
-        style: const TextStyle(color: Colors.green),
-      ),
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.hovered)) {
-              return Colors.green.withOpacity(0.04);
-            }
-            if (states.contains(MaterialState.focused) ||
-                states.contains(MaterialState.pressed)) {
-              return Colors.green.withOpacity(0.12);
-            }
-            return null; // Defer to the widget's default.
-          },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Padding(
+              padding: const EdgeInsets.only(left: 54),
+              child: Text(
+                submissionStatusText,
+                style: const TextStyle(color: Colors.blue),
+              )),
         ),
-      ),
-    );
-  }
+        OutlinedButton.icon(
+          onPressed: () async {
+            if (isLoding) {
+              return;
+            }
 
-  Future<DonorData?> _checkDuplicate(String phone) async {
-    ProviderResponse providerResponse =
-        await Provider.of<DonorDataProvider>(context, listen: false)
-            .checkDuplicate(phone);
-    return providerResponse.success ? providerResponse.data : null;
+            // if duplicate donor found
+            if (donorId != null) {
+              // then open url in main site
+              // home/details?id=5e677716ca2dc857938d7c73
+              String url =
+                  "${Environment.mainWebsite}/#/home/details?id=$donorId";
+              Log.d(tag, "opening: $url");
+              if (!await launch(url)) throw 'Could not launch $url';
+              return;
+            }
+
+            setState(() {
+              isLoding = true;
+            });
+
+            ProviderResponse response =
+                await Provider.of<DonorDataProvider>(context, listen: false)
+                    .createDonor(widget.newDonor);
+
+            if (!response.success && response.data != null) {
+              donorId = response.data;
+              setState(() {
+                isLoding = false;
+                foundDuplicate = true;
+                if (foundDuplicate) {
+                  submissionStatusText = response.message;
+                  buttonText = "See Duplicate";
+                }
+              });
+            } else if (response.success && response.data != null) {
+              DonorData donorData = response.data;
+              donorId = donorData.id;
+              setState(() {
+                isLoding = false;
+                foundDuplicate = false;
+                submissionStatusText = "Donor created Successfully!";
+                buttonText = "See Donor";
+              });
+            } else {
+              setState(() {
+                isLoding = false;
+                foundDuplicate = false;
+                if (foundDuplicate) {
+                  submissionStatusText = response.message;
+                  buttonText = "Submit";
+                }
+              });
+            }
+          },
+          icon: isLoding
+              ? const SizedBox(
+                  child: CircularProgressIndicator(
+                    color: Colors.green,
+                    strokeWidth: 2.0,
+                  ),
+                  height: 10,
+                  width: 10,
+                )
+              : Icon(
+                  foundDuplicate ? Icons.copy : Icons.file_upload_outlined,
+                  color: Colors.green,
+                  size: 17.0,
+                ),
+          label: Text(
+            buttonText,
+            style: const TextStyle(color: Colors.green),
+          ),
+          style: ButtonStyle(
+            overlayColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return Colors.green.withOpacity(0.04);
+                }
+                if (states.contains(MaterialState.focused) ||
+                    states.contains(MaterialState.pressed)) {
+                  return Colors.green.withOpacity(0.12);
+                }
+                return null; // Defer to the widget's default.
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
