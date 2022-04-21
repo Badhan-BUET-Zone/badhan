@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'util/auth_token_util.dart';
+//import 'util/auth_token_util.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: "dotenv");

@@ -11,12 +11,10 @@ class LandingPage extends StatelessWidget {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.network(
-            "https://badhan-buet.web.app/img/badhanlogo.d2a732ea.png",
-            height: 250,
-            headers: const {
-              'access-control-allow-origin': '*',
-            },
+          Image.asset(
+            "assets/images/badhanlogo.png",
+            width: 200,
+            height: 200,
           ),
           Text(
             "Badhan",
