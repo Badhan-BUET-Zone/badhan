@@ -13,11 +13,11 @@ import '../model/provider_response_model.dart';
 import '../provider/user_data_provider.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title, required this.token})
+  MyHomePage({Key? key, required this.title, required this.token})
       : super(key: key);
   static String route = "/home";
   final String title;
-  final String token;
+  String token;
   @override
   State<MyHomePage> createState() {
     return _MyHomePageState();
@@ -62,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ProviderResponse response =
         await Provider.of<UserDataProvider>(context, listen: false).logout();
     if (response.success) {
+      widget.token = "";
       AuthToken.deleteToken(); // clear token from cache
       Navigator.of(context).pushNamed("/");
     } else {
@@ -103,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // if user if not redirected yet
-    if (!isAuthenticated) {
+    if (!isAuthenticated && widget.token != "") {
       Log.d(tag, "_fetchProfileData: redirectng user");
       response = await Provider.of<UserDataProvider>(context, listen: false)
           .redirectUser(widget.token);
@@ -113,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return response.data;
       }
     }
-
+    
     return null; // user is not authenticated
   }
 
@@ -192,8 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
   } */
 
   AppBar? _appBar;
-  AppBar _getAppBar() {
-    _appBar ??= AppBar(
+  AppBar _getAppBar(bool isMobile) {
+    _appBar = AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -206,8 +207,8 @@ class _MyHomePageState extends State<MyHomePage> {
               )
           ],
         ),
-        automaticallyImplyLeading: Responsive.isMobile(context),
-      );
+        automaticallyImplyLeading: isMobile //Responsive.isMobile(context),
+        );
     return _appBar!;
   }
 
@@ -217,19 +218,22 @@ class _MyHomePageState extends State<MyHomePage> {
       body: FutureBuilder(
         future: _fetchProfileData(),
         builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
-          
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-    
+
           _profileData = snapshot.data;
-    
+
+          bool isMobile = Responsive.isMobile(context);
+
           return Scaffold(
-            appBar: _getAppBar(),
-            drawer: Responsive.isMobile(context)
-                ? Drawer(
-                    child: SideMenu(profileData: _profileData!),
-                  )
+            appBar: _getAppBar(isMobile),
+            drawer: isMobile
+                ? _profileData == null
+                    ? const Center(child: Text("Failed Authentication!"))
+                    : Drawer(
+                        child: SideMenu(profileData: _profileData!),
+                      )
                 : null,
             body: _profileData == null
                 ? const AuthFailedWidget()

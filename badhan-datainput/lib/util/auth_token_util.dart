@@ -12,10 +12,16 @@ class AuthToken {
     prefs.setString('token', token);
   }
 
+  static Future<bool> isAuthorized() async {
+    String token = await getToken();
+    //Log.d(tag, "isAuthorized: $token");
+    return token != "";
+  }
+
   static Future<String> getToken() async {
     if (_token == "") {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      _token = prefs.getString("token") as String;
+      _token = prefs.getString("token") ?? "";
     }
     return _token;
   }
@@ -37,9 +43,10 @@ class AuthToken {
   static void deleteToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool verdict = await prefs.clear();
+    _token = "";
     if (verdict) {
       Log.d(tag, "cache cleared");
-    }else{
+    } else {
       Log.d(tag, "cache was not cleared");
     }
   }

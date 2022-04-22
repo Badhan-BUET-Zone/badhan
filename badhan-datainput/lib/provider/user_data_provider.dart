@@ -12,6 +12,7 @@ import '../util/http_status_code.dart';
 
 class UserDataProvider with ChangeNotifier {
   static String tag = "UserDataProvider";
+  final String _failedAuthentication = "Failed Authentication!";
 
   Future<ProviderResponse> redirectUser(String token) async {
     String url = "${Environment.apiUrl}/users/redirection";
@@ -44,17 +45,24 @@ class UserDataProvider with ChangeNotifier {
         );
       } else {
         Log.d(tag, "$fName not http 200");
-        return ProviderResponse(
-            success: false, message: "error fetching donation");
+        return ProviderResponse(success: false, message: _failedAuthentication);
       }
     } catch (e) {
       Log.d(tag, "$fName error");
       Log.d(tag, "$fName $e");
-      return ProviderResponse(success: false, message: "error");
+      return ProviderResponse(success: false, message: _failedAuthentication);
     }
   }
 
   Future<ProviderResponse> getProfileData() async {
+    if (!(await AuthToken.isAuthorized())) {
+      Log.d(tag, "user is not authenticated");
+      return ProviderResponse(
+        success: false,
+        message: _failedAuthentication,
+      );
+    }
+
     String url = "${Environment.apiUrl}/users/me";
     String fName = "getProfileData():";
     Log.d(tag, "$fName fetching from: $url");
@@ -78,13 +86,12 @@ class UserDataProvider with ChangeNotifier {
         );
       } else {
         Log.d(tag, "$fName not http 200");
-        return ProviderResponse(
-            success: false, message: "error fetching donation");
+        return ProviderResponse(success: false, message: _failedAuthentication);
       }
     } catch (e) {
       Log.d(tag, "$fName error");
       Log.d(tag, "$fName $e");
-      return ProviderResponse(success: false, message: "error");
+      return ProviderResponse(success: false, message: _failedAuthentication);
     }
   }
 
@@ -110,8 +117,7 @@ class UserDataProvider with ChangeNotifier {
       } else {
         String msg = "error while logging out";
         Log.d(tag, "$fName $msg");
-        return ProviderResponse(
-            success: false, message: msg);
+        return ProviderResponse(success: false, message: msg);
       }
     } catch (e) {
       Log.d(tag, "$fName error");
