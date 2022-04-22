@@ -1,4 +1,6 @@
 import 'package:badhandatainput/model/donor_model.dart';
+import 'package:badhandatainput/util/auth_token_util.dart';
+import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
 import 'package:badhandatainput/widget/home_page/excel_widget.dart';
 import 'package:badhandatainput/widget/home_page/side_menu.dart';
@@ -23,7 +25,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //static String tag = "MyHomePage";
+  static String tag = "MyHomePage";
+
+  bool isLoggingOut = false;
 
   final StringBuffer _msg = StringBuffer("Import an excel file.");
   String profileDataStr = "";
@@ -32,7 +36,88 @@ class _MyHomePageState extends State<MyHomePage> {
   final Map<String, DateTime> _lastDonationMap = {};
   ProfileData? _profileData;
 
-  @override
+  /// logout the user when logout button
+  /// in the appbar is clicked
+  /// to logout, logout api is called
+  /// and cached token is deleted
+  void logout() async {
+    // show a dialog of logging out =====================
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                const CircularProgressIndicator(),
+                Container(
+                  margin: const EdgeInsets.only(left: 14),
+                  child: const Text("Logging out..."),
+                ),
+              ],
+            ),
+          );
+        });
+
+    // call the logout api and clear the cache =====================
+    ProviderResponse response =
+        await Provider.of<UserDataProvider>(context, listen: false).logout();
+    if (response.success) {
+      AuthToken.deleteToken(); // clear token from cache
+      Navigator.of(context).pushNamed("/");
+    } else {
+      Navigator.of(context).pop();
+    }
+
+    // show a snackbar with a message from the response==============
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 15),
+        // width: MediaQuery.of(context).size.width * 0.2,
+        margin: EdgeInsets.only(
+            left: MediaQuery.of(context).size.width * 0.7,
+            right: 20,
+            bottom: 20),
+        behavior: SnackBarBehavior.floating,
+        content: Text(response.message),
+        backgroundColor: response.success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  /// try to fetch profile data if redirected in any previous call.
+  /// otherwise redirect user using auth token provided as url query param if not authenticated
+  Future<ProfileData?> _fetchProfileData() async {
+    ProviderResponse response;
+
+    // if user profile data is already fetched in previous request
+    if (_profileData != null) return _profileData;
+
+    // try to get the profile data of the user
+    if (!isAuthenticated) {
+      response = await Provider.of<UserDataProvider>(context, listen: false)
+          .getProfileData();
+      if (response.success) {
+        isAuthenticated = true;
+        return response.data;
+      }
+    }
+
+    // if user if not redirected yet
+    if (!isAuthenticated) {
+      Log.d(tag, "_fetchProfileData: redirectng user");
+      response = await Provider.of<UserDataProvider>(context, listen: false)
+          .redirectUser(widget.token);
+
+      if (response.success) {
+        isAuthenticated = true;
+        return response.data;
+      }
+    }
+
+    return null; // user is not authenticated
+  }
+
+  /* @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -40,11 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(widget.title),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.login),
-              tooltip: "Logout",
-            )
+            if (isAuthenticated)
+              IconButton(
+                onPressed: logout, // call logout method
+                icon: const Icon(Icons.login),
+                tooltip: "Logout",
+              )
           ],
         ),
         automaticallyImplyLeading: Responsive.isMobile(context),
@@ -64,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return const Center(
                           child: Text("Failed Authentication!"));
                     }
+
                     return Drawer(
                       child: SideMenu(profileData: _profileData!),
                     );
@@ -102,33 +189,60 @@ class _MyHomePageState extends State<MyHomePage> {
               lastDonationMap: _lastDonationMap,
             ),
     );
+  } */
+
+  AppBar? _appBar;
+  AppBar _getAppBar() {
+    _appBar ??= AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.title),
+            if (isAuthenticated)
+              IconButton(
+                onPressed: logout, // call logout method
+                icon: const Icon(Icons.login),
+                tooltip: "Logout",
+              )
+          ],
+        ),
+        automaticallyImplyLeading: Responsive.isMobile(context),
+      );
+    return _appBar!;
   }
 
-  Future<ProfileData?> _fetchProfileData() async {
-    ProviderResponse response;
-
-    if (_profileData != null) return _profileData;
-
-    if (!isAuthenticated) {
-      response = await Provider.of<UserDataProvider>(context, listen: false)
-          .redirectUser(widget.token);
-
-      if (response.success) {
-        isAuthenticated = true;
-        return response.data;
-      }
-    }
-
-    if (!isAuthenticated) {
-      response = await Provider.of<UserDataProvider>(context, listen: false)
-          .getProfileData();
-      if (response.success) {
-        isAuthenticated = true;
-        return response.data;
-      }
-    }
-
-    return null;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FutureBuilder(
+        future: _fetchProfileData(),
+        builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
+          
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+    
+          _profileData = snapshot.data;
+    
+          return Scaffold(
+            appBar: _getAppBar(),
+            drawer: Responsive.isMobile(context)
+                ? Drawer(
+                    child: SideMenu(profileData: _profileData!),
+                  )
+                : null,
+            body: _profileData == null
+                ? const AuthFailedWidget()
+                : _ResponsiveHomePage(
+                    newDonorList: _newDonorList,
+                    msg: _msg,
+                    profileData: _profileData,
+                    lastDonationMap: _lastDonationMap,
+                  ),
+          );
+        },
+      ),
+    );
   }
 }
 

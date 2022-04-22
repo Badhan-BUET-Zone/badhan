@@ -10,7 +10,7 @@ class MyFluroRouter {
   static final Handler _homeHander =
       Handler(handlerFunc: ((context, Map<String, dynamic> parameters) {
     Log.d(tag, parameters.toString());
-    String token = parameters['token']?.first??"";
+    String token = parameters['token']?.first ?? "";
     return MyHomePage(title: "Badhan data input", token: token);
   }));
 
@@ -21,7 +21,7 @@ class MyFluroRouter {
   }));
 
   static void setUpRouter() {
-    router.define("/", handler: _landingHandler);
+    router.define("/", handler: _landingHandler, transitionType: TransitionType.fadeIn);
     router.define("/home",
         handler: _homeHander, transitionType: TransitionType.fadeIn);
   }

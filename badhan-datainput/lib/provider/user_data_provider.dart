@@ -88,5 +88,35 @@ class UserDataProvider with ChangeNotifier {
     }
   }
 
-  
+  Future<ProviderResponse> logout() async {
+    String url = "${Environment.apiUrl}/users/signout";
+    String fName = "logout():";
+    Log.d(tag, "$fName logging out from: $url");
+
+    try {
+      Response response = await delete(
+        Uri.parse(url),
+        headers: await AuthToken.getHeaders(),
+      );
+
+      Log.d(tag, "$fName  ${response.body}");
+
+      Map data = json.decode(response.body);
+      if (data['statusCode'] == HttpSatusCode.ok) {
+        return ProviderResponse(
+          success: true,
+          message: data['message'],
+        );
+      } else {
+        String msg = "error while logging out";
+        Log.d(tag, "$fName $msg");
+        return ProviderResponse(
+            success: false, message: msg);
+      }
+    } catch (e) {
+      Log.d(tag, "$fName error");
+      Log.d(tag, "$fName $e");
+      return ProviderResponse(success: false, message: "Unexpected error.");
+    }
+  }
 }

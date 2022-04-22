@@ -1,8 +1,10 @@
+import 'package:badhandatainput/util/debug.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthToken {
   static String _token = "";
+  static String tag = "AuthToken";
 
   static void saveToken(String token) async {
     _token = token;
@@ -34,6 +36,11 @@ class AuthToken {
 
   static void deleteToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    bool verdict = await prefs.clear();
+    if (verdict) {
+      Log.d(tag, "cache cleared");
+    }else{
+      Log.d(tag, "cache was not cleared");
+    }
   }
 }
