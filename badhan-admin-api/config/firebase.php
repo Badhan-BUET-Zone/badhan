@@ -10,9 +10,6 @@ return [
      */
     'default' => env('FIREBASE_PROJECT', 'app'),
 
-//    'credentials' => [
-//        'file' => storage_path('firebase/firebase_credentials.json'),
-//    ],
 
     /*
      * ------------------------------------------------------------------------
@@ -51,6 +48,7 @@ return [
              *
              */
             'credentials' => [
+//                'file' => storage_path('firebase\firebase_credentials.json'),
                 'file' => env('FIREBASE_CREDENTIALS', env('GOOGLE_APPLICATION_CREDENTIALS')),
 
                 /*
