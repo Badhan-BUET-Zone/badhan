@@ -78,7 +78,7 @@ class FirebaseController extends Controller
             ->set($validator->valid());
         $validatedInput = $validator->valid();
         $validatedInput["id"] = $id;
-        return response()->json(['status'=>200,'contributor'=>$validatedInput]);
+        return response()->json(['status'=>201,"message"=>"Contributor created successfully","contributor"=>$validatedInput]);
     }
 
     public function update($id){
