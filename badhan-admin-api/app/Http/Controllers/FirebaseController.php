@@ -20,8 +20,9 @@ class FirebaseController extends Controller
     }
 
     public function index(){
-        $reference =  $this->database->getReference('data/');
-        return response()->json(['status'=>200,'data'=>$reference->getvalue()]);
+        $contributors =  $this->database->getReference('data/');
+        $activeDeveloper = $contributors->orderByChild('type')->equalTo('Active Developers');
+        return response()->json(['status'=>200, 'message'=>'Contributors fetched successfully','contributors'=>['activeDevelopers'=>$activeDeveloper]]);
     }
 
     public function store(Request $request){
@@ -78,7 +79,7 @@ class FirebaseController extends Controller
             ->set($validator->valid());
         $validatedInput = $validator->valid();
         $validatedInput["id"] = $id;
-        return response()->json(['status'=>201,"message"=>"Contributor created successfully","contributor"=>$validatedInput]);
+        return response()->json(['status'=>201,'message'=>'Contributor created successfully','contributor'=>$validatedInput]);
     }
 
     public function update($id){
