@@ -56,14 +56,14 @@ class BadhanConst {
 
   static int hallId(String name) {
     for (int i = 0; i < halls.length; i++) {
-      if (halls[i] == name) return i;
+      if (halls[i].toLowerCase() == name.toLowerCase()) return i;
     }
     return -1;
   }
 
   static int bloodGroupId(String bg) {
     for (int i = 0; i < bloodGroups.length; i++) {
-      if (bloodGroups[i] == bg) return i;
+      if (bloodGroups[i].toLowerCase() == bg.toLowerCase()) return i;
     }
     return -1;
   }

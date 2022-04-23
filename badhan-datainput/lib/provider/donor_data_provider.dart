@@ -83,7 +83,7 @@ class DonorDataProvider with ChangeNotifier {
       } else {
         Log.d(tag, "$fName unexpected status code");
         return ProviderResponse(
-            success: false, message: "error fetching donation");
+            success: false, message: data["message"]??"Error creating donor");
       }
     } catch (e) {
       Log.d(tag, "$fName error");

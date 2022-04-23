@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+//import 'package:http/http.dart';
 
 import '../../util/debug.dart';
 
@@ -92,6 +93,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                     //child: SingleChildScrollView(child: SelectableText(msg))),
                     child: !isDesktop
                         ? ListView.builder(
+                            // for mobile and tablet
                             shrinkWrap: true,
                             itemCount: widget.newDonorList.length,
                             itemBuilder: (context, index) {
@@ -104,6 +106,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                             },
                           )
                         : SingleChildScrollView(
+                            // for desktop show in gribview
                             child: StaggeredGrid.count(
                               crossAxisCount: 2,
                               children: widget.newDonorList.map((e) {
@@ -117,6 +120,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
               ),
             ],
           ),
+
+          /// floating action button
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.only(right: 10, bottom: 10),
@@ -153,6 +158,26 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     );
   }
 
+  void showErrorToast(BuildContext context, String msg) {
+    setState(() {
+      widget.newDonorList.clear();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 5),
+        // width: MediaQuery.of(context).size.width * 0.2,
+        margin: EdgeInsets.only(
+            left: MediaQuery.of(context).size.width * 0.7,
+            right: 20,
+            bottom: 20),
+        behavior: SnackBarBehavior.floating,
+        content: Text(msg),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  // clears all the data in the excel widget
   void _clearAll() {
     setState(() {
       widget.msg.clear();
@@ -198,33 +223,68 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     for (String sheetName in excel.tables.keys) {
       Log.d(tag, "$fName $sheetName"); //sheet Name
       widget.msg.write("Sheet: $sheetName");
-      int r = 1;
+
       List<String> header = [];
       Map<String, dynamic> dataMap = {};
+
+      int r = 1; // row number
       for (List<Data?> row in excel.tables[sheetName]!.rows) {
-        int c = 0;
+        dataMap = {};
+        int c = 0; // column number
+        //Log.d(tag, "$row");
         for (Data? data in row) {
-          if (data == null) continue;
-          if (r == 1) {
-            header.add(headerMap("${data.value}"));
-          } else {
-            if (header[c] == "lastDonation") {
-              try {
-                if (data.value.toString() != "0") {
-                  DateTime dateTime = DateTime.parse(data.value);
-                  widget.lastDonationMap[dataMap['phone']] = dateTime;
-                  Log.d(tag, "${dataMap['phone']} : $dateTime");
-                }
-              } catch (e) {
-                Log.d(tag, e.toString());
-              }
+          if (data == null) {
+            String h = header[c];
+            if (!(h == "comment" || h == "lastDonation")) {
+              Log.d(tag, "Empty cell of column $h");
+              showErrorToast(context, "Empty cell on row $r, column ${c + 1}");
+              return;
             } else {
-              dataMap[header[c]] = _dataMap(header[c], data.value);
+              c++;
+              continue;
             }
           }
+
+          try {
+            if (r == 1) {
+              // 1st row contains field names
+              header.add(
+                  headerMap("${data.value}")); // get the mapped header name
+            } else {
+              //Log.d(tag, "total columns: ${header.length}");
+              if (header.length < 11) {
+                showErrorToast(context,
+                    "Excel file doesn't contain all the required columns. Please see the instructions!");
+                return;
+              }
+
+              if (header[c] == "lastDonation") {
+                try {
+                  if (data.value.toString() != "0") {
+                    DateTime dateTime = DateTime.parse(data.value);
+                    widget.lastDonationMap[dataMap['phone']] = dateTime;
+                    Log.d(tag, "${dataMap['phone']} : $dateTime");
+                  }
+                } on FormatException catch (_) {
+                  showErrorToast(context,
+                      "Invalid last donation date format on row $r, column ${c + 1}");
+                } catch (e) {
+                  Log.d(tag, e.toString());
+                }
+              } else {
+                dataMap[header[c]] = _dataMap(header[c], data.value);
+              }
+            }
+          } on Exception catch (e) {
+            String msg = "Error on row $r, column ${c + 1}.\n${e.toString()}.";
+            showErrorToast(context, msg);
+            return;
+          }
+
           c++; // next column
         }
         if (r > 1) {
+          Log.d(tag, "datamap: $dataMap");
           NewDonor newDonor = NewDonor.fromJson(dataMap);
           widget.newDonorList.add(newDonor);
         }
@@ -256,20 +316,69 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   }
 
   dynamic _dataMap(String header, dynamic data) {
+    //Log.d(tag, "_dataMap(): $header : $data");
     switch (header) {
       case "phone":
-        return (data.toInt()).toString();
+        try {
+          String number = (data.toInt()).toString();
+
+          if (number.length != 13) {
+            throw InputFormatException(
+                "Phone number length must be 13. See instruction for more details");
+          }
+
+          return number;
+        } on NoSuchMethodError catch (_) {
+          throw InputFormatException("Phone number must be a number");
+        } on InputFormatException catch (_) {
+          rethrow;
+        }
       case "bloodGroup":
-        return BadhanConst.bloodGroupId(data as String);
+        try {
+          int bloodGroup = BadhanConst.bloodGroupId(data as String);
+          Log.d(tag, "blood group: $data: $bloodGroup");
+          if (bloodGroup == -1) {
+            throw Exception();
+          }
+          return bloodGroup;
+        } catch (e) {
+          throw InputFormatException(
+              "Invalid blood group. See instruction for more details.");
+        }
       case "hall":
-        return BadhanConst.hallId(data);
+        try {
+          int hall = BadhanConst.hallId(data);
+          if (hall == -1) {
+            throw Exception();
+          }
+          return hall;
+        } catch (e) {
+          throw InputFormatException(
+              "Invalid hall name. See instruction for more details");
+        }
       case "studentId":
-        return data.toInt().toString();
+        try {
+          return data.toInt().toString();
+        } catch (_) {
+          throw InputFormatException("Student id must be a number");
+        }
       case "extraDonationCount":
-        return data.toInt();
+        try {
+          return data.toInt();
+        } catch (_) {
+          throw InputFormatException("Total doonation must be a number");
+        }
       case "comment":
         String comment = data;
         return comment.trim() == "" ? "no comments" : comment.trim();
+      case "availableToAll":
+        Log.d(tag, "availableToAll: $data");
+        try{
+          return data as bool;
+        }catch(_){
+          throw InputFormatException("Available to all must be either true or false");
+        }
+        
       default:
         return data;
     }
@@ -279,5 +388,16 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     Log.d(tag, "opening file from : $filePath");
     List<int> bytes = File(filePath).readAsBytesSync();
     _openFileFromByte(bytes);
+  }
+}
+
+class InputFormatException implements Exception {
+  final String message;
+
+  InputFormatException(this.message);
+
+  @override
+  String toString() {
+    return message;
   }
 }

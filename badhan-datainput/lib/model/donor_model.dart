@@ -39,7 +39,7 @@ class DonorBasicInfo {
         studentId: json["studentId"],
         address: json["address"],
         roomNumber: json["roomNumber"],
-        availableToAll: json["availableToAll"],
+        availableToAll: json["availableToAll"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -106,8 +106,8 @@ class NewDonor extends DonorBasicInfo {
       address: info.address,
       roomNumber: info.roomNumber,
       availableToAll: info.availableToAll,
-      comment: json["comment"],
-      extraDonationCount: json["extraDonationCount"],
+      comment: json["comment"] ?? "unkown",
+      extraDonationCount: json["extraDonationCount"] ?? 0,
     );
   }
 

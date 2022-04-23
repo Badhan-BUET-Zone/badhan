@@ -237,10 +237,8 @@ class _SubmissionSectionState extends State<SubmissionSection> {
               setState(() {
                 isLoding = false;
                 foundDuplicate = false;
-                if (foundDuplicate) {
-                  submissionStatusText = response.message;
-                  buttonText = "Submit";
-                }
+                submissionStatusText = response.message;
+                buttonText = "Submit";
               });
             }
           },
