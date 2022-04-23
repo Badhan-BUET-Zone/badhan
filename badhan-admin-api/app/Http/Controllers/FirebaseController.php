@@ -26,13 +26,15 @@ class FirebaseController extends Controller
                 'mir' => 'Example Task',
                 'turja'=>'hkhggv',
             ]);
-        $this->database->getReference('data/mir')->set('New Task Name');
-        $reference = $this->database->getReference('data/mir');
+        $reference = $this->database->getReference('data');
         return response()->json(['status'=>200,'data'=>$reference->getvalue()]);
     }
 
-    public function update(){
-
+    public function update($id){
+        $this->database->getReference('data/'.$id)
+            ->set('Example Task');
+        $reference = $this->database->getReference('data');
+        return response()->json(['status'=>200,'data'=>$reference->getvalue()]);
     }
 
     public function updateImage(){
@@ -40,9 +42,7 @@ class FirebaseController extends Controller
     }
 
     public function destroy(Request $request, $id){
-//        echo $request->route('id');
-//        echo $request->id;
-//        echo $id;
+
         $this->database->getReference('data/'.$id)->remove();
         return response()->json(['status'=>200]);
     }
