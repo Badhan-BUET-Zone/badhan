@@ -17,7 +17,27 @@ class FirebaseController extends Controller
 
     public function index(){
         $reference =  $this->database->getReference('data/');
-        dd($reference->getvalue());
+        return response()->json(['status'=>200,'data'=>$reference->getvalue()]);
+    }
+
+    public function store(){
+//        $this->database->getReference('data/')
+//            ->set([
+//                'mir' => 'Example Task',
+//            ]);
+//        $this->database->getReference('data/mir')->set('New Task Name');
+    }
+
+    public function update(){
+
+    }
+
+    public function updateImage(){
+
+    }
+
+    public function destroy(){
+
     }
 
 }
