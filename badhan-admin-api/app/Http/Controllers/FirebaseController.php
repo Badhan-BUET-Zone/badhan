@@ -112,4 +112,12 @@ class FirebaseController extends Controller
         return response()->json(['status'=>200]);
     }
 
+    public function indexFrontendSettings(){
+
+    }
+
+    public function updateFrontendSettings(){
+
+    }
+
 }

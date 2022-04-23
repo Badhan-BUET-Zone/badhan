@@ -21,5 +21,6 @@ Route::post('/contributors', [App\Http\Controllers\FirebaseController::class, 's
 Route::patch('/contributors/{id}', [App\Http\Controllers\FirebaseController::class, 'update'])->name('contributors.update');
 Route::delete('/contributors/{id}',[App\Http\Controllers\FirebaseController::class, 'destroy'])->name('contributors.destroy');
 Route::patch('/contributors/{id}/image',[App\Http\Controllers\FirebaseController::class, 'updateImage'])->name('contributors.updateImage');;
-
+Route::get('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'indexFrontendSettings'])->name('contributors.indexFrontendSettings');
+Route::patch('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'updateFrontendSettings'])->name('contributors.updateFrontendSettings');
 
