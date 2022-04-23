@@ -155,11 +155,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
           return Scaffold(
             appBar: _getAppBar(isMobile),
-            drawer: isMobile
+            drawer: isMobile && isAuthenticated
                 ? Drawer(
-                        child: _profileData == null
-                        ? const Center(child: Text("Failed Authentication!"))
-                        : SideMenu(profileData: _profileData!),
+                        child: SideMenu(profileData: _profileData!),
                       )
                 : null,
             body: _profileData == null
