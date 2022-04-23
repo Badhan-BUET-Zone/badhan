@@ -36,4 +36,4 @@ Steps for finalization:
 * Deploy main site and android
 
 # Software Architecture of Badhan, BUET Zone
-![](Badhan Architecture.png)
+![Architecture](Badhan Architecture.png)
