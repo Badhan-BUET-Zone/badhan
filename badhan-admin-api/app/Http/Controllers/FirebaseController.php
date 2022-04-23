@@ -20,9 +20,22 @@ class FirebaseController extends Controller
     }
 
     public function index(){
-        $contributors =  $this->database->getReference('data/');
-        $activeDeveloper = $contributors->orderByChild('type')->equalTo('Active Developers');
-        return response()->json(['status'=>200, 'message'=>'Contributors fetched successfully','contributors'=>['activeDevelopers'=>$activeDeveloper]]);
+        $contributors =  $this->database->getReference('data/')->getvalue();
+        $activeDevelopers=[];
+        $contributorsOfBadhan=[];
+        $legacyDevelopers=[];
+        $keys = array_keys($contributors);
+        foreach ($contributors as $contributor){
+            $contributor['id']= array_shift($keys);
+            if($contributor['type']=='Active Developers'){
+                $activeDevelopers[] = $contributor;
+            }else if($contributor['type']=='Contributors of Badhan'){
+                $contributorsOfBadhan[]=$contributor;
+            }else{
+                $legacyDevelopers[]=$contributor;
+            };
+        }
+        return response()->json(['status'=>200, 'message'=>'Contributors fetched successfully','contributors'=>['activeDevelopers'=>$activeDevelopers,'contributorsOfBadhan'=>$contributorsOfBadhan,'legacyDevelopers'=>$legacyDevelopers]]);
     }
 
     public function store(Request $request){
@@ -85,8 +98,8 @@ class FirebaseController extends Controller
     public function update($id){
         $this->database->getReference('data/'.$id)
             ->set('Example Task');
-        $reference = $this->database->getReference('data');
-        return response()->json(['status'=>200,'data'=>$reference->getvalue()]);
+        $reference = $this->database->getReference('data')->getvalue();
+        return response()->json(['status'=>200,'data'=>$reference]);
     }
 
     public function updateImage(){
