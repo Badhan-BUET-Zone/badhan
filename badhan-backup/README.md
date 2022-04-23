@@ -21,33 +21,3 @@ firebase storage
 backups
 
 `node badhan restoreLatest`  Restore the last backup to database
-
-
-### Permission Matrix of Routes:
-
-https://docs.google.com/spreadsheets/d/11jBcFWn9-E6lY-l0PFHv5Mc_DyAvjb6po_BYZXtVHRk/edit?usp=sharing
-
-### Steps required for new feature
-Steps for the design
-* Design new UI in Figma
-* Meetings
-
-Steps for the backend:
-* Schemas
-* Main controller
-* Validation and sanitization
-* Logging
-* Relevant security middlewares
-* Rate limiter
-* Guest API
-* Automated testing for main and guest route
-* New openapi documentation
-* Testing from openapi documentation
-
-Steps for the frontend:
-* Build UI
-* Connect UI to backend
-
-Steps for finalization:
-* Deploy test site for testing
-* Deploy main site and android
