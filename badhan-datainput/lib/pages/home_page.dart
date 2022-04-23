@@ -12,6 +12,7 @@ import '../model/profile_data_model.dart';
 import '../model/provider_response_model.dart';
 import '../provider/user_data_provider.dart';
 
+// ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title, required this.token})
       : super(key: key);
@@ -72,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // show a snackbar with a message from the response==============
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: const Duration(seconds: 15),
+        duration: const Duration(seconds: 4),
         // width: MediaQuery.of(context).size.width * 0.2,
         margin: EdgeInsets.only(
             left: MediaQuery.of(context).size.width * 0.7,
@@ -133,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
               )
           ],
         ),
-        automaticallyImplyLeading: isMobile //Responsive.isMobile(context),
+        automaticallyImplyLeading: isMobile && isAuthenticated //Responsive.isMobile(context),
         );
     return _appBar!;
   }
@@ -155,10 +156,10 @@ class _MyHomePageState extends State<MyHomePage> {
           return Scaffold(
             appBar: _getAppBar(isMobile),
             drawer: isMobile
-                ? _profileData == null
-                    ? const Center(child: Text("Failed Authentication!"))
-                    : Drawer(
-                        child: SideMenu(profileData: _profileData!),
+                ? Drawer(
+                        child: _profileData == null
+                        ? const Center(child: Text("Failed Authentication!"))
+                        : SideMenu(profileData: _profileData!),
                       )
                 : null,
             body: _profileData == null
