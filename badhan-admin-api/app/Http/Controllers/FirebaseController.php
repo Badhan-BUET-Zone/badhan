@@ -39,8 +39,12 @@ class FirebaseController extends Controller
 
     }
 
-    public function destroy(){
-
+    public function destroy(Request $request, $id){
+//        echo $request->route('id');
+//        echo $request->id;
+//        echo $id;
+        $this->database->getReference('data/'.$id)->remove();
+        return response()->json(['status'=>200]);
     }
 
 }
