@@ -24,7 +24,8 @@ class FirebaseController extends Controller
         $this->messages = [
             'in' => 'The :attribute must be one of the following values: :values',
             'min' => 'The :attribute does not have minimum length :min',
-            'array' => 'The :attribute must be an array'
+            'array' => 'The :attribute must be an array',
+            'regex' => 'The :attribute didnot match regex pattern :pattern'
         ];
 
         $this->rules = [
@@ -53,15 +54,15 @@ class FirebaseController extends Controller
                 'array',
                 'min:1'
             ],
-            "links.*.color" => [
+            'links.*.color' => [
                 'required',
                 'min:3',
             ],
-            "links.*.icon" => [
+            'links.*.icon' => [
                 'required',
                 'min:3',
             ],
-            "links.*.link" => [
+            'links.*.link' => [
                 'required',
                 'url',
             ],
@@ -136,8 +137,27 @@ class FirebaseController extends Controller
 
     }
 
-    public function updateFrontendSettings(){
-
+    public function updateFrontendSettings(Request $request){
+        $validator = Validator::make( $request->all(), [
+            'backendBaseURL' => [
+                'required',
+                'url',
+            ],
+            'backendTestBaseURL' => [
+                'required',
+                'url',
+            ],
+            'version' =>[
+                'required',
+                'regex:/\d+\.\d+\.\d+/u'
+            ]
+        ], $this->messages);
+        if ($validator->fails()) {
+            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+        }
+        $this->database->getReference('frontendSettings')
+            ->update($validator->valid());
+        return response()->json(['status'=>200,'message'=>'frontend settings edited successfully']);
     }
 
 }
