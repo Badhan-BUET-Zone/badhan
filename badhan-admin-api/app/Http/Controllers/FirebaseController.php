@@ -101,11 +101,18 @@ class FirebaseController extends Controller
         return response()->json(['status'=>201,'message'=>'Contributor created successfully','contributor'=>$validatedInput]);
     }
 
-    public function update($id){
+    public function update(Request $request,$id){
+        $validator = Validator::make( $request->all(), $this->rules , $this->messages);
+        if ($validator->fails()) {
+            return response()->json(['status'=>400,'data'=>$validator->errors()]);
+        }
+//        $contributors = $this->database->getReference('data/')->getvalue();
+//        $keys = array_keys($contributors);
         $this->database->getReference('data/'.$id)
-            ->set('Example Task');
-        $reference = $this->database->getReference('data')->getvalue();
-        return response()->json(['status'=>200,'data'=>$reference]);
+            ->update($validator->valid());
+        $reference = $this->database->getReference('data/'.$id)->getvalue();
+        $reference['id']=$id;
+        return response()->json(['status'=>200, 'message'=>'Contributor edited successfully','contributor'=>$reference]);
     }
 
     public function updateImage(){
