@@ -123,7 +123,11 @@ class FirebaseController extends Controller
     }
 
     public function destroy(Request $input){
-
+        $contributors = $this->database->getReference('data/')->getvalue();
+        $keys = array_keys($contributors);
+        if (!in_array($input->id, $keys)) {
+            return response()->json(['status'=>404,'message'=>'Contributor id not found']);
+        }
         $this->database->getReference('data/'.$input->id)->remove();
         return response()->json(['status'=>200,'message'=>'Contributor deleted successfully']);
     }
