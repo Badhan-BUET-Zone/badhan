@@ -134,7 +134,8 @@ class FirebaseController extends Controller
     }
 
     public function indexFrontendSettings(){
-
+        $reference = $this->database->getReference('frontendSettings')->getvalue();
+        return response()->json(['status'=>200,'message'=>'frontend settings fetched successfully','settings'=>$reference]);
     }
 
     public function updateFrontendSettings(Request $request){
