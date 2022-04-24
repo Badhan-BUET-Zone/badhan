@@ -109,7 +109,7 @@ class FirebaseController extends Controller
     public function destroy(Request $input){
 
         $this->database->getReference('data/'.$input->id)->remove();
-        return response()->json(['status'=>200]);
+        return response()->json(['status'=>200,'message'=>'Contributor deleted successfully']);
     }
 
     public function indexFrontendSettings(){
