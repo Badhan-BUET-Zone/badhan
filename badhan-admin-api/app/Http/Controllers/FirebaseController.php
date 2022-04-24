@@ -91,7 +91,7 @@ class FirebaseController extends Controller
         $validator = Validator::make( $request->all(), $this->rules , $this->messages);
         $id = Carbon::now()->timestamp;
         if ($validator->fails()) {
-            return response()->json(['status'=>400,'data'=>$validator->errors()]);
+            return response()->json(['status'=>400,'message'=>$validator->errors()]);
         }
 
         $this->database->getReference('data/'.$id)
@@ -104,10 +104,13 @@ class FirebaseController extends Controller
     public function update(Request $request,$id){
         $validator = Validator::make( $request->all(), $this->rules , $this->messages);
         if ($validator->fails()) {
-            return response()->json(['status'=>400,'data'=>$validator->errors()]);
+            return response()->json(['status'=>400,'message'=>$validator->errors()]);
         }
-//        $contributors = $this->database->getReference('data/')->getvalue();
-//        $keys = array_keys($contributors);
+        $contributors = $this->database->getReference('data/')->getvalue();
+        $keys = array_keys($contributors);
+        if (!in_array($id, $keys)) {
+            return response()->json(['status'=>404,'message'=>'Contributor id not found']);
+        }
         $this->database->getReference('data/'.$id)
             ->update($validator->valid());
         $reference = $this->database->getReference('data/'.$id)->getvalue();
