@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use PhpOption\None;
 
 
 class FirebaseController extends Controller
@@ -99,6 +100,7 @@ class FirebaseController extends Controller
             ->set($validator->valid());
         $validatedInput = $validator->valid();
         $validatedInput["id"] = $id;
+        $validatedInput["imageUrl"]="(none)";
         return response()->json(['status'=>201,'message'=>'Contributor created successfully','contributor'=>$validatedInput]);
     }
 
