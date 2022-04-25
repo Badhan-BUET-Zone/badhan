@@ -139,7 +139,8 @@ class FirebaseController extends Controller
 //        $disk = Storage::disk('gcs')->put($filePath, file_get_contents($input->image));
 //        $gcs = Storage::disk('gcs');
 //        $url = $gcs->url('badhan-admin-api/'.$input->id.".".$input->image->getClientOriginalExtension());
-
+        $this->database->getReference('data/'.$input->id.'/imageUrl')
+            ->set($url);
         return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url]);
     }
 
