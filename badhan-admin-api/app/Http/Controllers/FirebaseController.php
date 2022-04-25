@@ -98,12 +98,11 @@ class FirebaseController extends Controller
         if ($validator->fails()) {
             return response()->json(['status'=>400,'message'=>$validator->errors()]);
         }
-
-        $this->database->getReference('data/'.$id)
-            ->set($validator->valid());
         $validatedInput = $validator->valid();
-        $validatedInput["id"] = $id;
         $validatedInput["imageUrl"]="(none)";
+        $this->database->getReference('data/'.$id)
+            ->set($validatedInput);
+        $validatedInput["id"] = $id;
         return response()->json(['status'=>201,'message'=>'Contributor created successfully','contributor'=>$validatedInput]);
     }
 
