@@ -125,12 +125,12 @@ class FirebaseController extends Controller
     }
 
     public function storeImage(Request $input){
-//        $validator = Validator::make( $input->all(), [
-//                'image' => ["required","mimes:jpeg,jpg,png,gif"]
-//            ], $this->messages);
-//        if ($validator->fails()) {
-//            return response()->json(['status'=>400,'message'=>$validator->errors()]);
-//        }
+        $validator = Validator::make( $input->all(), [
+                'image' => ["required","mimes:jpeg,jpg,png,gif"]
+            ], $this->messages);
+        if ($validator->fails()) {
+            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+        }
         $name= $input->id. ".".$input->image->getClientOriginalExtension();
         $filePath = 'badhan-admin-api/'.$name;
         $storage= app('firebase.storage');
