@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+//use Illuminate\Support\Facades\Storage;
+use Google\Cloud\Storage\StorageClient;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
@@ -121,8 +124,24 @@ class FirebaseController extends Controller
         return response()->json(['status'=>200, 'message'=>'Contributor edited successfully','contributor'=>$reference]);
     }
 
-    public function updateImage(){
+    public function storeImage(Request $input){
+//        $validator = Validator::make( $input->all(), [
+//                'image' => ["required","mimes:jpeg,jpg,png,gif"]
+//            ], $this->messages);
+//        if ($validator->fails()) {
+//            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+//        }
+        $name= $input->id. ".".$input->image->getClientOriginalExtension();
+        $filePath = 'badhan-admin-api/'.$name;
+        $storage= app('firebase.storage');
+        $storage->getBucket()->upload(fopen($input->image, 'r'),['name' => $filePath]);
+        $url = 'https://firebasestorage.googleapis.com/v0/b/mt-oporajita.appspot.com/o/badhan-admin-api%2F'.$name.'?alt=media';
+//        $url= $storage->ref($name)->getDownloadURL();
+//        $disk = Storage::disk('gcs')->put($filePath, file_get_contents($input->image));
+//        $gcs = Storage::disk('gcs');
+//        $url = $gcs->url('badhan-admin-api/'.$input->id.".".$input->image->getClientOriginalExtension());
 
+        return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url]);
     }
 
     public function destroy(Request $input){
