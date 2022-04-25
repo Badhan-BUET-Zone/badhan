@@ -125,23 +125,25 @@ class FirebaseController extends Controller
 
     public function storeImage(Request $input){
         $validator = Validator::make( $input->all(), [
-                'image' => ["required","mimes:jpeg,jpg,png,gif"]
+                'image' => ["required","mimes:jpeg,jpg,png"]
             ], $this->messages);
         if ($validator->fails()) {
             return response()->json(['status'=>400,'message'=>$validator->errors()]);
         }
-        $name= $input->id. ".".$input->image->getClientOriginalExtension();
+//        $name= $input->id. ".".$input->image->getClientOriginalExtension();
+        $name= $input->id. ".png";
         $filePath = 'badhan-admin-api/'.$name;
         $storage= app('firebase.storage');
         $storage->getBucket()->upload(fopen($input->image, 'r'),['name' => $filePath]);
         $url = 'https://firebasestorage.googleapis.com/v0/b/mt-oporajita.appspot.com/o/badhan-admin-api%2F'.$name.'?alt=media';
+        $this->database->getReference('data/'.$input->id.'/imageUrl')
+            ->set($url);
+        return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url]);
 //        $url= $storage->ref($name)->getDownloadURL();
 //        $disk = Storage::disk('gcs')->put($filePath, file_get_contents($input->image));
 //        $gcs = Storage::disk('gcs');
 //        $url = $gcs->url('badhan-admin-api/'.$input->id.".".$input->image->getClientOriginalExtension());
-        $this->database->getReference('data/'.$input->id.'/imageUrl')
-            ->set($url);
-        return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url]);
+
     }
 
     public function destroy(Request $input){
@@ -150,6 +152,9 @@ class FirebaseController extends Controller
         if (!in_array($input->id, $keys)) {
             return response()->json(['status'=>404,'message'=>'Contributor id not found']);
         }
+        $storage= app('firebase.storage');
+        $filePath='badhan-admin-api/'.$input->id.'.png';
+        $storage->getBucket()->object($filePath)->delete();
         $this->database->getReference('data/'.$input->id)->remove();
         return response()->json(['status'=>200,'message'=>'Contributor deleted successfully']);
     }
