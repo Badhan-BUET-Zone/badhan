@@ -139,6 +139,7 @@ class FirebaseController extends Controller
         $this->database->getReference('data/'.$input->id.'/imageUrl')
             ->set($url);
         return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url]);
+        // if you want to use gcs
 //        $url= $storage->ref($name)->getDownloadURL();
 //        $disk = Storage::disk('gcs')->put($filePath, file_get_contents($input->image));
 //        $gcs = Storage::disk('gcs');
