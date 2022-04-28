@@ -30,7 +30,7 @@ class _DateInputWidgetState extends State<DateInputWidget> {
     dateString = widget.initialDate != null
         ? _dateFormat.format(widget.initialDate!)
         : "select date";
-    Log.d(tag, "initSate(): $dateString");
+    //Log.d(tag, "initSate(): $dateString");
     super.initState();
   }
 

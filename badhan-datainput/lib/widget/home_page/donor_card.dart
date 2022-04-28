@@ -1,5 +1,6 @@
 import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/util/custom_exceptions.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/util/environment.dart';
 import 'package:badhandatainput/widget/common/date_time_pickers.dart';
@@ -145,7 +146,11 @@ class _DonorCardState extends State<DonorCard> {
                 ),
               )
             ]),
-            SubmissionSection(newDonor: widget.newDonor),
+            // submit button with submission logic and ui update
+            SubmissionSection(
+              newDonor: widget.newDonor,
+              lastDonation: widget.lastDonation,
+            ),
           ],
         ),
       ),
@@ -157,9 +162,11 @@ class SubmissionSection extends StatefulWidget {
   const SubmissionSection({
     Key? key,
     required this.newDonor,
+    required this.lastDonation,
   }) : super(key: key);
 
   final NewDonor newDonor;
+  final DateTime? lastDonation;
 
   @override
   State<SubmissionSection> createState() => _SubmissionSectionState();
@@ -169,12 +176,68 @@ class _SubmissionSectionState extends State<SubmissionSection> {
   static String tag = "SubmissionSection";
 
   String submissionStatusText = "";
+  Color submissionStatusTextColor = Colors.blue;
   String buttonText = "Submit";
+  Color buttonDataColor = Colors.green;
 
   bool isLoding = false;
   bool foundDuplicate = false;
   String? donorId;
   DonorData? duplicateDonorData;
+
+  bool vallidateData() {
+    NewDonor newDonor = widget.newDonor;
+
+    String error = "Error!";
+
+    // phone number constrainsts ==========
+    if (newDonor.phone.length != 13) {
+      throw InputFormatException("$error Phone length must be of 13 digits.");
+    }
+
+    // name constrains =============
+    if (newDonor.name.length < 3 || newDonor.name.length > 500) {
+      throw InputFormatException(
+          "$error Name length must be between 3 and 500");
+    }
+
+    // student id contraints=========
+    if (newDonor.studentId.length != 7) {
+      throw InputFormatException("$error Student Id must be of 7 digits.");
+    }
+
+    // room number constraints =============
+    if (newDonor.roomNumber.length < 2 || newDonor.roomNumber.length > 500) {
+      throw InputFormatException(
+          "$error Room number length must be between 2 and 500");
+    }
+
+    // address constraints =============
+    if (newDonor.address.length < 2 || newDonor.address.length > 500) {
+      throw InputFormatException(
+          "$error Address length must be between 2 and 500");
+    }
+
+    // comment constraints ==============
+    if (newDonor.comment.length < 2 || newDonor.comment.length > 500) {
+      throw InputFormatException(
+          "$error Comment length must be between 2 and 500");
+    }
+
+    // donation count constrainst
+    if (newDonor.extraDonationCount < 0) {
+      throw InputFormatException("$error donation count can't be negative!");
+    }
+
+    // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
+    // last donation date must be specified if the donation count does not equal to zero.
+    if (newDonor.extraDonationCount > 0 && widget.lastDonation == null) {
+      throw InputFormatException(
+          "$error Donation count is more than zero. Please select the donation date!");
+    }
+
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +249,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
               padding: const EdgeInsets.only(left: 54),
               child: Text(
                 submissionStatusText,
-                style: const TextStyle(color: Colors.blue),
+                style: TextStyle(color: submissionStatusTextColor),
               )),
         ),
         OutlinedButton.icon(
@@ -208,8 +271,25 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
             setState(() {
               isLoding = true;
+              submissionStatusText = "";
             });
 
+            // fontend validation ================================
+            try {
+              vallidateData();
+            } on InputFormatException catch (e) {
+              setState(() {
+                isLoding = false;
+                foundDuplicate = false;
+                submissionStatusText = e.toString();
+                submissionStatusTextColor = Colors.red;
+                buttonDataColor = Colors.green;
+                buttonText = "Submit";
+              });
+              return;
+            }
+
+            // input data format is ok for submission ==========================
             ProviderResponse response =
                 await Provider.of<DonorDataProvider>(context, listen: false)
                     .createDonor(widget.newDonor);
@@ -221,6 +301,8 @@ class _SubmissionSectionState extends State<SubmissionSection> {
                 foundDuplicate = true;
                 if (foundDuplicate) {
                   submissionStatusText = response.message;
+                  submissionStatusTextColor = Colors.red;
+                  buttonDataColor = Colors.red;
                   buttonText = "See Duplicate";
                 }
               });
@@ -230,6 +312,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
               setState(() {
                 isLoding = false;
                 foundDuplicate = false;
+                submissionStatusTextColor = Colors.green;
                 submissionStatusText = "Donor created Successfully!";
                 buttonText = "See Donor";
               });
@@ -238,14 +321,16 @@ class _SubmissionSectionState extends State<SubmissionSection> {
                 isLoding = false;
                 foundDuplicate = false;
                 submissionStatusText = response.message;
+                submissionStatusTextColor = Colors.red;
+                buttonDataColor = Colors.green;
                 buttonText = "Submit";
               });
             }
           },
           icon: isLoding
-              ? const SizedBox(
+              ? SizedBox(
                   child: CircularProgressIndicator(
-                    color: Colors.green,
+                    color: buttonDataColor,
                     strokeWidth: 2.0,
                   ),
                   height: 10,
@@ -253,22 +338,22 @@ class _SubmissionSectionState extends State<SubmissionSection> {
                 )
               : Icon(
                   foundDuplicate ? Icons.copy : Icons.file_upload_outlined,
-                  color: Colors.green,
+                  color: buttonDataColor,
                   size: 17.0,
                 ),
           label: Text(
             buttonText,
-            style: const TextStyle(color: Colors.green),
+            style: TextStyle(color: buttonDataColor),
           ),
           style: ButtonStyle(
             overlayColor: MaterialStateProperty.resolveWith<Color?>(
               (Set<MaterialState> states) {
                 if (states.contains(MaterialState.hovered)) {
-                  return Colors.green.withOpacity(0.04);
+                  return buttonDataColor.withOpacity(0.04);
                 }
                 if (states.contains(MaterialState.focused) ||
                     states.contains(MaterialState.pressed)) {
-                  return Colors.green.withOpacity(0.12);
+                  return buttonDataColor.withOpacity(0.12);
                 }
                 return null; // Defer to the widget's default.
               },
