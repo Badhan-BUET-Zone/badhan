@@ -208,7 +208,14 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     widget.msg.write("File name: ${file.name}, ");
     //Log.d(TAG, "file bytes: ${file.bytes}");
     //Log.d(tag, "file size: ${file.size}");
-    //Log.d(tag, "file extension: ${file.extension}");
+    Log.d(tag, "file extension: ${file.extension}");
+
+    // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/29
+    // Handle other files beside xlsx files
+    if (file.extension != "xlsx") {
+      showErrorToast(context, "Error! Only xlxs files are allowed.");
+      return;
+    }
     //Log.d(TAG, "file path: ${file.path}");
 
     // https: //stackoverflow.com/questions/45924474/how-do-you-detect-the-host-platform-from-dart-code
@@ -445,4 +452,3 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     _openFileFromByte(bytes);
   }
 }
-
