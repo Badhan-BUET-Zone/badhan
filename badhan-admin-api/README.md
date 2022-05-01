@@ -10,7 +10,7 @@ This is an [API](https://badhan-admin-api.herokuapp.com/) to primarily manage th
 - Used Firebase Storage for storing images 
 
 ## Deployed URL
- - **[URL](https://badhan-admin-api.herokuapp.com/)
+ - https://badhan-admin-api.herokuapp.com/
 
 ## Local Environment
 
