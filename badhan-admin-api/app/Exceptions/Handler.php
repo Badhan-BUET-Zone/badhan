@@ -35,7 +35,13 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+//                return response()->json(['status'=>$e->getCode() ?: 400,'message' => $e->getMessage()]);
         });
+    }
+
+    public function render($request, Throwable $exception): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
+    {
+//        return parent::render($request, $exception);
+        return response()->json(['status'=>$exception->getCode() ?: 500,'message' => $exception->getMessage()], $exception->getCode() ?: 500);
     }
 }

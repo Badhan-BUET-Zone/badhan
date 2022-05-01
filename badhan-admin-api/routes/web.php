@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
 Route::get('/contributors', [App\Http\Controllers\FirebaseController::class, 'index'])->name('contributors.index');
 Route::post('/contributors', [App\Http\Controllers\FirebaseController::class, 'store'])->name('contributors.store');
 Route::patch('/contributors/{id}', [App\Http\Controllers\FirebaseController::class, 'update'])->name('contributors.update');

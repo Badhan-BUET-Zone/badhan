@@ -74,53 +74,53 @@ class FirebaseController extends Controller
     }
 
     public function index(){
-        $contributors =  $this->database->getReference('data/')->getvalue();
-        $activeDevelopers=[];
-        $contributorsOfBadhan=[];
-        $legacyDevelopers=[];
-        $keys = array_keys($contributors);
-        foreach ($contributors as $contributor){
-            $contributor['id']= array_shift($keys);
-            if($contributor['type']=='Active Developers'){
-                $activeDevelopers[] = $contributor;
-            }else if($contributor['type']=='Contributors of Badhan'){
-                $contributorsOfBadhan[]=$contributor;
-            }else{
-                $legacyDevelopers[]=$contributor;
-            };
-        }
-        return response()->json(['status'=>200, 'message'=>'Contributors fetched successfully','contributors'=>['activeDevelopers'=>$activeDevelopers,'contributorsOfBadhan'=>$contributorsOfBadhan,'legacyDevelopers'=>$legacyDevelopers]]);
+            $contributors = $this->database->getReference('data/')->getvalue();
+            $activeDevelopers = [];
+            $contributorsOfBadhan = [];
+            $legacyDevelopers = [];
+            $keys = array_keys($contributors);
+            foreach ($contributors as $contributor) {
+                $contributor['id'] = array_shift($keys);
+                if ($contributor['type'] == 'Active Developers') {
+                    $activeDevelopers[] = $contributor;
+                } else if ($contributor['type'] == 'Contributors of Badhan') {
+                    $contributorsOfBadhan[] = $contributor;
+                } else {
+                    $legacyDevelopers[] = $contributor;
+                };
+            }
+            return response()->json(['status' => 200, 'message' => 'Contributors fetched successfully', 'contributors' => ['activeDevelopers' => $activeDevelopers, 'contributorsOfBadhan' => $contributorsOfBadhan, 'legacyDevelopers' => $legacyDevelopers]],200);
     }
 
     public function store(Request $request){
         $validator = Validator::make( $request->all(), $this->rules , $this->messages);
         $id = Carbon::now()->timestamp;
         if ($validator->fails()) {
-            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+            return response()->json(['status'=>400,'message'=>$validator->errors()],400);
         }
         $validatedInput = $validator->valid();
         $validatedInput["imageUrl"]="(none)";
         $this->database->getReference('data/'.$id)
             ->set($validatedInput);
         $validatedInput["id"] = $id;
-        return response()->json(['status'=>201,'message'=>'Contributor created successfully','contributor'=>$validatedInput]);
+        return response()->json(['status'=>201,'message'=>'Contributor created successfully','contributor'=>$validatedInput],201);
     }
 
     public function update(Request $request,$id){
         $validator = Validator::make( $request->all(), $this->rules , $this->messages);
         if ($validator->fails()) {
-            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+            return response()->json(['status'=>400,'message'=>$validator->errors()],400);
         }
         $contributors = $this->database->getReference('data/')->getvalue();
         $keys = array_keys($contributors);
         if (!in_array($id, $keys)) {
-            return response()->json(['status'=>404,'message'=>'Contributor id not found']);
+            return response()->json(['status'=>404,'message'=>'Contributor id not found'],404);
         }
         $this->database->getReference('data/'.$id)
             ->update($validator->valid());
         $reference = $this->database->getReference('data/'.$id)->getvalue();
         $reference['id']=$id;
-        return response()->json(['status'=>200, 'message'=>'Contributor edited successfully','contributor'=>$reference]);
+        return response()->json(['status'=>200, 'message'=>'Contributor edited successfully','contributor'=>$reference],200);
     }
 
     public function storeImage(Request $input){
@@ -128,7 +128,7 @@ class FirebaseController extends Controller
                 'image' => ["required","mimes:jpeg,jpg,png"]
             ], $this->messages);
         if ($validator->fails()) {
-            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+            return response()->json(['status'=>400,'message'=>$validator->errors()],400);
         }
 //        $name= $input->id. ".".$input->image->getClientOriginalExtension();
         $name= $input->id. ".png";
@@ -138,7 +138,7 @@ class FirebaseController extends Controller
         $url = 'https://firebasestorage.googleapis.com/v0/b/mt-oporajita.appspot.com/o/badhan-admin-api%2F'.$name.'?alt=media';
         $this->database->getReference('data/'.$input->id.'/imageUrl')
             ->set($url);
-        return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url]);
+        return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url],200);
         // if you want to use gcs
 //        $url= $storage->ref($name)->getDownloadURL();
 //        $disk = Storage::disk('gcs')->put($filePath, file_get_contents($input->image));
@@ -151,18 +151,18 @@ class FirebaseController extends Controller
         $contributors = $this->database->getReference('data/')->getvalue();
         $keys = array_keys($contributors);
         if (!in_array($input->id, $keys)) {
-            return response()->json(['status'=>404,'message'=>'Contributor id not found']);
+            return response()->json(['status'=>404,'message'=>'Contributor id not found'],404);
         }
         $storage= app('firebase.storage');
         $filePath='badhan-admin-api/'.$input->id.'.png';
         $storage->getBucket()->object($filePath)->delete();
         $this->database->getReference('data/'.$input->id)->remove();
-        return response()->json(['status'=>200,'message'=>'Contributor deleted successfully']);
+        return response()->json(['status'=>200,'message'=>'Contributor deleted successfully'],200);
     }
 
     public function indexFrontendSettings(){
         $reference = $this->database->getReference('frontendSettings')->getvalue();
-        return response()->json(['status'=>200,'message'=>'frontend settings fetched successfully','settings'=>$reference]);
+        return response()->json(['status'=>200,'message'=>'frontend settings fetched successfully','settings'=>$reference],200);
     }
 
     public function updateFrontendSettings(Request $request){
@@ -181,11 +181,11 @@ class FirebaseController extends Controller
             ]
         ], $this->messages);
         if ($validator->fails()) {
-            return response()->json(['status'=>400,'message'=>$validator->errors()]);
+            return response()->json(['status'=>400,'message'=>$validator->errors()],400);
         }
         $this->database->getReference('frontendSettings')
             ->update($validator->valid());
-        return response()->json(['status'=>200,'message'=>'frontend settings edited successfully']);
+        return response()->json(['status'=>200,'message'=>'frontend settings edited successfully'],200);
     }
 
 }
