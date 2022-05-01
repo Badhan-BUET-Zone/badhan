@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -42,6 +44,10 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
 //        return parent::render($request, $exception);
-        return response()->json(['status'=>$exception->getCode() ?: 500,'message' => $exception->getMessage()], $exception->getCode() ?: 500);
+        if ($exception instanceof TooManyRequestsHttpException){
+            return response()->json(['status'=>429,'message'=>'Too many attempts'],429);
+        }else{
+            return response()->json(['status'=>$exception->getCode() ?: 500,'message' => $exception->getMessage()], $exception->getCode() ?: 500);
+        }
     }
 }

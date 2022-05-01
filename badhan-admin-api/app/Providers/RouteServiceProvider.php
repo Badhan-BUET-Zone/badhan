@@ -33,11 +33,13 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
     public function boot()
     {
         $this->configureRateLimiting();
 
         $this->routes(function () {
+
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
@@ -47,6 +49,8 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
+
+
     }
 
     /**
@@ -58,6 +62,12 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+        });
+        RateLimiter::for('limitAdmin', function (Request $request) {
+            return Limit::perMinute(1);
+//                ->response(function () {
+//                return response(['status'=>429,'message'=>'Too many attempts'],429);
+//            });
         });
     }
 }
