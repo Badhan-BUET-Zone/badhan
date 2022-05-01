@@ -9,7 +9,8 @@ This is an [API](https://badhan-admin-api.herokuapp.com/) to primarily manage th
 - Used Firebase RTDB for storing data
 - Used Firebase Storage for storing images 
 
-## **[Deployed URL] (https://badhan-admin-api.herokuapp.com/)
+## Deployed URL
+ ** https://badhan-admin-api.herokuapp.com/
 
 ## Local Environment
 
