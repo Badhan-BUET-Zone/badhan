@@ -16,11 +16,14 @@ use Illuminate\Support\Facades\Route;
 //Route::get('/', function () {
 //    return view('welcome');
 //});
-Route::get('/contributors', [App\Http\Controllers\FirebaseController::class, 'index'])->name('contributors.index');
-Route::post('/contributors', [App\Http\Controllers\FirebaseController::class, 'store'])->name('contributors.store');
-Route::patch('/contributors/{id}', [App\Http\Controllers\FirebaseController::class, 'update'])->name('contributors.update');
-Route::delete('/contributors/{id}',[App\Http\Controllers\FirebaseController::class, 'destroy'])->name('contributors.destroy');
-Route::post('/contributors/{id}/image',[App\Http\Controllers\FirebaseController::class, 'storeImage'])->name('contributors.storeImage');;
-Route::get('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'indexFrontendSettings'])->name('contributors.indexFrontendSettings');
-Route::patch('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'updateFrontendSettings'])->name('contributors.updateFrontendSettings');
+//Route::get('/contributors', [App\Http\Controllers\FirebaseController::class, 'index'])->name('contributors.index');
+Route::middleware(['api-key'])->group(function () {
+    Route::get('/contributors', [App\Http\Controllers\FirebaseController::class, 'index'])->name('contributors.index');
+    Route::post('/contributors', [App\Http\Controllers\FirebaseController::class, 'store'])->name('contributors.store');
+    Route::patch('/contributors/{id}', [App\Http\Controllers\FirebaseController::class, 'update'])->name('contributors.update');
+    Route::delete('/contributors/{id}', [App\Http\Controllers\FirebaseController::class, 'destroy'])->name('contributors.destroy');
+    Route::post('/contributors/{id}/image', [App\Http\Controllers\FirebaseController::class, 'storeImage'])->name('contributors.storeImage');;
+    Route::get('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'indexFrontendSettings'])->name('contributors.indexFrontendSettings');
+    Route::patch('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'updateFrontendSettings'])->name('contributors.updateFrontendSettings');
+});
 
