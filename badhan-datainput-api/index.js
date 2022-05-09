@@ -42,21 +42,21 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/pendingDonors", async (req, res) => {
-  try {
-    const data = req.body;
-    await Pending.add(data);
-    res.send({
-      status: "OK",
-      message: "New donor has been submitted successfully",
-    });
-  } catch (e) {
-    res.status(400).send({
-      status: "ERROR",
-      message: "(reason of bad request)",
-    });
-  }
-});
+// app.post("/pendingDonors", async (req, res) => {
+//   try {
+//     const data = req.body;
+//     await Pending.add(data);
+//     res.send({
+//       status: "OK",
+//       message: "New donor has been submitted successfully",
+//     });
+//   } catch (e) {
+//     res.status(400).send({
+//       status: "ERROR",
+//       message: "(reason of bad request)",
+//     });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
