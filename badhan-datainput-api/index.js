@@ -46,7 +46,7 @@ app.post("/pendingDonors", async (req, res) => {
   try {
     const data = req.body;
     console.log(data);
-    await Pending.set(data);
+    await Pending.add(data);
     console.log("still going!");
     res.send({
       status: "OK",
