@@ -14,7 +14,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../util/custom_exceptions.dart';
 import '../../util/debug.dart';
-
 // ignore: must_be_immutable
 class ExcelWidget extends StatefulWidget {
   ExcelWidget(
@@ -25,18 +24,20 @@ class ExcelWidget extends StatefulWidget {
       : super(key: key);
 
   List<NewDonor> newDonorList;
-  StringBuffer msg;
+  StringBuffer
+      msg; // message displayed in the topbar. e.g."Import an excel file"
+  // key: phone number, value: last donation date
   final Map<String, DateTime> lastDonationMap;
 
   @override
-  _AddExcelWidgetState createState() {
-    return _AddExcelWidgetState();
+  _ExcelWidgetState createState() {
+    return _ExcelWidgetState();
   }
 }
 
-class _AddExcelWidgetState extends State<ExcelWidget> {
-  static String tag = "AddExcelWidget";
-  static const String UNEXPECTED_COLUMN = "unexpected_column";
+class _ExcelWidgetState extends State<ExcelWidget> {
+  static String tag = "ExcelWidget";
+  static const String unexpectedColumnName = "unexpected_column";
   String defaultMsg = "Import an excel file.";
 
   @override
@@ -96,6 +97,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                     child: !isDesktop
                         ? ListView.builder(
                             // for mobile and tablet
+                            controller: ScrollController(),
                             shrinkWrap: true,
                             itemCount: widget.newDonorList.length,
                             itemBuilder: (context, index) {
@@ -162,11 +164,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
   }
 
   void showErrorToast(BuildContext context, String msg) {
-    setState(() {
-      widget.msg.clear();
-      widget.msg.write("Import an excel file.");
-      widget.newDonorList.clear();
-    });
+    _clearAll(); // clear all data in the UI
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 5),
@@ -191,8 +190,10 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     });
   }
 
-  // see: https://pub.dev/packages/file_picker
+  /// uploads an excel file
+  ///
   void _uploadFile() async {
+    // see: https://pub.dev/packages/file_picker
     final result = await FilePicker.platform
         .pickFiles(allowedExtensions: ['xlsx'], type: FileType.custom);
 
@@ -201,24 +202,24 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       return;
     }
 
-    PlatformFile file = result.files.first;
+    PlatformFile file =
+        result.files.first; // get the first file from the picked files
 
-    Log.d(tag, "file name: ${file.name}");
-    widget.msg.clear();
+    Log.d(tag, "Imported excel file name: ${file.name}");
+
+    // update the message in the top bar
+    widget.msg.clear(); // clear "Import an excel file" message
     widget.msg.write("File name: ${file.name}, ");
-    //Log.d(TAG, "file bytes: ${file.bytes}");
-    //Log.d(tag, "file size: ${file.size}");
-    Log.d(tag, "file extension: ${file.extension}");
 
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/29
     // Handle other files beside xlsx files
     if (file.extension != "xlsx") {
-      showErrorToast(context, "Error! Only xlxs files are allowed.");
+      showErrorToast(context, "Unexpected file! Only .xlxs files are allowed.");
       return;
     }
-    //Log.d(TAG, "file path: ${file.path}");
 
     // https: //stackoverflow.com/questions/45924474/how-do-you-detect-the-host-platform-from-dart-code
+    //_openFile(file.path!);
     if (kIsWeb && file.bytes != null) {
       _openFileFromByte(file.bytes!);
     } else if (file.path != null) {
@@ -226,9 +227,16 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     }
   }
 
-  void _openFileFromByte(List<int> bytes) async {
-    String fName = "_openFileFromByte():";
+  /// read the data as bytes
+  /// this is for desktop app
+  void _openFile(String filePath) {
+    Log.d(tag, "opening file from : $filePath");
+    List<int> bytes = File(filePath).readAsBytesSync();
+    _openFileFromByte(bytes);
+  }
 
+  /// this is for web app
+  void _openFileFromByte(List<int> bytes) async {
     // clear the list to show new data
     // to render new data
     widget.newDonorList.clear();
@@ -246,7 +254,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     }
 
     // show the sheet name in the ui ====================
-    Log.d(tag, "$fName $sheetName"); //sheet Name
+    //Log.d(tag, "$fName $sheetName"); //sheet Name
     widget.msg.write("Sheet: $sheetName");
 
     // now iterate row by row to get the data ==========
@@ -278,15 +286,15 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
           }
 
           try {
+            // first row contains the header names
             if (r == 1) {
-              // 1st row contains field(column) names
-              // Log.d(tag, "new header-$c: ${data.value}");
               if (data.value != null) {
-                header.add(headerMap("${data.value}"));
-              } // get the mapped header name
+                header.add(
+                    headerMap("${data.value}")); // get the mapped header name
+              }
             } else {
-              //Log.d(tag, "total columns: ${header.length}");
               if (header.length < 11) {
+                // at least 11 fields are required
                 showErrorToast(context,
                     "Excel file doesn't contain all the required columns. Please see the instructions!");
                 return;
@@ -296,18 +304,19 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
                 continue;
               }
 
+              //parse last donation separately
               if (header[c] == "lastDonation") {
                 try {
                   if (data.value.toString() != "0") {
-                    DateTime dateTime = DateTime.parse(data.value);
+                    Log.d(tag, "$r ${c + 1} date: $data");
+                    DateTime dateTime = DateTime.parse(data.value.toString());
                     widget.lastDonationMap[dataMap['phone']] = dateTime;
-                    //Log.d(tag, "${dataMap['phone']} : $dateTime");
                   }
-                } on FormatException catch (_) {
+                } catch (_) {
+                  /// https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/26
                   showErrorToast(context,
-                      "Invalid last donation date format on row $r, column ${c + 1}");
-                } catch (e) {
-                  Log.d(tag, e.toString());
+                      "Invalid last donation date format on row $r, column ${c + 1}. \nDate format must be dd-mm-yyyy.");
+                  return;
                 }
               } else {
                 dataMap[header[c]] = _dataMap(header[c], data.value);
@@ -334,7 +343,10 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     }
 
     setState(() {});
+
+    /// render the UI with new data
   }
+
 
   String headerMap(String old) {
     switch (old.toLowerCase()) {
@@ -359,9 +371,11 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
       case "available to all":
         return "availableToAll";
       case "last donation":
+      case "lastdonation":
+      case "last_donation":
         return "lastDonation";
       default:
-        return old.toLowerCase();
+        return throw InputFormatException(unexpectedColumnName);
     }
   }
 
@@ -414,7 +428,7 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
         }
       case "extraDonationCount":
         try {
-          int cnt = data.toInt();
+          int cnt = int.parse(data.toString());
 
           // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/27
           // negative donation count handle
@@ -427,7 +441,8 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
         } on InputFormatException catch (_) {
           rethrow;
         } catch (_) {
-          throw InputFormatException("Total doonation must be a number");
+          throw InputFormatException(
+              "Total doonation must be an integer number");
         }
       case "comment":
         String comment = data;
@@ -446,9 +461,57 @@ class _AddExcelWidgetState extends State<ExcelWidget> {
     }
   }
 
-  void _openFile(String filePath) {
-    Log.d(tag, "opening file from : $filePath");
-    List<int> bytes = File(filePath).readAsBytesSync();
-    _openFileFromByte(bytes);
+
+   /*  void _openFileFromByte2(List<int> bytes) async {
+    // clear the list to show new data
+    // to render new data
+    widget.newDonorList.clear();
+
+    Excel excel = Excel.decodeBytes(bytes);
+
+    String sheetName;
+    try {
+      sheetName = excel.tables.keys.first; // get the 1st sheet name
+    } catch (_) {
+      showErrorToast(context,
+          "No sheet found! Data must be in 1st sheet of the excel file.");
+      return;
+    }
+
+    // show the sheet name in the ui ====================
+    //Log.d(tag, "$fName $sheetName"); //sheet Name
+    widget.msg.write("Sheet: $sheetName");
+
+    // now iterate row by row to get the data ==========
+    List<String> header = [];
+
+    try {
+      int r = 1;
+
+      // row number
+      for (List<dynamic> row in excel.tables[sheetName]!.rows) {
+        // data of the current row
+        // Map<String, dynamic> dataMap = {};
+
+        int c = 0; // column number
+        StringBuffer rowData = StringBuffer();
+        //Log.d(tag, "$row");
+        for (dynamic data in row) {
+          /// handle the empty cells ====================================
+          rowData.write("${data.toString()},");
+          c++; // next column
+        }
+
+        Log.d(tag, rowData.toString());
+
+        r++; // new row
+      }
+    } catch (_) {
+      showErrorToast(context,
+          "Error parsing excel information! Please read the instructions carefully.");
+    }
+
+    setState(() {});
   }
+ */
 }

@@ -185,6 +185,25 @@ class _SubmissionSectionState extends State<SubmissionSection> {
   String? donorId;
   DonorData? duplicateDonorData;
 
+  bool isDataValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
+    if (widget.lastDonation != null &&
+        widget.newDonor.extraDonationCount == 0) {
+      setState(() {
+        submissionStatusText = "Error! Total donation must be equal 1 or more";
+        submissionStatusTextColor = Colors.red;
+        buttonText = "Submit";
+        buttonDataColor = Colors.green;
+        isDataValid = false;
+      });
+    }
+  }
+
   bool vallidateData() {
     NewDonor newDonor = widget.newDonor;
 
@@ -236,6 +255,13 @@ class _SubmissionSectionState extends State<SubmissionSection> {
           "$error Donation count is more than zero. Please select the donation date!");
     }
 
+
+    // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
+    if(widget.lastDonation != null && widget.newDonor.extraDonationCount == 0){
+      throw InputFormatException(
+          "$error Total donation must be equal 1 or more");
+    }
+
     return true;
   }
 
@@ -276,7 +302,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
             // fontend validation ================================
             try {
-              vallidateData();
+              isDataValid = vallidateData();
             } on InputFormatException catch (e) {
               setState(() {
                 isLoding = false;
@@ -287,6 +313,15 @@ class _SubmissionSectionState extends State<SubmissionSection> {
                 buttonText = "Submit";
               });
               return;
+            }
+
+            if (!isDataValid) {
+              setState(() {
+                isLoding = false;
+                foundDuplicate = false;
+                buttonDataColor = Colors.green;
+                buttonText = "Submit";
+              });
             }
 
             // input data format is ok for submission ==========================

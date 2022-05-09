@@ -73,7 +73,7 @@ class UserDataProvider with ChangeNotifier {
         headers: await AuthToken.getHeaders(),
       );
 
-      //Log.d(TAG, "$fName  ${response.body}");
+      Log.d(tag, "$fName  ${response.body}");
 
       Map data = json.decode(response.body);
       if (data['statusCode'] == HttpSatusCode.ok) {
