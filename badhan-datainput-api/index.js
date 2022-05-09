@@ -31,7 +31,7 @@ initializeApp({
 });
 
 const db = getFirestore();
-const Pending = db.collection("Pending Donors");
+const Pending = db.collection("Pending Donors_Global");
 
 app.use(express.json());
 
