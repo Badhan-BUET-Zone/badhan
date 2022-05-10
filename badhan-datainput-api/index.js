@@ -30,7 +30,7 @@ initializeApp({
 });
 
 const db = getFirestore();
-const Pending = db.collection("Pending Donors_Global");
+const Pending = db.collection("Pending Donors");
 
 app.use(express.json());
 
@@ -55,7 +55,42 @@ app.post("/pendingDonors", async (req, res) => {
     return res.status(500).send({
       status: "ERROR",
       message: "Internal server error",
-      reason: e
+      reason: e,
+    });
+  }
+});
+
+app.get("/pendingDonors", async (req, res) => {
+  try {
+    const pending = db.collection("Pending Donors");
+    const pendingArrays = [];
+    const snapshot = await pending.get();
+    snapshot.forEach((doc) => {
+      const pendingDonor = {
+        id: doc.id,
+        name: doc.data().name,
+        phone: doc.data().phone,
+        studentId: doc.data().studentId,
+        bloodGroup: doc.data().bloodGroup,
+        hall: doc.data().hall,
+        roomNumber: doc.data().roomNumber,
+        address: doc.data().address,
+        comment: doc.data().comment,
+        donationCount: doc.data().donationCount,
+        lastDonation: doc.data().lastDonation,
+      };
+      pendingArrays.push(pendingDonor);
+    });
+    return res.send({
+      status: "OK",
+      message: "Pending donors fetched successfully",
+      pendingDonors: pendingArrays,
+    });
+  } catch (e) {
+    return res.status(500).send({
+      status: "ERROR",
+      message: "Internal server error",
+      reason: e,
     });
   }
 });
