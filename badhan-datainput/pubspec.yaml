@@ -50,6 +50,7 @@ dependencies:
   intl: ^0.17.0
   auto_size_text: ^3.0.0
   html: ^0.15.0
+  collapsible_sidebar: ^2.0.1+2
 
 dev_dependencies:
   flutter_test:

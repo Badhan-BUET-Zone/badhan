@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:badhandatainput/widget/home_page/editable_donor_diaglog.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _SideMenuState extends State<SideMenu> {
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         AutoSizeText(
-                          designation(widget.profileData.designation),
+                          BadhanConst.designation(widget.profileData.designation),
                           style: Theme.of(context).textTheme.subtitle1,
                         )
                       ],
@@ -90,15 +91,6 @@ class _SideMenuState extends State<SideMenu> {
         )),
       ),
     );
-  }
-
-  String designation(int id) {
-    switch (id) {
-      case 3:
-        return "Super admin";
-      default:
-        return "";
-    }
   }
 }
 

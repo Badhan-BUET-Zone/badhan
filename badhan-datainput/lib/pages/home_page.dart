@@ -1,4 +1,3 @@
-import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
@@ -14,27 +13,34 @@ import '../provider/user_data_provider.dart';
 
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
+  // title and token is intialized in lib/config/routes.dart
+  // when the user navigates to the home page
+  // and MyHomePage instance is created
+  final String title;
+  String token; // token recieved from query params in the url from main website
+
   MyHomePage({Key? key, required this.title, required this.token})
       : super(key: key);
-  static String route = "/home";
-  final String title;
-  String token;
+
   @override
   State<MyHomePage> createState() {
     return _MyHomePageState();
   }
 }
 
+/// State of the home page
+/// First it authenticate user and fetch profile data
 class _MyHomePageState extends State<MyHomePage> {
   static String tag = "MyHomePage";
 
-  bool isLoggingOut = false;
+  /// const widget is created here 
+  /// so that we can use it for mobile, tablet and desktop views
+  final ExcelWidget excelWidget = const ExcelWidget();
 
-  final StringBuffer _msg = StringBuffer("Import an excel file.");
+  bool isLoggingOut = false;
   String profileDataStr = "";
-  bool isAuthenticated = false;
-  final List<NewDonor> _newDonorList = [];
-  final Map<String, DateTime> _lastDonationMap = {};
+
+  bool isAuthenticated = false; // becomes true when profile data is fetched
   ProfileData? _profileData;
 
   /// logout the user when logout button
@@ -115,28 +121,30 @@ class _MyHomePageState extends State<MyHomePage> {
         return response.data;
       }
     }
-    
+
     return null; // user is not authenticated
   }
 
-  AppBar? _appBar;
   AppBar _getAppBar(bool isMobile) {
-    _appBar = AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.title),
-            if (isAuthenticated)
-              IconButton(
-                onPressed: logout, // call logout method
-                icon: const Icon(Icons.login),
-                tooltip: "Logout",
-              )
-          ],
-        ),
-        automaticallyImplyLeading: isMobile && isAuthenticated //Responsive.isMobile(context),
-        );
-    return _appBar!;
+    AppBar _appBar = AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(widget.title),
+          if (isAuthenticated)
+            IconButton(
+              onPressed: logout, // call logout method
+              icon: const Icon(Icons.login),
+              tooltip: "Logout",
+            )
+        ],
+      ),
+
+      // decide whether to menu button or not
+      // hambuerger button is used in mobile view to show the menu
+      automaticallyImplyLeading: isMobile && isAuthenticated,
+    );
+    return _appBar;
   }
 
   @override
@@ -145,28 +153,44 @@ class _MyHomePageState extends State<MyHomePage> {
       body: FutureBuilder(
         future: _fetchProfileData(),
         builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
+          /// waiting for the authentication to be done
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           _profileData = snapshot.data;
 
+          // check if the user is in mobile view
           bool isMobile = Responsive.isMobile(context);
 
           return Scaffold(
             appBar: _getAppBar(isMobile),
             drawer: isMobile && isAuthenticated
                 ? Drawer(
-                        child: SideMenu(profileData: _profileData!),
-                      )
+                    child: SideMenu(profileData: _profileData!),
+                  )
                 : null,
             body: _profileData == null
-                ? const AuthFailedWidget()
-                : _ResponsiveHomePage(
-                    newDonorList: _newDonorList,
-                    msg: _msg,
-                    profileData: _profileData,
-                    lastDonationMap: _lastDonationMap,
+                ? const AuthFailedWidget() // user is not authenticated
+                : Responsive(
+                    mobile: ResponsiveHomePageView(
+                      sidebarFlex: 0,
+                      contentFlex: 1,
+                      excelWidget: excelWidget,
+                      profileData: _profileData!,
+                    ),
+                    tablet: ResponsiveHomePageView(
+                      sidebarFlex: 3,
+                      contentFlex: 8,
+                      excelWidget: excelWidget,
+                      profileData: _profileData!,
+                    ),
+                    desktop: ResponsiveHomePageView(
+                      sidebarFlex: 3,
+                      contentFlex: 10,
+                      excelWidget: excelWidget,
+                      profileData: _profileData!,
+                    ),
                   ),
           );
         },
@@ -175,62 +199,38 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class _ResponsiveHomePage extends StatelessWidget {
-  const _ResponsiveHomePage({
-    Key? key,
-    required List<NewDonor> newDonorList,
-    required StringBuffer msg,
-    required ProfileData? profileData,
-    required Map<String, DateTime> lastDonationMap,
-  })  : _newDonorList = newDonorList,
-        _msg = msg,
-        _profileData = profileData,
-        _lastDonationMap = lastDonationMap,
-        super(key: key);
+class ResponsiveHomePageView extends StatelessWidget {
+  /// flex of views
+  final int sidebarFlex;
+  final int contentFlex;
 
-  final List<NewDonor> _newDonorList;
-  final Map<String, DateTime> _lastDonationMap;
-  final StringBuffer _msg;
-  final ProfileData? _profileData;
+  final ExcelWidget excelWidget;
+  final ProfileData profileData;
+
+  const ResponsiveHomePageView({
+    Key? key,
+    required this.sidebarFlex,
+    required this.contentFlex,
+    required this.excelWidget,
+    required this.profileData,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Responsive(
-      mobile: ExcelWidget(
-        newDonorList: _newDonorList,
-        msg: _msg,
-        lastDonationMap: _lastDonationMap,
-      ),
-      tablet: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
-          const VerticalDivider(),
-          Expanded(
-              flex: 8,
-              child: ExcelWidget(
-                newDonorList: _newDonorList,
-                msg: _msg,
-                lastDonationMap: _lastDonationMap,
-              )),
-        ],
-      ),
-      desktop: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Flexible(flex: 3, child: SideMenu(profileData: _profileData!)),
-          const VerticalDivider(),
-          Expanded(
-              flex: 10,
-              child: ExcelWidget(
-                newDonorList: _newDonorList,
-                msg: _msg,
-                lastDonationMap: _lastDonationMap,
-              )),
-        ],
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        if (sidebarFlex > 0)
+          Flexible(
+              flex: sidebarFlex, child: SideMenu(profileData: profileData)),
+        if(sidebarFlex>0)
+        const VerticalDivider(),
+        Expanded(
+          flex: contentFlex,
+          child: excelWidget,
+        ),
+      ],
     );
   }
 }

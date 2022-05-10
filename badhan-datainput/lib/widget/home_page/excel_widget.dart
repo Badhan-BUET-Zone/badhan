@@ -14,23 +14,14 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../util/custom_exceptions.dart';
 import '../../util/debug.dart';
-// ignore: must_be_immutable
+
 class ExcelWidget extends StatefulWidget {
-  ExcelWidget(
-      {Key? key,
-      required this.newDonorList,
-      required this.msg,
-      required this.lastDonationMap})
-      : super(key: key);
-
-  List<NewDonor> newDonorList;
-  StringBuffer
-      msg; // message displayed in the topbar. e.g."Import an excel file"
-  // key: phone number, value: last donation date
-  final Map<String, DateTime> lastDonationMap;
-
+  const ExcelWidget({
+    Key? key,
+  }) : super(key: key);
   @override
   _ExcelWidgetState createState() {
+    //Log.d("ExcelWidget", "Creating new ExcelWidget");
     return _ExcelWidgetState();
   }
 }
@@ -38,7 +29,13 @@ class ExcelWidget extends StatefulWidget {
 class _ExcelWidgetState extends State<ExcelWidget> {
   static String tag = "ExcelWidget";
   static const String unexpectedColumnName = "unexpected_column";
-  String defaultMsg = "Import an excel file.";
+  final String defaultMsg = "Import an excel file.";
+
+  final List<NewDonor> newDonorList = [];
+  final StringBuffer msg =
+      StringBuffer("Import an excel file."); // message displayed in the topbar. e.g."Import an excel file"
+  // key: phone number, value: last donation date
+  final Map<String, DateTime> lastDonationMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +65,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                     children: [
                       Expanded(
                         child: Text(
-                          widget.msg.toString(),
+                          msg.toString(),
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
@@ -99,13 +96,12 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                             // for mobile and tablet
                             controller: ScrollController(),
                             shrinkWrap: true,
-                            itemCount: widget.newDonorList.length,
+                            itemCount: newDonorList.length,
                             itemBuilder: (context, index) {
-                              NewDonor donor = widget.newDonorList[index];
+                              NewDonor donor = newDonorList[index];
                               return DonorCard(
                                 newDonor: donor,
-                                lastDonation:
-                                    widget.lastDonationMap[donor.phone],
+                                lastDonation: lastDonationMap[donor.phone],
                               );
                             },
                           )
@@ -114,10 +110,10 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                             // for desktop show in gribview
                             child: StaggeredGrid.count(
                               crossAxisCount: 2,
-                              children: widget.newDonorList.map((e) {
+                              children: newDonorList.map((e) {
                                 return DonorCard(
                                   newDonor: e,
-                                  lastDonation: widget.lastDonationMap[e.phone],
+                                  lastDonation: lastDonationMap[e.phone],
                                 );
                               }).toList(),
                             ),
@@ -141,14 +137,14 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                     child: const Icon(Icons.file_upload),
                     backgroundColor: Colors.amber,
                     labelBackgroundColor: Colors.amber),
-                if (widget.newDonorList.isNotEmpty)
+                if (newDonorList.isNotEmpty)
                   SpeedDialChild(
                       onTap: () {},
                       label: "Upload all",
                       child: const Icon(Icons.file_upload_outlined),
                       backgroundColor: Colors.amber,
                       labelBackgroundColor: Colors.amber),
-                if (widget.newDonorList.isNotEmpty)
+                if (newDonorList.isNotEmpty)
                   SpeedDialChild(
                       onTap: _clearAll,
                       label: "Clear all",
@@ -184,9 +180,9 @@ class _ExcelWidgetState extends State<ExcelWidget> {
   // clears all the data in the excel widget
   void _clearAll() {
     setState(() {
-      widget.msg.clear();
-      widget.msg.write("Import an excel file.");
-      widget.newDonorList.clear();
+      msg.clear();
+      msg.write("Import an excel file.");
+      newDonorList.clear();
     });
   }
 
@@ -208,8 +204,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     Log.d(tag, "Imported excel file name: ${file.name}");
 
     // update the message in the top bar
-    widget.msg.clear(); // clear "Import an excel file" message
-    widget.msg.write("File name: ${file.name}, ");
+    msg.clear(); // clear "Import an excel file" message
+    msg.write("File name: ${file.name}, ");
 
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/29
     // Handle other files beside xlsx files
@@ -239,7 +235,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
   void _openFileFromByte(List<int> bytes) async {
     // clear the list to show new data
     // to render new data
-    widget.newDonorList.clear();
+    newDonorList.clear();
 
     Excel excel = Excel.decodeBytes(bytes);
 
@@ -255,7 +251,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
 
     // show the sheet name in the ui ====================
     //Log.d(tag, "$fName $sheetName"); //sheet Name
-    widget.msg.write("Sheet: $sheetName");
+    msg.write("Sheet: $sheetName");
 
     // now iterate row by row to get the data ==========
     List<String> header = [];
@@ -310,7 +306,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                   if (data.value.toString() != "0") {
                     Log.d(tag, "$r ${c + 1} date: $data");
                     DateTime dateTime = DateTime.parse(data.value.toString());
-                    widget.lastDonationMap[dataMap['phone']] = dateTime;
+                    lastDonationMap[dataMap['phone']] = dateTime;
                   }
                 } catch (_) {
                   /// https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/26
@@ -333,7 +329,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         if (r > 1) {
           //Log.d(tag, "datamap: $dataMap");
           NewDonor newDonor = NewDonor.fromJson(dataMap);
-          widget.newDonorList.add(newDonor);
+          newDonorList.add(newDonor);
         }
         r++; // new row
       }
@@ -346,7 +342,6 @@ class _ExcelWidgetState extends State<ExcelWidget> {
 
     /// render the UI with new data
   }
-
 
   String headerMap(String old) {
     switch (old.toLowerCase()) {
@@ -461,8 +456,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     }
   }
 
-
-   /*  void _openFileFromByte2(List<int> bytes) async {
+  /*  void _openFileFromByte2(List<int> bytes) async {
     // clear the list to show new data
     // to render new data
     widget.newDonorList.clear();
