@@ -27,7 +27,6 @@ initializeApp({
     auth_provider_x509_cert_url: process.env.AUTH_PROVIDER,
     client_x509_cert_url: process.env.CLIENT_CERT_URL,
   }),
-  credential: applicationDefault(),
 });
 
 const db = getFirestore();
@@ -46,14 +45,15 @@ app.post("/pendingDonors", async (req, res) => {
   try {
     const data = req.body;
     await Pending.add(data);
-    res.send({
+    return res.send({
       status: "OK",
       message: "New donor has been submitted successfully",
     });
   } catch (e) {
-    res.status(400).send({
+    return res.status(500).send({
       status: "ERROR",
-      message: "(reason of bad request)",
+      message: "Internal server error",
+      reason: e
     });
   }
 });
