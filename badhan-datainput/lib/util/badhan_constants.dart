@@ -1,3 +1,5 @@
+import 'custom_exceptions.dart';
+
 class BadhanConst {
   static const departments = [
     'NULL',
@@ -67,4 +69,118 @@ class BadhanConst {
     }
     return -1;
   }
+
+  static String headerMap(String old) {
+    switch (old.toLowerCase()) {
+      case "phone":
+        return "phone";
+      case "blood group":
+        return "bloodGroup";
+      case "hall":
+        return "hall";
+      case "name":
+        return "name";
+      case "student id":
+        return "studentId";
+      case "address":
+        return "address";
+      case "room number":
+        return "roomNumber";
+      case "comment":
+        return "comment";
+      case "total donations":
+        return "extraDonationCount";
+      case "available to all":
+        return "availableToAll";
+      case "last donation":
+      case "lastdonation":
+      case "last_donation":
+        return "lastDonation";
+      default:
+        return throw InputFormatException("unexpected column!");
+    }
+  }
+
+  static dynamic dataMap(String header, dynamic data) {
+    //Log.d(tag, "_dataMap(): $header : $data");
+    switch (header) {
+      case "phone":
+        try {
+          String number = (data.toInt()).toString();
+
+          if (number.length != 13) {
+            throw InputFormatException(
+                "Phone number length must be 13. See instruction for more details");
+          }
+
+          return number;
+        } on NoSuchMethodError catch (_) {
+          throw InputFormatException("Phone number must be a number");
+        } on InputFormatException catch (_) {
+          rethrow;
+        }
+      case "bloodGroup":
+        try {
+          int bloodGroup = BadhanConst.bloodGroupId(data as String);
+          //Log.d(tag, "blood group: $data: $bloodGroup");
+          if (bloodGroup == -1) {
+            throw Exception();
+          }
+          return bloodGroup;
+        } catch (e) {
+          throw InputFormatException(
+              "Invalid blood group. See instruction for more details.");
+        }
+      case "hall":
+        try {
+          int hall = BadhanConst.hallId(data);
+          if (hall == -1) {
+            throw Exception();
+          }
+          return hall;
+        } catch (e) {
+          throw InputFormatException(
+              "Invalid hall name. See instruction for more details");
+        }
+      case "studentId":
+        try {
+          return data.toInt().toString();
+        } catch (_) {
+          throw InputFormatException("Student id must be a number");
+        }
+      case "extraDonationCount":
+        try {
+          int cnt = int.parse(data.toString());
+
+          // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/27
+          // negative donation count handle
+          if (cnt < 0) {
+            //Log.d(tag, "total cnt $cnt");
+            throw InputFormatException("Total donation can't be negative");
+          }
+
+          return cnt;
+        } on InputFormatException catch (_) {
+          rethrow;
+        } catch (_) {
+          throw InputFormatException(
+              "Total doonation must be an integer number");
+        }
+      case "comment":
+        String comment = data;
+        return comment.trim() == "" ? "no comments" : comment.trim();
+      case "availableToAll":
+        //Log.d(tag, "availableToAll: $data");
+        try {
+          return data as bool;
+        } catch (_) {
+          throw InputFormatException(
+              "Available to all must be either true or false");
+        }
+
+      default:
+        return data;
+    }
+  }
+
 }

@@ -2,18 +2,14 @@ import 'dart:io';
 
 import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
-import 'package:badhandatainput/widget/home_page/donor_card.dart';
-import 'package:badhandatainput/widget/responsive.dart';
+import 'package:badhandatainput/util/const_ui.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-//import 'package:http/http.dart';
-
-import '../../util/custom_exceptions.dart';
 import '../../util/debug.dart';
+import '../common/all_donors_widget.dart';
 
 class ExcelWidget extends StatefulWidget {
   const ExcelWidget({
@@ -28,18 +24,16 @@ class ExcelWidget extends StatefulWidget {
 
 class _ExcelWidgetState extends State<ExcelWidget> {
   static String tag = "ExcelWidget";
-  static const String unexpectedColumnName = "unexpected_column";
   final String defaultMsg = "Import an excel file.";
 
   final List<NewDonor> newDonorList = [];
-  final StringBuffer msg =
-      StringBuffer("Import an excel file."); // message displayed in the topbar. e.g."Import an excel file"
+  final StringBuffer msg = StringBuffer(
+      "Import an excel file."); // message displayed in the topbar. e.g."Import an excel file"
   // key: phone number, value: last donation date
   final Map<String, DateTime> lastDonationMap = {};
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = Responsive.isDesktop(context);
     return Container(
       padding: const EdgeInsets.all(10),
       //color: Colors.amber,
@@ -85,40 +79,9 @@ class _ExcelWidgetState extends State<ExcelWidget> {
               const SizedBox(
                 height: 5,
               ),
-              Expanded(
-                // list of all donors
-                child: SizedBox(
-                    //color: Colors.red,
-                    width: double.infinity,
-                    //child: SingleChildScrollView(child: SelectableText(msg))),
-                    child: !isDesktop
-                        ? ListView.builder(
-                            // for mobile and tablet
-                            controller: ScrollController(),
-                            shrinkWrap: true,
-                            itemCount: newDonorList.length,
-                            itemBuilder: (context, index) {
-                              NewDonor donor = newDonorList[index];
-                              return DonorCard(
-                                newDonor: donor,
-                                lastDonation: lastDonationMap[donor.phone],
-                              );
-                            },
-                          )
-                        : SingleChildScrollView(
-                            controller: ScrollController(),
-                            // for desktop show in gribview
-                            child: StaggeredGrid.count(
-                              crossAxisCount: 2,
-                              children: newDonorList.map((e) {
-                                return DonorCard(
-                                  newDonor: e,
-                                  lastDonation: lastDonationMap[e.phone],
-                                );
-                              }).toList(),
-                            ),
-                          )),
-              ),
+              AllDonorsWidget(
+                  newDonorList: newDonorList,
+                  lastDonationMap: lastDonationMap),
             ],
           ),
 
@@ -159,24 +122,6 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     );
   }
 
-  void showErrorToast(BuildContext context, String msg) {
-    _clearAll(); // clear all data in the UI
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 5),
-        // width: MediaQuery.of(context).size.width * 0.2,
-        margin: EdgeInsets.only(
-            left: MediaQuery.of(context).size.width * 0.7,
-            right: 20,
-            bottom: 20),
-        behavior: SnackBarBehavior.floating,
-        content: Text(msg),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
   // clears all the data in the excel widget
   void _clearAll() {
     setState(() {
@@ -210,7 +155,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/29
     // Handle other files beside xlsx files
     if (file.extension != "xlsx") {
-      showErrorToast(context, "Unexpected file! Only .xlxs files are allowed.");
+      ConstUI.showErrorToast(
+          context, _clearAll, "Unexpected file! Only .xlxs files are allowed.");
       return;
     }
 
@@ -244,7 +190,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     try {
       sheetName = excel.tables.keys.first; // get the 1st sheet name
     } catch (_) {
-      showErrorToast(context,
+      ConstUI.showErrorToast(context, _clearAll,
           "No sheet found! Data must be in 1st sheet of the excel file.");
       return;
     }
@@ -273,7 +219,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
             String h = header[c];
             if (!(h == "comment" || h == "lastDonation" || h == "address")) {
               Log.d(tag, "Empty cell of column $h");
-              showErrorToast(context, "Empty cell on row $r, column ${c + 1}");
+              ConstUI.showErrorToast(
+                  context, _clearAll, "Empty cell on row $r, column ${c + 1}");
               return;
             } else {
               c++;
@@ -285,13 +232,13 @@ class _ExcelWidgetState extends State<ExcelWidget> {
             // first row contains the header names
             if (r == 1) {
               if (data.value != null) {
-                header.add(
-                    headerMap("${data.value}")); // get the mapped header name
+                header.add(BadhanConst.headerMap(
+                    "${data.value}")); // get the mapped header name
               }
             } else {
               if (header.length < 11) {
                 // at least 11 fields are required
-                showErrorToast(context,
+                ConstUI.showErrorToast(context, _clearAll,
                     "Excel file doesn't contain all the required columns. Please see the instructions!");
                 return;
               }
@@ -310,17 +257,17 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                   }
                 } catch (_) {
                   /// https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/26
-                  showErrorToast(context,
+                  ConstUI.showErrorToast(context, _clearAll,
                       "Invalid last donation date format on row $r, column ${c + 1}. \nDate format must be dd-mm-yyyy.");
                   return;
                 }
               } else {
-                dataMap[header[c]] = _dataMap(header[c], data.value);
+                dataMap[header[c]] = BadhanConst.dataMap(header[c], data.value);
               }
             }
           } on Exception catch (e) {
             String msg = "Error on row $r, column ${c + 1}.\n${e.toString()}.";
-            showErrorToast(context, msg);
+            ConstUI.showErrorToast(context, _clearAll, msg);
             return;
           }
 
@@ -334,7 +281,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         r++; // new row
       }
     } catch (_) {
-      showErrorToast(context,
+      ConstUI.showErrorToast(context, _clearAll,
           "Error parsing excel information! Please read the instructions carefully.");
     }
 
@@ -342,170 +289,4 @@ class _ExcelWidgetState extends State<ExcelWidget> {
 
     /// render the UI with new data
   }
-
-  String headerMap(String old) {
-    switch (old.toLowerCase()) {
-      case "phone":
-        return "phone";
-      case "blood group":
-        return "bloodGroup";
-      case "hall":
-        return "hall";
-      case "name":
-        return "name";
-      case "student id":
-        return "studentId";
-      case "address":
-        return "address";
-      case "room number":
-        return "roomNumber";
-      case "comment":
-        return "comment";
-      case "total donations":
-        return "extraDonationCount";
-      case "available to all":
-        return "availableToAll";
-      case "last donation":
-      case "lastdonation":
-      case "last_donation":
-        return "lastDonation";
-      default:
-        return throw InputFormatException(unexpectedColumnName);
-    }
-  }
-
-  dynamic _dataMap(String header, dynamic data) {
-    //Log.d(tag, "_dataMap(): $header : $data");
-    switch (header) {
-      case "phone":
-        try {
-          String number = (data.toInt()).toString();
-
-          if (number.length != 13) {
-            throw InputFormatException(
-                "Phone number length must be 13. See instruction for more details");
-          }
-
-          return number;
-        } on NoSuchMethodError catch (_) {
-          throw InputFormatException("Phone number must be a number");
-        } on InputFormatException catch (_) {
-          rethrow;
-        }
-      case "bloodGroup":
-        try {
-          int bloodGroup = BadhanConst.bloodGroupId(data as String);
-          //Log.d(tag, "blood group: $data: $bloodGroup");
-          if (bloodGroup == -1) {
-            throw Exception();
-          }
-          return bloodGroup;
-        } catch (e) {
-          throw InputFormatException(
-              "Invalid blood group. See instruction for more details.");
-        }
-      case "hall":
-        try {
-          int hall = BadhanConst.hallId(data);
-          if (hall == -1) {
-            throw Exception();
-          }
-          return hall;
-        } catch (e) {
-          throw InputFormatException(
-              "Invalid hall name. See instruction for more details");
-        }
-      case "studentId":
-        try {
-          return data.toInt().toString();
-        } catch (_) {
-          throw InputFormatException("Student id must be a number");
-        }
-      case "extraDonationCount":
-        try {
-          int cnt = int.parse(data.toString());
-
-          // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/27
-          // negative donation count handle
-          if (cnt < 0) {
-            Log.d(tag, "total cnt $cnt");
-            throw InputFormatException("Total donation can't be negative");
-          }
-
-          return cnt;
-        } on InputFormatException catch (_) {
-          rethrow;
-        } catch (_) {
-          throw InputFormatException(
-              "Total doonation must be an integer number");
-        }
-      case "comment":
-        String comment = data;
-        return comment.trim() == "" ? "no comments" : comment.trim();
-      case "availableToAll":
-        //Log.d(tag, "availableToAll: $data");
-        try {
-          return data as bool;
-        } catch (_) {
-          throw InputFormatException(
-              "Available to all must be either true or false");
-        }
-
-      default:
-        return data;
-    }
-  }
-
-  /*  void _openFileFromByte2(List<int> bytes) async {
-    // clear the list to show new data
-    // to render new data
-    widget.newDonorList.clear();
-
-    Excel excel = Excel.decodeBytes(bytes);
-
-    String sheetName;
-    try {
-      sheetName = excel.tables.keys.first; // get the 1st sheet name
-    } catch (_) {
-      showErrorToast(context,
-          "No sheet found! Data must be in 1st sheet of the excel file.");
-      return;
-    }
-
-    // show the sheet name in the ui ====================
-    //Log.d(tag, "$fName $sheetName"); //sheet Name
-    widget.msg.write("Sheet: $sheetName");
-
-    // now iterate row by row to get the data ==========
-    List<String> header = [];
-
-    try {
-      int r = 1;
-
-      // row number
-      for (List<dynamic> row in excel.tables[sheetName]!.rows) {
-        // data of the current row
-        // Map<String, dynamic> dataMap = {};
-
-        int c = 0; // column number
-        StringBuffer rowData = StringBuffer();
-        //Log.d(tag, "$row");
-        for (dynamic data in row) {
-          /// handle the empty cells ====================================
-          rowData.write("${data.toString()},");
-          c++; // next column
-        }
-
-        Log.d(tag, rowData.toString());
-
-        r++; // new row
-      }
-    } catch (_) {
-      showErrorToast(context,
-          "Error parsing excel information! Please read the instructions carefully.");
-    }
-
-    setState(() {});
-  }
- */
 }
