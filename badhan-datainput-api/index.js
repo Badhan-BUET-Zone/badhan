@@ -44,10 +44,8 @@ app.get("/", (req, res) => {
 app.post("/pendingDonors", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
     await Pending.add(data);
-    console.log("still going!");
-    res.send({
+    res.status(201).send({
       status: "OK",
       message: "New donor has been submitted successfully",
     });
@@ -86,6 +84,34 @@ app.get("/pendingDonors", async (req, res) => {
       message: "Pending donors fetched successfully",
       pendingDonors: pendingArrays,
     });
+  } catch (e) {
+    return res.status(500).send({
+      status: "ERROR",
+      message: "Internal server error",
+      reason: e,
+    });
+  }
+});
+
+app.delete("/pendingDonors/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const snapshot = await Pending.doc(id).get();
+    if (!snapshot.exists) {
+      return res.status(404).send({
+        status: "ERROR",
+        message: "Donor Id not found",
+      });
+    } else {
+      var deleteDonor = snapshot.data();
+      deleteDonor.id = id;
+      await Pending.doc(id).delete();
+      return res.send({
+        status: "OK",
+        message: "Pending donor deleted successfully",
+        pendingDonor: deleteDonor,
+      });
+    }
   } catch (e) {
     return res.status(500).send({
       status: "ERROR",
