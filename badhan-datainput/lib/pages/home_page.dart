@@ -2,6 +2,7 @@ import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
 import 'package:badhandatainput/widget/home_page/excel_widget.dart';
+import 'package:badhandatainput/widget/home_page/google_sheet_widget.dart';
 import 'package:badhandatainput/widget/home_page/side_menu.dart';
 import 'package:badhandatainput/widget/responsive.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +33,6 @@ class MyHomePage extends StatefulWidget {
 /// First it authenticate user and fetch profile data
 class _MyHomePageState extends State<MyHomePage> {
   static String tag = "MyHomePage";
-
-  /// const widget is created here
-  /// so that we can use it for mobile, tablet and desktop views
-  final ExcelWidget excelWidget = const ExcelWidget();
 
   bool isLoggingOut = false;
   String profileDataStr = "";
@@ -125,28 +122,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return null; // user is not authenticated
   }
 
-  AppBar _getAppBar(bool isMobile) {
-    AppBar _appBar = AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(widget.title),
-          if (isAuthenticated)
-            IconButton(
-              onPressed: logout, // call logout method
-              icon: const Icon(Icons.login),
-              tooltip: "Logout",
-            )
-        ],
-      ),
-
-      // decide whether to menu button or not
-      // hambuerger button is used in mobile view to show the menu
-      automaticallyImplyLeading: isMobile && isAuthenticated,
-    );
-    return _appBar;
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -160,56 +135,146 @@ class _MyHomePageState extends State<MyHomePage> {
 
         _profileData = snapshot.data;
 
-        // check if the user is in mobile view
-        bool isMobile = Responsive.isMobile(context);
-
-        
-         return Scaffold(
-            appBar: _getAppBar(isMobile),
-            drawer: isMobile && isAuthenticated
-                ? Drawer(
-                    child: SideMenu(profileData: _profileData!),
-                  )
-                : null,
-            body: _profileData == null
-                ? const AuthFailedWidget() // user is not authenticated
-                : Responsive(
-                    mobile: excelWidget,
-                    tablet: LargeScreenHomePageView(
-                      excelWidget: excelWidget,
-                      profileData: _profileData!,
-                    ),
-                    desktop: LargeScreenHomePageView(
-                      excelWidget: excelWidget,
-                      profileData: _profileData!,
-                    ),
-                  ),
-          );
+        return HomeWidget(
+          title: widget.title,
+          isAuthenticated: isAuthenticated,
+          logout: logout,
+          profileData: _profileData,
+        );
       },
     );
   }
 }
 
-class LargeScreenHomePageView extends StatelessWidget {
-  final ExcelWidget excelWidget;
-  final ProfileData profileData;
-
-  const LargeScreenHomePageView({
+class HomeWidget extends StatefulWidget {
+  const HomeWidget({
     Key? key,
-    required this.excelWidget,
+    required this.title,
+    required this.isAuthenticated,
+    required this.logout,
     required this.profileData,
   }) : super(key: key);
 
+  final String title;
+  final bool isAuthenticated;
+  final void Function() logout;
+  final ProfileData? profileData;
+
+  @override
+  State<HomeWidget> createState() => _HomeWidgetState();
+}
+
+class _HomeWidgetState extends State<HomeWidget> {
+  static String tag = "HomeWidget";
+
+  Widget? mainWidget;
+  final ExcelWidget excelWidget = const ExcelWidget();
+  final GoogleSheetWidget googleSheetWidget = const GoogleSheetWidget();
+
+  @override
+  void initState() {
+    super.initState();
+    mainWidget = excelWidget;
+  }
+
+  AppBar _getAppBar(bool isMobile) {
+    AppBar _appBar = AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(widget.title),
+          if (widget.isAuthenticated)
+            IconButton(
+              onPressed: widget.logout, // call logout method
+              icon: const Icon(Icons.login),
+              tooltip: "Logout",
+            )
+        ],
+      ),
+
+      // decide whether to menu button or not
+      // hambuerger button is used in mobile view to show the menu
+      automaticallyImplyLeading: isMobile && widget.isAuthenticated,
+    );
+    return _appBar;
+  }
+
+  void onMenuSelected(int idx) {
+    //Log.d(tag, "Selected menu: $idx");
+    switch (idx) {
+      case 0: // excel
+        mainWidget = excelWidget;
+        break;
+      case 1:
+        mainWidget = googleSheetWidget;
+        break;
+      case 2:
+        mainWidget = const Center(
+          child: Text("Form will be here"),
+        );
+        break;
+      case 3:
+        mainWidget = const Center(
+          child: Text("Instruction will be here"),
+        );
+    }
+    setState(() {
+      toggleDrawer();
+    });
+  }
+
+  ///https://stackoverflow.com/questions/43807184/how-to-close-scaffolds-drawer-after-an-item-tap
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  toggleDrawer() async {
+    if (_scaffoldKey.currentState!.isDrawerOpen) {
+      _scaffoldKey.currentState!.openEndDrawer();
+    } else {
+      _scaffoldKey.currentState!.openDrawer();
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SideMenu(profileData: profileData),
-        Expanded(
-          //fit: FlexFit.loose,
-          child: excelWidget,
-        ),
-      ],
+    bool isMobile = Responsive.isMobile(context);
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: _getAppBar(isMobile),
+      drawer: isMobile && widget.isAuthenticated
+          ? Drawer(
+              child: SideMenu(
+                onDestinationSelected: onMenuSelected,
+                profileData: widget.profileData!,
+              ),
+            )
+          : null,
+      body: widget.profileData == null
+          ? const AuthFailedWidget() // user is not authenticated
+          : Responsive(
+              mobile: mainWidget!,
+              tablet: Row(
+                children: [
+                  SideMenu(
+                    profileData: widget.profileData!,
+                    onDestinationSelected: onMenuSelected,
+                  ),
+                  Expanded(
+                    child: mainWidget!,
+                  ),
+                ],
+              ),
+              desktop: Row(
+                children: [
+                  SideMenu(
+                    profileData: widget.profileData!,
+                    onDestinationSelected: onMenuSelected,
+                  ),
+                  Expanded(
+                    child: mainWidget!,
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

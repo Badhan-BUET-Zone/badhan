@@ -8,9 +8,14 @@ import 'package:flutter/material.dart';
 import '../../model/profile_data_model.dart';
 
 class SideMenu extends StatefulWidget {
-  const SideMenu({Key? key, required this.profileData}) : super(key: key);
+  const SideMenu(
+      {Key? key,
+      required this.onDestinationSelected,
+      required this.profileData})
+      : super(key: key);
 
   final ProfileData profileData;
+  final void Function(int index) onDestinationSelected;
 
   @override
   State<SideMenu> createState() => _SideMenuState();
@@ -45,9 +50,10 @@ class _SideMenuState extends State<SideMenu> {
     bool isExpanded =
         Responsive.isDesktop(context) || Responsive.isMobile(context);
     return NavigationRail(
-      onDestinationSelected: (idx){
+      onDestinationSelected: (idx) {
         setState(() {
           _selectedIndex = idx;
+          widget.onDestinationSelected(idx);
         });
       },
       leading: ProfileDataWidget(
@@ -58,7 +64,7 @@ class _SideMenuState extends State<SideMenu> {
       selectedIndex: _selectedIndex,
       destinations: const [
         NavigationRailDestination(
-          icon: Icon(Icons.receipt),
+          icon: Icon(Icons.upload_file_rounded),
           label: Text("Excel"),
         ),
         NavigationRailDestination(
@@ -67,7 +73,7 @@ class _SideMenuState extends State<SideMenu> {
         ),
         NavigationRailDestination(
           icon: Icon(Icons.article),
-          label: Text("Form"),
+          label: Text("Badhan Form"),
         ),
         NavigationRailDestination(
           icon: Icon(Icons.info),
