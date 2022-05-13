@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static String tag = "MyHomePage";
 
-  /// const widget is created here 
+  /// const widget is created here
   /// so that we can use it for mobile, tablet and desktop views
   final ExcelWidget excelWidget = const ExcelWidget();
 
@@ -149,21 +149,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-        future: _fetchProfileData(),
-        builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
-          /// waiting for the authentication to be done
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return FutureBuilder(
+      future: _fetchProfileData(),
+      builder: (context, AsyncSnapshot<ProfileData?> snapshot) {
+        /// waiting for the authentication to be done
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
+        }
 
-          _profileData = snapshot.data;
+        _profileData = snapshot.data;
 
-          // check if the user is in mobile view
-          bool isMobile = Responsive.isMobile(context);
+        // check if the user is in mobile view
+        bool isMobile = Responsive.isMobile(context);
 
-          return Scaffold(
+        
+         return Scaffold(
             appBar: _getAppBar(isMobile),
             drawer: isMobile && isAuthenticated
                 ? Drawer(
@@ -173,44 +174,28 @@ class _MyHomePageState extends State<MyHomePage> {
             body: _profileData == null
                 ? const AuthFailedWidget() // user is not authenticated
                 : Responsive(
-                    mobile: ResponsiveHomePageView(
-                      sidebarFlex: 0,
-                      contentFlex: 1,
+                    mobile: excelWidget,
+                    tablet: LargeScreenHomePageView(
                       excelWidget: excelWidget,
                       profileData: _profileData!,
                     ),
-                    tablet: ResponsiveHomePageView(
-                      sidebarFlex: 3,
-                      contentFlex: 8,
-                      excelWidget: excelWidget,
-                      profileData: _profileData!,
-                    ),
-                    desktop: ResponsiveHomePageView(
-                      sidebarFlex: 3,
-                      contentFlex: 10,
+                    desktop: LargeScreenHomePageView(
                       excelWidget: excelWidget,
                       profileData: _profileData!,
                     ),
                   ),
           );
-        },
-      ),
+      },
     );
   }
 }
 
-class ResponsiveHomePageView extends StatelessWidget {
-  /// flex of views
-  final int sidebarFlex;
-  final int contentFlex;
-
+class LargeScreenHomePageView extends StatelessWidget {
   final ExcelWidget excelWidget;
   final ProfileData profileData;
 
-  const ResponsiveHomePageView({
+  const LargeScreenHomePageView({
     Key? key,
-    required this.sidebarFlex,
-    required this.contentFlex,
     required this.excelWidget,
     required this.profileData,
   }) : super(key: key);
@@ -218,16 +203,10 @@ class ResponsiveHomePageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (sidebarFlex > 0)
-          Flexible(
-              flex: sidebarFlex, child: SideMenu(profileData: profileData)),
-        if(sidebarFlex>0)
-        const VerticalDivider(),
+      children: [
+        SideMenu(profileData: profileData),
         Expanded(
-          flex: contentFlex,
+          //fit: FlexFit.loose,
           child: excelWidget,
         ),
       ],

@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:badhandatainput/widget/home_page/editable_donor_diaglog.dart';
+import 'package:badhandatainput/widget/responsive.dart';
 import 'package:flutter/material.dart';
 import '../../model/profile_data_model.dart';
 
@@ -15,10 +17,16 @@ class SideMenu extends StatefulWidget {
 }
 
 class _SideMenuState extends State<SideMenu> {
-  //static String tag = "SideMenu";
+  static String tag = "SideMenu";
 
   String profileDataStr = "";
   bool isAuthenticated = false;
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   List<String> instructions = [
     "1) Phone : text",
@@ -34,61 +42,93 @@ class _SideMenuState extends State<SideMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Center(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ProfilePictureFromName(
-                    showFullText: false,
-                    name: widget.profileData.name,
-                    radius: 30,
-                    fontsize: 15,
-                    characterCount: 2),
-                const SizedBox(
-                  width: 15,
-                ),
-                Expanded(
-                  child: Container(
-                    //color: Colors.red,
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        AutoSizeText(
-                          widget.profileData.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        AutoSizeText(
-                          BadhanConst.designation(widget.profileData.designation),
-                          style: Theme.of(context).textTheme.subtitle1,
-                        )
-                      ],
+    bool isExpanded =
+        Responsive.isDesktop(context) || Responsive.isMobile(context);
+    return NavigationRail(
+      onDestinationSelected: (idx){
+        setState(() {
+          _selectedIndex = idx;
+        });
+      },
+      leading: ProfileDataWidget(
+        isExpanded: isExpanded,
+        profileData: widget.profileData,
+      ),
+      extended: isExpanded,
+      selectedIndex: _selectedIndex,
+      destinations: const [
+        NavigationRailDestination(
+          icon: Icon(Icons.receipt),
+          label: Text("Excel"),
+        ),
+        NavigationRailDestination(
+          icon: Icon(Icons.file_present_sharp),
+          label: Text("Google Sheet"),
+        ),
+        NavigationRailDestination(
+          icon: Icon(Icons.article),
+          label: Text("Form"),
+        ),
+        NavigationRailDestination(
+          icon: Icon(Icons.info),
+          label: Text("Instructions"),
+        ),
+      ],
+    );
+  }
+}
+
+class ProfileDataWidget extends StatelessWidget {
+  const ProfileDataWidget(
+      {Key? key, required this.isExpanded, required this.profileData})
+      : super(key: key);
+
+  final ProfileData profileData;
+  final bool isExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: (isExpanded) ? 256 : 50,
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ProfilePictureFromName(
+              showFullText: false,
+              name: profileData.name,
+              radius: 25,
+              fontsize: 12,
+              characterCount: 2),
+          if (isExpanded)
+            const SizedBox(
+              width: 8,
+            ),
+          if (isExpanded)
+            Expanded(
+              child: Container(
+                //color: Colors.red,
+                padding: const EdgeInsets.only(right: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      profileData.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    AutoSizeText(
+                      BadhanConst.designation(profileData.designation),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    )
+                  ],
                 ),
-              ],
+              ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            /* const AddDonorButtonWidget(), */
-            const Text(
-                "Instructions : Your excel sheet must have the following columns"),
-            const SizedBox(
-              height: 5,
-            ),
-            ...instructions.map((e) => Text(e)),
-          ],
-        )),
+        ],
       ),
     );
   }
