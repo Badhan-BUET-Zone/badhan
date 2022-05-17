@@ -1,5 +1,7 @@
+import 'package:badhandatainput/util/const_ui.dart';
+import 'package:badhandatainput/util/debug.dart';
+import 'package:badhandatainput/util/google_sheet_parser.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../../model/donor_model.dart';
 import '../common/all_donors_widget.dart';
@@ -52,16 +54,23 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: MyTextField(
-                          hint: "Paste a public google sheet link here",
-                          onSubmitText: (String link) {},
-                          vanishTextOnSubmit: false,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 8.0,
+                            bottom: 8.0,
+                          ),
+                          child: MyTextField(
+                            hint: "Paste a public google sheet link here",
+                            onSubmitText: (String link) {
+                              Log.d(tag, "link: $link");
+                              fetchGoogleSheetData(link);
+                            },
+                            vanishTextOnSubmit: false,
+                            suffixIcon:
+                                const Icon(Icons.link, color: Colors.white),
+                          ),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Import"),
-                      )
                     ],
                   ),
                 ),
@@ -85,5 +94,17 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
       msg.write("Import an excel file.");
       newDonorList.clear();
     });
+  }
+
+  void fetchGoogleSheetData(String link) async {
+    try {
+      List<Map<String, String>> dataList =
+          await GoogleSheetParser.parseSheet(link);
+
+      Log.d(tag, "dataList: $dataList");
+    } catch (e) {
+      Log.d(tag, "Error: $e");
+      ConstUI.showErrorToast(context, () {}, e.toString());
+    }
   }
 }

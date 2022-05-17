@@ -211,55 +211,50 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
     // phone number constrainsts ==========
     if (newDonor.phone.length != 13) {
-      throw InputFormatException("$error Phone length must be of 13 digits.");
+      throw MyExpection("$error Phone length must be of 13 digits.");
     }
 
     // name constrains =============
     if (newDonor.name.length < 3 || newDonor.name.length > 500) {
-      throw InputFormatException(
-          "$error Name length must be between 3 and 500");
+      throw MyExpection("$error Name length must be between 3 and 500");
     }
 
     // student id contraints=========
     if (newDonor.studentId.length != 7) {
-      throw InputFormatException("$error Student Id must be of 7 digits.");
+      throw MyExpection("$error Student Id must be of 7 digits.");
     }
 
     // room number constraints =============
     if (newDonor.roomNumber.length < 2 || newDonor.roomNumber.length > 500) {
-      throw InputFormatException(
-          "$error Room number length must be between 2 and 500");
+      throw MyExpection("$error Room number length must be between 2 and 500");
     }
 
     // address constraints =============
     if (newDonor.address.length < 2 || newDonor.address.length > 500) {
-      throw InputFormatException(
-          "$error Address length must be between 2 and 500");
+      throw MyExpection("$error Address length must be between 2 and 500");
     }
 
     // comment constraints ==============
     if (newDonor.comment.length < 2 || newDonor.comment.length > 500) {
-      throw InputFormatException(
-          "$error Comment length must be between 2 and 500");
+      throw MyExpection("$error Comment length must be between 2 and 500");
     }
 
     // donation count constrainst
     if (newDonor.extraDonationCount < 0) {
-      throw InputFormatException("$error donation count can't be negative!");
+      throw MyExpection("$error donation count can't be negative!");
     }
 
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
     // last donation date must be specified if the donation count does not equal to zero.
     if (newDonor.extraDonationCount > 0 && widget.lastDonation == null) {
-      throw InputFormatException(
+      throw MyExpection(
           "$error Donation count is more than zero. Please select the donation date!");
     }
 
-
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
-    if(widget.lastDonation != null && widget.newDonor.extraDonationCount == 0){
-      throw InputFormatException(
-          "$error Total donation must be equal 1 or more");
+    if (widget.lastDonation != null &&
+        widget.newDonor.extraDonationCount == 0) {
+      throw MyExpection("$error Total donation must be equal 1 or more");
     }
 
     return true;
@@ -303,7 +298,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
             // fontend validation ================================
             try {
               isDataValid = vallidateData();
-            } on InputFormatException catch (e) {
+            } on MyExpection catch (e) {
               setState(() {
                 isLoding = false;
                 foundDuplicate = false;

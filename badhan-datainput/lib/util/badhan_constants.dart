@@ -97,7 +97,7 @@ class BadhanConst {
       case "last_donation":
         return "lastDonation";
       default:
-        return throw InputFormatException("unexpected column!");
+        return throw MyExpection("unexpected column!");
     }
   }
 
@@ -109,14 +109,14 @@ class BadhanConst {
           String number = (data.toInt()).toString();
 
           if (number.length != 13) {
-            throw InputFormatException(
+            throw MyExpection(
                 "Phone number length must be 13. See instruction for more details");
           }
 
           return number;
         } on NoSuchMethodError catch (_) {
-          throw InputFormatException("Phone number must be a number");
-        } on InputFormatException catch (_) {
+          throw MyExpection("Phone number must be a number");
+        } on MyExpection catch (_) {
           rethrow;
         }
       case "bloodGroup":
@@ -128,7 +128,7 @@ class BadhanConst {
           }
           return bloodGroup;
         } catch (e) {
-          throw InputFormatException(
+          throw MyExpection(
               "Invalid blood group. See instruction for more details.");
         }
       case "hall":
@@ -139,14 +139,14 @@ class BadhanConst {
           }
           return hall;
         } catch (e) {
-          throw InputFormatException(
+          throw MyExpection(
               "Invalid hall name. See instruction for more details");
         }
       case "studentId":
         try {
           return data.toInt().toString();
         } catch (_) {
-          throw InputFormatException("Student id must be a number");
+          throw MyExpection("Student id must be a number");
         }
       case "extraDonationCount":
         try {
@@ -156,15 +156,14 @@ class BadhanConst {
           // negative donation count handle
           if (cnt < 0) {
             //Log.d(tag, "total cnt $cnt");
-            throw InputFormatException("Total donation can't be negative");
+            throw MyExpection("Total donation can't be negative");
           }
 
           return cnt;
-        } on InputFormatException catch (_) {
+        } on MyExpection catch (_) {
           rethrow;
         } catch (_) {
-          throw InputFormatException(
-              "Total doonation must be an integer number");
+          throw MyExpection("Total doonation must be an integer number");
         }
       case "comment":
         String comment = data;
@@ -174,13 +173,11 @@ class BadhanConst {
         try {
           return data as bool;
         } catch (_) {
-          throw InputFormatException(
-              "Available to all must be either true or false");
+          throw MyExpection("Available to all must be either true or false");
         }
 
       default:
         return data;
     }
   }
-
 }

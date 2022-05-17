@@ -1,7 +1,7 @@
-class InputFormatException implements Exception {
+class MyExpection implements Exception {
   final String message;
 
-  InputFormatException(this.message);
+  MyExpection(this.message);
 
   @override
   String toString() {
