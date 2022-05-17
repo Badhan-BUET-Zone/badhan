@@ -1,4 +1,6 @@
+import 'package:badhandatainput/util/badhan_constants.dart';
 import 'package:badhandatainput/util/const_ui.dart';
+import 'package:badhandatainput/util/custom_exceptions.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/util/google_sheet_parser.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +21,10 @@ class GoogleSheetWidget extends StatefulWidget {
 }
 
 class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
-  static String tag = "ExcelWidget";
-  final String defaultMsg = "Import an excel file.";
+  static String tag = "GoogleSheetWidget";
 
+  bool isLoading = false;
   final List<NewDonor> newDonorList = [];
-  final StringBuffer msg = StringBuffer(
-      "Import an excel file."); // message displayed in the topbar. e.g."Import an excel file"
-  // key: phone number, value: last donation date
   final Map<String, DateTime> lastDonationMap = {};
 
   @override
@@ -75,11 +74,21 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
-              AllDonorsWidget(
-                  newDonorList: newDonorList, lastDonationMap: lastDonationMap),
+              if (isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              if (!isLoading)
+                const SizedBox(
+                  height: 5,
+                ),
+              if (!isLoading)
+                AllDonorsWidget(
+                    newDonorList: newDonorList,
+                    lastDonationMap: lastDonationMap),
             ],
           ),
         ],
@@ -90,21 +99,60 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
   // clears all the data in the excel widget
   void _clearAll() {
     setState(() {
-      msg.clear();
-      msg.write("Import an excel file.");
       newDonorList.clear();
+      lastDonationMap.clear();
     });
   }
 
   void fetchGoogleSheetData(String link) async {
+    isLoading = true;
+    _clearAll();
     try {
       List<Map<String, String>> dataList =
           await GoogleSheetParser.parseSheet(link);
 
+      Map<String, dynamic> mappedData = {};
+      int r = 1;
+      for (Map<String, String> data in dataList) {
+        data.forEach((key, value) {
+          String header = BadhanConst.headerMap(key);
+          if (header == "lastDonation" && value.isNotEmpty) {
+            String phone = mappedData["phone"] ?? "";
+            if (phone.isEmpty) {
+              throw MyExpection(
+                  "Phone number column must be appear before last donation column!");
+            }
+            try {
+              Log.d(tag, "$phone : $value");
+              if (value != "0" && phone != "") {
+                DateTime dateTime = DateTime.parse(value);
+                lastDonationMap[phone] = dateTime;
+              }
+            } catch (_) {
+              /// https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/26
+              throw MyExpection(
+                  "Invalid last donation date format on row $r.\nDate format must be yyyy-mm-dd.");
+            }
+          } else {
+            mappedData[header] = BadhanConst.dataMapFromString(header, value);
+          }
+        });
+        NewDonor newDonor = NewDonor.fromJson(mappedData);
+        newDonorList.add(newDonor);
+        r++;
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+
       Log.d(tag, "dataList: $dataList");
     } catch (e) {
+      isLoading = false;
+      _clearAll();
       Log.d(tag, "Error: $e");
       ConstUI.showErrorToast(context, () {}, e.toString());
     }
+    
   }
 }

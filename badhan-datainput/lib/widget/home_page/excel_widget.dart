@@ -80,8 +80,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                 height: 5,
               ),
               AllDonorsWidget(
-                  newDonorList: newDonorList,
-                  lastDonationMap: lastDonationMap),
+                  newDonorList: newDonorList, lastDonationMap: lastDonationMap),
             ],
           ),
 
@@ -128,6 +127,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
       msg.clear();
       msg.write("Import an excel file.");
       newDonorList.clear();
+      lastDonationMap.clear();
     });
   }
 

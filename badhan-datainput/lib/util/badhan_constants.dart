@@ -180,4 +180,84 @@ class BadhanConst {
         return data;
     }
   }
+
+  static dynamic dataMapFromString(String header, String data) {
+    //Log.d(tag, "_dataMap(): $header : $data");
+    switch (header) {
+      case "phone":
+        try {
+          String number = (int.parse(data)).toString();
+
+          if (number.length != 13) {
+            throw MyExpection(
+                "Phone number length must be 13. See instruction for more details");
+          }
+
+          return number;
+        } on NoSuchMethodError catch (_) {
+          throw MyExpection("Phone number must be a number");
+        } on MyExpection catch (_) {
+          rethrow;
+        }
+      case "bloodGroup":
+        try {
+          int bloodGroup = BadhanConst.bloodGroupId(data);
+          //Log.d(tag, "blood group: $data: $bloodGroup");
+          if (bloodGroup == -1) {
+            throw Exception();
+          }
+          return bloodGroup;
+        } catch (e) {
+          throw MyExpection(
+              "Invalid blood group. See instruction for more details.");
+        }
+      case "hall":
+        try {
+          int hall = BadhanConst.hallId(data);
+          if (hall == -1) {
+            throw Exception();
+          }
+          return hall;
+        } catch (e) {
+          throw MyExpection(
+              "Invalid hall name. See instruction for more details");
+        }
+      case "studentId":
+        try {
+          return int.parse(data).toString();
+        } catch (_) {
+          throw MyExpection("Student id must be a number");
+        }
+      case "extraDonationCount":
+        try {
+          int cnt = int.parse(data);
+
+          // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/27
+          // negative donation count handle
+          if (cnt < 0) {
+            //Log.d(tag, "total cnt $cnt");
+            throw MyExpection("Total donation can't be negative");
+          }
+
+          return cnt;
+        } on MyExpection catch (_) {
+          rethrow;
+        } catch (_) {
+          throw MyExpection("Total doonation must be an integer number");
+        }
+      case "comment":
+        String comment = data;
+        return comment.trim() == "" ? "no comments" : comment.trim();
+      case "availableToAll":
+        //Log.d(tag, "availableToAll: $data");
+        try {
+          return data.toLowerCase() == "true";
+        } catch (_) {
+          throw MyExpection("Available to all must be either true or false");
+        }
+
+      default:
+        return data;
+    }
+  }
 }
