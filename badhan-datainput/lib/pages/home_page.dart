@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../model/profile_data_model.dart';
 import '../model/provider_response_model.dart';
 import '../provider/user_data_provider.dart';
+import '../util/const_ui.dart';
 
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
@@ -79,11 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
         duration: const Duration(seconds: 4),
         // width: MediaQuery.of(context).size.width * 0.2,
         margin: EdgeInsets.only(
-            left: MediaQuery.of(context).size.width * 0.7,
+            left: ConstUI.responsiveSnackbarMargin(context),
             right: 20,
             bottom: 20),
         behavior: SnackBarBehavior.floating,
-        content: Text(response.message),
+        content: AutoSizeText(response.message),
         backgroundColor: response.success ? Colors.green : Colors.red,
       ),
     );
@@ -232,7 +234,6 @@ class _HomeWidgetState extends State<HomeWidget> {
       _scaffoldKey.currentState!.openDrawer();
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
