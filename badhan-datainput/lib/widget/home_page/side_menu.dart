@@ -10,10 +10,12 @@ import '../../model/profile_data_model.dart';
 class SideMenu extends StatefulWidget {
   const SideMenu(
       {Key? key,
+      required this.initialSelectedIdx,
       required this.onDestinationSelected,
       required this.profileData})
       : super(key: key);
 
+  final int initialSelectedIdx;
   final ProfileData profileData;
   final void Function(int index) onDestinationSelected;
 
@@ -31,6 +33,7 @@ class _SideMenuState extends State<SideMenu> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialSelectedIdx;
   }
 
   List<String> instructions = [

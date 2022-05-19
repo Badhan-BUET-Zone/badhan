@@ -169,6 +169,7 @@ class HomeWidget extends StatefulWidget {
 class _HomeWidgetState extends State<HomeWidget> {
   static String tag = "HomeWidget";
 
+  int lastSelectedMenuIdx = 0;
   Widget? mainWidget;
   final ExcelWidget excelWidget = const ExcelWidget();
   final GoogleSheetWidget googleSheetWidget = const GoogleSheetWidget();
@@ -202,6 +203,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   void onMenuSelected(int idx) {
+    lastSelectedMenuIdx = idx;
     //Log.d(tag, "Selected menu: $idx");
     switch (idx) {
       case 0: // excel
@@ -244,6 +246,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       drawer: isMobile && widget.isAuthenticated
           ? Drawer(
               child: SideMenu(
+                initialSelectedIdx: lastSelectedMenuIdx,
                 onDestinationSelected: onMenuSelected,
                 profileData: widget.profileData!,
               ),
@@ -256,6 +259,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               tablet: Row(
                 children: [
                   SideMenu(
+                    initialSelectedIdx: lastSelectedMenuIdx,
                     profileData: widget.profileData!,
                     onDestinationSelected: onMenuSelected,
                   ),
@@ -267,6 +271,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               desktop: Row(
                 children: [
                   SideMenu(
+                    initialSelectedIdx: lastSelectedMenuIdx,
                     profileData: widget.profileData!,
                     onDestinationSelected: onMenuSelected,
                   ),
