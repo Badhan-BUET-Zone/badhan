@@ -2,15 +2,14 @@ const express = require("express");
 require("dotenv").config({ path: "./config/dev.env" });
 const { body, validationResult } = require("express-validator");
 
+const { authenticationMiddleware } = require('./middlewares/auth')
+
 const {
   initializeApp,
-  applicationDefault,
   cert,
 } = require("firebase-admin/app");
 const {
   getFirestore,
-  Timestamp,
-  FieldValue,
 } = require("firebase-admin/firestore");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -167,7 +166,7 @@ app.post("/pendingDonors", pendingDonorCreationValidators, async (req, res) => {
   }
 });
 
-app.get("/pendingDonors", async (req, res) => {
+app.get("/pendingDonors", authenticationMiddleware, async (req, res) => {
   try {
     const pending = db.collection("Pending Donors");
     const pendingArrays = [];
@@ -202,7 +201,7 @@ app.get("/pendingDonors", async (req, res) => {
   }
 });
 
-app.delete("/pendingDonors/:id", async (req, res) => {
+app.delete("/pendingDonors/:id", authenticationMiddleware, async (req, res) => {
   try {
     const id = req.params.id;
     const snapshot = await Pending.doc(id).get();
