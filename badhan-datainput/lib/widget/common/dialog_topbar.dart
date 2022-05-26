@@ -5,9 +5,11 @@ class DialogTopBar extends StatelessWidget {
   const DialogTopBar({
     Key? key,
     required this.title,
+    required this.minimizable
   }) : super(key: key);
 
   final String title;
+  final bool minimizable;
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +19,15 @@ class DialogTopBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          if(minimizable)
           const Text("         "),
           Text(
             title,
-            style: themeData.textTheme.headline6
-                ?.copyWith(color: themeData.primaryColor),
+            style: themeData.textTheme.headline5
+                ?.copyWith(color: themeData.primaryColor, fontWeight: FontWeight.bold),
           ),
           //const Spacer(),
+          if(minimizable)
           IconButton(
               onPressed: () {
                 Navigator.of(context).pop();

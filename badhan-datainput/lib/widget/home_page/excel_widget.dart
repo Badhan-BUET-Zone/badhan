@@ -101,7 +101,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                     labelBackgroundColor: Colors.amber),
                 if (newDonorList.isNotEmpty)
                   SpeedDialChild(
-                      onTap: () {},
+                      onTap: _uploadAll,
                       label: "Upload all",
                       child: const Icon(Icons.file_upload_outlined),
                       backgroundColor: Colors.amber,
@@ -119,6 +119,17 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         ],
       ),
     );
+  }
+
+  void _uploadAll() {
+    if (newDonorList.isEmpty) {
+      ConstUI.showErrorToast(context, () {}, "No new donors to upload.");
+      return;
+    }
+
+    for (NewDonor donor in newDonorList) {
+      
+    }
   }
 
   // clears all the data in the excel widget

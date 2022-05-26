@@ -11,7 +11,7 @@ class Environment {
     return debug ? dotenv.env['TEST_MAIN_WEBSITE']! : dotenv.env['MAIN_WEBSITE']!;
   }
 
-  /* static String get SOCKET_URL {
-    return debug ? dotenv.env['SOCKET_URL']! : dotenv.env['SOCKET_URL_REMOTE']!;
-  } */
+  static String get badhanDataInputWebsite{
+    return debug ? dotenv.env['TEST_BADHAN_DATA_INPUT_WEBSITE']! : dotenv.env['BADHAN_DATA_INPUT_WEBSITE']!;
+  }
 }

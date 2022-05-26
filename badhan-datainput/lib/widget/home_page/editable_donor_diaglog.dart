@@ -55,7 +55,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
         //mainAxisSize: MainAxisSize.min,
         shrinkWrap: true,
         children: [
-          DialogTopBar(title: !editable() ? "Add Donor" : "Edit Donor"),
+          DialogTopBar(title: !editable() ? "Add Donor" : "Edit Donor", minimizable: true,),
           MyTextField(
               hint: "Name",
               initalText: editable() ? widget.donorData!.name : "",

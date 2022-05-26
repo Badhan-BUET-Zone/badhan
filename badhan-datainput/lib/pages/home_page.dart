@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
+import 'package:badhandatainput/widget/home_page/badhan_form_widget.dart';
 import 'package:badhandatainput/widget/home_page/excel_widget.dart';
 import 'package:badhandatainput/widget/home_page/google_sheet_widget.dart';
 import 'package:badhandatainput/widget/home_page/side_menu.dart';
@@ -173,6 +174,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   Widget? mainWidget;
   final ExcelWidget excelWidget = const ExcelWidget();
   final GoogleSheetWidget googleSheetWidget = const GoogleSheetWidget();
+  final BadhanFormWidget badhanFormWidget = const BadhanFormWidget();
 
   @override
   void initState() {
@@ -213,9 +215,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         mainWidget = googleSheetWidget;
         break;
       case 2:
-        mainWidget = const Center(
-          child: Text("Form will be here"),
-        );
+        mainWidget = badhanFormWidget;
         break;
       case 3:
         mainWidget = const Center(
