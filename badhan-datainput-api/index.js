@@ -226,8 +226,8 @@ app.delete("/pendingDonors/:id", authenticationMiddleware, async (req, res) => {
 
 app.use((req, res, next)=>{
   res.status(404).json({
-    error: "Bad request",
-    messege: "Write correct url"
+    status: "ERROR",
+    messege: "Invalid url"
   })
 })
 app.listen(port, () => {
