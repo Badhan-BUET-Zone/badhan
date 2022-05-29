@@ -224,6 +224,12 @@ app.delete("/pendingDonors/:id", authenticationMiddleware, async (req, res) => {
   }
 });
 
+app.use((req, res, next)=>{
+  res.status(404).json({
+    error: "Bad request",
+    messege: "Write correct url"
+  })
+})
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
