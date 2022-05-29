@@ -27,7 +27,18 @@ initializeApp({
 const db = getFirestore();
 const Pending = db.collection("Pending Donors");
 
-app.use(express.json());
+app.use(express.json({
+  verify : (req, res, buf, encoding) => {
+    try {
+      JSON.parse(buf);
+    } catch(e) {
+      return res.status(400).send({
+        status: "ERROR",
+        message: "request json is not well structured"
+      });
+    }
+  }
+}));
 
 app.get("/", (req, res) => {
   res.send({
