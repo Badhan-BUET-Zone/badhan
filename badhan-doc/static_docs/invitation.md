@@ -1,7 +1,7 @@
 # Software Developer for Badhan, BUET Zone
 
 We are looking for enthusiastic people to join us in our humanitarian 
-quest to build an app that will help streamline our process of blood 
+quest to build an app that will help to streamline our process of blood 
 donation management. Interested candidates will be responsible to 
 contributing in an open source project and will be assigned to tasks that
 are suitable for them.
