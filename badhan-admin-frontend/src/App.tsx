@@ -1,24 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import SignInSide from "./components/SignIn";
+import StickyFooter from "./components/Home";
+import {useRoutes, BrowserRouter as Router} from "react-router-dom";
+
+const MyRoutes = () => {
+    return useRoutes([
+        {path: "/", element: <StickyFooter/>},
+        {path: "/signin", element: <SignInSide/>},
+    ]);
+};
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <Router>
+            <MyRoutes />
+        </Router>
     </div>
   );
 }
