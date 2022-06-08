@@ -4,18 +4,18 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import SignInSide from "./components/SignIn";
-import StickyFooter from "./components/Home";
+import SignIn from "./pages/SignIn";
+import Home from "./pages/Home";
 import {useRoutes, BrowserRouter as Router} from "react-router-dom";
 
 const MyRoutes = () => {
     return useRoutes([
-        {path: "/", element: <StickyFooter/>},
-        {path: "/signin", element: <SignInSide/>},
+        {path: "/", element: <Home/>},
+        {path: "/signin", element: <SignIn/>},
     ]);
 };
 
-function App() {
+const App = ()=>{
   return (
     <div className="App">
         <Router>
