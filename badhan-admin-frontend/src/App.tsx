@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSelector } from 'react-redux';
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -15,7 +16,7 @@ import NavigationScroll from './layout/NavigationScroll';
 // ==============================|| APP ||============================== //
 
 const App = () => {
-    const customization = useSelector((state: any) => state.customization);
+    const customization = useSelector((state) => state.customization);
 
     return (
         <StyledEngineProvider injectFirst>
