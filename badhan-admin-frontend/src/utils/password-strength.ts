@@ -1,20 +1,26 @@
-// @ts-nocheck
+
 /**
  * Password validator for login pages
+ */
+/*
+cannot recognize scss module:
+
+the current solution is to add a file called global.d.ts to your src dir with the following contents
+declare module '*.scss';
  */
 import value from '../assets/scss/_themes-vars.module.scss';
 
 // has number
-const hasNumber = (number) => new RegExp(/[0-9]/).test(number);
+const hasNumber = (number: string) => new RegExp(/[0-9]/).test(number);
 
 // has mix of small and capitals
-const hasMixed = (number) => new RegExp(/[a-z]/).test(number) && new RegExp(/[A-Z]/).test(number);
+const hasMixed = (number: string) => new RegExp(/[a-z]/).test(number) && new RegExp(/[A-Z]/).test(number);
 
 // has special chars
-const hasSpecial = (number) => new RegExp(/[!#@$%^&*)(+=._-]/).test(number);
+const hasSpecial = (number: string) => new RegExp(/[!#@$%^&*)(+=._-]/).test(number);
 
 // set color based on password strength
-export const strengthColor = (count) => {
+export const strengthColor = (count: number) => {
     if (count < 2) return { label: 'Poor', color: value.errorMain };
     if (count < 3) return { label: 'Weak', color: value.warningDark };
     if (count < 4) return { label: 'Normal', color: value.orangeMain };
@@ -24,7 +30,7 @@ export const strengthColor = (count) => {
 };
 
 // password strength indicator
-export const strengthIndicator = (number) => {
+export const strengthIndicator = (number: string) => {
     let strengths = 0;
     if (number.length > 5) strengths += 1;
     if (number.length > 7) strengths += 1;
