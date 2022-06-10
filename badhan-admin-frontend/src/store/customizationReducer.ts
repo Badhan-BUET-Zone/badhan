@@ -1,16 +1,11 @@
 // @ts-nocheck
 // project imports
 import config from '../config';
-
+import {CustomizationModel} from "./customizationModel";
 // action - state management
 import * as actionTypes from './actions';
 
-export const initialState = {
-    isOpen: [], // for active default menu
-    fontFamily: config.fontFamily,
-    borderRadius: config.borderRadius,
-    opened: true
-};
+export const initialState = new CustomizationModel([],config.fontFamily, config.borderRadius, true)
 
 // ==============================|| CUSTOMIZATION REDUCER ||============================== //
 
