@@ -123,6 +123,7 @@ const NotificationSection = () => {
                         <IconBell stroke={1.5} size="1.3rem" />
                     </Avatar>
                 </ButtonBase>
+                (x)
             </Box>
             <Popper
                 placement={matchesXs ? 'bottom' : 'bottom-end'}
@@ -152,7 +153,7 @@ const NotificationSection = () => {
                                             <Grid container alignItems="center" justifyContent="space-between" sx={{ pt: 2, px: 2 }}>
                                                 <Grid item>
                                                     <Stack direction="row" spacing={2}>
-                                                        <Typography variant="subtitle1">All Notification</Typography>
+                                                        <Typography variant="subtitle1">(x)All Notification</Typography>
                                                         <Chip
                                                             size="small"
                                                             label="01"

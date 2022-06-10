@@ -14,6 +14,7 @@ import MenuList from './MenuList';
 import LogoSection from '../LogoSection';
 import MenuCard from './MenuCard';
 import { drawerWidth } from '../../../store/constant';
+import {isPartOfMockUI} from "../../../utils/deployment";
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -38,13 +39,13 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                     }}
                 >
                     <MenuList />
-                    <MenuCard />
+                    {isPartOfMockUI() && <MenuCard/>}
                 </PerfectScrollbar>
             </BrowserView>
             <MobileView>
                 <Box sx={{ px: 2 }}>
                     <MenuList />
-                    <MenuCard />
+                    {isPartOfMockUI() && <MenuCard/>}
                 </Box>
             </MobileView>
         </>

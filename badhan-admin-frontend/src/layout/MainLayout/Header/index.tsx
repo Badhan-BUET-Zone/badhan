@@ -3,16 +3,19 @@ import PropTypes from 'prop-types';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Box, ButtonBase } from '@mui/material';
+import {Avatar, Box, ButtonBase} from '@mui/material';
+// import {Typography} from '@mui/material';
 
 // project imports
 import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
+import ProfileSectionMock from './ProfileSectionMock';
 import ProfileSection from './ProfileSection';
 import NotificationSection from './NotificationSection';
 
 // assets
 import { IconMenu2 } from '@tabler/icons';
+import {isPartOfMockUI} from "../../../utils/deployment";
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
@@ -33,6 +36,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
             >
                 <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
                     <LogoSection />
+
                 </Box>
                 <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
                     <Avatar
@@ -57,13 +61,14 @@ const Header = ({ handleLeftDrawerToggle }) => {
             </Box>
 
             {/* header search */}
-            <SearchSection />
-            <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ flexGrow: 1 }} />
+            {isPartOfMockUI() && <SearchSection/>}
+            <Box sx={{flexGrow: 1}} />
+            <Box sx={{flexGrow: 1}} />
 
             {/* notification & profile */}
-            <NotificationSection />
-            <ProfileSection />
+            {isPartOfMockUI() && <NotificationSection />}
+            {isPartOfMockUI() && <ProfileSectionMock/>}
+            <ProfileSection/>
         </>
     );
 };

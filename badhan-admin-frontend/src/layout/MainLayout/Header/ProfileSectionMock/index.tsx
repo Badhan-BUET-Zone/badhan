@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useRef, useEffect } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // material-ui
@@ -14,10 +15,12 @@ import {
     ClickAwayListener,
     Divider,
     Grid,
+    InputAdornment,
     List,
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    OutlinedInput,
     Paper,
     Popper,
     Stack,
@@ -31,10 +34,11 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 // project imports
 import MainCard from '../../../../ui-component/cards/MainCard';
 import Transitions from '../../../../ui-component/extended/Transitions';
+import UpgradePlanCard from './UpgradePlanCard';
 import User1 from '../../../../assets/images/users/user-round.svg';
 
 // assets
-import { IconLogout, IconSettings } from '@tabler/icons';
+import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
 
 import {CustomizationModel} from "../../../../store/customizationModel";
 
@@ -43,9 +47,13 @@ import {CustomizationModel} from "../../../../store/customizationModel";
 const ProfileSection = () => {
     const theme = useTheme();
     const customization = useSelector((state: {customization: CustomizationModel}) => state.customization);
+    const navigate = useNavigate();
 
+    const [sdm, setSdm] = useState(true);
     const [darkMode, setDarkMode] = useState(true);
-    const [selectedIndex, ] = useState(-1);
+    const [value, setValue] = useState('');
+    const [notification, setNotification] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
     const [open, setOpen] = useState(false);
     /**
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
@@ -62,6 +70,14 @@ const ProfileSection = () => {
         setOpen(false);
     };
 
+    const handleListItemClick = (event, index, route = '') => {
+        setSelectedIndex(index);
+        handleClose(event);
+
+        if (route && route !== '') {
+            navigate(route);
+        }
+    };
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
@@ -152,10 +168,27 @@ const ProfileSection = () => {
                                             </Stack>
                                             <Typography variant="subtitle2">Super Admin</Typography>
                                         </Stack>
+                                        <OutlinedInput
+                                            sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
+                                            id="input-search-profile"
+                                            value={value}
+                                            onChange={(e) => setValue(e.target.value)}
+                                            placeholder="(x) Search profile options"
+                                            startAdornment={
+                                                <InputAdornment position="start">
+                                                    <IconSearch stroke={1.5} size="1rem" color={theme.palette.grey[500]} />
+                                                </InputAdornment>
+                                            }
+                                            aria-describedby="search-helper-text"
+                                            inputProps={{
+                                                'aria-label': 'weight'
+                                            }}
+                                        />
                                         <Divider />
                                     </Box>
                                     <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                                         <Box sx={{ p: 2 }}>
+                                            <UpgradePlanCard />
                                             <Divider />
                                             <Card
                                                 sx={{
@@ -181,6 +214,37 @@ const ProfileSection = () => {
                                                                 </Grid>
                                                             </Grid>
                                                         </Grid>
+                                                        <Grid item>
+                                                            <Grid item container alignItems="center" justifyContent="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="subtitle1">(x)Start DND Mode</Typography>
+                                                                </Grid>
+                                                                <Grid item>
+                                                                    <Switch
+                                                                        color="primary"
+                                                                        checked={sdm}
+                                                                        onChange={(e) => setSdm(e.target.checked)}
+                                                                        name="sdm"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>
+                                                        <Grid item>
+                                                            <Grid item container alignItems="center" justifyContent="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="subtitle1">(x)Allow Notifications</Typography>
+                                                                </Grid>
+                                                                <Grid item>
+                                                                    <Switch
+                                                                        checked={notification}
+                                                                        onChange={(e) => setNotification(e.target.checked)}
+                                                                        name="sdm"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>
                                                     </Grid>
                                                 </CardContent>
                                             </Card>
@@ -201,7 +265,44 @@ const ProfileSection = () => {
                                                     }
                                                 }}
                                             >
-
+                                                <ListItemButton
+                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                    selected={selectedIndex === 0}
+                                                    onClick={(event) => handleListItemClick(event, 0, '/user/account-profile/profile1')}
+                                                >
+                                                    <ListItemIcon>
+                                                        <IconSettings stroke={1.5} size="1.3rem" />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={<Typography variant="body2">(x)Account Settings</Typography>} />
+                                                </ListItemButton>
+                                                <ListItemButton
+                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                    selected={selectedIndex === 1}
+                                                    onClick={(event) => handleListItemClick(event, 1, '/user/social-profile/posts')}
+                                                >
+                                                    <ListItemIcon>
+                                                        <IconUser stroke={1.5} size="1.3rem" />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={
+                                                            <Grid container spacing={1} justifyContent="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="body2">(x)Social Profile</Typography>
+                                                                </Grid>
+                                                                <Grid item>
+                                                                    <Chip
+                                                                        label="02"
+                                                                        size="small"
+                                                                        sx={{
+                                                                            bgcolor: theme.palette.warning.dark,
+                                                                            color: theme.palette.background.default
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        }
+                                                    />
+                                                </ListItemButton>
                                                 <ListItemButton
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 4}

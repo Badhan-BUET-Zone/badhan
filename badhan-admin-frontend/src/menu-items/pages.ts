@@ -30,7 +30,7 @@ const pages = {
                 },
                 {
                     id: 'register3',
-                    title: 'Register',
+                    title: '(x)Register',
                     type: 'item',
                     url: '/pages/register/register3',
                     target: true

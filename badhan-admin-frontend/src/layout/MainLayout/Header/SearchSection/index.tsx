@@ -110,8 +110,7 @@ const MobileSearch = ({ value, setValue, popupState }) => {
 
 MobileSearch.propTypes = {
     value: PropTypes.string,
-    setValue: PropTypes.func,
-    popupState: PopupState
+    setValue: PropTypes.func
 };
 
 // ==============================|| SEARCH INPUT ||============================== //
@@ -167,7 +166,7 @@ const SearchSection = () => {
                     id="input-search-header"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    placeholder="Search"
+                    placeholder="(x)Search"
                     startAdornment={
                         <InputAdornment position="start">
                             <IconSearch stroke={1.5} size="1rem" color={theme.palette.grey[500]} />
