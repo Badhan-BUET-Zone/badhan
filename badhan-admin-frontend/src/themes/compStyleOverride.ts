@@ -6,7 +6,8 @@ export default function componentStyleOverrides(theme) {
             styleOverrides: {
                 root: {
                     fontWeight: 500,
-                    borderRadius: '4px'
+                    borderRadius: `${theme?.customization?.borderRadius}px`,
+                    margin: 5
                 }
             }
         },
@@ -182,6 +183,11 @@ export default function componentStyleOverrides(theme) {
                     color: theme.paper,
                     background: theme.colors?.grey700
                 }
+            }
+        },
+        MuiButtonBase: {
+            styleOverrides: {
+
             }
         }
     };

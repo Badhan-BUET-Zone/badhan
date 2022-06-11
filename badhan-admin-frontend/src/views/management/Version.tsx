@@ -1,24 +1,20 @@
 // @ts-nocheck
 // material-ui
-import {Typography} from '@mui/material';
 
 // project imports
 import MainCard from '../../ui-component/cards/MainCard';
-
+import MyTextField from "../../ui-component/MyTextField";
+import React from "react";
+import MyButton from "../../ui-component/MyButton";
 // ==============================|| SAMPLE PAGE ||============================== //
 
-const Version = () => (
-    <MainCard title="Sample Card">
-        <Typography variant="body2">
-            Version Page
-            Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie
-            magna alissa. Ut enif
-            ad minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos
-            aube grue dolor in
-            reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non
-            president, sunk in culpa
-            qui officiate descent molls anim id est labours.
-        </Typography>
+const cardAction = <MyButton text={'Update Version'}/>
+
+const Version: React.FC = () => (
+    <MainCard title="Set the App Version Deployed on Google Play" cardAction={cardAction}>
+            <MyTextField id="major-version" label="Major Version"/>
+            <MyTextField id="minor-version" label="Minor Version"/>
+            <MyTextField id="patch-version" label="Patch Version"/>
     </MainCard>
 );
 

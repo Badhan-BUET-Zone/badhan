@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Card, CardContent, CardHeader, Divider, Typography } from '@mui/material';
+import {Card, CardActions, CardContent, CardHeader, Divider, Typography} from '@mui/material';
 
 // constant
 const headerSX = {
@@ -27,6 +27,7 @@ const MainCard = forwardRef(
             shadow,
             sx = {},
             title,
+            cardAction,
             ...others
         },
         ref
@@ -62,6 +63,13 @@ const MainCard = forwardRef(
                     </CardContent>
                 )}
                 {!content && children}
+
+                {/* card actions*/}
+                {cardAction &&
+                    <CardActions disableSpacing>
+                        {cardAction}
+                    </CardActions>
+                }
             </Card>
         );
     }
