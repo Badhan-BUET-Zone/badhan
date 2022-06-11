@@ -13,6 +13,7 @@ Our Codebase: [Github Organization](https://github.com/Badhan-BUET-Zone)
 ## 1) Frontend Developer
 * Vacancy: 1
 * Skill Requirement: Vue.js / Flutter
+* Experience: Current student of CSE, BUET
 * Responsibilities: 
   * If you are proficient in Vue.js, you will be tasked to implement features 
 under the guidance of [Mir Mahathir Mohammad](https://www.facebook.com/MirMahathirMohammad) in the [Badhan Frontend Codebase](https://github.com/Badhan-BUET-Zone/badhan-web).
@@ -22,6 +23,7 @@ guidance of [Hasan Masum](https://www.facebook.com/hmasum52) in the [Badhan Data
 ## 2) Backend Developer
 * Vacancy: 1
 * Skill Requirement: Node.js
+* Experience Requirement: Current student of CSE, BUET
 * Responsibilities:
   * You will work under the guidance of [Sanju Basak](https://www.facebook.com/sanju.basak.71) to implement features on the [Datainput API codebase](https://github.com/Badhan-BUET-Zone/badhan-datainput-api)
   and on a tentative project of an archive system for Badhan.
@@ -30,13 +32,22 @@ guidance of [Hasan Masum](https://www.facebook.com/hmasum52) in the [Badhan Data
 * Vacancy: 1
 * Skill Requirement: Experience with Linux, completion of any online/academic 
 security course
+* Experience Requirement: Current student of CSE, BUET
 * Responsibilities:
   * You will be tasked to find vulnerabilities on the [Badhan Backend Codebase](https://github.com/Badhan-BUET-Zone/badhan-backend).
   * Your objective will be to try to systematically corrupt or break the [testing API](http://badhan-web-test.herokuapp.com/) or database.
   * You will be tasked for penetration testing of the testing API
 
+## 4) Q/A Member
+* Vacancy: 1
+* Skill Requirement: Knowledge on building apps or website, Github
+* Experience Requirement: Current student of any department of BUET
+* Responsibilities:
+  * You will have to collect user requirements from the members of Badhan
+  * You will have to write and document issues in Github.
+  * You will need to verify the implementations done after resolving any issues.
+
 ### General Requirements
-* Current students of batch 18,19 or 20 of CSE, BUET are preferable.
 * You have to be a member of Badhan, BUET Zone.
 * You must show dedication in maintaining the integrity of our platform
 and must stay dedicated in maintaining the responsibilities given to you
