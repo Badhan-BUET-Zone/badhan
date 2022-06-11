@@ -10,6 +10,7 @@ import AuthCardWrapper from '../AuthCardWrapper';
 import AuthLogin from '../auth-forms/AuthLogin';
 import Logo from '../../../../ui-component/Logo';
 import AuthFooter from '../../../../ui-component/cards/AuthFooter';
+import {isPartOfMockUI} from "../../../../utils/deployment";
 
 // assets
 
@@ -60,12 +61,12 @@ const Login = () => {
                                         </Grid>
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <AuthLogin />
+                                        <AuthLogin/>
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Divider />
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    {isPartOfMockUI() && <Grid item xs={12}>
                                         <Grid item container direction="column" alignItems="center" xs={12}>
                                             <Typography
                                                 component={Link}
@@ -73,10 +74,10 @@ const Login = () => {
                                                 variant="subtitle1"
                                                 sx={{ textDecoration: 'none' }}
                                             >
-                                                Don&apos;t have an account?
+                                                (x)Don&apos;t have an account?
                                             </Typography>
                                         </Grid>
-                                    </Grid>
+                                    </Grid>}
                                 </Grid>
                             </AuthCardWrapper>
                         </Grid>

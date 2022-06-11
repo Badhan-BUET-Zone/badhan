@@ -3,6 +3,10 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from '../layout/MainLayout';
 import Loadable from '../ui-component/Loadable';
+import Version from "../views/management/Version";
+import Contributors from "../views/management/Contributors";
+import SuperAdmin from "../views/management/SuperAdmin";
+import BackupRestore from "../views/backup-restore";
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
@@ -54,6 +58,22 @@ const MainRoutes = {
         {
             path: '/sample-page',
             element: <SamplePage />
+        },
+        {
+            path: '/management/version',
+            element: <Version/>
+        },
+        {
+            path: '/management/contributors',
+            element: <Contributors/>
+        },
+        {
+            path: '/management/superadmin',
+            element: <SuperAdmin/>
+        },
+        {
+            path: '/backup-restore',
+            element: <BackupRestore/>
         }
     ]
 };
