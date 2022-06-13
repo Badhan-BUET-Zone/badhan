@@ -18,7 +18,6 @@ import { SET_MENU } from '../../store/actions';
 
 // assets
 import { IconChevronRight } from '@tabler/icons';
-import {isPartOfMockUI} from "../../utils/deployment";
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
@@ -110,7 +109,6 @@ const MainLayout = () => {
                 <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
                 <Outlet />
             </Main>
-            {isPartOfMockUI() && <Customization/>}
         </Box>
     );
 };

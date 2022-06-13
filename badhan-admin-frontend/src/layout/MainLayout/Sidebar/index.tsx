@@ -12,9 +12,7 @@ import { BrowserView, MobileView } from 'react-device-detect';
 // project imports
 import MenuList from './MenuList';
 import LogoSection from '../LogoSection';
-import MenuCard from './MenuCard';
 import { drawerWidth } from '../../../store/constant';
-import {isPartOfMockUI} from "../../../utils/deployment";
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -39,13 +37,11 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                     }}
                 >
                     <MenuList />
-                    {isPartOfMockUI() && <MenuCard/>}
                 </PerfectScrollbar>
             </BrowserView>
             <MobileView>
                 <Box sx={{ px: 2 }}>
                     <MenuList />
-                    {isPartOfMockUI() && <MenuCard/>}
                 </Box>
             </MobileView>
         </>

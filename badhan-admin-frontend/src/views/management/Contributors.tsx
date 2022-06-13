@@ -1,4 +1,3 @@
-// @ts-nocheck
 // material-ui
 import {
     Button,
@@ -11,11 +10,11 @@ import {
 
 import Select  from '@mui/material/Select';
 // project imports
-import MainCard from '../../ui-component/cards/MainCard';
 import MyTextField from "../../ui-component/MyTextField";
 import {Box} from "@mui/material";
 import React from 'react';
 import MyButton from "../../ui-component/MyButton";
+import MyMainCard from "../../ui-component/cards/MyMainCard";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -30,7 +29,7 @@ const Contributors = () => {
     };
 
     return(
-        <MainCard title="Manage Contributors">
+        <MyMainCard title="Manage Contributors">
             <Card variant={'outlined'} sx={{maxWidth: '300px'}}>
                 <CardContent>
                     <Button
@@ -89,7 +88,7 @@ const Contributors = () => {
                     </Card>}
 
                     <Box sx={{margin: '10px'}}>
-                        <Typography sx={{margin: '10px'}} variant={'body'}>
+                        <Typography sx={{margin: '10px'}} variant={'body1'}>
                             Contributions:
                         </Typography>
                         <Chip sx={{margin: '5px'}} label="UX Designer" onDelete={() => {
@@ -113,7 +112,7 @@ const Contributors = () => {
 
 
                     <Box sx={{margin: '10px'}}>
-                        <Typography sx={{margin: '10px'}} variant={'body'}>
+                        <Typography sx={{margin: '10px'}} variant={'body1'}>
                             Links:
                         </Typography>
 
@@ -124,15 +123,13 @@ const Contributors = () => {
                             <Typography variant={'body1'} sx={{width: '200px', overflowWrap: 'break-word'}}>
                                 blue - facebook - <a href={'https://facebook.com/MirMahathirMohammad'}>https://facebook.com/MirMahathirMohammad</a>
                             </Typography>
-                            <MyButton text={'Delete'} color={'warning'}/>
+                            <MyButton text={'Delete'} color={'warning'} onClick={()=>{}}/>
                         </CardContent>
                     </Card>
-
-                    <MyButton text={'Save Changes of Contributor'} color={'primary'}/>
-
+                    <MyButton text={'Save Changes of Contributor'} color={'primary'} onClick={()=>{}}/>
                 </CardContent>
             </Card>
-        </MainCard>
+        </MyMainCard>
     )
 };
 

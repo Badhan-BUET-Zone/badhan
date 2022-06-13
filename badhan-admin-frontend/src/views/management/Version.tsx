@@ -1,21 +1,20 @@
-// @ts-nocheck
 // material-ui
 
 // project imports
-import MainCard from '../../ui-component/cards/MainCard';
 import MyTextField from "../../ui-component/MyTextField";
 import React from "react";
 import MyButton from "../../ui-component/MyButton";
+import MyMainCard from "../../ui-component/cards/MyMainCard";
 // ==============================|| SAMPLE PAGE ||============================== //
 
-const cardAction = <MyButton text={'Update Version'}/>
+const cardAction = <MyButton color={'primary'} text={'Update Version'} onClick={()=>{}}/>
 
 const Version: React.FC = () => (
-    <MainCard title="Set the App Version Deployed on Google Play" cardAction={cardAction}>
+    <MyMainCard title="Set the App Version Deployed on Google Play" cardActions={cardAction}>
             <MyTextField id="major-version" label="Major Version"/>
             <MyTextField id="minor-version" label="Minor Version"/>
             <MyTextField id="patch-version" label="Patch Version"/>
-    </MainCard>
+    </MyMainCard>
 );
 
 export default Version;
