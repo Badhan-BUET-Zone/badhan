@@ -21,7 +21,7 @@ export const SuperAdminCard = (props:{name: string, phone: string, hall: string,
                 </Typography>
             </CardContent>
             <CardActions>
-                <MyButton text={'Delete'} color={'warning'}/>
+                <MyButton text={'Delete'} color={'warning'} onClick={()=>{}}/>
             </CardActions>
         </Card>
     )
