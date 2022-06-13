@@ -27,7 +27,6 @@ const Logo = () => {
             sx={{
                     height: 40,
                     width: 40,
-                    margin: 5,
             }}
             alt="Logo"
             src={badhanLogo}
