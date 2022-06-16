@@ -34,6 +34,7 @@ api-test.rest
 .pub-cache/
 .pub/
 /build/
+windows
 
 # Web related
 lib/generated_plugin_registrant.dart

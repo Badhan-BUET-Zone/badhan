@@ -33,24 +33,37 @@ class _BadhanFormWidgetState extends State<BadhanFormWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    "Copy form link",
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(
-                        text:
-                            "${Environment.badhanDataInputWebsite}${MyFluroRouter.badhanFormPage}"));
-                    ConstUI.showToast(context, () {},
-                        "Link copied to clipboard", Colors.black, Colors.white);
-                  },
-                  child: const Icon(
-                    Icons.copy,
-                    color: Colors.black,
-                  ),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          "Copy form link",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(
+                                text:
+                                    "${Environment.badhanDataInputWebsite}/#${MyFluroRouter.badhanFormPage}"));
+                            ConstUI.showToast(
+                                context,
+                                () {},
+                                "Link copied to clipboard",
+                                Colors.black,
+                                Colors.white);
+                          },
+                          child: const Icon(
+                            Icons.copy,
+                            color: Colors.black,
+                            size: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 Tooltip(
                   message: kIsWeb
@@ -60,7 +73,7 @@ class _BadhanFormWidgetState extends State<BadhanFormWidget> {
                     icon: const Icon(Icons.file_upload_outlined),
                     label: const Text("Open badhan form"),
                     onPressed: () async {
-                      String url = 
+                      String url =
                           "${Environment.badhanDataInputWebsite}/#${MyFluroRouter.badhanFormPage}";
                       if (kIsWeb) {
                         // if the plaftorm is web
