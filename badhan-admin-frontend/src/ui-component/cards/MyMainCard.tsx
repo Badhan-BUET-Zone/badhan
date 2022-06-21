@@ -8,9 +8,9 @@ const MyMainCard: React.FC<{ title: string, children: JSX.Element[] | JSX.Elemen
             <CardContent>
                 {props.children}
             </CardContent>
-            <CardActions>
+            {props.cardActions && <CardActions>
                 {props.cardActions}
-            </CardActions>
+            </CardActions>}
         </Card>
     );
 }

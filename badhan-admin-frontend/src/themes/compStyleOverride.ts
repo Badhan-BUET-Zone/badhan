@@ -11,6 +11,15 @@ export default function componentStyleOverrides(theme) {
                 }
             }
         },
+        MuiCircularProgress: {
+            defaultProps: {
+                color: 'grey',
+                size: 15,
+                sx: {
+                    margin: '5px'
+                }
+            },
+        },
         MuiPaper: {
             defaultProps: {
                 elevation: 0
