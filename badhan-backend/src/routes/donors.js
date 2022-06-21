@@ -6,10 +6,12 @@ const donorController = require('../controllers/donorController')
 const authenticator = require('../middlewares/authenticate')
 const rateLimiter = require('../middlewares/rateLimiter')
 const donorValidator = require('../validations/donors')
+const queue = require('../middlewares/queue')
 
 router.post('/donors',
   donorValidator.validatePOSTDonors,
   rateLimiter.donorInsertionLimiter,
+  queue.donorInsertionQueue,
   authenticator.handleAuthentication,
   donorController.handlePOSTDonors
 )
