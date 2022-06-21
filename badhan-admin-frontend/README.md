@@ -2,6 +2,9 @@
 
 Badhan Admin Frontend is a management frontend for the administrators of Badhan, BUET Zone.
 
+## Deployment
+https://badhan-admin.web.app/
+
 ## Available Scripts
 
 In the project directory, you can run:
