@@ -20,7 +20,7 @@ const sendMail = async (emailAddress, subject, html) => {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: '1605011@ugrad.cse.buet.ac.bd',
+        user: 'badhanweb@gmail.com',
         clientId: CLIENT_ID,
         clientSecret: CLIENT_SECRET,
         refreshToken: REFRESH_TOKEN,

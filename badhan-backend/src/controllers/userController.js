@@ -147,9 +147,9 @@ const handlePOSTPasswordForgot = async (req, res) => {
 
   const emailHtml = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
 
-  const result = await emailInterface.sendMail(email, 'Password Recovery Email from Badhan', emailHtml)
-  if (result.status !== 'OK') {
-    return res.respond(new InternalServerError500(result.message, 'found in handlePOSTPasswordForgot when emailInterface.sendMail'))
+  const emailResult = await emailInterface.sendMail(email, 'Password Recovery Email from Badhan', emailHtml)
+  if (emailResult.status !== 'OK') {
+    return res.respond(new InternalServerError500(emailResult.message, emailResult.error))
   }
 
   await logInterface.addLog(donor._id, 'POST USERS PASSWORD FORGOT', {})
