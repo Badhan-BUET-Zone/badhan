@@ -8,6 +8,8 @@ import MyMainCard from "../../ui-component/cards/MyMainCard";
 
 import {useState} from "react";
 import {wait} from "../../utils/dummyAPI";
+import {NOTIFICATION_ON} from "../../store/notificationActions";
+import {useDispatch} from "react-redux";
 
 // const cardAction = <MyButton color={'primary'} text={'Update Version'} onClick={()=>{}}/>
 
@@ -16,6 +18,7 @@ const Version: React.FC = () => {
     const [minorVersion, setMinorVersion] = useState<string>('')
     const [patchVersion, setPatchVersion] = useState<string>('')
     const [versionSubmitFlag, setVersionSubmitFlag] = useState<boolean>(false)
+    const dispatch = useDispatch();
     const changeMajorVersionHandler = (text: string) => {
         setMajorVersion((prevText:string)=>text)
     }
@@ -30,7 +33,7 @@ const Version: React.FC = () => {
         setVersionSubmitFlag(prevState => true)
 
         await wait()
-
+        dispatch({ type: NOTIFICATION_ON});
         setVersionSubmitFlag(prevState => false)
         console.log(versionSubmissionData)
 

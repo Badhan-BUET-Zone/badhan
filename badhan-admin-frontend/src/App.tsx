@@ -13,6 +13,7 @@ import themes from './themes';
 
 // project imports
 import NavigationScroll from './layout/NavigationScroll';
+import {NotificationSnackbar} from "./layout/NotificationSnackbar";
 
 // ==============================|| APP ||============================== //
 
@@ -27,6 +28,7 @@ const App = () => {
                 <CssBaseline />
                 <NavigationScroll>
                     <Routes />
+                    <NotificationSnackbar/>
                 </NavigationScroll>
             </ThemeProvider>
         </StyledEngineProvider>
