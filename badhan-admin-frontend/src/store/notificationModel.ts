@@ -33,6 +33,6 @@ export class NotificationError extends NotificationModel{
 }
 export class NotificationOff extends NotificationModel{
     constructor() {
-        super(false,"Notification Disabled",NOTIFICATION_SUCCESS, NOTIFICATION_OFF);
+        super(false,"",NOTIFICATION_SUCCESS, NOTIFICATION_OFF);
     }
 }
