@@ -1,16 +1,16 @@
 import * as actionTypes from './notificationActions';
+import {NotificationModel, NotificationOff} from './notificationModel'
+export const initialState :NotificationModel = new NotificationOff()
 
-export const initialState = false
-
-const customizationReducer = (state = initialState, action: {type: string}) => {
+const notificationReducer = (state = initialState, action: NotificationModel) => {
     switch (action.type) {
         case actionTypes.NOTIFICATION_ON:
-            return true;
+            return action;
         case actionTypes.NOTIFICATION_OFF:
-            return false;
+            return action;
         default:
             return state;
     }
 };
 
-export default customizationReducer;
+export default notificationReducer;

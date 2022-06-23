@@ -1,3 +1,9 @@
 export const wait = () => {
-    return new Promise(resolve => setTimeout(resolve, 2000));
+    return new Promise((resolve, reject) => setTimeout(()=>{
+        if(Math.random()>0.5){
+            resolve(0)
+        }else{
+            reject(1)
+        }
+    }, 2000));
 }

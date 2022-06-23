@@ -1,39 +1,23 @@
-import {IconButton, Snackbar} from "@mui/material";
+import {Alert, Snackbar} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
-import Button from '@mui/material/Button';
+
 import React from 'react';
-import CloseIcon from '@mui/icons-material/Close';
-import {NOTIFICATION_OFF} from "../store/notificationActions";
+
+import {NotificationModel, NotificationOff} from "../store/notificationModel";
+
 export const NotificationSnackbar: React.FC = () =>{
-    const notification = useSelector((state: { notification: boolean}) => {
+    const notification = useSelector((state: { notification: NotificationModel}) => {
         return state.notification
     });
     const dispatch = useDispatch();
     const handleClose = () => {
-        dispatch({ type: NOTIFICATION_OFF});
+        dispatch(new NotificationOff());
     }
-    const action = (
-        <React.Fragment>
-            <Button color="secondary" size="small" onClick={handleClose}>
-                UNDO
-            </Button>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleClose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </React.Fragment>
-    );
     return (
-        <Snackbar
-            open={notification}
-            autoHideDuration={1000}
-            onClose={handleClose}
-            message="Note archived"
-            action={action}
-        />
+        <Snackbar open={notification.isOpen} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity={notification.notificationType} sx={{ width: '100%' }}>
+                {notification.message}
+            </Alert>
+        </Snackbar>
     )
 }

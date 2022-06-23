@@ -2,16 +2,12 @@
 
 // project imports
 import MyTextField from "../../ui-component/MyTextField";
-import React from "react";
+import React, {useState} from "react";
 import MyButton from "../../ui-component/MyButton";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
-
-import {useState} from "react";
 import {wait} from "../../utils/dummyAPI";
-import {NOTIFICATION_ON} from "../../store/notificationActions";
 import {useDispatch} from "react-redux";
-
-// const cardAction = <MyButton color={'primary'} text={'Update Version'} onClick={()=>{}}/>
+import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 
 const Version: React.FC = () => {
     const [majorVersion, setMajorVersion] = useState<string>('')
@@ -31,12 +27,15 @@ const Version: React.FC = () => {
     const onSubmitVersion = async () =>{
         const versionSubmissionData = `${majorVersion}.${minorVersion}.${patchVersion}`
         setVersionSubmitFlag(prevState => true)
-
-        await wait()
-        dispatch({ type: NOTIFICATION_ON});
-        setVersionSubmitFlag(prevState => false)
-        console.log(versionSubmissionData)
-
+        try{
+            await wait();
+            dispatch(new NotificationSuccess('Updated version successfully'));
+            console.log(versionSubmissionData)
+        }catch (e) {
+            dispatch(new NotificationError('Version updated unsuccessful'));
+        }finally {
+            setVersionSubmitFlag(prevState => false)
+        }
     }
     return (<MyMainCard title="Set the App Version Deployed on Google Play">
         <MyTextField label="Major Version" value={majorVersion} onChange={changeMajorVersionHandler}/>
