@@ -39,23 +39,35 @@ const dummyAdmins = [{
     bloodGroup: 'B+'
 }]
 
-const SkeletonsSuperAdmin : React.FC = () => {
-    return (
-        <MySkeleton loading={true}>
-            <SuperAdminCard name={'dummy'} phone={'dummy'} hall={'dummy'} bloodGroup={'dummy'}/>
-        </MySkeleton>
-    )
+class SuperAdminModel {
+    id: string
+    name: string
+    phone: string
+    hall: string
+    bloodGroup: string
+
+    constructor(id: string, name: string, phone: string, hall: string, bloodGroup: string) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.hall = hall;
+        this.bloodGroup = bloodGroup;
+    }
 }
 
 const SuperAdmin = () => {
     const [superAdminLoadingFlag, setSuperAdminLoadingFlag] = useState<boolean>(true)
     const [superAdminLoadingErrorFlag, setSuperAdminLoadingErrorFlag] = useState<boolean>(false)
+    const [superAdminDeleteLoaderFlagsArray, setSuperAdminDeleteLoaderFlagsArray ] = useState<boolean[]>([])
+    const [superAdmins, setSuperAdmins] = useState<SuperAdminModel[]>([])
     const dispatch = useDispatch();
     useEffect(() => {
         const loadSuperAdmins = async () => {
             try {
                 setSuperAdminLoadingFlag(prevState => true);
                 await wait();
+                setSuperAdmins(prevState => dummyAdmins)
+                setSuperAdminDeleteLoaderFlagsArray(prevState => Array(dummyAdmins.length).fill(false))
                 dispatch(new NotificationSuccess('Successfully loaded super admins'))
             } catch (e) {
                 setSuperAdminLoadingErrorFlag(prevState => true)
@@ -67,15 +79,67 @@ const SuperAdmin = () => {
         loadSuperAdmins()
     }, [dispatch])
 
-    let superAdminList : JSX.Element[]|JSX.Element = <SkeletonsSuperAdmin/>
+    const setDeleteFlagForSpecificIndex = (index: number) => {
+        setSuperAdminDeleteLoaderFlagsArray(prevState => {
+            const newState = [...prevState]
+            newState[index] = true
+            return newState
+        })
+    }
+    const resetAllDeleteFlag = () => {
+        setSuperAdminDeleteLoaderFlagsArray(prevState => Array(superAdmins.length).fill(false))
+    }
+
+    const onDeleteHandler = async (deletedSuperAdminId: string, deletedSuperAdminIndex: number) => {
+        console.log(`super admin id to be deleted ${deletedSuperAdminId} index ${deletedSuperAdminIndex}`);
+        setDeleteFlagForSpecificIndex(deletedSuperAdminIndex);
+        try{
+            await wait()
+            setSuperAdmins(prevState => {
+                return prevState.filter((superAdmin: SuperAdminModel) => superAdmin.id !== deletedSuperAdminId)
+            })
+            dispatch(new NotificationSuccess('Successfully deleted super admin'))
+        }catch (e) {
+            dispatch(new NotificationError('Failed to delete super admin'))
+        }finally {
+            resetAllDeleteFlag()
+        }
+
+
+
+    }
+
+    let superAdminList : JSX.Element[]|JSX.Element = <MySkeleton loading={true}>
+        <SuperAdminCard
+            deleteFlag={false}
+            id={'dummy'}
+            name={'dummy'}
+            phone={'dummy'}
+            hall={'dummy'}
+            bloodGroup={'dummy'}
+            onDeleteHandler={()=>{}}
+            index={0}
+        />
+    </MySkeleton>
 
     if(superAdminLoadingErrorFlag){
         superAdminList = <React.Fragment>Error In Loading Super Admins</React.Fragment>
-    }
-
-    if(!superAdminLoadingFlag && !superAdminLoadingErrorFlag){
-        superAdminList = dummyAdmins.map((superAdmin, index) =>
-            <SuperAdminCard key={superAdmin.id} name={superAdmin.name} phone={superAdmin.phone} hall={superAdmin.hall} bloodGroup={superAdmin.bloodGroup}/>)
+    }else if(!superAdminLoadingFlag && !superAdminLoadingErrorFlag && superAdmins.length>0){
+        superAdminList = superAdmins.map((superAdmin: SuperAdminModel, index: number) =>
+            <SuperAdminCard
+                id={superAdmin.id}
+                key={superAdmin.id}
+                name={superAdmin.name}
+                phone={superAdmin.phone}
+                hall={superAdmin.hall}
+                bloodGroup={superAdmin.bloodGroup}
+                onDeleteHandler={onDeleteHandler}
+                deleteFlag={superAdminDeleteLoaderFlagsArray[index]}
+                index={index}
+            />
+        )
+    }else if (!superAdminLoadingFlag && !superAdminLoadingErrorFlag && superAdmins.length===0) {
+        superAdminList = <p>Deletable Super Admin list is empty</p>
     }
 
     return (

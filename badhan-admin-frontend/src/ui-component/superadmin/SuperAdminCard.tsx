@@ -1,7 +1,19 @@
 import {Card, CardActions, CardContent, Typography} from "@mui/material";
 import MyButton from "../MyButton";
 
-export const SuperAdminCard = (props:{name: string, phone: string, hall: string, bloodGroup: string}) => {
+export const SuperAdminCard = (props:{
+    id: string,
+    name: string,
+    phone: string,
+    hall: string,
+    bloodGroup: string,
+    onDeleteHandler: (id: string, index: number)=> void,
+    deleteFlag: boolean,
+    index: number
+})=>{
+    const deleteHandler = ()=>{
+        props.onDeleteHandler(props.id, props.index)
+    }
     return (
         <Card variant="outlined" sx={{ maxWidth: 275, margin: '10px' }}>
             <CardContent>
@@ -21,7 +33,7 @@ export const SuperAdminCard = (props:{name: string, phone: string, hall: string,
                 </Typography>
             </CardContent>
             <CardActions>
-                <MyButton text={'Delete'} color={'warning'} onClick={()=>{}}/>
+                <MyButton text={'Delete'} color={'warning'} onClick={deleteHandler} loading={props.deleteFlag}/>
             </CardActions>
         </Card>
     )
