@@ -60,6 +60,8 @@ const SuperAdmin = () => {
     const [superAdminLoadingErrorFlag, setSuperAdminLoadingErrorFlag] = useState<boolean>(false)
     const [superAdminDeleteLoaderFlagsArray, setSuperAdminDeleteLoaderFlagsArray ] = useState<boolean[]>([])
     const [superAdmins, setSuperAdmins] = useState<SuperAdminModel[]>([])
+    const [newSuperAdminLoaderFlag, setNewSuperAdminLoaderFlag] = useState<boolean>(false)
+    const [newSuperAdminPhone, setNewSuperAdminPhone] = useState<string>('')
     const dispatch = useDispatch();
     useEffect(() => {
         const loadSuperAdmins = async () => {
@@ -78,6 +80,29 @@ const SuperAdmin = () => {
         }
         loadSuperAdmins()
     }, [dispatch])
+
+    const onNewSuperAdminPhoneInput = (phoneText: string) =>{
+        setNewSuperAdminPhone(prevState => phoneText)
+    }
+
+    const handleNewSuperAdmin = async () => {
+        console.log(`handleNewSuperAdmin: ${newSuperAdminPhone}`)
+        setNewSuperAdminLoaderFlag(prevState => true)
+        try{
+            await wait()
+            setSuperAdmins(prevState => {
+                const newState =  [...prevState]
+                newState.push(new SuperAdminModel(String(Math.random()), 'New Admin', newSuperAdminPhone, 'Nazrul', 'B+'))
+                return newState
+            })
+            dispatch(new NotificationSuccess('Successfully assigned new super admin'))
+        }catch (e) {
+            dispatch(new NotificationError('Failed to assign new super admin'))
+        }finally {
+            setNewSuperAdminLoaderFlag(prevState => false)
+            setNewSuperAdminPhone(prevState => '')
+        }
+    }
 
     const setDeleteFlagForSpecificIndex = (index: number) => {
         setSuperAdminDeleteLoaderFlagsArray(prevState => {
@@ -104,12 +129,10 @@ const SuperAdmin = () => {
         }finally {
             resetAllDeleteFlag()
         }
-
-
-
     }
 
-    let superAdminList : JSX.Element[]|JSX.Element = <MySkeleton loading={true}>
+
+    const superAdminLoader = <MySkeleton loading={true}>
         <SuperAdminCard
             deleteFlag={false}
             id={'dummy'}
@@ -122,36 +145,50 @@ const SuperAdmin = () => {
         />
     </MySkeleton>
 
-    if(superAdminLoadingErrorFlag){
-        superAdminList = <React.Fragment>Error In Loading Super Admins</React.Fragment>
-    }else if(!superAdminLoadingFlag && !superAdminLoadingErrorFlag && superAdmins.length>0){
-        superAdminList = superAdmins.map((superAdmin: SuperAdminModel, index: number) =>
-            <SuperAdminCard
-                id={superAdmin.id}
-                key={superAdmin.id}
-                name={superAdmin.name}
-                phone={superAdmin.phone}
-                hall={superAdmin.hall}
-                bloodGroup={superAdmin.bloodGroup}
-                onDeleteHandler={onDeleteHandler}
-                deleteFlag={superAdminDeleteLoaderFlagsArray[index]}
-                index={index}
-            />
-        )
-    }else if (!superAdminLoadingFlag && !superAdminLoadingErrorFlag && superAdmins.length===0) {
-        superAdminList = <p>Deletable Super Admin list is empty</p>
+    const superAdminErrorComponent = <React.Fragment>Error In Loading Super Admins</React.Fragment>
+
+    const superAdminListComponent = superAdmins.map((superAdmin: SuperAdminModel, index: number) =>
+        <SuperAdminCard
+            id={superAdmin.id}
+            key={superAdmin.id}
+            name={superAdmin.name}
+            phone={superAdmin.phone}
+            hall={superAdmin.hall}
+            bloodGroup={superAdmin.bloodGroup}
+            onDeleteHandler={onDeleteHandler}
+            deleteFlag={superAdminDeleteLoaderFlagsArray[index]}
+            index={index}
+        />
+    )
+
+    const superAdminListEmptyComponent = <p>Deletable Super Admin list is empty</p>
+
+    let superAdminPopulatedContent : JSX.Element[]|JSX.Element
+
+    if(superAdminLoadingFlag){
+        superAdminPopulatedContent = superAdminLoader
+    }else if(superAdminLoadingErrorFlag){
+        superAdminPopulatedContent = superAdminErrorComponent
+    }else if (superAdmins.length===0) {
+        superAdminPopulatedContent = superAdminListEmptyComponent
+    }else {
+        superAdminPopulatedContent = superAdminListComponent
     }
 
     return (
         <React.Fragment>
             <MyMainCard title="List of Super Admins">
-                { superAdminList }
+                { superAdminPopulatedContent }
             </MyMainCard>
             <MyMainCard title="Add New Super Admin">
-                <MyTextField id="new-superadmin-phone" label="Enter Phone Number" value={""}/>
+                <MyTextField id="new-superadmin-phone" label="Enter Phone Number" value={newSuperAdminPhone} onChange={onNewSuperAdminPhoneInput}/>
                 <br/>
-                <MyButton text={'Appoint New Super Admin'} color={'primary'} onClick={() => {
-                }}/>
+                <MyButton
+                    loading={newSuperAdminLoaderFlag}
+                    text={'Appoint New Super Admin'}
+                    color={'primary'}
+                    onClick={handleNewSuperAdmin}
+                />
             </MyMainCard>
         </React.Fragment>
     )
