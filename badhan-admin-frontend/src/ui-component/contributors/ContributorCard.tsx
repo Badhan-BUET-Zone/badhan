@@ -32,7 +32,14 @@ function contributorLoadReducer(state: ContributorModel, action: { type: string,
     }
 }
 
-const ContributorCard = (props: { index: number, contributor: ContributorModel, onHandleSaveChanges: (contributor: ContributorModel) => void, onHandleDelete: (contributor: ContributorModel, index: number) => void , deleteLoader: boolean}) => {
+const ContributorCard = (props: {
+    index: number,
+    contributor: ContributorModel,
+    onHandleSaveChanges: (contributor: ContributorModel, index: number) => void,
+    onHandleDelete: (contributor: ContributorModel, index: number) => void ,
+    deleteLoader: boolean,
+    saveChangesLoader: boolean
+}) => {
     // STATE MANAGEMENT
     const [isAddContributionShown, setIsAddContributionShown] = useState<boolean>(false)
     const [isAddLinkShown, setIsAddLinkShown] = useState<boolean>(false)
@@ -82,7 +89,7 @@ const ContributorCard = (props: { index: number, contributor: ContributorModel, 
 
     const handleSaveChanges = () => {
         console.log(`inside handleSaveChanges: stateContributor`)
-        props.onHandleSaveChanges(stateContributor)
+        props.onHandleSaveChanges(stateContributor, props.index)
     }
     const handleDelete = () => {
         console.log(`inside handleDelete: `)
@@ -267,7 +274,7 @@ const ContributorCard = (props: { index: number, contributor: ContributorModel, 
                         </Card>)
                 })
                 }
-                <MyButton text={'Save Changes of Contributor'} color={'primary'} onClick={handleSaveChanges}/>
+                <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'} onClick={handleSaveChanges}/>
                 <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete} text={'Delete this Contributor'}/>
             </CardContent>
         </Card>

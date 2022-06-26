@@ -3,10 +3,15 @@ import React, {useEffect, useState} from 'react';
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import ContributorCard from "../../ui-component/contributors/ContributorCard";
 import {ContributorLinkModel, ContributorModel} from "../../ui-component/contributors/contributorModel";
-import {CONTRIBUTOR_ACTIVE_DEVELOPERS, CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN} from "../../ui-component/contributors/contributorModel";
+import {
+    CONTRIBUTOR_ACTIVE_DEVELOPERS,
+    CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN
+} from "../../ui-component/contributors/contributorModel";
 import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
+import MySkeleton from "../../ui-component/MySkeleton";
+import {Card, CardContent} from "@mui/material";
 
 const dummyData: ContributorModel[] = [
     new ContributorModel(
@@ -16,8 +21,8 @@ const dummyData: ContributorModel[] = [
         'Jan 2020- Present',
         CONTRIBUTOR_ACTIVE_DEVELOPERS,
         [
-            new ContributorLinkModel('www.facebook.com','facebook','blue'),
-            new ContributorLinkModel('www.google.com','gmail','red')
+            new ContributorLinkModel('www.facebook.com', 'facebook', 'blue'),
+            new ContributorLinkModel('www.google.com', 'gmail', 'red')
         ],
         ['UX developer', 'Hybrid app Developer']
     ),
@@ -27,7 +32,7 @@ const dummyData: ContributorModel[] = [
         'Basak',
         'Jan 2022- Present',
         CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
-        [new ContributorLinkModel('www.facebook.com','gmail','red')],
+        [new ContributorLinkModel('www.facebook.com', 'gmail', 'red')],
         ['Backend Engineer']
     )
 ]
@@ -42,24 +47,24 @@ const Contributors = () => {
     const dispatch = useDispatch()
 
     //HANDLERS
-    useEffect(()=>{
+    useEffect(() => {
         const loadAllContributors = async () => {
             setContributorsLoader(prevState => true)
-            try{
+            try {
                 await wait()
                 setContributorList(prevState => dummyData)
                 setContributorDeleteFlagArray(prevState => Array(dummyData.length).fill(false))
                 setContributorSaveChangesFlagArray(prevState => Array(dummyData.length).fill(false))
                 dispatch(new NotificationSuccess('Successfully loaded contributors'))
-            }catch (e) {
+            } catch (e) {
                 setContributorsError(prevState => true)
                 dispatch(new NotificationError('Failed to load contributors'))
-            }finally {
+            } finally {
                 setContributorsLoader(prevState => false)
             }
         }
         loadAllContributors()
-    },[dispatch])
+    }, [dispatch])
 
     const resetDeleteFlags = () => {
         setContributorDeleteFlagArray(prevState => Array(dummyData.length).fill(false))
@@ -74,36 +79,73 @@ const Contributors = () => {
         return newState
     }
 
-    const handleDelete = async (contributor: ContributorModel, index: number) => {
+    const handleDelete = async (deletedContributor: ContributorModel, index: number) => {
         console.log(`inside Contributors.tsx handleDelete`);
-        console.log(contributor)
+        console.log(deletedContributor)
         setContributorDeleteFlagArray(prevState => setFlagForSpecificIndex(prevState, index))
-        try{
+        try {
             await wait()
+            setContributorList(prevState => {
+                let newState = [...prevState]
+                newState = newState.filter((contributor:ContributorModel)=>contributor.id!==deletedContributor.id)
+                return newState
+            })
             dispatch(new NotificationSuccess('Successfully deleted contributor'))
-        }catch (e) {
+        } catch (e) {
             dispatch(new NotificationError('Failed to delete contributor'))
-        }finally {
+        } finally {
             resetDeleteFlags()
         }
     }
-    const handleSaveChanges = (contributor: ContributorModel) => {
+    const handleSaveChanges = async (contributor: ContributorModel, index: number) => {
         console.log(`inside Contributors.tsx handleSaveChanges`);
         console.log(contributor)
+        setContributorSaveChangesFlagArray(prevState => setFlagForSpecificIndex(prevState, index))
+        try {
+            await wait()
+            dispatch(new NotificationSuccess('Successfully saved changes'))
+        } catch (e) {
+            dispatch(new NotificationError('Failed to save changes'))
+        } finally {
+            resetSaveChangesFlags()
+        }
+    }
+
+    // CONDITIONAL RENDERING
+
+    const contributorLoaderComponent = <MySkeleton loading={true}><Card><CardContent>Loading...</CardContent></Card></MySkeleton>
+
+    const contributorErrorComponent = <p>Error in loading contributors</p>
+
+    const contributorEmptyComponent = <p>Contributor list empty</p>
+
+    const contributorListComponent = contributorList.map((contributor: ContributorModel, index: number) =>
+        <ContributorCard
+            index={index}
+            deleteLoader={contributorDeleteFlagArray[index]}
+            saveChangesLoader={contributorSaveChangesFlagArray[index]}
+            onHandleDelete={handleDelete}
+            onHandleSaveChanges={handleSaveChanges}
+            contributor={contributor}
+            key={contributor.id}
+        />)
+
+    let contributorFinalContent: JSX.Element | JSX.Element[]
+
+    if (contributorsLoader) {
+        contributorFinalContent = contributorLoaderComponent
+    } else if (contributorsError) {
+        contributorFinalContent = contributorErrorComponent
+    } else if (contributorList.length === 0) {
+        contributorFinalContent = contributorEmptyComponent
+    } else {
+        contributorFinalContent = contributorListComponent
     }
 
     //MAIN COMPONENT
-    return(
+    return (
         <MyMainCard title="Manage Contributors">
-            {contributorList.map((contributor: ContributorModel, index: number)=>
-                <ContributorCard
-                    index={index}
-                    deleteLoader={contributorDeleteFlagArray[index]}
-                    onHandleDelete={handleDelete}
-                    onHandleSaveChanges={handleSaveChanges}
-                    contributor={contributor}
-                    key={contributor.id}
-                />)}
+            {contributorFinalContent}
         </MyMainCard>
     )
 };
