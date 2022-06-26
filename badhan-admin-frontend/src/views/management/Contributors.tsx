@@ -3,6 +3,7 @@ import React from 'react';
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import ContributorCard from "../../ui-component/contributors/ContributorCard";
 import {ContributorLinkModel, ContributorModel} from "../../ui-component/contributors/contributorModel";
+import {CONTRIBUTOR_ACTIVE_DEVELOPERS, CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN} from "../../ui-component/contributors/contributorModel";
 
 const dummyData: ContributorModel[] = [
     new ContributorModel(
@@ -10,7 +11,7 @@ const dummyData: ContributorModel[] = [
         'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fmahathir.jpg?alt=media',
         'Mir Mahathir Mohammad',
         'Jan 2020- Present',
-        'Active Developer',
+        CONTRIBUTOR_ACTIVE_DEVELOPERS,
         [
             new ContributorLinkModel('www.facebook.com','facebook','blue'),
             new ContributorLinkModel('www.google.com','gmail','red')
@@ -22,7 +23,7 @@ const dummyData: ContributorModel[] = [
         'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
         'Basak',
         'Jan 2022- Present',
-        'Legacy Developer',
+        CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
         [new ContributorLinkModel('www.facebook.com','gmail','red')],
         ['Backend Engineer']
     )
