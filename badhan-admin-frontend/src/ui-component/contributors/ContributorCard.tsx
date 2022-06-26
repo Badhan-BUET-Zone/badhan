@@ -32,11 +32,11 @@ function contributorLoadReducer(state: ContributorModel, action: { type: string,
     }
 }
 
-const ContributorCard = (props: { contributor: ContributorModel }) => {
+const ContributorCard = (props: { index: number, contributor: ContributorModel, onHandleSaveChanges: (contributor: ContributorModel) => void, onHandleDelete: (contributor: ContributorModel, index: number) => void , deleteLoader: boolean}) => {
     // STATE MANAGEMENT
-    const [isAddContributionShown, setIsAddContributionShown] = React.useState<boolean>(false)
-    const [isAddLinkShown, setIsAddLinkShown] = React.useState<boolean>(false)
-    const [newContribution, setNewContribution] = React.useState<string>('')
+    const [isAddContributionShown, setIsAddContributionShown] = useState<boolean>(false)
+    const [isAddLinkShown, setIsAddLinkShown] = useState<boolean>(false)
+    const [newContribution, setNewContribution] = useState<string>('')
     const [stateContributor, dispatchContributor] = useReducer(contributorLoadReducer, initialState)
     const [newLink, setNewLink] = useState<ContributorLinkModel>(new ContributorLinkModel('','',''))
 
@@ -82,7 +82,11 @@ const ContributorCard = (props: { contributor: ContributorModel }) => {
 
     const handleSaveChanges = () => {
         console.log(`inside handleSaveChanges: stateContributor`)
-        console.log(stateContributor)
+        props.onHandleSaveChanges(stateContributor)
+    }
+    const handleDelete = () => {
+        console.log(`inside handleDelete: `)
+        props.onHandleDelete(stateContributor, props.index)
     }
 
     useEffect(() => {
@@ -264,6 +268,7 @@ const ContributorCard = (props: { contributor: ContributorModel }) => {
                 })
                 }
                 <MyButton text={'Save Changes of Contributor'} color={'primary'} onClick={handleSaveChanges}/>
+                <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete} text={'Delete this Contributor'}/>
             </CardContent>
         </Card>
     )
