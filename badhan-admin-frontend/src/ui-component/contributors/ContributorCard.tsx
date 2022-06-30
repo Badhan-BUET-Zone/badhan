@@ -9,6 +9,7 @@ import {
     ContributorLinkModel,
     ContributorModel, ContributorType
 } from "./contributorModel";
+import styles from './ContributorCard.module.css'
 
 const initialState: ContributorModel = new ContributorModel(
     'dummy',
@@ -139,17 +140,14 @@ const ContributorCard = (props: {
 
     // MAIN CONTENT
     return (
-        <Card variant={'outlined'} sx={{maxWidth: '300px'}}>
+        <Card variant={'outlined'} className={styles.contributorCard}>
             <CardContent>
                 <Button
                     component="label"
                 >
                     <Box
                         component="img"
-                        sx={{
-                            height: 100,
-                            borderRadius: '50px'
-                        }}
+                        className={styles.contributorCardImageBox}
                         alt="The house from the offer."
                         src={stateContributor.imageURL}
                     />
@@ -185,7 +183,7 @@ const ContributorCard = (props: {
                 />
                 <br/>
                 <Select
-                    sx={{margin: '10px'}}
+                    className={styles.contributorCardContributorTypeSelect}
                     labelId="Member Type"
                     id={stateContributor.id + 'memberType'}
                     value={stateContributor.memberType}
@@ -208,13 +206,13 @@ const ContributorCard = (props: {
                     </CardContent>
                 </Card>}
 
-                <Box sx={{margin: '10px'}}>
-                    <Typography sx={{margin: '10px'}} variant={'body1'}>
+                <Box className={styles.contributorCardContributionList}>
+                    <Typography variant={'body1'}>
                         Contributions: ({stateContributor.contributions.length} contributions)
                     </Typography>
                     {stateContributor.contributions.map((contribution: string) => {
                         return (
-                            <Chip key={contribution} sx={{margin: '5px'}} label={contribution} onDelete={() => {
+                            <Chip key={contribution} className={styles.contributorCardContributionChip} label={contribution} onDelete={() => {
                                 handleDeleteContribution(contribution)
                             }}/>
                         )
@@ -252,28 +250,26 @@ const ContributorCard = (props: {
                 </Card>}
 
 
-                <Box sx={{margin: '10px'}}>
-                    <Typography sx={{margin: '10px'}} variant={'body1'}>
+                <Box className={styles.contributorCardLinkList}>
+                    <Typography variant={'body1'} className={styles.contributorCardLinkListTitle}>
                         Links: ({stateContributor.links.length} links)
                     </Typography>
-
+                    {stateContributor.links.map((link: ContributorLinkModel) => {
+                        return (
+                            <Card variant={'outlined'} key={link.id}>
+                                <CardContent>
+                                    <Typography variant={'body1'} className={styles.contributorCardLinkDetail}>
+                                        {link.color} - {link.icon} - <a
+                                        href={link.link}>{link.link}</a>
+                                    </Typography>
+                                    <MyButton text={'Delete'} color={'warning'} onClick={() => {
+                                        handleDeleteLink(link.id)
+                                    }}/>
+                                </CardContent>
+                            </Card>)
+                    })
+                    }
                 </Box>
-
-                {stateContributor.links.map((link: ContributorLinkModel) => {
-                    return (
-                        <Card variant={'outlined'} key={link.id}>
-                            <CardContent>
-                                <Typography variant={'body1'} sx={{width: '200px', overflowWrap: 'break-word'}}>
-                                    {link.color} - {link.icon} - <a
-                                    href={link.link}>{link.link}</a>
-                                </Typography>
-                                <MyButton text={'Delete'} color={'warning'} onClick={() => {
-                                    handleDeleteLink(link.id)
-                                }}/>
-                            </CardContent>
-                        </Card>)
-                })
-                }
                 <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'} onClick={handleSaveChanges}/>
                 <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete} text={'Delete this Contributor'}/>
             </CardContent>
