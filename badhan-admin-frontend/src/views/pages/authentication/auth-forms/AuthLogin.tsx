@@ -1,8 +1,6 @@
-// @ts-nocheck
-import { useState } from 'react';
+import {useState} from 'react';
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
 import {
     Box,
     Button,
@@ -18,11 +16,10 @@ import {
 
 // third party
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 
 // project imports
 import useScriptRef from '../../../../hooks/useScriptRef';
-import AnimateButton from '../../../../ui-component/extended/AnimateButton';
 
 // assets
 import Visibility from '@mui/icons-material/Visibility';
@@ -30,8 +27,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const FirebaseLogin = ({ ...others }) => {
-    const theme = useTheme();
+const FirebaseLogin = ({...others}) => {
     const scriptedRef = useScriptRef();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -39,71 +35,66 @@ const FirebaseLogin = ({ ...others }) => {
         setShowPassword(!showPassword);
     };
 
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
-
     return (
         <>
             <Grid container direction="column" justifyContent="center" spacing={2}>
                 <Grid item xs={12} container alignItems="center" justifyContent="center">
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1">Sign in with Email address</Typography>
+                    <Box sx={{mb: 2}}>
+                        <Typography variant="subtitle1">Sign in with number address</Typography>
                     </Box>
                 </Grid>
             </Grid>
 
             <Formik
                 initialValues={{
-                    email: 'info@codedthemes.com',
+                    number: '01521438557',
                     password: '123456',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
-                    email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+                    number: Yup.string().matches(/^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/, 'Phone number is not valid').required('Phone is required'),
                     password: Yup.string().max(255).required('Password is required')
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+                onSubmit={async (values, {setErrors, setStatus, setSubmitting}) => {
                     try {
                         if (scriptedRef.current) {
-                            setStatus({ success: true });
+                            setStatus({success: true});
                             setSubmitting(false);
                         }
-                    } catch (err) {
+                    } catch (err: any) {
                         console.error(err);
                         if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
+                            setStatus({success: false});
+                            setErrors({submit: err.message});
                             setSubmitting(false);
                         }
                     }
                 }}
             >
-                {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+                {({errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values}) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
-                        <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-                            <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+                        <FormControl fullWidth error={Boolean(touched.number && errors.number)}>
+                            <InputLabel htmlFor="outlined-adornment-number-login">Phone number</InputLabel>
                             <OutlinedInput
-                                id="outlined-adornment-email-login"
-                                type="email"
-                                value={values.email}
-                                name="email"
+                                id="outlined-adornment-number-login"
+                                type="number"
+                                value={values.number}
+                                name="number"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
-                                label="Email Address / Username"
+                                label="Phone number"
                                 inputProps={{}}
                             />
-                            {touched.email && errors.email && (
-                                <FormHelperText error id="standard-weight-helper-text-email-login">
-                                    {errors.email}
+                            {touched.number && errors.number && (
+                                <FormHelperText error id="standard-weight-helper-text-number-login">
+                                    {errors.number}
                                 </FormHelperText>
                             )}
                         </FormControl>
 
                         <FormControl
-                            fullWidth
+                            fullWidth sx={{marginTop: '20px'}}
                             error={Boolean(touched.password && errors.password)}
-                            sx={{ ...theme.typography.customInput }}
                         >
                             <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
                             <OutlinedInput
@@ -118,11 +109,10 @@ const FirebaseLogin = ({ ...others }) => {
                                         <IconButton
                                             aria-label="toggle password visibility"
                                             onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
                                             edge="end"
                                             size="large"
                                         >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            {showPassword ? <Visibility/> : <VisibilityOff/>}
                                         </IconButton>
                                     </InputAdornment>
                                 }
@@ -137,25 +127,23 @@ const FirebaseLogin = ({ ...others }) => {
                         </FormControl>
 
                         {errors.submit && (
-                            <Box sx={{ mt: 3 }}>
+                            <Box sx={{mt: 3}}>
                                 <FormHelperText error>{errors.submit}</FormHelperText>
                             </Box>
                         )}
 
-                        <Box sx={{ mt: 2 }}>
-                            <AnimateButton>
-                                <Button
-                                    disableElevation
-                                    disabled={isSubmitting}
-                                    fullWidth
-                                    size="large"
-                                    type="submit"
-                                    variant="contained"
-                                    color="secondary"
-                                >
-                                    Sign in
-                                </Button>
-                            </AnimateButton>
+                        <Box sx={{mt: 2}}>
+                            <Button
+                                disableElevation
+                                disabled={isSubmitting}
+                                fullWidth
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                color="secondary"
+                            >
+                                Sign in
+                            </Button>
                         </Box>
                     </form>
                 )}
