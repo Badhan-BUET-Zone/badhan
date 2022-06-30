@@ -11,6 +11,7 @@ import {wait} from "../../utils/dummyAPI";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
+import styles from './index.module.css'
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -154,7 +155,7 @@ const BackupRestore = () => {
 
     const backupListComponent =
         <React.Fragment>
-            <Typography variant={'subtitle1'} sx={{margin: '5px'}}>
+            <Typography variant={'subtitle1'} className={styles.backupTitle}>
                 Latest Backup
             </Typography>
             <BackupCard
@@ -167,7 +168,7 @@ const BackupRestore = () => {
                 restoreToProductionLoader={restoreToProductionFlagsArray[0]}
                 restoreToTestLoader={restoreToTestFlagsArray[0]}
             />
-            <Typography variant={'subtitle1'} sx={{margin: '5px'}}>
+            <Typography variant={'subtitle1'} className={styles.backupTitle}>
                 All Backups
             </Typography>
             {backupTimestamps.map((timestamp: number, index: number)=>

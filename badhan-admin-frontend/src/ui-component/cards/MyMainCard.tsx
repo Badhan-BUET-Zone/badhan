@@ -1,8 +1,9 @@
 import {Card, CardActions, CardContent, CardHeader, Divider} from "@mui/material";
 import React from 'react';
+import styles from './MyMainCard.module.css'
 const MyMainCard: React.FC<{ title: string, children: JSX.Element[] | JSX.Element, cardActions?: JSX.Element[] | JSX.Element }> = (props) => {
     return (
-        <Card sx={{margin: '10px'}}>
+        <Card className={styles.myMainCard}>
             <CardHeader title={props.title}/>
             <Divider/>
             <CardContent>

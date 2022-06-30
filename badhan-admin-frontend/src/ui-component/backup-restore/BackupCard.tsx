@@ -1,6 +1,7 @@
 import {Card, CardContent, Typography} from "@mui/material";
 import MyButton from "../MyButton";
 import React from "react";
+import styles from './BackupCard.module.css'
 
 export const BackupCard = (props: {
     index: number,
@@ -22,9 +23,9 @@ export const BackupCard = (props: {
         props.onRestoreToProduction(props.timestamp, props.index)
     }
     return (
-        <Card variant="outlined" sx={{maxWidth: '600px', margin: '10px'}}>
+        <Card variant="outlined" className={styles.backupCard}>
             <CardContent>
-                <Typography variant={'h5'} sx={{'padding':'10px'}}>Time: {new Date(props.timestamp).toLocaleString()}</Typography>
+                <Typography variant={'h5'} className={styles.backupCardTitle}>Time: {new Date(props.timestamp).toLocaleString()}</Typography>
                 <MyButton loading={props.restoreToTestLoader} text={'Restore to Test'} color={'primary'} onClick={handleRestoreToTest}/>
                 <MyButton loading={props.restoreToProductionLoader} text={'Restore to Production'} color={'warning'} onClick={handleRestoreToProduction}/>
                 <MyButton loading={props.deleteLoader} text={'Delete'} color={'warning'} onClick={handleDelete}/>

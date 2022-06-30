@@ -11,6 +11,7 @@ import {NotificationError, NotificationSuccess} from "../../store/notificationMo
 import MySkeleton from "../../ui-component/MySkeleton";
 
 const Version: React.FC = () => {
+    // STATE MANAGEMENT
     const [majorVersion, setMajorVersion] = useState<string>('')
     const [minorVersion, setMinorVersion] = useState<string>('')
     const [patchVersion, setPatchVersion] = useState<string>('')
@@ -28,6 +29,7 @@ const Version: React.FC = () => {
         setPatchVersion((prevText:string)=>text)
     }
 
+    // HANDLERS
     useEffect(  () => {
         const fetchData = async()=>{
             setVersionLoadingFlag(prevState => true)
@@ -60,7 +62,8 @@ const Version: React.FC = () => {
         }
     }
 
-    let versionPageContent = <MySkeleton loading={versionLoadingFlag}>
+    // CONDITIONAL RENDERING
+    const versionPageComponent = <MySkeleton loading={versionLoadingFlag}>
         <MyTextField label="Major Version" value={majorVersion} onChange={changeMajorVersionHandler}/>
         <MyTextField label="Minor Version" value={minorVersion} onChange={changeMinorVersionHandler}/>
         <MyTextField label="Patch Version" value={patchVersion} onChange={changePatchVersionHandler}/>
@@ -68,12 +71,19 @@ const Version: React.FC = () => {
         <MyButton loading={versionSubmitFlag} color={'primary'} text={'Update Version'} onClick={onSubmitVersion}/>
     </MySkeleton>
 
+    const versionErrorComponent = <React.Fragment>
+        Could not load app version
+    </React.Fragment>
+
+    let versionPageContent: JSX.Element
+
     if(versionLoadingErrorFlag){
-        versionPageContent = <React.Fragment>
-            Could not load app version
-        </React.Fragment>
+        versionPageContent = versionErrorComponent
+    }else{
+        versionPageContent = versionPageComponent
     }
 
+    // MAIN RENDERING
     return (<MyMainCard title="Set the App Version Deployed on Google Play">
         {versionPageContent}
     </MyMainCard>)

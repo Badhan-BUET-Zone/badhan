@@ -1,6 +1,6 @@
-import {Card, CardActions, CardContent, Typography} from "@mui/material";
+import {Card, CardContent, Typography} from "@mui/material";
 import MyButton from "../MyButton";
-
+import styles from './SuperAdminCard.module.css'
 export const SuperAdminCard = (props:{
     id: string,
     name: string,
@@ -15,26 +15,24 @@ export const SuperAdminCard = (props:{
         props.onDeleteHandler(props.id, props.index)
     }
     return (
-        <Card variant="outlined" sx={{ maxWidth: 275, margin: '10px' }}>
+        <Card variant="outlined" className={styles.superAdminCard}>
             <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                <Typography className={styles.superAdminCardTitle} color="text.secondary" gutterBottom>
                     Super Admin
                 </Typography>
                 <Typography variant="h5" component="div">
                     {props.name}
                 </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                <Typography className={styles.superAdminCardPhone} color="text.secondary">
                     {props.phone}
                 </Typography>
                 <Typography variant="body2">
                     {props.hall} Hall
-                    <br />
+                    <br/>
                     Blood Group: {props.bloodGroup}
                 </Typography>
-            </CardContent>
-            <CardActions>
                 <MyButton text={'Delete'} color={'warning'} onClick={deleteHandler} loading={props.deleteFlag}/>
-            </CardActions>
+            </CardContent>
         </Card>
     )
 }
