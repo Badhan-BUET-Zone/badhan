@@ -37,6 +37,7 @@ import User1 from '../../../../assets/images/users/user-round.svg';
 import { IconLogout, IconSettings } from '@tabler/icons';
 
 import {CustomizationModel} from "../../../../store/customizationModel";
+import {useNavigate} from "react-router-dom";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -47,12 +48,14 @@ const ProfileSection = () => {
     const [darkMode, setDarkMode] = useState(true);
     const [selectedIndex, ] = useState(-1);
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
     /**
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
      * */
     const anchorRef = useRef(null);
     const handleLogout = async () => {
         console.log('Logout');
+        navigate('/pages/login')
     };
 
     const handleClose = (event) => {

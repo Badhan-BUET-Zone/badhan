@@ -49,21 +49,6 @@ const pages = {
             type: 'item',
             icon: icons.IconBook,
             url: '/backup-restore'
-        },
-        {
-            id: 'authentication',
-            title: 'Authentication',
-            type: 'collapse',
-            icon: icons.IconKey,
-
-            children: [
-                {
-                    id: 'login3',
-                    title: 'Login',
-                    type: 'item',
-                    url: '/pages/login/login3'
-                }
-            ]
         }
     ]
 };

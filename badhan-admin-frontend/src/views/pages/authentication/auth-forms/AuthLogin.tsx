@@ -1,5 +1,5 @@
 import {useState} from 'react';
-
+import { useNavigate } from "react-router-dom";
 // material-ui
 import {
     Box,
@@ -29,7 +29,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Login = ({...others}) => {
     const scriptedRef = useScriptRef();
-
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -59,9 +59,10 @@ const Login = ({...others}) => {
                     try {
                         if (scriptedRef.current) {
                             setStatus({success: true});
-                            setSubmitting(false);
+                            setSubmitting(true);
                         }
                         console.log(values)
+                        navigate('/')
                     } catch (err: any) {
                         console.error(err);
                         if (scriptedRef.current) {
