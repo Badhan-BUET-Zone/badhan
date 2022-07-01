@@ -27,7 +27,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const FirebaseLogin = ({...others}) => {
+const Login = ({...others}) => {
     const scriptedRef = useScriptRef();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +61,7 @@ const FirebaseLogin = ({...others}) => {
                             setStatus({success: true});
                             setSubmitting(false);
                         }
+                        console.log(values)
                     } catch (err: any) {
                         console.error(err);
                         if (scriptedRef.current) {
@@ -152,4 +153,4 @@ const FirebaseLogin = ({...others}) => {
     );
 };
 
-export default FirebaseLogin;
+export default Login;
