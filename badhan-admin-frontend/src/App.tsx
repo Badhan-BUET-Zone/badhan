@@ -14,6 +14,7 @@ import themes from './themes';
 // project imports
 import NavigationScroll from './layout/NavigationScroll';
 import {NotificationSnackbar} from "./layout/NotificationSnackbar";
+import ErrorBoundary from "./ErrorBoundary";
 
 // ==============================|| APP ||============================== //
 
@@ -23,15 +24,17 @@ const App = () => {
     });
 
     return (
-        <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={themes(customization)}>
-                <CssBaseline />
-                <NavigationScroll>
-                    <Routes />
-                    <NotificationSnackbar/>
-                </NavigationScroll>
-            </ThemeProvider>
-        </StyledEngineProvider>
+        <ErrorBoundary>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={themes(customization)}>
+                    <CssBaseline />
+                    <NavigationScroll>
+                        <Routes />
+                        <NotificationSnackbar/>
+                    </NavigationScroll>
+                </ThemeProvider>
+            </StyledEngineProvider>
+        </ErrorBoundary>
     );
 };
 
