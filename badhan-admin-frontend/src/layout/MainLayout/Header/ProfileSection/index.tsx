@@ -1,7 +1,8 @@
-// @ts-nocheck
 import { useState, useRef, useEffect } from 'react';
 
 import { useSelector } from 'react-redux';
+
+import React from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -39,6 +40,8 @@ import { IconLogout, IconSettings } from '@tabler/icons';
 import {CustomizationModel} from "../../../../store/customizationModel";
 import {useNavigate} from "react-router-dom";
 
+import styleClasses from './index.module.css'
+
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
@@ -58,7 +61,9 @@ const ProfileSection = () => {
         navigate('/pages/login')
     };
 
+    /* @ts-ignore */
     const handleClose = (event) => {
+        /* @ts-ignore */
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
@@ -71,7 +76,8 @@ const ProfileSection = () => {
 
     const prevOpen = useRef(open);
     useEffect(() => {
-        if (prevOpen.current === true && open === false) {
+        if (prevOpen.current && !open) {
+            /* @ts-ignore */
             anchorRef.current.focus();
         }
 
@@ -79,7 +85,7 @@ const ProfileSection = () => {
     }, [open]);
 
     return (
-        <>
+        <React.Fragment>
             <Chip
                 sx={{
                     height: '48px',
@@ -104,6 +110,7 @@ const ProfileSection = () => {
                     <Avatar
                         src={User1}
                         sx={{
+                            // @ts-ignore
                             ...theme.typography.mediumAvatar,
                             margin: '8px 0 8px 8px !important',
                             cursor: 'pointer'
@@ -141,9 +148,11 @@ const ProfileSection = () => {
                 }}
             >
                 {({ TransitionProps }) => (
+                    /* @ts-ignore */
                     <Transitions in={open} {...TransitionProps}>
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
+                                {/* @ts-ignore */}
                                 <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
@@ -159,6 +168,8 @@ const ProfileSection = () => {
                                     </Box>
                                     <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                                         <Box sx={{ p: 2 }}>
+                                            <span className={styleClasses.mobileShow}>Accessing from mobile</span>
+                                            <span className={styleClasses.pcShow}>Accessing from desktop</span>
                                             <Divider />
                                             <Card
                                                 sx={{
@@ -224,7 +235,7 @@ const ProfileSection = () => {
                     </Transitions>
                 )}
             </Popper>
-        </>
+        </React.Fragment>
     );
 };
 

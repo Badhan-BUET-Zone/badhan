@@ -1,0 +1,9 @@
+.mobileShow {display: none;}
+@media only screen and (max-width: 600px) {
+    .mobileShow {display: inline;}
+}
+
+.pcShow {display: none;}
+@media only screen and (min-width: 600px) {
+    .pcShow {display: inline;}
+}
