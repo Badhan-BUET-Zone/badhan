@@ -5,7 +5,7 @@ const { checkEmail } = require('./others')
 const validateBODYPhone = body('phone')
   .exists().withMessage('Phone number is required')
   .isLength({ min: 13, max: 13 }).withMessage('Phone number must be of 13 digits')
-  .isNumeric().isInt().toInt().withMessage('Phone number must be integer')
+  .isNumeric().isInt({ min: 8801000000000, max: 8801999999999 }).toInt().withMessage('Phone number must an integer between 8801000000000 and 8801999999999')
 
 const validateBODYBloodGroup = body('bloodGroup')
   .exists().withMessage('bloodGroup is required')
