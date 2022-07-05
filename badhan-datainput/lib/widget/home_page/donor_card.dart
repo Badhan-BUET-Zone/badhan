@@ -17,7 +17,12 @@ import 'editable_donor_diaglog.dart';
 // ignore: must_be_immutable
 class DonorCard extends StatefulWidget {
   DonorCard({Key? key, required this.newDonor, required this.lastDonation})
-      : super(key: key);
+      : super(key: key) {
+    submissionSection = SubmissionSection(
+      newDonor: newDonor,
+      lastDonation: lastDonation,
+    );
+  }
 
   NewDonor newDonor; // can't be final as it is editable here
   DateTime? lastDonation;
@@ -32,10 +37,11 @@ class _DonorCardState extends State<DonorCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Log.d(tag, "building donor card");
     ThemeData themeData = Theme.of(context);
     TextTheme textTheme = themeData.textTheme;
-    widget.submissionSection = SubmissionSection(
-        newDonor: widget.newDonor, lastDonation: widget.lastDonation);
+    //widget.submissionSection = SubmissionSection(
+    // newDonor: widget.newDonor, lastDonation: widget.lastDonation);
 
     return Card(
       child: Container(
@@ -89,8 +95,12 @@ class _DonorCardState extends State<DonorCard> {
                                 });
                             if (donorData != null) {
                               setState(() {
-                                Log.d(tag, donorData.name);
+                                Log.d(tag, "Donor name: ${donorData.name}");
+                                Log.d(tag,
+                                    "donation cnt : ${donorData.extraDonationCount}");
                                 widget.newDonor = donorData;
+                                widget.submissionSection!.newDonor = donorData;
+                                widget.submissionSection!.redraw();
                               });
                             }
                           },
@@ -169,13 +179,19 @@ class SubmissionSection extends StatefulWidget {
     required this.lastDonation,
   }) : super(key: key);
 
-  final NewDonor newDonor;
+  NewDonor newDonor;
   final DateTime? lastDonation;
   _SubmissionSectionState? state;
 
+  void redraw() {
+    state?.redraw();
+  }
+
   void submit() async {
-    if(state!=null) {
+    if (state != null) {
       state!.upload();
+    } else {
+      Log.d("SubmissionSection->", "state is null for ${newDonor.name}");
     }
   }
 
@@ -188,6 +204,7 @@ class SubmissionSection extends StatefulWidget {
 
 class _SubmissionSectionState extends State<SubmissionSection> {
   static String tag = "SubmissionSection";
+  static String donorCreatedSuccessfully = "Donor created successfully!";
 
   String submissionStatusText = "";
   Color submissionStatusTextColor = Colors.blue;
@@ -204,17 +221,32 @@ class _SubmissionSectionState extends State<SubmissionSection> {
   @override
   void initState() {
     super.initState();
+    //Log.d(tag, "SubmissionSection initState");
+    checkDuplicate();
+  }
 
+  void redraw() {
+    setState(() {});
+  }
+
+  void checkDuplicate() {
+    //Log.d(tag, "checkDuplicate ${widget.newDonor.extraDonationCount}");
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
     if (widget.lastDonation != null &&
         widget.newDonor.extraDonationCount == 0) {
-      setState(() {
-        submissionStatusText = "Error! Total donation must be equal 1 or more";
-        submissionStatusTextColor = Colors.red;
-        buttonText = "Submit";
-        buttonDataColor = Colors.green;
-        isDataValid = false;
-      });
+      Log.d(tag, "donation cnt : ${widget.newDonor.extraDonationCount}");
+      submissionStatusText = "Error! Total donation must be equal 1 or more";
+      submissionStatusTextColor = Colors.red;
+      buttonText = "Submit";
+      buttonDataColor = Colors.green;
+      isDataValid = false;
+    } else if (submissionStatusText.contains("Error! Total")) {
+      submissionStatusText = "";
+      submissionStatusTextColor = Colors.green;
+      buttonText = "Submit";
+      buttonDataColor = Colors.green;
+      isDataValid = false;
+      foundDuplicate = false;
     }
   }
 
@@ -274,12 +306,11 @@ class _SubmissionSectionState extends State<SubmissionSection> {
     return true;
   }
 
-  void upload() async {
-    if (isLoding) {
-      return;
-    }
+  bool donorCreated() {
+    return submissionStatusText == donorCreatedSuccessfully;
+  }
 
-    // if duplicate donor found
+  void redirectToDuplicateDonor() async {
     if (donorId != null) {
       // then open url in main site
       // home/details?id=5e677716ca2dc857938d7c73
@@ -288,6 +319,21 @@ class _SubmissionSectionState extends State<SubmissionSection> {
       if (!await launch(url)) throw 'Could not launch $url';
       return;
     }
+  }
+
+  void upload() async {
+    Log.d(
+        tag, "uploading1 ${widget.newDonor.name} , duplicate: $foundDuplicate");
+
+    if (foundDuplicate || donorCreated()) {
+      return;
+    }
+
+    if (isLoding) {
+      return;
+    }
+
+    Log.d(tag, "uploading2 ${widget.newDonor.name}");
 
     setState(() {
       isLoding = true;
@@ -342,7 +388,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
         isLoding = false;
         foundDuplicate = false;
         submissionStatusTextColor = Colors.green;
-        submissionStatusText = "Donor created Successfully!";
+        submissionStatusText = donorCreatedSuccessfully;
         buttonText = "See Donor";
       });
     } else {
@@ -359,6 +405,8 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
   @override
   Widget build(BuildContext context) {
+    //Log.d(tag, "build submission section");
+    checkDuplicate();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -370,9 +418,11 @@ class _SubmissionSectionState extends State<SubmissionSection> {
                 style: TextStyle(color: submissionStatusTextColor),
               )),
         ),
-        const SizedBox(width: 2,),
+        const SizedBox(
+          width: 2,
+        ),
         OutlinedButton.icon(
-          onPressed: upload,
+          onPressed: foundDuplicate ? redirectToDuplicateDonor : upload,
           icon: isLoding
               ? SizedBox(
                   child: CircularProgressIndicator(

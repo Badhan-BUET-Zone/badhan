@@ -16,16 +16,17 @@ class EditableDonorDialog extends StatefulWidget {
 
 class _EditableDonorDialogState extends State<EditableDonorDialog> {
   NewDonor newDonor = NewDonor(
-      phone: "phone",
-      bloodGroup: -1,
-      hall: -1,
-      name: "name",
-      studentId: "0",
-      address: "address",
-      roomNumber: "roomNumber",
-      availableToAll: false,
-      comment: "comment",
-      extraDonationCount: 0);
+    phone: "phone",
+    bloodGroup: -1,
+    hall: -1,
+    name: "name",
+    studentId: "0",
+    address: "address",
+    roomNumber: "roomNumber",
+    availableToAll: false,
+    comment: "comment",
+    extraDonationCount: 0,
+  );
 
   @override
   void initState() {
@@ -55,13 +56,17 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
         //mainAxisSize: MainAxisSize.min,
         shrinkWrap: true,
         children: [
-          DialogTopBar(title: !editable() ? "Add Donor" : "Edit Donor", minimizable: true,),
+          DialogTopBar(
+            title: !editable() ? "Add Donor" : "Edit Donor",
+            minimizable: true,
+          ),
           MyTextField(
               hint: "Name",
               initalText: editable() ? widget.donorData!.name : "",
               onSubmitText: (String name) {
                 newDonor.name = name;
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -72,6 +77,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
               onSubmitText: (String phone) {
                 newDonor.phone = phone;
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -83,6 +89,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
               onSubmitText: (String studentId) {
                 newDonor.studentId = studentId;
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -116,6 +123,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
               onSubmitText: (String room) {
                 newDonor.roomNumber = room;
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -126,6 +134,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
               onSubmitText: (String address) {
                 newDonor.address = address;
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -136,6 +145,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
               onSubmitText: (String comment) {
                 newDonor.comment = comment;
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -148,6 +158,7 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
               onSubmitText: (String cnt) {
                 newDonor.extraDonationCount = int.parse(cnt);
               },
+              listenOnChange: true,
               vanishTextOnSubmit: false),
           const SizedBox(
             height: padding,
@@ -159,7 +170,8 @@ class _EditableDonorDialogState extends State<EditableDonorDialog> {
                       .visibilites[widget.donorData!.availableToAll ? 1 : 0]
                   : null,
               onSelected: (String visibility) {
-                newDonor.availableToAll = visibility == BadhanConst.visibilites[1];
+                newDonor.availableToAll =
+                    visibility == BadhanConst.visibilites[1];
               },
               list: BadhanConst.visibilites),
           const SizedBox(
