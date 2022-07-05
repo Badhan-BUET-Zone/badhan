@@ -214,10 +214,10 @@ class _HomeWidgetState extends State<HomeWidget> {
       case 1:
         mainWidget = googleSheetWidget;
         break;
-      case 2:
+      /* case 2:
         mainWidget = badhanFormWidget;
-        break;
-      case 3:
+        break; */
+      case 2:
         mainWidget = const Center(
           child: Text("Instruction will be here"),
         );

@@ -1,5 +1,5 @@
 import 'package:badhandatainput/model/donor_model.dart';
-import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/constant/badhan_constants.dart';
 import 'package:badhandatainput/widget/common/dialog_topbar.dart';
 import 'package:badhandatainput/widget/common/my_dropdown_list.dart';
 import 'package:badhandatainput/widget/common/my_text_field.dart';

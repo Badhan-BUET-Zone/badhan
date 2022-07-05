@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-import '../../model/donor_model.dart';
 import '../home_page/donor_card.dart';
 import '../responsive.dart';
 
 class AllDonorsWidget extends StatelessWidget {
   const AllDonorsWidget({
     Key? key,
-    required this.newDonorList,
-    required this.lastDonationMap,
+    required this.donorCardList,
   }) : super(key: key);
 
-  final List<NewDonor> newDonorList;
-  final Map<String, DateTime> lastDonationMap;
+  //final List<NewDonor> newDonorList;
+  //final Map<String, DateTime> lastDonationMap;
+  final List<DonorCard> donorCardList;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +27,9 @@ class AllDonorsWidget extends StatelessWidget {
                   // for mobile and tablet
                   controller: ScrollController(),
                   shrinkWrap: true,
-                  itemCount: newDonorList.length,
+                  itemCount: donorCardList.length,
                   itemBuilder: (context, index) {
-                    NewDonor donor = newDonorList[index];
-                    return DonorCard(
-                      newDonor: donor,
-                      lastDonation: lastDonationMap[donor.phone],
-                    );
+                    return donorCardList[index];
                   },
                 )
               : SingleChildScrollView(
@@ -43,12 +37,7 @@ class AllDonorsWidget extends StatelessWidget {
                   // for desktop show in gribview
                   child: StaggeredGrid.count(
                     crossAxisCount: 2,
-                    children: newDonorList.map((e) {
-                      return DonorCard(
-                        newDonor: e,
-                        lastDonation: lastDonationMap[e.phone],
-                      );
-                    }).toList(),
+                    children: donorCardList,
                   ),
                 )),
     );

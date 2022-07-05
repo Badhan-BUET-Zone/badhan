@@ -1,8 +1,10 @@
-import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/constant/badhan_constants.dart';
 import 'package:badhandatainput/util/const_ui.dart';
 import 'package:badhandatainput/util/custom_exceptions.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/util/google_sheet_parser.dart';
+import 'package:badhandatainput/util/util.dart';
+import 'package:badhandatainput/widget/home_page/donor_card.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/donor_model.dart';
@@ -24,8 +26,8 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
   static String tag = "GoogleSheetWidget";
 
   bool isLoading = false;
-  final List<NewDonor> newDonorList = [];
-  final Map<String, DateTime> lastDonationMap = {};
+
+  final List<DonorCard> donorCardList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +89,27 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
                 ),
               if (!isLoading)
                 AllDonorsWidget(
-                    newDonorList: newDonorList,
-                    lastDonationMap: lastDonationMap),
+                  donorCardList: donorCardList,
+                ),
             ],
           ),
+
+          /// floating action button
+          if (donorCardList.isNotEmpty)
+            Container(
+              alignment: Alignment.bottomRight,
+              padding: const EdgeInsets.only(right: 10, bottom: 10),
+              child: FloatingActionButton(
+                backgroundColor: Colors.red,
+                onPressed: () {
+                  Util.submitAll(context, donorCardList);
+                },
+                child: const Icon(
+                  Icons.upload,
+                  color: Colors.white,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -99,8 +118,7 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
   // clears all the data in the excel widget
   void _clearAll() {
     setState(() {
-      newDonorList.clear();
-      lastDonationMap.clear();
+      donorCardList.clear();
     });
   }
 
@@ -112,21 +130,23 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
           await GoogleSheetParser.parseSheet(link);
 
       Map<String, dynamic> mappedData = {};
+      DateTime? lastDonationDate;
+
       int r = 1;
       for (Map<String, String> data in dataList) {
         data.forEach((key, value) {
           String header = BadhanConst.headerMap(key);
           if (header == "lastDonation" && value.isNotEmpty) {
-            String phone = mappedData["phone"] ?? "";
-            if (phone.isEmpty) {
+            //String phone = mappedData["phone"] ?? "";
+            /* if (phone.isEmpty) {
               throw MyExpection(
                   "Phone number column must be appear before last donation column!");
-            }
+            } */
             try {
-              Log.d(tag, "$phone : $value");
-              if (value != "0" && phone != "") {
-                DateTime dateTime = DateTime.parse(value);
-                lastDonationMap[phone] = dateTime;
+              //Log.d(tag, "$phone : $value");
+              if (value != "0" /* && phone != "" */) {
+                lastDonationDate = DateTime.parse(value);
+                //lastDonationMap[phone] = dateTime;
               }
             } catch (_) {
               /// https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/26
@@ -137,8 +157,14 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
             mappedData[header] = BadhanConst.dataMapFromString(header, value);
           }
         });
-        NewDonor newDonor = NewDonor.fromJson(mappedData);
-        newDonorList.add(newDonor);
+
+        // NewDonor newDonor = NewDonor.fromJson(mappedData);
+        // newDonorList.add(newDonor);
+        donorCardList.add(DonorCard(
+          newDonor: NewDonor.fromJson(mappedData),
+          lastDonation: lastDonationDate,
+        ));
+
         r++;
       }
 
@@ -153,6 +179,5 @@ class _GoogleSheetWidgetState extends State<GoogleSheetWidget> {
       Log.d(tag, "Error: $e");
       ConstUI.showErrorToast(context, () {}, e.toString());
     }
-    
   }
 }

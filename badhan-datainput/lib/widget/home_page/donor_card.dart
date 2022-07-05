@@ -1,5 +1,5 @@
 import 'package:badhandatainput/model/donor_model.dart';
-import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/constant/badhan_constants.dart';
 import 'package:badhandatainput/util/custom_exceptions.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/util/environment.dart';
@@ -21,6 +21,7 @@ class DonorCard extends StatefulWidget {
 
   NewDonor newDonor; // can't be final as it is editable here
   DateTime? lastDonation;
+  SubmissionSection? submissionSection;
 
   @override
   State<DonorCard> createState() => _DonorCardState();
@@ -33,6 +34,8 @@ class _DonorCardState extends State<DonorCard> {
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     TextTheme textTheme = themeData.textTheme;
+    widget.submissionSection = SubmissionSection(
+        newDonor: widget.newDonor, lastDonation: widget.lastDonation);
 
     return Card(
       child: Container(
@@ -147,10 +150,11 @@ class _DonorCardState extends State<DonorCard> {
               )
             ]),
             // submit button with submission logic and ui update
-            SubmissionSection(
+            /* SubmissionSection(
               newDonor: widget.newDonor,
               lastDonation: widget.lastDonation,
-            ),
+            ), */
+            if (widget.submissionSection != null) widget.submissionSection!,
           ],
         ),
       ),
@@ -159,7 +163,7 @@ class _DonorCardState extends State<DonorCard> {
 }
 
 class SubmissionSection extends StatefulWidget {
-  const SubmissionSection({
+  SubmissionSection({
     Key? key,
     required this.newDonor,
     required this.lastDonation,
@@ -167,9 +171,19 @@ class SubmissionSection extends StatefulWidget {
 
   final NewDonor newDonor;
   final DateTime? lastDonation;
+  _SubmissionSectionState? state;
+
+  void submit() async {
+    if(state!=null) {
+      state!.upload();
+    }
+  }
 
   @override
-  State<SubmissionSection> createState() => _SubmissionSectionState();
+  //State<SubmissionSection> createState() => _SubmissionSectionState();
+  State<SubmissionSection> createState() {
+    return state = _SubmissionSectionState();
+  }
 }
 
 class _SubmissionSectionState extends State<SubmissionSection> {
@@ -260,6 +274,89 @@ class _SubmissionSectionState extends State<SubmissionSection> {
     return true;
   }
 
+  void upload() async {
+    if (isLoding) {
+      return;
+    }
+
+    // if duplicate donor found
+    if (donorId != null) {
+      // then open url in main site
+      // home/details?id=5e677716ca2dc857938d7c73
+      String url = "${Environment.mainWebsite}/#/home/details?id=$donorId";
+      Log.d(tag, "opening: $url");
+      if (!await launch(url)) throw 'Could not launch $url';
+      return;
+    }
+
+    setState(() {
+      isLoding = true;
+      submissionStatusText = "";
+    });
+
+    // fontend validation ================================
+    try {
+      isDataValid = vallidateData();
+    } on MyExpection catch (e) {
+      setState(() {
+        isLoding = false;
+        foundDuplicate = false;
+        submissionStatusText = e.toString();
+        submissionStatusTextColor = Colors.red;
+        buttonDataColor = Colors.green;
+        buttonText = "Submit";
+      });
+      return;
+    }
+
+    if (!isDataValid) {
+      setState(() {
+        isLoding = false;
+        foundDuplicate = false;
+        buttonDataColor = Colors.green;
+        buttonText = "Submit";
+      });
+    }
+
+    // input data format is ok for submission ==========================
+    ProviderResponse response =
+        await Provider.of<DonorDataProvider>(context, listen: false)
+            .createDonor(widget.newDonor);
+
+    if (!response.success && response.data != null) {
+      donorId = response.data;
+      setState(() {
+        isLoding = false;
+        foundDuplicate = true;
+        if (foundDuplicate) {
+          submissionStatusText = response.message;
+          submissionStatusTextColor = Colors.red;
+          buttonDataColor = Colors.red;
+          buttonText = "See Duplicate";
+        }
+      });
+    } else if (response.success && response.data != null) {
+      DonorData donorData = response.data;
+      donorId = donorData.id;
+      setState(() {
+        isLoding = false;
+        foundDuplicate = false;
+        submissionStatusTextColor = Colors.green;
+        submissionStatusText = "Donor created Successfully!";
+        buttonText = "See Donor";
+      });
+    } else {
+      setState(() {
+        isLoding = false;
+        foundDuplicate = false;
+        submissionStatusText = response.message;
+        submissionStatusTextColor = Colors.red;
+        buttonDataColor = Colors.green;
+        buttonText = "Submit";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -273,90 +370,9 @@ class _SubmissionSectionState extends State<SubmissionSection> {
                 style: TextStyle(color: submissionStatusTextColor),
               )),
         ),
+        const SizedBox(width: 2,),
         OutlinedButton.icon(
-          onPressed: () async {
-            if (isLoding) {
-              return;
-            }
-
-            // if duplicate donor found
-            if (donorId != null) {
-              // then open url in main site
-              // home/details?id=5e677716ca2dc857938d7c73
-              String url =
-                  "${Environment.mainWebsite}/#/home/details?id=$donorId";
-              Log.d(tag, "opening: $url");
-              if (!await launch(url)) throw 'Could not launch $url';
-              return;
-            }
-
-            setState(() {
-              isLoding = true;
-              submissionStatusText = "";
-            });
-
-            // fontend validation ================================
-            try {
-              isDataValid = vallidateData();
-            } on MyExpection catch (e) {
-              setState(() {
-                isLoding = false;
-                foundDuplicate = false;
-                submissionStatusText = e.toString();
-                submissionStatusTextColor = Colors.red;
-                buttonDataColor = Colors.green;
-                buttonText = "Submit";
-              });
-              return;
-            }
-
-            if (!isDataValid) {
-              setState(() {
-                isLoding = false;
-                foundDuplicate = false;
-                buttonDataColor = Colors.green;
-                buttonText = "Submit";
-              });
-            }
-
-            // input data format is ok for submission ==========================
-            ProviderResponse response =
-                await Provider.of<DonorDataProvider>(context, listen: false)
-                    .createDonor(widget.newDonor);
-
-            if (!response.success && response.data != null) {
-              donorId = response.data;
-              setState(() {
-                isLoding = false;
-                foundDuplicate = true;
-                if (foundDuplicate) {
-                  submissionStatusText = response.message;
-                  submissionStatusTextColor = Colors.red;
-                  buttonDataColor = Colors.red;
-                  buttonText = "See Duplicate";
-                }
-              });
-            } else if (response.success && response.data != null) {
-              DonorData donorData = response.data;
-              donorId = donorData.id;
-              setState(() {
-                isLoding = false;
-                foundDuplicate = false;
-                submissionStatusTextColor = Colors.green;
-                submissionStatusText = "Donor created Successfully!";
-                buttonText = "See Donor";
-              });
-            } else {
-              setState(() {
-                isLoding = false;
-                foundDuplicate = false;
-                submissionStatusText = response.message;
-                submissionStatusTextColor = Colors.red;
-                buttonDataColor = Colors.green;
-                buttonText = "Submit";
-              });
-            }
-          },
+          onPressed: upload,
           icon: isLoding
               ? SizedBox(
                   child: CircularProgressIndicator(

@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:badhandatainput/model/donor_model.dart';
-import 'package:badhandatainput/util/badhan_constants.dart';
+import 'package:badhandatainput/constant/badhan_constants.dart';
 import 'package:badhandatainput/util/const_ui.dart';
+import 'package:badhandatainput/widget/home_page/donor_card.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -26,11 +27,11 @@ class _ExcelWidgetState extends State<ExcelWidget> {
   static String tag = "ExcelWidget";
   final String defaultMsg = "Import an excel file.";
 
-  final List<NewDonor> newDonorList = [];
+  //final List<NewDonor> newDonorList = [];
   final StringBuffer msg = StringBuffer(
       "Import an excel file."); // message displayed in the topbar. e.g."Import an excel file"
   // key: phone number, value: last donation date
-  final Map<String, DateTime> lastDonationMap = {};
+  final List<DonorCard> donorCardList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +81,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                 height: 5,
               ),
               AllDonorsWidget(
-                  newDonorList: newDonorList, lastDonationMap: lastDonationMap),
+                donorCardList: donorCardList,
+              ),
             ],
           ),
 
@@ -99,14 +101,14 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                     child: const Icon(Icons.file_upload),
                     backgroundColor: Colors.amber,
                     labelBackgroundColor: Colors.amber),
-                if (newDonorList.isNotEmpty)
+                if (donorCardList.isNotEmpty)
                   SpeedDialChild(
-                      onTap: _uploadAll,
+                      onTap: _submitAll,
                       label: "Upload all",
                       child: const Icon(Icons.file_upload_outlined),
                       backgroundColor: Colors.amber,
                       labelBackgroundColor: Colors.amber),
-                if (newDonorList.isNotEmpty)
+                if (donorCardList.isNotEmpty)
                   SpeedDialChild(
                       onTap: _clearAll,
                       label: "Clear all",
@@ -121,14 +123,18 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     );
   }
 
-  void _uploadAll() {
-    if (newDonorList.isEmpty) {
+  /// submit all the new donors to the server
+  void _submitAll() {
+    if (donorCardList.isEmpty) {
       ConstUI.showErrorToast(context, () {}, "No new donors to upload.");
       return;
     }
 
-    for (NewDonor donor in newDonorList) {
-      
+    for (DonorCard donor in donorCardList) {
+      // donor.upload();
+      if(donor.submissionSection!=null) {
+        donor.submissionSection!.submit();
+      }
     }
   }
 
@@ -137,8 +143,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     setState(() {
       msg.clear();
       msg.write("Import an excel file.");
-      newDonorList.clear();
-      lastDonationMap.clear();
+
+      donorCardList.clear();
     });
   }
 
@@ -192,7 +198,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
   void _openFileFromByte(List<int> bytes) async {
     // clear the list to show new data
     // to render new data
-    newDonorList.clear();
+    //newDonorList.clear();
+    donorCardList.clear();
 
     Excel excel = Excel.decodeBytes(bytes);
 
@@ -216,8 +223,9 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     try {
       int r = 1; // row number
       for (List<Data?> row in excel.tables[sheetName]!.rows) {
-        // data of the current row
+        // data of the current row(current donor)
         Map<String, dynamic> dataMap = {};
+        DateTime? lastDonationDate;
 
         int c = 0; // column number
         //Log.d(tag, "$row");
@@ -262,9 +270,10 @@ class _ExcelWidgetState extends State<ExcelWidget> {
               if (header[c] == "lastDonation") {
                 try {
                   if (data.value.toString() != "0") {
-                    Log.d(tag, "$r ${c + 1} date: $data");
-                    DateTime dateTime = DateTime.parse(data.value.toString());
-                    lastDonationMap[dataMap['phone']] = dateTime;
+                    // Log.d(tag, "$r ${c + 1} date: $data");
+                    // DateTime dateTime = DateTime.parse(data.value.toString());
+                    lastDonationDate = DateTime.parse(data.value.toString());
+                    // lastDonationMap[dataMap['phone']] = dateTime;
                   }
                 } catch (_) {
                   /// https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/26
@@ -286,8 +295,11 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         }
         if (r > 1) {
           //Log.d(tag, "datamap: $dataMap");
-          NewDonor newDonor = NewDonor.fromJson(dataMap);
-          newDonorList.add(newDonor);
+          donorCardList.add(DonorCard(
+            newDonor: NewDonor.fromJson(dataMap),
+            lastDonation: lastDonationDate,
+          ));
+          //newDonorList.add(newDonor);
         }
         r++; // new row
       }
