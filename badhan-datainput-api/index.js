@@ -1,4 +1,5 @@
 const express = require("express");
+const config =  require('./config.js');
 require("dotenv").config({ path: "./config/dev.env" });
 const { body, validationResult } = require("express-validator");
 
@@ -8,6 +9,10 @@ const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const app = express();
 const port = process.env.PORT || 3000;
+const PENDING_DONORS_TEST= "Pending Donors test";
+const PENDING_DONORS_PROD= "Pending Donors prod";
+
+console.log('NODE_ENV='+ config.NODE_ENV);
 
 initializeApp({
   credential: cert({
@@ -25,7 +30,13 @@ initializeApp({
 });
 
 const db = getFirestore();
-const Pending = db.collection("Pending Donors");
+var Pending;
+if(config.NODE_ENV === "test"){
+  Pending = db.collection(PENDING_DONORS_TEST);
+}else{
+  Pending = db.collection(PENDING_DONORS_PROD);
+}
+
 
 app.use(express.json({
   verify : (req, res, buf, encoding) => {
@@ -174,7 +185,12 @@ app.post("/pendingDonors", pendingDonorCreationValidators, async (req, res) => {
 
 app.get("/pendingDonors", authenticationMiddleware, async (req, res) => {
   try {
-    const pending = db.collection("Pending Donors");
+    var pending;
+    if(config.NODE_ENV === "test"){
+      pending = db.collection(PENDING_DONORS_TEST);
+    }else{
+      pending = db.collection(PENDING_DONORS_PROD);
+    }
     const pendingArrays = [];
     const snapshot = await pending.get();
     snapshot.forEach((doc) => {

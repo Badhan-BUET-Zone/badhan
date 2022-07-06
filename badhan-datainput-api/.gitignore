@@ -3,3 +3,5 @@ package-lock.json
 badhan-buet-firebase-adminsdk-qe3r6-951a758201.json
 config
 .idea
+production.env
+test.env
