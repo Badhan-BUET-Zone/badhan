@@ -3,7 +3,6 @@
 // project imports
 import MyButton from "../../ui-component/MyButton";
 import React, {useEffect, useState} from 'react'
-import {Fragment} from "react";
 import {BackupCard} from "../../ui-component/backup-restore/BackupCard";
 import {Typography} from "@mui/material";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
@@ -12,6 +11,7 @@ import MySkeleton from "../../ui-component/MySkeleton";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import styles from './index.module.css'
+import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -201,7 +201,7 @@ const BackupRestore = () => {
     }
 
     return (
-        <Fragment>
+        <FadeAnimationWrapper>
             <MyMainCard title="Manage All Backups of Database">
                 <MyButton
                     loading={createNewBackupLoaderFlag}
@@ -219,7 +219,7 @@ const BackupRestore = () => {
             <MyMainCard title="List of All Backups">
                 {loadedComponent}
             </MyMainCard>
-        </Fragment>
+        </FadeAnimationWrapper>
     )
 };
 

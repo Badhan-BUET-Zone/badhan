@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
+import { AnimatePresence } from "framer-motion"
 
 import {CustomizationModel} from "./store/customizationModel";
 
@@ -29,7 +30,9 @@ const App = () => {
                 <ThemeProvider theme={themes(customization)}>
                     <CssBaseline />
                     <NavigationScroll>
+                        <AnimatePresence exitBeforeEnter>
                         <Routes />
+                        </AnimatePresence>
                         <NotificationSnackbar/>
                     </NavigationScroll>
                 </ThemeProvider>

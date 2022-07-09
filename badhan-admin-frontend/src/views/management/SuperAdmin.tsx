@@ -10,6 +10,7 @@ import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
+import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -179,7 +180,7 @@ const SuperAdmin = () => {
     }
 
     return (
-        <React.Fragment>
+        <FadeAnimationWrapper>
             <MyMainCard title="List of Super Admins">
                 { superAdminPopulatedContent }
             </MyMainCard>
@@ -193,7 +194,7 @@ const SuperAdmin = () => {
                     onClick={handleNewSuperAdmin}
                 />
             </MyMainCard>
-        </React.Fragment>
+        </FadeAnimationWrapper>
     )
 };
 

@@ -24,6 +24,7 @@ import useScriptRef from '../../../../hooks/useScriptRef';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import FadeAnimationWrapper from "../../../../ui-component/motion/FadeAnimationWrapper";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -36,7 +37,7 @@ const Login = ({...others}) => {
     };
 
     return (
-        <>
+        <FadeAnimationWrapper>
             <Grid container direction="column" justifyContent="center" spacing={2}>
                 <Grid item xs={12} container alignItems="center" justifyContent="center">
                     <Box sx={{mb: 2}}>
@@ -150,7 +151,7 @@ const Login = ({...others}) => {
                     </form>
                 )}
             </Formik>
-        </>
+        </FadeAnimationWrapper>
     );
 };
 

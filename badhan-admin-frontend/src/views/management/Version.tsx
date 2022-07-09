@@ -9,7 +9,9 @@ import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
-
+import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
+import {Box} from "@mui/material";
+import styleClasses from './Version.module.css'
 const Version: React.FC = () => {
     // STATE MANAGEMENT
     const [majorVersion, setMajorVersion] = useState<string>('')
@@ -72,13 +74,15 @@ const Version: React.FC = () => {
     }
 
     // CONDITIONAL RENDERING
-    const versionPageComponent = <MySkeleton loading={versionLoadingFlag}>
+    const versionPageComponent = <FadeAnimationWrapper>
         <MyTextField type={'number'} label="Major Version" value={majorVersion} onChange={changeMajorVersionHandler}/>
         <MyTextField type={'number'} label="Minor Version" value={minorVersion} onChange={changeMinorVersionHandler}/>
         <MyTextField type={'number'} label="Patch Version" value={patchVersion} onChange={changePatchVersionHandler}/>
         <br/>
         <MyButton loading={versionSubmitFlag} color={'primary'} text={'Update Version'} onClick={onSubmitVersion}/>
-    </MySkeleton>
+    </FadeAnimationWrapper>
+
+    const versionPageLoader = <MySkeleton loading={true}><Box className={styleClasses.box}>Loading</Box></MySkeleton>
 
     const versionErrorComponent = <React.Fragment>
         Could not load app version
@@ -86,7 +90,10 @@ const Version: React.FC = () => {
 
     let versionPageContent: JSX.Element
 
-    if(versionLoadingErrorFlag){
+    if(versionLoadingFlag){
+        versionPageContent = versionPageLoader
+    }
+    else if(versionLoadingErrorFlag){
         versionPageContent = versionErrorComponent
     }else{
         versionPageContent = versionPageComponent

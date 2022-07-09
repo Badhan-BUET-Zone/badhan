@@ -75,7 +75,7 @@ const MainRoutes = {
         },
         {
             path: '/backup-restore',
-            element: <BackupRestore/>
+            element: <BackupRestore/>,
         }
     ]
 };

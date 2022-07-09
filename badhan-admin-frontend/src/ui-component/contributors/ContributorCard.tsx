@@ -10,6 +10,7 @@ import {
     ContributorModel, ContributorType
 } from "./contributorModel";
 import styles from './ContributorCard.module.css'
+import FadeAnimationWrapper from "../motion/FadeAnimationWrapper";
 
 const initialState: ContributorModel = new ContributorModel(
     'dummy',
@@ -37,7 +38,7 @@ const ContributorCard = (props: {
     index: number,
     contributor: ContributorModel,
     onHandleSaveChanges: (contributor: ContributorModel, index: number) => void,
-    onHandleDelete: (contributor: ContributorModel, index: number) => void ,
+    onHandleDelete: (contributor: ContributorModel, index: number) => void,
     deleteLoader: boolean,
     saveChangesLoader: boolean
 }) => {
@@ -46,7 +47,7 @@ const ContributorCard = (props: {
     const [isAddLinkShown, setIsAddLinkShown] = useState<boolean>(false)
     const [newContribution, setNewContribution] = useState<string>('')
     const [stateContributor, dispatchContributor] = useReducer(contributorLoadReducer, initialState)
-    const [newLink, setNewLink] = useState<ContributorLinkModel>(new ContributorLinkModel('','',''))
+    const [newLink, setNewLink] = useState<ContributorLinkModel>(new ContributorLinkModel('', '', ''))
 
     // HANDLERS
     const handleContributorTypeSelectionChange = (event: SelectChangeEvent) => {
@@ -81,7 +82,7 @@ const ContributorCard = (props: {
 
     const handleDeleteContribution = (deletedContribution: string) => {
         const newContributor: ContributorModel = {...stateContributor}
-        newContributor.contributions = newContributor.contributions.filter((contribution:string)=>contribution!== deletedContribution)
+        newContributor.contributions = newContributor.contributions.filter((contribution: string) => contribution !== deletedContribution)
         dispatchContributor({
             type: 'load',
             contributor: newContributor
@@ -128,7 +129,7 @@ const ContributorCard = (props: {
 
     const handleDeleteLink = (id: string) => {
         const newContributor: ContributorModel = {...stateContributor}
-        newContributor.links = newContributor.links.filter((link:ContributorLinkModel)=>link.id!== id)
+        newContributor.links = newContributor.links.filter((link: ContributorLinkModel) => link.id !== id)
         dispatchContributor({
             type: 'load',
             contributor: newContributor
@@ -140,140 +141,147 @@ const ContributorCard = (props: {
 
     // MAIN CONTENT
     return (
-        <Card variant={'outlined'} className={styles.contributorCard}>
-            <CardContent>
-                <Button
-                    component="label"
-                >
-                    <Box
-                        component="img"
-                        className={styles.contributorCardImageBox}
-                        alt="The house from the offer."
-                        src={stateContributor.imageURL}
+        <FadeAnimationWrapper>
+            <Card variant={'outlined'} className={styles.contributorCard}>
+                <CardContent>
+                    <Button
+                        component="label"
+                    >
+                        <Box
+                            component="img"
+                            className={styles.contributorCardImageBox}
+                            alt="The house from the offer."
+                            src={stateContributor.imageURL}
+                        />
+                        <input
+                            type="file"
+                            hidden
+                        />
+                        <div style={{
+                            position: 'absolute',
+                            color: 'white',
+                            top: '90%',
+                            left: '50%',
+                            padding: '5px',
+                            transform: 'translate(-50%, -90%)',
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            borderRadius: '20px'
+                        }}>
+                            Update
+                        </div>
+                    </Button>
+                    <MyTextField
+                        id={stateContributor.id + 'name'}
+                        label={'Name of Contributor'}
+                        value={stateContributor.name}
+                        onChange={handleContributorNameChange}
                     />
-                    <input
-                        type="file"
-                        hidden
+                    <br/>
+                    <MyTextField
+                        id={stateContributor.id + 'duration'}
+                        label={'Duration of Service'}
+                        onChange={handleContributorDurationChange}
+                        value={stateContributor.duration}
                     />
-                    <div style={{
-                        position: 'absolute',
-                        color: 'white',
-                        top: '90%',
-                        left: '50%',
-                        padding: '5px',
-                        transform: 'translate(-50%, -90%)',
-                        backgroundColor: 'rgba(0,0,0,0.5)',
-                        borderRadius: '20px'
-                    }}>
-                        Update
-                    </div>
-                </Button>
-                <MyTextField
-                    id={stateContributor.id + 'name'}
-                    label={'Name of Contributor'}
-                    value={stateContributor.name}
-                    onChange={handleContributorNameChange}
-                />
-                <br/>
-                <MyTextField
-                    id={stateContributor.id + 'duration'}
-                    label={'Duration of Service'}
-                    onChange={handleContributorDurationChange}
-                    value={stateContributor.duration}
-                />
-                <br/>
-                <Select
-                    className={styles.contributorCardContributorTypeSelect}
-                    labelId="Member Type"
-                    id={stateContributor.id + 'memberType'}
-                    value={stateContributor.memberType}
-                    onChange={handleContributorTypeSelectionChange}
-                >
-                    <MenuItem value={CONTRIBUTOR_ACTIVE_DEVELOPERS}>Active Developers</MenuItem>
-                    <MenuItem value={CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN}>Contributors from Badhan</MenuItem>
-                    <MenuItem value={CONTRIBUTOR_LEGACY_DEVELOPERS}>Legacy Developers</MenuItem>
-                </Select>
-                {!isAddContributionShown && <MyButton text={'Show Add Contribution'} color={'primary'} onClick={() => {
-                    setIsAddContributionShown(true)
-                }}/>}
-                {isAddContributionShown && <Card variant={'outlined'}>
-                    <CardContent>
-                        <MyTextField id={stateContributor.id + 'contributions'} label={'Add Contribution'} onChange={setNewContribution} value={newContribution}/>
-                        <MyButton text={'Add Contribution'} color={'primary'} onClick={handleAddContribution}/>
-                        <MyButton text={'Cancel'} color={'warning'} onClick={() => {
-                            setIsAddContributionShown(false)
-                        }}/>
-                    </CardContent>
-                </Card>}
-
-                <Box className={styles.contributorCardContributionList}>
-                    <Typography variant={'body1'}>
-                        Contributions: ({stateContributor.contributions.length} contributions)
-                    </Typography>
-                    {stateContributor.contributions.map((contribution: string) => {
-                        return (
-                            <Chip key={contribution} className={styles.contributorCardContributionChip} label={contribution} onDelete={() => {
-                                handleDeleteContribution(contribution)
+                    <br/>
+                    <Select
+                        className={styles.contributorCardContributorTypeSelect}
+                        labelId="Member Type"
+                        id={stateContributor.id + 'memberType'}
+                        value={stateContributor.memberType}
+                        onChange={handleContributorTypeSelectionChange}
+                    >
+                        <MenuItem value={CONTRIBUTOR_ACTIVE_DEVELOPERS}>Active Developers</MenuItem>
+                        <MenuItem value={CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN}>Contributors from Badhan</MenuItem>
+                        <MenuItem value={CONTRIBUTOR_LEGACY_DEVELOPERS}>Legacy Developers</MenuItem>
+                    </Select>
+                    {!isAddContributionShown &&
+                        <MyButton text={'Show Add Contribution'} color={'primary'} onClick={() => {
+                            setIsAddContributionShown(true)
+                        }}/>}
+                    {isAddContributionShown && <Card variant={'outlined'}>
+                        <CardContent>
+                            <MyTextField id={stateContributor.id + 'contributions'} label={'Add Contribution'}
+                                         onChange={setNewContribution} value={newContribution}/>
+                            <MyButton text={'Add Contribution'} color={'primary'} onClick={handleAddContribution}/>
+                            <MyButton text={'Cancel'} color={'warning'} onClick={() => {
+                                setIsAddContributionShown(false)
                             }}/>
-                        )
-                    })}
-                </Box>
+                        </CardContent>
+                    </Card>}
 
-                {!isAddLinkShown && <MyButton text={'Show Add Link'} color={'primary'} onClick={() => {
-                    setIsAddLinkShown(true)
-                }}/>}
-                {isAddLinkShown && <Card variant={'outlined'}>
-                    <CardContent>
-                        <MyTextField
-                            onChange={handleChangeLinkColor}
-                            value={newLink.color}
-                            id={stateContributor.id + 'linkColor'}
-                            label={'Add Color'}
-                        />
-                        <MyTextField
-                            onChange={handleChangeLinkIcon}
-                            value={newLink.icon}
-                            id={stateContributor.id + 'linkIcon'}
-                            label={'Add Link Icon'}
-                        />
-                        <MyTextField
-                            onChange={handleChangeLinkSite}
-                            value={newLink.link}
-                            id={stateContributor.id + 'link'}
-                            label={'Add Profile Link'}
-                        />
-                        <MyButton text={'Add Link'} color={'primary'} onClick={handleAddNewLink}/>
-                        <MyButton text={'Cancel'} color={'warning'} onClick={() => {
-                            setIsAddLinkShown(false)
-                        }}/>
-                    </CardContent>
-                </Card>}
+                    <Box className={styles.contributorCardContributionList}>
+                        <Typography variant={'body1'}>
+                            Contributions: ({stateContributor.contributions.length} contributions)
+                        </Typography>
+                        {stateContributor.contributions.map((contribution: string) => {
+                            return (
+                                <Chip key={contribution} className={styles.contributorCardContributionChip}
+                                      label={contribution} onDelete={() => {
+                                    handleDeleteContribution(contribution)
+                                }}/>
+                            )
+                        })}
+                    </Box>
+
+                    {!isAddLinkShown && <MyButton text={'Show Add Link'} color={'primary'} onClick={() => {
+                        setIsAddLinkShown(true)
+                    }}/>}
+                    {isAddLinkShown && <Card variant={'outlined'}>
+                        <CardContent>
+                            <MyTextField
+                                onChange={handleChangeLinkColor}
+                                value={newLink.color}
+                                id={stateContributor.id + 'linkColor'}
+                                label={'Add Color'}
+                            />
+                            <MyTextField
+                                onChange={handleChangeLinkIcon}
+                                value={newLink.icon}
+                                id={stateContributor.id + 'linkIcon'}
+                                label={'Add Link Icon'}
+                            />
+                            <MyTextField
+                                onChange={handleChangeLinkSite}
+                                value={newLink.link}
+                                id={stateContributor.id + 'link'}
+                                label={'Add Profile Link'}
+                            />
+                            <MyButton text={'Add Link'} color={'primary'} onClick={handleAddNewLink}/>
+                            <MyButton text={'Cancel'} color={'warning'} onClick={() => {
+                                setIsAddLinkShown(false)
+                            }}/>
+                        </CardContent>
+                    </Card>}
 
 
-                <Box className={styles.contributorCardLinkList}>
-                    <Typography variant={'body1'} className={styles.contributorCardLinkListTitle}>
-                        Links: ({stateContributor.links.length} links)
-                    </Typography>
-                    {stateContributor.links.map((link: ContributorLinkModel) => {
-                        return (
-                            <Card variant={'outlined'} key={link.id}>
-                                <CardContent>
-                                    <Typography variant={'body1'} className={styles.contributorCardLinkDetail}>
-                                        {link.color} - {link.icon} - <a
-                                        href={link.link}>{link.link}</a>
-                                    </Typography>
-                                    <MyButton text={'Delete'} color={'warning'} onClick={() => {
-                                        handleDeleteLink(link.id)
-                                    }}/>
-                                </CardContent>
-                            </Card>)
-                    })
-                    }
-                </Box>
-                <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'} onClick={handleSaveChanges}/>
-                <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete} text={'Delete this Contributor'}/>
-            </CardContent>
-        </Card>
+                    <Box className={styles.contributorCardLinkList}>
+                        <Typography variant={'body1'} className={styles.contributorCardLinkListTitle}>
+                            Links: ({stateContributor.links.length} links)
+                        </Typography>
+                        {stateContributor.links.map((link: ContributorLinkModel) => {
+                            return (
+                                <Card variant={'outlined'} key={link.id}>
+                                    <CardContent>
+                                        <Typography variant={'body1'} className={styles.contributorCardLinkDetail}>
+                                            {link.color} - {link.icon} - <a
+                                            href={link.link}>{link.link}</a>
+                                        </Typography>
+                                        <MyButton text={'Delete'} color={'warning'} onClick={() => {
+                                            handleDeleteLink(link.id)
+                                        }}/>
+                                    </CardContent>
+                                </Card>)
+                        })
+                        }
+                    </Box>
+                    <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'}
+                              onClick={handleSaveChanges}/>
+                    <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete}
+                              text={'Delete this Contributor'}/>
+                </CardContent>
+            </Card>
+        </FadeAnimationWrapper>
     )
 }
 export default ContributorCard
