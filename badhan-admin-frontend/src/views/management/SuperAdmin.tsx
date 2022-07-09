@@ -2,7 +2,7 @@
 
 // project imports
 import {SuperAdminCard} from "../../ui-component/superadmin/SuperAdminCard";
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import MyTextField from "../../ui-component/MyTextField";
 import MyButton from "../../ui-component/MyButton";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
@@ -62,6 +62,7 @@ const SuperAdmin = () => {
     const [superAdmins, setSuperAdmins] = useState<SuperAdminModel[]>([])
     const [newSuperAdminLoaderFlag, setNewSuperAdminLoaderFlag] = useState<boolean>(false)
     const [newSuperAdminPhone, setNewSuperAdminPhone] = useState<string>('')
+    const newSuperAdminPhoneRef = useRef() as React.MutableRefObject<HTMLInputElement>;
     const dispatch = useDispatch();
     useEffect(() => {
         const loadSuperAdmins = async () => {
@@ -86,7 +87,9 @@ const SuperAdmin = () => {
     }
 
     const handleNewSuperAdmin = async () => {
-        console.log(`handleNewSuperAdmin: ${newSuperAdminPhone}`)
+        const newSuperAdminPhone = newSuperAdminPhoneRef.current.value
+        console.log(`newSuperAdminPhone: ${newSuperAdminPhone}`)
+
         setNewSuperAdminLoaderFlag(prevState => true)
         try{
             await wait()
@@ -181,7 +184,7 @@ const SuperAdmin = () => {
                 { superAdminPopulatedContent }
             </MyMainCard>
             <MyMainCard title="Add New Super Admin">
-                <MyTextField id="new-superadmin-phone" label="Enter Phone Number" value={newSuperAdminPhone} onChange={onNewSuperAdminPhoneInput}/>
+                <MyTextField type={'number'} ref={newSuperAdminPhoneRef} id="new-superadmin-phone" label="Enter Phone Number" value={newSuperAdminPhone} onChange={onNewSuperAdminPhoneInput}/>
                 <br/>
                 <MyButton
                     loading={newSuperAdminLoaderFlag}

@@ -1,12 +1,14 @@
 import { lazy } from 'react';
 
 // project imports
-import MainLayout from '../layout/MainLayout';
 import Loadable from '../ui-component/Loadable';
-import Version from "../views/management/Version";
-import Contributors from "../views/management/Contributors";
-import SuperAdmin from "../views/management/SuperAdmin";
-import BackupRestore from "../views/backup-restore";
+import loadable from "../ui-component/Loadable";
+
+const MainLayout  = loadable(lazy(()=> import('../layout/MainLayout')))
+const Contributors = loadable(lazy(()=> import('../views/management/Contributors')))
+const SuperAdmin = loadable(lazy(()=> import('../views/management/SuperAdmin')))
+const BackupRestore = loadable(lazy(()=> import('../views/backup-restore')))
+const Version = Loadable(lazy(() => import('../views/management/Version')));
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));

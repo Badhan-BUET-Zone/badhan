@@ -1,8 +1,8 @@
-// material-ui
+import useDebounce from "../../hooks/useDebounce";
 
 // project imports
 import MyTextField from "../../ui-component/MyTextField";
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import MyButton from "../../ui-component/MyButton";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import {wait} from "../../utils/dummyAPI";
@@ -19,9 +19,18 @@ const Version: React.FC = () => {
     const [versionLoadingFlag, setVersionLoadingFlag] = useState<boolean>(true)
     const [versionLoadingErrorFlag, setVersionLoadingErrorFlag] = useState<boolean>(false)
     const dispatch = useDispatch();
+
+    const debouncePrint = () => {
+        console.log("Debounced print")
+    }
+
+    const debounceHandler = useDebounce(debouncePrint)
+
     const changeMajorVersionHandler = (text: string) => {
         setMajorVersion((prevText:string)=>text)
+        debounceHandler()
     }
+
     const changeMinorVersionHandler = (text: string) => {
         setMinorVersion((prevText:string)=>text)
     }
@@ -64,9 +73,9 @@ const Version: React.FC = () => {
 
     // CONDITIONAL RENDERING
     const versionPageComponent = <MySkeleton loading={versionLoadingFlag}>
-        <MyTextField label="Major Version" value={majorVersion} onChange={changeMajorVersionHandler}/>
-        <MyTextField label="Minor Version" value={minorVersion} onChange={changeMinorVersionHandler}/>
-        <MyTextField label="Patch Version" value={patchVersion} onChange={changePatchVersionHandler}/>
+        <MyTextField type={'number'} label="Major Version" value={majorVersion} onChange={changeMajorVersionHandler}/>
+        <MyTextField type={'number'} label="Minor Version" value={minorVersion} onChange={changeMinorVersionHandler}/>
+        <MyTextField type={'number'} label="Patch Version" value={patchVersion} onChange={changePatchVersionHandler}/>
         <br/>
         <MyButton loading={versionSubmitFlag} color={'primary'} text={'Update Version'} onClick={onSubmitVersion}/>
     </MySkeleton>
