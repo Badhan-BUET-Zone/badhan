@@ -11,6 +11,7 @@ import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
+import useValidate from "../../hooks/useValidate";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -56,13 +57,19 @@ class SuperAdminModel {
     }
 }
 
+const validatePhone = (phone: any) => {
+    const phonePattern = /0[0-9]{10}$/
+    return phonePattern.test(phone)?false:'Phone number must be of 11 digits starting with 0'
+}
+
 const SuperAdmin = () => {
     const [superAdminLoadingFlag, setSuperAdminLoadingFlag] = useState<boolean>(true)
     const [superAdminLoadingErrorFlag, setSuperAdminLoadingErrorFlag] = useState<boolean>(false)
     const [superAdminDeleteLoaderFlagsArray, setSuperAdminDeleteLoaderFlagsArray ] = useState<boolean[]>([])
     const [superAdmins, setSuperAdmins] = useState<SuperAdminModel[]>([])
     const [newSuperAdminLoaderFlag, setNewSuperAdminLoaderFlag] = useState<boolean>(false)
-    const [newSuperAdminPhone, setNewSuperAdminPhone] = useState<string>('')
+    const newSuperAdminPhone = useValidate<string>('',validatePhone)
+
     const newSuperAdminPhoneRef = useRef() as React.MutableRefObject<HTMLInputElement>;
     const dispatch = useDispatch();
     useEffect(() => {
@@ -84,19 +91,23 @@ const SuperAdmin = () => {
     }, [dispatch])
 
     const onNewSuperAdminPhoneInput = (phoneText: string) =>{
-        setNewSuperAdminPhone(prevState => phoneText)
+        newSuperAdminPhone.setValue(phoneText)
     }
 
     const handleNewSuperAdmin = async () => {
-        const newSuperAdminPhone = newSuperAdminPhoneRef.current.value
-        console.log(`newSuperAdminPhone: ${newSuperAdminPhone}`)
+        newSuperAdminPhone.touch()
+        if(newSuperAdminPhone.hasError)return
+
+        const newSuperAdminPhoneValue = newSuperAdminPhoneRef.current.value
+        console.log(`newSuperAdminPhone: ${newSuperAdminPhoneValue}`)
+
 
         setNewSuperAdminLoaderFlag(prevState => true)
         try{
             await wait()
             setSuperAdmins(prevState => {
                 const newState =  [...prevState]
-                newState.push(new SuperAdminModel(String(Math.random()), 'New Admin', newSuperAdminPhone, 'Nazrul', 'B+'))
+                newState.push(new SuperAdminModel(String(Math.random()), 'New Admin', newSuperAdminPhoneValue, 'Nazrul', 'B+'))
                 return newState
             })
             dispatch(new NotificationSuccess('Successfully assigned new super admin'))
@@ -104,7 +115,7 @@ const SuperAdmin = () => {
             dispatch(new NotificationError('Failed to assign new super admin'))
         }finally {
             setNewSuperAdminLoaderFlag(prevState => false)
-            setNewSuperAdminPhone(prevState => '')
+            newSuperAdminPhone.reset()
         }
     }
 
@@ -185,13 +196,24 @@ const SuperAdmin = () => {
                 { superAdminPopulatedContent }
             </MyMainCard>
             <MyMainCard title="Add New Super Admin">
-                <MyTextField type={'number'} ref={newSuperAdminPhoneRef} id="new-superadmin-phone" label="Enter Phone Number" value={newSuperAdminPhone} onChange={onNewSuperAdminPhoneInput}/>
+                <MyTextField
+                    type={'number'}
+                    ref={newSuperAdminPhoneRef}
+                    id="new-superadmin-phone"
+                    label="Enter Phone Number"
+                    error={newSuperAdminPhone.hasError}
+                    onBlur={newSuperAdminPhone.touch}
+                    helperText={newSuperAdminPhone.message}
+                    value={newSuperAdminPhone.value}
+                    onChange={onNewSuperAdminPhoneInput}
+                />
                 <br/>
                 <MyButton
                     loading={newSuperAdminLoaderFlag}
                     text={'Appoint New Super Admin'}
                     color={'primary'}
                     onClick={handleNewSuperAdmin}
+                    disabled={newSuperAdminPhone.hasError}
                 />
             </MyMainCard>
         </FadeAnimationWrapper>

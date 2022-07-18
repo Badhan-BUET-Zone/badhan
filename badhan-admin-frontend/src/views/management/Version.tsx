@@ -20,34 +20,26 @@ const validateNumber = (arg:any): boolean |string => {
 
 const Version: React.FC = () => {
     // STATE MANAGEMENT
-    const {
-        value:majorVersion,
-        setTouch: setMajorVersionTouch,
-        setValue: setMajorVersion,
-        isError: isMajorVersionError,
-        message: majorVersionValidationMessage,
-    } = useValidate<string>('',validateNumber)
-
-    const {
-        value:minorVersion,
-        setTouch: setMinorVersionTouch,
-        setValue:setMinorVersion,
-        isError: isMinorVersionError,
-        message: minorVersionValidationMessage,
-    } = useValidate<string>('',validateNumber)
-
-    const {
-        value:patchVersion,
-        setTouch: setPatchVersionTouch,
-        setValue:setPatchVersion,
-        isError: isPatchVersionError,
-        message: patchVersionValidationMessage,
-    } = useValidate<string>('',validateNumber)
+    const majorVersion = useValidate<string>('',validateNumber)
+    const minorVersion = useValidate<string>('',validateNumber)
+    const patchVersion = useValidate<string>('',validateNumber)
 
     const [versionSubmitFlag, setVersionSubmitFlag] = useState<boolean>(false)
     const [versionLoadingFlag, setVersionLoadingFlag] = useState<boolean>(true)
     const [versionLoadingErrorFlag, setVersionLoadingErrorFlag] = useState<boolean>(false)
     const dispatch = useDispatch();
+
+    // HANDLERS
+
+    const touchAllValidation = () => {
+        patchVersion.touch()
+        minorVersion.touch()
+        majorVersion.touch()
+    }
+
+    const formHasError = () => {
+        return minorVersion.hasError || majorVersion.hasError || patchVersion.hasError
+    }
 
     const debouncePrint = () => {
         console.log("Debounced print")
@@ -56,26 +48,25 @@ const Version: React.FC = () => {
     const debounceHandler = useDebounce(debouncePrint)
 
     const changeMajorVersionHandler = (text: string) => {
-        setMajorVersion(text)
+        majorVersion.setValue(text)
         debounceHandler()
     }
 
     const changeMinorVersionHandler = (text: string) => {
-        setMinorVersion(text)
+        minorVersion.setValue(text)
     }
     const changePatchVersionHandler = (text: string) => {
-        setPatchVersion(text)
+        patchVersion.setValue(text)
     }
 
-    // HANDLERS
     useEffect(  () => {
         const fetchData = async()=>{
             setVersionLoadingFlag(prevState => true)
             try{
                 await wait();
-                setMajorVersion('9')
-                setMinorVersion('5')
-                setPatchVersion('2')
+                majorVersion.setValue('9')
+                minorVersion.setValue('5')
+                patchVersion.setValue('2')
             }catch (e) {
                 dispatch(new NotificationError('Could not load app version'))
                 setVersionLoadingErrorFlag(prevState => true)
@@ -84,10 +75,16 @@ const Version: React.FC = () => {
             }
         }
         fetchData()
-    },[dispatch]);
+    },
+        // eslint-disable-next-line
+        [dispatch]);
+
 
     const onSubmitVersion = async () =>{
-        const versionSubmissionData = `${majorVersion}.${minorVersion}.${patchVersion}`
+        touchAllValidation()
+        if(formHasError())return
+
+        const versionSubmissionData = `${majorVersion.value}.${minorVersion}.${patchVersion}`
         setVersionSubmitFlag(prevState => true)
         try{
             await wait();
@@ -103,31 +100,37 @@ const Version: React.FC = () => {
     // CONDITIONAL RENDERING
     const versionPageComponent = <FadeAnimationWrapper>
         <MyTextField
-            helperText={majorVersionValidationMessage}
-            onBlur={setMajorVersionTouch}
-            error={isMajorVersionError}
+            helperText={majorVersion.message}
+            onBlur={majorVersion.touch}
+            error={majorVersion.hasError}
             label="Major Version"
-            value={majorVersion}
+            value={majorVersion.value}
             onChange={changeMajorVersionHandler}
         />
         <MyTextField
-            helperText={minorVersionValidationMessage}
-            onBlur={setMinorVersionTouch}
-            error={isMinorVersionError}
+            helperText={minorVersion.message}
+            onBlur={minorVersion.touch}
+            error={minorVersion.hasError}
             label="Minor Version"
-            value={minorVersion}
+            value={minorVersion.value}
             onChange={changeMinorVersionHandler}
         />
         <MyTextField
-            helperText={patchVersionValidationMessage}
-            onBlur={setPatchVersionTouch}
-            error={isPatchVersionError}
+            helperText={patchVersion.message}
+            onBlur={patchVersion.touch}
+            error={patchVersion.hasError}
             label="Patch Version"
-            value={patchVersion}
+            value={patchVersion.value}
             onChange={changePatchVersionHandler}
         />
         <br/>
-        <MyButton loading={versionSubmitFlag} color={'primary'} text={'Update Version'} onClick={onSubmitVersion}/>
+        <MyButton
+            disabled={formHasError()}
+            loading={versionSubmitFlag}
+            color={'primary'}
+            text={'Update Version'}
+            onClick={onSubmitVersion}
+        />
     </FadeAnimationWrapper>
 
     const versionPageLoader = <MySkeleton loading={true}><Box className={styleClasses.box}>Loading</Box></MySkeleton>
