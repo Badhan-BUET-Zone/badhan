@@ -14,8 +14,8 @@ import {Box} from "@mui/material";
 import styleClasses from './Version.module.css'
 import useValidate from "../../hooks/useValidate";
 
-const validateNumber = (arg:any) => {
-    return !isNaN(arg)
+const validateNumber = (arg:any): boolean |string => {
+    return (isNaN(arg) || !Number.isInteger(Number(arg)) || Number(arg) <0 || Number(arg)>100)?'Input must be an integer between 1 and 99':false
 }
 
 const Version: React.FC = () => {
@@ -23,22 +23,31 @@ const Version: React.FC = () => {
     const {
         value:majorVersion,
         setTouch: setMajorVersionTouch,
-        setValue:setMajorVersion,
+        setValue: setMajorVersion,
         isError: isMajorVersionError,
-        isTouched: isMajorVersionTouched,
-        isInvalid: isMajorVersionInvalid
+        message: majorVersionValidationMessage,
     } = useValidate<string>('',validateNumber)
 
-    const [minorVersion, setMinorVersion] = useState<string>('')
-    const [patchVersion, setPatchVersion] = useState<string>('')
+    const {
+        value:minorVersion,
+        setTouch: setMinorVersionTouch,
+        setValue:setMinorVersion,
+        isError: isMinorVersionError,
+        message: minorVersionValidationMessage,
+    } = useValidate<string>('',validateNumber)
+
+    const {
+        value:patchVersion,
+        setTouch: setPatchVersionTouch,
+        setValue:setPatchVersion,
+        isError: isPatchVersionError,
+        message: patchVersionValidationMessage,
+    } = useValidate<string>('',validateNumber)
+
     const [versionSubmitFlag, setVersionSubmitFlag] = useState<boolean>(false)
     const [versionLoadingFlag, setVersionLoadingFlag] = useState<boolean>(true)
     const [versionLoadingErrorFlag, setVersionLoadingErrorFlag] = useState<boolean>(false)
     const dispatch = useDispatch();
-
-    const onSetVersionTouch = () => {
-        setMajorVersionTouch()
-    }
 
     const debouncePrint = () => {
         console.log("Debounced print")
@@ -52,10 +61,10 @@ const Version: React.FC = () => {
     }
 
     const changeMinorVersionHandler = (text: string) => {
-        setMinorVersion((prevText:string)=>text)
+        setMinorVersion(text)
     }
     const changePatchVersionHandler = (text: string) => {
-        setPatchVersion((prevText:string)=>text)
+        setPatchVersion(text)
     }
 
     // HANDLERS
@@ -93,14 +102,30 @@ const Version: React.FC = () => {
 
     // CONDITIONAL RENDERING
     const versionPageComponent = <FadeAnimationWrapper>
-        <span>
-            touched: {isMajorVersionTouched?<div>true</div>:<div>false</div>}
-            invalid: {isMajorVersionInvalid?<div>true</div>:<div>false</div>}
-            error: {isMajorVersionError?<div>true</div>:<div>false</div>}
-        </span>
-        <MyTextField onBlur={onSetVersionTouch} error={isMajorVersionError} label="Major Version" value={majorVersion} onChange={changeMajorVersionHandler}/>
-        <MyTextField type={'number'} label="Minor Version" value={minorVersion} onChange={changeMinorVersionHandler}/>
-        <MyTextField type={'number'} label="Patch Version" value={patchVersion} onChange={changePatchVersionHandler}/>
+        <MyTextField
+            helperText={majorVersionValidationMessage}
+            onBlur={setMajorVersionTouch}
+            error={isMajorVersionError}
+            label="Major Version"
+            value={majorVersion}
+            onChange={changeMajorVersionHandler}
+        />
+        <MyTextField
+            helperText={minorVersionValidationMessage}
+            onBlur={setMinorVersionTouch}
+            error={isMinorVersionError}
+            label="Minor Version"
+            value={minorVersion}
+            onChange={changeMinorVersionHandler}
+        />
+        <MyTextField
+            helperText={patchVersionValidationMessage}
+            onBlur={setPatchVersionTouch}
+            error={isPatchVersionError}
+            label="Patch Version"
+            value={patchVersion}
+            onChange={changePatchVersionHandler}
+        />
         <br/>
         <MyButton loading={versionSubmitFlag} color={'primary'} text={'Update Version'} onClick={onSubmitVersion}/>
     </FadeAnimationWrapper>
