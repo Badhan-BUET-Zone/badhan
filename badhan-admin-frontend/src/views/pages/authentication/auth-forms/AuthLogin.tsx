@@ -25,6 +25,8 @@ import useScriptRef from '../../../../hooks/useScriptRef';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FadeAnimationWrapper from "../../../../ui-component/motion/FadeAnimationWrapper";
+import {useDispatch} from "react-redux";
+import {UserProfileLogin} from "../../../../store/userProfileModel";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -32,6 +34,8 @@ const Login = ({...others}) => {
     const scriptedRef = useScriptRef();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch()
+
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -63,6 +67,7 @@ const Login = ({...others}) => {
                             setSubmitting(true);
                         }
                         console.log(values)
+                        dispatch(new UserProfileLogin('ABCDEFGHIJKL'))
                         navigate('/')
                     } catch (err: any) {
                         console.error(err);

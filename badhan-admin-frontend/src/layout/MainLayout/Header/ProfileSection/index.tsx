@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import React from 'react';
 
@@ -41,6 +41,7 @@ import {CustomizationModel} from "../../../../store/customizationModel";
 import {useNavigate} from "react-router-dom";
 
 import styleClasses from './index.module.css'
+import {UserProfileLogout} from "../../../../store/userProfileModel";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -52,12 +53,14 @@ const ProfileSection = () => {
     const [selectedIndex, ] = useState(-1);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     /**
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
      * */
     const anchorRef = useRef(null);
     const handleLogout = async () => {
         console.log('Logout');
+        dispatch(new UserProfileLogout());
         navigate('/pages/login')
     };
 

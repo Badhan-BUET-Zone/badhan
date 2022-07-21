@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
@@ -16,6 +16,8 @@ import themes from './themes';
 import NavigationScroll from './layout/NavigationScroll';
 import {NotificationSnackbar} from "./layout/NotificationSnackbar";
 import ErrorBoundary from "./ErrorBoundary";
+import {useEffect} from "react";
+import {UserProfileLogin, UserProfileLogout} from "./store/userProfileModel";
 
 // ==============================|| APP ||============================== //
 
@@ -23,6 +25,17 @@ const App = () => {
     const customization = useSelector((state: { customization: CustomizationModel}) => {
         return state.customization
     });
+
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+        const token = localStorage.getItem('token')
+        if(token){
+            dispatch(new UserProfileLogin(token))
+        }else {
+            dispatch(new UserProfileLogout())
+        }
+    },[dispatch])
 
     return (
         <ErrorBoundary>
