@@ -10,6 +10,14 @@ export class ContributorLinkModel {
         this.color = color;
         this.id = String(Math.random())
     }
+
+}
+
+export const validateContributorLink = (contributorLink: ContributorLinkModel): boolean => {
+    if(contributorLink.link.trim().length===0)return true
+    if(contributorLink.icon.trim().length===0)return true
+    if(contributorLink.color.trim().length===0)return true
+    return false
 }
 
 export const CONTRIBUTOR_ACTIVE_DEVELOPERS = 'Active Developers'
@@ -37,4 +45,20 @@ export class ContributorModel {
         this.contributions = contributions
     }
 
+    // hasOneFieldEmpty():boolean{
+
+    // }
+}
+
+export const validateContributor = (contributor: ContributorModel):boolean => {
+        if(contributor.imageURL.trim().length===0)return true
+        if(contributor.name.trim().length===0)return true
+        if(contributor.duration.trim().length===0)return true
+        for(let i = 0; i < contributor.links.length; i++){
+            if(validateContributorLink(contributor.links[i]))return true
+        }
+        for(let i = 0; i < contributor.contributions.length; i++){
+            if(contributor.contributions[i].trim().length===0)return true
+        }
+        return false
 }

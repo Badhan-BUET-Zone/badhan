@@ -7,7 +7,7 @@ import {
     CONTRIBUTOR_ACTIVE_DEVELOPERS,
     CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN, CONTRIBUTOR_LEGACY_DEVELOPERS,
     ContributorLinkModel,
-    ContributorModel, ContributorType
+    ContributorModel, ContributorType, validateContributor
 } from "./contributorModel";
 import styles from './ContributorCard.module.css'
 import FadeAnimationWrapper from "../motion/FadeAnimationWrapper";
@@ -48,6 +48,7 @@ const ContributorCard = (props: {
     const [newContribution, setNewContribution] = useState<string>('')
     const [stateContributor, dispatchContributor] = useReducer(contributorLoadReducer, initialState)
     const [newLink, setNewLink] = useState<ContributorLinkModel>(new ContributorLinkModel('', '', ''))
+    const [validationError, setValidationError] = useState<boolean>(false)
 
     // HANDLERS
     const handleContributorTypeSelectionChange = (event: SelectChangeEvent) => {
@@ -90,7 +91,12 @@ const ContributorCard = (props: {
     }
 
     const handleSaveChanges = () => {
+        setValidationError((prevState => false))
         console.log(`inside handleSaveChanges: stateContributor`)
+        if(validateContributor(stateContributor)){
+            setValidationError((prevState => true))
+            return
+        }
         props.onHandleSaveChanges(stateContributor, props.index)
     }
     const handleDelete = () => {
@@ -275,6 +281,9 @@ const ContributorCard = (props: {
                         })
                         }
                     </Box>
+                    {validationError && <Box sx={{color: 'error.main'}}>
+                        Empty field found. Please correct and submit.
+                    </Box>}
                     <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'}
                               onClick={handleSaveChanges}/>
                     <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete}
