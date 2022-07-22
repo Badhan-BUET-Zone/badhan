@@ -151,9 +151,11 @@ const Version: React.FC = () => {
     }
 
     // MAIN RENDERING
-    return (<MyMainCard title="Set the App Version Deployed on Google Play">
-        {versionPageContent}
-    </MyMainCard>)
+    return (
+        <MyMainCard title="Set the App Version Deployed on Google Play">
+            {versionPageContent}
+        </MyMainCard>
+    )
 };
 
 export default Version;

@@ -1,10 +1,10 @@
 import {LOGIN, LOGOUT, userprofileActionType} from "./userProfileActions";
 
 export class UserProfileModel{
-    token: string
+    token: string|null
     type: userprofileActionType
 
-    constructor(token: string, type: userprofileActionType) {
+    constructor(token: string|null, type: userprofileActionType) {
         this.token = token
         this.type = type
     }
@@ -12,7 +12,7 @@ export class UserProfileModel{
 
 export class UserProfileLogout extends UserProfileModel{
     constructor() {
-        super('', LOGOUT);
+        super(null, LOGOUT);
     }
 }
 export class UserProfileLogin extends UserProfileModel{

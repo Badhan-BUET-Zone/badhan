@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project imports
 import Loadable from '../ui-component/Loadable';
 import loadable from "../ui-component/Loadable";
+import RestrictUnAuthorizedUser from "../authentication/RestrictUnAuthorizedUser";
 
 const MainLayout  = loadable(lazy(()=> import('../layout/MainLayout')))
 const Contributors = loadable(lazy(()=> import('../views/management/Contributors')))
@@ -27,7 +28,7 @@ const SamplePage = Loadable(lazy(() => import('../views/sample-page')));
 
 const MainRoutes = {
     path: '/',
-    element: <MainLayout />,
+    element: <RestrictUnAuthorizedUser><MainLayout /></RestrictUnAuthorizedUser>,
     children: [
         {
             path: '/',

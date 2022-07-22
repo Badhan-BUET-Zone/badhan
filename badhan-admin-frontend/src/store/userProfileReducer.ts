@@ -1,6 +1,6 @@
 import * as actionTypes from './userProfileActions';
 import {UserProfileModel} from './userProfileModel'
-export const initialState :UserProfileModel = new UserProfileModel('',actionTypes.LOGOUT)
+export const initialState :UserProfileModel = new UserProfileModel(null,actionTypes.LOGOUT)
 
 const userProfileReducer = (state = initialState, action: UserProfileModel) => {
     switch (action.type) {
@@ -16,7 +16,9 @@ const userProfileReducer = (state = initialState, action: UserProfileModel) => {
 };
 
 const handleLogin = (action: UserProfileModel) => {
-    localStorage.setItem('token', action.token)
+    if(action.token){
+        localStorage.setItem('token', action.token)
+    }
 }
 const handleLogout = () => {
     localStorage.removeItem('token')
