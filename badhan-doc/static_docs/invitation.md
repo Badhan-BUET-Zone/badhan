@@ -43,7 +43,7 @@ security course
 * Skill Requirement: Knowledge on building apps or website, Github
 * Experience Requirement: Current student of any department of BUET
 * Responsibilities:
-  * You will have to collect user requirements from the members of Badhan
+  * You will have to collect user requirements and feedbacks from the members of Badhan
   * You will have to write and document issues in Github.
   * You will need to verify the implementations done after resolving any issues.
 
