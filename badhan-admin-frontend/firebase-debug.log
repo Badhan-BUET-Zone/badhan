@@ -1,0 +1,29 @@
+[debug] [2022-07-23T19:28:16.311Z] ----------------------------------------------------------------------
+[debug] [2022-07-23T19:28:16.313Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Mahathir\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2022-07-23T19:28:16.314Z] CLI Version:   10.6.0
+[debug] [2022-07-23T19:28:16.314Z] Platform:      win32
+[debug] [2022-07-23T19:28:16.314Z] Node Version:  v16.14.0
+[debug] [2022-07-23T19:28:16.321Z] Time:          Sun Jul 24 2022 01:28:16 GMT+0600 (Bangladesh Standard Time)
+[debug] [2022-07-23T19:28:16.321Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-07-23T19:28:16.326Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2022-07-23T19:28:16.424Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-07-23T19:28:16.425Z] > authorizing via signed-in user (1605011@ugrad.cse.buet.ac.bd)
+[debug] [2022-07-23T19:28:16.425Z] [iam] checking project badhan-admin for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2022-07-23T19:28:16.426Z] > refreshing access token with scopes: []
+[debug] [2022-07-23T19:28:16.427Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-07-23T19:28:16.689Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","date":"Sat, 23 Jul 2022 19:28:17 GMT","pragma":"no-cache","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-07-23T19:28:16.704Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/badhan-admin:testIamPermissions [none]
+[debug] [2022-07-23T19:28:16.704Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/badhan-admin:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2022-07-23T19:28:17.206Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2022-07-23T19:28:17.206Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2022-07-23T19:28:18.214Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/badhan-admin:testIamPermissions 200
+[debug] [2022-07-23T19:28:18.215Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/badhan-admin:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2022-07-23T19:28:18.218Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/badhan-admin [none]
+[debug] [2022-07-23T19:28:18.237Z] Failed to make request to https://firebase.googleapis.com/v1beta1/projects/badhan-admin
+[debug] [2022-07-23T19:28:18.238Z] FirebaseError: Failed to make request to https://firebase.googleapis.com/v1beta1/projects/badhan-admin
+    at RetryOperation._fn (C:\Users\Mahathir\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:240:31)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+[error] 
+[error] Error: Failed to get Firebase project badhan-admin. Please make sure the project exists and your account has permission to access it.
