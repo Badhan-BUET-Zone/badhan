@@ -1,5 +1,5 @@
 // project imports
-import React, {useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import ContributorCard from "../../ui-component/contributors/ContributorCard";
 import {ContributorLinkModel, ContributorModel} from "../../ui-component/contributors/contributorModel";
@@ -12,6 +12,7 @@ import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {Card, CardContent} from "@mui/material";
+import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 
 const dummyData: ContributorModel[] = [
     new ContributorModel(
@@ -144,9 +145,13 @@ const Contributors = () => {
 
     //MAIN COMPONENT
     return (
-        <MyMainCard title="Manage Contributors">
-            {contributorFinalContent}
-        </MyMainCard>
+        <Fragment>
+            <UnderConstructionNotice/>
+            <MyMainCard title="Manage Contributors">
+                {contributorFinalContent}
+            </MyMainCard>
+        </Fragment>
+
     )
 };
 

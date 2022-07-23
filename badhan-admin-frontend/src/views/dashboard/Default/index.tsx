@@ -11,6 +11,7 @@ import TotalIncomeDarkCard from './TotalIncomeDarkCard';
 import TotalIncomeLightCard from './TotalIncomeLightCard';
 import TotalGrowthBarChart from './TotalGrowthBarChart';
 import {gridSpacing} from '../../../store/constant';
+import UnderConstructionNotice from "../../../ui-component/UnderConstructionNotice";
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 
@@ -24,6 +25,7 @@ const Dashboard = () => {
 
             <Grid container spacing={gridSpacing}>
                 <Grid item xs={12}>
+                    <UnderConstructionNotice/>
                     <Grid container spacing={gridSpacing}>
                         <Grid item lg={4} md={6} sm={6} xs={12}>
                             <EarningCard isLoading={isLoading}/>

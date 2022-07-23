@@ -12,6 +12,7 @@ import {NotificationError, NotificationSuccess} from "../../store/notificationMo
 import MySkeleton from "../../ui-component/MySkeleton";
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 import useValidate from "../../hooks/useValidate";
+import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -192,6 +193,7 @@ const SuperAdmin = () => {
 
     return (
         <FadeAnimationWrapper>
+            <UnderConstructionNotice/>
             <MyMainCard title="List of Super Admins">
                 { superAdminPopulatedContent }
             </MyMainCard>

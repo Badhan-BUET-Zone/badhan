@@ -13,6 +13,8 @@ import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper
 import {Box} from "@mui/material";
 import styleClasses from './Version.module.css'
 import useValidate from "../../hooks/useValidate";
+import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
+import {Fragment} from "react";
 
 const validateNumber = (arg:any): boolean |string => {
     return (isNaN(arg) || !Number.isInteger(Number(arg)) || Number(arg) <0 || Number(arg)>100)?'Input must be an integer between 1 and 99':false
@@ -152,9 +154,12 @@ const Version: React.FC = () => {
 
     // MAIN RENDERING
     return (
+        <Fragment>
+        <UnderConstructionNotice/>
         <MyMainCard title="Set the App Version Deployed on Google Play">
             {versionPageContent}
         </MyMainCard>
+        </Fragment>
     )
 };
 

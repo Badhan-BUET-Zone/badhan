@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import {useState, useRef, useEffect} from 'react';
 
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -9,12 +9,9 @@ import { useTheme } from '@mui/material/styles';
 import {
     Avatar,
     Box,
-    Card,
-    CardContent,
     Chip,
     ClickAwayListener,
     Divider,
-    Grid,
     List,
     ListItemButton,
     ListItemIcon,
@@ -22,7 +19,6 @@ import {
     Paper,
     Popper,
     Stack,
-    Switch,
     Typography
 } from '@mui/material';
 
@@ -49,7 +45,6 @@ const ProfileSection = () => {
     const theme = useTheme();
     const customization = useSelector((state: {customization: CustomizationModel}) => state.customization);
 
-    const [darkMode, setDarkMode] = useState(true);
     const [selectedIndex, ] = useState(-1);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
@@ -58,9 +53,10 @@ const ProfileSection = () => {
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
      * */
     const anchorRef = useRef(null);
+
     const handleLogout = async () => {
-        console.log('Logout');
         dispatch(new UserProfileLogout());
+        setTimeout(()=>{console.log('Logged out')},1000)
         navigate('/pages/login')
     };
 
@@ -173,35 +169,6 @@ const ProfileSection = () => {
                                         <Box sx={{ p: 2 }}>
                                             <span className={styleClasses.mobileShow}>Accessing from mobile</span>
                                             <span className={styleClasses.pcShow}>Accessing from desktop</span>
-                                            <Divider />
-                                            <Card
-                                                sx={{
-                                                    bgcolor: theme.palette.primary.light,
-                                                    my: 2
-                                                }}
-                                            >
-                                                <CardContent>
-                                                    <Grid container spacing={3} direction="column">
-                                                        <Grid item>
-                                                            <Grid item container alignItems="center" justifyContent="space-between">
-                                                                <Grid item>
-                                                                    <Typography variant="subtitle1">Dark Mode</Typography>
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <Switch
-                                                                        color="primary"
-                                                                        checked={darkMode}
-                                                                        onChange={(e) => setDarkMode(e.target.checked)}
-                                                                        name="darkMode"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Grid>
-                                                </CardContent>
-                                            </Card>
-                                            <Divider />
                                             <List
                                                 component="nav"
                                                 sx={{

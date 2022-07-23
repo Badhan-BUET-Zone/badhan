@@ -12,6 +12,7 @@ import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import styles from './index.module.css'
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
+import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -202,6 +203,7 @@ const BackupRestore = () => {
 
     return (
         <FadeAnimationWrapper>
+            <UnderConstructionNotice/>
             <MyMainCard title="Manage All Backups of Database">
                 <MyButton
                     loading={createNewBackupLoaderFlag}
