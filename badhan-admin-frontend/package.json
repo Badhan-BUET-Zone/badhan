@@ -20,6 +20,7 @@
     "@types/react-dom": "^18.0.5",
     "@types/react-router-dom": "^5.3.3",
     "apexcharts": "^3.35.3",
+    "axios": "^0.27.2",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.11",
     "material-ui-popup-state": "^3.1.1",
