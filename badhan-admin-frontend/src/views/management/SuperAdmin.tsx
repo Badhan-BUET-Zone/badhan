@@ -13,6 +13,7 @@ import MySkeleton from "../../ui-component/MySkeleton";
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 import useValidate from "../../hooks/useValidate";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
+import {Grid} from "@mui/material";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -163,19 +164,22 @@ const SuperAdmin = () => {
 
     const superAdminErrorComponent = <React.Fragment>Error In Loading Super Admins</React.Fragment>
 
-    const superAdminListComponent = superAdmins.map((superAdmin: SuperAdminModel, index: number) =>
-        <SuperAdminCard
-            id={superAdmin.id}
-            key={superAdmin.id}
-            name={superAdmin.name}
-            phone={superAdmin.phone}
-            hall={superAdmin.hall}
-            bloodGroup={superAdmin.bloodGroup}
-            onDeleteHandler={onDeleteHandler}
-            deleteFlag={superAdminDeleteLoaderFlagsArray[index]}
-            index={index}
-        />
-    )
+    const superAdminListComponent = <Grid container>
+        {superAdmins.map((superAdmin: SuperAdminModel, index: number) =>
+            <Grid item xs={12} md={4} key={superAdmin.id}>
+                <SuperAdminCard
+                    id={superAdmin.id}
+                    name={superAdmin.name}
+                    phone={superAdmin.phone}
+                    hall={superAdmin.hall}
+                    bloodGroup={superAdmin.bloodGroup}
+                    onDeleteHandler={onDeleteHandler}
+                    deleteFlag={superAdminDeleteLoaderFlagsArray[index]}
+                    index={index}
+                />
+            </Grid>
+    )}
+    </Grid>
 
     const superAdminListEmptyComponent = <p>Deletable Super Admin list is empty</p>
 

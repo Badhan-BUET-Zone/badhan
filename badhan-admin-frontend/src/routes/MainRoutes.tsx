@@ -14,69 +14,36 @@ const Version = Loadable(lazy(() => import('../views/management/Version')));
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
 
-// utilities routing
-const UtilsTypography = Loadable(lazy(() => import('../views/utilities/Typography')));
-const UtilsColor = Loadable(lazy(() => import('../views/utilities/Color')));
-const UtilsShadow = Loadable(lazy(() => import('../views/utilities/Shadow')));
-const UtilsMaterialIcons = Loadable(lazy(() => import('../views/utilities/MaterialIcons')));
-const UtilsTablerIcons = Loadable(lazy(() => import('../views/utilities/TablerIcons')));
-
-// sample page routing
-const SamplePage = Loadable(lazy(() => import('../views/sample-page')));
-
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
     path: '/',
-    element: <RestrictUnAuthorizedUser><MainLayout /></RestrictUnAuthorizedUser>,
+    // element: <RestrictUnAuthorizedUser><MainLayout /></RestrictUnAuthorizedUser>,
+    element: <MainLayout />,
     children: [
         {
             path: '/',
-            element: <DashboardDefault />
+            element: <RestrictUnAuthorizedUser><DashboardDefault /></RestrictUnAuthorizedUser>
         },
         {
             path: '/dashboard/default',
-            element: <DashboardDefault />
-        },
-        {
-            path: '/utils/util-typography',
-            element: <UtilsTypography />
-        },
-        {
-            path: '/utils/util-color',
-            element: <UtilsColor />
-        },
-        {
-            path: '/utils/util-shadow',
-            element: <UtilsShadow />
-        },
-        {
-            path: '/icons/tabler-icons',
-            element: <UtilsTablerIcons />
-        },
-        {
-            path: '/icons/material-icons',
-            element: <UtilsMaterialIcons />
-        },
-        {
-            path: '/sample-page',
-            element: <SamplePage />
+            element: <RestrictUnAuthorizedUser><DashboardDefault /></RestrictUnAuthorizedUser>
         },
         {
             path: '/management/version',
-            element: <Version/>
+            element: <RestrictUnAuthorizedUser><Version/></RestrictUnAuthorizedUser>
         },
         {
             path: '/management/contributors',
-            element: <Contributors/>
+            element: <RestrictUnAuthorizedUser><Contributors/></RestrictUnAuthorizedUser>
         },
         {
             path: '/management/superadmin',
-            element: <SuperAdmin/>
+            element: <RestrictUnAuthorizedUser><SuperAdmin/></RestrictUnAuthorizedUser>
         },
         {
             path: '/backup-restore',
-            element: <BackupRestore/>,
+            element: <RestrictUnAuthorizedUser><BackupRestore/></RestrictUnAuthorizedUser>,
         }
     ]
 };

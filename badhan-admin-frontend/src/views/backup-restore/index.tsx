@@ -4,7 +4,7 @@
 import MyButton from "../../ui-component/MyButton";
 import React, {useEffect, useState} from 'react'
 import {BackupCard} from "../../ui-component/backup-restore/BackupCard";
-import {Typography} from "@mui/material";
+import {Grid, Typography} from "@mui/material";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import {wait} from "../../utils/dummyAPI";
 import MySkeleton from "../../ui-component/MySkeleton";
@@ -172,19 +172,22 @@ const BackupRestore = () => {
             <Typography variant={'subtitle1'} className={styles.backupTitle}>
                 All Backups
             </Typography>
+            <Grid container>
             {backupTimestamps.map((timestamp: number, index: number)=>
-                <BackupCard
-                    key={timestamp}
-                    index={index}
-                    timestamp={timestamp}
-                    onDelete={handleBackupDelete}
-                    onRestoreToTest={handleRestoreToTest}
-                    onRestoreToProduction={handleRestoreToProduction}
-                    deleteLoader={deleteLoaderFlagsArray[index]}
-                    restoreToProductionLoader={restoreToProductionFlagsArray[index]}
-                    restoreToTestLoader={restoreToTestFlagsArray[index]}
-                />
+                <Grid item xs={12} md={4} key={timestamp}>
+                    <BackupCard
+                        index={index}
+                        timestamp={timestamp}
+                        onDelete={handleBackupDelete}
+                        onRestoreToTest={handleRestoreToTest}
+                        onRestoreToProduction={handleRestoreToProduction}
+                        deleteLoader={deleteLoaderFlagsArray[index]}
+                        restoreToProductionLoader={restoreToProductionFlagsArray[index]}
+                        restoreToTestLoader={restoreToTestFlagsArray[index]}
+                    />
+                </Grid>
             )}
+            </Grid>
         </React.Fragment>
 
     const backupListEmptyComponent = <p>No Backup found</p>

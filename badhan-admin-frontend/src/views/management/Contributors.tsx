@@ -11,7 +11,7 @@ import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
-import {Card, CardContent} from "@mui/material";
+import {Card, CardContent, Grid} from "@mui/material";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 
 const dummyData: ContributorModel[] = [
@@ -29,6 +29,24 @@ const dummyData: ContributorModel[] = [
     ),
     new ContributorModel(
         '123456',
+        'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
+        'Basak',
+        'Jan 2022- Present',
+        CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
+        [new ContributorLinkModel('www.facebook.com', 'gmail', 'red')],
+        ['Backend Engineer']
+    ),
+    new ContributorModel(
+        '123784658467676',
+        'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
+        'Basak',
+        'Jan 2022- Present',
+        CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
+        [new ContributorLinkModel('www.facebook.com', 'gmail', 'red')],
+        ['Backend Engineer']
+    ),
+    new ContributorModel(
+        '12378465846gfdgfhfh7676',
         'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
         'Basak',
         'Jan 2022- Present',
@@ -120,16 +138,21 @@ const Contributors = () => {
 
     const contributorEmptyComponent = <p>Contributor list empty</p>
 
-    const contributorListComponent = contributorList.map((contributor: ContributorModel, index: number) =>
-        <ContributorCard
-            index={index}
-            deleteLoader={contributorDeleteFlagArray[index]}
-            saveChangesLoader={contributorSaveChangesFlagArray[index]}
-            onHandleDelete={handleDelete}
-            onHandleSaveChanges={handleSaveChanges}
-            contributor={contributor}
-            key={contributor.id}
-        />)
+    const contributorListComponent =
+        <Grid container>
+            {contributorList.map((contributor: ContributorModel, index: number) =>
+                <Grid item xs={12} md={4} key={contributor.id}>
+                    <ContributorCard
+                        index={index}
+                        deleteLoader={contributorDeleteFlagArray[index]}
+                        saveChangesLoader={contributorSaveChangesFlagArray[index]}
+                        onHandleDelete={handleDelete}
+                        onHandleSaveChanges={handleSaveChanges}
+                        contributor={contributor}
+                    />
+                </Grid>)
+            }
+        </Grid>
 
     let contributorFinalContent: JSX.Element | JSX.Element[]
 
