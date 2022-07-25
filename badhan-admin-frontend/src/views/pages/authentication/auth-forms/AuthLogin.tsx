@@ -19,20 +19,18 @@ import * as Yup from 'yup';
 import {Formik} from 'formik';
 
 // project imports
-import useScriptRef from '../../../../hooks/useScriptRef';
 
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FadeAnimationWrapper from "../../../../ui-component/motion/FadeAnimationWrapper";
 import {useDispatch} from "react-redux";
-import {UserProfileLogin} from "../../../../store/userProfileModel";
-import {wait} from "../../../../utils/dummyAPI";
+import {UserProfileLogin} from "../../../../store/userProfile/userProfileModel";
+import {badhanAxios} from "../../../../api";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const Login = ({...others}) => {
-    const scriptedRef = useScriptRef();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const dispatch = useDispatch()
@@ -62,17 +60,13 @@ const Login = ({...others}) => {
                     password: Yup.string().max(255).required('Password is required')
                 })}
                 onSubmit={async (values, {setErrors, setStatus, setSubmitting}) => {
+                    setSubmitting(true);
                     try {
-                        setSubmitting(true);
-                        if (scriptedRef.current) {
-                            setStatus({success: true});
-                        }
-                        await wait()
-                        console.log(values)
-                        dispatch(new UserProfileLogin('ABCDEFGHIJKL'))
+                        let response = await badhanAxios.post('/users/signin',{phone: '88'+values.number, password: values.password})
+                        dispatch(new UserProfileLogin(response.data.token))
                         navigate('/')
                     } catch (err: any) {
-                        console.error(err);
+                        console.log(err)
                     } finally {
                         setSubmitting(false);
                     }

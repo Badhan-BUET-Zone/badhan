@@ -18,7 +18,6 @@ const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default'
 
 const MainRoutes = {
     path: '/',
-    // element: <RestrictUnAuthorizedUser><MainLayout /></RestrictUnAuthorizedUser>,
     element: <MainLayout />,
     children: [
         {

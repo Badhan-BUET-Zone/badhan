@@ -9,7 +9,7 @@ import {
 } from "../../ui-component/contributors/contributorModel";
 import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
-import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
+import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {Card, CardContent, Grid} from "@mui/material";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";

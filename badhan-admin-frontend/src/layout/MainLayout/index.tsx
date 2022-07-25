@@ -12,8 +12,8 @@ import Breadcrumbs from '../../ui-component/extended/Breadcrumbs';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import navigation from '../../menu-items';
-import {drawerWidth} from '../../store/constant';
-import {SET_MENU} from '../../store/actions';
+import {drawerWidth} from '../../store/customization/constant';
+import {SET_MENU} from '../../store/customization/actions';
 
 // assets
 import {IconChevronRight} from '@tabler/icons';

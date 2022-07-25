@@ -33,12 +33,13 @@ import User1 from '../../../../assets/images/users/user-round.svg';
 // assets
 import { IconLogout, IconSettings } from '@tabler/icons';
 
-import {CustomizationModel} from "../../../../store/customizationModel";
+import {CustomizationModel} from "../../../../store/customization/customizationModel";
 import {useNavigate} from "react-router-dom";
 
 import styleClasses from './index.module.css'
-import {UserProfileLogout} from "../../../../store/userProfileModel";
+import {UserProfileLogout} from "../../../../store/userProfile/userProfileModel";
 import {ConfirmationDialogOpen} from "../../../../store/confirmationDialog/model";
+import {badhanAxios} from "../../../../api";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -55,15 +56,19 @@ const ProfileSection = () => {
      * */
     const anchorRef = useRef(null);
 
-    const logoutConfirmed = () => {
-        dispatch(new UserProfileLogout());
-        setTimeout(()=>{console.log('Logged out')},1000)
-        navigate('/pages/login')
+    const logoutConfirmed = async () => {
+        try{
+            await badhanAxios.delete('/users/signout')
+        }catch (e) {
+
+        }finally {
+            dispatch(new UserProfileLogout());
+            navigate('/pages/login')
+        }
     }
 
     const handleLogout = async () => {
         dispatch(new ConfirmationDialogOpen('Do you want to log out?',logoutConfirmed))
-        // logoutConfirmed()
     };
 
     /* @ts-ignore */
@@ -162,9 +167,9 @@ const ProfileSection = () => {
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
                                             <Stack direction="row" spacing={0.5} alignItems="center">
-                                                <Typography variant="h4">Good Morning,</Typography>
+                                                <Typography variant="h4">Welcome,</Typography>
                                                 <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                                                    Johne Doe
+                                                    user
                                                 </Typography>
                                             </Stack>
                                             <Typography variant="subtitle2">Super Admin</Typography>

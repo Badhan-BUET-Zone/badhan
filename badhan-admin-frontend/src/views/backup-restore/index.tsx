@@ -9,7 +9,7 @@ import MyMainCard from "../../ui-component/cards/MyMainCard";
 import {wait} from "../../utils/dummyAPI";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {useDispatch} from "react-redux";
-import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
+import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import styles from './index.module.css'
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";

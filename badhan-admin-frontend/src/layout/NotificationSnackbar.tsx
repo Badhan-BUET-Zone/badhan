@@ -2,7 +2,7 @@ import {Alert, Snackbar} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import React from 'react';
 import ReactDOM from 'react-dom'
-import {NotificationModel, NotificationOff} from "../store/notificationModel";
+import {NotificationModel, NotificationOff} from "../store/notification/notificationModel";
 import styles from './NotificationSnackbar.module.css'
 export const NotificationSnackbar: React.FC = () =>{
     const notification = useSelector((state: { notification: NotificationModel}) => {

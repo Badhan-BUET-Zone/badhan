@@ -1,6 +1,6 @@
 // @ts-nocheck
 // project imports
-import config from '../config';
+import config from '../../config';
 import {CustomizationModel} from "./customizationModel";
 // action - state management
 import * as actionTypes from './actions';

@@ -10,7 +10,7 @@ import TotalOrderLineChartCard from './TotalOrderLineChartCard';
 import TotalIncomeDarkCard from './TotalIncomeDarkCard';
 import TotalIncomeLightCard from './TotalIncomeLightCard';
 import TotalGrowthBarChart from './TotalGrowthBarChart';
-import {gridSpacing} from '../../../store/constant';
+import {gridSpacing} from '../../../store/customization/constant';
 import UnderConstructionNotice from "../../../ui-component/UnderConstructionNotice";
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //

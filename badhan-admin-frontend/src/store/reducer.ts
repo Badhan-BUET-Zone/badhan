@@ -1,9 +1,9 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 // reducer import
-import customizationReducer from './customizationReducer';
-import notificationReducer from "./notificationReducer";
-import userProfileReducer from "./userProfileReducer";
+import customizationReducer from './customization/customizationReducer';
+import notificationReducer from "./notification/notificationReducer";
+import userProfileReducer from "./userProfile/userProfileReducer";
 import confirmationDialogReducer from './confirmationDialog/reducer'
 
 // ==============================|| COMBINE REDUCER ||============================== //
@@ -16,3 +16,4 @@ const reducer = combineReducers({
 });
 
 export default reducer;
+

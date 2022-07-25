@@ -1,6 +1,6 @@
 import * as actionTypes from './userProfileActions';
-import {UserProfileModel} from './userProfileModel'
-export const initialState :UserProfileModel = new UserProfileModel(null,actionTypes.LOGOUT)
+import {UserProfileLogout, UserProfileModel} from './userProfileModel'
+export const initialState :UserProfileModel = new UserProfileLogout()
 
 const userProfileReducer = (state = initialState, action: UserProfileModel) => {
     switch (action.type) {

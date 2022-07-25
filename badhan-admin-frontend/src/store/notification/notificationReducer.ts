@@ -14,3 +14,4 @@ const notificationReducer = (state = initialState, action: NotificationModel) =>
 };
 
 export default notificationReducer;
+

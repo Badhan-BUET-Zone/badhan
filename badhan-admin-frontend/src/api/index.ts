@@ -1,7 +1,5 @@
 import axios from 'axios'
 import {USERS_SIGNIN, USERS_SIGNOUT} from "./model";
-import {useSelector} from "react-redux";
-import {UserProfileModel} from "../store/userProfileModel";
 import {store} from "../store";
 
 export const badhanAxios = axios.create({baseURL: 'https://badhan-buet.uc.r.appspot.com/'})

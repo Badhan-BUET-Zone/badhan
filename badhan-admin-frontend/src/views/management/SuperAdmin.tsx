@@ -8,7 +8,7 @@ import MyButton from "../../ui-component/MyButton";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
-import {NotificationError, NotificationSuccess} from "../../store/notificationModel";
+import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 import useValidate from "../../hooks/useValidate";
