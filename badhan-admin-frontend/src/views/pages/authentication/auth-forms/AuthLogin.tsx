@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 // material-ui
 import {
     Box,
-    Button,
+    Button, CircularProgress,
     FormControl,
     FormHelperText,
     Grid,
@@ -27,6 +27,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FadeAnimationWrapper from "../../../../ui-component/motion/FadeAnimationWrapper";
 import {useDispatch} from "react-redux";
 import {UserProfileLogin} from "../../../../store/userProfileModel";
+import {wait} from "../../../../utils/dummyAPI";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -57,15 +58,16 @@ const Login = ({...others}) => {
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
-                    number: Yup.string().matches(/^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/, 'Phone number is not valid').required('Phone is required'),
+                    number: Yup.string().matches(/^\d{11}$/, 'Phone number must be number of length 11').required('Phone is required'),
                     password: Yup.string().max(255).required('Password is required')
                 })}
                 onSubmit={async (values, {setErrors, setStatus, setSubmitting}) => {
                     try {
+                        setSubmitting(true);
                         if (scriptedRef.current) {
                             setStatus({success: true});
-                            setSubmitting(true);
                         }
+                        await wait()
                         console.log(values)
                         dispatch(new UserProfileLogin('ABCDEFGHIJKL'))
                         navigate('/')
@@ -74,8 +76,9 @@ const Login = ({...others}) => {
                         if (scriptedRef.current) {
                             setStatus({success: false});
                             setErrors({submit: err.message});
-                            setSubmitting(false);
                         }
+                    } finally {
+                        setSubmitting(false);
                     }
                 }}
             >
@@ -85,7 +88,7 @@ const Login = ({...others}) => {
                             <InputLabel htmlFor="outlined-adornment-number-login">Phone number</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-number-login"
-                                type="number"
+                                type="string"
                                 value={values.number}
                                 name="number"
                                 onBlur={handleBlur}
@@ -150,6 +153,7 @@ const Login = ({...others}) => {
                                 variant="contained"
                                 color="secondary"
                             >
+                                {isSubmitting && <CircularProgress/>}
                                 Sign in
                             </Button>
                         </Box>
