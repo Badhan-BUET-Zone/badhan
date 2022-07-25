@@ -106,7 +106,7 @@ const ContributorCard = (props: {
         console.log(`inside handleDelete: `)
         props.onHandleDelete(stateContributor, props.index)
     }
-    const propmtDelete  = () => {
+    const promptDelete  = () => {
         dispatch(new ConfirmationDialogOpen('Are you sure you want to delete this contributor?', handleDelete))
     }
 
@@ -292,7 +292,7 @@ const ContributorCard = (props: {
                     </Box>}
                     <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'}
                               onClick={handleSaveChanges}/>
-                    <MyButton loading={props.deleteLoader} color={'warning'} onClick={propmtDelete}
+                    <MyButton loading={props.deleteLoader} color={'warning'} onClick={promptDelete}
                               text={'Delete this Contributor'}/>
                 </CardContent>
             </Card>

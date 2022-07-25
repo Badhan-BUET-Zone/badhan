@@ -73,10 +73,6 @@ const Login = ({...others}) => {
                         navigate('/')
                     } catch (err: any) {
                         console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({success: false});
-                            setErrors({submit: err.message});
-                        }
                     } finally {
                         setSubmitting(false);
                     }
