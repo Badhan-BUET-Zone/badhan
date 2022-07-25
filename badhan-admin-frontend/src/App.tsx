@@ -18,6 +18,7 @@ import {NotificationSnackbar} from "./layout/NotificationSnackbar";
 import ErrorBoundary from "./ErrorBoundary";
 import {useEffect} from "react";
 import {UserProfileLogin, UserProfileLogout} from "./store/userProfileModel";
+import ConfirmationDialog from "./layout/ConfirmationDialog";
 
 // ==============================|| APP ||============================== //
 
@@ -47,6 +48,7 @@ const App = () => {
                         <Routes />
                         </AnimatePresence>
                         <NotificationSnackbar/>
+                        <ConfirmationDialog/>
                     </NavigationScroll>
                 </ThemeProvider>
             </StyledEngineProvider>

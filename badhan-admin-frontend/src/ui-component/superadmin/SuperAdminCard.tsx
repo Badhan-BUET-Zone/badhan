@@ -2,6 +2,8 @@ import {Card, CardContent, Typography} from "@mui/material";
 import MyButton from "../MyButton";
 import styles from './SuperAdminCard.module.css'
 import FadeAnimationWrapper from "../motion/FadeAnimationWrapper";
+import {useDispatch} from "react-redux";
+import {ConfirmationDialogOpen} from "../../store/confirmationDialog/model";
 
 export const SuperAdminCard = (props: {
     id: string,
@@ -13,8 +15,13 @@ export const SuperAdminCard = (props: {
     deleteFlag: boolean,
     index: number
 }) => {
+    const dispatch = useDispatch()
+
     const deleteHandler = () => {
         props.onDeleteHandler(props.id, props.index)
+    }
+    const promptDelete = () => {
+        dispatch(new ConfirmationDialogOpen('Are you sure you want to delete this super admin?', deleteHandler))
     }
     return (
         <FadeAnimationWrapper>
@@ -34,7 +41,7 @@ export const SuperAdminCard = (props: {
                         <br/>
                         Blood Group: {props.bloodGroup}
                     </Typography>
-                    <MyButton text={'Delete'} color={'warning'} onClick={deleteHandler} loading={props.deleteFlag}/>
+                    <MyButton text={'Delete'} color={'warning'} onClick={promptDelete} loading={props.deleteFlag}/>
                 </CardContent>
             </Card>
         </FadeAnimationWrapper>

@@ -38,6 +38,7 @@ import {useNavigate} from "react-router-dom";
 
 import styleClasses from './index.module.css'
 import {UserProfileLogout} from "../../../../store/userProfileModel";
+import {ConfirmationDialogOpen} from "../../../../store/confirmationDialog/model";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -54,10 +55,15 @@ const ProfileSection = () => {
      * */
     const anchorRef = useRef(null);
 
-    const handleLogout = async () => {
+    const logoutConfirmed = () => {
         dispatch(new UserProfileLogout());
         setTimeout(()=>{console.log('Logged out')},1000)
         navigate('/pages/login')
+    }
+
+    const handleLogout = async () => {
+        dispatch(new ConfirmationDialogOpen('Do you want to log out?',logoutConfirmed))
+        // logoutConfirmed()
     };
 
     /* @ts-ignore */

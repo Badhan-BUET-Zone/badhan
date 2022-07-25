@@ -11,6 +11,8 @@ import {
 } from "./contributorModel";
 import styles from './ContributorCard.module.css'
 import FadeAnimationWrapper from "../motion/FadeAnimationWrapper";
+import {useDispatch} from "react-redux";
+import {ConfirmationDialogOpen} from "../../store/confirmationDialog/model";
 
 const initialState: ContributorModel = new ContributorModel(
     'dummy',
@@ -49,6 +51,7 @@ const ContributorCard = (props: {
     const [stateContributor, dispatchContributor] = useReducer(contributorLoadReducer, initialState)
     const [newLink, setNewLink] = useState<ContributorLinkModel>(new ContributorLinkModel('', '', ''))
     const [validationError, setValidationError] = useState<boolean>(false)
+    const dispatch = useDispatch()
 
     // HANDLERS
     const handleContributorTypeSelectionChange = (event: SelectChangeEvent) => {
@@ -102,6 +105,9 @@ const ContributorCard = (props: {
     const handleDelete = () => {
         console.log(`inside handleDelete: `)
         props.onHandleDelete(stateContributor, props.index)
+    }
+    const propmtDelete  = () => {
+        dispatch(new ConfirmationDialogOpen('Are you sure you want to delete this contributor?', handleDelete))
     }
 
     useEffect(() => {
@@ -286,7 +292,7 @@ const ContributorCard = (props: {
                     </Box>}
                     <MyButton loading={props.saveChangesLoader} text={'Save Changes of Contributor'} color={'primary'}
                               onClick={handleSaveChanges}/>
-                    <MyButton loading={props.deleteLoader} color={'warning'} onClick={handleDelete}
+                    <MyButton loading={props.deleteLoader} color={'warning'} onClick={propmtDelete}
                               text={'Delete this Contributor'}/>
                 </CardContent>
             </Card>

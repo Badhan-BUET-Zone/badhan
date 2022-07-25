@@ -3,6 +3,8 @@ import MyButton from "../MyButton";
 import React from "react";
 import styles from './BackupCard.module.css'
 import FadeAnimationWrapper from "../motion/FadeAnimationWrapper";
+import {useDispatch} from "react-redux";
+import {ConfirmationDialogOpen} from "../../store/confirmationDialog/model";
 
 export const BackupCard = (props: {
     index: number,
@@ -14,8 +16,13 @@ export const BackupCard = (props: {
     restoreToTestLoader: boolean,
     restoreToProductionLoader: boolean,
 }) => {
+    const dispatch = useDispatch()
+
     const handleDelete = () => {
         props.onDelete(props.timestamp, props.index)
+    }
+    const promptConfirmation = () => {
+        dispatch(new ConfirmationDialogOpen('Delete this backup?', handleDelete))
     }
     const handleRestoreToTest = () => {
         props.onRestoreToTest(props.timestamp, props.index)
@@ -33,7 +40,7 @@ export const BackupCard = (props: {
                               onClick={handleRestoreToTest}/>
                     <MyButton loading={props.restoreToProductionLoader} text={'Restore to Production'} color={'warning'}
                               onClick={handleRestoreToProduction}/>
-                    <MyButton loading={props.deleteLoader} text={'Delete'} color={'warning'} onClick={handleDelete}/>
+                    <MyButton loading={props.deleteLoader} text={'Delete'} color={'warning'} onClick={promptConfirmation}/>
                 </CardContent>
             </Card>
         </FadeAnimationWrapper>
