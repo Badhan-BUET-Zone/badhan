@@ -56,3 +56,19 @@ export const handleGETUsersMe = async () => {
         return e.response
     }
 }
+
+export const handlePOSTUsersRedirection = async () => {
+    try{
+        return await badhanAxios.post('/users/redirection')
+    }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handlePATCHUsersRedirection = async (payload: {token: string}) => {
+    try{
+        return await badhanAxios.patch('/users/redirection',{token: payload.token})
+    }catch (e:any) {
+        return e.response
+    }
+}
