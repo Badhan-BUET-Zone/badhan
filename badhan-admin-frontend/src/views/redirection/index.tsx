@@ -31,7 +31,7 @@ const Login = () => {
             await handleDELETEUsersSignOut()
         }
         const redirectionResponse = await handlePATCHUsersRedirection({token: searchParams.get("token")!})
-        if (redirectionResponse.status !== 'OK') {
+        if (redirectionResponse.status !== 201) {
             console.log('unsuccessful login')
             navigate('/pages/login')
             return
