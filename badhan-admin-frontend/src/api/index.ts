@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {USERS_SIGNIN, USERS_SIGNOUT} from "./model";
+import {USERS_ME, USERS_SIGNIN, USERS_SIGNOUT} from "./model";
 import {store} from "../store";
 
 export const badhanAxios = axios.create({baseURL: 'https://badhan-buet.uc.r.appspot.com/'})
@@ -33,7 +33,7 @@ badhanAxios.interceptors.response.use((response) => {
     return Promise.reject(error)
 })
 
-export const handleUsersSignIn = async (payload: {phone: string, password: string}) => {
+export const handlePOSTUsersSignIn = async (payload: {phone: string, password: string}) => {
     try{
         return await badhanAxios.post(USERS_SIGNIN,{phone: payload.phone, password: payload.password},{})
     }catch (e:any) {
@@ -41,10 +41,18 @@ export const handleUsersSignIn = async (payload: {phone: string, password: strin
     }
 }
 
-export const handleUsersSignOut = async () => {
+export const handleDELETEUsersSignOut = async () => {
     try {
-        return await badhanAxios.delete(USERS_SIGNOUT,{})
+        return await badhanAxios.delete(USERS_SIGNOUT)
     }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handleGETUsersMe = async () => {
+    try {
+        return await badhanAxios.get(USERS_ME)
+    }catch (e: any) {
         return e.response
     }
 }

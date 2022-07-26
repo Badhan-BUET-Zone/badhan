@@ -19,14 +19,13 @@ import * as Yup from 'yup';
 import {Formik} from 'formik';
 
 // project imports
-
+import {handlePOSTUsersSignIn} from '../../../../api'
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FadeAnimationWrapper from "../../../../ui-component/motion/FadeAnimationWrapper";
 import {useDispatch} from "react-redux";
 import {UserProfileLogin} from "../../../../store/userProfile/userProfileModel";
-import {badhanAxios} from "../../../../api";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -51,8 +50,8 @@ const Login = ({...others}) => {
 
             <Formik
                 initialValues={{
-                    number: '01521438557',
-                    password: '123456',
+                    number: '',
+                    password: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
@@ -62,7 +61,7 @@ const Login = ({...others}) => {
                 onSubmit={async (values, {setErrors, setStatus, setSubmitting}) => {
                     setSubmitting(true);
                     try {
-                        let response = await badhanAxios.post('/users/signin',{phone: '88'+values.number, password: values.password})
+                        let response = await handlePOSTUsersSignIn({phone: '88'+values.number, password: values.password})
                         dispatch(new UserProfileLogin(response.data.token))
                         navigate('/')
                     } catch (err: any) {

@@ -39,7 +39,7 @@ import {useNavigate} from "react-router-dom";
 import styleClasses from './index.module.css'
 import {UserProfileLogout} from "../../../../store/userProfile/userProfileModel";
 import {ConfirmationDialogOpen} from "../../../../store/confirmationDialog/model";
-import {badhanAxios} from "../../../../api";
+import { handleDELETEUsersSignOut} from "../../../../api";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -58,7 +58,7 @@ const ProfileSection = () => {
 
     const logoutConfirmed = async () => {
         try{
-            await badhanAxios.delete('/users/signout')
+            await handleDELETEUsersSignOut()
         }catch (e) {
 
         }finally {

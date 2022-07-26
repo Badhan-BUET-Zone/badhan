@@ -20,7 +20,7 @@ import {useEffect, useState} from "react";
 import {UserProfileLogin, UserProfileLogout} from "./store/userProfile/userProfileModel";
 import ConfirmationDialog from "./layout/ConfirmationDialog";
 import WholePageLoader from "./layout/WholePageLoader";
-import {badhanAxios} from "./api";
+import {badhanAxios, handleGETUsersMe} from "./api";
 
 // ==============================|| APP ||============================== //
 
@@ -40,7 +40,7 @@ const App = () => {
             return
         }
         try{
-            await badhanAxios.get('/users/me',{headers: {'x-auth':token}})
+            await handleGETUsersMe()
             dispatch(new UserProfileLogin(token))
         }catch(e: any){
             dispatch(new UserProfileLogout())
