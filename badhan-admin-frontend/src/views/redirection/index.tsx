@@ -25,19 +25,15 @@ const Login = () => {
     const dispatch = useDispatch()
 
     const authenticateRedirectedUser = async () => {
-        console.log(`token: ${searchParams.get("token")}`)
         if (userProfile.token) {
-            console.log('previous token detected')
             await handleDELETEUsersSignOut()
         }
         const redirectionResponse = await handlePATCHUsersRedirection({token: searchParams.get("token")!})
         if (redirectionResponse.status !== 201) {
-            console.log('unsuccessful login')
             navigate('/pages/login')
             return
         }
 
-        console.log('successful login')
         dispatch(new UserProfileLogin(redirectionResponse.data.token))
         navigate('/')
     }
