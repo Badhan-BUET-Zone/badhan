@@ -2,7 +2,7 @@ import {Box, Button, Card, CardContent, Chip, MenuItem, SelectChangeEvent, Typog
 import MyTextField from "../MyTextField";
 import Select from "@mui/material/Select";
 import MyButton from "../MyButton";
-import React, {useEffect, useReducer, useState} from "react";
+import React, {ChangeEvent, useEffect, useReducer, useState} from "react";
 import {
     CONTRIBUTOR_ACTIVE_DEVELOPERS,
     CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN, CONTRIBUTOR_LEGACY_DEVELOPERS,
@@ -36,10 +36,11 @@ function contributorLoadReducer(state: ContributorModel, action: { type: string,
     }
 }
 
+
 const ContributorCard = (props: {
     index: number,
     contributor: ContributorModel,
-    onHandleSaveChanges: (contributor: ContributorModel, index: number) => void,
+    onHandleSaveChanges: (contributor: ContributorModel, newImageFile: File | null, index: number) => void,
     onHandleDelete: (contributor: ContributorModel, index: number) => void,
     deleteLoader: boolean,
     saveChangesLoader: boolean
@@ -52,6 +53,9 @@ const ContributorCard = (props: {
     const [newLink, setNewLink] = useState<ContributorLinkModel>(new ContributorLinkModel('', '', ''))
     const [validationError, setValidationError] = useState<boolean>(false)
     const dispatch = useDispatch()
+
+    const [newImageLocalURL, setNewImageLocalURL] = useState<string|null>(null)
+    const [newImageFile, setNewImageFile] = useState<File|null>(null)
 
     // HANDLERS
     const handleContributorTypeSelectionChange = (event: SelectChangeEvent) => {
@@ -100,7 +104,7 @@ const ContributorCard = (props: {
             setValidationError((prevState => true))
             return
         }
-        props.onHandleSaveChanges(stateContributor, props.index)
+        props.onHandleSaveChanges(stateContributor, newImageFile, props.index)
     }
     const handleDelete = () => {
         console.log(`inside handleDelete: `)
@@ -108,6 +112,14 @@ const ContributorCard = (props: {
     }
     const promptDelete  = () => {
         dispatch(new ConfirmationDialogOpen('Are you sure you want to delete this contributor?', handleDelete))
+    }
+    const fileSelectHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if(!event.target.files)return
+        const file = event.target.files[0];
+        console.log("file")
+        console.log(file)
+        setNewImageFile((prevState => file))
+        setNewImageLocalURL(prevState => URL.createObjectURL(file))
     }
 
     useEffect(() => {
@@ -163,11 +175,11 @@ const ContributorCard = (props: {
                             component="img"
                             className={styles.contributorCardImageBox}
                             alt="The house from the offer."
-                            src={stateContributor.imageURL}
+                            src={newImageLocalURL || stateContributor.imageURL}
                         />
                         <input
                             type="file"
-                            hidden
+                            hidden onChange={fileSelectHandler}
                         />
                         <div style={{
                             position: 'absolute',

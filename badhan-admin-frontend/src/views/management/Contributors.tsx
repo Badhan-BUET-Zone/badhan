@@ -116,9 +116,10 @@ const Contributors = () => {
             resetDeleteFlags()
         }
     }
-    const handleSaveChanges = async (contributor: ContributorModel, index: number) => {
+    const handleSaveChanges = async (contributor: ContributorModel, newImageFile: Blob | null, index: number) => {
         console.log(`inside Contributors.tsx handleSaveChanges`);
         console.log(contributor)
+        console.log(newImageFile)
         setContributorSaveChangesFlagArray(prevState => setFlagForSpecificIndex(prevState, index))
         try {
             await wait()

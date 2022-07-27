@@ -1,8 +1,8 @@
 import {useDispatch, useSelector} from 'react-redux';
 
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, StyledEngineProvider } from '@mui/material';
-import { AnimatePresence } from "framer-motion"
+import {ThemeProvider} from '@mui/material/styles';
+import {CssBaseline, StyledEngineProvider} from '@mui/material';
+import {AnimatePresence} from "framer-motion"
 
 import {CustomizationModel} from "./store/customization/customizationModel";
 
@@ -20,12 +20,12 @@ import {useEffect, useState} from "react";
 import {UserProfileLogin, UserProfileLogout} from "./store/userProfile/userProfileModel";
 import ConfirmationDialog from "./layout/ConfirmationDialog";
 import WholePageLoader from "./layout/WholePageLoader";
-import {badhanAxios, handleGETUsersMe} from "./api";
+import {handleGETUsersMe} from "./api";
 
 // ==============================|| APP ||============================== //
 
 const App = () => {
-    const customization = useSelector((state: { customization: CustomizationModel}) => {
+    const customization = useSelector((state: { customization: CustomizationModel }) => {
         return state.customization
     });
     const [autoLoginLoader, setAutoLoginLoader] = useState<boolean>(true)
@@ -34,31 +34,34 @@ const App = () => {
 
     const autoLogin = async () => {
         const token = localStorage.getItem('token')
-        if(!token){
+        if (!token) {
             dispatch(new UserProfileLogout())
             setAutoLoginLoader((prevState => false))
             return
         }
-        try{
-            await handleGETUsersMe()
-            dispatch(new UserProfileLogin(token))
-        }catch(e: any){
+
+        dispatch(new UserProfileLogin(token))
+        const response = await handleGETUsersMe()
+        setAutoLoginLoader((prevState => false))
+
+        if (response.status !== 200) {
             dispatch(new UserProfileLogout())
-        }finally{
-            setAutoLoginLoader((prevState => false))
+            return
         }
+
     }
 
-    useEffect(()=>{
-        autoLogin().then(r => {})
+    useEffect(() => {
+        autoLogin().then(r => {
+        })
         // eslint-disable-next-line
-    },[])
+    }, [])
 
     return (
         <ErrorBoundary>
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={themes(customization)}>
-                    <CssBaseline />
+                    <CssBaseline/>
                     {autoLoginLoader && <WholePageLoader/>}
                     {!autoLoginLoader && <NavigationScroll>
                         <AnimatePresence exitBeforeEnter>

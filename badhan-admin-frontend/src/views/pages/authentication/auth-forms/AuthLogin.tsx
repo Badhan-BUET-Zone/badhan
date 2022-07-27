@@ -26,6 +26,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FadeAnimationWrapper from "../../../../ui-component/motion/FadeAnimationWrapper";
 import {useDispatch} from "react-redux";
 import {UserProfileLogin} from "../../../../store/userProfile/userProfileModel";
+import {NotificationError} from "../../../../store/notification/notificationModel";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -60,15 +61,14 @@ const Login = ({...others}) => {
                 })}
                 onSubmit={async (values, {setErrors, setStatus, setSubmitting}) => {
                     setSubmitting(true);
-                    try {
-                        let response = await handlePOSTUsersSignIn({phone: '88'+values.number, password: values.password})
-                        dispatch(new UserProfileLogin(response.data.token))
-                        navigate('/')
-                    } catch (err: any) {
-                        console.log(err)
-                    } finally {
-                        setSubmitting(false);
+                    let response = await handlePOSTUsersSignIn({phone: '88'+values.number, password: values.password})
+                    setSubmitting(false);
+                    if(response.status!==201){
+                        dispatch(new NotificationError('Phone/password incorrect'))
+                        return
                     }
+                    dispatch(new UserProfileLogin(response.data.token))
+                    navigate('/')
                 }}
             >
                 {({errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values}) => (

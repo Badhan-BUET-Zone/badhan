@@ -57,14 +57,9 @@ const ProfileSection = () => {
     const anchorRef = useRef(null);
 
     const logoutConfirmed = async () => {
-        try{
-            await handleDELETEUsersSignOut()
-        }catch (e) {
-
-        }finally {
-            dispatch(new UserProfileLogout());
-            navigate('/pages/login')
-        }
+        await handleDELETEUsersSignOut()
+        dispatch(new UserProfileLogout());
+        navigate('/pages/login')
     }
 
     const handleLogout = async () => {
