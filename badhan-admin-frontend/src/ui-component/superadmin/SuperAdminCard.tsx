@@ -10,7 +10,6 @@ export const SuperAdminCard = (props: {
     name: string,
     phone: string,
     hall: string,
-    bloodGroup: string,
     onDeleteHandler: (id: string, index: number) => void,
     deleteFlag: boolean,
     index: number
@@ -38,8 +37,6 @@ export const SuperAdminCard = (props: {
                     </Typography>
                     <Typography variant="body2">
                         {props.hall} Hall
-                        <br/>
-                        Blood Group: {props.bloodGroup}
                     </Typography>
                     <MyButton text={'Delete'} color={'warning'} onClick={promptDelete} loading={props.deleteFlag}/>
                 </CardContent>

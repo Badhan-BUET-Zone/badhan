@@ -15,16 +15,17 @@ import styleClasses from './Version.module.css'
 import useValidate from "../../hooks/useValidate";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {Fragment} from "react";
+import {handleGETLogVersion} from "../../api";
 
-const validateNumber = (arg:any): boolean |string => {
-    return (isNaN(arg) || !Number.isInteger(Number(arg)) || Number(arg) <0 || Number(arg)>100)?'Input must be an integer between 1 and 99':false
+const validateNumber = (arg: any): boolean | string => {
+    return (isNaN(arg) || !Number.isInteger(Number(arg)) || Number(arg) < 0 || Number(arg) > 100) ? 'Input must be an integer between 1 and 99' : false
 }
 
 const Version: React.FC = () => {
     // STATE MANAGEMENT
-    const majorVersion = useValidate<string>('',validateNumber)
-    const minorVersion = useValidate<string>('',validateNumber)
-    const patchVersion = useValidate<string>('',validateNumber)
+    const majorVersion = useValidate<string>('', validateNumber)
+    const minorVersion = useValidate<string>('', validateNumber)
+    const patchVersion = useValidate<string>('', validateNumber)
 
     const [versionSubmitFlag, setVersionSubmitFlag] = useState<boolean>(false)
     const [versionLoadingFlag, setVersionLoadingFlag] = useState<boolean>(true)
@@ -61,40 +62,41 @@ const Version: React.FC = () => {
         patchVersion.setValue(text)
     }
 
-    useEffect(  () => {
-        const fetchData = async()=>{
-            setVersionLoadingFlag(prevState => true)
-            try{
-                await wait();
-                majorVersion.setValue('9')
-                minorVersion.setValue('5')
-                patchVersion.setValue('2')
-            }catch (e) {
-                dispatch(new NotificationError('Could not load app version'))
-                setVersionLoadingErrorFlag(prevState => true)
-            }finally {
+    useEffect(() => {
+            const fetchData = async () => {
+                setVersionLoadingFlag(prevState => true)
+                const response = await handleGETLogVersion()
                 setVersionLoadingFlag(prevState => false)
+                if (response.status !== 200) {
+                    dispatch(new NotificationError('Could not load app version'))
+                    setVersionLoadingErrorFlag(prevState => true)
+                    return
+                }
+                const [fetchedMajorVersion, fetchedMinorVersion, fetchedPatchVersion] = response.data.firebaseVersion.split('.')
+                majorVersion.setValue(fetchedMajorVersion)
+                minorVersion.setValue(fetchedMinorVersion)
+                patchVersion.setValue(fetchedPatchVersion)
             }
-        }
-        fetchData()
-    },
+            fetchData()
+        },
         // eslint-disable-next-line
-        [dispatch]);
+        [dispatch]
+    );
 
 
-    const onSubmitVersion = async () =>{
+    const onSubmitVersion = async () => {
         touchAllValidation()
-        if(formHasError())return
+        if (formHasError()) return
 
         const versionSubmissionData = `${majorVersion.value}.${minorVersion}.${patchVersion}`
         setVersionSubmitFlag(prevState => true)
-        try{
+        try {
             await wait();
             dispatch(new NotificationSuccess('Updated version successfully'));
             console.log(versionSubmissionData)
-        }catch (e) {
+        } catch (e) {
             dispatch(new NotificationError('Version updated unsuccessful'));
-        }finally {
+        } finally {
             setVersionSubmitFlag(prevState => false)
         }
     }
@@ -143,22 +145,21 @@ const Version: React.FC = () => {
 
     let versionPageContent: JSX.Element
 
-    if(versionLoadingFlag){
+    if (versionLoadingFlag) {
         versionPageContent = versionPageLoader
-    }
-    else if(versionLoadingErrorFlag){
+    } else if (versionLoadingErrorFlag) {
         versionPageContent = versionErrorComponent
-    }else{
+    } else {
         versionPageContent = versionPageComponent
     }
 
     // MAIN RENDERING
     return (
         <Fragment>
-        <UnderConstructionNotice/>
-        <MyMainCard title="Set the App Version Deployed on Google Play">
-            {versionPageContent}
-        </MyMainCard>
+            <UnderConstructionNotice/>
+            <MyMainCard title="Set the App Version Deployed on Google Play">
+                {versionPageContent}
+            </MyMainCard>
         </Fragment>
     )
 };

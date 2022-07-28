@@ -2,10 +2,12 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import MyMainCard from "../../ui-component/cards/MyMainCard";
 import ContributorCard from "../../ui-component/contributors/ContributorCard";
-import {ContributorLinkModel, ContributorModel} from "../../ui-component/contributors/contributorModel";
 import {
     CONTRIBUTOR_ACTIVE_DEVELOPERS,
-    CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN
+    CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
+    CONTRIBUTOR_LEGACY_DEVELOPERS,
+    ContributorLinkModel,
+    ContributorModel
 } from "../../ui-component/contributors/contributorModel";
 import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
@@ -13,48 +15,7 @@ import {NotificationError, NotificationSuccess} from "../../store/notification/n
 import MySkeleton from "../../ui-component/MySkeleton";
 import {Card, CardContent, Grid} from "@mui/material";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
-
-const dummyData: ContributorModel[] = [
-    new ContributorModel(
-        '123',
-        'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fmahathir.jpg?alt=media',
-        'Mir Mahathir Mohammad',
-        'Jan 2020- Present',
-        CONTRIBUTOR_ACTIVE_DEVELOPERS,
-        [
-            new ContributorLinkModel('www.facebook.com', 'facebook', 'blue'),
-            new ContributorLinkModel('www.google.com', 'gmail', 'red')
-        ],
-        ['UX developer', 'Hybrid app Developer']
-    ),
-    new ContributorModel(
-        '123456',
-        'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
-        'Basak',
-        'Jan 2022- Present',
-        CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
-        [new ContributorLinkModel('www.facebook.com', 'gmail', 'red')],
-        ['Backend Engineer']
-    ),
-    new ContributorModel(
-        '123784658467676',
-        'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
-        'Basak',
-        'Jan 2022- Present',
-        CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
-        [new ContributorLinkModel('www.facebook.com', 'gmail', 'red')],
-        ['Backend Engineer']
-    ),
-    new ContributorModel(
-        '12378465846gfdgfhfh7676',
-        'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fsanjubasak.jpg?alt=media',
-        'Basak',
-        'Jan 2022- Present',
-        CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,
-        [new ContributorLinkModel('www.facebook.com', 'gmail', 'red')],
-        ['Backend Engineer']
-    )
-]
+import {handleGETCredits} from "../../api";
 
 const Contributors = () => {
     //STATE MANAGEMENT
@@ -69,27 +30,50 @@ const Contributors = () => {
     useEffect(() => {
         const loadAllContributors = async () => {
             setContributorsLoader(prevState => true)
-            try {
-                await wait()
-                setContributorList(prevState => dummyData)
-                setContributorDeleteFlagArray(prevState => Array(dummyData.length).fill(false))
-                setContributorSaveChangesFlagArray(prevState => Array(dummyData.length).fill(false))
-                dispatch(new NotificationSuccess('Successfully loaded contributors'))
-            } catch (e) {
+            let response = await handleGETCredits()
+            setContributorsLoader(prevState => false)
+            if (response.status !== 200) {
                 setContributorsError(prevState => true)
                 dispatch(new NotificationError('Failed to load contributors'))
-            } finally {
-                setContributorsLoader(prevState => false)
+                return
             }
+
+            const contributorArray = [...response.data[CONTRIBUTOR_ACTIVE_DEVELOPERS].map((contributor: {
+                name: string,
+                calender: string,
+                image: string,
+                contributions: string[],
+                links: [{color: string, icon: string, link: string}]
+            })=>new ContributorModel(contributor.name, contributor.image, contributor.name, contributor.calender, CONTRIBUTOR_ACTIVE_DEVELOPERS, contributor.links.map((link:{color: string, link: string, icon: string})=>new ContributorLinkModel(link.link,link.icon,link.color)),contributor.contributions)),
+                ...response.data[CONTRIBUTOR_LEGACY_DEVELOPERS].map((contributor: {
+                    name: string,
+                    calender: string,
+                    image: string,
+                    contributions: string[],
+                    links: [{color: string, icon: string, link: string}]
+                })=>new ContributorModel(contributor.name, contributor.image, contributor.name, contributor.calender, CONTRIBUTOR_LEGACY_DEVELOPERS, contributor.links.map((link:{color: string, link: string, icon: string})=>new ContributorLinkModel(link.link,link.icon,link.color)),contributor.contributions)),
+                ...response.data[CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN].map((contributor: {
+                    name: string,
+                    calender: string,
+                    image: string,
+                    contributions: string[],
+                    links: [{color: string, icon: string, link: string}]
+                })=>new ContributorModel(contributor.name, contributor.image, contributor.name, contributor.calender, CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,contributor.links.map((link:{color: string, link: string, icon: string})=>new ContributorLinkModel(link.link,link.icon,link.color)),contributor.contributions)),
+            ]
+
+            setContributorList(prevState => contributorArray)
+            setContributorDeleteFlagArray(prevState => Array(contributorArray.length).fill(false))
+            setContributorSaveChangesFlagArray(prevState => Array(contributorArray.length).fill(false))
+            dispatch(new NotificationSuccess('Successfully loaded contributors'))
         }
         loadAllContributors()
     }, [dispatch])
 
     const resetDeleteFlags = () => {
-        setContributorDeleteFlagArray(prevState => Array(dummyData.length).fill(false))
+        setContributorDeleteFlagArray(prevState => Array(contributorList.length).fill(false))
     }
     const resetSaveChangesFlags = () => {
-        setContributorSaveChangesFlagArray(prevState => Array(dummyData.length).fill(false))
+        setContributorSaveChangesFlagArray(prevState => Array(contributorList.length).fill(false))
     }
 
     const setFlagForSpecificIndex = (prevState: boolean[], index: number) => {
@@ -106,7 +90,7 @@ const Contributors = () => {
             await wait()
             setContributorList(prevState => {
                 let newState = [...prevState]
-                newState = newState.filter((contributor:ContributorModel)=>contributor.id!==deletedContributor.id)
+                newState = newState.filter((contributor: ContributorModel) => contributor.id !== deletedContributor.id)
                 return newState
             })
             dispatch(new NotificationSuccess('Successfully deleted contributor'))
@@ -133,7 +117,8 @@ const Contributors = () => {
 
     // CONDITIONAL RENDERING
 
-    const contributorLoaderComponent = <MySkeleton loading={true}><Card><CardContent>Loading...</CardContent></Card></MySkeleton>
+    const contributorLoaderComponent = <MySkeleton
+        loading={true}><Card><CardContent>Loading...</CardContent></Card></MySkeleton>
 
     const contributorErrorComponent = <p>Error in loading contributors</p>
 
