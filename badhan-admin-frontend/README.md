@@ -1,43 +1,47 @@
-# Badhan Admin Frontend
+# Overview
+Badhan Admin Console Website is an extension of the main Badhan, BUET Zone Android app that manages operations accessible by the Super Admins of this platform. This website consists of two repositories: 
+1) Frontend (https://github.com/Badhan-BUET-Zone/badhan-admin-frontend)
+2) Backend (https://github.com/Badhan-BUET-Zone/badhan-admin-api)
 
-Badhan Admin Frontend is a management frontend for the administrators of Badhan, BUET Zone.
+This website can be visited by any one of the following links:
+* Direct Login (https://badhan-admin.web.app/)
+* Secure Redirection from app (https://badhan-buet.web.app/#/adminconsole)
 
-## Deployment
-https://badhan-admin.web.app/
+# Features
+## Version
+![image](./doc/version.PNG)
+https://badhan-admin.web.app/management/version
 
-## Available Scripts
+- To send notification to the general user of the app if a new version of the app is available in Google Play Store
 
-In the project directory, you can run:
+## Contributors
+![image](./doc/contributors.PNG)
+https://badhan-admin.web.app/management/contributors
 
-### `npm start`
+- To manage the list of contributors shown in the Credits page of the app
+## Super Admins
+![image](./doc/superadmins.PNG)
+https://badhan-admin.web.app/management/superadmin
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- To add or remove super admins of the platform
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Backup and Restore
+![image](./doc/backup.PNG)
+https://badhan-admin.web.app/backup-restore
 
-### `npm test`
+- To backup and restore the MongoDB database of the whole platform
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#Setup Backup and Restore
+The Backup-and-Restore page is a UI for the API implemented in [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). 
+However, this API has not been deployed to a live server and this, you will need to 
+follow through the instructions written below in order to run the API locally in your
+machine.
+1) Install Node.js on your machine
+2) Clone [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). To do this, run `git clone https://github.com/Badhan-BUET-Zone/badhan-backup`
+3) Enter into the directory and install all dependencies. Run `cd badhan-backup` and `npm i`
+4) Download the contents of [this link](https://drive.google.com/drive/folders/13SFt1fY0XPAe9p1xkWN2gCLQzvbHx0y7?usp=sharing) and put these files inside the `bin` folder of the cloned repo.
+5) Get `badhan-buet-1d20b088a755.json` and `config.env` files from me (mirmahathir1@gmail.com). Paste them inside the `config` folder of the cloned repository.
+6) Run `npm start`
+7) Go to https://badhan-admin.web.app/backup-restore
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+You should now see the Backup-and-Restore page
