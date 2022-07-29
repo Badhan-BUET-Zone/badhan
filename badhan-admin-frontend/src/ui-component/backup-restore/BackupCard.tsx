@@ -24,6 +24,10 @@ export const BackupCard = (props: {
     const promptConfirmation = () => {
         dispatch(new ConfirmationDialogOpen('Delete this backup?', handleDelete))
     }
+
+    const promptConfirmationToRestoreToProduction = () => {
+        dispatch(new ConfirmationDialogOpen('WARNING: Are you sure you want to restore this backup to production?',handleRestoreToProduction))
+    }
     const handleRestoreToTest = () => {
         props.onRestoreToTest(props.timestamp, props.index)
     }
@@ -39,7 +43,7 @@ export const BackupCard = (props: {
                     <MyButton loading={props.restoreToTestLoader} text={'Restore to Test'} color={'primary'}
                               onClick={handleRestoreToTest}/>
                     <MyButton loading={props.restoreToProductionLoader} text={'Restore to Production'} color={'warning'}
-                              onClick={handleRestoreToProduction}/>
+                              onClick={promptConfirmationToRestoreToProduction}/>
                     <MyButton loading={props.deleteLoader} text={'Delete'} color={'warning'} onClick={promptConfirmation}/>
                 </CardContent>
             </Card>
