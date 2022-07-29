@@ -35,7 +35,7 @@ https://badhan-admin.web.app/backup-restore
 
 # Setup Backup and Restore
 The Backup-and-Restore page is a UI for the API implemented in [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). 
-However, this API has not been deployed to a live server and this, you will need to 
+However, this API has not been deployed to a live server and thus, you will need to 
 follow through the instructions written below in order to run the API locally in your
 machine.
 1) Install Node.js on your machine
