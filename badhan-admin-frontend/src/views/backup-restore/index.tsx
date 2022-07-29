@@ -153,7 +153,7 @@ const BackupRestore = () => {
     </MySkeleton>
 
     const backupLoadErrorComponent = <p>Error in loading backups. Make sure that the backup and restore server is active
-        in localhost and reload this page. Please visit https://github.com/Badhan-BUET-Zone/badhan-backup on setting up
+        in localhost and reload this page. Please visit <a href={'https://github.com/Badhan-BUET-Zone/badhan-admin-frontend'}>this link</a> on setting up
         the backup api server on localhost</p>
 
     const backupListComponent =
