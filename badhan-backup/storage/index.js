@@ -4,7 +4,7 @@ const fs = require("fs");
 const json_file_key = 'badhan-buet-1d20b088a755.json'
 
 if (!fs.existsSync(`./config/${json_file_key}`)) {
-  console.log(`LOG: config/${json_file_key} does not exist`);
+  console.log(`LOG: config/${json_file_key} does not exist. Please read the instructions from https://github.com/Badhan-BUET-Zone/badhan-backup`);
   process.exit(1)
 }
 

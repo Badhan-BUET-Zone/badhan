@@ -9,7 +9,7 @@ const config = {
 
 Object.keys(config).forEach((key) => {
   if (config[key] === undefined) {
-    console.log('LOG: ', key, 'is not defined in config. Program will exit')
+    console.log('LOG: ', key, 'is not defined in config. Program will exit. Please read the instructions from https://github.com/Badhan-BUET-Zone/badhan-backup')
     process.exit(1)
   }
 })

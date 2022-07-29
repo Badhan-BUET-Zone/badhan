@@ -1,5 +1,6 @@
 const express = require('express')
 require('./dotenv')
+require('./mongotools')
 const { handleJsonBodyParseFailures } = require('./response/bodyParser')
 const { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } = require('./response/errorHandlers')
 
@@ -34,5 +35,5 @@ process.on('unhandledRejection', unhandledRejectionHandler)
 process.on('uncaughtException', uncaughtExceptionHandler)
 
 app.listen(4000, () => {
-    console.log(`Example app listening on port ${4000}`)
+    console.log(`Backup api is listening on port ${4000}. Please visit https://badhan-admin.web.app/backup-restore`)
 })
