@@ -31,7 +31,7 @@ https://badhan-admin.web.app/backup-restore
 
 - To backup and restore the MongoDB database of the whole platform
 
-#Setup Backup and Restore
+# Setup Backup and Restore
 The Backup-and-Restore page is a UI for the API implemented in [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). 
 However, this API has not been deployed to a live server and this, you will need to 
 follow through the instructions written below in order to run the API locally in your
@@ -41,7 +41,7 @@ machine.
 3) Enter into the directory and install all dependencies. Run `cd badhan-backup` and `npm i`
 4) Download the contents of [this link](https://drive.google.com/drive/folders/13SFt1fY0XPAe9p1xkWN2gCLQzvbHx0y7?usp=sharing) and put these files inside the `bin` folder of the cloned repo.
 5) Get `badhan-buet-1d20b088a755.json` and `config.env` files from me (mirmahathir1@gmail.com). Paste them inside the `config` folder of the cloned repository.
-6) Run `npm start`
+6) Run `npm start` inside the repo.
 7) Go to https://badhan-admin.web.app/backup-restore
 
 You should now see the Backup-and-Restore page
