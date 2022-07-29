@@ -6,18 +6,20 @@ import React, {useEffect, useState} from 'react'
 import {BackupCard} from "../../ui-component/backup-restore/BackupCard";
 import {Grid, Typography} from "@mui/material";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
-import {wait} from "../../utils/dummyAPI";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import styles from './index.module.css'
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
-
-// ==============================|| SAMPLE PAGE ||============================== //
-
-const dummyBackups: number[] = [1650383925655, 1650383935655, 1650481935655, 1657383925655, 1680383935655, 1650441935655]
-// const dummyBackups: number[] = []
+import {
+    handleDELETEBackup,
+    handleDELETEBackupOld,
+    handleGETBackup,
+    handlePOSTBackup,
+    handlePOSTRestore,
+    handlePOSTRestoreToProduction
+} from "../../api";
 
 const BackupRestore = () => {
     const [backupTimestamps, setBackupTimestamps] = useState<number[]>([])
@@ -51,100 +53,98 @@ const BackupRestore = () => {
 
     useEffect(() => {
         const loadBackups = async () => {
-            try {
-                setBackupTimestampsLoaderFlag(prevState => true)
-                await wait();
-                setBackupTimestamps(prevState => dummyBackups)
-                setDeleteLoaderFlagsArray(prevState => Array(dummyBackups.length).fill(false))
-                setRestoreToProductionFlagsArray(prevState => Array(dummyBackups.length).fill(false))
-                setRestoreToTestFlagsArray(prevState => Array(dummyBackups.length).fill(false))
-                dispatch(new NotificationSuccess('Successfully loaded backups'))
-            } catch (e) {
+
+            setBackupTimestampsLoaderFlag(prevState => true)
+            const response = await handleGETBackup()
+            setBackupTimestampsLoaderFlag(prevState => false)
+            if (response.status !== 200) {
                 setBackupTimestampsErrorFlag(prevState => true)
                 dispatch(new NotificationError('Error in loading backups'))
-            } finally {
-                setBackupTimestampsLoaderFlag(prevState => false)
+                return
             }
+            const listOfBackups = response.data.backups
+            setBackupTimestamps(prevState => listOfBackups)
+            setDeleteLoaderFlagsArray(prevState => Array(listOfBackups.length).fill(false))
+            setRestoreToProductionFlagsArray(prevState => Array(listOfBackups.length).fill(false))
+            setRestoreToTestFlagsArray(prevState => Array(listOfBackups.length).fill(false))
+            dispatch(new NotificationSuccess('Successfully loaded backups'))
+
         }
         loadBackups()
     }, [dispatch])
 
-    const handleBackupDelete = async (timestamp: number, index: number)=>{
+    const handleBackupDelete = async (timestamp: number, index: number) => {
         console.log(`inside handleBackupDelete: timestamp ${timestamp} index ${index}`)
         setDeleteFlagForSpecificIndex(index)
-        try{
-            await wait();
-            setBackupTimestamps(prevState => {
-                return prevState.filter(backup=> backup!== timestamp)
-            })
-            dispatch(new NotificationSuccess('Successfully deleted backup'))
-        }catch (e) {
+        const response = await handleDELETEBackup({date: timestamp})
+        setDeleteLoaderFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
+        if (response.status !== 200) {
             dispatch(new NotificationError('Error in deleting backup'))
-        }finally {
-            setDeleteLoaderFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
+            return
         }
+        setBackupTimestamps(prevState => {
+            return prevState.filter(backup => backup !== timestamp)
+        })
+        dispatch(new NotificationSuccess('Successfully deleted backup'))
     }
-    const handleRestoreToTest = async (timestamp: number, index: number)=>{
+    const handleRestoreToTest = async (timestamp: number, index: number) => {
         console.log(`inside handleRestoreToTest: timestamp ${timestamp} index ${index}`)
         setRestoreToTestFlagForSpecificIndex(index)
-        try{
-            await wait();
-            dispatch(new NotificationSuccess('Successfully restored backup to test environment'))
-        }catch (e) {
+        const response = await handlePOSTRestore({date: timestamp})
+        setRestoreToTestFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
+        if (response.status !== 200) {
             dispatch(new NotificationError('Failed to restore backup to test environment'))
-        }finally {
-            setRestoreToTestFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
+            return
         }
+        dispatch(new NotificationSuccess('Successfully restored backup to test environment'))
     }
     const handleRestoreToProduction = async (timestamp: number, index: number) => {
         console.log(`inside handleRestoreToProduction: timestamp ${timestamp} index ${index}`)
         setRestoreToProductionFlagForSpecificIndex(index)
-        try{
-            await wait();
-            dispatch(new NotificationSuccess('Successfully restored backup to production environment'))
-        }catch (e) {
+        const response = await handlePOSTRestoreToProduction({date: timestamp});
+        setRestoreToProductionFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
+        if (response.status !== 200) {
             dispatch(new NotificationError('Failed to restore backup to production environment'))
-        }finally {
-            setRestoreToProductionFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
+            return
         }
+        dispatch(new NotificationSuccess('Successfully restored backup to production environment'))
     }
     const handleCreateBackup = async () => {
-        console.log(`inside handleCreateBackup`)
         setCreateNewBackupLoaderFlag(prevState => true)
-        try{
-            await wait();
-            setBackupTimestamps(prevState => {
-                return [new Date().getTime() ,...prevState]
-            })
-            dispatch(new NotificationSuccess('Successfully created backup'))
-        }catch (e) {
+        const response = await handlePOSTBackup()
+        setCreateNewBackupLoaderFlag(prevState => false)
+        if (response.status !== 201) {
             dispatch(new NotificationError('Failed to create backup'))
-        }finally {
-            setCreateNewBackupLoaderFlag(prevState => false)
+            return
         }
+        setBackupTimestamps(prevState => {
+            return [new Date().getTime(), ...prevState]
+        })
+        dispatch(new NotificationSuccess('Successfully created backup'))
     }
     const handleTrimBackups = async () => {
-        console.log(`inside handleTrimBackups`)
         setTrimBackupsLoaderFlag(prevState => true)
-        try{
-            await wait();
-            setBackupTimestamps(prevState => {
-                return prevState.slice(0,3)
-            })
-            dispatch(new NotificationSuccess('Successfully trimmed backups'))
-        }catch (e) {
+        const response = await handleDELETEBackupOld();
+        setTrimBackupsLoaderFlag(prevState => false)
+        if (response.status !== 200) {
             dispatch(new NotificationError('Failed to trim backups'))
-        }finally {
-            setTrimBackupsLoaderFlag(prevState => false)
+            return
         }
+        setBackupTimestamps(prevState => {
+            return prevState.slice(0, 3)
+        })
+        dispatch(new NotificationSuccess('Successfully trimmed backups'))
     }
 
     const backupLoaderComponent = <MySkeleton loading={true}>
         <BackupCard
             index={0}
-            onDelete={()=>{}}
-            onRestoreToProduction={()=>{}}
-            onRestoreToTest={()=>{}}
+            onDelete={() => {
+            }}
+            onRestoreToProduction={() => {
+            }}
+            onRestoreToTest={() => {
+            }}
             timestamp={0}
             deleteLoader={deleteLoaderFlagsArray[0]}
             restoreToProductionLoader={restoreToProductionFlagsArray[0]}
@@ -152,10 +152,24 @@ const BackupRestore = () => {
         />
     </MySkeleton>
 
-    const backupLoadErrorComponent = <p>Error in loading backups. Make sure that the backup and restore server is active in localhost.</p>
+    const backupLoadErrorComponent = <p>Error in loading backups. Make sure that the backup and restore server is active
+        in localhost and reload this page. Please visit https://github.com/Badhan-BUET-Zone/badhan-backup on setting up
+        the backup api server on localhost</p>
 
     const backupListComponent =
         <React.Fragment>
+            <MyButton
+                loading={createNewBackupLoaderFlag}
+                text={'Create New Backup'}
+                color={'primary'}
+                onClick={handleCreateBackup}
+            />
+            <MyButton
+                loading={trimBackupsLoaderFlag}
+                text={'Trim Backups'}
+                color={'warning'}
+                onClick={handleTrimBackups}
+            />
             <Typography variant={'subtitle1'} className={styles.backupTitle}>
                 Latest Backup
             </Typography>
@@ -173,34 +187,34 @@ const BackupRestore = () => {
                 All Backups
             </Typography>
             <Grid container>
-            {backupTimestamps.map((timestamp: number, index: number)=>
-                <Grid item xs={12} md={4} key={timestamp}>
-                    <BackupCard
-                        index={index}
-                        timestamp={timestamp}
-                        onDelete={handleBackupDelete}
-                        onRestoreToTest={handleRestoreToTest}
-                        onRestoreToProduction={handleRestoreToProduction}
-                        deleteLoader={deleteLoaderFlagsArray[index]}
-                        restoreToProductionLoader={restoreToProductionFlagsArray[index]}
-                        restoreToTestLoader={restoreToTestFlagsArray[index]}
-                    />
-                </Grid>
-            )}
+                {backupTimestamps.map((timestamp: number, index: number) =>
+                    <Grid item xs={12} md={4} key={timestamp}>
+                        <BackupCard
+                            index={index}
+                            timestamp={timestamp}
+                            onDelete={handleBackupDelete}
+                            onRestoreToTest={handleRestoreToTest}
+                            onRestoreToProduction={handleRestoreToProduction}
+                            deleteLoader={deleteLoaderFlagsArray[index]}
+                            restoreToProductionLoader={restoreToProductionFlagsArray[index]}
+                            restoreToTestLoader={restoreToTestFlagsArray[index]}
+                        />
+                    </Grid>
+                )}
             </Grid>
         </React.Fragment>
 
     const backupListEmptyComponent = <p>No Backup found</p>
 
-    let loadedComponent: JSX.Element[]| JSX.Element
+    let loadedComponent: JSX.Element[] | JSX.Element
 
-    if(backupTimestampsLoaderFlag){
+    if (backupTimestampsLoaderFlag) {
         loadedComponent = backupLoaderComponent
-    }else if(backupTimestampsErrorFlag){
+    } else if (backupTimestampsErrorFlag) {
         loadedComponent = backupLoadErrorComponent
-    }else if(backupTimestamps.length === 0){
+    } else if (backupTimestamps.length === 0) {
         loadedComponent = backupListEmptyComponent
-    }else {
+    } else {
         loadedComponent = backupListComponent
     }
 
@@ -208,20 +222,6 @@ const BackupRestore = () => {
         <FadeAnimationWrapper>
             <UnderConstructionNotice/>
             <MyMainCard title="Manage All Backups of Database">
-                <MyButton
-                    loading={createNewBackupLoaderFlag}
-                    text={'Create New Backup'}
-                    color={'primary'}
-                    onClick={handleCreateBackup}
-                />
-                <MyButton
-                    loading={trimBackupsLoaderFlag}
-                    text={'Trim Backups'}
-                    color={'warning'}
-                    onClick={handleTrimBackups}
-                />
-            </MyMainCard>
-            <MyMainCard title="List of All Backups">
                 {loadedComponent}
             </MyMainCard>
         </FadeAnimationWrapper>

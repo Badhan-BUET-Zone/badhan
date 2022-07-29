@@ -39,7 +39,7 @@ export const BackupCard = (props: {
             <Card variant="outlined" className={styles.backupCard}>
                 <CardContent>
                     <Typography variant={'h5'}
-                                className={styles.backupCardTitle}>Time: {new Date(props.timestamp).toLocaleString()}</Typography>
+                                className={styles.backupCardTitle}>Time: {new Date(props.timestamp).toLocaleDateString()} {new Date(props.timestamp).toLocaleTimeString()}</Typography>
                     <MyButton loading={props.restoreToTestLoader} text={'Restore to Test'} color={'primary'}
                               onClick={handleRestoreToTest}/>
                     <MyButton loading={props.restoreToProductionLoader} text={'Restore to Production'} color={'warning'}

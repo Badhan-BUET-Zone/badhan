@@ -2,11 +2,10 @@ import axios from 'axios'
 import {USERS_ME, USERS_SIGNIN, USERS_SIGNOUT} from "./model";
 import {store} from "../store";
 
-export const badhanAxios = axios.create({baseURL: 'https://badhan-buet.uc.r.appspot.com/'})
-export const badhanAdminAxios = axios.create({baseURL: 'https://badhan-admin-api.herokuapp.com/'})
-const firebaseAxios = axios.create({
-    baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'
-})
+const badhanAxios = axios.create({baseURL: 'https://badhan-buet.uc.r.appspot.com/'})
+// const badhanAdminAxios = axios.create({baseURL: 'https://badhan-admin-api.herokuapp.com/'})
+const firebaseAxios = axios.create({baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'})
+const backupAPIAxios = axios.create({baseURL: 'http://localhost:4000'})
 
 
 badhanAxios.interceptors.request.use((config) => {
@@ -45,6 +44,24 @@ firebaseAxios.interceptors.request.use((config) => {
 })
 
 firebaseAxios.interceptors.response.use((response) => {
+    // Do something before request is sent
+    console.log('%cRESPONSE FROM ' + response.config.url + ': ', 'color: #00ff00', response)
+    return response
+}, (error) => {
+    // Do something with request error
+    return Promise.reject(error)
+})
+
+backupAPIAxios.interceptors.request.use((config) => {
+    // Do something before request is sent
+    console.log('%cREQUEST TO ' + config.url + ': ', 'color: #ff00ff', config.data)
+    return config
+}, function (error) {
+    // Do something with request error
+    return Promise.reject(error)
+})
+
+backupAPIAxios.interceptors.response.use((response) => {
     // Do something before request is sent
     console.log('%cRESPONSE FROM ' + response.config.url + ': ', 'color: #00ff00', response)
     return response
@@ -105,6 +122,54 @@ export const handleGETCredits = async () => {
     try {
         return await firebaseAxios.get('/contributors.json')
     } catch (e: any) {
+        return e.response
+    }
+}
+
+export const handleGETBackup = async () => {
+    try {
+        return await backupAPIAxios.get('/backup')
+    }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handlePOSTBackup = async () => {
+    try{
+        return await backupAPIAxios.post('/backup')
+    }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handleDELETEBackupOld = async () => {
+    try {
+        return await backupAPIAxios.delete('/backup/old')
+    }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handlePOSTRestore = async (payload: {date: number}) => {
+    try {
+        return await backupAPIAxios.post(`/restore/${payload.date}`)
+    }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handlePOSTRestoreToProduction = async (payload:{date: number}) => {
+    try {
+        return await backupAPIAxios.post(`/restore/${payload.date}?production=true`)
+    }catch (e:any) {
+        return e.response
+    }
+}
+
+export const handleDELETEBackup = async (payload: { date: number }) =>{
+    try{
+        return await backupAPIAxios.delete(`/backup/date/${payload.date}`)
+    }catch (e:any) {
         return e.response
     }
 }
