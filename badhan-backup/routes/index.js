@@ -4,12 +4,22 @@ const validation = require('../validation')
 const rateLimiter = require('../rateLimiter')
 const {OKResponse200} = require("../response/successTypes");
 const queue = require('../queue')
+const {backupController, listController, deleteController, pruneController, restoreController} = require("../controllers");
+
+const wait = () => {
+    return new Promise((resolve, reject) => setTimeout(()=>{
+        resolve(0)
+    }, 3000));
+}
+
 
 router.delete('/backup/old',
     rateLimiter.commonLimiter,
     queue.commonQueue,
     async (req,res)=>{
-        res.status(200).send(new OKResponse200('Deleted old backups',{}))
+        await wait()
+        const response = await pruneController()
+        return res.status(response.statusCode).send(response)
     })
 
 router.delete('/backup/date/:date',
@@ -17,8 +27,8 @@ router.delete('/backup/date/:date',
     rateLimiter.commonLimiter,
     queue.commonQueue,
     async (req, res) => {
-        console.log(req.params)
-        res.status(200).send(new OKResponse200('Successfully deleted backup'))
+        const response = await deleteController({time: parseInt(req.params.date)})
+        return res.status(response.statusCode).send(response)
     }
 )
 
@@ -26,15 +36,16 @@ router.get('/backup',
     rateLimiter.commonLimiter,
     queue.commonQueue,
     async(req, res) => {
-        const backups = [1650383925655, 1650383935655, 1650481935655, 1657383925655, 1680383935655, 1650441935655]
-        res.status(200).send(new OKResponse200('Backup list fetched',{backups}))
+        const response = await listController()
+        return res.status(response.statusCode).send(response)
     })
 
 router.post('/backup',
     rateLimiter.commonLimiter,
     queue.commonQueue,
     async(req,res)=>{
-        res.status(201).send(new OKResponse200('Created new backup'))
+        const response = await backupController()
+        return res.status(response.statusCode).send(response)
     }
     )
 
@@ -43,10 +54,8 @@ router.post('/restore/:date',
     rateLimiter.commonLimiter,
     queue.commonQueue,
     async(req, res) => {
-        const productionFlag = req.query.production === 'true'
-        res.status(200).send(new OKResponse200('Backup restored',{productionFlag, date:req.params.date}))
+        const response = await restoreController({production: req.query.production === 'true', time: parseInt(req.params.date)})
+        return res.status(response.statusCode).send(response)
     })
-
-
 
 module.exports = router
