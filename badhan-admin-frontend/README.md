@@ -41,7 +41,9 @@ machine.
 3) Enter into the directory and install all dependencies. Run `cd badhan-backup` and `npm i`
 4) Download the contents of [this link](https://drive.google.com/drive/folders/13SFt1fY0XPAe9p1xkWN2gCLQzvbHx0y7?usp=sharing) and put these files inside the `bin` folder of the cloned repo.
 5) Get `badhan-buet-1d20b088a755.json` and `config.env` files from me (mirmahathir1@gmail.com). Paste them inside the `config` folder of the cloned repository.
-6) Run `npm start` inside the repo.
-7) Go to https://badhan-admin.web.app/backup-restore
+
+Now, for every time you want to visit the backup-and-restore page, follow the instructions written below:
+1) Run `npm start` inside the repo.
+2) Go to https://badhan-admin.web.app/backup-restore
 
 You should now see the Backup-and-Restore page
