@@ -67,6 +67,7 @@ const listController = async () => {
 
     console.log('fetching backups from cloud...')
     let backupList = await firebaseStorage.getBackupList()
+    backupList.sort().reverse()
     console.log('fetching backups from cloud completed')
 
     console.log('found backups:')
