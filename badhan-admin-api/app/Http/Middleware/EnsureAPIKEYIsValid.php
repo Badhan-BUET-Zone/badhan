@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 
 class EnsureAPIKEYIsValid
 {
@@ -16,8 +17,10 @@ class EnsureAPIKEYIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->header('api-key') !== \config('app.api_key')) {
-            return response()->json(['status'=>404,'message'=>'Unauthorized'],404);
+        $client = new Client();
+        $res = $client->get('http://badhan-buet.uc.r.appspot.com/users/me', ['headers' => ['x-auth' => $request->header('x-auth')]]);
+        if ($res->getStatusCode() !== 200) {
+            return response()->json(['status'=>401,'message'=>'Unauthorized'],401);
         }
         return $next($request);
     }

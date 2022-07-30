@@ -25,7 +25,8 @@ Route::middleware(['api-key', 'throttle:limitAdmin'])->group(function () {
     Route::patch('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'updateFrontendSettings'])->name('contributors.updateFrontendSettings');
 });
 
-Route::middleware(['api-key'])->group(function () {
+Route::middleware([])->group(function () {
+    Route::get('/', [App\Http\Controllers\CheckAlive::class, 'index'])->name('contributors.checkalive');
     Route::get('/contributors', [App\Http\Controllers\FirebaseController::class, 'index'])->name('contributors.index');
     Route::get('/frontendSettings', [App\Http\Controllers\FirebaseController::class, 'indexFrontendSettings'])->name('contributors.indexFrontendSettings');
 });
