@@ -9,13 +9,27 @@ import {
     ContributorLinkModel,
     ContributorModel
 } from "../../ui-component/contributors/contributorModel";
-import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {Card, CardContent, Grid} from "@mui/material";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
-import {handleGETCredits} from "../../api";
+import {
+    handleDELETEContributor,
+    handlePOSTContributorImage,
+    handleGETContributor,
+    handlePOSTContributor, handlePATCHContributor
+} from "../../api";
+
+const initialNewContributor = new ContributorModel(
+    'newDonor',
+    'https://www.pngitem.com/pimgs/m/256-2560200_username-conversion-account-icon-png-transparent-png.png',
+    'New User',
+    'User Duration',
+    CONTRIBUTOR_ACTIVE_DEVELOPERS,
+    [],
+    []
+)
 
 const Contributors = () => {
     //STATE MANAGEMENT
@@ -25,12 +39,14 @@ const Contributors = () => {
     const [contributorDeleteFlagArray, setContributorDeleteFlagArray] = useState<boolean[]>([])
     const [contributorSaveChangesFlagArray, setContributorSaveChangesFlagArray] = useState<boolean[]>([])
     const dispatch = useDispatch()
+    const [newContributorLoaderFlag, setNewContributorLoaderFlag] = useState<boolean>(false)
+    const [newContributor, setNewContributor] = useState<ContributorModel>(initialNewContributor)
 
     //HANDLERS
     useEffect(() => {
         const loadAllContributors = async () => {
             setContributorsLoader(prevState => true)
-            let response = await handleGETCredits()
+            let response = await handleGETContributor()
             setContributorsLoader(prevState => false)
             if (response.status !== 200) {
                 setContributorsError(prevState => true)
@@ -38,27 +54,30 @@ const Contributors = () => {
                 return
             }
 
-            const contributorArray = [...response.data[CONTRIBUTOR_ACTIVE_DEVELOPERS].map((contributor: {
+            const contributorArray = [...response.data.contributors['activeDevelopers'].map((contributor: {
+                id: string
                 name: string,
                 calender: string,
-                image: string,
-                contributions: string[],
-                links: [{color: string, icon: string, link: string}]
-            })=>new ContributorModel(contributor.name, contributor.image, contributor.name, contributor.calender, CONTRIBUTOR_ACTIVE_DEVELOPERS, contributor.links.map((link:{color: string, link: string, icon: string})=>new ContributorLinkModel(link.link,link.icon,link.color)),contributor.contributions)),
-                ...response.data[CONTRIBUTOR_LEGACY_DEVELOPERS].map((contributor: {
+                imageUrl: string,
+                contribution: string[],
+                links: [{ color: string, icon: string, link: string }]
+            }) => new ContributorModel(contributor.id, contributor.imageUrl, contributor.name, contributor.calender, CONTRIBUTOR_ACTIVE_DEVELOPERS, contributor.links.map((link: { color: string, link: string, icon: string }) => new ContributorLinkModel(link.link, link.icon, link.color)), contributor.contribution)),
+                ...response.data.contributors['legacyDevelopers'].map((contributor: {
+                    id: string,
                     name: string,
                     calender: string,
-                    image: string,
-                    contributions: string[],
-                    links: [{color: string, icon: string, link: string}]
-                })=>new ContributorModel(contributor.name, contributor.image, contributor.name, contributor.calender, CONTRIBUTOR_LEGACY_DEVELOPERS, contributor.links.map((link:{color: string, link: string, icon: string})=>new ContributorLinkModel(link.link,link.icon,link.color)),contributor.contributions)),
-                ...response.data[CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN].map((contributor: {
+                    imageUrl: string,
+                    contribution: string[],
+                    links: [{ color: string, icon: string, link: string }]
+                }) => new ContributorModel(contributor.id, contributor.imageUrl, contributor.name, contributor.calender, CONTRIBUTOR_LEGACY_DEVELOPERS, contributor.links.map((link: { color: string, link: string, icon: string }) => new ContributorLinkModel(link.link, link.icon, link.color)), contributor.contribution)),
+                ...response.data.contributors['contributorsOfBadhan'].map((contributor: {
+                    id: string
                     name: string,
                     calender: string,
-                    image: string,
-                    contributions: string[],
-                    links: [{color: string, icon: string, link: string}]
-                })=>new ContributorModel(contributor.name, contributor.image, contributor.name, contributor.calender, CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN,contributor.links.map((link:{color: string, link: string, icon: string})=>new ContributorLinkModel(link.link,link.icon,link.color)),contributor.contributions)),
+                    imageUrl: string,
+                    contribution: string[],
+                    links: [{ color: string, icon: string, link: string }]
+                }) => new ContributorModel(contributor.id, contributor.imageUrl, contributor.name, contributor.calender, CONTRIBUTOR_CONTRIBUTORS_FROM_BADHAN, contributor.links.map((link: { color: string, link: string, icon: string }) => new ContributorLinkModel(link.link, link.icon, link.color)), contributor.contribution)),
             ]
 
             setContributorList(prevState => contributorArray)
@@ -68,6 +87,41 @@ const Contributors = () => {
         }
         loadAllContributors()
     }, [dispatch])
+
+    const handleSaveNewContributor = async (contributor: ContributorModel, newImageFile: Blob | null, _index: number) => {
+        console.log(`inside Contributors.tsx new contributor`);
+        console.log(contributor)
+        console.log(newImageFile)
+        setNewContributorLoaderFlag(prevState => true)
+        const response = await handlePOSTContributor({
+            name: contributor.name,
+            calender: contributor.duration,
+            contribution: contributor.contributions,
+            links: contributor.links.map((link: ContributorLinkModel) => {
+                return {
+                    color: link.color,
+                    icon: link.icon,
+                    link: link.link
+                }
+            }),
+            type: contributor.memberType
+        })
+        setNewContributorLoaderFlag(prevState => false)
+        if (response.status !== 201) {
+            dispatch(new NotificationError('Failed to save changes'))
+            return
+        }
+        setContributorList((prevState: ContributorModel[]) => [...prevState, contributor])
+        setContributorDeleteFlagArray(prevState => Array(contributorList.length + 1).fill(false))
+        setContributorSaveChangesFlagArray(prevState => Array(contributorList.length + 1).fill(false))
+
+        dispatch(new NotificationSuccess('Successfully saved changes'))
+        handleClearNewContributor()
+    }
+
+    const handleClearNewContributor = () => {
+        setNewContributor(prevState => initialNewContributor)
+    }
 
     const resetDeleteFlags = () => {
         setContributorDeleteFlagArray(prevState => Array(contributorList.length).fill(false))
@@ -86,33 +140,56 @@ const Contributors = () => {
         console.log(`inside Contributors.tsx handleDelete`);
         console.log(deletedContributor)
         setContributorDeleteFlagArray(prevState => setFlagForSpecificIndex(prevState, index))
-        try {
-            await wait()
-            setContributorList(prevState => {
-                let newState = [...prevState]
-                newState = newState.filter((contributor: ContributorModel) => contributor.id !== deletedContributor.id)
-                return newState
-            })
-            dispatch(new NotificationSuccess('Successfully deleted contributor'))
-        } catch (e) {
+        const response = await handleDELETEContributor({id: deletedContributor.id})
+        resetDeleteFlags()
+        if (response.status !== 200) {
             dispatch(new NotificationError('Failed to delete contributor'))
-        } finally {
-            resetDeleteFlags()
+            return
         }
+        setContributorList(prevState => {
+            let newState = [...prevState]
+            newState = newState.filter((contributor: ContributorModel) => contributor.id !== deletedContributor.id)
+            return newState
+        })
+        dispatch(new NotificationSuccess('Successfully deleted contributor'))
+
     }
     const handleSaveChanges = async (contributor: ContributorModel, newImageFile: Blob | null, index: number) => {
         console.log(`inside Contributors.tsx handleSaveChanges`);
         console.log(contributor)
         console.log(newImageFile)
         setContributorSaveChangesFlagArray(prevState => setFlagForSpecificIndex(prevState, index))
-        try {
-            await wait()
-            dispatch(new NotificationSuccess('Successfully saved changes'))
-        } catch (e) {
-            dispatch(new NotificationError('Failed to save changes'))
-        } finally {
-            resetSaveChangesFlags()
+        if(newImageFile){
+            const formData = new FormData()
+            formData.append('image',newImageFile)
+            const imageUploadResponse = await handlePOSTContributorImage({id: contributor.id, formData: formData})
+            if(imageUploadResponse.status!==200){
+                dispatch(new NotificationError('Failed to save changes'))
+                return
+            }
         }
+
+        const patchResponse = await handlePATCHContributor({
+            id: contributor.id,
+            type: contributor.memberType,
+            name: contributor.name,
+            contribution: contributor.contributions,
+            links: contributor.links.map((link: ContributorLinkModel) => {
+                return {
+                    color: link.color,
+                    icon: link.icon,
+                    link: link.link
+                }
+            }),
+            calender: contributor.duration
+        })
+        resetSaveChangesFlags()
+        if (patchResponse.status !== 200) {
+            dispatch(new NotificationError('Failed to save changes'))
+            return
+        }
+        dispatch(new NotificationSuccess('Successfully saved changes'))
+
     }
 
     // CONDITIONAL RENDERING
@@ -135,6 +212,7 @@ const Contributors = () => {
                         onHandleDelete={handleDelete}
                         onHandleSaveChanges={handleSaveChanges}
                         contributor={contributor}
+                        hideImageUpload={false}
                     />
                 </Grid>)
             }
@@ -158,6 +236,17 @@ const Contributors = () => {
             <UnderConstructionNotice/>
             <MyMainCard title="Manage Contributors">
                 {contributorFinalContent}
+            </MyMainCard>
+            <MyMainCard title={"Create New Contributor"}>
+                <ContributorCard
+                    index={-1}
+                    contributor={newContributor}
+                    onHandleSaveChanges={handleSaveNewContributor}
+                    onHandleDelete={handleClearNewContributor}
+                    deleteLoader={false}
+                    saveChangesLoader={newContributorLoaderFlag}
+                    hideImageUpload={true}
+                />
             </MyMainCard>
         </Fragment>
 

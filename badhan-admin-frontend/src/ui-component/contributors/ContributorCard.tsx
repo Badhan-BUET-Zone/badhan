@@ -16,7 +16,7 @@ import {ConfirmationDialogOpen} from "../../store/confirmationDialog/model";
 
 const initialState: ContributorModel = new ContributorModel(
     'dummy',
-    'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fmahathir.jpg?alt=media',
+    'https://www.pngitem.com/pimgs/m/256-2560200_username-conversion-account-icon-png-transparent-png.png',
     'Mir Mahathir Mohammad',
     'Jan 2020- Present',
     CONTRIBUTOR_ACTIVE_DEVELOPERS,
@@ -36,15 +36,15 @@ function contributorLoadReducer(state: ContributorModel, action: { type: string,
     }
 }
 
-
-const ContributorCard = (props: {
-    index: number,
-    contributor: ContributorModel,
-    onHandleSaveChanges: (contributor: ContributorModel, newImageFile: File | null, index: number) => void,
-    onHandleDelete: (contributor: ContributorModel, index: number) => void,
-    deleteLoader: boolean,
-    saveChangesLoader: boolean
-}) => {
+const ContributorCard : React.FC<{
+        index: number,
+        contributor: ContributorModel,
+        onHandleSaveChanges: (contributor: ContributorModel, newImageFile: File | null, index: number) => void,
+        onHandleDelete: (contributor: ContributorModel, index: number) => void,
+        deleteLoader: boolean,
+        saveChangesLoader: boolean
+        hideImageUpload: boolean
+    }> = (props) => {
     // STATE MANAGEMENT
     const [isAddContributionShown, setIsAddContributionShown] = useState<boolean>(false)
     const [isAddLinkShown, setIsAddLinkShown] = useState<boolean>(false)
@@ -168,7 +168,7 @@ const ContributorCard = (props: {
         <FadeAnimationWrapper>
             <Card variant={'outlined'} className={styles.contributorCard}>
                 <CardContent>
-                    <Button
+                    {!props.hideImageUpload && <Button
                         component="label"
                     >
                         <Box
@@ -193,7 +193,7 @@ const ContributorCard = (props: {
                         }}>
                             Update
                         </div>
-                    </Button>
+                    </Button>}
                     <MyTextField
                         id={stateContributor.id + 'name'}
                         label={'Name of Contributor'}
@@ -311,4 +311,9 @@ const ContributorCard = (props: {
         </FadeAnimationWrapper>
     )
 }
+
+ContributorCard.defaultProps = {
+    hideImageUpload: false
+}
+
 export default ContributorCard
