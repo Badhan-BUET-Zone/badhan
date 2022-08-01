@@ -4,8 +4,7 @@ import {store} from "../store";
 import { ContributorType} from "../ui-component/contributors/contributorModel";
 
 const badhanAxios = axios.create({baseURL: 'https://badhan-buet.uc.r.appspot.com/'})
-// const badhanAdminAxios = axios.create({baseURL: 'https://badhan-admin-api.herokuapp.com/'})
-const badhanAdminAxios = axios.create({baseURL: 'http://127.0.0.1:8000'})
+const badhanAdminAxios = axios.create({baseURL: process.env.REACT_APP_ADMIN_API_URL})
 const firebaseAxios = axios.create({baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'})
 const backupAPIAxios = axios.create({baseURL: 'http://localhost:4000'})
 
