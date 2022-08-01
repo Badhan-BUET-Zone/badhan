@@ -22,6 +22,10 @@ class EnsureAPIKEYIsValid
         if ($res->getStatusCode() !== 200) {
             return response()->json(['status'=>401,'message'=>'Unauthorized'],401);
         }
+        $body = json_decode($res->getBody());
+        if($body->donor->designation !== 3){
+            return response()->json(['status'=>409,'message'=>'Only super admin can access this route'],409);
+        }
         return $next($request);
     }
 }
