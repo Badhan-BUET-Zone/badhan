@@ -22,6 +22,8 @@ class FirebaseController extends Controller
 
     private $rules;
 
+    private $blankImage = 'https://www.pngitem.com/pimgs/m/256-2560200_username-conversion-account-icon-png-transparent-png.png';
+
     public function __construct()
     {
         $this->database = app('firebase.database');
@@ -75,6 +77,9 @@ class FirebaseController extends Controller
 
     public function index(){
             $contributors = $this->database->getReference('data/')->getvalue();
+            if(!$contributors){
+                return response()->json(['status' => 200, 'message' => 'Contributors fetched successfully', 'contributors' => ['activeDevelopers' => [], 'contributorsOfBadhan' => [], 'legacyDevelopers' => []]],200);
+            }
             $activeDevelopers = [];
             $contributorsOfBadhan = [];
             $legacyDevelopers = [];
@@ -99,7 +104,7 @@ class FirebaseController extends Controller
             return response()->json(['status'=>400,'message'=>$validator->errors()],400);
         }
         $validatedInput = $validator->valid();
-        $validatedInput["imageUrl"]="(none)";
+        $validatedInput["imageUrl"]=$this->blankImage;
         $this->database->getReference('data/'.$id)
             ->set($validatedInput);
         $validatedInput["id"] = $id;
@@ -135,7 +140,7 @@ class FirebaseController extends Controller
         $filePath = 'badhan-admin-api/'.$name;
         $storage= app('firebase.storage');
         $storage->getBucket()->upload(fopen($input->image, 'r'),['name' => $filePath]);
-        $url = 'https://firebasestorage.googleapis.com/v0/b/mt-oporajita.appspot.com/o/badhan-admin-api%2F'.$name.'?alt=media';
+        $url = 'https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F'.$name.'?alt=media';
         $this->database->getReference('data/'.$input->id.'/imageUrl')
             ->set($url);
         return response()->json(['status'=>200,'message'=>'Image successfully updated','url'=>$url],200);
@@ -153,9 +158,12 @@ class FirebaseController extends Controller
         if (!in_array($input->id, $keys)) {
             return response()->json(['status'=>404,'message'=>'Contributor id not found'],404);
         }
-        $storage= app('firebase.storage');
-        $filePath='badhan-admin-api/'.$input->id.'.png';
-        $storage->getBucket()->object($filePath)->delete();
+        $singleContributor = $this->database->getReference('data/'.$input->id)->getValue();
+        if($singleContributor['imageUrl']!== $this->blankImage){
+            $storage= app('firebase.storage');
+            $filePath='badhan-admin-api/'.$input->id.'.png';
+            $storage->getBucket()->object($filePath)->delete();
+        }
         $this->database->getReference('data/'.$input->id)->remove();
         return response()->json(['status'=>200,'message'=>'Contributor deleted successfully'],200);
     }

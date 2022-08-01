@@ -64,7 +64,7 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
         RateLimiter::for('limitAdmin', function (Request $request) {
-            return Limit::perMinute(1);
+            return Limit::perMinute(60);
 //                ->response(function () {
 //                return response(['status'=>429,'message'=>'Too many attempts'],429);
 //            });
