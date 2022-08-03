@@ -18,12 +18,8 @@ git commit -am "$message"
 echo "---pushing master branch to github---"
 git push origin master
 
-echo "---switching back to test branch---"
-git checkout test-branch
-
 echo "---deploying to gcloud---"
 gcloud app deploy
 
-echo "---checking secret file changes---"
-cd ../secrets
-bash ./push.sh
+echo "---switching back to test branch---"
+git checkout test-branch
