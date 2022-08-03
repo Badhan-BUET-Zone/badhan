@@ -15,7 +15,7 @@ import styleClasses from './Version.module.css'
 import useValidate from "../../hooks/useValidate";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {Fragment} from "react";
-import {handleGETLogVersion} from "../../api";
+import {handleGETLogVersion, handlePATCHFrontendSettings} from "../../api";
 
 const validateNumber = (arg: any): boolean | string => {
     return (isNaN(arg) || !Number.isInteger(Number(arg)) || Number(arg) < 0 || Number(arg) > 100) ? 'Input must be an integer between 1 and 99' : false
@@ -88,17 +88,18 @@ const Version: React.FC = () => {
         touchAllValidation()
         if (formHasError()) return
 
-        const versionSubmissionData = `${majorVersion.value}.${minorVersion}.${patchVersion}`
         setVersionSubmitFlag(prevState => true)
-        try {
-            await wait();
-            dispatch(new NotificationSuccess('Updated version successfully'));
-            console.log(versionSubmissionData)
-        } catch (e) {
+        const response = await handlePATCHFrontendSettings({
+            majorVersion: parseInt(majorVersion.value),
+            minorVersion: parseInt(minorVersion.value),
+            patchVersion: parseInt(patchVersion.value)
+        })
+        setVersionSubmitFlag(prevState => false)
+        if (response.status !== 200) {
             dispatch(new NotificationError('Version updated unsuccessful'));
-        } finally {
-            setVersionSubmitFlag(prevState => false)
+            return
         }
+        dispatch(new NotificationSuccess('Updated version successfully'));
     }
 
     // CONDITIONAL RENDERING
@@ -116,6 +117,7 @@ const Version: React.FC = () => {
             onBlur={minorVersion.touch}
             error={minorVersion.hasError}
             label="Minor Version"
+            type={'number'}
             value={minorVersion.value}
             onChange={changeMinorVersionHandler}
         />
@@ -124,6 +126,7 @@ const Version: React.FC = () => {
             onBlur={patchVersion.touch}
             error={patchVersion.hasError}
             label="Patch Version"
+            type={'number'}
             value={patchVersion.value}
             onChange={changePatchVersionHandler}
         />

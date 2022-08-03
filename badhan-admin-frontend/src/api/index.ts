@@ -202,3 +202,15 @@ export const handlePATCHContributor = async (payload: {
         return e.response
     }
 }
+
+export const handlePATCHFrontendSettings = async (payload: {
+    majorVersion: number,
+    minorVersion: number,
+    patchVersion: number,
+}) => {
+    try{
+        return await badhanAdminAxios.patch(`/frontendSettings`,{version: `${payload.majorVersion}.${payload.minorVersion}.${payload.patchVersion}`})
+    }catch (e:any) {
+        return e.response
+    }
+}
