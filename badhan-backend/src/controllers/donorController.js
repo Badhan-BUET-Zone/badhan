@@ -4,7 +4,11 @@ const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
 const emailInterface = require('../db/interfaces/emailInterface')
-const { halls } = require('../constants')
+const {
+  halls,
+  designationNumber,
+  MASTER_ADMIN_ID
+} = require('../constants')
 
 const {
   InternalServerError500,
@@ -16,6 +20,7 @@ const {
   CreatedResponse201,
   OKResponse200
 } = require('../response/successTypes')
+const constants = require('../constants')
 
 const handlePOSTDonors = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
@@ -213,20 +218,38 @@ const handlePATCHDonors = async (req, res) => {
 const handlePATCHDonorsDesignation = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
   const donorDesignation = donor.designation
+  if (donorDesignation === designationNumber.SUPER_ADMIN && req.body.promoteFlag) {
+    return res.respond(new ConflictError409('Can\'t promote super admin'))
+  }
 
-  if ((donorDesignation === 1 && req.body.promoteFlag) ||
-    (donorDesignation === 0 && !req.body.promoteFlag) || donorDesignation === 3) {
-    return res.respond(new ConflictError409('Can\'t promote volunteer or can\'t demote donor'))
+  if(donorDesignation === designationNumber.DONOR && !req.body.promoteFlag){
+    return res.respond(new ConflictError409('Can\'t demote donor'))
+  }
+
+  if(donorDesignation === designationNumber.HALL_ADMIN){
+    return res.respond(new ConflictError409('This route is not applicable for hall admins'))
   }
 
   if (donor.hall > 6) {
     return res.respond(new ConflictError409('Donor does not have a valid hall'))
   }
 
+  if (donor._id.equals(constants.MASTER_ADMIN_ID)) {
+    return res.respond(new ConflictError409('Cannot call route on master admin'))
+  }
+
   if (req.body.promoteFlag) {
-    donor.designation = 1
+    if ( donorDesignation === designationNumber.DONOR){
+      donor.designation = designationNumber.VOLUNTEER
+    }else if(donorDesignation === designationNumber.VOLUNTEER){
+      donor.designation = designationNumber.SUPER_ADMIN
+    }
   } else {
-    donor.designation = 0
+    if ( donorDesignation === designationNumber.VOLUNTEER){
+      donor.designation = designationNumber.DONOR
+    }else if(donorDesignation === designationNumber.SUPER_ADMIN){
+      donor.designation = designationNumber.VOLUNTEER
+    }
   }
 
   await donor.save()

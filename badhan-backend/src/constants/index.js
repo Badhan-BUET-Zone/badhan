@@ -7,6 +7,12 @@ const departments = [
 
 const halls = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 const designations = ['Donor', 'Volunteer', 'Hall Admin', 'Super Admin']
+const designationNumber = {
+  DONOR: 0,
+  VOLUNTEER: 1,
+  HALL_ADMIN: 2,
+  SUPER_ADMIN: 3
+}
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
 
 const MASTER_ADMIN_ID = '5e901d56effc5900177ced73'
@@ -16,5 +22,6 @@ module.exports = {
   departments,
   bloodGroups,
   halls,
-  MASTER_ADMIN_ID
+  MASTER_ADMIN_ID,
+  designationNumber
 }
