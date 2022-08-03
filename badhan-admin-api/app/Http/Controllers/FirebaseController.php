@@ -175,14 +175,6 @@ class FirebaseController extends Controller
 
     public function updateFrontendSettings(Request $request){
         $validator = Validator::make( $request->all(), [
-            'backendBaseURL' => [
-                'required',
-                'url',
-            ],
-            'backendTestBaseURL' => [
-                'required',
-                'url',
-            ],
             'version' =>[
                 'required',
                 'regex:/\d+\.\d+\.\d+/u'
