@@ -7,6 +7,8 @@ This website can be visited by any one of the following links:
 * Direct Login (https://badhan-admin.web.app/)
 * Secure Redirection from app (https://badhan-buet.web.app/#/adminconsole)
 
+This admin console website consists of the functionalities that were once done manually directly on the database. The reasons why I did not implement these features in the main app is because I wanted to keep the code of the main app lean.
+And it seemed to me that these admin console features will be accessed once in one or two years and I wanted to keep these less used but highly sensitive features seperate from the active app. This app will also allow me to implement features that are necessary for app management without needing to touch the main app.
 # Features
 ## Version
 ![image](./doc/version.PNG)
@@ -33,7 +35,7 @@ https://badhan-admin.web.app/backup-restore
 
 # Setup Backup and Restore
 The Backup-and-Restore page is a UI for the API implemented in [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). 
-However, this API has not been deployed to a live server and this, you will need to 
+However, this API has not been deployed to a live server and thus, you will need to 
 follow through the instructions written below in order to run the API locally in your
 machine.
 1) Install Node.js on your machine
