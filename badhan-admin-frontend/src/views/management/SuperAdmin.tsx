@@ -6,7 +6,6 @@ import React, {useEffect, useRef, useState} from 'react'
 import MyTextField from "../../ui-component/MyTextField";
 import MyButton from "../../ui-component/MyButton";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
-import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
@@ -14,7 +13,7 @@ import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper
 import useValidate from "../../hooks/useValidate";
 import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {Grid} from "@mui/material";
-import {handleGETDonorsDesignation} from "../../api";
+import {handleGETDonorsDesignation, handlePATCHDonorsDesignation} from "../../api";
 import {halls} from '../../utils/constants'
 
 class SuperAdminModel {
@@ -31,9 +30,8 @@ class SuperAdminModel {
     }
 }
 
-const validatePhone = (phone: any) => {
-    const phonePattern = /0[0-9]{10}$/
-    return phonePattern.test(phone) ? false : 'Phone number must be of 11 digits starting with 0'
+const validateDonorId = (phone: any) => {
+    return String(phone).length >= 20? false: 'Donor Id is not valid'
 }
 
 const SuperAdmin = () => {
@@ -42,7 +40,7 @@ const SuperAdmin = () => {
     const [superAdminDeleteLoaderFlagsArray, setSuperAdminDeleteLoaderFlagsArray] = useState<boolean[]>([])
     const [superAdmins, setSuperAdmins] = useState<SuperAdminModel[]>([])
     const [newSuperAdminLoaderFlag, setNewSuperAdminLoaderFlag] = useState<boolean>(false)
-    const newSuperAdminPhone = useValidate<string>('', validatePhone)
+    const newSuperAdminPhone = useValidate<string>('', validateDonorId)
 
     const newSuperAdminPhoneRef = useRef() as React.MutableRefObject<HTMLInputElement>;
     const dispatch = useDispatch();
@@ -77,22 +75,23 @@ const SuperAdmin = () => {
         const newSuperAdminPhoneValue = newSuperAdminPhoneRef.current.value
         console.log(`newSuperAdminPhone: ${newSuperAdminPhoneValue}`)
 
-
         setNewSuperAdminLoaderFlag(prevState => true)
-        try {
-            await wait()
-            setSuperAdmins(prevState => {
-                const newState = [...prevState]
-                newState.push(new SuperAdminModel(String(Math.random()), 'New Admin', newSuperAdminPhoneValue, 'Nazrul'))
-                return newState
-            })
-            dispatch(new NotificationSuccess('Successfully assigned new super admin'))
-        } catch (e) {
-            dispatch(new NotificationError('Failed to assign new super admin'))
-        } finally {
-            setNewSuperAdminLoaderFlag(prevState => false)
-            newSuperAdminPhone.reset()
+        const response = await handlePATCHDonorsDesignation({donorId: newSuperAdminPhoneValue, promoteFlag: true})
+        setNewSuperAdminLoaderFlag(prevState => false)
+        newSuperAdminPhone.reset()
+
+        if (response.status !== 200) {
+            dispatch(new NotificationError(response.data.message))
+            return
         }
+
+        const newSuperAdmin = response.data.donor
+        setSuperAdmins(prevState => {
+            const newState = [...prevState]
+            newState.push(new SuperAdminModel(newSuperAdmin._id, newSuperAdmin.name, newSuperAdmin.phone, halls[newSuperAdmin.hall]))
+            return newState
+        })
+        dispatch(new NotificationSuccess('Successfully assigned new super admin'))
     }
 
     const setDeleteFlagForSpecificIndex = (index: number) => {
@@ -107,19 +106,18 @@ const SuperAdmin = () => {
     }
 
     const onDeleteHandler = async (deletedSuperAdminId: string, deletedSuperAdminIndex: number) => {
-        console.log(`super admin id to be deleted ${deletedSuperAdminId} index ${deletedSuperAdminIndex}`);
         setDeleteFlagForSpecificIndex(deletedSuperAdminIndex);
-        try {
-            await wait()
-            setSuperAdmins(prevState => {
-                return prevState.filter((superAdmin: SuperAdminModel) => superAdmin.id !== deletedSuperAdminId)
-            })
-            dispatch(new NotificationSuccess('Successfully deleted super admin'))
-        } catch (e) {
-            dispatch(new NotificationError('Failed to delete super admin'))
-        } finally {
-            resetAllDeleteFlag()
+
+        const response = await handlePATCHDonorsDesignation({donorId: deletedSuperAdminId, promoteFlag: false});
+        resetAllDeleteFlag()
+        if (response.status !== 200) {
+            dispatch(new NotificationError(response.data.message))
+            return
         }
+        setSuperAdmins(prevState => {
+            return prevState.filter((superAdmin: SuperAdminModel) => superAdmin.id !== deletedSuperAdminId)
+        })
+        dispatch(new NotificationSuccess('Successfully deleted super admin'))
     }
 
 
@@ -176,7 +174,6 @@ const SuperAdmin = () => {
             </MyMainCard>
             <MyMainCard title="Add New Super Admin">
                 <MyTextField
-                    type={'number'}
                     ref={newSuperAdminPhoneRef}
                     id="new-superadmin-phone"
                     label="Enter Phone Number"
