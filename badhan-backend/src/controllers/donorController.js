@@ -428,6 +428,11 @@ const handleGETDonorsDuplicateMany = async (req, res) => {
 
 const handlePATCHAdminsSuperAdmin = async (req, res)=>{
   const targetDonor = res.locals.middlewareResponse.targetDonor
+
+  if (targetDonor._id.equals(constants.MASTER_ADMIN_ID)) {
+    return res.respond(new ForbiddenError403('All hail master admin'))
+  }
+
   if(targetDonor.designation!==1 && targetDonor.designation!==3){
     return res.respond(new ConflictError409('Target donor must be a volunteer or super admin'))
   }
