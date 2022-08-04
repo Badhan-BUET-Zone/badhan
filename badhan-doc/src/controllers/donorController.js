@@ -686,6 +686,126 @@
 
 /**
  * @openapi
+ * /admins/superadmin:
+ *   patch:
+ *     tags:
+ *       - Donors
+ *     summary: Patch super admin admin route
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Promotes a volunteer to super admin or demotes the super admin to volunteer
+ *     requestBody:
+ *       description: Donor info for changing admin
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               donorId:
+ *                 type: string
+ *                 example: 563ghefqwr763
+ *               promoteFlag:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Donor has been promoted to Super Admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donor has been promoted to Super Admin
+ *                 donor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: string
+ *                       example: 1605011
+ *                     email:
+ *                       type: string
+ *                       example: mirmahathir1@gmail.com
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 786534785
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur
+ *                     comment:
+ *                       type: string
+ *                       example: Developer of badhan
+ *                     commentTime:
+ *                       type: number
+ *                       example: 0
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
+ *       404:
+ *         description: When no donor with the specified donor id is found, user will get this error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Donor not found
+ *       409:
+ *         description: If fetched user is not a volunteer/ superadmin , user will get this error message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: Target donor must be a volunteer or super admin
+ */
+
+/**
+ * @openapi
  * /donors:
  *   get:
  *     tags:
