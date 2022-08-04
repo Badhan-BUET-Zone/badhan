@@ -262,9 +262,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (' + logOperation + ')', donor)
-  return res.respond(new OKResponse200('Target user promoted/demoted successfully',{
-    donor
-  }))
+  return res.respond(new OKResponse200('Target user promoted/demoted successfully'))
 }
 
 const handlePATCHAdmins = async (req, res) => {
