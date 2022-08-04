@@ -11,9 +11,8 @@ import {NotificationError, NotificationSuccess} from "../../store/notification/n
 import MySkeleton from "../../ui-component/MySkeleton";
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
 import useValidate from "../../hooks/useValidate";
-import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {Grid} from "@mui/material";
-import {handleGETDonorsDesignation, handlePATCHDonorsDesignation} from "../../api";
+import {handleGETDonorsDesignation, handlePATCHAdminsSuperAdmin} from "../../api";
 import {halls} from '../../utils/constants'
 
 class SuperAdminModel {
@@ -40,9 +39,9 @@ const SuperAdmin = () => {
     const [superAdminDeleteLoaderFlagsArray, setSuperAdminDeleteLoaderFlagsArray] = useState<boolean[]>([])
     const [superAdmins, setSuperAdmins] = useState<SuperAdminModel[]>([])
     const [newSuperAdminLoaderFlag, setNewSuperAdminLoaderFlag] = useState<boolean>(false)
-    const newSuperAdminPhone = useValidate<string>('', validateDonorId)
+    const newSuperAdminId = useValidate<string>('', validateDonorId)
 
-    const newSuperAdminPhoneRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+    const newSuperAdminIdRef = useRef() as React.MutableRefObject<HTMLInputElement>;
     const dispatch = useDispatch();
     useEffect(() => {
         const loadSuperAdmins = async () => {
@@ -64,21 +63,21 @@ const SuperAdmin = () => {
         loadSuperAdmins()
     }, [dispatch])
 
-    const onNewSuperAdminPhoneInput = (phoneText: string) => {
-        newSuperAdminPhone.setValue(phoneText)
+    const onnewSuperAdminIdInput = (phoneText: string) => {
+        newSuperAdminId.setValue(phoneText)
     }
 
     const handleNewSuperAdmin = async () => {
-        newSuperAdminPhone.touch()
-        if (newSuperAdminPhone.hasError) return
+        newSuperAdminId.touch()
+        if (newSuperAdminId.hasError) return
 
-        const newSuperAdminPhoneValue = newSuperAdminPhoneRef.current.value
-        console.log(`newSuperAdminPhone: ${newSuperAdminPhoneValue}`)
+        const newSuperAdminIdValue = newSuperAdminIdRef.current.value
+        console.log(`newSuperAdminId: ${newSuperAdminIdValue}`)
 
         setNewSuperAdminLoaderFlag(prevState => true)
-        const response = await handlePATCHDonorsDesignation({donorId: newSuperAdminPhoneValue, promoteFlag: true})
+        const response = await handlePATCHAdminsSuperAdmin({donorId: newSuperAdminIdValue, promoteFlag: true})
         setNewSuperAdminLoaderFlag(prevState => false)
-        newSuperAdminPhone.reset()
+        newSuperAdminId.reset()
 
         if (response.status !== 200) {
             dispatch(new NotificationError(response.data.message))
@@ -108,7 +107,7 @@ const SuperAdmin = () => {
     const onDeleteHandler = async (deletedSuperAdminId: string, deletedSuperAdminIndex: number) => {
         setDeleteFlagForSpecificIndex(deletedSuperAdminIndex);
 
-        const response = await handlePATCHDonorsDesignation({donorId: deletedSuperAdminId, promoteFlag: false});
+        const response = await handlePATCHAdminsSuperAdmin({donorId: deletedSuperAdminId, promoteFlag: false});
         resetAllDeleteFlag()
         if (response.status !== 200) {
             dispatch(new NotificationError(response.data.message))
@@ -168,20 +167,19 @@ const SuperAdmin = () => {
 
     return (
         <FadeAnimationWrapper>
-            <UnderConstructionNotice/>
             <MyMainCard title="List of Super Admins">
                 {superAdminPopulatedContent}
             </MyMainCard>
             <MyMainCard title="Add New Super Admin">
                 <MyTextField
-                    ref={newSuperAdminPhoneRef}
-                    id="new-superadmin-phone"
-                    label="Enter Phone Number"
-                    error={newSuperAdminPhone.hasError}
-                    onBlur={newSuperAdminPhone.touch}
-                    helperText={newSuperAdminPhone.message}
-                    value={newSuperAdminPhone.value}
-                    onChange={onNewSuperAdminPhoneInput}
+                    ref={newSuperAdminIdRef}
+                    id="new-superadmin-id"
+                    label="Enter Donor Id"
+                    error={newSuperAdminId.hasError}
+                    onBlur={newSuperAdminId.touch}
+                    helperText={newSuperAdminId.message}
+                    value={newSuperAdminId.value}
+                    onChange={onnewSuperAdminIdInput}
                 />
                 <br/>
                 <MyButton
@@ -189,7 +187,7 @@ const SuperAdmin = () => {
                     text={'Appoint New Super Admin'}
                     color={'primary'}
                     onClick={handleNewSuperAdmin}
-                    disabled={newSuperAdminPhone.hasError}
+                    disabled={newSuperAdminId.hasError}
                 />
             </MyMainCard>
         </FadeAnimationWrapper>

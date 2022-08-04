@@ -54,6 +54,7 @@ export const validateContributor = (contributor: ContributorModel):boolean => {
         if(contributor.imageURL.trim().length===0)return true
         if(contributor.name.trim().length===0)return true
         if(contributor.duration.trim().length===0)return true
+        if(contributor.links.length === 0 || contributor.contributions.length === 0)return true
         for(let i = 0; i < contributor.links.length; i++){
             if(validateContributorLink(contributor.links[i]))return true
         }

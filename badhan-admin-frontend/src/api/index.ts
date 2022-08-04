@@ -215,12 +215,12 @@ export const handlePATCHFrontendSettings = async (payload: {
     }
 }
 
-export const handlePATCHDonorsDesignation = async (payload: {
+export const handlePATCHAdminsSuperAdmin = async (payload: {
     donorId: string,
     promoteFlag: boolean
 }) => {
     try {
-        return await badhanAxios.patch('/donors/designation', payload)
+        return await badhanAxios.patch('/admins/superadmin', payload)
     }catch (e:any) {
         return e.response
     }

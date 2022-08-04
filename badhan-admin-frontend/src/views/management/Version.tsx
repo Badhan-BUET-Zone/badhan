@@ -5,7 +5,6 @@ import MyTextField from "../../ui-component/MyTextField";
 import React, {useEffect, useState} from "react";
 import MyButton from "../../ui-component/MyButton";
 import MyMainCard from "../../ui-component/cards/MyMainCard";
-import {wait} from "../../utils/dummyAPI";
 import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
@@ -13,7 +12,6 @@ import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper
 import {Box} from "@mui/material";
 import styleClasses from './Version.module.css'
 import useValidate from "../../hooks/useValidate";
-import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {Fragment} from "react";
 import {handleGETLogVersion, handlePATCHFrontendSettings} from "../../api";
 
@@ -104,6 +102,9 @@ const Version: React.FC = () => {
 
     // CONDITIONAL RENDERING
     const versionPageComponent = <FadeAnimationWrapper>
+        <p>
+            WARNING: Make sure to consult with Mir Mahathir Mohammad to edit the values
+        </p>
         <MyTextField
             helperText={majorVersion.message}
             onBlur={majorVersion.touch}
@@ -159,7 +160,6 @@ const Version: React.FC = () => {
     // MAIN RENDERING
     return (
         <Fragment>
-            <UnderConstructionNotice/>
             <MyMainCard title="Set the App Version Deployed on Google Play">
                 {versionPageContent}
             </MyMainCard>

@@ -11,7 +11,6 @@ import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import styles from './index.module.css'
 import FadeAnimationWrapper from "../../ui-component/motion/FadeAnimationWrapper";
-import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {
     handleDELETEBackup,
     handleDELETEBackupOld,
@@ -118,7 +117,7 @@ const BackupRestore = () => {
             return
         }
         setBackupTimestamps(prevState => {
-            return [new Date().getTime(), ...prevState]
+            return [response.data.time, ...prevState]
         })
         dispatch(new NotificationSuccess('Successfully created backup'))
     }
@@ -220,7 +219,6 @@ const BackupRestore = () => {
 
     return (
         <FadeAnimationWrapper>
-            <UnderConstructionNotice/>
             <MyMainCard title="Manage All Backups of Database">
                 {loadedComponent}
             </MyMainCard>
