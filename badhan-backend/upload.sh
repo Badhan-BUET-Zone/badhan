@@ -23,7 +23,3 @@ git checkout test-branch
 
 echo "---deploying to gcloud---"
 gcloud app deploy
-
-echo "---checking secret file changes---"
-cd ../secrets
-bash ./push.sh

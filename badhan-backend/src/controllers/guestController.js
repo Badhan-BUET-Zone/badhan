@@ -575,6 +575,27 @@ const handleGETActiveDonors = async (req, res) => {
 
 const handleGETAppVersions = logController.handleGETAppVersions
 
+const handlePATCHAdminsSuperAdmin = async (req,res) => {
+  return res.respond(new OKResponse200('Donor has been promoted to Super Admin',{
+    donor: {
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      name: faker.getName(),
+      studentId: faker.getStudentId(),
+      bloodGroup: faker.getBloodGroup(),
+      hall: faker.getHall(),
+      roomNumber: faker.getRoom(),
+      address: faker.getAddress(),
+      comment: faker.getComment(),
+      commentTime: faker.getTimestamp(240),
+      designation: 3,
+      availableToAll: faker.getBoolean(),
+      email: faker.getEmail(),
+      lastDonation: faker.getTimestamp(240)
+    }
+  }))
+}
+
 module.exports = {
   handlePOSTLogIn,
   handlePOSTViewDonorDetailsSelf,
@@ -612,5 +633,6 @@ module.exports = {
   handleDELETEActiveDonors,
   handlePOSTActiveDonors,
   handleGETActiveDonors,
-  handleGETAppVersions
+  handleGETAppVersions,
+  handlePATCHAdminsSuperAdmin
 }

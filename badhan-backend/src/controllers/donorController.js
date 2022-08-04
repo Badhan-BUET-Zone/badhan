@@ -426,6 +426,28 @@ const handleGETDonorsDuplicateMany = async (req, res) => {
   }))
 }
 
+const handlePATCHAdminsSuperAdmin = async (req, res)=>{
+  const targetDonor = res.locals.middlewareResponse.targetDonor
+  if(targetDonor.designation!==1 && targetDonor.designation!==3){
+    return res.respond(new ConflictError409('Target donor must be a volunteer or super admin'))
+  }
+
+  let message
+  if(req.body.promoteFlag){
+    targetDonor.designation = 3
+    message = 'Donor has been promoted to Super Admin'
+  }else {
+    targetDonor.designation = 1
+    message = 'Donor has been demoted to Volunteer'
+  }
+  await targetDonor.save()
+  await logInterface.addLog(targetDonor._id,'PATCH DONORS DESIGNATION SUPERADMIN',{name: targetDonor.name})
+  return res.respond(new OKResponse200(message,{
+    donor: targetDonor
+  }))
+
+}
+
 module.exports = {
   handlePOSTDonors,
   handleDELETEDonors,
@@ -441,5 +463,6 @@ module.exports = {
   handleGETDonorsDuplicate,
   handlePOSTDonorsPasswordRequest,
   handleGETSearchV3,
-  handleGETDonorsDuplicateMany
+  handleGETDonorsDuplicateMany,
+  handlePATCHAdminsSuperAdmin
 }

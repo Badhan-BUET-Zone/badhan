@@ -79,6 +79,11 @@ const validateGETDonorsDuplicateMany = validate([
   // validateQUERYPhoneListElement
 ])
 
+const validatePATCHAdminsSuperAdmin = validate([
+  validateBODYDonorId,
+  validateBODYPromoteFlag
+])
+
 module.exports = {
   validatePOSTDonors,
   validatePATCHDonors,
@@ -91,5 +96,6 @@ module.exports = {
   validateDELETEDonors,
   validateGETDonorsDuplicate,
   validatePOSTDonorsPasswordRequest,
-  validateGETDonorsDuplicateMany
+  validateGETDonorsDuplicateMany,
+  validatePATCHAdminsSuperAdmin
 }
