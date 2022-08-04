@@ -4,7 +4,7 @@ const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
 const emailInterface = require('../db/interfaces/emailInterface')
-const { halls } = require('../constants')
+const { halls, MASTER_ADMIN_ID } = require('../constants')
 
 const {
   InternalServerError500,
@@ -429,7 +429,7 @@ const handleGETDonorsDuplicateMany = async (req, res) => {
 const handlePATCHAdminsSuperAdmin = async (req, res)=>{
   const targetDonor = res.locals.middlewareResponse.targetDonor
 
-  if (targetDonor._id.equals(constants.MASTER_ADMIN_ID)) {
+  if (targetDonor._id.equals(MASTER_ADMIN_ID)) {
     return res.respond(new ForbiddenError403('All hail master admin'))
   }
 
