@@ -39,7 +39,8 @@ const backupController = async (callback) => {
     return new CreatedResponse201('Successfully created backup',{
         output: child.stdout,
         error: child.stderr,
-        childStatus: child.status
+        childStatus: child.status,
+        time: folderName
     })
 }
 const deleteController = async (argv) => {
