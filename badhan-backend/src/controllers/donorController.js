@@ -4,11 +4,7 @@ const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
 const emailInterface = require('../db/interfaces/emailInterface')
-const {
-  halls,
-  designationNumber,
-  MASTER_ADMIN_ID
-} = require('../constants')
+const { halls } = require('../constants')
 
 const {
   InternalServerError500,
@@ -20,7 +16,6 @@ const {
   CreatedResponse201,
   OKResponse200
 } = require('../response/successTypes')
-const constants = require('../constants')
 
 const handlePOSTDonors = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
@@ -218,38 +213,20 @@ const handlePATCHDonors = async (req, res) => {
 const handlePATCHDonorsDesignation = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
   const donorDesignation = donor.designation
-  if (donorDesignation === designationNumber.SUPER_ADMIN && req.body.promoteFlag) {
-    return res.respond(new ConflictError409('Can\'t promote super admin'))
-  }
 
-  if(donorDesignation === designationNumber.DONOR && !req.body.promoteFlag){
-    return res.respond(new ConflictError409('Can\'t demote donor'))
-  }
-
-  if(donorDesignation === designationNumber.HALL_ADMIN){
-    return res.respond(new ConflictError409('This route is not applicable for hall admins'))
+  if ((donorDesignation === 1 && req.body.promoteFlag) ||
+    (donorDesignation === 0 && !req.body.promoteFlag) || donorDesignation === 3) {
+    return res.respond(new ConflictError409('Can\'t promote volunteer or can\'t demote donor'))
   }
 
   if (donor.hall > 6) {
     return res.respond(new ConflictError409('Donor does not have a valid hall'))
   }
 
-  if (donor._id.equals(constants.MASTER_ADMIN_ID)) {
-    return res.respond(new ConflictError409('Cannot call route on master admin'))
-  }
-
   if (req.body.promoteFlag) {
-    if ( donorDesignation === designationNumber.DONOR){
-      donor.designation = designationNumber.VOLUNTEER
-    }else if(donorDesignation === designationNumber.VOLUNTEER){
-      donor.designation = designationNumber.SUPER_ADMIN
-    }
+    donor.designation = 1
   } else {
-    if ( donorDesignation === designationNumber.VOLUNTEER){
-      donor.designation = designationNumber.DONOR
-    }else if(donorDesignation === designationNumber.SUPER_ADMIN){
-      donor.designation = designationNumber.VOLUNTEER
-    }
+    donor.designation = 0
   }
 
   await donor.save()
@@ -262,9 +239,7 @@ const handlePATCHDonorsDesignation = async (req, res) => {
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (' + logOperation + ')', donor)
-  return res.respond(new OKResponse200('Target user promoted/demoted successfully',{
-    donor
-  }))
+  return res.respond(new OKResponse200('Target user promoted/demoted successfully'))
 }
 
 const handlePATCHAdmins = async (req, res) => {
@@ -451,6 +426,28 @@ const handleGETDonorsDuplicateMany = async (req, res) => {
   }))
 }
 
+const handlePATCHAdminsSuperAdmin = async (req, res)=>{
+  const targetDonor = res.locals.middlewareResponse.targetDonor
+  if(targetDonor.designation!==1 && targetDonor.designation!==3){
+    return res.respond(new ConflictError409('Target donor must be a volunteer or super admin'))
+  }
+
+  let message
+  if(req.body.promoteFlag){
+    targetDonor.designation = 3
+    message = 'Donor has been promoted to Super Admin'
+  }else {
+    targetDonor.designation = 1
+    message = 'Donor has been demoted to Volunteer'
+  }
+  await targetDonor.save()
+  await logInterface.addLog(targetDonor._id,'PATCH DONORS DESIGNATION SUPERADMIN',{name: targetDonor.name})
+  return res.respond(new OKResponse200(message,{
+    donor: targetDonor
+  }))
+
+}
+
 module.exports = {
   handlePOSTDonors,
   handleDELETEDonors,
@@ -466,5 +463,6 @@ module.exports = {
   handleGETDonorsDuplicate,
   handlePOSTDonorsPasswordRequest,
   handleGETSearchV3,
-  handleGETDonorsDuplicateMany
+  handleGETDonorsDuplicateMany,
+  handlePATCHAdminsSuperAdmin
 }

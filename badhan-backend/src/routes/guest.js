@@ -54,6 +54,10 @@ router.patch('/admins',
   guestController.handlePOSTChangeAdmin
 )
 
+router.patch('/admins/superadmin',
+  guestController.handlePATCHAdminsSuperAdmin
+)
+
 router.get('/donors',
   guestController.handleGETViewDonorDetails
 )

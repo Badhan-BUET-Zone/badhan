@@ -131,4 +131,13 @@ router.patch('/admins',
   donorController.handlePATCHAdmins
 )
 
+router.patch('/admins/superadmin',
+  donorValidator.validatePATCHAdminsSuperAdmin,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  authenticator.handleFetchTargetDonor,
+  authenticator.handleSuperAdminCheck,
+  donorController.handlePATCHAdminsSuperAdmin
+)
+
 module.exports = router
