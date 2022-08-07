@@ -58,7 +58,7 @@ const BackupRestore = () => {
             setBackupTimestampsLoaderFlag(prevState => false)
             if (response.status !== 200) {
                 setBackupTimestampsErrorFlag(prevState => true)
-                dispatch(new NotificationError('Error in loading backups'))
+                dispatch(new NotificationError(response.data.message))
                 return
             }
             const listOfBackups = response.data.backups
@@ -78,7 +78,7 @@ const BackupRestore = () => {
         const response = await handleDELETEBackup({date: timestamp})
         setDeleteLoaderFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
         if (response.status !== 200) {
-            dispatch(new NotificationError('Error in deleting backup'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         setBackupTimestamps(prevState => {
@@ -92,7 +92,7 @@ const BackupRestore = () => {
         const response = await handlePOSTRestore({date: timestamp})
         setRestoreToTestFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
         if (response.status !== 200) {
-            dispatch(new NotificationError('Failed to restore backup to test environment'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         dispatch(new NotificationSuccess('Successfully restored backup to test environment'))
@@ -103,7 +103,7 @@ const BackupRestore = () => {
         const response = await handlePOSTRestoreToProduction({date: timestamp});
         setRestoreToProductionFlagsArray(prevState => Array(backupTimestamps.length).fill(false))
         if (response.status !== 200) {
-            dispatch(new NotificationError('Failed to restore backup to production environment'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         dispatch(new NotificationSuccess('Successfully restored backup to production environment'))
@@ -113,7 +113,7 @@ const BackupRestore = () => {
         const response = await handlePOSTBackup()
         setCreateNewBackupLoaderFlag(prevState => false)
         if (response.status !== 201) {
-            dispatch(new NotificationError('Failed to create backup'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         setBackupTimestamps(prevState => {
@@ -126,7 +126,7 @@ const BackupRestore = () => {
         const response = await handleDELETEBackupOld();
         setTrimBackupsLoaderFlag(prevState => false)
         if (response.status !== 200) {
-            dispatch(new NotificationError('Failed to trim backups'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         setBackupTimestamps(prevState => {

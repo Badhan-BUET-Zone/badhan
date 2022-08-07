@@ -40,6 +40,7 @@ import styleClasses from './index.module.css'
 import {UserProfileLogout} from "../../../../store/userProfile/userProfileModel";
 import {ConfirmationDialogOpen} from "../../../../store/confirmationDialog/model";
 import { handleDELETEUsersSignOut} from "../../../../api";
+import {NotificationError, NotificationSuccess} from "../../../../store/notification/notificationModel";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -58,6 +59,7 @@ const ProfileSection = () => {
 
     const logoutConfirmed = async () => {
         await handleDELETEUsersSignOut()
+        dispatch(new NotificationSuccess('Logged out'))
         dispatch(new UserProfileLogout());
         navigate('/pages/login')
     }

@@ -64,7 +64,7 @@ const Login = ({...others}) => {
                     let response = await handlePOSTUsersSignIn({phone: '88'+values.number, password: values.password})
                     setSubmitting(false);
                     if(response.status!==201){
-                        dispatch(new NotificationError('Phone/password incorrect'))
+                        dispatch(new NotificationError(response.data.message))
                         return
                     }
                     dispatch(new UserProfileLogin(response.data.token))

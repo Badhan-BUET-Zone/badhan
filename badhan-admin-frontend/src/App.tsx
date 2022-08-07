@@ -21,6 +21,7 @@ import {UserProfileLogin, UserProfileLogout} from "./store/userProfile/userProfi
 import ConfirmationDialog from "./layout/ConfirmationDialog";
 import WholePageLoader from "./layout/WholePageLoader";
 import {handleGETUsersMe} from "./api";
+import {NotificationError} from "./store/notification/notificationModel";
 
 // ==============================|| APP ||============================== //
 
@@ -45,6 +46,7 @@ const App = () => {
         setAutoLoginLoader((prevState => false))
 
         if (response.status !== 200) {
+            dispatch(new NotificationError(response.data.message))
             dispatch(new UserProfileLogout())
             return
         }

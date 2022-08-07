@@ -50,7 +50,7 @@ const Contributors = () => {
             setContributorsLoader(prevState => false)
             if (response.status !== 200) {
                 setContributorsError(prevState => true)
-                dispatch(new NotificationError('Failed to load contributors'))
+                dispatch(new NotificationError(response.data.message))
                 return
             }
 
@@ -108,7 +108,7 @@ const Contributors = () => {
         })
         setNewContributorLoaderFlag(prevState => false)
         if (response.status !== 201) {
-            dispatch(new NotificationError('Failed to save changes'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         setContributorList((prevState: ContributorModel[]) => [...prevState, contributor])
@@ -143,7 +143,7 @@ const Contributors = () => {
         const response = await handleDELETEContributor({id: deletedContributor.id})
         resetDeleteFlags()
         if (response.status !== 200) {
-            dispatch(new NotificationError('Failed to delete contributor'))
+            dispatch(new NotificationError(response.data.message))
             return
         }
         setContributorList(prevState => {
@@ -164,7 +164,7 @@ const Contributors = () => {
             formData.append('image',newImageFile)
             const imageUploadResponse = await handlePOSTContributorImage({id: contributor.id, formData: formData})
             if(imageUploadResponse.status!==200){
-                dispatch(new NotificationError('Failed to save changes'))
+                dispatch(new NotificationError(imageUploadResponse.data.message))
                 return
             }
         }
@@ -185,7 +185,7 @@ const Contributors = () => {
         })
         resetSaveChangesFlags()
         if (patchResponse.status !== 200) {
-            dispatch(new NotificationError('Failed to save changes'))
+            dispatch(new NotificationError(patchResponse.data.message))
             return
         }
         dispatch(new NotificationSuccess('Successfully saved changes'))

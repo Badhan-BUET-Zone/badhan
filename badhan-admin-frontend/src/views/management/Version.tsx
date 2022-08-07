@@ -66,7 +66,7 @@ const Version: React.FC = () => {
                 const response = await handleGETLogVersion()
                 setVersionLoadingFlag(prevState => false)
                 if (response.status !== 200) {
-                    dispatch(new NotificationError('Could not load app version'))
+                    dispatch(new NotificationError(response.data.message))
                     setVersionLoadingErrorFlag(prevState => true)
                     return
                 }
@@ -94,7 +94,7 @@ const Version: React.FC = () => {
         })
         setVersionSubmitFlag(prevState => false)
         if (response.status !== 200) {
-            dispatch(new NotificationError('Version updated unsuccessful'));
+            dispatch(new NotificationError(response.data.message));
             return
         }
         dispatch(new NotificationSuccess('Updated version successfully'));

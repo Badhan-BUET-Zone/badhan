@@ -28,7 +28,10 @@ const responseInterceptorOnFulFilled = (response: AxiosResponse) => {
 
 const requestResponseInterceptorOnRejected = (error: any)=>{
     // Do something with request error
-    return Promise.reject(error)
+    if(error.response && error.response.data && error.response.data.message){
+        return Promise.reject(error)
+    }
+    return Promise.reject({response: {data: {message: 'Unknown error'}}})
 }
 
 badhanAxios.interceptors.request.use(requestInterceptorOnFullfilled,  requestResponseInterceptorOnRejected)

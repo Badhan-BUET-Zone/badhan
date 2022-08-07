@@ -14,6 +14,7 @@ import {useSearchParams} from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 import {UserProfileLogin, UserProfileModel} from "../../store/userProfile/userProfileModel";
 import {handleDELETEUsersSignOut, handlePATCHUsersRedirection} from "../../api";
+import {NotificationError} from "../../store/notification/notificationModel";
 
 
 const Login = () => {
@@ -30,6 +31,7 @@ const Login = () => {
         }
         const redirectionResponse = await handlePATCHUsersRedirection({token: searchParams.get("token")!})
         if (redirectionResponse.status !== 201) {
+            dispatch(new NotificationError(redirectionResponse.data.message))
             navigate('/pages/login')
             return
         }

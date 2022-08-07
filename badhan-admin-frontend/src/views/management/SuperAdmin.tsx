@@ -50,7 +50,7 @@ const SuperAdmin = () => {
             setSuperAdminLoadingFlag(prevState => false);
             if (response.status !== 200) {
                 setSuperAdminLoadingErrorFlag(prevState => true)
-                dispatch(new NotificationError('Super admin load failed'))
+                dispatch(new NotificationError(response.data.message))
                 return
             }
 
