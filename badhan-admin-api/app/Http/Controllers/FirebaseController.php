@@ -70,7 +70,7 @@ class FirebaseController extends Controller
             ],
             'links.*.link' => [
                 'required',
-                'url',
+                'min:3',
             ],
         ];
     }
