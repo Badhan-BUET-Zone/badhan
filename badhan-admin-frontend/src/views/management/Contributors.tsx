@@ -111,6 +111,7 @@ const Contributors = () => {
             dispatch(new NotificationError(response.data.message))
             return
         }
+        contributor.id = response.data.contributor.id
         setContributorList((prevState: ContributorModel[]) => [...prevState, contributor])
         setContributorDeleteFlagArray(prevState => Array(contributorList.length + 1).fill(false))
         setContributorSaveChangesFlagArray(prevState => Array(contributorList.length + 1).fill(false))
