@@ -13,7 +13,6 @@ import {useDispatch} from "react-redux";
 import {NotificationError, NotificationSuccess} from "../../store/notification/notificationModel";
 import MySkeleton from "../../ui-component/MySkeleton";
 import {Card, CardContent, Grid} from "@mui/material";
-import UnderConstructionNotice from "../../ui-component/UnderConstructionNotice";
 import {
     handleDELETEContributor,
     handlePOSTContributorImage,
@@ -234,7 +233,6 @@ const Contributors = () => {
     //MAIN COMPONENT
     return (
         <Fragment>
-            <UnderConstructionNotice/>
             <MyMainCard title="Manage Contributors">
                 {contributorFinalContent}
             </MyMainCard>

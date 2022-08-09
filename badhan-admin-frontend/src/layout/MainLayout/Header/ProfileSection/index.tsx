@@ -40,7 +40,7 @@ import styleClasses from './index.module.css'
 import {UserProfileLogout} from "../../../../store/userProfile/userProfileModel";
 import {ConfirmationDialogOpen} from "../../../../store/confirmationDialog/model";
 import { handleDELETEUsersSignOut} from "../../../../api";
-import {NotificationError, NotificationSuccess} from "../../../../store/notification/notificationModel";
+import { NotificationSuccess} from "../../../../store/notification/notificationModel";
 
 // ==============================|| PROFILE MENU ||============================== //
 

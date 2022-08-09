@@ -86,6 +86,7 @@ const ContributorCard : React.FC<{
             type: 'load',
             contributor: newContributor
         })
+        setNewContribution(prevState => '')
     }
 
     const handleDeleteContribution = (deletedContribution: string) => {
@@ -149,6 +150,12 @@ const ContributorCard : React.FC<{
             type: 'load',
             contributor: newContributor
         })
+
+        setNewLink(prevState => {
+            return new ContributorLinkModel('','','')
+        })
+
+
     }
 
     const handleDeleteLink = (id: string) => {
