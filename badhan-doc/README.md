@@ -37,3 +37,6 @@ Steps for finalization:
 
 # Software Architecture of Badhan, BUET Zone
 ![Architecture](Architecture.jpg)
+
+# Currently Focused Issues
+https://drive.google.com/file/d/1PcJ_ZWniQ3sPJ-_vAivf1SLrhXhaZkC5/view?usp=sharing
