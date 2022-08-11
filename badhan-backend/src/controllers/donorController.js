@@ -182,9 +182,9 @@ const handlePATCHDonors = async (req, res) => {
   const target = res.locals.middlewareResponse.targetDonor
   const user = res.locals.middlewareResponse.donor
 
-  if (reqBody.email !== '' && !await emailInterface.checkIfEmailExists(reqBody.email)) {
-    return res.respond(new NotFoundError404('Email address does not exist'))
-  }
+  // if (reqBody.email !== '' && !await emailInterface.checkIfEmailExists(reqBody.email)) {
+  //   return res.respond(new NotFoundError404('Email address does not exist'))
+  // }
 
   if (target.email !== reqBody.email && !target._id.equals(user._id)) {
     return res.respond(new ForbiddenError403('You do not have permission to edit email address of another user'))
