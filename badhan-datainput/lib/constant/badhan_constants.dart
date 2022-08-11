@@ -150,7 +150,7 @@ class BadhanConst {
         }
       case "extraDonationCount":
         try {
-          int cnt = int.parse(data.toString());
+          int cnt = double.tryParse(data.toString())?.toInt() ?? 0;
 
           // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/27
           // negative donation count handle

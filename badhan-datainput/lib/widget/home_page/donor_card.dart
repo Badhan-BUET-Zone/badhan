@@ -307,7 +307,11 @@ class _SubmissionSectionState extends State<SubmissionSection> {
   }
 
   bool donorCreated() {
-    return submissionStatusText == donorCreatedSuccessfully;
+    bool status = submissionStatusText == donorCreatedSuccessfully;
+    if (status) {
+      redirectToDuplicateDonor();
+    }
+    return status;  
   }
 
   void redirectToDuplicateDonor() async {
@@ -326,6 +330,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
         tag, "uploading1 ${widget.newDonor.name} , duplicate: $foundDuplicate");
 
     if (foundDuplicate || donorCreated()) {
+      Log.d(tag, "found duplicate donor!");
       return;
     }
 
