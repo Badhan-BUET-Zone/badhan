@@ -1,4 +1,5 @@
 const AsyncRouter = require('express-async-router').AsyncRouter
+const otherControllers = require('../controllers/otherControllers')
 const router = AsyncRouter()
 
 const authenticator = require('../middlewares/authenticate')
@@ -42,9 +43,10 @@ router.patch('/redirection',
 )
 
 router.post('/password/forgot',
-  rateLimiter.passwordForgotLimiter,
-  userValidator.validatePOSTPasswordForgot,
-  userController.handlePOSTPasswordForgot
+  otherControllers.underMaintenanceController
+  // rateLimiter.passwordForgotLimiter,
+  // userValidator.validatePOSTPasswordForgot,
+  // userController.handlePOSTPasswordForgot
 )
 
 router.patch('/password',

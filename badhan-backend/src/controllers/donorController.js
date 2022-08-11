@@ -3,13 +3,13 @@ const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
-const emailInterface = require('../db/interfaces/emailInterface')
+// const emailInterface = require('../db/interfaces/emailInterface')
 const { halls, MASTER_ADMIN_ID } = require('../constants')
 
 const {
   InternalServerError500,
   ForbiddenError403,
-  NotFoundError404,
+  // NotFoundError404,
   ConflictError409
 } = require('../response/errorTypes')
 const {
