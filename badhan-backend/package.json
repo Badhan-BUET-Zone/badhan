@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npx tsc",
     "postinstall": "tsc",
+    "gcp-build": "tsc",
     "start": "NODE_ENV=production node ./dist/bin/www.js",
     "dev": "cross-env NODE_ENV=development node ./dist/bin/www",
     "prod": "cross-env NODE_ENV=production node ./dist/bin/www",
