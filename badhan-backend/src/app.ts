@@ -1,3 +1,4 @@
+// @ts-nocheck
 const express = require('express')
 const dotenv = require('./dotenv')
 const { handleJsonBodyParseFailures } = require('./response/bodyParser')
