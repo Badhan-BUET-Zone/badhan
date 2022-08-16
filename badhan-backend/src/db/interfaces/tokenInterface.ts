@@ -12,7 +12,7 @@ const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
   const token = await jwt.sign({
     _id: String(donorId),
     access: 'auth'
-  }, dotenv.JWT_SECRET, options).toString()
+  }, dotenv.dotenvEnvFile.JWT_SECRET, options).toString()
   const tokenData = new Token({ donorId, token, ...userAgent })
   const data = await tokenData.save()
   if (data.nInserted === 0) {

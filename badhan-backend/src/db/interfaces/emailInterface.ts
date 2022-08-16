@@ -6,10 +6,10 @@ const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const emailValidator = require('deep-email-validator')
 
-const CLIENT_ID = dotenv.GMAIL_CLIENT_ID
-const CLIENT_SECRET = dotenv.GMAIL_CLIENT_SECRET
-const REDIRECT_URI = dotenv.GMAIL_REDIRECT_URI
-const REFRESH_TOKEN = dotenv.GMAIL_REFRESH_TOKEN
+const CLIENT_ID = dotenv.dotenvEnvFile.GMAIL_CLIENT_ID
+const CLIENT_SECRET = dotenv.dotenvEnvFile.GMAIL_CLIENT_SECRET
+const REDIRECT_URI = dotenv.dotenvEnvFile.GMAIL_REDIRECT_URI
+const REFRESH_TOKEN = dotenv.dotenvEnvFile.GMAIL_REFRESH_TOKEN
 
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
@@ -58,7 +58,7 @@ const checkIfEmailExists = async (email) => {
 }
 
 const generatePasswordForgotHTML = (token) => {
-  const url = dotenv.VUE_APP_FRONTEND_BASE + '#/passwordReset?token=' + token
+  const url = dotenv.dotenvEnvFile.VUE_APP_FRONTEND_BASE + '#/passwordReset?token=' + token
   return `
     <p>Password Recovery Email</p>
     <br>

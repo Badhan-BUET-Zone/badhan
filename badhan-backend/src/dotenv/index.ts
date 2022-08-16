@@ -1,10 +1,20 @@
-// @ts-nocheck
-/* tslint:disable */
-const dotenv = require('dotenv')
+import dotenv from 'dotenv'
 
 dotenv.config({ path: '.env.' + process.env.NODE_ENV })
 
-const config = {
+interface DotenvEnvFile {
+  NODE_ENV?: string,
+  JWT_SECRET?: string,
+  GMAIL_CLIENT_ID?: string,
+  GMAIL_CLIENT_SECRET?: string,
+  GMAIL_REDIRECT_URI?: string,
+  GMAIL_REFRESH_TOKEN?: string,
+  VUE_APP_FRONTEND_BASE?: string,
+  RATE_LIMITER_ENABLE?: string,
+  MONGODB_URI?: string| undefined
+}
+
+export const dotenvEnvFile: DotenvEnvFile = {
   NODE_ENV: process.env.NODE_ENV,
   JWT_SECRET: process.env.JWT_SECRET,
   GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
@@ -16,11 +26,12 @@ const config = {
   MONGODB_URI: process.env.MONGODB_URI
 }
 
-Object.keys(config).forEach((key) => {
-  if (config[key] === undefined) {
+Object.entries(dotenvEnvFile).forEach(([key, value], index) => {
+  if (value === undefined) {
+    // tslint:disable-next-line:no-console
     console.log('BADHAN LOG: ', key, 'is not defined in config. Program will exit')
     process.exit(1)
   }
-})
+});
 
-module.exports = config
+

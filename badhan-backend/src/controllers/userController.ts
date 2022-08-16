@@ -92,7 +92,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
 
   let decodedDonor
   try {
-    decodedDonor = await jwt.verify(token, dotenv.JWT_SECRET)
+    decodedDonor = await jwt.verify(token, dotenv.dotenvEnvFile.JWT_SECRET)
   } catch (e) {
     return res.respond(new UnauthorizedError401('Session Expired'))
   }

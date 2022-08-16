@@ -11,7 +11,7 @@ const handleAuthentication = async (req, res, next) => {
   const token = req.header('x-auth')
 
   try {
-    await jwt.verify(token, dotenv.JWT_SECRET)
+    await jwt.verify(token, dotenv.dotenvEnvFile.JWT_SECRET)
   } catch (e) {
     return res.respond(new UnauthorizedError401('Invalid Authentication'))
   }

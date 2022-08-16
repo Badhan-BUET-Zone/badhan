@@ -1,10 +1,10 @@
 // @ts-nocheck
-/* tslint:disable */
 import { userAgentHandler } from './middlewares/userAgent'
 import express from 'express'
-const dotenv = require('./dotenv')
-const { handleJsonBodyParseFailures } = require('./response/bodyParser')
-const cookieParser = require('cookie-parser')
+import { dotenvEnvFile } from './dotenv'
+import { handleJsonBodyParseFailures } from './response/bodyParser'
+import cookieParser from 'cookie-parser'
+/* tslint:disable */
 const logger = require('morgan')
 const cors = require('cors')
 const apiRouter = require('./routes/donors')
@@ -47,7 +47,7 @@ app.use(internalServerErrorHandler)
 process.on('unhandledRejection', unhandledRejectionHandler)
 process.on('uncaughtException', uncaughtExceptionHandler)
 
-console.log('BADHAN LOG: server environment is', dotenv.NODE_ENV)
-console.log('BADHAN LOG: rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
+console.log('BADHAN LOG: server environment is', dotenvEnvFile.NODE_ENV)
+console.log('BADHAN LOG: rate limiter', dotenvEnvFile.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
 
 module.exports = app
