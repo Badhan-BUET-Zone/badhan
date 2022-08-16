@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const axios = require('axios')
 const firebaseAxios = axios.create({
   baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'

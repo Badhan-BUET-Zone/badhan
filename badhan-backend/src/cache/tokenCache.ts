@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 let cache = {}
 // 37% reduction of total time in testing all routes
 const add = (token, user) => {

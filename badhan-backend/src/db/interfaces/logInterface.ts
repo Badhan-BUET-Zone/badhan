@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const constants = require('../../constants')
 const { Log } = require('../models/Log')
 const mongoose = require('mongoose')

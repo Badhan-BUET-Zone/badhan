@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { validate } = require('../validations')
 const { validatePARAMDonorId } = require('./validateRequest/validateParam')
 const { validateBODYDonorId } = require('./validateRequest/validateBody')

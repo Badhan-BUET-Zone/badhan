@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const tokenCache = require('../cache/tokenCache')
 const dotenv = require('../dotenv')
 const bcrypt = require('bcryptjs')

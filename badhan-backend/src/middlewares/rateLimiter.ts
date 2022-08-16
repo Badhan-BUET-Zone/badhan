@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const dotenv = require('../dotenv')
 const rateLimit = require('express-rate-limit')
 const { TooManyRequestsError429 } = require('../response/errorTypes')

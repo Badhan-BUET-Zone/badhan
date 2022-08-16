@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const generateAggregatePipeline = (reqQuery, donorId) => {
   const queryBuilder = generateSearchQuery(reqQuery)
   const aggregatePipeline = [{

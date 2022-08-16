@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { query } = require('express-validator')
 const mongoose = require('mongoose')
 

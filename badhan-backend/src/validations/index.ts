@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { validationResult } = require('express-validator')
 const { BadRequestError400 } = require('../response/errorTypes')
 const validate = validations => {

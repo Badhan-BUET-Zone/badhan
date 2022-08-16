@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { validate } = require('../validations')
 const { validateQUERYPublicContactId, validateQUERYDonorId } = require('../validations/validateRequest/validateQuery')
 const { validateBODYDonorId, validateBODYPublicContactBloodGroup } = require('../validations/validateRequest/validateBody')

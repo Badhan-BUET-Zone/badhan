@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { NotFoundError404 } = require('../../response/errorTypes')
 const { OKResponse200 } = require('../../response/successTypes')
 const deprecatedController = async (req, res) => {

@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { NotFoundError404, InternalServerError500 } = require('./errorTypes')
 const routeNotFoundHandler = (req, res) => {
   return res.respond(new NotFoundError404('Route not found'))

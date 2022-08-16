@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { PublicContact } = require('../models/PublicContacts')
 
 const insertPublicContact = async (donorId, bloodGroup) => {

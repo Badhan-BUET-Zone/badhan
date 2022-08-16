@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const publicContactInterface = require('../db/interfaces/publicContactInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const {

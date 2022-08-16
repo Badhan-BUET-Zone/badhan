@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const AsyncRouter = require('express-async-router').AsyncRouter
 const otherControllers = require('../controllers/otherControllers')
 const router = AsyncRouter()

@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const faker = require('faker')
 const phoneOperators = ['88014', '88015', '88016', '88017', '88018', '88019']
 const departments = [

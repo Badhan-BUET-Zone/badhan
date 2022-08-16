@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 class BaseSuccessResponse {
   /**
      * @param {string} status - OK, ERROR or EXCEPTION, the summary of the response type

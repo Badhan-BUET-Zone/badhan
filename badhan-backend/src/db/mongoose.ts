@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const dotenv = require('../dotenv')
 const mongoose = require('mongoose')
 

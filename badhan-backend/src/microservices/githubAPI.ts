@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const axios = require('axios')
 const githubAxios = axios.create({
   baseURL: 'https://api.github.com/repos/Badhan-BUET-Zone/badhan-web/releases/latest'

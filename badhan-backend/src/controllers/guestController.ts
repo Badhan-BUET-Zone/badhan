@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const faker = require('../doc/faker')
 const {
   OKResponse200,

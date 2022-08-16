@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')

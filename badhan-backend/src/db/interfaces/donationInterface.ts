@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { Donation } = require('../models/Donation')
 
 const insertDonation = async (donationObject) => {

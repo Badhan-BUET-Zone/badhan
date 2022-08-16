@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 
 const departments = [
   'NULL', 'Arch (01)', 'Ch.E (02)', 'NULL',

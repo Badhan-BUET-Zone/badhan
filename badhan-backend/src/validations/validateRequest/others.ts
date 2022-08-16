@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const checkEmail = (email) => {
   /* eslint-disable no-useless-escape */
   const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/

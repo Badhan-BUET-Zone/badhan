@@ -1,5 +1,7 @@
 // @ts-nocheck
-const express = require('express')
+/* tslint:disable */
+import { userAgentHandler } from './middlewares/userAgent'
+import express from 'express'
 const dotenv = require('./dotenv')
 const { handleJsonBodyParseFailures } = require('./response/bodyParser')
 const cookieParser = require('cookie-parser')
@@ -14,7 +16,6 @@ const publicContactsRouter = require('./routes/publicContacts')
 const logRouter = require('./routes/logs')
 const activeDonorsRouter = require('./routes/activeDonors')
 require('./db/mongoose')
-const { userAgentHandler } = require('./middlewares/userAgent')
 const { respond } = require('./response')
 const { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } = require('./response/errorHandlers')
 const { redirectToDoc } = require('./doc/redirection')

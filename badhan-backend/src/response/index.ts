@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { ErrorResponse } = require('../response/errorTypes')
 const { BaseSuccessResponse } = require('../response/successTypes')
 function respond (responseObject) {

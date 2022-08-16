@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { CallRecord } = require('../models/CallRecord')
 
 const insertOne = async (callerId, calleeId) => {

@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { generateAggregatePipeline } = require('./donorInterface')
 const { ActiveDonor } = require('../models/ActiveDonor')
 

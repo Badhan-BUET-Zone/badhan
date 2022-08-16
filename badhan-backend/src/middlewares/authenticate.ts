@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const dotenv = require('../dotenv')
 const tokenCache = require('../cache/tokenCache')
 const jwt = require('jsonwebtoken')

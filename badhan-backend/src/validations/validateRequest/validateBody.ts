@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const { body } = require('express-validator')
 const mongoose = require('mongoose')
 const { checkEmail } = require('./others')

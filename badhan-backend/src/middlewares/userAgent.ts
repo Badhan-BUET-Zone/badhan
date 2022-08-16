@@ -1,6 +1,7 @@
 // @ts-nocheck
+/* tslint:disable */
 const useragent = require('useragent')
-const userAgentHandler = (req, res, next) => {
+export const userAgentHandler = (req, res, next) => {
   const agent = useragent.parse(req.headers['user-agent'])
   req.userAgent = {
     os: agent.os.toString(),
@@ -11,6 +12,4 @@ const userAgentHandler = (req, res, next) => {
   console.log('useragent os->', req.userAgent.os, ' device->', req.userAgent.device, ' family->', req.userAgent.browserFamily, ' ip->', req.userAgent.ipAddress)
   next()
 }
-module.exports = {
-  userAgentHandler
-}
+

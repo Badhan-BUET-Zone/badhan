@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const responseInterceptor = (req, res, next) => {
   const oldSend = res.send
   res.send = async (data) => {

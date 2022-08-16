@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const callRecordInterface = require('../db/interfaces/callRecordInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const { InternalServerError500, NotFoundError404, ConflictError409 } = require('../response/errorTypes')

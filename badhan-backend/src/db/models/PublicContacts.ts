@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 const mongoose = require('mongoose')
 
 const publicContactSchema = new mongoose.Schema({

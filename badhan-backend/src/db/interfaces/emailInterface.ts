@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* tslint:disable */
 // import dotenv from '../../dotenv'
 const dotenv = require('../../dotenv')
 const nodemailer = require('nodemailer')
