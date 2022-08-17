@@ -39,6 +39,22 @@ test('GET/donors/phone',async()=>{
             password: env.SUPERADMIN_PASSWORD
         });
 
+
+        let duplicateResponse = await badhanAxios.get(`/donors/checkDuplicate?phone=${8801555444777}`,{
+            headers: {
+                "x-auth": superAdminSignInResponse.data.token
+            }
+        })
+
+        if(duplicateResponse.data.donor){
+            await badhanAxios.delete(`/donors?donorId=${duplicateResponse.data.donor._id}`,{
+                headers: {
+                    "x-auth": superAdminSignInResponse.data.token
+                }
+            })
+        }
+
+
         let donorCreationResponse = await badhanAxios.post("/donors", {
             phone: 8801555444777,
             bloodGroup: 2,

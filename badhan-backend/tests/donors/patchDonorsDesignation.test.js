@@ -22,6 +22,20 @@ test('PATCH/donors/designation', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
+        let duplicateResponse = await badhanAxios.get(`/donors/checkDuplicate?phone=${8801555444777}`,{
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        })
+
+        if(duplicateResponse.data.donor){
+            await badhanAxios.delete(`/donors?donorId=${duplicateResponse.data.donor._id}`,{
+                headers: {
+                    "x-auth": signInResponse.data.token
+                }
+            })
+        }
+
         //create a new donor
         let donorCreationResponse = await badhanAxios.post("/donors", {
             phone: 8801555444777,
