@@ -1,23 +1,27 @@
 // @ts-nocheck
 import { userAgentHandler } from './middlewares/userAgent'
 import express from 'express'
-import { dotenvEnvFile } from './dotenv'
+import dotenv from './dotenv'
 import { handleJsonBodyParseFailures } from './response/bodyParser'
 import cookieParser from 'cookie-parser'
+
+import logger from 'morgan'
+import cors from 'cors'
+
+import apiRouter from './routes/donors'
+import usersRouter from './routes/users'
+import donationsRouter from './routes/donations'
+import guestRouter from './routes/guest'
+import callRecordRouter from './routes/callRecords'
+import publicContactsRouter from './routes/publicContacts'
+import logRouter from './routes/logs'
+import activeDonorsRouter from './routes/activeDonors'
+
+import './db/mongoose'
+
+import { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } from './response/errorHandlers'
+
 /* tslint:disable */
-const logger = require('morgan')
-const cors = require('cors')
-const apiRouter = require('./routes/donors')
-const usersRouter = require('./routes/users')
-const donationsRouter = require('./routes/donations')
-const guestRouter = require('./routes/guest')
-const callRecordRouter = require('./routes/callRecords')
-const publicContactsRouter = require('./routes/publicContacts')
-const logRouter = require('./routes/logs')
-const activeDonorsRouter = require('./routes/activeDonors')
-require('./db/mongoose')
-const { respond } = require('./response')
-const { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } = require('./response/errorHandlers')
 const { redirectToDoc } = require('./doc/redirection')
 const { onlineCheckController } = require('./controllers/otherControllers')
 const app = express()
@@ -28,7 +32,7 @@ app.use(cookieParser())
 app.use('/doc/', redirectToDoc)
 app.use(logger('dev'))
 app.use(userAgentHandler)
-app.response.respond = respond
+
 app.use(express.json())
 app.use(handleJsonBodyParseFailures)
 
@@ -47,7 +51,7 @@ app.use(internalServerErrorHandler)
 process.on('unhandledRejection', unhandledRejectionHandler)
 process.on('uncaughtException', uncaughtExceptionHandler)
 
-console.log('BADHAN LOG: server environment is', dotenvEnvFile.NODE_ENV)
-console.log('BADHAN LOG: rate limiter', dotenvEnvFile.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
+console.log('BADHAN LOG: server environment is', dotenv.NODE_ENV)
+console.log('BADHAN LOG: rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
 
 module.exports = app

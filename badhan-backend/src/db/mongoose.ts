@@ -1,15 +1,15 @@
 // @ts-nocheck
 /* tslint:disable */
-import {dotenvEnvFile} from "../dotenv";
+import dotenv from "../dotenv";
 const mongoose = require('mongoose')
 
 mongoose.Promise = global.Promise
 
-console.log('BADHAN LOG: Connecting to ' + (String(dotenvEnvFile.MONGODB_URI).includes('Test') ? 'Test' : 'Production') + ' database...')
+console.log('BADHAN LOG: Connecting to ' + (String(dotenv.MONGODB_URI).includes('Test') ? 'Test' : 'Production') + ' database...')
 
 const connectToDB = async () => {
   try {
-    mongoose.connect(dotenvEnvFile.MONGODB_URI, {
+    mongoose.connect(dotenv.MONGODB_URI, {
       useUnifiedTopology: true,
       useNewUrlParser: true
     }, () => { console.log('BADHAN LOG: You are connected to the database.') })

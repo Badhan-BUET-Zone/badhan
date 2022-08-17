@@ -8,16 +8,16 @@ const tokenInterface = require('../db/interfaces/tokenInterface')
 // const emailInterface = require('../db/interfaces/emailInterface')
 const { halls, MASTER_ADMIN_ID } = require('../constants')
 
-const {
+import {
   InternalServerError500,
   ForbiddenError403,
   // NotFoundError404,
   ConflictError409
-} = require('../response/errorTypes')
-const {
+} from '../response/errorTypes'
+import {
   CreatedResponse201,
   OKResponse200
-} = require('../response/successTypes')
+} from '../response/successTypes'
 
 const handlePOSTDonors = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
@@ -31,11 +31,11 @@ const handlePOSTDonors = async (req, res) => {
       duplicateDonorResult.data.hall > 6 ||
       duplicateDonorResult.data.availableToAll === true
     ) {
-      return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall', {
+      return res.status(409).send(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall', {
         donorId: duplicateDonorResult.data._id
       }))
     }
-    return res.respond(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall. You are not permitted to access this donor.', {}))
+    return res.status(409).send(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall. You are not permitted to access this donor.', {}))
   }
 
   // if the hall is unknown, then the donor must be available to all
@@ -59,7 +59,7 @@ const handlePOSTDonors = async (req, res) => {
 
   const donorInsertionResult = await donorInterface.insertDonor(donorObject)
   if (donorInsertionResult.status !== 'OK') {
-    return res.respond(new InternalServerError500('New donor insertion unsuccessful'))
+    return res.status(500).send(new InternalServerError500('New donor insertion unsuccessful'))
   }
 
   const dummyDonations = []
@@ -74,11 +74,11 @@ const handlePOSTDonors = async (req, res) => {
   const dummyInsertionResult = await donationInterface.insertManyDonations(dummyDonations)
 
   if (dummyInsertionResult.status !== 'OK') {
-    return res.respond(new InternalServerError500('Dummy donations insertion unsuccessful'))
+    return res.status(500).send(new InternalServerError500('Dummy donations insertion unsuccessful'))
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONORS', donorInsertionResult.data)
-  return res.respond(new CreatedResponse201('New donor inserted successfully', {
+  return res.status(201).send(new CreatedResponse201('New donor inserted successfully', {
     newDonor: donorInsertionResult.data
   }))
 }
@@ -87,17 +87,17 @@ const handleDELETEDonors = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   if (donor.designation > 1) {
-    return res.respond(new ConflictError409('Donor must be demoted for deletion', {}))
+    return res.status(409).send(new ConflictError409('Donor must be demoted for deletion', {}))
   }
 
   const deleteDonorResult = await donorInterface.deleteDonorById(donor._id)
   if (deleteDonorResult.status !== 'OK') {
-    return res.respond(new InternalServerError500('Error occurred in deleting target donor'))
+    return res.status(500).send(new InternalServerError500('Error occurred in deleting target donor'))
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE DONORS', deleteDonorResult.data)
 
-  return res.respond(new OKResponse200('Donor deleted successfully'))
+  return res.status(200).send(new OKResponse200('Donor deleted successfully'))
 }
 
 const handleGETSearchOptimized = async (req, res) => {
@@ -108,7 +108,7 @@ const handleGETSearchOptimized = async (req, res) => {
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
     reqQuery.hall <= 6 &&
     res.locals.middlewareResponse.donor.designation !== 3) {
-    return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'))
+    return res.status(403).send(new ForbiddenError403('You are not allowed to search donors of other halls'))
   }
 
   // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
@@ -123,7 +123,7 @@ const handleGETSearchOptimized = async (req, res) => {
     resultCount: result.data.length
   })
 
-  return res.respond(new OKResponse200('Donors queried successfully', {
+  return res.status(200).send(new OKResponse200('Donors queried successfully', {
     filteredDonors: result.data
   }))
 }
@@ -135,7 +135,7 @@ const handleGETSearchV3 = async (req, res) => {
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
     reqQuery.hall <= 6 &&
     res.locals.middlewareResponse.donor.designation !== 3) {
-    return res.respond(new ForbiddenError403('You are not allowed to search donors of other halls'))
+    return res.status(403).send(new ForbiddenError403('You are not allowed to search donors of other halls'))
   }
 
   // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
@@ -146,7 +146,7 @@ const handleGETSearchV3 = async (req, res) => {
     resultCount: result.data.length
   })
 
-  return res.respond(new OKResponse200('Donors queried successfully', {
+  return res.status(200).send(new OKResponse200('Donors queried successfully', {
     filteredDonors: result.data
   }))
 }
@@ -158,14 +158,14 @@ const handlePATCHDonorsComment = async (req, res) => {
   targetDonor.commentTime = new Date().getTime()
   await targetDonor.save()
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS COMMENT', targetDonor)
-  return res.respond(new OKResponse200('Comment updated successfully'))
+  return res.status(200).send(new OKResponse200('Comment updated successfully'))
 }
 
 const handlePATCHDonorsPassword = async (req, res) => {
   const reqBody = req.body
   const target = res.locals.middlewareResponse.targetDonor
   if (target.designation === 0) {
-    return res.respond(new ConflictError409('Target user does not have an account', {}))
+    return res.status(409).send(new ConflictError409('Target user does not have an account', {}))
   }
 
   target.password = reqBody.password
@@ -175,7 +175,7 @@ const handlePATCHDonorsPassword = async (req, res) => {
   await tokenInterface.deleteAllTokensByDonorId(target._id)
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS PASSWORD', { name: target.name })
-  return res.respond(new OKResponse200('Password changed successfully'))
+  return res.status(200).send(new OKResponse200('Password changed successfully'))
 }
 
 const handlePATCHDonors = async (req, res) => {
@@ -185,11 +185,11 @@ const handlePATCHDonors = async (req, res) => {
   const user = res.locals.middlewareResponse.donor
 
   // if (reqBody.email !== '' && !await emailInterface.checkIfEmailExists(reqBody.email)) {
-  //   return res.respond(new NotFoundError404('Email address does not exist'))
+  //   return res.status(404).send(new NotFoundError404('Email address does not exist'))
   // }
 
   if (target.email !== reqBody.email && !target._id.equals(user._id)) {
-    return res.respond(new ForbiddenError403('You do not have permission to edit email address of another user'))
+    return res.status(403).send(new ForbiddenError403('You do not have permission to edit email address of another user'))
   }
 
   target.name = reqBody.name
@@ -209,7 +209,7 @@ const handlePATCHDonors = async (req, res) => {
   await target.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS', target)
-  return res.respond(new OKResponse200('Donor updated successfully'))
+  return res.status(200).send(new OKResponse200('Donor updated successfully'))
 }
 
 const handlePATCHDonorsDesignation = async (req, res) => {
@@ -218,11 +218,11 @@ const handlePATCHDonorsDesignation = async (req, res) => {
 
   if ((donorDesignation === 1 && req.body.promoteFlag) ||
     (donorDesignation === 0 && !req.body.promoteFlag) || donorDesignation === 3) {
-    return res.respond(new ConflictError409('Can\'t promote volunteer or can\'t demote donor'))
+    return res.status(409).send(new ConflictError409('Can\'t promote volunteer or can\'t demote donor'))
   }
 
   if (donor.hall > 6) {
-    return res.respond(new ConflictError409('Donor does not have a valid hall'))
+    return res.status(409).send(new ConflictError409('Donor does not have a valid hall'))
   }
 
   if (req.body.promoteFlag) {
@@ -241,18 +241,18 @@ const handlePATCHDonorsDesignation = async (req, res) => {
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (' + logOperation + ')', donor)
-  return res.respond(new OKResponse200('Target user promoted/demoted successfully'))
+  return res.status(200).send(new OKResponse200('Target user promoted/demoted successfully'))
 }
 
 const handlePATCHAdmins = async (req, res) => {
   const targetDonor = res.locals.middlewareResponse.targetDonor
 
   if (targetDonor.designation !== 1) {
-    return res.respond(new ConflictError409('User is not a volunteer'))
+    return res.status(409).send(new ConflictError409('User is not a volunteer'))
   }
 
   if (targetDonor.hall > 6) {
-    return res.respond(new ConflictError409('User does not have a valid hall'))
+    return res.status(409).send(new ConflictError409('User does not have a valid hall'))
   }
   await donorInterface.findDonorAndUpdate({
     hall: targetDonor.hall,
@@ -266,7 +266,7 @@ const handlePATCHAdmins = async (req, res) => {
   await targetDonor.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH DONORS DESIGNATION (VOLUNTEER)', { name: targetDonor.name })
-  return res.respond(new OKResponse200('Changed hall admin successfully'))
+  return res.status(200).send(new OKResponse200('Changed hall admin successfully'))
 }
 
 const handleGETDonors = async (req, res) => {
@@ -313,7 +313,7 @@ const handleGETDonors = async (req, res) => {
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS', { name: donor.name })
 
-  return res.respond(new OKResponse200('Fetched donor details successfully', {
+  return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     donor
   }))
 }
@@ -322,12 +322,12 @@ const handleGETDesignatedDonorsAll = async (req, res) => {
   const allDesignatedDonorResult = await donorInterface.findAllDesignatedDonors()
 
   if (allDesignatedDonorResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(allDesignatedDonorResult.message))
+    return res.status(500).send(new InternalServerError500(allDesignatedDonorResult.message))
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS DESIGNATION ALL', {})
 
-  return res.respond(new OKResponse200('Fetched donor details successfully', {
+  return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     data: allDesignatedDonorResult.data
   }))
 }
@@ -344,13 +344,13 @@ const handleGETDonorsDuplicate = async (req, res) => {
       duplicateDonorResult.data.hall > 6 ||
       duplicateDonorResult.data.availableToAll === true
     ) {
-      return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall', {
+      return res.status(200).send(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall', {
         found: true,
         donor: duplicateDonorResult.data
       }))
     }
 
-    return res.respond(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall. You are not permitted to access this donor.', {
+    return res.status(200).send(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data.hall] + ' hall. You are not permitted to access this donor.', {
       found: true,
       donor: null
     }))
@@ -358,7 +358,7 @@ const handleGETDonorsDuplicate = async (req, res) => {
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS CHECKDUPLICATE', { phone: req.query.phone })
 
-  return res.respond(new OKResponse200('No duplicate donors found', {
+  return res.status(200).send(new OKResponse200('No duplicate donors found', {
     found: false,
     donor: null
   }))
@@ -368,22 +368,22 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   if (donor.designation === 0) {
-    return res.respond(new ConflictError409('Donor is not a volunteer/ admin'))
+    return res.status(409).send(new ConflictError409('Donor is not a volunteer/ admin'))
   }
 
   const tokenDeleteResult = await tokenInterface.deleteAllTokensByDonorId(donor._id)
   if (tokenDeleteResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(tokenDeleteResult.message))
+    return res.status(500).send(new InternalServerError500(tokenDeleteResult.message))
   }
 
   const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
   if (tokenInsertResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(tokenInsertResult.message))
+    return res.status(500).send(new InternalServerError500(tokenInsertResult.message))
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONORS PASSWORD (REQUEST)', { name: donor.name })
 
-  return res.respond(new OKResponse200('Created recovery link for user successfully', {
+  return res.status(200).send(new OKResponse200('Created recovery link for user successfully', {
     token: tokenInsertResult.data.token
   }))
 }
@@ -393,26 +393,26 @@ const handleGETDonorsDesignation = async (req, res) => {
 
   const adminsQueryResult = await donorInterface.findAdmins(2)
   if (adminsQueryResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(adminsQueryResult.message))
+    return res.status(500).send(new InternalServerError500(adminsQueryResult.message))
   }
   const adminList = adminsQueryResult.data
 
   const donorsQueryResult = await donorInterface.findVolunteersOfHall(authenticatedUser.hall)
   if (donorsQueryResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(donorsQueryResult.message))
+    return res.status(500).send(new InternalServerError500(donorsQueryResult.message))
   }
 
   const volunteerList = donorsQueryResult.data
 
   const superAdminQuery = await donorInterface.findAdmins(3)
   if (superAdminQuery.status !== 'OK') {
-    return res.respond(new InternalServerError500(superAdminQuery.message))
+    return res.status(500).send(new InternalServerError500(superAdminQuery.message))
   }
   const superAdminList = superAdminQuery.data
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS DESIGNATION', {})
 
-  return res.respond(new OKResponse200('All designated members fetched', {
+  return res.status(200).send(new OKResponse200('All designated members fetched', {
     volunteerList,
     adminList,
     superAdminList
@@ -423,7 +423,7 @@ const handleGETDonorsDuplicateMany = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
   const existingDonorsResult = await donorInterface.findDonorIdsByPhone(authenticatedUser.designation, authenticatedUser.hall, req.query.phoneList)
   await logInterface.addLog(authenticatedUser._id, 'GET DONORS PHONE', { phones: req.query.phoneList })
-  return res.respond(new OKResponse200(existingDonorsResult.message, {
+  return res.status(200).send(new OKResponse200(existingDonorsResult.message, {
     donors: existingDonorsResult.donors
   }))
 }
@@ -432,11 +432,11 @@ const handlePATCHAdminsSuperAdmin = async (req, res)=>{
   const targetDonor = res.locals.middlewareResponse.targetDonor
 
   if (targetDonor._id.equals(MASTER_ADMIN_ID)) {
-    return res.respond(new ForbiddenError403('All hail master admin'))
+    return res.status(403).send(new ForbiddenError403('All hail master admin'))
   }
 
   if(targetDonor.designation!==1 && targetDonor.designation!==3){
-    return res.respond(new ConflictError409('Target donor must be a volunteer or super admin'))
+    return res.status(409).send(new ConflictError409('Target donor must be a volunteer or super admin'))
   }
 
   let message
@@ -449,7 +449,7 @@ const handlePATCHAdminsSuperAdmin = async (req, res)=>{
   }
   await targetDonor.save()
   await logInterface.addLog(targetDonor._id,'PATCH DONORS DESIGNATION SUPERADMIN',{name: targetDonor.name})
-  return res.respond(new OKResponse200(message,{
+  return res.status(200).send(new OKResponse200(message,{
     donor: targetDonor
   }))
 

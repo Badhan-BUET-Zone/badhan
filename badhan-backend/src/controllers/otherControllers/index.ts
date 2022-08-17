@@ -1,15 +1,15 @@
 // @ts-nocheck
 /* tslint:disable */
-const { NotFoundError404 } = require('../../response/errorTypes')
-const { OKResponse200 } = require('../../response/successTypes')
+import { NotFoundError404 } from '../../response/errorTypes'
+import { OKResponse200 } from '../../response/successTypes'
 const deprecatedController = async (req, res) => {
-  return res.respond(new NotFoundError404('Please update your app'))
+  return res.status(404).send(new NotFoundError404('Please update your app'))
 }
 const underMaintenanceController = async (req, res) => {
-  return res.respond(new NotFoundError404('This feature is currently under maintenance'))
+  return res.status(404).send(new NotFoundError404('This feature is currently under maintenance'))
 }
 const onlineCheckController = async (req, res) => {
-  return res.respond(new OKResponse200('Badhan API is online'))
+  return res.status(200).send(new OKResponse200('Badhan API is online'))
 }
 
 module.exports = {

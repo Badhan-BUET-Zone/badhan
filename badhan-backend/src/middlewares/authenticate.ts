@@ -1,19 +1,19 @@
 // @ts-nocheck
 /* tslint:disable */
-const dotenv = require('../dotenv')
+import dotenv from '../dotenv'
 const tokenCache = require('../cache/tokenCache')
 const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
-const { UnauthorizedError401, InternalServerError500, ForbiddenError403, NotFoundError404 } = require('../response/errorTypes')
+import { UnauthorizedError401, InternalServerError500, ForbiddenError403, NotFoundError404 } from '../response/errorTypes'
 
 const handleAuthentication = async (req, res, next) => {
   const token = req.header('x-auth')
 
   try {
-    await jwt.verify(token, dotenv.dotenvEnvFile.JWT_SECRET)
+    await jwt.verify(token, dotenv.JWT_SECRET)
   } catch (e) {
-    return res.respond(new UnauthorizedError401('Invalid Authentication'))
+    return res.status(401).send(new UnauthorizedError401('Invalid Authentication'))
   }
 
   // check whether donor is already in cache
@@ -28,14 +28,14 @@ const handleAuthentication = async (req, res, next) => {
 
   const tokenCheckResult = await tokenInterface.findTokenDataByToken(token)
   if (tokenCheckResult.status !== 'OK') {
-    return res.respond(new UnauthorizedError401('You have been logged out'))
+    return res.status(401).send(new UnauthorizedError401('You have been logged out'))
   }
 
   const tokenData = tokenCheckResult.data
 
   const findDonorResult = await donorInterface.findDonorById(tokenData.donorId)
   if (findDonorResult.status !== 'OK') {
-    return res.respond(new InternalServerError500('No user found associated with token', 'Found in handleAuthentication'))
+    return res.status(500).send(new InternalServerError500('No user found associated with token', 'Found in handleAuthentication',{}))
   }
 
   const donor = findDonorResult.data
@@ -52,12 +52,12 @@ const handleSuperAdminCheck = async (req, res, next) => {
   if (res.locals.middlewareResponse.donor.designation === 3) {
     return next()
   }
-  return res.respond(new ForbiddenError403('You are not permitted to access this route'))
+  return res.status(403).send(new ForbiddenError403('You are not permitted to access this route'))
 }
 
 const handleHallAdminCheck = async (req, res, next) => {
   if (res.locals.middlewareResponse.donor.designation < 2) {
-    return res.respond(new ForbiddenError403('You are not permitted to access this route'))
+    return res.status(403).send(new ForbiddenError403('You are not permitted to access this route'))
   }
   next()
 }
@@ -65,7 +65,7 @@ const handleHallAdminCheck = async (req, res, next) => {
 const handleHigherDesignationCheck = async (req, res, next) => {
   if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation &&
         res.locals.middlewareResponse.donor._id !== res.locals.middlewareResponse.targetDonor._id) {
-    return res.respond(new ForbiddenError403('You cannot modify the details of a Badhan member with higher designation'))
+    return res.status(403).send(new ForbiddenError403('You cannot modify the details of a Badhan member with higher designation'))
   }
   next()
 }
@@ -88,7 +88,7 @@ const handleFetchTargetDonor = async (req, res, next) => {
     _id: donorId
   })
   if (donorQueryResult.status !== 'OK') {
-    return res.respond(new NotFoundError404('Donor not found'))
+    return res.status(404).send(new NotFoundError404('Donor not found'))
   }
   res.locals.middlewareResponse.targetDonor = donorQueryResult.data
   return next()
@@ -112,7 +112,7 @@ const handleHallPermission = async (req, res, next) => {
   if (targetDonor.hall <= 6 &&
         res.locals.middlewareResponse.donor.hall !== targetDonor.hall &&
         res.locals.middlewareResponse.donor.designation !== 3) {
-    return res.respond(new ForbiddenError403('You are not authorized to access a donor of different hall'))
+    return res.status(403).send(new ForbiddenError403('You are not authorized to access a donor of different hall'))
   }
   return next()
 }

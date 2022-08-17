@@ -11,10 +11,10 @@ interface DotenvEnvFile {
   GMAIL_REFRESH_TOKEN?: string,
   VUE_APP_FRONTEND_BASE?: string,
   RATE_LIMITER_ENABLE?: string,
-  MONGODB_URI?: string| undefined
+  MONGODB_URI?: string
 }
 
-export const dotenvEnvFile: DotenvEnvFile = {
+const dotenvEnvFile: DotenvEnvFile = {
   NODE_ENV: process.env.NODE_ENV,
   JWT_SECRET: process.env.JWT_SECRET,
   GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
@@ -33,5 +33,7 @@ Object.entries(dotenvEnvFile).forEach(([key, value], index) => {
     process.exit(1)
   }
 });
+
+export default dotenvEnvFile
 
 

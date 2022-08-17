@@ -25,4 +25,4 @@ router.delete('/',
   donationController.handleDELETEDonations
 )
 
-module.exports = router
+export default router

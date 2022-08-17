@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* tslint:disable */
-const dotenv = require('../../dotenv')
+import dotenv from '../../dotenv'
 const tokenCache = require('../../cache/tokenCache')
 const { Token } = require('../models/Token')
 const jwt = require('jsonwebtoken')
@@ -12,7 +12,7 @@ const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
   const token = await jwt.sign({
     _id: String(donorId),
     access: 'auth'
-  }, dotenv.dotenvEnvFile.JWT_SECRET, options).toString()
+  }, dotenv.JWT_SECRET, options).toString()
   const tokenData = new Token({ donorId, token, ...userAgent })
   const data = await tokenData.save()
   if (data.nInserted === 0) {

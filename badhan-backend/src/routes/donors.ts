@@ -142,4 +142,4 @@ router.patch('/admins/superadmin',
   donorController.handlePATCHAdminsSuperAdmin
 )
 
-module.exports = router
+export default router

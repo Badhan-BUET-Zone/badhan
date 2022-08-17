@@ -61,4 +61,4 @@ router.delete('/log',
   logController.handleDELETELogs
 )
 
-module.exports = router
+export default router

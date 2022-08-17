@@ -2,11 +2,11 @@
 /* tslint:disable */
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
-const {
+import {
   InternalServerError500,
   NotFoundError404
-} = require('../response/errorTypes')
-const { CreatedResponse201, OKResponse200 } = require('../response/successTypes')
+} from '../response/errorTypes'
+import { CreatedResponse201, OKResponse200 } from '../response/successTypes'
 
 const handlePOSTDonations = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
@@ -18,7 +18,7 @@ const handlePOSTDonations = async (req, res) => {
   })
 
   if (donationInsertionResult.status !== 'OK') {
-    return res.respond(new InternalServerError500(donationInsertionResult.message))
+    return res.status(500).send(new InternalServerError500(donationInsertionResult.message))
   }
 
   if (donor.lastDonation < req.body.date) {
@@ -32,7 +32,7 @@ const handlePOSTDonations = async (req, res) => {
     donor: donor.name
   })
 
-  return res.respond(new CreatedResponse201('Donation inserted successfully', {
+  return res.status(201).send(new CreatedResponse201('Donation inserted successfully', {
     newDonation: donationInsertionResult.data
   }))
 }
@@ -48,7 +48,7 @@ const handleDELETEDonations = async (req, res) => {
   })
 
   if (donationDeletionResult.status !== 'OK') {
-    return res.respond(new NotFoundError404('Matching donation not found'))
+    return res.status(404).send(new NotFoundError404('Matching donation not found'))
   }
 
   const maxDonationResult = await donationInterface.findMaxDonationByDonorId(donor._id)
@@ -66,9 +66,9 @@ const handleDELETEDonations = async (req, res) => {
     name: donor.name
   })
 
-  return res.respond(new OKResponse200('Deleted donation successfully'), {
+  return res.status(200).send(new OKResponse200('Deleted donation successfully', {
     deletedDonation: donationDeletionResult.data
-  })
+  }))
 }
 
 module.exports = {

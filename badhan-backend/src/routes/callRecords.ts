@@ -26,4 +26,4 @@ router.delete('/',
   callRecordController.handleDELETECallRecord
 )
 
-module.exports = router
+export default router

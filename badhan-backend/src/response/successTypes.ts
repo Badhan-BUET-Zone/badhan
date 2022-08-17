@@ -1,13 +1,15 @@
-// @ts-nocheck
-/* tslint:disable */
-class BaseSuccessResponse {
+/* tslint:disable:max-classes-per-file */
+export class BaseSuccessResponse {
+  private status: string;
+  private statusCode: number;
+  private message: string;
   /**
-     * @param {string} status - OK, ERROR or EXCEPTION, the summary of the response type
-     * @param {number} statusCode - appropriate status code as per the guideline of mozilla
-     * @param {string} message - main message as the response
-     * @param {object} payload - additional objects to be sent to client
-     */
-  constructor (status, statusCode, message, payload) {
+   * @param {string} status - OK, ERROR or EXCEPTION, the summary of the response type
+   * @param {number} statusCode - appropriate status code as per the guideline of mozilla
+   * @param {string} message - main message as the response
+   * @param {object} payload - additional objects to be sent to client
+   */
+  constructor (status: string, statusCode: number, message: string, payload: any) {
     this.status = status
     this.statusCode = statusCode
     this.message = message
@@ -17,11 +19,11 @@ class BaseSuccessResponse {
   }
 }
 
-class OKResponse200 extends BaseSuccessResponse {
+export class OKResponse200 extends BaseSuccessResponse {
   /**
-     * @param {string} message - success response
-     * @param {object} payload - response object for the user
-     */
+   * @param {string} message - success response
+   * @param {object} payload - response object for the user
+   */
 
   /*
     200 OK
@@ -32,29 +34,24 @@ class OKResponse200 extends BaseSuccessResponse {
     TRACE: The message body contains the request message as received by the server.
      */
 
-  constructor (message, payload) {
+  constructor (message: string, payload: any) {
     super('OK', 200, message, payload)
   }
 }
 
-class CreatedResponse201 extends BaseSuccessResponse {
+export class CreatedResponse201 extends BaseSuccessResponse {
   /**
-     * @param {string} message - success response
-     * @param {object} payload - response object for the user
-     */
+   * @param {string} message - success response
+   * @param {object} payload - response object for the user
+   */
 
   /*
 201 Created
 The request has succeeded and a new resource has been created as a result.
 This is typically the response sent after POST requests, or some PUT requests.
  */
-  constructor (message, payload) {
+  constructor (message: string, payload: any) {
     super('OK', 201, message, payload)
   }
 }
 
-module.exports = {
-  OKResponse200,
-  CreatedResponse201,
-  BaseSuccessResponse
-}

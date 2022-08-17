@@ -1,15 +1,15 @@
 // @ts-nocheck
 /* tslint:disable */
 const faker = require('../doc/faker')
-const {
+import {
   OKResponse200,
   CreatedResponse201
-} = require('../response/successTypes')
+} from '../response/successTypes'
 
 const logController = require('../controllers/logController')
 
 const handlePOSTLogIn = async (req, res) => {
-  return res.respond(new CreatedResponse201('Guest sign in will not show actual nor accurate data', {
+  return res.status(201).send(new CreatedResponse201('Guest sign in will not show actual nor accurate data', {
     token: faker.getToken()
   }))
 }
@@ -32,13 +32,13 @@ const handlePOSTViewDonorDetailsSelf = async (req, res) => {
     lastDonation: faker.getTimestamp(240)
   }
 
-  return res.respond(new OKResponse200('Fetched donor details successfully', {
+  return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     donor: obj
   }))
 }
 
 const handlePOSTInsertDonor = async (req, res) => {
-  return res.respond(new CreatedResponse201('New donor inserted successfully', {
+  return res.status(201).send(new CreatedResponse201('New donor inserted successfully', {
     newDonor: {
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
@@ -59,11 +59,11 @@ const handlePOSTInsertDonor = async (req, res) => {
 }
 
 const handlePOSTLogOut = async (req, res) => {
-  return res.respond(new OKResponse200('Logged out successfully'))
+  return res.status(200).send(new OKResponse200('Logged out successfully'))
 }
 
 const handlePOSTLogOutAll = async (req, res) => {
-  return res.respond(new OKResponse200('Logged out from all devices successfully'))
+  return res.status(200).send(new OKResponse200('Logged out from all devices successfully'))
 }
 
 const handlePOSTSearchDonors = async (req, res) => {
@@ -108,35 +108,35 @@ const handlePOSTSearchDonors = async (req, res) => {
     })
   }
 
-  return res.respond(new OKResponse200('Donors queried successfully', {
+  return res.status(200).send(new OKResponse200('Donors queried successfully', {
     filteredDonors
   }))
 }
 
 const handlePOSTDeleteDonor = async (req, res) => {
-  return res.respond(new OKResponse200('Donor deleted successfully'))
+  return res.status(200).send(new OKResponse200('Donor deleted successfully'))
 }
 
 const handlePOSTComment = async (req, res) => {
-  return res.respond(new OKResponse200('Comment posted successfully'))
+  return res.status(200).send(new OKResponse200('Comment posted successfully'))
 }
 
 const handlePOSTChangePassword = async (req, res) => {
-  return res.respond(new OKResponse200('Created recovery link for user successfully', {
+  return res.status(200).send(new OKResponse200('Created recovery link for user successfully', {
     token: faker.getToken()
   }))
 }
 
 const handlePOSTEditDonor = async (req, res) => {
-  return res.respond(new OKResponse200('Donor updated successfully'))
+  return res.status(200).send(new OKResponse200('Donor updated successfully'))
 }
 
 const handlePOSTPromote = async (req, res) => {
-  return res.respond(new OKResponse200('Target user promoted/demoted successfully'))
+  return res.status(200).send(new OKResponse200('Target user promoted/demoted successfully'))
 }
 
 const handlePOSTChangeAdmin = async (req, res) => {
-  return res.respond(new OKResponse200('Changed hall admin successfully'))
+  return res.status(200).send(new OKResponse200('Changed hall admin successfully'))
 }
 
 const handleGETViewDonorDetails = async (req, res) => {
@@ -211,7 +211,7 @@ const handleGETViewDonorDetails = async (req, res) => {
     markedBy: randomMarker
   }
 
-  return res.respond(new OKResponse200('Fetched donor details successfully', {
+  return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     donor: obj
   }))
 }
@@ -229,7 +229,7 @@ const handlePOSTViewVolunteersOfOwnHall = async (req, res) => {
     })
   }
 
-  return res.respond(new OKResponse200('Volunteer list fetched successfully', {
+  return res.status(200).send(new OKResponse200('Volunteer list fetched successfully', {
     volunteerList
   }))
 }
@@ -244,13 +244,13 @@ const handlePOSTShowHallAdmins = async (req, res) => {
       phone: faker.getPhone()
     })
   }
-  return res.respond(new OKResponse200('Hall admin list fetched successfully', {
+  return res.status(200).send(new OKResponse200('Hall admin list fetched successfully', {
     admins
   }))
 }
 
 const handlePOSTInsertDonation = async (req, res) => {
-  return res.respond(new CreatedResponse201('Donation inserted successfully', {
+  return res.status(201).send(new CreatedResponse201('Donation inserted successfully', {
     newDonation: {
       date: faker.getTimestamp(10),
       _id: faker.getId(),
@@ -261,11 +261,18 @@ const handlePOSTInsertDonation = async (req, res) => {
 }
 
 const handlePOSTDeleteDonation = async (req, res) => {
-  return res.respond(new OKResponse200('Deleted donation successfully'))
+  return res.status(200).send(new OKResponse200('Deleted donation successfully',{
+    deletedDonation: {
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      donorId: faker.getId(),
+      date: faker.getTimestamp(5)
+    }
+  }))
 }
 
 const handleGETStatistics = async (req, res) => {
-  return res.respond(new OKResponse200('Statistics fetched successfully', {
+  return res.status(200).send(new OKResponse200('Statistics fetched successfully', {
     statistics: {
       donorCount: faker.getRandomIndex(2600),
       donationCount: faker.getRandomIndex(1200),
@@ -275,7 +282,7 @@ const handleGETStatistics = async (req, res) => {
 }
 
 const handleDELETELogs = async (req, res) => {
-  return res.respond(new OKResponse200('All logs deleted successfully'))
+  return res.status(200).send(new OKResponse200('All logs deleted successfully'))
 }
 
 const handleGETViewAllVolunteers = async (req, res) => {
@@ -290,13 +297,13 @@ const handleGETViewAllVolunteers = async (req, res) => {
     })
   }
 
-  return res.respond(new OKResponse200('Fetched donor details successfully', {
+  return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     data: object
   }))
 }
 
 const handlePOSTCallRecord = async (req, res) => {
-  return res.respond(new CreatedResponse201('Call record insertion successful', {
+  return res.status(201).send(new CreatedResponse201('Call record insertion successful', {
     callRecord: {
       date: faker.getTimestamp(),
       _id: faker.getId(),
@@ -308,7 +315,7 @@ const handlePOSTCallRecord = async (req, res) => {
 }
 
 const handleDELETECallRecord = async (req, res) => {
-  return res.respond(new OKResponse200('Call record deletion successful', {
+  return res.status(200).send(new OKResponse200('Call record deletion successful', {
     deletedCallRecord: {
       date: faker.getTimestamp(10),
       _id: faker.getId(),
@@ -320,7 +327,7 @@ const handleDELETECallRecord = async (req, res) => {
 }
 
 const handleGETDonorsDuplicate = async (req, res) => {
-  return res.respond(new OKResponse200('Duplicate donor found', {
+  return res.status(200).send(new OKResponse200('Duplicate donor found', {
     found: true,
     donor: {
       address: faker.getAddress(),
@@ -350,7 +357,7 @@ const handleGETLogs = async (req, res) => {
       totalLogCount: faker.getRandomIndex(20)
     })
   }
-  return res.respond(new OKResponse200('All logs fetched successfully', {
+  return res.status(200).send(new OKResponse200('All logs fetched successfully', {
     logs
   }))
 }
@@ -366,7 +373,7 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
       details: {}
     })
   }
-  return res.respond(new OKResponse200('Logs fetched by user and date', {
+  return res.status(200).send(new OKResponse200('Logs fetched by user and date', {
     logs
   }))
 }
@@ -381,19 +388,19 @@ const handleGETLogsByDate = async (req, res) => {
       count: faker.getRandomIndex(20)
     })
   }
-  return res.respond(new OKResponse200('Logs fetched by date successfully', {
+  return res.status(200).send(new OKResponse200('Logs fetched by date successfully', {
     logs
   }))
 }
 
 const handlePATCHPassword = async (req, res) => {
-  return res.respond(new CreatedResponse201('Password changed successfully', {
+  return res.status(201).send(new CreatedResponse201('Password changed successfully', {
     token: faker.getToken()
   }))
 }
 
 const handlePOSTPublicContact = async (req, res) => {
-  return res.respond(new CreatedResponse201('Public contact added successfully', {
+  return res.status(201).send(new CreatedResponse201('Public contact added successfully', {
     publicContact: {
       bloodGroup: 2,
       _id: faker.getId(),
@@ -403,7 +410,7 @@ const handlePOSTPublicContact = async (req, res) => {
 }
 
 const handleDELETEPublicContact = async (req, res) => {
-  return res.respond(new OKResponse200('Public contact deleted successfully'))
+  return res.status(200).send(new OKResponse200('Public contact deleted successfully'))
 }
 
 const handleGETPublicContacts = async (req, res) => {
@@ -439,7 +446,7 @@ const handleGETPublicContacts = async (req, res) => {
     })
   }
 
-  return res.respond(new OKResponse200('All public contacts fetched successfully', {
+  return res.status(200).send(new OKResponse200('All public contacts fetched successfully', {
     publicContacts
   }))
 }
@@ -478,7 +485,7 @@ const handleGETDonorsDesignation = async (req, res) => {
     })
   }
 
-  return res.respond(new OKResponse200('All designated members fetched', {
+  return res.status(200).send(new OKResponse200('All designated members fetched', {
     volunteerList,
     adminList,
     superAdminList
@@ -516,17 +523,17 @@ const handleGETLogins = (req, res) => {
     ipAddress: '9.10.11.12'
   }
 
-  return res.respond(new OKResponse200('Recent logins fetched successfully', {
+  return res.status(200).send(new OKResponse200('Recent logins fetched successfully', {
     logins,
     currentLogin
   }))
 }
 const handleDELETELogins = (req, res) => {
-  return res.respond(new OKResponse200('Logged out from specified device'))
+  return res.status(200).send(new OKResponse200('Logged out from specified device'))
 }
 
 const handleDELETEActiveDonors = (req, res) => {
-  return res.respond(new OKResponse200('Active donor deleted successfully', {
+  return res.status(200).send(new OKResponse200('Active donor deleted successfully', {
     removedActiveDonor: {
       _id: faker.getId(),
       donorId: faker.getId(),
@@ -537,7 +544,7 @@ const handleDELETEActiveDonors = (req, res) => {
 }
 
 const handlePOSTActiveDonors = async (req, res) => {
-  return res.respond(new CreatedResponse201('Active donor created', {
+  return res.status(201).send(new CreatedResponse201('Active donor created', {
     newActiveDonor: {
       _id: faker.getId(),
       donorId: faker.getId(),
@@ -570,7 +577,7 @@ const handleGETActiveDonors = async (req, res) => {
       lastCallRecord: faker.getTimestamp(2)
     })
   }
-  return res.respond(new OKResponse200('Active donor fetched successfully', {
+  return res.status(200).send(new OKResponse200('Active donor fetched successfully', {
     activeDonors: filteredActiveDonors
   }))
 }
@@ -578,7 +585,7 @@ const handleGETActiveDonors = async (req, res) => {
 const handleGETAppVersions = logController.handleGETAppVersions
 
 const handlePATCHAdminsSuperAdmin = async (req,res) => {
-  return res.respond(new OKResponse200('Donor has been promoted to Super Admin',{
+  return res.status(200).send(new OKResponse200('Donor has been promoted to Super Admin',{
     donor: {
       _id: faker.getId(),
       phone: faker.getPhone(),

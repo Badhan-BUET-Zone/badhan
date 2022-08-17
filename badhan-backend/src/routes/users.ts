@@ -71,4 +71,4 @@ router.delete('/logins/:tokenId',
   userController.handleDELETELogins
 )
 
-module.exports = router
+export default router

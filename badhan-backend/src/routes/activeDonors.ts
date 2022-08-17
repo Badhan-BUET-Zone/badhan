@@ -33,4 +33,4 @@ router.get('/',
   activeDonorController.handleGETActiveDonors
 )
 
-module.exports = router
+export default router
