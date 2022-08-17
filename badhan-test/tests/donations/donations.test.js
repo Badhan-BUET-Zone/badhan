@@ -29,9 +29,20 @@ const deleteDonationSchema={
     properties: {
         status: {type: "string"},
         statusCode: {const: 200},
-        message: {type: "string"}
+        message: {type: "string"},
+        deletedDonation: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                _id: {type: "string"},
+                date: {type: "number"},
+                donorId: {type: "string"},
+                phone: {type: "number"}
+            },
+            required: ["_id", "date", "donorId","phone"]
+        }
     },
-    required: ["status", "statusCode", "message"]
+    required: ["status", "statusCode", "message","deletedDonation"]
 }
 
 test('POST&DELETE/donations', async () => {
