@@ -5,8 +5,8 @@ const router = AsyncRouter()
 
 const userController = require('../controllers/userController')
 const donorController = require('../controllers/donorController')
-const authenticator = require('../middlewares/authenticate')
-const rateLimiter = require('../middlewares/rateLimiter')
+import authenticator from '../middlewares/authenticate'
+import rateLimiter from '../middlewares/rateLimiter'
 const donorValidator = require('../validations/donors')
 const queue = require('../middlewares/queue')
 

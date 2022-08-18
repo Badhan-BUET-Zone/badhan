@@ -4,9 +4,9 @@ const AsyncRouter = require('express-async-router').AsyncRouter
 import { underMaintenanceController } from '../controllers/otherControllers'
 const router = AsyncRouter()
 
-const authenticator = require('../middlewares/authenticate')
+import authenticator from '../middlewares/authenticate'
 const userController = require('../controllers/userController')
-const rateLimiter = require('../middlewares/rateLimiter')
+import rateLimiter from '../middlewares/rateLimiter'
 const userValidator = require('../validations/users')
 
 router.post('/signin',

@@ -117,7 +117,7 @@ const handleHallPermission = async (req, res, next) => {
   return next()
 }
 
-module.exports = {
+export default {
   // CHECK PERMISSIONS
   handleAuthentication,
   handleHallAdminCheck,

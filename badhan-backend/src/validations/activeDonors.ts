@@ -36,7 +36,7 @@ const validateGETActiveDonors = validate([
   validateQUERYAvailableToAllOrHall
 ])
 
-module.exports = {
+export default {
   validatePOSTActiveDonors,
   validateDELETEActiveDonors,
   validateGETActiveDonors

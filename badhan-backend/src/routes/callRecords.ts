@@ -4,8 +4,8 @@ const AsyncRouter = require('express-async-router').AsyncRouter
 const router = AsyncRouter()
 
 const callRecordController = require('../controllers/callRecordController')
-const authenticator = require('../middlewares/authenticate')
-const rateLimiter = require('../middlewares/rateLimiter')
+import authenticator from '../middlewares/authenticate'
+import rateLimiter from '../middlewares/rateLimiter'
 const callRecordValidator = require('../validations/callRecords')
 
 router.post('/',

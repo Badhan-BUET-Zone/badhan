@@ -4,8 +4,8 @@ const AsyncRouter = require('express-async-router').AsyncRouter
 const router = AsyncRouter()
 const logController = require('../controllers/logController')
 import { deprecatedController } from '../controllers/otherControllers'
-const authenticator = require('../middlewares/authenticate')
-const rateLimiter = require('../middlewares/rateLimiter')
+import authenticator from '../middlewares/authenticate'
+import rateLimiter from '../middlewares/rateLimiter'
 
 const logValidator = require('../validations/logs')
 

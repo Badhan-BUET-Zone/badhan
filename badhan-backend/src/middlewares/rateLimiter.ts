@@ -3,6 +3,7 @@
 import dotenv from '../dotenv'
 const rateLimit = require('express-rate-limit')
 import { TooManyRequestsError429 } from '../response/errorTypes'
+import exp from "constants";
 
 const rateLimiterEnabled = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
 const minute = 60 * 1000
@@ -71,7 +72,7 @@ const publicContactDeletionLimiter = rateLimit({
   message: commonRateLimiterError
 })
 
-module.exports = {
+export default {
   signInLimiter,
   donationInsertionLimiter,
   donorInsertionLimiter,

@@ -64,7 +64,7 @@ const handleGETActiveDonors = async (req, res) => {
   }))
 }
 
-module.exports = {
+export default {
   handlePOSTActiveDonors,
   handleDELETEActiveDonors,
   handleGETActiveDonors

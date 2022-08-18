@@ -3,8 +3,8 @@
 const AsyncRouter = require('express-async-router').AsyncRouter
 const router = AsyncRouter()
 const donationController = require('../controllers/donationController')
-const authenticator = require('../middlewares/authenticate')
-const rateLimiter = require('../middlewares/rateLimiter')
+import authenticator from '../middlewares/authenticate'
+import rateLimiter from '../middlewares/rateLimiter'
 const donationValidator = require('../validations/donations')
 
 router.post('/',
