@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
 const AsyncRouter = require('express-async-router').AsyncRouter
-const otherControllers = require('../controllers/otherControllers')
+import { underMaintenanceController } from '../controllers/otherControllers'
 const router = AsyncRouter()
 
 const authenticator = require('../middlewares/authenticate')
@@ -45,7 +45,7 @@ router.patch('/redirection',
 )
 
 router.post('/password/forgot',
-  otherControllers.underMaintenanceController
+    underMaintenanceController
   // rateLimiter.passwordForgotLimiter,
   // userValidator.validatePOSTPasswordForgot,
   // userController.handlePOSTPasswordForgot

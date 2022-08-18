@@ -1,12 +1,12 @@
-// @ts-nocheck
-/* tslint:disable */
 /**
  * Module dependencies.
  */
 
-const app = require('../app')
-const debug = require('debug')('badhan-backend:server')
-const http = require('http')
+import app from '../app'
+import DebugLibrary from 'debug'
+const debug = DebugLibrary('badhan-backend:server')
+
+import http from 'http'
 
 /**
  * Get port from environment and store in Express.
@@ -33,17 +33,17 @@ server.on('listening', onListening)
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort (val) {
-  const port = parseInt(val, 10)
+function normalizePort (val: string) {
+  const rawPort = parseInt(val, 10)
 
-  if (isNaN(port)) {
+  if (isNaN(rawPort)) {
     // named pipe
     return val
   }
 
-  if (port >= 0) {
+  if (rawPort >= 0) {
     // port number
-    return port
+    return rawPort
   }
 
   return false
@@ -53,7 +53,15 @@ function normalizePort (val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError (error) {
+interface ErrnoException extends Error {
+  errno?: number;
+  code?: string;
+  path?: string;
+  syscall?: string;
+  stack?: string;
+}
+
+function onError (error: ErrnoException) {
   if (error.syscall !== 'listen') {
     throw error
   }
@@ -65,17 +73,15 @@ function onError (error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
+      // tslint:disable-next-line:no-console
       console.error(bind + ' requires elevated privileges')
       process.exit(1)
-      /* eslint-disable no-unreachable */
       break
-      /* eslint-enable no-unreachable */
     case 'EADDRINUSE':
+      // tslint:disable-next-line:no-console
       console.error(bind + ' is already in use')
       process.exit(1)
-      /* eslint-disable no-unreachable */
       break
-      /* eslint-enable no-unreachable */
     default:
       throw error
   }
@@ -87,8 +93,9 @@ function onError (error) {
 
 function onListening () {
   const addr = server.address()
+  // https://stackoverflow.com/questions/40349987/how-to-suppress-error-ts2533-object-is-possibly-null-or-undefined
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
-    : 'port ' + addr.port
+    : 'port ' + addr!.port
   debug('Listening on ' + bind)
 }

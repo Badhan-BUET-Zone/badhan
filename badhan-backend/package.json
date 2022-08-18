@@ -42,7 +42,11 @@
     "useragent": "^2.3.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.12",
+    "@types/debug": "^4.1.7",
     "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.3",
     "@types/node": "^18.7.2",
     "cross-env": "^7.0.3",
     "nodemon": "^2.0.19",
