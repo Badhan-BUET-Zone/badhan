@@ -1,11 +1,10 @@
-// @ts-nocheck
-/* tslint:disable */
-const AsyncRouter = require('express-async-router').AsyncRouter
+import { AsyncRouter } from 'express-async-router'
 const router = AsyncRouter()
-const donationController = require('../controllers/donationController')
+
+import donationController from '../controllers/donationController'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
-const donationValidator = require('../validations/donations')
+import donationValidator from '../validations/donations'
 
 router.post('/',
   donationValidator.validatePOSTDonations,

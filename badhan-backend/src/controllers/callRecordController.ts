@@ -44,7 +44,7 @@ const handleDELETECallRecord = async (req, res) => {
   }))
 }
 
-module.exports = {
+export default {
   handlePOSTCallRecord,
   handleDELETECallRecord
 }

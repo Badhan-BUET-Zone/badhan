@@ -86,7 +86,7 @@ const validatePATCHAdminsSuperAdmin = validate([
   validateBODYPromoteFlag
 ])
 
-module.exports = {
+export default {
   validatePOSTDonors,
   validatePATCHDonors,
   validatePATCHDonorsComment,

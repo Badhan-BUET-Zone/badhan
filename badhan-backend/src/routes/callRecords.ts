@@ -1,12 +1,10 @@
-// @ts-nocheck
-/* tslint:disable */
-const AsyncRouter = require('express-async-router').AsyncRouter
+import { AsyncRouter } from 'express-async-router'
 const router = AsyncRouter()
 
-const callRecordController = require('../controllers/callRecordController')
+import callRecordController from '../controllers/callRecordController'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
-const callRecordValidator = require('../validations/callRecords')
+import callRecordValidator from '../validations/callRecords'
 
 router.post('/',
   callRecordValidator.validatePOSTCallRecords,

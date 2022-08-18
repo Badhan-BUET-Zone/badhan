@@ -71,7 +71,7 @@ const handleDELETEDonations = async (req, res) => {
   }))
 }
 
-module.exports = {
+export default {
   handlePOSTDonations,
   handleDELETEDonations
 }

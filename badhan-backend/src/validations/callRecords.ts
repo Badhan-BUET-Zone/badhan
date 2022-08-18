@@ -13,7 +13,7 @@ const validateDELETECallRecords = validate([
   validateQUERYCallRecordId
 ])
 
-module.exports = {
+export default {
   validatePOSTCallRecords,
   validateDELETECallRecords
 }

@@ -5,7 +5,7 @@ import { underMaintenanceController } from '../controllers/otherControllers'
 const router = AsyncRouter()
 
 import authenticator from '../middlewares/authenticate'
-const userController = require('../controllers/userController')
+import userController from '../controllers/userController'
 import rateLimiter from '../middlewares/rateLimiter'
 const userValidator = require('../validations/users')
 

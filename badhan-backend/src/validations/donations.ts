@@ -14,7 +14,7 @@ const validateDELETEDonations = validate([
   validateQUERYDate
 ])
 
-module.exports = {
+export default {
   validatePOSTDonations,
   validateDELETEDonations
 }

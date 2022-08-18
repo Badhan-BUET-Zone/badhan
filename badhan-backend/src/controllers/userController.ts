@@ -217,7 +217,7 @@ const handleGETMe = async (req, res) => {
   }))
 }
 
-module.exports = {
+export default {
   // TOKEN HANDLERS
   handlePOSTSignIn,
   handleDELETESignOut,

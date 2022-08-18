@@ -455,7 +455,7 @@ const handlePATCHAdminsSuperAdmin = async (req, res)=>{
 
 }
 
-module.exports = {
+export default {
   handlePOSTDonors,
   handleDELETEDonors,
   handleGETSearchOptimized,
