@@ -1,12 +1,10 @@
-// @ts-nocheck
-/* tslint:disable */
-const AsyncRouter = require('express-async-router').AsyncRouter
+import { AsyncRouter } from 'express-async-router'
 const router = AsyncRouter()
 
-const publicContactController = require('../controllers/publicContactController')
+import publicContactController from '../controllers/publicContactController'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
-const publicContactValidator = require('../validations/publicContacts')
+import publicContactValidator from '../validations/publicContacts'
 
 router.post('/',
   rateLimiter.publicContactInsertionLimiter,

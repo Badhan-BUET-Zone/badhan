@@ -1,9 +1,7 @@
-// @ts-nocheck
-/* tslint:disable */
-const AsyncRouter = require('express-async-router').AsyncRouter
+import { AsyncRouter } from 'express-async-router'
 const router = AsyncRouter()
 
-const guestController = require('../controllers/guestController')
+import guestController from '../controllers/guestController'
 
 router.post('/users/signin',
   guestController.handlePOSTLogIn

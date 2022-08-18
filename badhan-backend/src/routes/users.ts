@@ -1,13 +1,12 @@
-// @ts-nocheck
-/* tslint:disable */
-const AsyncRouter = require('express-async-router').AsyncRouter
-import { underMaintenanceController } from '../controllers/otherControllers'
+import { AsyncRouter } from 'express-async-router'
 const router = AsyncRouter()
+
+import { underMaintenanceController } from '../controllers/otherControllers'
 
 import authenticator from '../middlewares/authenticate'
 import userController from '../controllers/userController'
 import rateLimiter from '../middlewares/rateLimiter'
-const userValidator = require('../validations/users')
+import userValidator from '../validations/users'
 
 router.post('/signin',
   userValidator.validateLogin,

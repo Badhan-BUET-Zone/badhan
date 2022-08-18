@@ -14,7 +14,7 @@ const validateDELETEPublicContact = validate([
   validateQUERYPublicContactId
 ])
 
-module.exports = {
+export default {
   validatePOSTPublicContact,
   validateDELETEPublicContact
 }

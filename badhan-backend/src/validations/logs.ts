@@ -12,7 +12,7 @@ const validateGETLogsByDateAndDonor = validate([
   validatePARAMDate
 ])
 
-module.exports = {
+export default {
   validateGETLogsByDate,
   validateGETLogsByDateAndDonor
 }

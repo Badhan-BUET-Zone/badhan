@@ -1,13 +1,11 @@
-// @ts-nocheck
-/* tslint:disable */
-const AsyncRouter = require('express-async-router').AsyncRouter
+import { AsyncRouter } from 'express-async-router'
 const router = AsyncRouter()
-const logController = require('../controllers/logController')
+
+import logController from '../controllers/logController'
 import { deprecatedController } from '../controllers/otherControllers'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
-
-const logValidator = require('../validations/logs')
+import logValidator from '../validations/logs'
 
 router.get('/v3/log/version',
   rateLimiter.commonLimiter,

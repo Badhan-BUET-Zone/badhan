@@ -125,7 +125,7 @@ const handleDELETELogs = async (req, res) => {
   return res.status(200).send(new OKResponse200('All logs deleted successfully'))
 }
 
-module.exports = {
+export default {
   handleGETStatistics,
   handleGETAppVersions,
   handleGETLogs,

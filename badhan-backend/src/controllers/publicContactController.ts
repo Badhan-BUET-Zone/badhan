@@ -47,7 +47,7 @@ const handleDELETEPublicContact = async (req, res) => {
 
   return res.status(200).send(new OKResponse200('Public contact deleted successfully'))
 }
-module.exports = {
+export default {
   handlePOSTPublicContact,
   handleDELETEPublicContact,
   handleGETPublicContacts

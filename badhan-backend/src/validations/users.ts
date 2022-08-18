@@ -20,7 +20,7 @@ const validateDELETELogins = validate([
   validatePARAMTokenId
 ])
 
-module.exports = {
+export default {
   validateLogin,
   validatePATCHPassword,
   validatePOSTPasswordForgot,

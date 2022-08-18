@@ -6,7 +6,7 @@ import {
   CreatedResponse201
 } from '../response/successTypes'
 
-const logController = require('../controllers/logController')
+import logController from '../controllers/logController'
 
 const handlePOSTLogIn = async (req, res) => {
   return res.status(201).send(new CreatedResponse201('Guest sign in will not show actual nor accurate data', {
@@ -605,7 +605,7 @@ const handlePATCHAdminsSuperAdmin = async (req,res) => {
   }))
 }
 
-module.exports = {
+export default {
   handlePOSTLogIn,
   handlePOSTViewDonorDetailsSelf,
   handlePOSTSearchDonors,
