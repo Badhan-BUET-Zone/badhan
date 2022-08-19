@@ -238,7 +238,7 @@ donorSchema.pre('save', function (next) {
   const donor = this
   if (donor.isModified('password')) {
     bcrypt.genSalt(10, (err: Error, salt: string) => {
-      bcrypt.hash(donor.password, salt, (errHash: Error, hash: string) => {
+      bcrypt.hash(donor.password, salt, (errHash: Error, hash: string | undefined) => {
         donor.password = hash
         next()
       })
