@@ -259,6 +259,6 @@ donorSchema.post('findOneAndDelete', async (donor) => {
   await ActiveDonor.deleteMany({ markerId: donor._id })
 })
 
-const Donor = mongoose.model('Donor', donorSchema)
+export default mongoose.model('Donor', donorSchema)
 
-module.exports = { Donor }
+

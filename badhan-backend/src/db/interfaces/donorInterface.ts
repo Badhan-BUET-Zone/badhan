@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* tslint:disable */
-const { Donor } = require('../models/Donor')
+import Donor from '../models/Donor'
 const insertDonor = async (donorObject) => {
   const donor = new Donor(donorObject)
   const data = await donor.save()
