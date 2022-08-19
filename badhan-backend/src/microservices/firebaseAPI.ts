@@ -1,17 +1,13 @@
-// @ts-nocheck
-/* tslint:disable */
-const axios = require('axios')
+import axios from 'axios'
+// https://github.com/axios/axios/issues/3612#issuecomment-770224236
 const firebaseAxios = axios.create({
   baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'
 })
 
-const handleGETFirebaseGooglePlayVersion = async () => {
+export const handleGETFirebaseGooglePlayVersion = async () => {
   try {
     return await firebaseAxios.get('/frontendSettings.json')
-  } catch (e) {
+  } catch (e: any) {
     return e.response
   }
-}
-module.exports = {
-  handleGETFirebaseGooglePlayVersion
 }

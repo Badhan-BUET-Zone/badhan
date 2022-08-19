@@ -3,10 +3,8 @@ import express from 'express'
 import dotenv from './dotenv'
 import { handleJsonBodyParseFailures } from './response/bodyParser'
 import cookieParser from 'cookie-parser'
-
 import logger from 'morgan'
 import cors from 'cors'
-
 import apiRouter from './routes/donors'
 import usersRouter from './routes/users'
 import donationsRouter from './routes/donations'
@@ -15,13 +13,9 @@ import callRecordRouter from './routes/callRecords'
 import publicContactsRouter from './routes/publicContacts'
 import logRouter from './routes/logs'
 import activeDonorsRouter from './routes/activeDonors'
-
 import './db/mongoose'
-
 import { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } from './response/errorHandlers'
-
 import { redirectToDoc } from './doc/redirection'
-
 import { onlineCheckController } from './controllers/otherControllers'
 
 const app = express()

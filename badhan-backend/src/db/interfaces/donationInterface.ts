@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* tslint:disable */
-const { Donation } = require('../models/Donation')
+import Donation from "../models/Donation";
 
 const insertDonation = async (donationObject) => {
   const donation = new Donation(donationObject)

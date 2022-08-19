@@ -1,6 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const logSchema = new mongoose.Schema({
   donorId: {
@@ -14,7 +12,7 @@ const logSchema = new mongoose.Schema({
     default: Date.now,
     min: 0,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -40,6 +38,4 @@ const logSchema = new mongoose.Schema({
 
 logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-const Log = mongoose.model('Logs', logSchema)
-
-module.exports = { Log }
+export default mongoose.model('Logs', logSchema)

@@ -1,6 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const callRecordSchema = new mongoose.Schema({
   callerId: {
@@ -19,7 +17,7 @@ const callRecordSchema = new mongoose.Schema({
     min: 0,
     required: true,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -35,6 +33,4 @@ const callRecordSchema = new mongoose.Schema({
 
 callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-const CallRecord = mongoose.model('CallRecords', callRecordSchema)
-
-module.exports = { CallRecord, callRecordSchema }
+export default mongoose.model('CallRecords', callRecordSchema)

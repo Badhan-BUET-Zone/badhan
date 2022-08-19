@@ -1,12 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const checkEmail = (email) => {
-  /* eslint-disable no-useless-escape */
+export const checkEmail = (email: string) => {
   const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/
-  /* eslint-enable no-useless-escape */ //
   return emailRegex.test(email)
-}
-
-module.exports = {
-  checkEmail
 }

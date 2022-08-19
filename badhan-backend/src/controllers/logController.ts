@@ -7,8 +7,8 @@ import OKResponse200 from "../response/models/successTypes/OKResponse200";
 const constants = require('../constants')
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
-const githubAPI = require('../microservices/githubAPI')
-const firebaseAPI = require('../microservices/firebaseAPI')
+import { handleGETGitReleaseInfo } from '../microservices/githubAPI'
+import {handleGETFirebaseGooglePlayVersion} from '../microservices/firebaseAPI'
 
 const validate = require('jsonschema').validate
 
@@ -59,7 +59,7 @@ function isValidVersion (string) {
 }
 
 const handleGETAppVersions = async (req, res) => {
-  const githubResponse = await githubAPI.handleGETGitReleaseInfo()
+  const githubResponse = await handleGETGitReleaseInfo()
 
   const githubValidationResult = validate(githubResponse.data, githubResponseSchema)
   if (githubValidationResult.errors.length !== 0) {
@@ -72,7 +72,7 @@ const handleGETAppVersions = async (req, res) => {
     return res.status(500).send(new InternalServerError500('Github release browser download URL/ version is not valid'))
   }
 
-  const firebaseResponse = await firebaseAPI.handleGETFirebaseGooglePlayVersion()
+  const firebaseResponse = await handleGETFirebaseGooglePlayVersion()
   const firebaseValidationResult = validate(firebaseResponse.data, firebaseResponseSchema)
   if (firebaseValidationResult.errors.length !== 0 || !isValidVersion(firebaseResponse.data.version)) {
     return res.status(500).send(new InternalServerError500('Firebase frontendSettings has invalid format'))

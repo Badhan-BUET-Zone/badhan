@@ -1,14 +1,12 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
-const { CallRecord } = require('./CallRecord')
-const { Donation } = require('./Donation')
-const { Log } = require('./Log')
-const { PublicContact } = require('./PublicContacts')
-const { Token } = require('./Token')
-const { ActiveDonor } = require('./ActiveDonor')
-const { checkEmail } = require('../../validations/validateRequest/others')
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+import CallRecord from "./CallRecord";
+import Donation from "./Donation";
+import Log from "./Log";
+import PublicContact from "./PublicContact";
+import ActiveDonor from "./ActiveDonor";
+import Token from "./Token";
+import { checkEmail } from '../../validations/validateRequest/others'
 
 const donorSchema = new mongoose.Schema({
   phone: {
@@ -32,13 +30,13 @@ const donorSchema = new mongoose.Schema({
     minlength: 7,
     maxlength: 7,
     validate: [{
-      validator: (value) => {
-        return [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 18].includes(parseInt(value.substr(2, 2)))
+      validator: (value: string) => {
+        return [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 18].includes(parseInt(value.substr(2, 2), 10))
       },
       msg: 'DB: Please input a valid department number'
     }, {
-      validator: (value) => {
-        const inputYear = parseInt('20' + value.substr(0, 2))
+      validator: (value: string) => {
+        const inputYear = parseInt('20' + value.substr(0, 2),10)
         return inputYear <= new Date().getFullYear() && inputYear >= 2001
       },
       msg: 'DB: Please input a valid batch between 01 and last two digits of current year'
@@ -50,12 +48,12 @@ const donorSchema = new mongoose.Schema({
     min: 0,
     max: 7,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: bloodGroup must be an integer'
     }, {
-      validator: (value) => {
+      validator: (value: number) => {
         return [0, 1, 2, 3, 4, 5, 6, 7].includes(value)
       },
       msg: 'DB: Please input a valid blood group number'
@@ -67,12 +65,12 @@ const donorSchema = new mongoose.Schema({
     min: 0,
     max: 8,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: hall must be an integer'
     }, {
-      validator: (value) => {
+      validator: (value: number) => {
         return [0, 1, 2, 3, 4, 5, 6, 8].includes(value)
       },
       msg: 'DB: Please input a valid hall number'
@@ -100,12 +98,12 @@ const donorSchema = new mongoose.Schema({
     min: 0,
     max: 3,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: designation must be an integer'
     }, {
-      validator: (value) => {
+      validator: (value: number) => {
         return [0, 1, 2, 3].includes(value)
       },
       msg: 'DB: Please input a valid designation'
@@ -118,7 +116,7 @@ const donorSchema = new mongoose.Schema({
     min: 0,
     required: true,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -145,7 +143,7 @@ const donorSchema = new mongoose.Schema({
     default: 0,
     required: true,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: commentTime must be an integer'
@@ -172,7 +170,7 @@ const donorSchema = new mongoose.Schema({
     default: '',
     maxlength: 100,
     validate: [{
-      validator: (email) => {
+      validator: (email: string) => {
         if (email === '') {
           return true
         }
@@ -239,14 +237,12 @@ donorSchema.methods.toJSON = function () {
 donorSchema.pre('save', function (next) {
   const donor = this
   if (donor.isModified('password')) {
-    /* eslint-disable node/handle-callback-err */
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(donor.password, salt, (err, hash) => {
+    bcrypt.genSalt(10, (err: Error, salt: string) => {
+      bcrypt.hash(donor.password, salt, (errHash: Error, hash: string) => {
         donor.password = hash
         next()
       })
     })
-    /* eslint-enable node/handle-callback-err */
   } else {
     next()
   }

@@ -1,6 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 const activeDonorSchema = new mongoose.Schema({
   donorId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +21,4 @@ const activeDonorSchema = new mongoose.Schema({
   }
 }, { versionKey: false, id: false })
 
-const ActiveDonor = mongoose.model('ActiveDonors', activeDonorSchema)
-
-module.exports = { ActiveDonor }
+export default mongoose.model('ActiveDonors', activeDonorSchema)

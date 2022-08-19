@@ -1,6 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const publicContactSchema = new mongoose.Schema({
   donorId: {
@@ -12,12 +10,12 @@ const publicContactSchema = new mongoose.Schema({
     type: Number,
     default: -1,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: bloodGroup must be an integer'
     }, {
-      validator: (value) => {
+      validator: (value: number) => {
         return [-1, 0, 2, 4, 6].includes(value)
       },
       msg: 'DB: Please input a valid bloodGroup'
@@ -27,6 +25,4 @@ const publicContactSchema = new mongoose.Schema({
 
 }, { versionKey: false, id: false })
 
-const PublicContact = mongoose.model('PublicContacts', publicContactSchema)
-
-module.exports = { PublicContact }
+export default mongoose.model('PublicContacts', publicContactSchema)

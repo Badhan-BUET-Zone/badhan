@@ -2,7 +2,7 @@
 /* tslint:disable */
 const { body } = require('express-validator')
 const mongoose = require('mongoose')
-const { checkEmail } = require('./others')
+import {checkEmail} from "./others";
 
 const validateBODYPhone = body('phone')
   .exists().withMessage('Phone number is required')

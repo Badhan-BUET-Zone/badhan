@@ -2,7 +2,8 @@
 /* tslint:disable */
 import dotenv from '../../dotenv'
 const tokenCache = require('../../cache/tokenCache')
-const { Token } = require('../models/Token')
+// const { Token } = require('../models/Token')
+import Token from "../models/Token";
 const jwt = require('jsonwebtoken')
 const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
   let options = {}

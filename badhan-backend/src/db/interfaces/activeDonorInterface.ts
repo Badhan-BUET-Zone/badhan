@@ -1,8 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
 const { generateAggregatePipeline } = require('./donorInterface')
-const { ActiveDonor } = require('../models/ActiveDonor')
-
+import ActiveDonor from "../models/ActiveDonor";
 const add = async (donorId, markerId) => {
   const addedActiveDonor = new ActiveDonor({ donorId, markerId })
   const data = await addedActiveDonor.save()

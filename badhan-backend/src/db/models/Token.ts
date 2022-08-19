@@ -1,6 +1,5 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
+import exp from "constants";
 
 const tokenSchema = new mongoose.Schema({
   donorId: {
@@ -39,6 +38,4 @@ const tokenSchema = new mongoose.Schema({
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-const Token = mongoose.model('Tokens', tokenSchema)
-
-module.exports = { Token }
+export default mongoose.model('Tokens', tokenSchema)

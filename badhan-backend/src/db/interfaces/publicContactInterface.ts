@@ -1,7 +1,6 @@
 // @ts-nocheck
 /* tslint:disable */
-const { PublicContact } = require('../models/PublicContacts')
-
+import PublicContact from "../models/PublicContact";
 const insertPublicContact = async (donorId, bloodGroup) => {
   const publicContact = new PublicContact({ donorId, bloodGroup })
   const data = await publicContact.save()

@@ -1,7 +1,6 @@
 // @ts-nocheck
 /* tslint:disable */
-const { CallRecord } = require('../models/CallRecord')
-
+import CallRecord from "../models/CallRecord";
 const insertOne = async (callerId, calleeId) => {
   const callRecord = new CallRecord(
     { callerId, calleeId, date: new Date().getTime() })

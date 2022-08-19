@@ -4,9 +4,11 @@
 
 import app from '../app'
 import DebugLibrary from 'debug'
-const debug = DebugLibrary('badhan-backend:server')
-
+import SourceMapSupport from 'source-map-support'
 import http from 'http'
+
+const debug = DebugLibrary('badhan-backend:server')
+SourceMapSupport.install()
 
 /**
  * Get port from environment and store in Express.

@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
 const constants = require('../../constants')
-const { Log } = require('../models/Log')
+import Log from '../models/Log'
 const mongoose = require('mongoose')
 
 const addLog = async (donorId, operation, details) => {

@@ -1,6 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const donationSchema = new mongoose.Schema({
   phone: {
@@ -20,7 +18,7 @@ const donationSchema = new mongoose.Schema({
     min: 0,
     required: true,
     validate: [{
-      validator: (value) => {
+      validator: (value: number) => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -28,6 +26,4 @@ const donationSchema = new mongoose.Schema({
   }
 }, { versionKey: false, id: false })
 
-const Donation = mongoose.model('Donations', donationSchema)
-
-module.exports = { Donation }
+export default mongoose.model('Donations', donationSchema)
