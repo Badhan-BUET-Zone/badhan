@@ -2,8 +2,11 @@
 /* tslint:disable */
 const callRecordInterface = require('../db/interfaces/callRecordInterface')
 const logInterface = require('../db/interfaces/logInterface')
-import { InternalServerError500, NotFoundError404, ConflictError409 } from '../response/errorTypes'
-import { OKResponse200, CreatedResponse201 } from '../response/successTypes'
+import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
+import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
+import ConflictError409 from "../response/models/errorTypes/ConflictError409";
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
+import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 
 const handlePOSTCallRecord = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor

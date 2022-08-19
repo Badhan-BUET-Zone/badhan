@@ -3,9 +3,10 @@
 const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
-import { OKResponse200 } from '../response/successTypes'
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
 const constants = require('../constants')
-import { ForbiddenError403, InternalServerError500 } from '../response/errorTypes'
+import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
+import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 const githubAPI = require('../microservices/githubAPI')
 const firebaseAPI = require('../microservices/firebaseAPI')
 

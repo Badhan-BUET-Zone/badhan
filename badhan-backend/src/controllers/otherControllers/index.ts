@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { NotFoundError404 } from '../../response/errorTypes'
-import { OKResponse200 } from '../../response/successTypes'
+import NotFoundError404 from "../../response/models/errorTypes/NotFoundError404";
+import OKResponse200 from "../../response/models/successTypes/OKResponse200";
 export const deprecatedController = async (req: Request, res: Response) => {
   return res.status(404).send(new NotFoundError404('Please update your app',{}))
 }

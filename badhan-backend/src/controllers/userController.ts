@@ -10,12 +10,12 @@ const tokenInterface = require('../db/interfaces/tokenInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const emailInterface = require('../db/interfaces/emailInterface')
 
-import {
-  InternalServerError500,
-  NotFoundError404,
-  UnauthorizedError401
-} from '../response/errorTypes'
-import { CreatedResponse201, OKResponse200 } from '../response/successTypes'
+import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
+import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
+import UnauthorizedError401 from "../response/models/errorTypes/UnauthorizedError401";
+
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
+import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 
 const handlePOSTSignIn = async (req, res) => {
   const donorPhone = req.body.phone

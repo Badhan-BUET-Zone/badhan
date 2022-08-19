@@ -5,7 +5,11 @@ const tokenCache = require('../cache/tokenCache')
 const jwt = require('jsonwebtoken')
 const donorInterface = require('../db/interfaces/donorInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
-import { UnauthorizedError401, InternalServerError500, ForbiddenError403, NotFoundError404 } from '../response/errorTypes'
+
+import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
+import UnauthorizedError401 from "../response/models/errorTypes/UnauthorizedError401";
+import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
+import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 
 const handleAuthentication = async (req, res, next) => {
   const token = req.header('x-auth')

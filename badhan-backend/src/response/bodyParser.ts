@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from 'express'
-import { BadRequestError400 } from './errorTypes'
+import BadRequestError400 from "./models/errorTypes/BadRequestError400";
 import { HttpException} from "./models/HttpException";
 
 export function handleJsonBodyParseFailures (err: HttpException, request: Request, response: Response, next: NextFunction) {

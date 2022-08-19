@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
 const { validationResult } = require('express-validator')
-import { BadRequestError400 } from '../response/errorTypes'
+import BadRequestError400 from "../response/models/errorTypes/BadRequestError400";
 const validate = validations => {
   return async (req, res, next) => {
     await Promise.all(validations.map(validation => validation.run(req)))

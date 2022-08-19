@@ -2,11 +2,10 @@
 /* tslint:disable */
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
-import {
-  InternalServerError500,
-  NotFoundError404
-} from '../response/errorTypes'
-import { CreatedResponse201, OKResponse200 } from '../response/successTypes'
+import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
+import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
+import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 
 const handlePOSTDonations = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor

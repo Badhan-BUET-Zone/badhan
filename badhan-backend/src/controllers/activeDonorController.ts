@@ -3,13 +3,12 @@
 const activeDonorInterface = require('../db/interfaces/activeDonorInterface')
 const logInterface = require('../db/interfaces/logInterface')
 // const util = require('util')
-import {
-  NotFoundError404,
-  ConflictError409,
-  ForbiddenError403
-} from '../response/errorTypes'
-import { OKResponse200, CreatedResponse201 } from '../response/successTypes'
 
+import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
+import ConflictError409 from "../response/models/errorTypes/ConflictError409";
+import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
+import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 const handlePOSTActiveDonors = async (req, res) => {
   const donor = res.locals.middlewareResponse.targetDonor
   const user = res.locals.middlewareResponse.donor

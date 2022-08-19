@@ -8,12 +8,9 @@ const tokenInterface = require('../db/interfaces/tokenInterface')
 // const emailInterface = require('../db/interfaces/emailInterface')
 const { halls, MASTER_ADMIN_ID } = require('../constants')
 
-import {
-  InternalServerError500,
-  ForbiddenError403,
-  // NotFoundError404,
-  ConflictError409
-} from '../response/errorTypes'
+import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
+import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
+import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import {
   CreatedResponse201,
   OKResponse200

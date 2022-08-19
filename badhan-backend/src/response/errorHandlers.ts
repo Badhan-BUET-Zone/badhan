@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
-import { NotFoundError404, InternalServerError500 } from './errorTypes'
+import NotFoundError404 from "./models/errorTypes/NotFoundError404";
+import InternalServerError500 from "./models/errorTypes/InternalServerError500";
 export const routeNotFoundHandler = (req: Request, res: Response) => {
   return res.status(404).send(new NotFoundError404('Route not found',{}))
 }
