@@ -237,8 +237,8 @@ donorSchema.methods.toJSON = function () {
 donorSchema.pre('save', function (next) {
   const donor = this
   if (donor.isModified('password')) {
-    bcrypt.genSalt(10, (err: Error, salt: string) => {
-      bcrypt.hash(donor.password, salt, (errHash: Error, hash: string | undefined) => {
+    bcrypt.genSalt(10, (err: Error, salt: string | number) => {
+      bcrypt.hash(donor.password, salt, (errHash: Error, hash: string) => {
         donor.password = hash
         next()
       })
