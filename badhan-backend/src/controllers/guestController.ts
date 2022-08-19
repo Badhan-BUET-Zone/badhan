@@ -1,11 +1,8 @@
 // @ts-nocheck
 /* tslint:disable */
 const faker = require('../doc/faker')
-import {
-  OKResponse200,
-  CreatedResponse201
-} from '../response/successTypes'
-
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
+import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import logController from '../controllers/logController'
 
 const handlePOSTLogIn = async (req, res) => {

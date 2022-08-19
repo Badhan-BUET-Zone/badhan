@@ -11,10 +11,8 @@ const { halls, MASTER_ADMIN_ID } = require('../constants')
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import ConflictError409 from "../response/models/errorTypes/ConflictError409";
-import {
-  CreatedResponse201,
-  OKResponse200
-} from '../response/successTypes'
+import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
+import OKResponse200 from "../response/models/successTypes/OKResponse200";
 
 const handlePOSTDonors = async (req, res) => {
   const authenticatedUser = res.locals.middlewareResponse.donor
