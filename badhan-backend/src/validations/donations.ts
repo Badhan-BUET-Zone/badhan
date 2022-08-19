@@ -1,8 +1,6 @@
-// @ts-nocheck
-/* tslint:disable */
-const { validate } = require('../validations')
-const { validateBODYDate, validateBODYDonorId } = require('../validations/validateRequest/validateBody')
-const { validateQUERYDonorId, validateQUERYDate } = require('../validations/validateRequest/validateQuery')
+import { validate } from './index'
+import { validateBODYDate, validateBODYDonorId } from './validateRequest/validateBody'
+import { validateQUERYDonorId, validateQUERYDate } from './validateRequest/validateQuery'
 
 const validatePOSTDonations = validate([
   validateBODYDonorId,

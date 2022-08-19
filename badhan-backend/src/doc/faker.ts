@@ -1,6 +1,4 @@
-// @ts-nocheck
-/* tslint:disable */
-const faker = require('faker')
+import faker from 'faker'
 const phoneOperators = ['88014', '88015', '88016', '88017', '88018', '88019']
 const departments = [
   '01', '02', '04', '05', '06', '08', '10', '11', '12', '15', '16', '18'
@@ -36,60 +34,60 @@ const operations = [
 
 /// //////////////////////TO BE EXPORTED///////////////////////////////
 
-const getRandInt = (min, max) => {
-  return faker.datatype.number({ min: min, max: max })
+export const getRandInt = (min: number, max: number) => {
+  return faker.datatype.number({ min, max })
 }
-const getRandomIndex = (maxIndex) => {
+export const getRandomIndex = (maxIndex: number) => {
   return faker.datatype.number({ min: 0, max: maxIndex })
 }
 
-const getToken = () => {
+export const getToken = () => {
   return faker.datatype.hexaDecimal(32).substr(2, 32).toLowerCase()
 }
-const getId = () => {
+export const getId = () => {
   return faker.datatype.hexaDecimal(32).substr(2, 32).toLowerCase()
 }
-const getPhone = () => {
-  return parseInt(phoneOperators[getRandomIndex(5)] + '' + getRandInt(10000000, 99999999))
+export const getPhone = () => {
+  return parseInt(phoneOperators[getRandomIndex(5)] + '' + getRandInt(10000000, 99999999),10)
 }
-const getName = () => {
+export const getName = () => {
   return faker.name.findName()
 }
-const getStudentId = () => {
+export const getStudentId = () => {
   return getRandInt(14, 20) + departments[getRandomIndex(11)] + getRandInt(100, 200)
 }
-const getBloodGroup = () => {
+export const getBloodGroup = () => {
   return getRandomIndex(7)
 }
-const getHall = () => {
+export const getHall = () => {
   return halls[getRandomIndex(halls.length - 1)]
 }
-const getRoom = () => {
+export const getRoom = () => {
   return faker.address.zipCode()
 }
-const getAddress = () => {
+export const getAddress = () => {
   return faker.address.streetAddress() + ', ' + faker.address.cityName() + ', ' + faker.address.country()
 }
-const getComment = () => {
+export const getComment = () => {
   return faker.lorem.sentence()
 }
-const getTimestamp = (day) => {
+export const getTimestamp = (day: number) => {
   return new Date().getTime() - 24 * 3600 * 1000 * getRandomIndex(day)
 }
-const getDesignation = () => {
+export const getDesignation = () => {
   return getRandInt(1, 3)
 }
-const getBoolean = () => {
+export const getBoolean = () => {
   return faker.datatype.boolean()
 }
-const getDonationCount = () => {
+export const getDonationCount = () => {
   return getRandomIndex(6)
 }
-const getDonations = () => {
+export const getDonations = () => {
   const donations = []
   for (let i = 0; i < getRandomIndex(5); i++) {
     donations.push({
-      date: getTimestamp(),
+      date: getTimestamp(5),
       _id: getId(),
       phone: getPhone(),
       donorId: getId()
@@ -97,42 +95,19 @@ const getDonations = () => {
   }
   return donations
 }
-const getOperation = () => {
+export const getOperation = () => {
   return operations[getRandomIndex(operations.length - 1)]
 }
-const getFakeDateString = () => {
+export const getFakeDateString = () => {
   const date = new Date()
   return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + getRandInt(1, 28)
 }
 
-const getEmail = () => {
+export const getEmail = () => {
   return faker.internet.email()
 }
 
-const getExpireAt = () => {
+export const getExpireAt = () => {
   return '2021-11-15T11:23:54.231Z'
 }
 
-module.exports = {
-  getName,
-  getId,
-  getToken,
-  getPhone,
-  getStudentId,
-  getBloodGroup,
-  getHall,
-  getRoom,
-  getAddress,
-  getComment,
-  getTimestamp,
-  getDesignation,
-  getBoolean,
-  getDonationCount,
-  getRandomIndex,
-  getDonations,
-  getOperation,
-  getFakeDateString,
-  getEmail,
-  getExpireAt,
-  getRandInt
-}

@@ -1,9 +1,7 @@
-// @ts-nocheck
-/* tslint:disable */
-const { validate } = require('../validations')
-const { validatePARAMDonorId } = require('./validateRequest/validateParam')
-const { validateBODYDonorId } = require('./validateRequest/validateBody')
-const {
+import { validate } from './index'
+import { validatePARAMDonorId } from './validateRequest/validateParam'
+import { validateBODYDonorId } from './validateRequest/validateBody'
+import {
   validateQUERYBloodGroup,
   validateQUERYHall,
   validateQUERYBatch,
@@ -14,7 +12,7 @@ const {
   validateQUERYAvailableToAll,
   validateQUERYMarkedByMe,
   validateQUERYAvailableToAllOrHall
-} = require('../validations/validateRequest/validateQuery')
+} from './validateRequest/validateQuery'
 
 const validatePOSTActiveDonors = validate([
   validateBODYDonorId

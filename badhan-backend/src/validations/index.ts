@@ -2,7 +2,7 @@
 /* tslint:disable */
 const { validationResult } = require('express-validator')
 import BadRequestError400 from "../response/models/errorTypes/BadRequestError400";
-const validate = validations => {
+export const validate = validations => {
   return async (req, res, next) => {
     await Promise.all(validations.map(validation => validation.run(req)))
     const errors = validationResult(req)
@@ -13,9 +13,6 @@ const validate = validations => {
   }
 }
 
-module.exports = {
-  validate
-}
 /*
 rules of using express validator
 - no asynchronous calls

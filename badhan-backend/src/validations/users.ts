@@ -1,8 +1,6 @@
-// @ts-nocheck
-/* tslint:disable */
-const { validate } = require('../validations')
-const { validateBODYPhone, validateBODYPassword } = require('../validations/validateRequest/validateBody')
-const { validatePARAMTokenId } = require('../validations/validateRequest/validateParam')
+import { validate } from './index'
+import { validateBODYPhone, validateBODYPassword } from './validateRequest/validateBody'
+import { validatePARAMTokenId } from './validateRequest/validateParam'
 const validateLogin = validate([
   validateBODYPhone,
   validateBODYPassword

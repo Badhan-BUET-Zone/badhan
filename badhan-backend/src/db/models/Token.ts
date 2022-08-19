@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import exp from "constants";
 
 const tokenSchema = new mongoose.Schema({
   donorId: {

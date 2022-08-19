@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* tslint:disable */
-const faker = require('../doc/faker')
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import logController from '../controllers/logController'
+import * as faker from "../doc/faker";
 
 const handlePOSTLogIn = async (req, res) => {
   return res.status(201).send(new CreatedResponse201('Guest sign in will not show actual nor accurate data', {

@@ -6,7 +6,7 @@ const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 const tokenInterface = require('../db/interfaces/tokenInterface')
 // const emailInterface = require('../db/interfaces/emailInterface')
-const { halls, MASTER_ADMIN_ID } = require('../constants')
+import { halls, MASTER_ADMIN_ID } from '../constants'
 
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";

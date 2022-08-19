@@ -1,7 +1,5 @@
-// @ts-nocheck
-/* tslint:disable */
-const { validate } = require('../validations')
-const { validatePARAMDate, validatePARAMDonorId } = require('../validations/validateRequest/validateParam')
+import { validate } from './index'
+import { validatePARAMDate, validatePARAMDonorId } from './validateRequest/validateParam'
 
 const validateGETLogsByDate = validate([
   validatePARAMDate

@@ -4,7 +4,7 @@ const donorInterface = require('../db/interfaces/donorInterface')
 const donationInterface = require('../db/interfaces/donationInterface')
 const logInterface = require('../db/interfaces/logInterface')
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
-const constants = require('../constants')
+import {MASTER_ADMIN_ID} from '../constants'
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import { handleGETGitReleaseInfo } from '../microservices/githubAPI'
@@ -118,7 +118,7 @@ const handleGETLogsByDateAndDonor = async (req, res) => {
 }
 
 const handleDELETELogs = async (req, res) => {
-  if (!res.locals.middlewareResponse.donor._id.equals(constants.MASTER_ADMIN_ID)) {
+  if (!res.locals.middlewareResponse.donor._id.equals(MASTER_ADMIN_ID)) {
     return res.status(403).send(new ForbiddenError403('Only Master Admin is allowed to access this route'))
   }
   await logInterface.deleteLogs()

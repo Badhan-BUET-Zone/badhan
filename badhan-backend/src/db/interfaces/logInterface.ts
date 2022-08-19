@@ -1,11 +1,12 @@
 // @ts-nocheck
 /* tslint:disable */
-const constants = require('../../constants')
+import {MASTER_ADMIN_ID} from "../../constants";
+
 import Log from '../models/Log'
 const mongoose = require('mongoose')
 
 const addLog = async (donorId, operation, details) => {
-  if (donorId.equals(constants.MASTER_ADMIN_ID)) {
+  if (donorId.equals(MASTER_ADMIN_ID)) {
     return
   }
 
@@ -28,7 +29,7 @@ const addLog = async (donorId, operation, details) => {
 }
 
 const addLogOfMasterAdmin = async (operation, details) => {
-  const log = new Log({ donorId: constants.MASTER_ADMIN_ID, operation, details })
+  const log = new Log({ donorId: MASTER_ADMIN_ID, operation, details })
   const data = await log.save()
 
   if (data.nInserted === 0) {
