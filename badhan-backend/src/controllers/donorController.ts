@@ -95,34 +95,6 @@ const handleDELETEDonors = async (req, res) => {
   return res.status(200).send(new OKResponse200('Donor deleted successfully'))
 }
 
-const handleGETSearchOptimized = async (req, res) => {
-  const reqQuery = req.query
-
-  // console.log(util.inspect(reqQuery, false, null, true /* enable colors */))
-
-  if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
-    reqQuery.hall <= 6 &&
-    res.locals.middlewareResponse.donor.designation !== 3) {
-    return res.status(403).send(new ForbiddenError403('You are not allowed to search donors of other halls'))
-  }
-
-  // console.log(util.inspect(queryBuilder, false, null, true /* enable colors */))
-
-  const result = await donorInterface.findDonorsByQuery(reqQuery)
-
-  result.data.sort((donor1, donor2) =>
-    donor1.donationCountOptimized >= donor2.donationCountOptimized ? -1 : 1
-  )
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET SEARCH', {
-    filter: reqQuery,
-    resultCount: result.data.length
-  })
-
-  return res.status(200).send(new OKResponse200('Donors queried successfully', {
-    filteredDonors: result.data
-  }))
-}
-
 const handleGETSearchV3 = async (req, res) => {
   const reqQuery = req.query
   // console.log(util.inspect(reqQuery, false, null, true /* enable colors */))
@@ -371,7 +343,7 @@ const handlePOSTDonorsPasswordRequest = async (req, res) => {
     return res.status(500).send(new InternalServerError500(tokenDeleteResult.message))
   }
 
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
   if (tokenInsertResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(tokenInsertResult.message))
   }
@@ -453,7 +425,6 @@ const handlePATCHAdminsSuperAdmin = async (req, res)=>{
 export default {
   handlePOSTDonors,
   handleDELETEDonors,
-  handleGETSearchOptimized,
   handlePATCHDonorsComment,
   handlePATCHDonorsPassword,
   handleGETDonorsDesignation,

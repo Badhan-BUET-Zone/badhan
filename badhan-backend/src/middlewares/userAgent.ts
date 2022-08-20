@@ -1,6 +1,5 @@
-// @ts-nocheck
-/* tslint:disable */
-const useragent = require('useragent')
+import useragent from 'useragent'
+import {Request, Response, NextFunction} from "express";
 
 export interface IUserAgent {
   os: string,
@@ -8,15 +7,18 @@ export interface IUserAgent {
   browserFamily: string,
   ipAddress: string
 }
-export const userAgentHandler = (req, res, next) => {
+
+export const userAgentHandler = (req:Request, res: Response, next: NextFunction) => {
   const agent = useragent.parse(req.headers['user-agent'])
-  req.userAgent = {
+  const xForwardedForHeader = req.get('x-forwarded-for')
+  res.locals.userAgent = {
     os: agent.os.toString(),
     device: agent.device.toString(),
     browserFamily: agent.family.toString(),
-    ipAddress: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',').shift() : (req.socket ? req.socket.remoteAddress : '0.0.0.0')
+    ipAddress: xForwardedForHeader ? xForwardedForHeader.split(',').shift() : (req.socket ? req.socket.remoteAddress : '0.0.0.0')
   }
-  console.log('useragent os->', req.userAgent.os, ' device->', req.userAgent.device, ' family->', req.userAgent.browserFamily, ' ip->', req.userAgent.ipAddress)
+  // tslint:disable-next-line:no-console
+  console.log('useragent os->', res.locals.userAgent.os, ' device->', res.locals.userAgent.device, ' family->', res.locals.userAgent.browserFamily, ' ip->', res.locals.userAgent.ipAddress)
   next()
 }
 

@@ -20,7 +20,7 @@ import CreatedResponse201 from "../response/models/successTypes/CreatedResponse2
 const handlePOSTSignIn = async (req, res) => {
   const donorPhone = req.body.phone
   const password = req.body.password
-  const donorQueryResult = await donorInterface.findDonorByQuery({ phone: donorPhone }, {})
+  const donorQueryResult = await donorInterface.findDonorByQuery({ phone: donorPhone })
 
   if (donorQueryResult.status !== 'OK') {
     return res.status(404).send(new NotFoundError404('Account not found'))
@@ -39,7 +39,7 @@ const handlePOSTSignIn = async (req, res) => {
   if (!matched) {
     return res.status(401).send(new UnauthorizedError401('Incorrect phone / password'))
   }
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
 
   if (tokenInsertResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('Token insertion failed', 'found in handlePOSTSignIn when tokenInterface.addToken'))
@@ -74,7 +74,7 @@ const handleDELETESignOutAll = async (req, res) => {
 
 const handlePOSTRedirection = async (req, res) => {
   const donor = res.locals.middlewareResponse.donor
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, '30s')
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, '30s')
 
   if (tokenInsertResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(tokenInsertResult.message, 'found in handlePOSTRedirection when tokenInterface.addToken'))
@@ -97,7 +97,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
     return res.status(401).send(new UnauthorizedError401('Session Expired'))
   }
 
-  const donorQueryResult = await donorInterface.findDonorByQuery({ _id: decodedDonor._id }, {})
+  const donorQueryResult = await donorInterface.findDonorByQuery({ _id: decodedDonor._id })
 
   if (donorQueryResult.status !== 'OK') {
     return res.status(404).send(new NotFoundError404('Donor not found'))
@@ -110,7 +110,7 @@ const handlePATCHRedirectedAuthentication = async (req, res) => {
   if (tokenDeleteResponse.status !== 'OK') {
     return res.status(404).send(new NotFoundError404('Token not found'))
   }
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
 
   if (tokenInsertResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(tokenInsertResult.message, 'found in handlePATCHRedirectedAuthentication when tokenInterface.addToken'))
@@ -141,7 +141,7 @@ const handlePOSTPasswordForgot = async (req, res) => {
     return res.status(404).send(new NotFoundError404('No recovery email found for this phone number'))
   }
 
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
 
   if (tokenInsertResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('Token insertion failed', 'found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken'))
@@ -166,7 +166,7 @@ const handlePATCHPassword = async (req, res) => {
   await donor.save()
 
   await tokenInterface.deleteAllTokensByDonorId(donor._id)
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, req.userAgent, null)
+  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'PATCH USERS PASSWORD', {})
 
   return res.status(201).send(new CreatedResponse201('Password changed successfully', {

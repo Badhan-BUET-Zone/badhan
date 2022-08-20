@@ -1,17 +1,15 @@
-// @ts-nocheck
-/* tslint:disable */
 import dotenv from '../dotenv'
-const rateLimit = require('express-rate-limit')
+import rateLimit from 'express-rate-limit'
 import TooManyRequestsError429 from "../response/models/errorTypes/TooManyRequestsError429";
 const rateLimiterEnabled = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
 const minute = 60 * 1000
 
-const commonRateLimiterError = new TooManyRequestsError429('Service unavailable')
+const commonRateLimiterError = new TooManyRequestsError429('Service unavailable',{})
 
 const signInLimiter = rateLimit({
   windowMs: 5 * minute,
   max: 3 * rateLimiterEnabled,
-  message: new TooManyRequestsError429('Please try again after 5 minutes')
+  message: new TooManyRequestsError429('Please try again after 5 minutes',{})
 })
 
 const redirectionSignInLimiter = rateLimit({
@@ -56,7 +54,7 @@ const passwordRequestLimiter = rateLimit({
 const passwordForgotLimiter = rateLimit({
   windowMs: 3 * minute,
   max: 1,
-  message: new TooManyRequestsError429('Please try again after 3 minutes')
+  message: new TooManyRequestsError429('Please try again after 3 minutes',{})
 })
 
 const publicContactInsertionLimiter = rateLimit({

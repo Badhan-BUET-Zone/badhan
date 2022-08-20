@@ -1,6 +1,6 @@
 import { generateAggregatePipeline } from './donorInterface'
 import {ActiveDonorModel} from "../models/ActiveDonor";
-import { Schema} from "mongoose";
+import {Schema, Types} from "mongoose";
 
 export const add = async (donorId: Schema.Types.ObjectId, markerId: Schema.Types.ObjectId) => {
   const addedActiveDonor = new ActiveDonorModel({ donorId, markerId })
@@ -52,9 +52,9 @@ export const findByQueryAndPopulate = async (reqQuery: {
   isNotAvailable: boolean,
   availableToAll: boolean,
   markedByMe: boolean
-}, donorId: Schema.Types.ObjectId) => {
+}, donorId: Types.ObjectId) => {
   const aggregatePipeline = generateAggregatePipeline(reqQuery, donorId)
-  // @ts-ignore
+
   const activeDonors = await ActiveDonorModel.aggregate(aggregatePipeline)
   return {
     message: 'Active donors fetched with details',

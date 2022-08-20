@@ -1,6 +1,5 @@
 // @ts-nocheck
 /* tslint:disable */
-// import dotenv from '../../dotenv'
 import dotenv from '../../dotenv'
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
