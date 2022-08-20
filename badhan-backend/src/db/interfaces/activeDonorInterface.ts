@@ -54,6 +54,7 @@ export const findByQueryAndPopulate = async (reqQuery: {
   markedByMe: boolean
 }, donorId: Schema.Types.ObjectId) => {
   const aggregatePipeline = generateAggregatePipeline(reqQuery, donorId)
+  // @ts-ignore
   const activeDonors = await ActiveDonorModel.aggregate(aggregatePipeline)
   return {
     message: 'Active donors fetched with details',
