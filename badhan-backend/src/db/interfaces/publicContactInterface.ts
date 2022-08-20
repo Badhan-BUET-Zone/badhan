@@ -11,7 +11,7 @@ export const insertPublicContact = async (donorId: mongoose.Types.ObjectId, bloo
     }
 }
 
-export const deletePublicContactById = async (publicContactId: mongoose.Types.ObjectId) => {
+export const deletePublicContactById = async (publicContactId: string) => {
     const data = await PublicContactModel.findByIdAndDelete(publicContactId)
     if (data) {
         return {
@@ -26,7 +26,7 @@ export const deletePublicContactById = async (publicContactId: mongoose.Types.Ob
     }
 }
 
-export const findPublicContactById = async (publicContactId: mongoose.Types.ObjectId) => {
+export const findPublicContactById = async (publicContactId: string) => {
     const data = await PublicContactModel.findOne({
         _id: publicContactId
     })
