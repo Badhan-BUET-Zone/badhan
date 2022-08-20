@@ -15,7 +15,7 @@ export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.Objec
     const token = jwt.sign({
         _id: String(donorId),
         access: 'auth'
-    }, dotenv.JWT_SECRET!, options).toString()
+    }, dotenv.JWT_SECRET, options).toString()
     const tokenData = new TokenModel({donorId, token, ...userAgent})
     const data = await tokenData.save()
 

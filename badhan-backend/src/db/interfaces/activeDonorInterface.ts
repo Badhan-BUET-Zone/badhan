@@ -52,7 +52,7 @@ export const findByQueryAndPopulate = async (reqQuery: {
   isNotAvailable: boolean,
   availableToAll: boolean,
   markedByMe: boolean
-}, donorId: Types.ObjectId) => {
+}, donorId: Schema.Types.ObjectId) => {
   const aggregatePipeline = generateAggregatePipeline(reqQuery, donorId)
 
   const activeDonors = await ActiveDonorModel.aggregate(aggregatePipeline)

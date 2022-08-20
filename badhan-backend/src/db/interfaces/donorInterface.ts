@@ -1,5 +1,5 @@
 import {DonorModel, IDonor} from '../models/Donor'
-import {Types} from "mongoose";
+import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
 
 export const insertDonor = async (donorObject: IDonor) => {
@@ -12,7 +12,7 @@ export const insertDonor = async (donorObject: IDonor) => {
     }
 }
 
-export const deleteDonorById = async (donorId: Types.ObjectId) => {
+export const deleteDonorById = async (donorId: Schema.Types.ObjectId) => {
     const data = await DonorModel.findOneAndDelete({_id: donorId})
     if (data) {
         return {
@@ -28,7 +28,7 @@ export const deleteDonorById = async (donorId: Types.ObjectId) => {
     }
 }
 
-export const findDonorById = async (id: Types.ObjectId) => {
+export const findDonorById = async (id: Schema.Types.ObjectId) => {
     const data = await DonorModel.findById(id)
     if (data) {
         return {
@@ -45,7 +45,7 @@ export const findDonorById = async (id: Types.ObjectId) => {
     }
 }
 
-export const findDonorByQuery = async (query: { _id: string | Types.ObjectId } | { phone: number }) => {
+export const findDonorByQuery = async (query: { _id: string | Schema.Types.ObjectId } | { phone: number }) => {
     const data = await DonorModel.findOne(query)
     if (data) {
         return {
@@ -280,7 +280,7 @@ export const generateAggregatePipeline = (reqQuery: {
     isNotAvailable: boolean,
     availableToAll: boolean,
     markedByMe: boolean
-}, donorId: Types.ObjectId) : PipelineStage[] => {
+}, donorId: Schema.Types.ObjectId) : PipelineStage[] => {
     const queryBuilder = generateSearchQuery(reqQuery)
     const aggregatePipeline: PipelineStage[] = [{
         $lookup: {

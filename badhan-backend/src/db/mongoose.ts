@@ -1,10 +1,9 @@
-// @ts-nocheck
-/* tslint:disable */
 import dotenv from "../dotenv";
-const mongoose = require('mongoose')
+import mongoose, {ConnectOptions} from 'mongoose'
 
 mongoose.Promise = global.Promise
 
+// tslint:disable-next-line:no-console
 console.log('BADHAN LOG: Connecting to ' + (String(dotenv.MONGODB_URI).includes('Test') ? 'Test' : 'Production') + ' database...')
 
 const connectToDB = async () => {
@@ -12,8 +11,12 @@ const connectToDB = async () => {
     mongoose.connect(dotenv.MONGODB_URI, {
       useUnifiedTopology: true,
       useNewUrlParser: true
-    }, () => { console.log('BADHAN LOG: You are connected to the database.') })
-  } catch (e) {
+    } as ConnectOptions, () => {
+      // tslint:disable-next-line:no-console
+      console.log('BADHAN LOG: You are connected to the database.')
+    })
+  } catch (e: any) {
+    // tslint:disable-next-line:no-console
     console.log(e.message)
     process.exit()
   }
@@ -21,16 +24,20 @@ const connectToDB = async () => {
 
 connectToDB()
 
-process.on('SIGINT', async function () {
+process.on('SIGINT', async ()=>{
+  // tslint:disable-next-line:no-console
   console.error('SIGINT called')
   await mongoose.disconnect()
+  // tslint:disable-next-line:no-console
   console.error('Mongoose connection terminated')
   process.exit(0)
 })
 
-process.on('SIGTERM', async function () {
+process.on('SIGTERM', async ()=>{
+  // tslint:disable-next-line:no-console
   console.error('SIGTERM called')
   await mongoose.disconnect()
+  // tslint:disable-next-line:no-console
   console.error('Mongoose connection terminated')
   process.exit(0)
 })
