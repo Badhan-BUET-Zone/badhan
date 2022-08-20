@@ -1,6 +1,13 @@
 // @ts-nocheck
 /* tslint:disable */
 const useragent = require('useragent')
+
+export interface IUserAgent {
+  os: string,
+  device: string,
+  browserFamily: string,
+  ipAddress: string
+}
 export const userAgentHandler = (req, res, next) => {
   const agent = useragent.parse(req.headers['user-agent'])
   req.userAgent = {

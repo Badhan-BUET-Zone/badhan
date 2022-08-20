@@ -1,23 +1,19 @@
-// @ts-nocheck
-/* tslint:disable */
-let cache = {}
+import {IDonor} from "../db/models/Donor";
+
+let cache: {
+  [key: string]: IDonor | undefined
+} = {}
+
 // 37% reduction of total time in testing all routes
-const add = (token, user) => {
+export const add = (token: string, user: IDonor) => {
   cache[token] = user
 }
-const clear = (token) => {
+export const clear = (token: string) => {
   cache[token] = undefined
 }
-const get = (token) => {
+export const get = (token: string) => {
   return cache[token]
 }
-const clearAll = () => {
+export const clearAll = () => {
   cache = {}
-}
-
-module.exports = {
-  add,
-  clear,
-  get,
-  clearAll
 }
