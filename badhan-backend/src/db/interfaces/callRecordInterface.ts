@@ -22,7 +22,7 @@ export const findManyByCallee = async (calleeId: Schema.Types.ObjectId) => {
   }
 }
 
-export const deleteById = async (id: Schema.Types.ObjectId) => {
+export const deleteById = async (id: string) => {
   const data = await CallRecordModel.findByIdAndDelete(id)
   if (data) {
     return {
@@ -37,7 +37,7 @@ export const deleteById = async (id: Schema.Types.ObjectId) => {
   }
 }
 
-export const findById = async (id: Schema.Types.ObjectId) => {
+export const findById = async (id: string) => {
   const data = await CallRecordModel.findOne({ _id: id })
   if (!data) {
     return {
