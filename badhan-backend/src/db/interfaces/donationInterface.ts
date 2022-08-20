@@ -1,130 +1,64 @@
-// @ts-nocheck
-/* tslint:disable */
+import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
+import {Schema} from 'mongoose'
 
-export const insertDonation = async (donationObject) => {
-  const donation = new DonationModel(donationObject)
-  const data = await donation.save()
-  if (data.nInserted === 0) {
-    return {
+export const insertDonation = async (donationObject: IDonation) => {
+    const donation = new DonationModel(donationObject)
+    const data = await donation.save()
 
-      message: 'Donation insertion failed',
-      status: 'ERROR'
-    }
-  } else {
     return {
-      data,
-      message: 'Donation insertion successful',
-      status: 'OK'
+        data,
+        message: 'Donation insertion successful',
+        status: 'OK'
     }
-  }
 }
 
-export const deleteDonation = async (donationID) => {
-  const data = await DonationModel.findOneAndDelete({ _id: donationID })
-  if (data) {
-    return {
-      data,
-      message: 'Donation removed successfully',
-      status: 'OK'
+export const deleteDonationByQuery = async (query: { donorId: Schema.Types.ObjectId, date: number }) => {
+    const data = await DonationModel.findOneAndDelete(query)
+    if (data) {
+        return {
+            data,
+            message: 'Donation removed successfully',
+            status: 'OK'
+        }
+    } else {
+        return {
+            message: 'Could not remove donation',
+            status: 'ERROR'
+        }
     }
-  } else {
-    return {
-      message: 'Could not remove donation',
-      status: 'ERROR'
-    }
-  }
 }
 
-export const deleteDonationByQuery = async (query) => {
-  const data = await DonationModel.findOneAndDelete(query)
-  if (data) {
-    return {
-      data,
-      message: 'Donation removed successfully',
-      status: 'OK'
+export const findMaxDonationByDonorId = async (id: Schema.Types.ObjectId) => {
+    const data = await DonationModel.find({donorId: id}).sort({date: -1}).limit(1)
+    if (data.length !== 0) {
+        return {
+            message: 'Max donation fetched successfully',
+            status: 'OK',
+            data
+        }
     }
-  } else {
-    console.log('ERROR')
     return {
-      message: 'Could not remove donation',
-      status: 'ERROR'
+        message: 'No donations found',
+        status: 'ERROR'
     }
-  }
 }
 
-export const findMaxDonationByDonorId = async (id) => {
-  const data = await DonationModel.find({ donorId: id }).sort({ date: -1 }).limit(1)
-  if (data.length !== 0) {
+export const insertManyDonations = async (donations: IDonation[]) => {
+    const data = await DonationModel.insertMany(donations)
     return {
-      message: 'Max donation fetched successfully',
-      status: 'OK',
-      data
+        message: 'Donations inserted successfully',
+        status: 'OK',
+        data
     }
-  }
-  return {
-    message: 'No donations found',
-    status: 'ERROR'
-  }
-}
-
-export const deleteDonationsByQuery = async (query) => {
-  const data = await DonationModel.deleteMany(query)
-  if (data) {
-    return {
-      message: 'Donations removed successfully',
-      status: 'OK',
-      data
-    }
-  }
-  return {
-    message: 'Could not remove donations',
-    status: 'ERROR'
-  }
-}
-
-export const insertManyDonations = async (donations) => {
-  const data = await DonationModel.insertMany(donations)
-  return {
-    message: 'Donations inserted successfully',
-    status: 'OK',
-    data
-  }
-}
-
-export const findDonationByQuery = async (query, option) => {
-  const data = await DonationModel.findOne(query, option)
-  if (data) {
-    return {
-      data,
-      message: 'Donation found',
-      status: 'OK'
-    }
-  } else {
-    return {
-      data: null,
-      message: 'Donation not found',
-      status: 'ERROR'
-    }
-  }
-}
-
-export const findDonationsByQuery = async (query, option) => {
-  const data = await DonationModel.find(query, option)
-  const message = data.length > 0 ? 'Donation(s) found' : 'Donation not found'
-  return {
-    data,
-    message,
-    status: 'OK'
-  }
 }
 
 export const getCount = async () => {
-  const donationCount = await DonationModel.countDocuments()
-  return {
-    message: 'Fetched donation count',
-    status: 'OK',
-    data: donationCount
-  }
+    const donationCount = await DonationModel.countDocuments()
+    return {
+        message: 'Fetched donation count',
+        status: 'OK',
+        data: donationCount
+    }
 }
 

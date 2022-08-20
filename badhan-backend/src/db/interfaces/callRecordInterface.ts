@@ -1,17 +1,16 @@
-// @ts-nocheck
-/* tslint:disable */
 import {CallRecordModel} from "../models/CallRecord";
-export const insertOne = async (callerId, calleeId) => {
+import {Schema } from 'mongoose'
+export const insertOne = async (callerId: Schema.Types.ObjectId, calleeId: Schema.Types.ObjectId) => {
   const callRecord = new CallRecordModel(
     { callerId, calleeId, date: new Date().getTime() })
   const data = await callRecord.save()
   return {
     message: 'Created call record successfully',
     status: 'OK',
-    data: data
+    data
   }
 }
-export const findManyByCallee = async (calleeId) => {
+export const findManyByCallee = async (calleeId: Schema.Types.ObjectId) => {
   const data = await CallRecordModel.find({ calleeId }).populate({
     path: 'callerId',
     select: { _id: 1, name: 1, hall: 1, designation: 1 }
@@ -19,17 +18,17 @@ export const findManyByCallee = async (calleeId) => {
   return {
     message: 'Fetched call record successfully',
     status: 'OK',
-    data: data
+    data
   }
 }
 
-export const deleteById = async (id) => {
+export const deleteById = async (id: Schema.Types.ObjectId) => {
   const data = await CallRecordModel.findByIdAndDelete(id)
   if (data) {
     return {
       message: 'Call record deleted successfully',
       status: 'OK',
-      data: data
+      data
     }
   }
   return {
@@ -38,7 +37,7 @@ export const deleteById = async (id) => {
   }
 }
 
-export const findById = async (id) => {
+export const findById = async (id: Schema.Types.ObjectId) => {
   const data = await CallRecordModel.findOne({ _id: id })
   if (!data) {
     return {
@@ -49,12 +48,6 @@ export const findById = async (id) => {
   return {
     message: 'Call record fetched successfully',
     status: 'OK',
-    data: data
+    data
   }
-}
-export default {
-  insertOne,
-  findManyByCallee,
-  deleteById,
-  findById
 }

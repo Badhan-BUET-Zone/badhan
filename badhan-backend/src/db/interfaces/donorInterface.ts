@@ -20,36 +20,6 @@ export const insertDonor = async (donorObject) => {
   }
 }
 
-export const deleteDonor = async (donorID) => {
-  const data = await DonorModel.findOneAndDelete({ _id: donorID })
-  if (data) {
-    return {
-      message: 'Donor removed successfully',
-      status: 'OK'
-    }
-  } else {
-    return {
-      message: 'Could not remove donor',
-      status: 'ERROR'
-    }
-  }
-}
-
-export const deleteDonorByPhone = async (donorPhone) => {
-  const data = await DonorModel.findOneAndDelete({ phone: donorPhone })
-  if (data) {
-    return {
-      message: 'Donor removed successfully',
-      status: 'OK'
-    }
-  } else {
-    return {
-      message: 'Could not remove donor',
-      status: 'ERROR'
-    }
-  }
-}
-
 export const deleteDonorById = async (donorId) => {
   const data = await DonorModel.findOneAndDelete({ _id: donorId })
   if (data) {
@@ -230,45 +200,6 @@ export const findDonorsByQuery = async (reqQuery) => {
     data,
     message: 'Donors fetched successfully',
     status: 'OK'
-  }
-}
-export const findDonorByIDAndUpdateCommentTime = async (id, commentTime) => {
-  const data = await DonorModel.findByIdAndUpdate(id, {
-    $set: {
-      commentTime
-    }
-  })
-
-  if (data) {
-    return {
-      data,
-      message: 'Comment time updated successfully',
-      status: 'OK'
-    }
-  } else {
-    return {
-      data: null,
-      message: 'Comment time update failed',
-      status: 'ERROR'
-    }
-  }
-}
-
-export const findDonorByIDAndUpdate = async (id, update) => {
-  const data = await DonorModel.findByIdAndUpdate(id, update)
-
-  if (data) {
-    return {
-      data,
-      message: 'Donor updated successfully',
-      status: 'OK'
-    }
-  } else {
-    return {
-      data: null,
-      message: 'Donor update failed',
-      status: 'ERROR'
-    }
   }
 }
 
@@ -592,4 +523,3 @@ export const findDonorIdsByPhone = async (userDesignation, userHall, phoneList) 
     donors: existingDonors
   }
 }
-

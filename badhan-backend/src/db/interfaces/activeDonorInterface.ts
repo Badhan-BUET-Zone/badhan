@@ -1,17 +1,10 @@
-// @ts-nocheck
-/* tslint:disable */
 import { generateAggregatePipeline } from './donorInterface'
-
 import {ActiveDonorModel} from "../models/ActiveDonor";
-export const add = async (donorId, markerId) => {
+import { Schema} from "mongoose";
+
+export const add = async (donorId: Schema.Types.ObjectId, markerId: Schema.Types.ObjectId) => {
   const addedActiveDonor = new ActiveDonorModel({ donorId, markerId })
   const data = await addedActiveDonor.save()
-  if (data.nInserted === 0) {
-    return {
-      message: 'Active donor insertion failed',
-      status: 'ERROR'
-    }
-  }
   return {
     data,
     message: 'Active donor insertion successful',
@@ -19,7 +12,7 @@ export const add = async (donorId, markerId) => {
   }
 }
 
-export const remove = async (donorId) => {
+export const remove = async (donorId: Schema.Types.ObjectId) => {
   const removedActiveDonor = await ActiveDonorModel.findOneAndDelete({ donorId })
   if (removedActiveDonor) {
     return {
@@ -35,7 +28,7 @@ export const remove = async (donorId) => {
   }
 }
 
-export const findByDonorId = async (donorId) => {
+export const findByDonorId = async (donorId: Schema.Types.ObjectId) => {
   const activeDonors = await ActiveDonorModel.find({ donorId })
   if (activeDonors.length === 0) {
     return {
@@ -49,7 +42,17 @@ export const findByDonorId = async (donorId) => {
     message: 'Active donor found'
   }
 }
-export const findByQueryAndPopulate = async (reqQuery, donorId) => {
+export const findByQueryAndPopulate = async (reqQuery: {
+  bloodGroup: number,
+  hall: number,
+  batch: string,
+  name: string,
+  address: string,
+  isAvailable: boolean,
+  isNotAvailable: boolean,
+  availableToAll: boolean,
+  markedByMe: boolean
+}, donorId: Schema.Types.ObjectId) => {
   const aggregatePipeline = generateAggregatePipeline(reqQuery, donorId)
   const activeDonors = await ActiveDonorModel.aggregate(aggregatePipeline)
   return {
