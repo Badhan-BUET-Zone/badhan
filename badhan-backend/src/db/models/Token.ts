@@ -1,4 +1,9 @@
 import mongoose from 'mongoose'
+
+export interface JwtPayload {
+  _id: string
+}
+
 export interface IToken {
   donorId: mongoose.Schema.Types.ObjectId,
   token: string,

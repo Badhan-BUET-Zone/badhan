@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
 import {IUserAgent} from "../../middlewares/userAgent";
 
-export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.ObjectId, userAgent: IUserAgent, expiresIn: number) => {
+export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.ObjectId, userAgent: IUserAgent, expiresIn: string| null) => {
     let options = {}
     if (expiresIn) {
         options = {expiresIn}
@@ -85,7 +85,7 @@ export const findTokenDataExceptSpecifiedToken = async (donorId: mongoose.Types.
     }
 }
 
-export const deleteByTokenId = async (tokenId: mongoose.Types.ObjectId) => {
+export const deleteByTokenId = async (tokenId: string) => {
     const deletedToken = await TokenModel.findByIdAndDelete(tokenId)
     tokenCache.clearAll()
     if (deletedToken) {

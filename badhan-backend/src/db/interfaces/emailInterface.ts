@@ -13,7 +13,7 @@ const REFRESH_TOKEN = dotenv.GMAIL_REFRESH_TOKEN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-const sendMail = async (emailAddress, subject, html) => {
+export const sendMail = async (emailAddress, subject, html) => {
   // https://www.youtube.com/watch?v=-rcRf7yswfM
   try {
     const accessToken = await oAuth2Client.getAccessToken()
@@ -51,12 +51,12 @@ const sendMail = async (emailAddress, subject, html) => {
   }
 }
 
-const checkIfEmailExists = async (email) => {
+export const checkIfEmailExists = async (email) => {
   const result = await emailValidator.validate(email)
   return result.valid
 }
 
-const generatePasswordForgotHTML = (token) => {
+export const generatePasswordForgotHTML = (token) => {
   const url = dotenv.VUE_APP_FRONTEND_BASE + '#/passwordReset?token=' + token
   return `
     <p>Password Recovery Email</p>
@@ -69,8 +69,3 @@ const generatePasswordForgotHTML = (token) => {
     `
 }
 
-module.exports = {
-  sendMail,
-  generatePasswordForgotHTML,
-  checkIfEmailExists
-}
