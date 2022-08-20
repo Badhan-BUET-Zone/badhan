@@ -1,9 +1,10 @@
 // @ts-nocheck
 /* tslint:disable */
-const { generateAggregatePipeline } = require('./donorInterface')
-import ActiveDonor from "../models/ActiveDonor";
-const add = async (donorId, markerId) => {
-  const addedActiveDonor = new ActiveDonor({ donorId, markerId })
+import { generateAggregatePipeline } from './donorInterface'
+
+import {ActiveDonorModel} from "../models/ActiveDonor";
+export const add = async (donorId, markerId) => {
+  const addedActiveDonor = new ActiveDonorModel({ donorId, markerId })
   const data = await addedActiveDonor.save()
   if (data.nInserted === 0) {
     return {
@@ -18,8 +19,8 @@ const add = async (donorId, markerId) => {
   }
 }
 
-const remove = async (donorId) => {
-  const removedActiveDonor = await ActiveDonor.findOneAndDelete({ donorId })
+export const remove = async (donorId) => {
+  const removedActiveDonor = await ActiveDonorModel.findOneAndDelete({ donorId })
   if (removedActiveDonor) {
     return {
       data: removedActiveDonor,
@@ -34,8 +35,8 @@ const remove = async (donorId) => {
   }
 }
 
-const findByDonorId = async (donorId) => {
-  const activeDonors = await ActiveDonor.find({ donorId })
+export const findByDonorId = async (donorId) => {
+  const activeDonors = await ActiveDonorModel.find({ donorId })
   if (activeDonors.length === 0) {
     return {
       message: 'Active donor not found',
@@ -48,9 +49,9 @@ const findByDonorId = async (donorId) => {
     message: 'Active donor found'
   }
 }
-const findByQueryAndPopulate = async (reqQuery, donorId) => {
+export const findByQueryAndPopulate = async (reqQuery, donorId) => {
   const aggregatePipeline = generateAggregatePipeline(reqQuery, donorId)
-  const activeDonors = await ActiveDonor.aggregate(aggregatePipeline)
+  const activeDonors = await ActiveDonorModel.aggregate(aggregatePipeline)
   return {
     message: 'Active donors fetched with details',
     status: 'OK',
@@ -58,9 +59,3 @@ const findByQueryAndPopulate = async (reqQuery, donorId) => {
   }
 }
 
-module.exports = {
-  add,
-  remove,
-  findByDonorId,
-  findByQueryAndPopulate
-}

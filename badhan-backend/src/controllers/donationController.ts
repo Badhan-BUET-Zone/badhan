@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
-const donationInterface = require('../db/interfaces/donationInterface')
-const logInterface = require('../db/interfaces/logInterface')
+import * as donationInterface from '../db/interfaces/donationInterface'
+import * as logInterface from '../db/interfaces/logInterface'
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";

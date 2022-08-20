@@ -3,8 +3,8 @@
 import dotenv from '../dotenv'
 const tokenCache = require('../cache/tokenCache')
 const jwt = require('jsonwebtoken')
-const donorInterface = require('../db/interfaces/donorInterface')
-const tokenInterface = require('../db/interfaces/tokenInterface')
+import * as donorInterface from '../db/interfaces/donorInterface'
+import * as tokenInterface from '../db/interfaces/tokenInterface'
 
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import UnauthorizedError401 from "../response/models/errorTypes/UnauthorizedError401";

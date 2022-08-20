@@ -1,8 +1,8 @@
 // @ts-nocheck
 /* tslint:disable */
-const donorInterface = require('../db/interfaces/donorInterface')
-const donationInterface = require('../db/interfaces/donationInterface')
-const logInterface = require('../db/interfaces/logInterface')
+import * as donorInterface from '../db/interfaces/donorInterface'
+import * as donationInterface from '../db/interfaces/donationInterface'
+import * as logInterface from '../db/interfaces/logInterface'
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import {MASTER_ADMIN_ID} from '../constants'
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";

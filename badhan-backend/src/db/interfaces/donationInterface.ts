@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* tslint:disable */
-import Donation from "../models/Donation";
+import {DonationModel} from "../models/Donation";
 
-const insertDonation = async (donationObject) => {
-  const donation = new Donation(donationObject)
+export const insertDonation = async (donationObject) => {
+  const donation = new DonationModel(donationObject)
   const data = await donation.save()
   if (data.nInserted === 0) {
     return {
@@ -20,8 +20,8 @@ const insertDonation = async (donationObject) => {
   }
 }
 
-const deleteDonation = async (donationID) => {
-  const data = await Donation.findOneAndDelete({ _id: donationID })
+export const deleteDonation = async (donationID) => {
+  const data = await DonationModel.findOneAndDelete({ _id: donationID })
   if (data) {
     return {
       data,
@@ -36,8 +36,8 @@ const deleteDonation = async (donationID) => {
   }
 }
 
-const deleteDonationByQuery = async (query) => {
-  const data = await Donation.findOneAndDelete(query)
+export const deleteDonationByQuery = async (query) => {
+  const data = await DonationModel.findOneAndDelete(query)
   if (data) {
     return {
       data,
@@ -53,8 +53,8 @@ const deleteDonationByQuery = async (query) => {
   }
 }
 
-const findMaxDonationByDonorId = async (id) => {
-  const data = await Donation.find({ donorId: id }).sort({ date: -1 }).limit(1)
+export const findMaxDonationByDonorId = async (id) => {
+  const data = await DonationModel.find({ donorId: id }).sort({ date: -1 }).limit(1)
   if (data.length !== 0) {
     return {
       message: 'Max donation fetched successfully',
@@ -68,8 +68,8 @@ const findMaxDonationByDonorId = async (id) => {
   }
 }
 
-const deleteDonationsByQuery = async (query) => {
-  const data = await Donation.deleteMany(query)
+export const deleteDonationsByQuery = async (query) => {
+  const data = await DonationModel.deleteMany(query)
   if (data) {
     return {
       message: 'Donations removed successfully',
@@ -83,8 +83,8 @@ const deleteDonationsByQuery = async (query) => {
   }
 }
 
-const insertManyDonations = async (donations) => {
-  const data = await Donation.insertMany(donations)
+export const insertManyDonations = async (donations) => {
+  const data = await DonationModel.insertMany(donations)
   return {
     message: 'Donations inserted successfully',
     status: 'OK',
@@ -92,8 +92,8 @@ const insertManyDonations = async (donations) => {
   }
 }
 
-const findDonationByQuery = async (query, option) => {
-  const data = await Donation.findOne(query, option)
+export const findDonationByQuery = async (query, option) => {
+  const data = await DonationModel.findOne(query, option)
   if (data) {
     return {
       data,
@@ -109,8 +109,8 @@ const findDonationByQuery = async (query, option) => {
   }
 }
 
-const findDonationsByQuery = async (query, option) => {
-  const data = await Donation.find(query, option)
+export const findDonationsByQuery = async (query, option) => {
+  const data = await DonationModel.find(query, option)
   const message = data.length > 0 ? 'Donation(s) found' : 'Donation not found'
   return {
     data,
@@ -119,22 +119,12 @@ const findDonationsByQuery = async (query, option) => {
   }
 }
 
-const getCount = async () => {
-  const donationCount = await Donation.countDocuments()
+export const getCount = async () => {
+  const donationCount = await DonationModel.countDocuments()
   return {
     message: 'Fetched donation count',
     status: 'OK',
     data: donationCount
   }
 }
-module.exports = {
-  insertDonation,
-  deleteDonation,
-  deleteDonationByQuery,
-  deleteDonationsByQuery,
-  findDonationByQuery,
-  findDonationsByQuery,
-  getCount,
-  insertManyDonations,
-  findMaxDonationByDonorId
-}
+

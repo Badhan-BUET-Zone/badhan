@@ -1,10 +1,10 @@
 // @ts-nocheck
 /* tslint:disable */
 // const util = require('util')
-const donorInterface = require('../db/interfaces/donorInterface')
-const donationInterface = require('../db/interfaces/donationInterface')
-const logInterface = require('../db/interfaces/logInterface')
-const tokenInterface = require('../db/interfaces/tokenInterface')
+import * as donorInterface from '../db/interfaces/donorInterface'
+import * as donationInterface from '../db/interfaces/donationInterface'
+import * as logInterface from '../db/interfaces/logInterface'
+import * as tokenInterface from '../db/interfaces/tokenInterface'
 // const emailInterface = require('../db/interfaces/emailInterface')
 import { halls, MASTER_ADMIN_ID } from '../constants'
 

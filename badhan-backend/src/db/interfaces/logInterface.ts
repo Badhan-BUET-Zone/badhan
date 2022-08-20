@@ -2,15 +2,15 @@
 /* tslint:disable */
 import {MASTER_ADMIN_ID} from "../../constants";
 
-import Log from '../models/Log'
+import {LogModel} from '../models/Log'
 const mongoose = require('mongoose')
 
-const addLog = async (donorId, operation, details) => {
+export const addLog = async (donorId, operation, details) => {
   if (donorId.equals(MASTER_ADMIN_ID)) {
     return
   }
 
-  const log = new Log({ donorId, operation, details })
+  const log = new LogModel({ donorId, operation, details })
   const data = await log.save()
 
   if (data.nInserted === 0) {
@@ -28,8 +28,8 @@ const addLog = async (donorId, operation, details) => {
   }
 }
 
-const addLogOfMasterAdmin = async (operation, details) => {
-  const log = new Log({ donorId: MASTER_ADMIN_ID, operation, details })
+export const addLogOfMasterAdmin = async (operation, details) => {
+  const log = new LogModel({ donorId: MASTER_ADMIN_ID, operation, details })
   const data = await log.save()
 
   if (data.nInserted === 0) {
@@ -47,8 +47,8 @@ const addLogOfMasterAdmin = async (operation, details) => {
   }
 }
 
-const getLogs = async () => {
-  const logs = await Log.find().populate({ path: 'donorId', select: { name: 1, hall: 1, designation: 3 } })
+export const getLogs = async () => {
+  const logs = await LogModel.find().populate({ path: 'donorId', select: { name: 1, hall: 1, designation: 3 } })
   return {
     message: 'Log insertion successful',
     status: 'OK',
@@ -56,8 +56,8 @@ const getLogs = async () => {
 
   }
 }
-const deleteLogs = async () => {
-  const logs = await Log.deleteMany()
+export const deleteLogs = async () => {
+  const logs = await LogModel.deleteMany()
   return {
     message: 'Log deletion successful',
     status: 'OK',
@@ -65,8 +65,8 @@ const deleteLogs = async () => {
   }
 }
 
-const getLogCounts = async () => {
-  const data = await Log.aggregate(
+export const getLogCounts = async () => {
+  const data = await LogModel.aggregate(
     [
       {
         $project: {
@@ -122,8 +122,8 @@ const getLogCounts = async () => {
     data: data
   }
 }
-const getLogsByDate = async (date) => {
-  const data = await Log.aggregate([
+export const getLogsByDate = async (date) => {
+  const data = await LogModel.aggregate([
     {
       $match: {
         date: {
@@ -173,8 +173,8 @@ const getLogsByDate = async (date) => {
   }
 }
 
-const getLogsByDateAndUser = async (date, donorId) => {
-  const data = await Log.aggregate([
+export const getLogsByDateAndUser = async (date, donorId) => {
+  const data = await LogModel.aggregate([
     {
       $match: {
         date: {
@@ -211,14 +211,4 @@ const getLogsByDateAndUser = async (date, donorId) => {
     status: 'OK',
     data: data
   }
-}
-
-module.exports = {
-  addLog,
-  getLogs,
-  deleteLogs,
-  getLogCounts,
-  getLogsByDate,
-  getLogsByDateAndUser,
-  addLogOfMasterAdmin
 }

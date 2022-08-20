@@ -1,6 +1,12 @@
 import mongoose from 'mongoose'
-
-const logSchema = new mongoose.Schema({
+export interface ILog {
+  donorId: mongoose.Schema.Types.ObjectId,
+  date: number,
+  operation: string,
+  details: object,
+  expireAt?: number
+}
+const logSchema = new mongoose.Schema<ILog>({
   donorId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -38,4 +44,4 @@ const logSchema = new mongoose.Schema({
 
 logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export default mongoose.model('Logs', logSchema)
+export const LogModel = mongoose.model('Logs', logSchema)

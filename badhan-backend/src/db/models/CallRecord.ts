@@ -1,6 +1,13 @@
 import mongoose from 'mongoose'
 
-const callRecordSchema = new mongoose.Schema({
+export interface ICallRecord {
+  callerId: mongoose.Schema.Types.ObjectId,
+  calleeId: mongoose.Schema.Types.ObjectId,
+  date: number,
+  expireAt?: number
+}
+
+const callRecordSchema = new mongoose.Schema<ICallRecord>({
   callerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Donor',
@@ -33,4 +40,4 @@ const callRecordSchema = new mongoose.Schema({
 
 callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export default mongoose.model('CallRecords', callRecordSchema)
+export const CallRecordModel = mongoose.model('CallRecords', callRecordSchema)

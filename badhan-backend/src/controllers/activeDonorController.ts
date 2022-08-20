@@ -1,7 +1,8 @@
 // @ts-nocheck
 /* tslint:disable */
-const activeDonorInterface = require('../db/interfaces/activeDonorInterface')
-const logInterface = require('../db/interfaces/logInterface')
+import * as activeDonorInterface from '../db/interfaces/activeDonorInterface'
+import * as logInterface from '../db/interfaces/logInterface'
+
 // const util = require('util')
 
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";

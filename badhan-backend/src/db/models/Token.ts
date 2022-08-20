@@ -1,6 +1,14 @@
 import mongoose from 'mongoose'
-
-const tokenSchema = new mongoose.Schema({
+export interface IToken {
+  donorId: mongoose.Schema.Types.ObjectId,
+  token: string,
+  expireAt?: number,
+  os: string,
+  browserFamily: string,
+  device: string,
+  ipAddress: string,
+}
+const tokenSchema = new mongoose.Schema<IToken>({
   donorId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -37,4 +45,4 @@ const tokenSchema = new mongoose.Schema({
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export default mongoose.model('Tokens', tokenSchema)
+export const TokenModel = mongoose.model('Tokens', tokenSchema)

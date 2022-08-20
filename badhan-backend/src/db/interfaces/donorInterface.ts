@@ -1,8 +1,8 @@
 // @ts-nocheck
 /* tslint:disable */
-import Donor from '../models/Donor'
-const insertDonor = async (donorObject) => {
-  const donor = new Donor(donorObject)
+import {DonorModel} from '../models/Donor'
+export const insertDonor = async (donorObject) => {
+  const donor = new DonorModel(donorObject)
   const data = await donor.save()
 
   if (data.nInserted === 0) {
@@ -20,8 +20,8 @@ const insertDonor = async (donorObject) => {
   }
 }
 
-const deleteDonor = async (donorID) => {
-  const data = await Donor.findOneAndDelete({ _id: donorID })
+export const deleteDonor = async (donorID) => {
+  const data = await DonorModel.findOneAndDelete({ _id: donorID })
   if (data) {
     return {
       message: 'Donor removed successfully',
@@ -35,8 +35,8 @@ const deleteDonor = async (donorID) => {
   }
 }
 
-const deleteDonorByPhone = async (donorPhone) => {
-  const data = await Donor.findOneAndDelete({ phone: donorPhone })
+export const deleteDonorByPhone = async (donorPhone) => {
+  const data = await DonorModel.findOneAndDelete({ phone: donorPhone })
   if (data) {
     return {
       message: 'Donor removed successfully',
@@ -50,8 +50,8 @@ const deleteDonorByPhone = async (donorPhone) => {
   }
 }
 
-const deleteDonorById = async (donorId) => {
-  const data = await Donor.findOneAndDelete({ _id: donorId })
+export const deleteDonorById = async (donorId) => {
+  const data = await DonorModel.findOneAndDelete({ _id: donorId })
   if (data) {
     return {
       data,
@@ -65,25 +65,8 @@ const deleteDonorById = async (donorId) => {
     }
   }
 }
-const findDonorById = async (id) => {
-  const data = await Donor.findById(id)
-  if (data) {
-    return {
-      data,
-      message: 'Donor found',
-      status: 'OK'
-    }
-  } else {
-    return {
-      data: null,
-      message: 'Donor not found',
-      status: 'ERROR'
-    }
-  }
-}
-
-const findDonorByQuery = async (query, option) => {
-  const data = await Donor.findOne(query, option)
+export const findDonorById = async (id) => {
+  const data = await DonorModel.findById(id)
   if (data) {
     return {
       data,
@@ -99,8 +82,25 @@ const findDonorByQuery = async (query, option) => {
   }
 }
 
-const findDonorByPhone = async (phoneNumber) => {
-  const data = await Donor.findOne({
+export const findDonorByQuery = async (query, option) => {
+  const data = await DonorModel.findOne(query, option)
+  if (data) {
+    return {
+      data,
+      message: 'Donor found',
+      status: 'OK'
+    }
+  } else {
+    return {
+      data: null,
+      message: 'Donor not found',
+      status: 'ERROR'
+    }
+  }
+}
+
+export const findDonorByPhone = async (phoneNumber) => {
+  const data = await DonorModel.findOne({
     phone: phoneNumber
   })
 
@@ -119,8 +119,8 @@ const findDonorByPhone = async (phoneNumber) => {
   }
 }
 
-const findAllDesignatedDonors = async () => {
-  const data = await Donor.find({
+export const findAllDesignatedDonors = async () => {
+  const data = await DonorModel.find({
   }, {
     name: 1,
     hall: 1,
@@ -133,9 +133,9 @@ const findAllDesignatedDonors = async () => {
   }
 }
 
-const findDonorsByAggregate = async (reqQuery) => {
+export const findDonorsByAggregate = async (reqQuery) => {
   const queryBuilder = generateSearchQuery(reqQuery)
-  const data = await Donor.aggregate([{
+  const data = await DonorModel.aggregate([{
     $match: queryBuilder
   }, {
     $lookup: {
@@ -207,9 +207,9 @@ const findDonorsByAggregate = async (reqQuery) => {
   }
 }
 
-const findDonorsByQuery = async (reqQuery) => {
+export const findDonorsByQuery = async (reqQuery) => {
   const queryBuilder = generateSearchQuery(reqQuery)
-  const data = await Donor.find(queryBuilder).populate({
+  const data = await DonorModel.find(queryBuilder).populate({
     path: 'callRecords',
     select: { _id: 1, date: 1, callerId: 1 }
   }).populate({
@@ -232,8 +232,8 @@ const findDonorsByQuery = async (reqQuery) => {
     status: 'OK'
   }
 }
-const findDonorByIDAndUpdateCommentTime = async (id, commentTime) => {
-  const data = await Donor.findByIdAndUpdate(id, {
+export const findDonorByIDAndUpdateCommentTime = async (id, commentTime) => {
+  const data = await DonorModel.findByIdAndUpdate(id, {
     $set: {
       commentTime
     }
@@ -254,8 +254,8 @@ const findDonorByIDAndUpdateCommentTime = async (id, commentTime) => {
   }
 }
 
-const findDonorByIDAndUpdate = async (id, update) => {
-  const data = await Donor.findByIdAndUpdate(id, update)
+export const findDonorByIDAndUpdate = async (id, update) => {
+  const data = await DonorModel.findByIdAndUpdate(id, update)
 
   if (data) {
     return {
@@ -272,8 +272,8 @@ const findDonorByIDAndUpdate = async (id, update) => {
   }
 }
 
-const findDonorAndUpdate = async (query, donorUpdate) => {
-  const data = await Donor.findOneAndUpdate(query, donorUpdate, {
+export const findDonorAndUpdate = async (query, donorUpdate) => {
+  const data = await DonorModel.findOneAndUpdate(query, donorUpdate, {
     returnOriginal: false
   })
   if (data) {
@@ -290,8 +290,8 @@ const findDonorAndUpdate = async (query, donorUpdate) => {
   }
 }
 
-const getCount = async () => {
-  const donorCount = await Donor.countDocuments()
+export const getCount = async () => {
+  const donorCount = await DonorModel.countDocuments()
   return {
     message: 'Fetched donor count',
     status: 'OK',
@@ -299,8 +299,8 @@ const getCount = async () => {
   }
 }
 
-const getVolunteerCount = async () => {
-  const volunteerCount = await Donor.find({ designation: 1 }).countDocuments()
+export const getVolunteerCount = async () => {
+  const volunteerCount = await DonorModel.find({ designation: 1 }).countDocuments()
   return {
     message: 'Fetched volunteer count',
     status: 'OK',
@@ -308,8 +308,8 @@ const getVolunteerCount = async () => {
   }
 }
 
-const findAdmins = async (designation) => {
-  const data = await Donor.find({ designation }, {
+export const findAdmins = async (designation) => {
+  const data = await DonorModel.find({ designation }, {
     studentId: 1,
     name: 1,
     phone: 1,
@@ -323,15 +323,8 @@ const findAdmins = async (designation) => {
   }
 }
 
-const findVolunteersOfHall = async (hall) => {
-  // const data = await Donor.find({ designation: 1, hall: hall }, {
-  //   studentId: 1,
-  //   name: 1,
-  //   roomNumber: 1,
-  //   bloodGroup: 1,
-  //   phone: 1
-  // })
-  const data = await Donor.aggregate([{
+export const findVolunteersOfHall = async (hall) => {
+  const data = await DonorModel.aggregate([{
     $match: {
       hall: hall,
       designation: 1
@@ -371,7 +364,7 @@ const findVolunteersOfHall = async (hall) => {
   }
 }
 
-const generateAggregatePipeline = (reqQuery, donorId) => {
+export const generateAggregatePipeline = (reqQuery, donorId) => {
   const queryBuilder = generateSearchQuery(reqQuery)
   const aggregatePipeline = [{
     $lookup: {
@@ -466,7 +459,7 @@ const generateAggregatePipeline = (reqQuery, donorId) => {
   return aggregatePipeline
 }
 
-const generateSearchQuery = (reqQuery) => {
+export const generateSearchQuery = (reqQuery) => {
   const queryBuilder = {}
 
   // process blood group
@@ -544,11 +537,11 @@ const generateSearchQuery = (reqQuery) => {
   }
   return queryBuilder
 }
-const findDonorIdsByPhone = async (userDesignation, userHall, phoneList) => {
+export const findDonorIdsByPhone = async (userDesignation, userHall, phoneList) => {
   // phoneList = [8801521438557, 8801786433743, 8801627151097]
   let existingDonors
   if (userDesignation === 3) {
-    existingDonors = await Donor.aggregate([
+    existingDonors = await DonorModel.aggregate([
       {
         $match: {
           phone: { $in: phoneList }
@@ -563,7 +556,7 @@ const findDonorIdsByPhone = async (userDesignation, userHall, phoneList) => {
       }
     ])
   } else {
-    existingDonors = await Donor.aggregate([
+    existingDonors = await DonorModel.aggregate([
       {
         $match: {
           phone: { $in: phoneList }
@@ -600,25 +593,3 @@ const findDonorIdsByPhone = async (userDesignation, userHall, phoneList) => {
   }
 }
 
-module.exports = {
-  findDonorIdsByPhone,
-  insertDonor,
-  deleteDonor,
-  deleteDonorByPhone,
-  deleteDonorById,
-  findDonorByQuery,
-  findDonorsByQuery,
-  findDonorByIDAndUpdate,
-  findDonorAndUpdate,
-  getCount,
-  getVolunteerCount,
-  findAllDesignatedDonors,
-  findDonorByPhone,
-  findDonorByIDAndUpdateCommentTime,
-  findDonorById,
-  findAdmins,
-  findVolunteersOfHall,
-  findDonorsByAggregate,
-  generateAggregatePipeline,
-  generateSearchQuery
-}

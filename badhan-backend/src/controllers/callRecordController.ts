@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
-const callRecordInterface = require('../db/interfaces/callRecordInterface')
-const logInterface = require('../db/interfaces/logInterface')
+import * as callRecordInterface from '../db/interfaces/callRecordInterface'
+import * as logInterface from '../db/interfaces/logInterface'
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import ConflictError409 from "../response/models/errorTypes/ConflictError409";

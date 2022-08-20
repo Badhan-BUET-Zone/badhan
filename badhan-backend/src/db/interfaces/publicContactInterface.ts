@@ -1,8 +1,8 @@
 // @ts-nocheck
 /* tslint:disable */
-import PublicContact from "../models/PublicContact";
-const insertPublicContact = async (donorId, bloodGroup) => {
-  const publicContact = new PublicContact({ donorId, bloodGroup })
+import {PublicContactModel} from "../models/PublicContact";
+export const insertPublicContact = async (donorId, bloodGroup) => {
+  const publicContact = new PublicContactModel({ donorId, bloodGroup })
   const data = await publicContact.save()
 
   if (data.nInserted === 0) {
@@ -20,8 +20,8 @@ const insertPublicContact = async (donorId, bloodGroup) => {
   }
 }
 
-const deletePublicContactById = async (publicContactId) => {
-  const data = await PublicContact.findByIdAndDelete(publicContactId)
+export const deletePublicContactById = async (publicContactId) => {
+  const data = await PublicContactModel.findByIdAndDelete(publicContactId)
   if (data) {
     return {
       message: 'Public contact removed successfully',
@@ -35,8 +35,8 @@ const deletePublicContactById = async (publicContactId) => {
   }
 }
 
-const findPublicContactById = async (publicContactId) => {
-  const data = await PublicContact.findOne({
+export const findPublicContactById = async (publicContactId) => {
+  const data = await PublicContactModel.findOne({
     _id: publicContactId
   })
   if (data) {
@@ -53,8 +53,8 @@ const findPublicContactById = async (publicContactId) => {
   }
 }
 
-const findAllPublicContacts = async () => {
-  const data = await PublicContact.aggregate([
+export const findAllPublicContacts = async () => {
+  const data = await PublicContactModel.aggregate([
     {
       $lookup: {
         from: 'donors',
@@ -98,11 +98,4 @@ const findAllPublicContacts = async () => {
     message: 'All public contacts fetched',
     status: 'ERROR'
   }
-}
-
-module.exports = {
-  insertPublicContact,
-  deletePublicContactById,
-  findPublicContactById,
-  findAllPublicContacts
 }

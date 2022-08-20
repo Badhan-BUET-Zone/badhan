@@ -3,9 +3,9 @@
 import dotenv from '../../dotenv'
 const tokenCache = require('../../cache/tokenCache')
 // const { Token } = require('../models/Token')
-import Token from "../models/Token";
+import {TokenModel} from "../models/Token";
 const jwt = require('jsonwebtoken')
-const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
+export const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
   let options = {}
   if (expiresIn) {
     options = { expiresIn }
@@ -14,7 +14,7 @@ const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
     _id: String(donorId),
     access: 'auth'
   }, dotenv.JWT_SECRET, options).toString()
-  const tokenData = new Token({ donorId, token, ...userAgent })
+  const tokenData = new TokenModel({ donorId, token, ...userAgent })
   const data = await tokenData.save()
   if (data.nInserted === 0) {
     return {
@@ -31,8 +31,8 @@ const insertAndSaveTokenWithExpiry = async (donorId, userAgent, expiresIn) => {
   }
 }
 
-const findTokenDataByToken = async (token) => {
-  const tokenData = await Token.findOne({ token })
+export const findTokenDataByToken = async (token) => {
+  const tokenData = await TokenModel.findOne({ token })
   if (!tokenData) {
     return {
       message: 'Token not found',
@@ -46,8 +46,8 @@ const findTokenDataByToken = async (token) => {
   }
 }
 
-const deleteTokenDataByToken = async (token) => {
-  const tokenData = await Token.findOneAndDelete({ token })
+export const deleteTokenDataByToken = async (token) => {
+  const tokenData = await TokenModel.findOneAndDelete({ token })
   if (tokenData) {
     tokenCache.clear(token)
     return {
@@ -61,8 +61,8 @@ const deleteTokenDataByToken = async (token) => {
   }
 }
 
-const deleteAllTokensByDonorId = async (donorId) => {
-  const tokenData = await Token.deleteMany({ donorId })
+export const deleteAllTokensByDonorId = async (donorId) => {
+  const tokenData = await TokenModel.deleteMany({ donorId })
   tokenCache.clearAll()
   return {
     message: 'Token successfully removed',
@@ -71,8 +71,8 @@ const deleteAllTokensByDonorId = async (donorId) => {
   }
 }
 
-const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken) => {
-  const tokenDataList = await Token.find({
+export const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken) => {
+  const tokenDataList = await TokenModel.find({
     $and: [{
       donorId: {
         $eq: donorId
@@ -89,8 +89,8 @@ const findTokenDataExceptSpecifiedToken = async (donorId, excludedToken) => {
   }
 }
 
-const deleteByTokenId = async (tokenId) => {
-  const deletedToken = await Token.findByIdAndDelete(tokenId)
+export const deleteByTokenId = async (tokenId) => {
+  const deletedToken = await TokenModel.findByIdAndDelete(tokenId)
   tokenCache.clearAll()
   if (deletedToken) {
     return {
@@ -104,13 +104,4 @@ const deleteByTokenId = async (tokenId) => {
     status: 'ERROR',
     data: null
   }
-}
-
-module.exports = {
-  findTokenDataByToken,
-  deleteTokenDataByToken,
-  deleteAllTokensByDonorId,
-  insertAndSaveTokenWithExpiry,
-  findTokenDataExceptSpecifiedToken,
-  deleteByTokenId
 }

@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* tslint:disable */
-const publicContactInterface = require('../db/interfaces/publicContactInterface')
-const logInterface = require('../db/interfaces/logInterface')
+import * as publicContactInterface from '../db/interfaces/publicContactInterface'
+import * as logInterface from '../db/interfaces/logInterface'
 
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";

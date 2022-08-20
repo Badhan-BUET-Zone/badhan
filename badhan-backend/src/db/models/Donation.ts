@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
-
-const donationSchema = new mongoose.Schema({
+export interface IDonation {
+  phone: number,
+  donorId: mongoose.Schema.Types.ObjectId,
+  date: number
+}
+const donationSchema = new mongoose.Schema<IDonation>({
   phone: {
     type: Number,
     required: true,
@@ -26,4 +30,4 @@ const donationSchema = new mongoose.Schema({
   }
 }, { versionKey: false, id: false })
 
-export default mongoose.model('Donations', donationSchema)
+export const DonationModel = mongoose.model('Donations', donationSchema)

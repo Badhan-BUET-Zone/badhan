@@ -1,8 +1,8 @@
 // @ts-nocheck
 /* tslint:disable */
-import CallRecord from "../models/CallRecord";
-const insertOne = async (callerId, calleeId) => {
-  const callRecord = new CallRecord(
+import {CallRecordModel} from "../models/CallRecord";
+export const insertOne = async (callerId, calleeId) => {
+  const callRecord = new CallRecordModel(
     { callerId, calleeId, date: new Date().getTime() })
   const data = await callRecord.save()
   return {
@@ -11,8 +11,8 @@ const insertOne = async (callerId, calleeId) => {
     data: data
   }
 }
-const findManyByCallee = async (calleeId) => {
-  const data = await CallRecord.find({ calleeId }).populate({
+export const findManyByCallee = async (calleeId) => {
+  const data = await CallRecordModel.find({ calleeId }).populate({
     path: 'callerId',
     select: { _id: 1, name: 1, hall: 1, designation: 1 }
   })
@@ -23,8 +23,8 @@ const findManyByCallee = async (calleeId) => {
   }
 }
 
-const deleteById = async (id) => {
-  const data = await CallRecord.findByIdAndDelete(id)
+export const deleteById = async (id) => {
+  const data = await CallRecordModel.findByIdAndDelete(id)
   if (data) {
     return {
       message: 'Call record deleted successfully',
@@ -38,8 +38,8 @@ const deleteById = async (id) => {
   }
 }
 
-const findById = async (id) => {
-  const data = await CallRecord.findOne({ _id: id })
+export const findById = async (id) => {
+  const data = await CallRecordModel.findOne({ _id: id })
   if (!data) {
     return {
       message: 'No call record found',
@@ -52,7 +52,7 @@ const findById = async (id) => {
     data: data
   }
 }
-module.exports = {
+export default {
   insertOne,
   findManyByCallee,
   deleteById,

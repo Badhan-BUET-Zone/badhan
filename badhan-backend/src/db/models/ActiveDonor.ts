@@ -1,13 +1,20 @@
-import mongoose from 'mongoose'
-const activeDonorSchema = new mongoose.Schema({
+import {Schema, model} from 'mongoose'
+
+export interface IActiveDonor {
+  donorId: Schema.Types.ObjectId;
+  markerId: Schema.Types.ObjectId;
+  time: number;
+}
+
+const activeDonorSchema = new Schema<IActiveDonor>({
   donorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Donor',
     required: true,
     unique: true
   },
   markerId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Donor',
     required: true
   },
@@ -21,4 +28,4 @@ const activeDonorSchema = new mongoose.Schema({
   }
 }, { versionKey: false, id: false })
 
-export default mongoose.model('ActiveDonors', activeDonorSchema)
+export const ActiveDonorModel = model('ActiveDonors', activeDonorSchema)

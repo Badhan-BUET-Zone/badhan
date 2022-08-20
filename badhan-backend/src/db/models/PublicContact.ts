@@ -1,6 +1,9 @@
 import mongoose from 'mongoose'
-
-const publicContactSchema = new mongoose.Schema({
+export interface IPublicContact {
+  donorId: mongoose.Schema.Types.ObjectId,
+  bloodGroup: number,
+}
+const publicContactSchema = new mongoose.Schema<IPublicContact>({
   donorId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -25,4 +28,4 @@ const publicContactSchema = new mongoose.Schema({
 
 }, { versionKey: false, id: false })
 
-export default mongoose.model('PublicContacts', publicContactSchema)
+export const PublicContactModel = mongoose.model('PublicContacts', publicContactSchema)

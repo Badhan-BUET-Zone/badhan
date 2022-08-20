@@ -5,9 +5,9 @@ import dotenv from '../dotenv'
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const donorInterface = require('../db/interfaces/donorInterface')
-const tokenInterface = require('../db/interfaces/tokenInterface')
-const logInterface = require('../db/interfaces/logInterface')
+import * as donorInterface from '../db/interfaces/donorInterface'
+import * as tokenInterface from '../db/interfaces/tokenInterface'
+import * as logInterface from '../db/interfaces/logInterface'
 const emailInterface = require('../db/interfaces/emailInterface')
 
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";

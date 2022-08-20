@@ -1,14 +1,31 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
-import CallRecord from "./CallRecord";
-import Donation from "./Donation";
-import Log from "./Log";
-import PublicContact from "./PublicContact";
-import ActiveDonor from "./ActiveDonor";
-import Token from "./Token";
+import {CallRecordModel} from "./CallRecord";
+import {DonationModel} from "./Donation";
+import {LogModel} from "./Log";
+import {PublicContactModel} from "./PublicContact";
+import {ActiveDonorModel} from "./ActiveDonor";
+import {TokenModel} from "./Token";
 import { checkEmail } from '../../validations/validateRequest/others'
 
-const donorSchema = new mongoose.Schema({
+export interface IDonor {
+  phone: number,
+  password: string,
+  studentId: string,
+  bloodGroup: number,
+  hall: number,
+  address: string,
+  roomNumber: string,
+  designation: number,
+  lastDonation: number,
+  name: string,
+  comment: string,
+  commentTime: number,
+  availableToAll: boolean,
+  email: string,
+}
+
+const donorSchema = new mongoose.Schema<IDonor>({
   phone: {
     unique: true,
     type: Number,
@@ -149,18 +166,7 @@ const donorSchema = new mongoose.Schema({
       msg: 'DB: commentTime must be an integer'
     }]
   },
-  // donationCount: {
-  //     type: Number,
-  //     default: 0,
-  //     min: 0,
-  //     max: 99,
-  //     required: true,
-  //     validate: [{
-  //         validator: (value) => {
-  //             return Number.isInteger(value);
-  //         }, msg: 'DB: donationCount must be an integer'
-  //     }],
-  // },
+
   availableToAll: {
     type: Boolean,
     required: true
@@ -249,16 +255,16 @@ donorSchema.pre('save', function (next) {
 })
 
 donorSchema.post('findOneAndDelete', async (donor) => {
-  await CallRecord.deleteMany({ callerId: donor._id })
-  await CallRecord.deleteMany({ calleeId: donor._id })
-  await Donation.deleteMany({ donorId: donor._id })
-  await Log.deleteMany({ donorId: donor._id })
-  await PublicContact.deleteMany({ donorId: donor._id })
-  await Token.deleteMany({ donorId: donor._id })
-  await ActiveDonor.deleteMany({ donorId: donor._id })
-  await ActiveDonor.deleteMany({ markerId: donor._id })
+  await CallRecordModel.deleteMany({ callerId: donor._id })
+  await CallRecordModel.deleteMany({ calleeId: donor._id })
+  await DonationModel.deleteMany({ donorId: donor._id })
+  await LogModel.deleteMany({ donorId: donor._id })
+  await PublicContactModel.deleteMany({ donorId: donor._id })
+  await TokenModel.deleteMany({ donorId: donor._id })
+  await ActiveDonorModel.deleteMany({ donorId: donor._id })
+  await ActiveDonorModel.deleteMany({ markerId: donor._id })
 })
 
-export default mongoose.model('Donor', donorSchema)
+export const DonorModel = mongoose.model('Donor', donorSchema)
 
 
