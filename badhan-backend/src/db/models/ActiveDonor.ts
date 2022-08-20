@@ -28,4 +28,4 @@ const activeDonorSchema = new Schema<IActiveDonor>({
   }
 }, { versionKey: false, id: false })
 
-export const ActiveDonorModel = model('ActiveDonors', activeDonorSchema)
+export const ActiveDonorModel = model<IActiveDonor>('ActiveDonors', activeDonorSchema)

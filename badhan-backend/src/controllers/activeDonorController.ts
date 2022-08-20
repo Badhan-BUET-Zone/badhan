@@ -50,7 +50,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
   name: string,
   address: string,
   isAvailable: string,
-  isNotAvaiable: string,
+  isNotAvailable: string,
   availableToAll:string,
   markedByMe: string
 }>, res: Response) => {
@@ -61,7 +61,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
     name: req.query.name,
     address: req.query.address,
     isAvailable: req.query.isAvailable === 'true',
-    isNotAvailable: req.query.isNotAvaiable === 'true',
+    isNotAvailable: req.query.isNotAvailable === 'true',
     availableToAll: req.query.availableToAll === 'true',
     markedByMe: req.query.markedByMe === 'true'
   }

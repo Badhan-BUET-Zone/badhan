@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 export interface IDonation {
   phone: number,
-  donorId: mongoose.Schema.Types.ObjectId,
+  donorId: mongoose.Types.ObjectId,
   date: number
 }
 const donationSchema = new mongoose.Schema<IDonation>({
@@ -30,4 +30,4 @@ const donationSchema = new mongoose.Schema<IDonation>({
   }
 }, { versionKey: false, id: false })
 
-export const DonationModel = mongoose.model('Donations', donationSchema)
+export const DonationModel = mongoose.model<IDonation>('Donations', donationSchema)

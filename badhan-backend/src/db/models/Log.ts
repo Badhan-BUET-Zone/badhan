@@ -44,4 +44,4 @@ const logSchema = new mongoose.Schema<ILog>({
 
 logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export const LogModel = mongoose.model('Logs', logSchema)
+export const LogModel = mongoose.model<ILog>('Logs', logSchema)

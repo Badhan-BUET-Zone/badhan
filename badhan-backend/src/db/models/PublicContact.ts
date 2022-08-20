@@ -28,4 +28,4 @@ const publicContactSchema = new mongoose.Schema<IPublicContact>({
 
 }, { versionKey: false, id: false })
 
-export const PublicContactModel = mongoose.model('PublicContacts', publicContactSchema)
+export const PublicContactModel = mongoose.model<IPublicContact>('PublicContacts', publicContactSchema)

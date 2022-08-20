@@ -10,19 +10,19 @@ import { checkEmail } from '../../validations/validateRequest/others'
 
 export interface IDonor {
   phone: number,
-  password: string,
+  password?: string,
   studentId: string,
   bloodGroup: number,
   hall: number,
   address: string,
   roomNumber: string,
-  designation: number,
+  designation?: number,
   lastDonation: number,
   name: string,
   comment: string,
-  commentTime: number,
+  commentTime?: number,
   availableToAll: boolean,
-  email: string,
+  email?: string,
 }
 
 const donorSchema = new mongoose.Schema<IDonor>({
@@ -265,6 +265,6 @@ donorSchema.post('findOneAndDelete', async (donor) => {
   await ActiveDonorModel.deleteMany({ markerId: donor._id })
 })
 
-export const DonorModel = mongoose.model('Donor', donorSchema)
+export const DonorModel = mongoose.model<IDonor>('Donor', donorSchema)
 
 

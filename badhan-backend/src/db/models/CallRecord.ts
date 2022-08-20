@@ -40,4 +40,4 @@ const callRecordSchema = new mongoose.Schema<ICallRecord>({
 
 callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export const CallRecordModel = mongoose.model('CallRecords', callRecordSchema)
+export const CallRecordModel = mongoose.model<ICallRecord>('CallRecords', callRecordSchema)

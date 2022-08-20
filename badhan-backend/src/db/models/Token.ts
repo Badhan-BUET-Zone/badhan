@@ -50,4 +50,4 @@ const tokenSchema = new mongoose.Schema<IToken>({
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export const TokenModel = mongoose.model('Tokens', tokenSchema)
+export const TokenModel = mongoose.model<IToken>('Tokens', tokenSchema)

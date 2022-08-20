@@ -30,7 +30,7 @@ const handlePOSTSignIn = async (req: Request, res: Response) => {
   let matched
 
   try {
-    matched = await bcrypt.compare(password, donor.password)
+    matched = await bcrypt.compare(password, donor.password!)
   } catch (e) {
     return res.status(404).send(new NotFoundError404('Account not found',{}))
   }
