@@ -33,15 +33,15 @@ export const validateQUERYAddress = query('address')
 
 export const validateQUERYIsAvailable = query('isAvailable')
   .exists().withMessage('isAvailable is required')
-  .isBoolean().toBoolean().withMessage('isAvailable must be boolean')
+  .isBoolean().withMessage('isAvailable must be boolean')
 
 export const validateQEURYIsNotAvailable = query('isNotAvailable')
   .exists().withMessage('isNotAvailable is required')
-  .isBoolean().toBoolean().withMessage('isNotAvailable must be boolean')
+  .isBoolean().withMessage('isNotAvailable must be boolean')
 
 export const validateQUERYAvailableToAll = query('availableToAll')
   .exists().withMessage('availableToAll is required')
-  .isBoolean().toBoolean().withMessage('availableToAll must be boolean')
+  .isBoolean().withMessage('availableToAll must be boolean')
 
 export const validateQUERYDate = query('date')
   .exists().not().isEmpty().withMessage('date is required')
@@ -64,11 +64,11 @@ export const validateQUERYPublicContactId = query('contactId')
 
 export const validateQUERYMarkedByMe = query('markedByMe')
   .exists().withMessage('markedByMe is required')
-  .isBoolean().toBoolean().withMessage('markedByMe must be boolean')
+  .isBoolean().withMessage('markedByMe must be boolean')
 
 export const validateQUERYAvailableToAllOrHall = query('availableToAllOrHall')
   .exists().withMessage('availableToAllOrHall is required')
-  .isBoolean().toBoolean().withMessage('availableToAllOrHall must be boolean')
+  .isBoolean().withMessage('availableToAllOrHall must be boolean')
 
 export const validateQUERYPhoneList = query('phoneList').exists().withMessage('phoneList is required')
   .toArray().custom((phoneList) => {

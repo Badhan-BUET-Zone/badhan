@@ -1,7 +1,7 @@
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
-
+import util from 'util'
 export const insertDonor = async (donorObject: IDonor) => {
     const donor = new DonorModel(donorObject)
     const data = await donor.save()

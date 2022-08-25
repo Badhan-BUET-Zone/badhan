@@ -11,7 +11,6 @@ import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import {IDonation} from "../db/models/Donation";
-import mongoose, {Schema} from "mongoose";
 
 const handlePOSTDonors = async (req: Request<{},{},{
   phone: number,
