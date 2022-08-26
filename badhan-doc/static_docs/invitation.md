@@ -39,7 +39,7 @@ security course
   * You will be tasked for penetration testing of the testing API
 
 ## 4) Q/A Member
-* Vacancy: 1
+* Vacancy: 0
 * Skill Requirement: Knowledge on building apps or website, Github
 * Experience Requirement: Current student of any department of BUET
 * Responsibilities:
