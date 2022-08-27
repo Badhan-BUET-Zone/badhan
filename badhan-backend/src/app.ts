@@ -17,6 +17,7 @@ import './db/mongoose'
 import { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } from './response/errorHandlers'
 import { redirectToDoc } from './doc/redirection'
 import { onlineCheckController } from './controllers/otherControllers'
+import myConsole from "./response/myConsole";
 
 const app = express()
 
@@ -42,9 +43,7 @@ app.use(internalServerErrorHandler)
 process.on('unhandledRejection', unhandledRejectionHandler)
 process.on('uncaughtException', uncaughtExceptionHandler)
 
-// tslint:disable-next-line:no-console
-console.log('BADHAN LOG: server environment is', dotenv.NODE_ENV)
-// tslint:disable-next-line:no-console
-console.log('BADHAN LOG: rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
+myConsole.log('BADHAN LOG: server environment is', dotenv.NODE_ENV)
+myConsole.log('BADHAN LOG: rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
 
 export default app

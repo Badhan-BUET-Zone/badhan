@@ -1,5 +1,6 @@
 import useragent from 'useragent'
 import {Request, Response, NextFunction} from "express";
+import myConsole from "../response/myConsole";
 
 export interface IUserAgent {
   os: string,
@@ -17,8 +18,7 @@ export const userAgentHandler = (req:Request, res: Response, next: NextFunction)
     browserFamily: agent.family.toString(),
     ipAddress: xForwardedForHeader ? xForwardedForHeader.split(',').shift() : (req.socket ? req.socket.remoteAddress : '0.0.0.0')
   }
-  // tslint:disable-next-line:no-console
-  console.log('useragent os->', res.locals.userAgent.os, ' device->', res.locals.userAgent.device, ' family->', res.locals.userAgent.browserFamily, ' ip->', res.locals.userAgent.ipAddress)
+  myConsole.log('useragent os->', res.locals.userAgent.os, ' device->', res.locals.userAgent.device, ' family->', res.locals.userAgent.browserFamily, ' ip->', res.locals.userAgent.ipAddress)
   next()
 }
 

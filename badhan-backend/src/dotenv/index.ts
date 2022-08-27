@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import myConsole from "../response/myConsole";
 
 dotenv.config({ path: '.env.' + process.env.NODE_ENV })
 
@@ -28,8 +29,7 @@ const dotenvEnvFile: DotenvEnvFile = {
 
 Object.entries(dotenvEnvFile).forEach(([key, value], index) => {
   if (value === undefined) {
-    // tslint:disable-next-line:no-console
-    console.log('BADHAN LOG: ', key, 'is not defined in config. Program will exit')
+    myConsole.log('BADHAN LOG: ', key, 'is not defined in config. Program will exit')
     process.exit(1)
   }
 });

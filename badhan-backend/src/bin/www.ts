@@ -6,6 +6,7 @@ import app from '../app'
 import DebugLibrary from 'debug'
 import SourceMapSupport from 'source-map-support'
 import http from 'http'
+import myConsole from "../response/myConsole";
 
 const debug = DebugLibrary('badhan-backend:server')
 SourceMapSupport.install()
@@ -75,13 +76,11 @@ function onError (error: ErrnoException) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      // tslint:disable-next-line:no-console
-      console.error(bind + ' requires elevated privileges')
+      myConsole.error(bind + ' requires elevated privileges')
       process.exit(1)
       break
     case 'EADDRINUSE':
-      // tslint:disable-next-line:no-console
-      console.error(bind + ' is already in use')
+      myConsole.error(bind + ' is already in use')
       process.exit(1)
       break
     default:
