@@ -1,8 +1,8 @@
 import { validationResult, ValidationChain } from 'express-validator'
 import {Request, Response, NextFunction} from 'express'
 import BadRequestError400 from "../response/models/errorTypes/BadRequestError400";
-export const validate = (validations: ValidationChain[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const validate = (validations: ValidationChain[]):(req: Request, res: Response, next: NextFunction) => Promise<Response | void> => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
     await Promise.all(validations.map(validation => validation.run(req)))
     const errors = validationResult(req)
     if (errors.isEmpty()) {

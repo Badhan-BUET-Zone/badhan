@@ -27,7 +27,7 @@ const dotenvEnvFile: DotenvEnvFile = {
   MONGODB_URI: process.env.MONGODB_URI!
 }
 
-Object.entries(dotenvEnvFile).forEach(([key, value], index) => {
+Object.entries(dotenvEnvFile).forEach(([key, value], index):void => {
   if (value === undefined) {
     myConsole.log('BADHAN LOG: ', key, 'is not defined in config. Program will exit')
     process.exit(1)

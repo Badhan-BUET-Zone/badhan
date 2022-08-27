@@ -7,7 +7,7 @@ import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 
-const handlePOSTPublicContact = async (req: Request, res: Response) => {
+const handlePOSTPublicContact = async (req: Request, res: Response):Promise<Response> => {
   const insertionResult = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup)
   if (insertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(insertionResult.message,{},{}))
@@ -19,14 +19,14 @@ const handlePOSTPublicContact = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETPublicContacts = async (req: Request, res: Response) => {
+const handleGETPublicContacts = async (req: Request, res: Response):Promise<Response> => {
   const searchResult = await publicContactInterface.findAllPublicContacts()
   return res.status(200).send(new OKResponse200('All public contacts fetched successfully', {
     publicContacts: searchResult.data
   }))
 }
 
-const handleDELETEPublicContact = async (req: Request<{},{},{},{contactId: string}>, res: Response) => {
+const handleDELETEPublicContact = async (req: Request<{},{},{},{contactId: string}>, res: Response):Promise<Response> => {
   const targetDonor = res.locals.middlewareResponse.donor
   const searchResult = await publicContactInterface.findPublicContactById(req.query.contactId)
   if (searchResult.status !== 'OK') {

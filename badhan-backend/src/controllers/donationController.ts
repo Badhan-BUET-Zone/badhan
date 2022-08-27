@@ -6,7 +6,7 @@ import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 
-const handlePOSTDonations = async (req: Request, res: Response) => {
+const handlePOSTDonations = async (req: Request, res: Response): Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   const donationInsertionResult = await donationInterface.insertDonation({
@@ -35,7 +35,7 @@ const handlePOSTDonations = async (req: Request, res: Response) => {
   }))
 }
 
-const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res: Response) => {
+const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res: Response):Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
   const reqQuery = req.query
   const givenDate = parseInt(reqQuery.date,10)

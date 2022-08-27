@@ -9,7 +9,7 @@ export interface IUserAgent {
   ipAddress: string
 }
 
-export const userAgentHandler = (req:Request, res: Response, next: NextFunction) => {
+export const userAgentHandler = (req:Request, res: Response, next: NextFunction):void => {
   const agent = useragent.parse(req.headers['user-agent'])
   const xForwardedForHeader = req.get('x-forwarded-for')
   res.locals.userAgent = {

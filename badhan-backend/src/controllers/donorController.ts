@@ -24,7 +24,7 @@ const handlePOSTDonors = async (req: Request<{},{},{
   comment: string,
   availableToAll: boolean,
   extraDonationCount: number
-},{}>, res: Response) => {
+},{}>, res: Response): Promise<Response> => {
   const authenticatedUser = res.locals.middlewareResponse.donor
 
   const duplicateDonorResult = await donorInterface.findDonorByPhone(req.body.phone)
@@ -88,7 +88,7 @@ const handlePOSTDonors = async (req: Request<{},{},{
   }))
 }
 
-const handleDELETEDonors = async (req: Request, res: Response) => {
+const handleDELETEDonors = async (req: Request, res: Response):Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   if (donor.designation > 1) {
@@ -114,7 +114,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
   isAvailable: string,
   isNotAvailable: string,
   availableToAll:string,
-}>, res: Response) => {
+}>, res: Response):Promise<Response> => {
   const reqQuery = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),
@@ -142,7 +142,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
   }))
 }
 
-const handlePATCHDonorsComment = async (req: Request, res: Response) => {
+const handlePATCHDonorsComment = async (req: Request, res: Response):Promise<Response> => {
   const targetDonor = res.locals.middlewareResponse.targetDonor
 
   targetDonor.comment = req.body.comment
@@ -152,7 +152,7 @@ const handlePATCHDonorsComment = async (req: Request, res: Response) => {
   return res.status(200).send(new OKResponse200('Comment updated successfully',{}))
 }
 
-const handlePATCHDonorsPassword = async (req: Request, res: Response) => {
+const handlePATCHDonorsPassword = async (req: Request, res: Response):Promise<Response> => {
   const reqBody = req.body
   const target = res.locals.middlewareResponse.targetDonor
   if (target.designation === 0) {
@@ -169,7 +169,7 @@ const handlePATCHDonorsPassword = async (req: Request, res: Response) => {
   return res.status(200).send(new OKResponse200('Password changed successfully',{}))
 }
 
-const handlePATCHDonors = async (req: Request, res: Response) => {
+const handlePATCHDonors = async (req: Request, res: Response):Promise<Response> => {
   const reqBody = req.body
 
   const target = res.locals.middlewareResponse.targetDonor
@@ -203,7 +203,7 @@ const handlePATCHDonors = async (req: Request, res: Response) => {
   return res.status(200).send(new OKResponse200('Donor updated successfully',{}))
 }
 
-const handlePATCHDonorsDesignation = async (req: Request, res: Response) => {
+const handlePATCHDonorsDesignation = async (req: Request, res: Response):Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
   const donorDesignation = donor.designation
 
@@ -235,7 +235,7 @@ const handlePATCHDonorsDesignation = async (req: Request, res: Response) => {
   return res.status(200).send(new OKResponse200('Target user promoted/demoted successfully',{}))
 }
 
-const handlePATCHAdmins = async (req: Request, res: Response) => {
+const handlePATCHAdmins = async (req: Request, res: Response):Promise<Response> => {
   const targetDonor = res.locals.middlewareResponse.targetDonor
 
   if (targetDonor.designation !== 1) {
@@ -260,7 +260,7 @@ const handlePATCHAdmins = async (req: Request, res: Response) => {
   return res.status(200).send(new OKResponse200('Changed hall admin successfully',{}))
 }
 
-const handleGETDonors = async (req: Request, res: Response) => {
+const handleGETDonors = async (req: Request, res: Response):Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
   await donor.populate([
     {
@@ -309,7 +309,7 @@ const handleGETDonors = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETDesignatedDonorsAll = async (req: Request, res: Response) => {
+const handleGETDesignatedDonorsAll = async (req: Request, res: Response):Promise<Response> => {
   const allDesignatedDonorResult = await donorInterface.findAllDesignatedDonors()
 
   if (allDesignatedDonorResult.status !== 'OK') {
@@ -323,7 +323,7 @@ const handleGETDesignatedDonorsAll = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETDonorsDuplicate = async (req: Request<{},{},{},{phone: string}>, res: Response) => {
+const handleGETDonorsDuplicate = async (req: Request<{},{},{},{phone: string}>, res: Response):Promise<Response> => {
   const authenticatedUser = res.locals.middlewareResponse.donor
 
   const duplicateDonorResult = await donorInterface.findDonorByPhone(parseInt(req.query.phone,10))
@@ -355,7 +355,7 @@ const handleGETDonorsDuplicate = async (req: Request<{},{},{},{phone: string}>, 
   }))
 }
 
-const handlePOSTDonorsPasswordRequest = async (req: Request, res: Response) => {
+const handlePOSTDonorsPasswordRequest = async (req: Request, res: Response):Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   if (donor.designation === 0) {
@@ -379,7 +379,7 @@ const handlePOSTDonorsPasswordRequest = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETDonorsDesignation = async (req: Request, res: Response) => {
+const handleGETDonorsDesignation = async (req: Request, res: Response):Promise<Response> => {
   const authenticatedUser = res.locals.middlewareResponse.donor
 
   const adminsQueryResult = await donorInterface.findAdmins(2)
@@ -410,7 +410,7 @@ const handleGETDonorsDesignation = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETDonorsDuplicateMany = async (req: Request<{},{},{},{phoneList: string[]}>, res: Response) => {
+const handleGETDonorsDuplicateMany = async (req: Request<{},{},{},{phoneList: string[]}>, res: Response):Promise<Response> => {
   const authenticatedUser = res.locals.middlewareResponse.donor
   const existingDonorsResult = await donorInterface.findDonorIdsByPhone(authenticatedUser.designation, authenticatedUser.hall, req.query.phoneList.map((phone:string)=>parseInt(phone,10)))
   await logInterface.addLog(authenticatedUser._id, 'GET DONORS PHONE', { phones: req.query.phoneList })
@@ -419,7 +419,7 @@ const handleGETDonorsDuplicateMany = async (req: Request<{},{},{},{phoneList: st
   }))
 }
 
-const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response)=>{
+const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response):Promise<Response>=>{
   const targetDonor = res.locals.middlewareResponse.targetDonor
 
   if (targetDonor._id.equals(MASTER_ADMIN_ID)) {

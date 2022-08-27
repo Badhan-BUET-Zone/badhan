@@ -1,4 +1,5 @@
 import faker from 'faker'
+import {Response} from "express";
 const phoneOperators = ['88014', '88015', '88016', '88017', '88018', '88019']
 const departments = [
   '01', '02', '04', '05', '06', '08', '10', '11', '12', '15', '16', '18'
@@ -34,56 +35,56 @@ const operations = [
 
 /// //////////////////////TO BE EXPORTED///////////////////////////////
 
-export const getRandInt = (min: number, max: number) => {
+export const getRandInt = (min: number, max: number):number => {
   return faker.datatype.number({ min, max })
 }
-export const getRandomIndex = (maxIndex: number) => {
+export const getRandomIndex = (maxIndex: number): number => {
   return faker.datatype.number({ min: 0, max: maxIndex })
 }
 
-export const getToken = () => {
+export const getToken = ():string => {
   return faker.datatype.hexaDecimal(32).substr(2, 32).toLowerCase()
 }
-export const getId = () => {
+export const getId = ():string => {
   return faker.datatype.hexaDecimal(32).substr(2, 32).toLowerCase()
 }
-export const getPhone = () => {
+export const getPhone = ():number => {
   return parseInt(phoneOperators[getRandomIndex(5)] + '' + getRandInt(10000000, 99999999),10)
 }
-export const getName = () => {
+export const getName = ():string => {
   return faker.name.findName()
 }
-export const getStudentId = () => {
+export const getStudentId = (): string => {
   return getRandInt(14, 20) + departments[getRandomIndex(11)] + getRandInt(100, 200)
 }
-export const getBloodGroup = () => {
+export const getBloodGroup = ():number => {
   return getRandomIndex(7)
 }
-export const getHall = () => {
+export const getHall = ():number => {
   return halls[getRandomIndex(halls.length - 1)]
 }
-export const getRoom = () => {
+export const getRoom = ():string => {
   return faker.address.zipCode()
 }
-export const getAddress = () => {
+export const getAddress = ():string => {
   return faker.address.streetAddress() + ', ' + faker.address.cityName() + ', ' + faker.address.country()
 }
-export const getComment = () => {
+export const getComment = ():string => {
   return faker.lorem.sentence()
 }
-export const getTimestamp = (day: number) => {
+export const getTimestamp = (day: number):number => {
   return new Date().getTime() - 24 * 3600 * 1000 * getRandomIndex(day)
 }
-export const getDesignation = () => {
+export const getDesignation = ():number => {
   return getRandInt(1, 3)
 }
-export const getBoolean = () => {
+export const getBoolean = ():boolean => {
   return faker.datatype.boolean()
 }
-export const getDonationCount = () => {
+export const getDonationCount = ():number => {
   return getRandomIndex(6)
 }
-export const getDonations = () => {
+export const getDonations = ():{date: number, _id: string, phone: number, donorId: string}[] => {
   const donations = []
   for (let i = 0; i < getRandomIndex(5); i++) {
     donations.push({
@@ -95,7 +96,7 @@ export const getDonations = () => {
   }
   return donations
 }
-export const getOperation = () => {
+export const getOperation = ():string => {
   return operations[getRandomIndex(operations.length - 1)]
 }
 export const getFakeDateString = () => {

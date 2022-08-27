@@ -5,15 +5,15 @@ let cache: {
 } = {}
 
 // 37% reduction of total time in testing all routes
-export const add = (token: string, user: IDonor) => {
+export const add = (token: string, user: IDonor):void => {
   cache[token] = user
 }
-export const clear = (token: string) => {
+export const clear = (token: string):void => {
   cache[token] = undefined
 }
-export const get = (token: string) => {
+export const get = (token: string): IDonor|undefined=> {
   return cache[token]
 }
-export const clearAll = () => {
+export const clearAll = ():void => {
   cache = {}
 }

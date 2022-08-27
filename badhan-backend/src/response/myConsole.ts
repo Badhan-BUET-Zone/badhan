@@ -1,9 +1,9 @@
 // tslint:disable:no-console
 export default {
-    log: (...args: any[])=>{
+    log: (...args: any[]):void=>{
         console.log.apply(console, args)
     },
-    error: (...args: any[])=> {
+    error: (...args: any[]):void=> {
         console.error.apply(console, args)
     }
 }

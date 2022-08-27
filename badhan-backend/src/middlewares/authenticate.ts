@@ -10,7 +10,7 @@ import UnauthorizedError401 from "../response/models/errorTypes/UnauthorizedErro
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 
-const handleAuthentication = async (req: Request, res: Response, next:  NextFunction) => {
+const handleAuthentication = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   const token = req.header('x-auth')!
 
   try {
@@ -51,21 +51,21 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
   return next()
 }
 
-const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFunction) => {
+const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation === 3) {
     return next()
   }
   return res.status(403).send(new ForbiddenError403('You are not permitted to access this route',{}))
 }
 
-const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunction) => {
+const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < 2) {
     return res.status(403).send(new ForbiddenError403('You are not permitted to access this route',{}))
   }
   next()
 }
 
-const handleHigherDesignationCheck = async (req: Request, res: Response, next:  NextFunction) => {
+const handleHigherDesignationCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation &&
         res.locals.middlewareResponse.donor._id !== res.locals.middlewareResponse.targetDonor._id) {
     return res.status(403).send(new ForbiddenError403('You cannot modify the details of a Badhan member with higher designation',{}))

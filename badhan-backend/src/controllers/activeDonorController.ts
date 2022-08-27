@@ -7,7 +7,7 @@ import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
-const handlePOSTActiveDonors = async (req: Request, res: Response) => {
+const handlePOSTActiveDonors = async (req: Request, res: Response):Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
   const user = res.locals.middlewareResponse.donor
 
@@ -27,7 +27,7 @@ const handlePOSTActiveDonors = async (req: Request, res: Response) => {
   }))
 }
 
-const handleDELETEActiveDonors = async (req: Request, res: Response) => {
+const handleDELETEActiveDonors = async (req: Request, res: Response): Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
 
   const activeDonorRemoveResult = await activeDonorInterface.remove(donor._id)
@@ -53,7 +53,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
   isNotAvailable: string,
   availableToAll:string,
   markedByMe: string
-}>, res: Response) => {
+}>, res: Response): Promise<Response> => {
   const reqQuery = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),

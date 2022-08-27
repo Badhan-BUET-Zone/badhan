@@ -6,7 +6,7 @@ import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 
-const handlePOSTCallRecord = async (req: Request, res: Response) => {
+const handlePOSTCallRecord = async (req: Request, res: Response): Promise<Response> => {
   const donor = res.locals.middlewareResponse.targetDonor
   const user = res.locals.middlewareResponse.donor
   const callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id)
@@ -18,7 +18,7 @@ const handlePOSTCallRecord = async (req: Request, res: Response) => {
   }))
 }
 
-const handleDELETECallRecord = async (req: Request<{},{},{},{callRecordId: string}>, res: Response) => {
+const handleDELETECallRecord = async (req: Request<{},{},{},{callRecordId: string}>, res: Response): Promise<Response> => {
   const user = res.locals.middlewareResponse.donor
   const donor = res.locals.middlewareResponse.targetDonor
   const callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId)

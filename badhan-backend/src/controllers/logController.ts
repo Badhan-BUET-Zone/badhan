@@ -56,7 +56,7 @@ function isValidVersion (text: string) {
   return /^\d{1,2}\.\d{1,2}\.\d{1,2}$/.test(text)
 }
 
-const handleGETAppVersions = async (req: Request, res: Response) => {
+const handleGETAppVersions = async (req: Request, res: Response):Promise<Response> => {
   const githubResponse = await handleGETGitReleaseInfo()
 
   const githubValidationResult = validate(githubResponse.data, githubResponseSchema)
@@ -82,7 +82,7 @@ const handleGETAppVersions = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETStatistics = async (req: Request, res: Response) => {
+const handleGETStatistics = async (req: Request, res: Response):Promise<Response> => {
   const donorCount = await donorInterface.getCount()
   const donationCount = await donationInterface.getCount()
   const volunteerCount = await donorInterface.getVolunteerCount()
@@ -95,20 +95,20 @@ const handleGETStatistics = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETLogs = async (req: Request, res: Response) => {
+const handleGETLogs = async (req: Request, res: Response):Promise<Response> => {
   const logCountsResult = await logInterface.getLogCounts()
   return res.status(200).send(new OKResponse200('Log counts fetched successfully', {
     logs: logCountsResult.data
   }))
 }
 
-const handleGETLogsByDate = async (req: Request<{date: string},{},{},{}>, res: Response) => {
+const handleGETLogsByDate = async (req: Request<{date: string},{},{},{}>, res: Response):Promise<Response> => {
   const logsByDateResult = await logInterface.getLogsByDate(parseInt(req.params.date,10))
   return res.status(200).send(new OKResponse200('Logs fetched by date successfully', {
     logs: logsByDateResult.data
   }))
 }
-const handleGETLogsByDateAndDonor = async (req: Request, res: Response) => {
+const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<Response> => {
   const logsByDateAndDonor = await logInterface.getLogsByDateAndUser(parseInt(req.params.date,10), req.params.donorId)
   return res.status(200).send(new OKResponse200('Logs fetched by data and donor successfully', {
     logs: logsByDateAndDonor.data
