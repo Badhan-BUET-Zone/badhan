@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
 import {Schema} from 'mongoose'

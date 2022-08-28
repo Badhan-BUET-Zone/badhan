@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { Response, Request, NextFunction } from 'express'
 import BadRequestError400 from "./models/errorTypes/BadRequestError400";
 import { HttpException} from "./models/HttpException";

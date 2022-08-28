@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as donationInterface from '../db/interfaces/donationInterface'
 import * as logInterface from '../db/interfaces/logInterface'

@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { userAgentHandler } from './middlewares/userAgent'
 import express from 'express'
 import dotenv from './dotenv'

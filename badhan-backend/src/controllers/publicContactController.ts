@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {Request, Response} from 'express'
 import * as publicContactInterface from '../db/interfaces/publicContactInterface'
 import * as logInterface from '../db/interfaces/logInterface'

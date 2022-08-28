@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import axios, {AxiosResponse} from 'axios'
 const githubAxios = axios.create({
   baseURL: 'https://api.github.com/repos/Badhan-BUET-Zone/badhan-web/releases/latest'

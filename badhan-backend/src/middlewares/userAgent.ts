@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import useragent from 'useragent'
 import {Request, Response, NextFunction} from "express";
 import myConsole from "../response/myConsole";

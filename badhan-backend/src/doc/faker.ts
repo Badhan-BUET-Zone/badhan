@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import faker from 'faker'
 import {Response} from "express";
 const phoneOperators = ['88014', '88015', '88016', '88017', '88018', '88019']

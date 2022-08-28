@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import dotenv from '../../dotenv'
 import * as tokenCache from '../../cache/tokenCache'
 

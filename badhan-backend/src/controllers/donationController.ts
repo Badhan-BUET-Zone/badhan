@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {Request, Response} from 'express'
 import * as donationInterface from '../db/interfaces/donationInterface'
 import * as logInterface from '../db/interfaces/logInterface'

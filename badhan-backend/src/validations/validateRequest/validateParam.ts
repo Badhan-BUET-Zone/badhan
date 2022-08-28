@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { param } from 'express-validator'
 import mongoose from 'mongoose'
 

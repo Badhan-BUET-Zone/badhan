@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {Request, Response, NextFunction} from 'express';
 import NotFoundError404 from "./models/errorTypes/NotFoundError404";
 import InternalServerError500 from "./models/errorTypes/InternalServerError500";

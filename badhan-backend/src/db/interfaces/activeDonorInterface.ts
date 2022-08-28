@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { generateAggregatePipeline } from './donorInterface'
 import {ActiveDonorModel} from "../models/ActiveDonor";
 import {Schema, Types} from "mongoose";

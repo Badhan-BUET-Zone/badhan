@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 export default class BaseSuccessResponse {
     private status: string;
     private statusCode: number;

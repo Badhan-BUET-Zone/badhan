@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {CallRecordModel} from "../models/CallRecord";
 import {Schema } from 'mongoose'
 export const insertOne = async (callerId: Schema.Types.ObjectId, calleeId: Schema.Types.ObjectId) => {

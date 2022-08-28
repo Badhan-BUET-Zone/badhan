@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import ErrorResponse from "./ErrorResponse";
 
 export default class InternalServerError500 extends ErrorResponse {

@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {MASTER_ADMIN_ID} from "../../constants";
 
 import {LogModel} from '../models/Log'

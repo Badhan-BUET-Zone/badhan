@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import dotenv from '../dotenv'
 import rateLimit from 'express-rate-limit'
 import TooManyRequestsError429 from "../response/models/errorTypes/TooManyRequestsError429";

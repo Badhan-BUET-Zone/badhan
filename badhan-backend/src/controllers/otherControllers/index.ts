@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { Request, Response } from 'express'
 import NotFoundError404 from "../../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../../response/models/successTypes/OKResponse200";

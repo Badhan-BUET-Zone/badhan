@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { validate } from './index'
 import { validateBODYPhone, validateBODYPassword } from './validateRequest/validateBody'
 import { validatePARAMTokenId } from './validateRequest/validateParam'

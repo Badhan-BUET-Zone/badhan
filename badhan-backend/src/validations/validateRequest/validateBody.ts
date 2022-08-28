@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { body } from 'express-validator'
 import mongoose from 'mongoose'
 import {checkEmail} from "./others";

@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import logController from '../controllers/logController'

@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import mongoose from 'mongoose'
 
 export interface ICallRecord {

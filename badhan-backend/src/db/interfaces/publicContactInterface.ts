@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {PublicContactModel} from "../models/PublicContact";
 import mongoose from "mongoose";
 

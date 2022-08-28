@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";

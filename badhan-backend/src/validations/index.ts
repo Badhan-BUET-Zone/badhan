@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { validationResult, ValidationChain } from 'express-validator'
 import {Request, Response, NextFunction} from 'express'
 import BadRequestError400 from "../response/models/errorTypes/BadRequestError400";

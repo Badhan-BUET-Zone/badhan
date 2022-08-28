@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import axios, {AxiosResponse} from 'axios'
 // https://github.com/axios/axios/issues/3612#issuecomment-770224236
 const firebaseAxios = axios.create({

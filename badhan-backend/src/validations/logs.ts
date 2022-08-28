@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { validate } from './index'
 import { validatePARAMDate, validatePARAMDonorId } from './validateRequest/validateParam'
 

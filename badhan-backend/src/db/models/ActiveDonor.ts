@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {Schema, model} from 'mongoose'
 
 export interface IActiveDonor {

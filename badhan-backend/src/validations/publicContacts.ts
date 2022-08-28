@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import { validate } from './index'
 import { validateQUERYPublicContactId, validateQUERYDonorId } from './validateRequest/validateQuery'
 import { validateBODYDonorId, validateBODYPublicContactBloodGroup } from './validateRequest/validateBody'

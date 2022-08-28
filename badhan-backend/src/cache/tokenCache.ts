@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import {IDonor} from "../db/models/Donor";
 
 let cache: {

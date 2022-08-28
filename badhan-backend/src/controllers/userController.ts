@@ -1,3 +1,5 @@
+// @ts-nocheck
+// tslint:disable
 import * as tokenCache from '../cache/tokenCache'
 import dotenv from '../dotenv'
 import bcrypt from 'bcryptjs'
