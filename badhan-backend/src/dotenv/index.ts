@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import dotenv from 'dotenv'
 import myConsole from "../response/myConsole";
 
@@ -29,7 +27,7 @@ const dotenvEnvFile: DotenvEnvFile = {
   MONGODB_URI: process.env.MONGODB_URI!
 }
 
-Object.entries(dotenvEnvFile).forEach(([key, value], index):void => {
+Object.entries(dotenvEnvFile).forEach(([key, value]:[string,string], index:number):void => {
   if (value === undefined) {
     myConsole.log('BADHAN LOG: ', key, 'is not defined in config. Program will exit')
     process.exit(1)

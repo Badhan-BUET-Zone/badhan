@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import { validate } from './index'
 import { validatePARAMDonorId } from './validateRequest/validateParam'
 import { validateBODYDonorId } from './validateRequest/validateBody'
@@ -16,14 +14,16 @@ import {
   validateQUERYAvailableToAllOrHall
 } from './validateRequest/validateQuery'
 
-const validatePOSTActiveDonors = validate([
+import {NextFunction, Request, Response} from "express";
+
+const validatePOSTActiveDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId
 ])
 
-const validateDELETEActiveDonors = validate([
+const validateDELETEActiveDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validatePARAMDonorId
 ])
-const validateGETActiveDonors = validate([
+const validateGETActiveDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYBloodGroup,
   validateQUERYHall,
   validateQUERYBatch,

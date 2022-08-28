@@ -1,14 +1,13 @@
-// @ts-nocheck
-// tslint:disable
 import { validate } from './index'
 import { validateBODYDonorId } from './validateRequest/validateBody'
 import { validateQUERYDonorId, validateQUERYCallRecordId } from './validateRequest/validateQuery'
+import {NextFunction, Request, Response} from "express";
 
-const validatePOSTCallRecords = validate([
+const validatePOSTCallRecords:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId
 ])
 
-const validateDELETECallRecords = validate([
+const validateDELETECallRecords:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYDonorId,
   validateQUERYCallRecordId
 ])

@@ -1,11 +1,10 @@
-// @ts-nocheck
-// tslint:disable
-import { AsyncRouter } from 'express-async-router'
-const router = AsyncRouter()
+import { AsyncRouter, AsyncRouterInstance } from 'express-async-router'
 import activeDonorController from '../controllers/activeDonorController'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
 import activeDonorsValidator from '../validations/activeDonors'
+
+const router:AsyncRouterInstance = AsyncRouter()
 
 router.post('/',
   activeDonorsValidator.validatePOSTActiveDonors,

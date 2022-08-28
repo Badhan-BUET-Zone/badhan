@@ -1,10 +1,9 @@
-// @ts-nocheck
-// tslint:disable
 import { validate } from './index'
 import { validateBODYEmail, validateBODYPromoteFlag, validateBODYPassword, validateBODYDonorId, validateBODYAddress, validateBODYRoomNumber, validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId } from './validateRequest/validateBody'
 import { validateQUERYPhoneList, validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName } from './validateRequest/validateQuery'
+import {NextFunction, Request, Response} from "express";
 
-const validatePOSTDonors = validate([
+const validatePOSTDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYPhone,
   validateBODYBloodGroup,
   validateBODYHall,
@@ -17,7 +16,7 @@ const validatePOSTDonors = validate([
   validateBODYRoomNumber
 ])
 
-const validatePATCHDonors = validate([
+const validatePATCHDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId,
   validateBODYName,
   validateBODYPhone,
@@ -30,34 +29,34 @@ const validatePATCHDonors = validate([
   validateBODYEmail
 ])
 
-const validatePATCHDonorsPassword = validate([
+const validatePATCHDonorsPassword:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId,
   validateBODYPassword
 ])
 
-const validatePATCHDonorsComment = validate([
+const validatePATCHDonorsComment:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId,
   validateBODYComment
 ])
 
-const validatePATCHDonorsDesignation = validate([
+const validatePATCHDonorsDesignation:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId,
   validateBODYPromoteFlag
 ])
 
-const validatePATCHAdmins = validate([
+const validatePATCHAdmins:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId
 ])
 
-const validateGETDonors = validate([
+const validateGETDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYDonorId
 ])
 
-const validatePOSTDonorsPasswordRequest = validate([
+const validatePOSTDonorsPasswordRequest:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId
 ])
 
-const validateGETSearchDonors = validate([
+const validateGETSearchDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYBloodGroup,
   validateQUERYHall,
   validateQUERYBatch,
@@ -68,20 +67,20 @@ const validateGETSearchDonors = validate([
   validateQUERYAvailableToAll
 ])
 
-const validateDELETEDonors = validate([
+const validateDELETEDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYDonorId
 ])
 
-const validateGETDonorsDuplicate = validate([
+const validateGETDonorsDuplicate:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYPhone
 ])
 
-const validateGETDonorsDuplicateMany = validate([
+const validateGETDonorsDuplicateMany:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYPhoneList
   // validateQUERYPhoneListElement
 ])
 
-const validatePATCHAdminsSuperAdmin = validate([
+const validatePATCHAdminsSuperAdmin:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId,
   validateBODYPromoteFlag
 ])

@@ -1,12 +1,10 @@
-// @ts-nocheck
-// tslint:disable
-import { AsyncRouter } from 'express-async-router'
-const router = AsyncRouter()
-
+import {AsyncRouter, AsyncRouterInstance} from 'express-async-router'
 import callRecordController from '../controllers/callRecordController'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
 import callRecordValidator from '../validations/callRecords'
+
+const router: AsyncRouterInstance = AsyncRouter()
 
 router.post('/',
   callRecordValidator.validatePOSTCallRecords,

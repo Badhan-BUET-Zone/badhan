@@ -1,9 +1,7 @@
-// @ts-nocheck
-// tslint:disable
-import { AsyncRouter } from 'express-async-router'
-const router = AsyncRouter()
-
+import {AsyncRouter, AsyncRouterInstance} from 'express-async-router'
 import guestController from '../controllers/guestController'
+
+const router: AsyncRouterInstance = AsyncRouter()
 
 router.post('/users/signin',
   guestController.handlePOSTLogIn

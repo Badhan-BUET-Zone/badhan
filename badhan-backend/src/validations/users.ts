@@ -1,22 +1,21 @@
-// @ts-nocheck
-// tslint:disable
 import { validate } from './index'
 import { validateBODYPhone, validateBODYPassword } from './validateRequest/validateBody'
 import { validatePARAMTokenId } from './validateRequest/validateParam'
-const validateLogin = validate([
+import {NextFunction, Request, Response} from "express";
+const validateLogin:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYPhone,
   validateBODYPassword
 ])
 
-const validatePATCHPassword = validate([
+const validatePATCHPassword:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYPassword
 ])
 
-const validatePOSTPasswordForgot = validate([
+const validatePOSTPasswordForgot:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYPhone
 ])
 
-const validateDELETELogins = validate([
+const validateDELETELogins:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validatePARAMTokenId
 ])
 
