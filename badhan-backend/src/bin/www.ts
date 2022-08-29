@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 /**
  * Module dependencies.
  */
@@ -9,37 +7,21 @@ import DebugLibrary from 'debug'
 import SourceMapSupport from 'source-map-support'
 import http from 'http'
 import myConsole from "../response/myConsole";
+import {AddressInfo} from "net";
 
-const debug = DebugLibrary('badhan-backend:server')
+const debug: DebugLibrary.Debugger = DebugLibrary('badhan-backend:server')
 SourceMapSupport.install()
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000')
-app.set('port', port)
-
-/**
- * Create HTTP server.
- */
-
-const server = http.createServer(app)
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port)
-server.on('error', onError)
-server.on('listening', onListening)
-
 /**
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort (val: string) {
-  const rawPort = parseInt(val, 10)
+const normalizePort: (val: string)=> string | number | boolean = (val: string): string|number|boolean => {
+  const rawPort: number = parseInt(val, 10)
 
   if (isNaN(rawPort)) {
     // named pipe
@@ -54,26 +36,27 @@ function normalizePort (val: string) {
   return false
 }
 
+const port: string|number|boolean = normalizePort(process.env.PORT || '3000')
+app.set('port', port)
+
 /**
- * Event listener for HTTP server "error" event.
+ * Create HTTP server.
  */
 
-interface ErrnoException extends Error {
-  errno?: number;
-  code?: string;
-  path?: string;
-  syscall?: string;
-  stack?: string;
-}
+const server:http.Server = http.createServer(app)
 
-function onError (error: ErrnoException) {
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+const onError:(error: ErrnoException)=>void = (error: ErrnoException):void =>{
   if (error.syscall !== 'listen') {
     throw error
   }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port
+  const bind: string = typeof port === 'string'
+      ? 'Pipe ' + port
+      : 'Port ' + port
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -94,11 +77,27 @@ function onError (error: ErrnoException) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening () {
-  const addr = server.address()
+const onListening:()=>void = ():void =>{
+  const addr: string | AddressInfo | null = server.address()
   // https://stackoverflow.com/questions/40349987/how-to-suppress-error-ts2533-object-is-possibly-null-or-undefined
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr!.port
+  const bind: string = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr!.port
   debug('Listening on ' + bind)
+}
+
+server.listen(port)
+server.on('error', onError)
+server.on('listening', onListening)
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+interface ErrnoException extends Error {
+  errno?: number;
+  code?: string;
+  path?: string;
+  syscall?: string;
+  stack?: string;
 }
