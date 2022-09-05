@@ -1,7 +1,7 @@
 // @ts-nocheck
 // tslint:disable
 import mongoose from 'mongoose'
-export interface IDonation {
+export interface IDonation extends mongoose.Document {
   phone: number,
   donorId: mongoose.Types.ObjectId,
   date: number

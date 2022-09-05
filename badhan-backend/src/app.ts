@@ -1,7 +1,5 @@
-// @ts-nocheck
-// tslint:disable
 import { userAgentHandler } from './middlewares/userAgent'
-import express from 'express'
+import express, {Express} from 'express'
 import dotenv from './dotenv'
 import { handleJsonBodyParseFailures } from './response/bodyParser'
 import cookieParser from 'cookie-parser'
@@ -21,7 +19,7 @@ import { redirectToDoc } from './doc/redirection'
 import { onlineCheckController } from './controllers/otherControllers'
 import myConsole from "./response/myConsole";
 
-const app = express()
+const app:Express = express()
 
 app.use(cors())
 app.use(express.urlencoded({ extended: false }))

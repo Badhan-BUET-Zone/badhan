@@ -13,7 +13,8 @@
             "variable-declaration",
             "arrow-parameter",
             "parameter",
-            "arrow-call-signature"
+            "arrow-call-signature",
+            "variable-declaration-ignore-function"
         ]
     },
     "rulesDirectory": []

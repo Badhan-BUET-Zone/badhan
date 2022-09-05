@@ -1,11 +1,9 @@
-// @ts-nocheck
-// tslint:disable
-import {PublicContactModel} from "../models/PublicContact";
+import {IPublicContact, PublicContactModel} from "../models/PublicContact";
 import mongoose from "mongoose";
 
-export const insertPublicContact = async (donorId: mongoose.Types.ObjectId, bloodGroup: number) => {
-    const publicContact = new PublicContactModel({donorId, bloodGroup})
-    const data = await publicContact.save()
+export const insertPublicContact = async (donorId: mongoose.Types.ObjectId, bloodGroup: number): Promise<{data: IPublicContact, message: string, status: string}> => {
+    const publicContact: IPublicContact = new PublicContactModel({donorId, bloodGroup})
+    const data: IPublicContact = await publicContact.save()
     return {
         data,
         message: 'Public contact insertion successful',
@@ -13,8 +11,8 @@ export const insertPublicContact = async (donorId: mongoose.Types.ObjectId, bloo
     }
 }
 
-export const deletePublicContactById = async (publicContactId: string) => {
-    const data = await PublicContactModel.findByIdAndDelete(publicContactId)
+export const deletePublicContactById = async (publicContactId: string): Promise<{data?:IPublicContact, status: string, message: string}> => {
+    const data: IPublicContact|null = await PublicContactModel.findByIdAndDelete(publicContactId)
     if (data) {
         return {
             message: 'Public contact removed successfully',
@@ -28,8 +26,8 @@ export const deletePublicContactById = async (publicContactId: string) => {
     }
 }
 
-export const findPublicContactById = async (publicContactId: string) => {
-    const data = await PublicContactModel.findOne({
+export const findPublicContactById = async (publicContactId: string): Promise<{data?: IPublicContact, message: string, status: string}> => {
+    const data: IPublicContact| null = await PublicContactModel.findOne({
         _id: publicContactId
     })
     if (data) {
@@ -40,14 +38,13 @@ export const findPublicContactById = async (publicContactId: string) => {
         }
     }
     return {
-        data,
         message: 'Contact not found',
         status: 'ERROR'
     }
 }
 
-export const findAllPublicContacts = async () => {
-    const data = await PublicContactModel.aggregate([
+export const findAllPublicContacts = async (): Promise<{data: IPublicContact[], message: string, status: string}> => {
+    const data: IPublicContact[] = await PublicContactModel.aggregate([
         {
             $lookup: {
                 from: 'donors',

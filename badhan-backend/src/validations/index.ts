@@ -2,7 +2,7 @@ import { validationResult, ValidationChain, Result } from 'express-validator'
 import {Request, Response, NextFunction} from 'express'
 import BadRequestError400 from "../response/models/errorTypes/BadRequestError400";
 import {ReadonlyContext} from "express-validator/src/context";
-export const validate:(validations: ValidationChain[]) => (req: Request, res: Response, next: NextFunction) => Promise<Response | void> = (validations: ValidationChain[]):(req: Request, res: Response, next: NextFunction) => Promise<Response | void> => {
+export const validate = (validations: ValidationChain[]):(req: Request, res: Response, next: NextFunction) => Promise<Response | void> => {
   return async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
     await Promise.all(validations.map((validation:ValidationChain):Promise<Result & { context: ReadonlyContext }> => validation.run(req)))
     const errors: Result = validationResult(req)

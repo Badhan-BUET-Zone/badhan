@@ -2,7 +2,7 @@
 // tslint:disable
 import mongoose from 'mongoose'
 
-export interface ICallRecord {
+export interface ICallRecord extends mongoose.Document {
   callerId: mongoose.Schema.Types.ObjectId,
   calleeId: mongoose.Schema.Types.ObjectId,
   date: number,

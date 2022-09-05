@@ -1,12 +1,10 @@
-// @ts-nocheck
-// tslint:disable
 import { generateAggregatePipeline } from './donorInterface'
-import {ActiveDonorModel} from "../models/ActiveDonor";
-import {Schema, Types} from "mongoose";
+import {ActiveDonorModel, IActiveDonor} from "../models/ActiveDonor";
+import {PipelineStage, Schema} from "mongoose";
 
-export const add = async (donorId: Schema.Types.ObjectId, markerId: Schema.Types.ObjectId) => {
-  const addedActiveDonor = new ActiveDonorModel({ donorId, markerId })
-  const data = await addedActiveDonor.save()
+export const add = async (donorId: Schema.Types.ObjectId, markerId: Schema.Types.ObjectId):Promise<{message: string, status: string, data: IActiveDonor}> => {
+  const addedActiveDonor: IActiveDonor = new ActiveDonorModel({ donorId, markerId })
+  const data: IActiveDonor = await addedActiveDonor.save()
   return {
     data,
     message: 'Active donor insertion successful',
@@ -14,8 +12,8 @@ export const add = async (donorId: Schema.Types.ObjectId, markerId: Schema.Types
   }
 }
 
-export const remove = async (donorId: Schema.Types.ObjectId) => {
-  const removedActiveDonor = await ActiveDonorModel.findOneAndDelete({ donorId })
+export const remove = async (donorId: Schema.Types.ObjectId):Promise<{data?: IActiveDonor, message: string, status: string}> => {
+  const removedActiveDonor: IActiveDonor|null = await ActiveDonorModel.findOneAndDelete({ donorId })
   if (removedActiveDonor) {
     return {
       data: removedActiveDonor,
@@ -30,8 +28,8 @@ export const remove = async (donorId: Schema.Types.ObjectId) => {
   }
 }
 
-export const findByDonorId = async (donorId: Schema.Types.ObjectId) => {
-  const activeDonors = await ActiveDonorModel.find({ donorId })
+export const findByDonorId = async (donorId: Schema.Types.ObjectId): Promise<{data?:IActiveDonor[], message: string, status: string}> => {
+  const activeDonors:IActiveDonor[] = await ActiveDonorModel.find({ donorId })
   if (activeDonors.length === 0) {
     return {
       message: 'Active donor not found',
@@ -54,10 +52,10 @@ export const findByQueryAndPopulate = async (reqQuery: {
   isNotAvailable: boolean,
   availableToAll: boolean,
   markedByMe: boolean
-}, donorId: Schema.Types.ObjectId) => {
-  const aggregatePipeline = generateAggregatePipeline(reqQuery, donorId)
+}, donorId: Schema.Types.ObjectId): Promise<{message: string, status: string, data: IActiveDonor[]}> => {
+  const aggregatePipeline: PipelineStage[] = generateAggregatePipeline(reqQuery, donorId)
 
-  const activeDonors = await ActiveDonorModel.aggregate(aggregatePipeline)
+  const activeDonors: IActiveDonor[] = await ActiveDonorModel.aggregate(aggregatePipeline)
   return {
     message: 'Active donors fetched with details',
     status: 'OK',

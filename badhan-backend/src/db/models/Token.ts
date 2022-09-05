@@ -6,7 +6,7 @@ export interface JwtPayload {
   _id: string
 }
 
-export interface IToken {
+export interface IToken extends mongoose.Document {
   donorId: mongoose.Schema.Types.ObjectId,
   token: string,
   expireAt?: number,

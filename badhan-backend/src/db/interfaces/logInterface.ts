@@ -1,17 +1,18 @@
-// @ts-nocheck
-// tslint:disable
 import {MASTER_ADMIN_ID} from "../../constants";
 
-import {LogModel} from '../models/Log'
-import mongoose from 'mongoose'
+import {ILog, LogModel} from '../models/Log'
+import mongoose, {Aggregate} from 'mongoose'
 
-export const addLog = async (donorId: mongoose.Types.ObjectId, operation: string, details: object) => {
+export const addLog = async (donorId: mongoose.Types.ObjectId, operation: string, details: object): Promise<{message: string, status: string, data?: ILog}> => {
     if (donorId.equals(MASTER_ADMIN_ID)) {
-        return
+        return {
+            message: 'Log insertion of master admin has bee denied',
+            status: 'OK'
+        }
     }
 
-    const log = new LogModel({donorId, operation, details})
-    const data = await log.save()
+    const log: ILog = new LogModel({donorId, operation, details})
+    const data: ILog = await log.save()
     return {
         message: 'Log insertion successful',
         status: 'OK',
@@ -19,9 +20,9 @@ export const addLog = async (donorId: mongoose.Types.ObjectId, operation: string
     }
 }
 
-export const addLogOfMasterAdmin = async (operation: string, details: object) => {
-    const log = new LogModel({donorId: MASTER_ADMIN_ID, operation, details})
-    const data = await log.save()
+export const addLogOfMasterAdmin = async (operation: string, details: object): Promise<{data: ILog, message: string, status: string}> => {
+    const log: ILog = new LogModel({donorId: MASTER_ADMIN_ID, operation, details})
+    const data: ILog = await log.save()
 
     return {
         message: 'Log insertion successful',
@@ -31,17 +32,16 @@ export const addLogOfMasterAdmin = async (operation: string, details: object) =>
 
 }
 
-export const deleteLogs = async () => {
-    const logs = await LogModel.deleteMany()
+export const deleteLogs = async (): Promise<{status: string, message: string}> => {
+    await LogModel.deleteMany()
     return {
         message: 'Log deletion successful',
         status: 'OK',
-        data: logs
     }
 }
 
-export const getLogCounts = async () => {
-    const data = await LogModel.aggregate(
+export const getLogCounts = async (): Promise<{data: ILog[], status: string, message: string}> => {
+    const data: ILog[] = await LogModel.aggregate(
         [
             {
                 $project: {
@@ -97,8 +97,8 @@ export const getLogCounts = async () => {
         data
     }
 }
-export const getLogsByDate = async (date: number) => {
-    const data = await LogModel.aggregate([
+export const getLogsByDate = async (date: number): Promise<{data: ILog[], status: string, message: string }> => {
+    const data: ILog[] = await LogModel.aggregate([
         {
             $match: {
                 date: {
@@ -148,8 +148,8 @@ export const getLogsByDate = async (date: number) => {
     }
 }
 
-export const getLogsByDateAndUser = async (date: number, donorId: string) => {
-    const data = await LogModel.aggregate([
+export const getLogsByDateAndUser = async (date: number, donorId: string): Promise<{data: ILog[], message: string, status: string}> => {
+    const data: ILog[] = await LogModel.aggregate([
         {
             $match: {
                 date: {

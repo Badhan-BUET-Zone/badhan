@@ -1,7 +1,7 @@
 // @ts-nocheck
 // tslint:disable
 import mongoose from 'mongoose'
-export interface ILog {
+export interface ILog extends mongoose.Document {
   donorId: mongoose.Schema.Types.ObjectId,
   date: number,
   operation: string,

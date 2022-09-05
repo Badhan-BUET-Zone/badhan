@@ -10,7 +10,7 @@ import {ActiveDonorModel} from "./ActiveDonor";
 import {TokenModel} from "./Token";
 import { checkEmail } from '../../validations/validateRequest/others'
 
-export interface IDonor {
+export interface IDonor extends mongoose.Document {
   phone: number,
   password?: string,
   studentId: string,

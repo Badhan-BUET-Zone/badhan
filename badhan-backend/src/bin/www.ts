@@ -49,7 +49,7 @@ const server:http.Server = http.createServer(app)
  * Listen on provided port, on all network interfaces.
  */
 
-const onError:(error: ErrnoException)=>void = (error: ErrnoException):void =>{
+const onError = (error: ErrnoException):void =>{
   if (error.syscall !== 'listen') {
     throw error
   }
@@ -77,7 +77,7 @@ const onError:(error: ErrnoException)=>void = (error: ErrnoException):void =>{
  * Event listener for HTTP server "listening" event.
  */
 
-const onListening:()=>void = ():void =>{
+const onListening = ():void =>{
   const addr: string | AddressInfo | null = server.address()
   // https://stackoverflow.com/questions/40349987/how-to-suppress-error-ts2533-object-is-possibly-null-or-undefined
   const bind: string = typeof addr === 'string'

@@ -1,8 +1,8 @@
 // @ts-nocheck
 // tslint:disable
-import {Schema, model} from 'mongoose'
+import mongoose, {Schema, model} from 'mongoose'
 
-export interface IActiveDonor {
+export interface IActiveDonor extends mongoose.Document {
   donorId: Schema.Types.ObjectId;
   markerId: Schema.Types.ObjectId;
   time: number;

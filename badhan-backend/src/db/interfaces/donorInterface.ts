@@ -1,12 +1,10 @@
-// @ts-nocheck
-// tslint:disable
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
-import util from 'util'
-export const insertDonor = async (donorObject: IDonor) => {
-    const donor = new DonorModel(donorObject)
-    const data = await donor.save()
+
+export const insertDonor = async (donorObject: IDonor):Promise<{data: IDonor, message: string, status: string}> => {
+    const donor: IDonor = new DonorModel(donorObject)
+    const data: IDonor = await donor.save()
     return {
         message: 'Donor insertion successful',
         status: 'OK',
@@ -14,8 +12,8 @@ export const insertDonor = async (donorObject: IDonor) => {
     }
 }
 
-export const deleteDonorById = async (donorId: Schema.Types.ObjectId) => {
-    const data = await DonorModel.findOneAndDelete({_id: donorId})
+export const deleteDonorById = async (donorId: Schema.Types.ObjectId): Promise<{data?: IDonor, message: string, status: string}> => {
+    const data: IDonor | null = await DonorModel.findOneAndDelete({_id: donorId})
     if (data) {
         return {
             data,
@@ -30,8 +28,8 @@ export const deleteDonorById = async (donorId: Schema.Types.ObjectId) => {
     }
 }
 
-export const findDonorById = async (id: Schema.Types.ObjectId) => {
-    const data = await DonorModel.findById(id)
+export const findDonorById = async (id: Schema.Types.ObjectId): Promise<{message: string, status: string, data?: IDonor}> => {
+    const data: IDonor | null = await DonorModel.findById(id)
     if (data) {
         return {
             data,
@@ -40,15 +38,14 @@ export const findDonorById = async (id: Schema.Types.ObjectId) => {
         }
     } else {
         return {
-            data: null,
             message: 'Donor not found',
             status: 'ERROR'
         }
     }
 }
 
-export const findDonorByQuery = async (query: { _id: string | Schema.Types.ObjectId } | { phone: number }) => {
-    const data = await DonorModel.findOne(query)
+export const findDonorByQuery = async (query: { _id: string | Schema.Types.ObjectId } | { phone: number }): Promise<{data?: IDonor, message: string, status: string}> => {
+    const data: IDonor | null = await DonorModel.findOne(query)
     if (data) {
         return {
             data,
@@ -57,15 +54,14 @@ export const findDonorByQuery = async (query: { _id: string | Schema.Types.Objec
         }
     } else {
         return {
-            data: null,
             message: 'Donor not found',
             status: 'ERROR'
         }
     }
 }
 
-export const findDonorByPhone = async (phoneNumber: number) => {
-    const data = await DonorModel.findOne({
+export const findDonorByPhone = async (phoneNumber: number): Promise<{data?: IDonor, message: string, status: string}> => {
+    const data: IDonor | null = await DonorModel.findOne({
         phone: phoneNumber
     })
 
@@ -78,14 +74,13 @@ export const findDonorByPhone = async (phoneNumber: number) => {
     }
 
     return {
-        data,
         message: 'Donor not found',
         status: 'ERROR'
     }
 }
 
-export const findAllDesignatedDonors = async () => {
-    const data = await DonorModel.find({}, {
+export const findAllDesignatedDonors = async ():Promise<{data: IDonor[], message: string, status: string}> => {
+    const data: IDonor[] = await DonorModel.find({}, {
         name: 1,
         hall: 1,
         studentId: 1
@@ -106,9 +101,9 @@ export const findDonorsByAggregate = async (reqQuery: {
     isAvailable: boolean,
     isNotAvailable: boolean,
     availableToAll: boolean
-}) => {
-    const queryBuilder = generateSearchQuery(reqQuery)
-    const data = await DonorModel.aggregate([{
+}): Promise<{data: IDonor[], message: string, status: string}> => {
+    const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
+    const data: IDonor[] = await DonorModel.aggregate([{
         $match: queryBuilder
     }, {
         $lookup: {
@@ -180,8 +175,8 @@ export const findDonorsByAggregate = async (reqQuery: {
     }
 }
 
-export const findDonorAndUpdate = async (query: { hall: number, designation: number }, donorUpdate: { $set: { designation: number } }) => {
-    const data = await DonorModel.findOneAndUpdate(query, donorUpdate, {
+export const findDonorAndUpdate = async (query: { hall: number, designation: number }, donorUpdate: { $set: { designation: number } }): Promise<{data?: IDonor, message: string, status: string}> => {
+    const data: IDonor | null = await DonorModel.findOneAndUpdate(query, donorUpdate, {
         returnOriginal: false
     })
     if (data) {
@@ -198,8 +193,8 @@ export const findDonorAndUpdate = async (query: { hall: number, designation: num
     }
 }
 
-export const getCount = async () => {
-    const donorCount = await DonorModel.countDocuments()
+export const getCount = async (): Promise<{message: string, status: string, data: number}> => {
+    const donorCount: number = await DonorModel.countDocuments()
     return {
         message: 'Fetched donor count',
         status: 'OK',
@@ -207,8 +202,8 @@ export const getCount = async () => {
     }
 }
 
-export const getVolunteerCount = async () => {
-    const volunteerCount = await DonorModel.find({designation: 1}).countDocuments()
+export const getVolunteerCount = async (): Promise<{message: string, status: string, data: number}> => {
+    const volunteerCount: number = await DonorModel.find({designation: 1}).countDocuments()
     return {
         message: 'Fetched volunteer count',
         status: 'OK',
@@ -216,14 +211,14 @@ export const getVolunteerCount = async () => {
     }
 }
 
-export const findAdmins = async (designation: number) => {
-    const data = await DonorModel.find({designation}, {
+export const findAdmins = async (designation: number): Promise<{data: IDonor[], message: string, status: string}> => {
+    const data: IDonor[] = await DonorModel.find({designation}, {
         studentId: 1,
         name: 1,
         phone: 1,
         hall: 1
     })
-    const message = data.length > 0 ? 'Donor(s) found' : 'Donor not found'
+    const message: string = data.length > 0 ? 'Donor(s) found' : 'Donor not found'
     return {
         data,
         message,
@@ -231,8 +226,8 @@ export const findAdmins = async (designation: number) => {
     }
 }
 
-export const findVolunteersOfHall = async (hall: number) => {
-    const data = await DonorModel.aggregate([{
+export const findVolunteersOfHall = async (hall: number): Promise<{data: IDonor[], message: string, status: string}> => {
+    const data: IDonor[] = await DonorModel.aggregate([{
         $match: {
             hall,
             designation: 1
@@ -264,7 +259,7 @@ export const findVolunteersOfHall = async (hall: number) => {
             }
         }
     ])
-    const message = data.length > 0 ? 'Donor(s) found' : 'Donor not found'
+    const message: string = data.length > 0 ? 'Donor(s) found' : 'Donor not found'
     return {
         data,
         message,
@@ -283,7 +278,7 @@ export const generateAggregatePipeline = (reqQuery: {
     availableToAll: boolean,
     markedByMe: boolean
 }, donorId: Schema.Types.ObjectId) : PipelineStage[] => {
-    const queryBuilder = generateSearchQuery(reqQuery)
+    const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
     const aggregatePipeline: PipelineStage[] = [{
         $lookup: {
             from: 'donors',
@@ -416,23 +411,23 @@ export const generateSearchQuery = (reqQuery: {
     }
 
     // process batch
-    let batchRegex = '.......'
+    let batchRegex: string = '.......'
     if (reqQuery.batch !== '') {
         batchRegex = reqQuery.batch + '.....'
     }
     queryBuilder.studentId = {$regex: batchRegex, $options: 'ix'}
 
     // process name
-    let nameRegex = '.*'
+    let nameRegex: string = '.*'
 
-    for (let i = 0; i < reqQuery.name.length; i++) {
+    for (let i: number = 0; i < reqQuery.name.length; i++) {
         nameRegex += (reqQuery.name.charAt(i) + '.*')
     }
 
     queryBuilder.name = {$regex: nameRegex, $options: 'ix'}
 
     // process address
-    const addressRegex = '.*' + reqQuery.address + '.*'
+    const addressRegex:string = '.*' + reqQuery.address + '.*'
     queryBuilder.$and = [{
         $or: [
             {comment: {$regex: addressRegex, $options: 'ix'}},
@@ -451,7 +446,7 @@ export const generateSearchQuery = (reqQuery: {
         )
     }
 
-    const availableLimit = new Date().getTime() - 120 * 24 * 3600 * 1000
+    const availableLimit: number = new Date().getTime() - 120 * 24 * 3600 * 1000
 
     const lastDonationAvailability: { lastDonation?: { $lt?: number, $gt?: number } }[] = []
 
@@ -473,9 +468,9 @@ export const generateSearchQuery = (reqQuery: {
     return queryBuilder
 }
 
-export const findDonorIdsByPhone = async (userDesignation: number, userHall: number, phoneList: number[]) => {
+export const findDonorIdsByPhone = async (userDesignation: number, userHall: number, phoneList: number[]): Promise<{donors: IDonor[], message: string, status: string}> => {
     // phoneList = [8801521438557, 8801786433743, 8801627151097]
-    let existingDonors
+    let existingDonors: IDonor[]
     if (userDesignation === 3) {
         existingDonors = await DonorModel.aggregate([
             {

@@ -1,12 +1,10 @@
-// @ts-nocheck
-// tslint:disable
 import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
 import {Schema} from 'mongoose'
 
-export const insertDonation = async (donationObject: IDonation) => {
-    const donation = new DonationModel(donationObject)
-    const data = await donation.save()
+export const insertDonation = async (donationObject: IDonation): Promise<{data: IDonation, message: string, status: string}> => {
+    const donation: IDonation = new DonationModel(donationObject)
+    const data: IDonation = await donation.save()
 
     return {
         data,
@@ -15,8 +13,8 @@ export const insertDonation = async (donationObject: IDonation) => {
     }
 }
 
-export const deleteDonationByQuery = async (query: { donorId: Schema.Types.ObjectId, date: number }) => {
-    const data = await DonationModel.findOneAndDelete(query)
+export const deleteDonationByQuery = async (query: { donorId: Schema.Types.ObjectId, date: number }): Promise<{data?:IDonation, message: string, status: string}> => {
+    const data: IDonation | null = await DonationModel.findOneAndDelete(query)
     if (data) {
         return {
             data,
@@ -31,8 +29,8 @@ export const deleteDonationByQuery = async (query: { donorId: Schema.Types.Objec
     }
 }
 
-export const findMaxDonationByDonorId = async (id: Schema.Types.ObjectId) => {
-    const data = await DonationModel.find({donorId: id}).sort({date: -1}).limit(1)
+export const findMaxDonationByDonorId = async (id: Schema.Types.ObjectId): Promise<{data?: IDonation[], message: string, status: string}> => {
+    const data: IDonation[] = await DonationModel.find({donorId: id}).sort({date: -1}).limit(1)
     if (data.length !== 0) {
         return {
             message: 'Max donation fetched successfully',
@@ -46,8 +44,8 @@ export const findMaxDonationByDonorId = async (id: Schema.Types.ObjectId) => {
     }
 }
 
-export const insertManyDonations = async (donations: IDonation[]) => {
-    const data = await DonationModel.insertMany(donations)
+export const insertManyDonations = async (donations: IDonation[]): Promise<{data: IDonation[], message: string, status: string}> => {
+    const data: IDonation[] = await DonationModel.insertMany(donations)
     return {
         message: 'Donations inserted successfully',
         status: 'OK',
@@ -55,8 +53,8 @@ export const insertManyDonations = async (donations: IDonation[]) => {
     }
 }
 
-export const getCount = async () => {
-    const donationCount = await DonationModel.countDocuments()
+export const getCount = async ():Promise<{message: string, status: string, data: number}> => {
+    const donationCount: number = await DonationModel.countDocuments()
     return {
         message: 'Fetched donation count',
         status: 'OK',

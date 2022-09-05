@@ -1,19 +1,16 @@
-// @ts-nocheck
-// tslint:disable
-import {CallRecordModel} from "../models/CallRecord";
+import {CallRecordModel, ICallRecord} from "../models/CallRecord";
 import {Schema } from 'mongoose'
-export const insertOne = async (callerId: Schema.Types.ObjectId, calleeId: Schema.Types.ObjectId) => {
-  const callRecord = new CallRecordModel(
-    { callerId, calleeId, date: new Date().getTime() })
-  const data = await callRecord.save()
+export const insertOne = async (callerId: Schema.Types.ObjectId, calleeId: Schema.Types.ObjectId): Promise<{data: ICallRecord, message: string, status: string}> => {
+  const callRecord: ICallRecord = new CallRecordModel({ callerId, calleeId, date: new Date().getTime() })
+  const data: ICallRecord = await callRecord.save()
   return {
     message: 'Created call record successfully',
     status: 'OK',
     data
   }
 }
-export const findManyByCallee = async (calleeId: Schema.Types.ObjectId) => {
-  const data = await CallRecordModel.find({ calleeId }).populate({
+export const findManyByCallee = async (calleeId: Schema.Types.ObjectId): Promise<{data: ICallRecord[], message: string, status: string}> => {
+  const data: ICallRecord[] = await CallRecordModel.find({ calleeId }).populate({
     path: 'callerId',
     select: { _id: 1, name: 1, hall: 1, designation: 1 }
   })
@@ -24,8 +21,8 @@ export const findManyByCallee = async (calleeId: Schema.Types.ObjectId) => {
   }
 }
 
-export const deleteById = async (id: string) => {
-  const data = await CallRecordModel.findByIdAndDelete(id)
+export const deleteById = async (id: string):Promise<{data?: ICallRecord, message: string, status: string}> => {
+  const data: ICallRecord | null = await CallRecordModel.findByIdAndDelete(id)
   if (data) {
     return {
       message: 'Call record deleted successfully',
@@ -39,8 +36,8 @@ export const deleteById = async (id: string) => {
   }
 }
 
-export const findById = async (id: string) => {
-  const data = await CallRecordModel.findOne({ _id: id })
+export const findById = async (id: string):Promise<{data?: ICallRecord, message: string, status: string}> => {
+  const data: ICallRecord | null = await CallRecordModel.findOne({ _id: id })
   if (!data) {
     return {
       message: 'No call record found',

@@ -1,25 +1,23 @@
-// @ts-nocheck
-// tslint:disable
 import dotenv from '../../dotenv'
 import * as tokenCache from '../../cache/tokenCache'
 
-import {TokenModel} from "../models/Token";
+import {IToken, TokenModel} from "../models/Token";
 import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
 import {IUserAgent} from "../../middlewares/userAgent";
 
-export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.ObjectId, userAgent: IUserAgent, expiresIn: string| null) => {
-    let options = {}
+export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.ObjectId, userAgent: IUserAgent, expiresIn: string| null): Promise<{data: IToken, message: string, status: string}> => {
+    let options: {expiresIn?: string} = {}
     if (expiresIn) {
         options = {expiresIn}
     }
 
-    const token = jwt.sign({
+    const token: string = jwt.sign({
         _id: String(donorId),
         access: 'auth'
     }, dotenv.JWT_SECRET, options).toString()
-    const tokenData = new TokenModel({donorId, token, ...userAgent})
-    const data = await tokenData.save()
+    const tokenData: IToken = new TokenModel({donorId, token, ...userAgent})
+    const data: IToken = await tokenData.save()
 
     return {
         message: 'Token insertion successful',
@@ -29,8 +27,8 @@ export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.Objec
 
 }
 
-export const findTokenDataByToken = async (token: string) => {
-    const tokenData = await TokenModel.findOne({token})
+export const findTokenDataByToken = async (token: string):Promise<{data?: IToken,message: string, status: string}> => {
+    const tokenData: IToken|null = await TokenModel.findOne({token})
     if (!tokenData) {
         return {
             message: 'Token not found',
@@ -44,8 +42,8 @@ export const findTokenDataByToken = async (token: string) => {
     }
 }
 
-export const deleteTokenDataByToken = async (token: string) => {
-    const tokenData = await TokenModel.findOneAndDelete({token})
+export const deleteTokenDataByToken = async (token: string):Promise<{message: string, status: string}> => {
+    const tokenData: IToken | null = await TokenModel.findOneAndDelete({token})
     if (tokenData) {
         tokenCache.clear(token)
         return {
@@ -59,18 +57,17 @@ export const deleteTokenDataByToken = async (token: string) => {
     }
 }
 
-export const deleteAllTokensByDonorId = async (donorId: mongoose.Types.ObjectId) => {
-    const tokenData = await TokenModel.deleteMany({donorId})
+export const deleteAllTokensByDonorId = async (donorId: mongoose.Types.ObjectId): Promise<{message: string, status: string}> => {
+    await TokenModel.deleteMany({donorId})
     tokenCache.clearAll()
     return {
         message: 'Token successfully removed',
         status: 'OK',
-        data: tokenData
     }
 }
 
-export const findTokenDataExceptSpecifiedToken = async (donorId: mongoose.Types.ObjectId, excludedToken: string) => {
-    const tokenDataList = await TokenModel.find({
+export const findTokenDataExceptSpecifiedToken = async (donorId: mongoose.Types.ObjectId, excludedToken: string): Promise<{status: string, message: string, data: IToken[]}> => {
+    const tokenDataList: IToken[] = await TokenModel.find({
         $and: [{
             donorId: {
                 $eq: donorId
@@ -87,8 +84,8 @@ export const findTokenDataExceptSpecifiedToken = async (donorId: mongoose.Types.
     }
 }
 
-export const deleteByTokenId = async (tokenId: string) => {
-    const deletedToken = await TokenModel.findByIdAndDelete(tokenId)
+export const deleteByTokenId = async (tokenId: string): Promise<{message: string, status: string, data?:IToken}> => {
+    const deletedToken: IToken | null = await TokenModel.findByIdAndDelete(tokenId)
     tokenCache.clearAll()
     if (deletedToken) {
         return {
@@ -100,6 +97,5 @@ export const deleteByTokenId = async (tokenId: string) => {
     return {
         message: 'Token not found',
         status: 'ERROR',
-        data: null
     }
 }

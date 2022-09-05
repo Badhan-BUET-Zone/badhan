@@ -1,7 +1,7 @@
 // @ts-nocheck
 // tslint:disable
 import mongoose from 'mongoose'
-export interface IPublicContact {
+export interface IPublicContact extends mongoose.Document {
   donorId: mongoose.Schema.Types.ObjectId,
   bloodGroup: number,
 }
