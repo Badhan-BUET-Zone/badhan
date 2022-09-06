@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {Document, model, Model, Schema } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import {CallRecordModel} from "./CallRecord";
@@ -241,7 +240,7 @@ donorSchema.methods.toJSON = function (): IDonor {
 }
 
 // reason for definition of next function: https://github.com/Automattic/mongoose/issues/11449
-donorSchema.pre('save', function (next: (err?: Error) => void):void{
+donorSchema.pre<IDonor>('save', function (next: (err?: Error) => void):void{
   const donor: IDonor = this
   if (donor.isModified('password')) {
     bcrypt.genSalt(10, (err: Error, salt: string):void => {
