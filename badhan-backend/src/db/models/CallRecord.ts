@@ -1,22 +1,20 @@
-// @ts-nocheck
-// tslint:disable
-import mongoose from 'mongoose'
+import {Schema, model, Model, Document} from 'mongoose'
 
-export interface ICallRecord extends mongoose.Document {
-  callerId: mongoose.Schema.Types.ObjectId,
-  calleeId: mongoose.Schema.Types.ObjectId,
+export interface ICallRecord extends Document {
+  callerId: Schema.Types.ObjectId,
+  calleeId: Schema.Types.ObjectId,
   date: number,
   expireAt?: number
 }
 
-const callRecordSchema = new mongoose.Schema<ICallRecord>({
+const callRecordSchema: Schema = new Schema<ICallRecord>({
   callerId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Donor',
     required: true
   },
   calleeId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Donor',
     required: true
   },
@@ -26,7 +24,7 @@ const callRecordSchema = new mongoose.Schema<ICallRecord>({
     min: 0,
     required: true,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number):boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -34,7 +32,7 @@ const callRecordSchema = new mongoose.Schema<ICallRecord>({
   },
   expireAt: {
     type: Date,
-    default: () => {
+    default: (): number => {
       return new Date().getTime() + 60 * 1000 * 60 * 24 * 3// 3days
     }
   }
@@ -42,4 +40,4 @@ const callRecordSchema = new mongoose.Schema<ICallRecord>({
 
 callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export const CallRecordModel = mongoose.model<ICallRecord>('CallRecords', callRecordSchema)
+export const CallRecordModel: Model<ICallRecord> = model<ICallRecord>('CallRecords', callRecordSchema)

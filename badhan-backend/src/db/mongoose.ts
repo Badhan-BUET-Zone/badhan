@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import dotenv from "../dotenv";
 import mongoose, {ConnectOptions} from 'mongoose'
 import myConsole from "../response/myConsole";

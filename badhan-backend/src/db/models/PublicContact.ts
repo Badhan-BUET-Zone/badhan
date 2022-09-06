@@ -1,13 +1,11 @@
-// @ts-nocheck
-// tslint:disable
-import mongoose from 'mongoose'
-export interface IPublicContact extends mongoose.Document {
-  donorId: mongoose.Schema.Types.ObjectId,
+import { Schema, model, Model, Document} from 'mongoose'
+export interface IPublicContact extends Document {
+  donorId: Schema.Types.ObjectId,
   bloodGroup: number,
 }
-const publicContactSchema = new mongoose.Schema<IPublicContact>({
+const publicContactSchema: Schema = new Schema<IPublicContact>({
   donorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: 'Donor'
   },
@@ -15,12 +13,12 @@ const publicContactSchema = new mongoose.Schema<IPublicContact>({
     type: Number,
     default: -1,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: bloodGroup must be an integer'
     }, {
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return [-1, 0, 2, 4, 6].includes(value)
       },
       msg: 'DB: Please input a valid bloodGroup'
@@ -30,4 +28,4 @@ const publicContactSchema = new mongoose.Schema<IPublicContact>({
 
 }, { versionKey: false, id: false })
 
-export const PublicContactModel = mongoose.model<IPublicContact>('PublicContacts', publicContactSchema)
+export const PublicContactModel: Model<IPublicContact> = model<IPublicContact>('PublicContacts', publicContactSchema)

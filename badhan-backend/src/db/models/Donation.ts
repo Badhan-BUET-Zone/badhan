@@ -1,12 +1,10 @@
-// @ts-nocheck
-// tslint:disable
-import mongoose from 'mongoose'
-export interface IDonation extends mongoose.Document {
+import { Schema, Document, model, Model, Types} from 'mongoose'
+export interface IDonation extends Document {
   phone: number,
-  donorId: mongoose.Types.ObjectId,
+  donorId: Types.ObjectId,
   date: number
 }
-const donationSchema = new mongoose.Schema<IDonation>({
+const donationSchema: Schema = new Schema<IDonation>({
   phone: {
     type: Number,
     required: true,
@@ -14,7 +12,7 @@ const donationSchema = new mongoose.Schema<IDonation>({
     minlength: 13
   },
   donorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Donor',
     required: true
   },
@@ -24,7 +22,7 @@ const donationSchema = new mongoose.Schema<IDonation>({
     min: 0,
     required: true,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -32,4 +30,4 @@ const donationSchema = new mongoose.Schema<IDonation>({
   }
 }, { versionKey: false, id: false })
 
-export const DonationModel = mongoose.model<IDonation>('Donations', donationSchema)
+export const DonationModel: Model<IDonation> = model<IDonation>('Donations', donationSchema)

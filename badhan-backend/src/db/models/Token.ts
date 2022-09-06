@@ -1,13 +1,11 @@
-// @ts-nocheck
-// tslint:disable
-import mongoose from 'mongoose'
+import {model, Model, Schema, Document} from 'mongoose'
 
 export interface JwtPayload {
   _id: string
 }
 
-export interface IToken extends mongoose.Document {
-  donorId: mongoose.Schema.Types.ObjectId,
+export interface IToken extends Document {
+  donorId: Schema.Types.ObjectId,
   token: string,
   expireAt?: number,
   os: string,
@@ -15,9 +13,9 @@ export interface IToken extends mongoose.Document {
   device: string,
   ipAddress: string,
 }
-const tokenSchema = new mongoose.Schema<IToken>({
+const tokenSchema: Schema = new Schema<IToken>({
   donorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: 'Donor'
   },
@@ -27,7 +25,7 @@ const tokenSchema = new mongoose.Schema<IToken>({
   },
   expireAt: {
     type: Date,
-    default: () => {
+    default: (): number => {
       return new Date().getTime() + 60 * 1000 * 60 * 24 * 30// 30days
     },
     select: false
@@ -52,4 +50,4 @@ const tokenSchema = new mongoose.Schema<IToken>({
 
 tokenSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export const TokenModel = mongoose.model<IToken>('Tokens', tokenSchema)
+export const TokenModel: Model<IToken> = model<IToken>('Tokens', tokenSchema)

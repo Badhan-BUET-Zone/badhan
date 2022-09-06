@@ -1,6 +1,4 @@
-// @ts-nocheck
-// tslint:disable
-import mongoose from 'mongoose'
+import {Document, model, Model, Schema } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import {CallRecordModel} from "./CallRecord";
 import {DonationModel} from "./Donation";
@@ -10,7 +8,7 @@ import {ActiveDonorModel} from "./ActiveDonor";
 import {TokenModel} from "./Token";
 import { checkEmail } from '../../validations/validateRequest/others'
 
-export interface IDonor extends mongoose.Document {
+export interface IDonor extends Document {
   phone: number,
   password?: string,
   studentId: string,
@@ -27,7 +25,7 @@ export interface IDonor extends mongoose.Document {
   email?: string,
 }
 
-const donorSchema = new mongoose.Schema<IDonor>({
+const donorSchema: Schema = new Schema<IDonor>({
   phone: {
     unique: true,
     type: Number,
@@ -49,13 +47,13 @@ const donorSchema = new mongoose.Schema<IDonor>({
     minlength: 7,
     maxlength: 7,
     validate: [{
-      validator: (value: string) => {
+      validator: (value: string): boolean => {
         return [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 18].includes(parseInt(value.substr(2, 2), 10))
       },
       msg: 'DB: Please input a valid department number'
     }, {
-      validator: (value: string) => {
-        const inputYear = parseInt('20' + value.substr(0, 2),10)
+      validator: (value: string): boolean => {
+        const inputYear: number = parseInt('20' + value.substr(0, 2),10)
         return inputYear <= new Date().getFullYear() && inputYear >= 2001
       },
       msg: 'DB: Please input a valid batch between 01 and last two digits of current year'
@@ -67,12 +65,12 @@ const donorSchema = new mongoose.Schema<IDonor>({
     min: 0,
     max: 7,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: bloodGroup must be an integer'
     }, {
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return [0, 1, 2, 3, 4, 5, 6, 7].includes(value)
       },
       msg: 'DB: Please input a valid blood group number'
@@ -84,12 +82,12 @@ const donorSchema = new mongoose.Schema<IDonor>({
     min: 0,
     max: 8,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: hall must be an integer'
     }, {
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return [0, 1, 2, 3, 4, 5, 6, 8].includes(value)
       },
       msg: 'DB: Please input a valid hall number'
@@ -117,12 +115,12 @@ const donorSchema = new mongoose.Schema<IDonor>({
     min: 0,
     max: 3,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: designation must be an integer'
     }, {
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return [0, 1, 2, 3].includes(value)
       },
       msg: 'DB: Please input a valid designation'
@@ -135,7 +133,7 @@ const donorSchema = new mongoose.Schema<IDonor>({
     min: 0,
     required: true,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -162,7 +160,7 @@ const donorSchema = new mongoose.Schema<IDonor>({
     default: 0,
     required: true,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: commentTime must be an integer'
@@ -178,7 +176,7 @@ const donorSchema = new mongoose.Schema<IDonor>({
     default: '',
     maxlength: 100,
     validate: [{
-      validator: (email: string) => {
+      validator: (email: string): boolean => {
         if (email === '') {
           return true
         }
@@ -232,21 +230,21 @@ donorSchema.virtual('markedBy', {
 donorSchema.set('toObject', { virtuals: true })
 donorSchema.set('toJSON', { virtuals: true })
 
-donorSchema.methods.toJSON = function () {
-  const donor = this
-  const donorObject = donor.toObject()
+donorSchema.methods.toJSON = function (): IDonor {
+  const donor: {[p: string]: any} = this
+  const donorObject: IDonor = donor.toObject()
 
   delete donorObject.password
-  delete donorObject.tokens
 
   return donorObject
 }
 
-donorSchema.pre('save', function (next) {
-  const donor = this
+// reason for definition of next function: https://github.com/Automattic/mongoose/issues/11449
+donorSchema.pre('save', function (next: (err?: Error) => void):void{
+  const donor: IDonor = this
   if (donor.isModified('password')) {
-    bcrypt.genSalt(10, (err: Error, salt: string) => {
-      bcrypt.hash(donor.password!, salt, (errHash: Error, hash: string) => {
+    bcrypt.genSalt(10, (err: Error, salt: string):void => {
+      bcrypt.hash(donor.password!, salt, (errHash: Error, hash: string):void => {
         donor.password = hash
         next()
       })
@@ -256,7 +254,7 @@ donorSchema.pre('save', function (next) {
   }
 })
 
-donorSchema.post('findOneAndDelete', async (donor) => {
+donorSchema.post('findOneAndDelete', async (donor: IDonor):Promise<void> => {
   await CallRecordModel.deleteMany({ callerId: donor._id })
   await CallRecordModel.deleteMany({ calleeId: donor._id })
   await DonationModel.deleteMany({ donorId: donor._id })
@@ -267,6 +265,6 @@ donorSchema.post('findOneAndDelete', async (donor) => {
   await ActiveDonorModel.deleteMany({ markerId: donor._id })
 })
 
-export const DonorModel = mongoose.model<IDonor>('Donor', donorSchema)
+export const DonorModel: Model<IDonor> = model<IDonor>('Donor', donorSchema)
 
 

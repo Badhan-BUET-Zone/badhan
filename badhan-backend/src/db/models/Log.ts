@@ -1,16 +1,14 @@
-// @ts-nocheck
-// tslint:disable
-import mongoose from 'mongoose'
-export interface ILog extends mongoose.Document {
-  donorId: mongoose.Schema.Types.ObjectId,
+import {Document, Schema, model, Model} from 'mongoose'
+export interface ILog extends Document {
+  donorId: Schema.Types.ObjectId,
   date: number,
   operation: string,
   details: object,
   expireAt?: number
 }
-const logSchema = new mongoose.Schema<ILog>({
+const logSchema: Schema = new Schema<ILog>({
   donorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: 'Donor'
   },
@@ -20,7 +18,7 @@ const logSchema = new mongoose.Schema<ILog>({
     default: Date.now,
     min: 0,
     validate: [{
-      validator: (value: number) => {
+      validator: (value: number): boolean => {
         return Number.isInteger(value)
       },
       msg: 'DB: lastDonation must be an integer'
@@ -36,7 +34,7 @@ const logSchema = new mongoose.Schema<ILog>({
   },
   expireAt: {
     type: Date,
-    default: () => {
+    default: (): number => {
       return new Date().getTime() + 60 * 1000 * 60 * 24 * 30// 30days
     },
     select: false
@@ -46,4 +44,4 @@ const logSchema = new mongoose.Schema<ILog>({
 
 logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-export const LogModel = mongoose.model<ILog>('Logs', logSchema)
+export const LogModel: Model<ILog> = model<ILog>('Logs', logSchema)
