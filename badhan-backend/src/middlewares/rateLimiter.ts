@@ -1,70 +1,69 @@
-// @ts-nocheck
-// tslint:disable
 import dotenv from '../dotenv'
 import rateLimit from 'express-rate-limit'
 import TooManyRequestsError429 from "../response/models/errorTypes/TooManyRequestsError429";
-const rateLimiterEnabled = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
-const minute = 60 * 1000
+import { RequestHandler} from "express";
+const rateLimiterEnabled: number = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
+const minute: number = 60 * 1000
 
-const commonRateLimiterError = new TooManyRequestsError429('Service unavailable',{})
+const commonRateLimiterError: TooManyRequestsError429 = new TooManyRequestsError429('Service unavailable',{})
 
-const signInLimiter = rateLimit({
+const signInLimiter: RequestHandler = rateLimit({
   windowMs: 5 * minute,
   max: 3 * rateLimiterEnabled,
   message: new TooManyRequestsError429('Please try again after 5 minutes',{})
 })
 
-const redirectionSignInLimiter = rateLimit({
+const redirectionSignInLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 3 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
 
-const donationInsertionLimiter = rateLimit({
+const donationInsertionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
-const donorInsertionLimiter = rateLimit({
+const donorInsertionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
-const donorDeletionLimiter = rateLimit({
+const donorDeletionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
-const deleteDonationLimiter = rateLimit({
-  windowMs: minute,
-  max: 12 * rateLimiterEnabled,
-  message: commonRateLimiterError
-})
-
-const commonLimiter = rateLimit({
+const deleteDonationLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
 
-const passwordRequestLimiter = rateLimit({
+const commonLimiter: RequestHandler = rateLimit({
+  windowMs: minute,
+  max: 12 * rateLimiterEnabled,
+  message: commonRateLimiterError
+})
+
+const passwordRequestLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 3 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
 
-const passwordForgotLimiter = rateLimit({
+const passwordForgotLimiter: RequestHandler = rateLimit({
   windowMs: 3 * minute,
   max: 1,
   message: new TooManyRequestsError429('Please try again after 3 minutes',{})
 })
 
-const publicContactInsertionLimiter = rateLimit({
+const publicContactInsertionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
   message: commonRateLimiterError
 })
-const publicContactDeletionLimiter = rateLimit({
+const publicContactDeletionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
   message: commonRateLimiterError

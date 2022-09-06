@@ -1,6 +1,4 @@
-// @ts-nocheck
-// tslint:disable
-import useragent from 'useragent'
+import useragent, {Agent} from 'useragent'
 import {Request, Response, NextFunction} from "express";
 import myConsole from "../response/myConsole";
 
@@ -12,8 +10,8 @@ export interface IUserAgent {
 }
 
 export const userAgentHandler = (req:Request, res: Response, next: NextFunction):void => {
-  const agent = useragent.parse(req.headers['user-agent'])
-  const xForwardedForHeader = req.get('x-forwarded-for')
+  const agent: Agent = useragent.parse(req.headers['user-agent'])
+  const xForwardedForHeader: string | undefined = req.get('x-forwarded-for')
   res.locals.userAgent = {
     os: agent.os.toString(),
     device: agent.device.toString(),
