@@ -1,10 +1,8 @@
-// @ts-nocheck
-// tslint:disable
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import logController from '../controllers/logController'
 import * as faker from "../doc/faker";
-import {Request, Response} from 'express'
+import {Request, RequestHandler, Response} from 'express'
 const handlePOSTLogIn = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).send(new CreatedResponse201('Guest sign in will not show actual nor accurate data', {
     token: faker.getToken()
@@ -12,7 +10,22 @@ const handlePOSTLogIn = async (req: Request, res: Response): Promise<Response> =
 }
 
 const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Promise<Response> => {
-  const obj = {
+  const obj: {
+    _id: string
+    phone: number
+    name: string
+    studentId: string
+    bloodGroup: number
+    hall: number
+    roomNumber: string
+    address: string
+    comment: string
+    commentTime: number
+    designation: number
+    availableToAll: boolean
+    email: string
+    lastDonation: number
+  } = {
     _id: faker.getId(),
     phone: faker.getPhone(),
     name: faker.getName(),
@@ -64,21 +77,27 @@ const handlePOSTLogOutAll = async (req: Request, res: Response):Promise<Response
 }
 
 const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Response> => {
-  const filteredDonors = []
+  const filteredDonors:{
+    _id: string,
+    phone: number,
+    name: string,
+    studentId: string,
+    hall: number,
+    lastDonation: number,
+    bloodGroup: number,
+    address: string,
+    roomNumber: string,
+    comment: string,
+    donationCount: number,
+    commentTime: number,
+    availableToAll: boolean,
+    callRecordCount: number,
+    lastCalled: number,
+    marker: { name: string; time: number } | {}
+  }[] = []
 
-  for (let i = 0; i < faker.getRandInt(1, 50); i++) {
-    const callRecords = []
-    for (let j = 0; j < faker.getRandInt(1, 3); j++) {
-      callRecords.push({
-        date: faker.getTimestamp(5),
-        _id: faker.getId(),
-        callerId: faker.getId(),
-        calleeId: faker.getId()
-      }
-      )
-    }
-
-    const randomMarker = faker.getBoolean()
+  for (let i: number = 0; i < faker.getRandInt(1, 50); i++) {
+    const randomMarker: { name: string; time: number } | {} = faker.getBoolean()
       ? {
           name: faker.getName(),
           time: faker.getTimestamp(20)
@@ -137,8 +156,19 @@ const handlePOSTChangeAdmin = async (req: Request, res: Response):Promise<Respon
 }
 
 const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Response> => {
-  const callRecords = []
-  for (let i = 0; i < 2; i++) {
+  const callRecords: {
+    date: number
+    _id: string
+    callerId: {
+      designation: number
+      _id: string
+      hall: number
+      name: string
+    },
+    calleeId: string
+    expireAt: string
+  }[] = []
+  for (let i: number = 0; i < 2; i++) {
     callRecords.push({
       date: faker.getTimestamp(240),
       _id: faker.getId(),
@@ -153,8 +183,13 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
     }
     )
   }
-  const donations = []
-  for (let i = 0; i < 2; i++) {
+  const donations:{
+    date: number,
+    _id: string,
+    phone: number,
+    donorId: string
+  }[] = []
+  for (let i: number = 0; i < 2; i++) {
     donations.push({
       date: faker.getTimestamp(240),
       _id: faker.getId(),
@@ -163,7 +198,7 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
     }
     )
   }
-  const publicContacts = [
+  const publicContacts: {bloodGroup: number, _id: string, donorId: string}[] = [
     {
       bloodGroup: 2,
       _id: faker.getId(),
@@ -176,7 +211,7 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
     }
   ]
 
-  const randomMarker = faker.getBoolean()
+  const randomMarker: { donorId: string; time: number; markerId: { name: string; _id: string } } | null = faker.getBoolean()
     ? {
         donorId: faker.getId(),
         markerId: {
@@ -187,7 +222,7 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
       }
     : null
 
-  const obj = {
+  const obj: { roomNumber: string; address: string; donations: { date: number; _id: string; phone: number; donorId: string }[]; callRecords: { date: number; calleeId: string; _id: string; callerId: { name: string; hall: number; designation: number; _id: string }; expireAt: string }[]; availableToAll: boolean; hall: number; commentTime: number; studentId: string; bloodGroup: number; phone: number; lastDonation: number; name: string; publicContacts: { bloodGroup: number; _id: string; donorId: string }[]; comment: string; _id: string; designation: number; markedBy: { donorId: string; time: number; markerId: { name: string; _id: string } } | null; email: string } = {
     _id: faker.getId(),
     phone: faker.getPhone(),
     name: faker.getName(),
@@ -214,8 +249,15 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
 }
 
 const handlePOSTViewVolunteersOfOwnHall = async (req: Request, res: Response):Promise<Response> => {
-  const volunteerList = []
-  for (let i = 0; i < faker.getRandomIndex(50); i++) {
+  const volunteerList: {
+    _id: string,
+    bloodGroup: number,
+    name: string,
+    phone: number,
+    roomNumber: string,
+    studentId: string
+  }[] = []
+  for (let i: number = 0; i < faker.getRandomIndex(50); i++) {
     volunteerList.push({
       _id: faker.getId(),
       bloodGroup: faker.getBloodGroup(),
@@ -232,8 +274,8 @@ const handlePOSTViewVolunteersOfOwnHall = async (req: Request, res: Response):Pr
 }
 
 const handlePOSTShowHallAdmins = async (req: Request, res: Response):Promise<Response> => {
-  const admins = []
-  for (let i = 0; i <= 6; i++) {
+  const admins: { _id: string, hall: number, name: string, phone: number }[] = []
+  for (let i: number = 0; i <= 6; i++) {
     admins.push({
       _id: faker.getId(),
       hall: i,
@@ -283,8 +325,8 @@ const handleDELETELogs = async (req: Request, res: Response):Promise<Response> =
 }
 
 const handleGETViewAllVolunteers = async (req: Request, res: Response):Promise<Response> => {
-  const object = []
-  for (let i = 0; i < faker.getRandomIndex(200); i++) {
+  const object: {name: string, hall: number, studentId: string, logCount: number, _id: string}[] = []
+  for (let i: number = 0; i < faker.getRandomIndex(200); i++) {
     object.push({
       name: faker.getName(),
       hall: faker.getHall(),
@@ -346,8 +388,8 @@ const handleGETDonorsDuplicate = async (req: Request, res: Response):Promise<Res
 }
 
 const handleGETLogs = async (req: Request, res: Response):Promise<Response> => {
-  const logs = []
-  for (let i = 0; i < 15; i++) {
+  const logs:{ dateString: string, activeUserCount: number, totalLogCount: number }[] = []
+  for (let i: number = 0; i < 15; i++) {
     logs.push({
       dateString: faker.getFakeDateString(),
       activeUserCount: faker.getRandomIndex(20),
@@ -360,9 +402,9 @@ const handleGETLogs = async (req: Request, res: Response):Promise<Response> => {
 }
 
 const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<Response> => {
-  const logs = []
+  const logs: {_id: string, date: number, operation: string, details: {}}[] = []
 
-  for (let i = 0; i < 15; i++) {
+  for (let i: number = 0; i < 15; i++) {
     logs.push({
       _id: faker.getId(),
       date: faker.getTimestamp(2),
@@ -376,8 +418,8 @@ const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<
 }
 
 const handleGETLogsByDate = async (req: Request, res: Response):Promise<Response> => {
-  const logs = []
-  for (let i = 0; i < 15; i++) {
+  const logs: {name: string, donorId: string, hall: number, count: number}[] = []
+  for (let i: number = 0; i < 15; i++) {
     logs.push({
       name: faker.getName(),
       donorId: faker.getId(),
@@ -396,7 +438,7 @@ const handlePATCHPassword = async (req: Request, res: Response):Promise<Response
   }))
 }
 
-const handlePOSTPublicContact = async (req: Request, res: Response) => {
+const handlePOSTPublicContact = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).send(new CreatedResponse201('Public contact added successfully', {
     publicContact: {
       bloodGroup: 2,
@@ -406,15 +448,16 @@ const handlePOSTPublicContact = async (req: Request, res: Response) => {
   }))
 }
 
-const handleDELETEPublicContact = async (req: Request, res: Response) => {
+const handleDELETEPublicContact = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).send(new OKResponse200('Public contact deleted successfully',{}))
 }
 
-const handleGETPublicContacts = async (req: Request, res: Response) => {
-  const publicContacts = []
-  let contacts = []
+const handleGETPublicContacts = async (req: Request, res: Response): Promise<Response> => {
+  type contactType = { donorId: string, phone: number, name: string, contactId: string }
+  const publicContacts: { bloodGroup: number, contacts: contactType[]}[] = []
+  let contacts: contactType[] = []
 
-  for (let i = 0; i < 2; i++) {
+  for (let i: number = 0; i < 2; i++) {
     contacts.push({
       donorId: faker.getId(),
       phone: faker.getPhone(),
@@ -427,9 +470,9 @@ const handleGETPublicContacts = async (req: Request, res: Response) => {
     contacts
   })
 
-  for (let i = 0; i < 4; i++) {
+  for (let i: number = 0; i < 4; i++) {
     contacts = []
-    for (let j = 0; j < 2; j++) {
+    for (let j: number = 0; j < 2; j++) {
       contacts.push({
         donorId: faker.getId(),
         phone: faker.getPhone(),
@@ -448,12 +491,15 @@ const handleGETPublicContacts = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETDonorsDesignation = async (req: Request, res: Response) => {
-  const volunteerList = []
-  const adminList = []
-  const superAdminList = []
+const handleGETDonorsDesignation = async (req: Request, res: Response): Promise<Response> => {
+  type adminType = { _id: string, studentId: string, name: string, phone: number, hall: number }
+  type volunteerType = { roomNumber: string, _id: string, studentId: string, name: string, bloodGroup: number, phone: number}
+  type superAdminType = adminType
+  const volunteerList: volunteerType[] = []
+  const adminList: adminType[] = []
+  const superAdminList: superAdminType[] = []
 
-  for (let i = 0; i < 7; i++) {
+  for (let i: number = 0; i < 7; i++) {
     adminList.push({
       _id: faker.getId(),
       studentId: faker.getStudentId(),
@@ -462,7 +508,7 @@ const handleGETDonorsDesignation = async (req: Request, res: Response) => {
       hall: i
     })
   }
-  for (let i = 0; i < 15; i++) {
+  for (let i: number = 0; i < 15; i++) {
     volunteerList.push({
       roomNumber: faker.getRoom(),
       _id: faker.getId(),
@@ -472,7 +518,7 @@ const handleGETDonorsDesignation = async (req: Request, res: Response) => {
       phone: faker.getPhone()
     })
   }
-  for (let i = 0; i < 5; i++) {
+  for (let i: number = 0; i < 5; i++) {
     superAdminList.push({
       _id: faker.getId(),
       studentId: faker.getStudentId(),
@@ -489,8 +535,9 @@ const handleGETDonorsDesignation = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETLogins = (req: Request, res: Response) => {
-  const logins = [
+const handleGETLogins = async (req: Request, res: Response): Promise<Response> => {
+  type loginType = { _id: string, os: string, device: string, browserFamily: string, ipAddress: string }
+  const logins: loginType[] = [
     {
       _id: faker.getId(),
       os: 'Ubuntu 20.04.1',
@@ -512,7 +559,7 @@ const handleGETLogins = (req: Request, res: Response) => {
     }
   ]
 
-  const currentLogin = {
+  const currentLogin: loginType = {
     _id: faker.getId(),
     os: 'MacOS McMojave',
     device: 'MacBook Pro',
@@ -525,11 +572,11 @@ const handleGETLogins = (req: Request, res: Response) => {
     currentLogin
   }))
 }
-const handleDELETELogins = (req: Request, res: Response) => {
+const handleDELETELogins = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).send(new OKResponse200('Logged out from specified device',{}))
 }
 
-const handleDELETEActiveDonors = (req: Request, res: Response) => {
+const handleDELETEActiveDonors = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).send(new OKResponse200('Active donor deleted successfully', {
     removedActiveDonor: {
       _id: faker.getId(),
@@ -540,7 +587,7 @@ const handleDELETEActiveDonors = (req: Request, res: Response) => {
   }))
 }
 
-const handlePOSTActiveDonors = async (req: Request, res: Response) => {
+const handlePOSTActiveDonors = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).send(new CreatedResponse201('Active donor created', {
     newActiveDonor: {
       _id: faker.getId(),
@@ -551,10 +598,12 @@ const handlePOSTActiveDonors = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETActiveDonors = async (req: Request, res: Response) => {
-  const filteredActiveDonors = []
+const handleGETActiveDonors = async (req: Request, res: Response): Promise<Response> => {
+  const filteredActiveDonors:{ _id: string, hall: number, name: string, address: string, comment: string, commentTime: number,
+    lastDonation: number, availableToAll: boolean, bloodGroup: number, studentId: string, phone: number, markedTime: number,
+    markerName: string, donationCount: number, callRecordCount: number, lastCallRecord: number }[] = []
 
-  for (let i = 0; i < faker.getRandInt(1, 50); i++) {
+  for (let i: number = 0; i < faker.getRandInt(1, 50); i++) {
     filteredActiveDonors.push({
       _id: faker.getId(),
       hall: faker.getHall(),
@@ -579,9 +628,9 @@ const handleGETActiveDonors = async (req: Request, res: Response) => {
   }))
 }
 
-const handleGETAppVersions = logController.handleGETAppVersions
+const handleGETAppVersions: RequestHandler = logController.handleGETAppVersions
 
-const handlePATCHAdminsSuperAdmin = async (req: Request,res: Response) => {
+const handlePATCHAdminsSuperAdmin = async (req: Request,res: Response): Promise<Response> => {
   return res.status(200).send(new OKResponse200('Donor has been promoted to Super Admin',{
     donor: {
       _id: faker.getId(),
