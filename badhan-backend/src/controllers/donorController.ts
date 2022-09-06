@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as donationInterface from '../db/interfaces/donationInterface'
 import * as logInterface from '../db/interfaces/logInterface'
@@ -13,6 +11,8 @@ import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import {IDonation} from "../db/models/Donation";
+import {IDonor} from "../db/models/Donor";
+import {IToken} from "../db/models/Token";
 
 const handlePOSTDonors = async (req: Request<{},{},{
   phone: number,
@@ -27,16 +27,16 @@ const handlePOSTDonors = async (req: Request<{},{},{
   availableToAll: boolean,
   extraDonationCount: number
 },{}>, res: Response): Promise<Response> => {
-  const authenticatedUser = res.locals.middlewareResponse.donor
+  const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
 
-  const duplicateDonorResult = await donorInterface.findDonorByPhone(req.body.phone)
+  const duplicateDonorResult: { data?: IDonor; message: string; status: string } = await donorInterface.findDonorByPhone(req.body.phone)
 
   if (duplicateDonorResult.status === 'OK') {
     if (
       authenticatedUser.designation === 3 ||
       duplicateDonorResult.data!.hall === authenticatedUser.hall ||
       duplicateDonorResult.data!.hall > 6 ||
-      duplicateDonorResult.data!.availableToAll === true
+      duplicateDonorResult.data!.availableToAll
     ) {
       return res.status(409).send(new ConflictError409('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data!.hall] + ' hall', {
         donorId: duplicateDonorResult.data!._id
@@ -46,39 +46,26 @@ const handlePOSTDonors = async (req: Request<{},{},{
   }
 
   // if the hall is unknown, then the donor must be available to all
-  let availableToAll = req.body.availableToAll
+  let availableToAll: boolean = req.body.availableToAll
   if (req.body.hall === 8) {
     availableToAll = true
   }
 
-  const donorObject = {
-    phone: req.body.phone,
-    bloodGroup: req.body.bloodGroup,
-    hall: req.body.hall,
-    name: req.body.name,
-    studentId: req.body.studentId,
-    address: req.body.address,
-    roomNumber: req.body.roomNumber,
-    lastDonation: 0,
-    comment: req.body.comment,
-    availableToAll
-  }
-
-  const donorInsertionResult = await donorInterface.insertDonor(donorObject)
+  const donorInsertionResult: { data: IDonor; message: string; status: string } = await donorInterface.insertDonor(req.body.phone, req.body.bloodGroup, req.body.hall, req.body.name, req.body.studentId, req.body.address, req.body.roomNumber, 0, req.body.comment, availableToAll)
   if (donorInsertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('New donor insertion unsuccessful',{},{}))
   }
 
   const dummyDonations: IDonation[] = []
-  for (let i = 0; i < req.body.extraDonationCount; i++) {
+  for (let i: number = 0; i < req.body.extraDonationCount; i++) {
     dummyDonations.push({
       phone: donorInsertionResult.data.phone,
       donorId: donorInsertionResult.data._id,
       date: 0
-    })
+    } as IDonation)
   }
 
-  const dummyInsertionResult = await donationInterface.insertManyDonations(dummyDonations)
+  const dummyInsertionResult: { data: IDonation[]; message: string; status: string } = await donationInterface.insertManyDonations(dummyDonations)
 
   if (dummyInsertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('Dummy donations insertion unsuccessful',{},{}))
@@ -91,13 +78,13 @@ const handlePOSTDonors = async (req: Request<{},{},{
 }
 
 const handleDELETEDonors = async (req: Request, res: Response):Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
 
-  if (donor.designation > 1) {
+  if (donor.designation! > 1) {
     return res.status(409).send(new ConflictError409('Donor must be demoted for deletion', {}))
   }
 
-  const deleteDonorResult = await donorInterface.deleteDonorById(donor._id)
+  const deleteDonorResult: { data?: IDonor; message: string; status: string } = await donorInterface.deleteDonorById(donor._id)
   if (deleteDonorResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('Error occurred in deleting target donor',{},{}))
   }
@@ -117,7 +104,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
   isNotAvailable: string,
   availableToAll:string,
 }>, res: Response):Promise<Response> => {
-  const reqQuery = {
+  const reqQuery: { bloodGroup: number; isAvailable: boolean; address: string; batch: string; name: string; isNotAvailable: boolean; availableToAll: boolean; hall: number } = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),
     batch: req.query.batch,
@@ -133,7 +120,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
     res.locals.middlewareResponse.donor.designation !== 3) {
     return res.status(403).send(new ForbiddenError403('You are not allowed to search donors of other halls',{}))
   }
-  const result = await donorInterface.findDonorsByAggregate(reqQuery)
+  const result: { data: IDonor[]; message: string; status: string } = await donorInterface.findDonorsByAggregate(reqQuery)
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET SEARCH V3', {
     filter: reqQuery,
     resultCount: result.data.length
@@ -145,7 +132,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
 }
 
 const handlePATCHDonorsComment = async (req: Request, res: Response):Promise<Response> => {
-  const targetDonor = res.locals.middlewareResponse.targetDonor
+  const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
 
   targetDonor.comment = req.body.comment
   targetDonor.commentTime = new Date().getTime()
@@ -155,8 +142,8 @@ const handlePATCHDonorsComment = async (req: Request, res: Response):Promise<Res
 }
 
 const handlePATCHDonorsPassword = async (req: Request, res: Response):Promise<Response> => {
-  const reqBody = req.body
-  const target = res.locals.middlewareResponse.targetDonor
+  const reqBody: {password: string} = req.body
+  const target: IDonor = res.locals.middlewareResponse.targetDonor
   if (target.designation === 0) {
     return res.status(409).send(new ConflictError409('Target user does not have an account', {}))
   }
@@ -172,10 +159,10 @@ const handlePATCHDonorsPassword = async (req: Request, res: Response):Promise<Re
 }
 
 const handlePATCHDonors = async (req: Request, res: Response):Promise<Response> => {
-  const reqBody = req.body
+  const reqBody: {availableToAll: boolean, address: string, roomNumber: string, hall: number, bloodGroup: number, studentId: string,phone: number, name: string, email: string} = req.body
 
-  const target = res.locals.middlewareResponse.targetDonor
-  const user = res.locals.middlewareResponse.donor
+  const target: IDonor = res.locals.middlewareResponse.targetDonor
+  const user: IDonor = res.locals.middlewareResponse.donor
 
   // if (reqBody.email !== '' && !await emailInterface.checkIfEmailExists(reqBody.email)) {
   //   return res.status(404).send(new NotFoundError404('Email address does not exist'))
@@ -206,8 +193,8 @@ const handlePATCHDonors = async (req: Request, res: Response):Promise<Response> 
 }
 
 const handlePATCHDonorsDesignation = async (req: Request, res: Response):Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
-  const donorDesignation = donor.designation
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
+  const donorDesignation: number | undefined = donor.designation
 
   if ((donorDesignation === 1 && req.body.promoteFlag) ||
     (donorDesignation === 0 && !req.body.promoteFlag) || donorDesignation === 3) {
@@ -226,7 +213,7 @@ const handlePATCHDonorsDesignation = async (req: Request, res: Response):Promise
 
   await donor.save()
 
-  let logOperation = ''
+  let logOperation: string = ''
   if (req.body.promoteFlag) {
     logOperation = 'PROMOTE'
   } else {
@@ -238,7 +225,7 @@ const handlePATCHDonorsDesignation = async (req: Request, res: Response):Promise
 }
 
 const handlePATCHAdmins = async (req: Request, res: Response):Promise<Response> => {
-  const targetDonor = res.locals.middlewareResponse.targetDonor
+  const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
 
   if (targetDonor.designation !== 1) {
     return res.status(409).send(new ConflictError409('User is not a volunteer',{}))
@@ -263,7 +250,7 @@ const handlePATCHAdmins = async (req: Request, res: Response):Promise<Response> 
 }
 
 const handleGETDonors = async (req: Request, res: Response):Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
   await donor.populate([
     {
       path: 'donations',
@@ -312,7 +299,7 @@ const handleGETDonors = async (req: Request, res: Response):Promise<Response> =>
 }
 
 const handleGETDesignatedDonorsAll = async (req: Request, res: Response):Promise<Response> => {
-  const allDesignatedDonorResult = await donorInterface.findAllDesignatedDonors()
+  const allDesignatedDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDesignatedDonors()
 
   if (allDesignatedDonorResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(allDesignatedDonorResult.message,{},{}))
@@ -326,16 +313,16 @@ const handleGETDesignatedDonorsAll = async (req: Request, res: Response):Promise
 }
 
 const handleGETDonorsDuplicate = async (req: Request<{},{},{},{phone: string}>, res: Response):Promise<Response> => {
-  const authenticatedUser = res.locals.middlewareResponse.donor
+  const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
 
-  const duplicateDonorResult = await donorInterface.findDonorByPhone(parseInt(req.query.phone,10))
+  const duplicateDonorResult: { data?: IDonor; message: string; status: string } = await donorInterface.findDonorByPhone(parseInt(req.query.phone,10))
 
   if (duplicateDonorResult.status === 'OK') {
     if (
       authenticatedUser.designation === 3 ||
       duplicateDonorResult.data!.hall === authenticatedUser.hall ||
       duplicateDonorResult.data!.hall > 6 ||
-      duplicateDonorResult.data!.availableToAll === true
+      duplicateDonorResult.data!.availableToAll
     ) {
       return res.status(200).send(new OKResponse200('Donor found with duplicate phone number in ' + halls[duplicateDonorResult.data!.hall] + ' hall', {
         found: true,
@@ -358,18 +345,18 @@ const handleGETDonorsDuplicate = async (req: Request<{},{},{},{phone: string}>, 
 }
 
 const handlePOSTDonorsPasswordRequest = async (req: Request, res: Response):Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
 
   if (donor.designation === 0) {
     return res.status(409).send(new ConflictError409('Donor is not a volunteer/ admin',{}))
   }
 
-  const tokenDeleteResult = await tokenInterface.deleteAllTokensByDonorId(donor._id)
+  const tokenDeleteResult: { message: string; status: string } = await tokenInterface.deleteAllTokensByDonorId(donor._id)
   if (tokenDeleteResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(tokenDeleteResult.message,{},{}))
   }
 
-  const tokenInsertResult = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
+  const tokenInsertResult: { data: IToken; message: string; status: string } = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
   if (tokenInsertResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(tokenInsertResult.message,{},{}))
   }
@@ -382,26 +369,26 @@ const handlePOSTDonorsPasswordRequest = async (req: Request, res: Response):Prom
 }
 
 const handleGETDonorsDesignation = async (req: Request, res: Response):Promise<Response> => {
-  const authenticatedUser = res.locals.middlewareResponse.donor
+  const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
 
-  const adminsQueryResult = await donorInterface.findAdmins(2)
+  const adminsQueryResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAdmins(2)
   if (adminsQueryResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(adminsQueryResult.message,{},{}))
   }
-  const adminList = adminsQueryResult.data
+  const adminList: IDonor[] = adminsQueryResult.data
 
-  const donorsQueryResult = await donorInterface.findVolunteersOfHall(authenticatedUser.hall)
+  const donorsQueryResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findVolunteersOfHall(authenticatedUser.hall)
   if (donorsQueryResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(donorsQueryResult.message,{},{}))
   }
 
-  const volunteerList = donorsQueryResult.data
+  const volunteerList: IDonor[] = donorsQueryResult.data
 
-  const superAdminQuery = await donorInterface.findAdmins(3)
+  const superAdminQuery: { data: IDonor[]; message: string; status: string } = await donorInterface.findAdmins(3)
   if (superAdminQuery.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(superAdminQuery.message,{},{}))
   }
-  const superAdminList = superAdminQuery.data
+  const superAdminList: IDonor[] = superAdminQuery.data
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS DESIGNATION', {})
 
@@ -413,8 +400,8 @@ const handleGETDonorsDesignation = async (req: Request, res: Response):Promise<R
 }
 
 const handleGETDonorsDuplicateMany = async (req: Request<{},{},{},{phoneList: string[]}>, res: Response):Promise<Response> => {
-  const authenticatedUser = res.locals.middlewareResponse.donor
-  const existingDonorsResult = await donorInterface.findDonorIdsByPhone(authenticatedUser.designation, authenticatedUser.hall, req.query.phoneList.map((phone:string)=>parseInt(phone,10)))
+  const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
+  const existingDonorsResult: { donors: IDonor[]; message: string; status: string } = await donorInterface.findDonorIdsByPhone(authenticatedUser.designation!, authenticatedUser.hall, req.query.phoneList.map((phone:string): number=>parseInt(phone,10)))
   await logInterface.addLog(authenticatedUser._id, 'GET DONORS PHONE', { phones: req.query.phoneList })
   return res.status(200).send(new OKResponse200(existingDonorsResult.message, {
     donors: existingDonorsResult.donors
@@ -422,7 +409,7 @@ const handleGETDonorsDuplicateMany = async (req: Request<{},{},{},{phoneList: st
 }
 
 const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response):Promise<Response>=>{
-  const targetDonor = res.locals.middlewareResponse.targetDonor
+  const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
 
   if (targetDonor._id.equals(MASTER_ADMIN_ID)) {
     return res.status(403).send(new ForbiddenError403('All hail master admin',{}))
@@ -432,7 +419,7 @@ const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response):Promise<
     return res.status(409).send(new ConflictError409('Target donor must be a volunteer or super admin',{}))
   }
 
-  let message
+  let message: string
   if(req.body.promoteFlag){
     targetDonor.designation = 3
     message = 'Donor has been promoted to Super Admin'

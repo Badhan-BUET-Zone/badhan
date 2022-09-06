@@ -23,7 +23,7 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
   }
 
   // check whether donor is already in cache
-  const cachedUser: IDonor | undefined = tokenCache.get(token)
+  const cachedUser: IDonor = tokenCache.get(token)!
   if (cachedUser) {
     res.locals.middlewareResponse = {
       donor: cachedUser,

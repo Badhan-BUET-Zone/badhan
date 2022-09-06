@@ -2,8 +2,8 @@ import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
 
-export const insertDonor = async (donorObject: IDonor):Promise<{data: IDonor, message: string, status: string}> => {
-    const donor: IDonor = new DonorModel(donorObject)
+export const insertDonor = async (phone: number, bloodGroup: number, hall: number, name: string, studentId: string, address: string, roomNumber: string, lastDonation: number, comment: string, availableToAll: boolean):Promise<{data: IDonor, message: string, status: string}> => {
+    const donor: IDonor = new DonorModel({phone, bloodGroup, hall, name, studentId, address, roomNumber, lastDonation: 0, comment, availableToAll})
     const data: IDonor = await donor.save()
     return {
         message: 'Donor insertion successful',
