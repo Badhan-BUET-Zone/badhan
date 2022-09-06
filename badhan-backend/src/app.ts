@@ -43,7 +43,7 @@ app.use(internalServerErrorHandler)
 process.on('unhandledRejection', unhandledRejectionHandler)
 process.on('uncaughtException', uncaughtExceptionHandler)
 
-myConsole.log('BADHAN LOG: server environment is', dotenv.NODE_ENV)
-myConsole.log('BADHAN LOG: rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
+myConsole.log('server environment is', dotenv.NODE_ENV)
+myConsole.log('rate limiter', dotenv.RATE_LIMITER_ENABLE === 'true' ? 'on' : 'off')
 
 export default app

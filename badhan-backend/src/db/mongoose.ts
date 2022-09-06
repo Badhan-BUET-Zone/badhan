@@ -4,7 +4,7 @@ import myConsole from "../response/myConsole";
 
 mongoose.Promise = global.Promise
 
-myConsole.log('BADHAN LOG: Connecting to ' + (String(dotenv.MONGODB_URI).includes('Test') ? 'Test' : 'Production') + ' database...')
+myConsole.log('Connecting to ' + (String(dotenv.MONGODB_URI).includes('Test') ? 'Test' : 'Production') + ' database...')
 
 const connectToDB = async ():Promise<void> => {
   try {
@@ -12,7 +12,7 @@ const connectToDB = async ():Promise<void> => {
       useUnifiedTopology: true,
       useNewUrlParser: true
     } as ConnectOptions, ():void => {
-      myConsole.log('BADHAN LOG: You are connected to the database.')
+      myConsole.log('You are connected to the database.')
     })
   } catch (e: any) {
     myConsole.log(e.message)

@@ -29,7 +29,7 @@ const dotenvEnvFile: DotenvEnvFile = {
 
 Object.entries(dotenvEnvFile).forEach(([key, value]:[string,string], index:number):void => {
   if (value === undefined) {
-    myConsole.log('BADHAN LOG: ', key, 'is not defined in config. Program will exit')
+    myConsole.log(key, 'is not defined in config. Program will exit')
     process.exit(1)
   }
 });
