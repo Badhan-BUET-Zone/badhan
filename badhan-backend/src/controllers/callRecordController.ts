@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import {Request, Response} from 'express'
 import * as callRecordInterface from '../db/interfaces/callRecordInterface'
 import * as logInterface from '../db/interfaces/logInterface'
@@ -7,11 +5,13 @@ import InternalServerError500 from "../response/models/errorTypes/InternalServer
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
+import {IDonor} from "../db/models/Donor";
+import {ICallRecord} from "../db/models/CallRecord";
 
 const handlePOSTCallRecord = async (req: Request, res: Response): Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
-  const user = res.locals.middlewareResponse.donor
-  const callRecordInsertionResult = await callRecordInterface.insertOne(user._id, donor._id)
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
+  const user: IDonor = res.locals.middlewareResponse.donor
+  const callRecordInsertionResult: {data: ICallRecord, message: string, status: string} = await callRecordInterface.insertOne(user._id, donor._id)
 
   await logInterface.addLog(user._id, 'POST CALLRECORDS', { callee: donor.name })
 
@@ -21,14 +21,14 @@ const handlePOSTCallRecord = async (req: Request, res: Response): Promise<Respon
 }
 
 const handleDELETECallRecord = async (req: Request<{},{},{},{callRecordId: string}>, res: Response): Promise<Response> => {
-  const user = res.locals.middlewareResponse.donor
-  const donor = res.locals.middlewareResponse.targetDonor
-  const callRecordSearchResult = await callRecordInterface.findById(req.query.callRecordId)
+  const user: IDonor = res.locals.middlewareResponse.donor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
+  const callRecordSearchResult: {data?: ICallRecord, message: string, status: string} = await callRecordInterface.findById(req.query.callRecordId)
   if (callRecordSearchResult.status !== 'OK') {
     return res.status(404).send(new NotFoundError404('Call record not found',{}))
   }
 
-  const callRecordDeleteResult = await callRecordInterface.deleteById(req.query.callRecordId)
+  const callRecordDeleteResult: {data?: ICallRecord, message: string, status: string} = await callRecordInterface.deleteById(req.query.callRecordId)
   if (callRecordDeleteResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(callRecordDeleteResult.message,{},{}))
   }

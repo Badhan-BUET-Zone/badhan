@@ -2,8 +2,8 @@ import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
 import {Schema} from 'mongoose'
 
-export const insertDonation = async (donationObject: IDonation): Promise<{data: IDonation, message: string, status: string}> => {
-    const donation: IDonation = new DonationModel(donationObject)
+export const insertDonation = async (phone: number, donorId: Schema.Types.ObjectId, date: number ): Promise<{data: IDonation, message: string, status: string}> => {
+    const donation: IDonation = new DonationModel({phone, donorId, date})
     const data: IDonation = await donation.save()
 
     return {

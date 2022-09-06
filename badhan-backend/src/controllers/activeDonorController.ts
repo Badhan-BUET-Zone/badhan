@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import {Request, Response} from 'express'
 import * as activeDonorInterface from '../db/interfaces/activeDonorInterface'
 import * as logInterface from '../db/interfaces/logInterface'
@@ -9,16 +7,18 @@ import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
+import {IDonor} from "../db/models/Donor";
+import {IActiveDonor} from "../db/models/ActiveDonor";
 const handlePOSTActiveDonors = async (req: Request, res: Response):Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
-  const user = res.locals.middlewareResponse.donor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
+  const user: IDonor = res.locals.middlewareResponse.donor
 
-  const activeDonorSearch = await activeDonorInterface.findByDonorId(donor._id)
+  const activeDonorSearch: {data?: IActiveDonor[], message: string, status: string} = await activeDonorInterface.findByDonorId(donor._id)
   if (activeDonorSearch.status === 'OK') {
     return res.status(409).send(new ConflictError409('Active donor already created',{}))
   }
 
-  const activeDonorInsertResult = await activeDonorInterface.add(donor._id, user._id)
+  const activeDonorInsertResult: {message: string, status: string, data: IActiveDonor} = await activeDonorInterface.add(donor._id, user._id)
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST ACTIVEDONORS', {
     ...activeDonorInsertResult.data,
@@ -30,9 +30,9 @@ const handlePOSTActiveDonors = async (req: Request, res: Response):Promise<Respo
 }
 
 const handleDELETEActiveDonors = async (req: Request, res: Response): Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
 
-  const activeDonorRemoveResult = await activeDonorInterface.remove(donor._id)
+  const activeDonorRemoveResult: {data?: IActiveDonor, message: string, status: string} = await activeDonorInterface.remove(donor._id)
   if (activeDonorRemoveResult.status !== 'OK') {
     return res.status(404).send(new NotFoundError404('Active donor not found',{}))
   }
@@ -56,7 +56,17 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
   availableToAll:string,
   markedByMe: string
 }>, res: Response): Promise<Response> => {
-  const reqQuery = {
+  const reqQuery:{
+    bloodGroup: number,
+    hall: number,
+    batch: string,
+    name: string,
+    address: string,
+    isAvailable: boolean,
+    isNotAvailable: boolean,
+    availableToAll: boolean,
+    markedByMe: boolean
+  } = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),
     batch: req.query.batch,
@@ -73,7 +83,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
     res.locals.middlewareResponse.donor.designation !== 3) {
     return res.status(403).send(new ForbiddenError403('You are not allowed to search donors of other halls',{}))
   }
-  const activeDonors = await activeDonorInterface.findByQueryAndPopulate(reqQuery, res.locals.middlewareResponse.donor._id)
+  const activeDonors: {message: string, status: string, data: IActiveDonor[]} = await activeDonorInterface.findByQueryAndPopulate(reqQuery, res.locals.middlewareResponse.donor._id)
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET ACTIVEDONORS', {
     filter: reqQuery,
     resultCount: activeDonors.data.length

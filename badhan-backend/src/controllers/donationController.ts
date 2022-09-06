@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import {Request, Response} from 'express'
 import * as donationInterface from '../db/interfaces/donationInterface'
 import * as logInterface from '../db/interfaces/logInterface'
@@ -7,15 +5,17 @@ import InternalServerError500 from "../response/models/errorTypes/InternalServer
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
+import {IDonor} from "../db/models/Donor";
+import {IDonation} from "../db/models/Donation";
 
 const handlePOSTDonations = async (req: Request, res: Response): Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
 
-  const donationInsertionResult = await donationInterface.insertDonation({
-    phone: donor.phone,
-    donorId: donor._id,
-    date: req.body.date
-  })
+  const donationInsertionResult: {data: IDonation, message: string, status: string} = await donationInterface.insertDonation(
+    donor.phone,
+    donor._id,
+    req.body.date
+  )
 
   if (donationInsertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(donationInsertionResult.message,{},{}))
@@ -38,11 +38,11 @@ const handlePOSTDonations = async (req: Request, res: Response): Promise<Respons
 }
 
 const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res: Response):Promise<Response> => {
-  const donor = res.locals.middlewareResponse.targetDonor
-  const reqQuery = req.query
-  const givenDate = parseInt(reqQuery.date,10)
+  const donor: IDonor = res.locals.middlewareResponse.targetDonor
+  const reqQuery: { date: string } = req.query
+  const givenDate: number = parseInt(reqQuery.date,10)
 
-  const donationDeletionResult = await donationInterface.deleteDonationByQuery({
+  const donationDeletionResult: {data?: IDonation, message: string, status: string} = await donationInterface.deleteDonationByQuery({
     donorId: donor._id,
     date: givenDate
   })
@@ -51,7 +51,7 @@ const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res:
     return res.status(404).send(new NotFoundError404('Matching donation not found',{}))
   }
 
-  const maxDonationResult = await donationInterface.findMaxDonationByDonorId(donor._id)
+  const maxDonationResult: {data?: IDonation[], message: string, status: string} = await donationInterface.findMaxDonationByDonorId(donor._id)
 
   if (maxDonationResult.status === 'OK') {
     donor.lastDonation = maxDonationResult.data![0].date
