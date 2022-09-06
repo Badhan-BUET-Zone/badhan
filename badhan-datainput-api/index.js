@@ -8,7 +8,7 @@ const { authenticationMiddleware } = require("./middlewares/auth");
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 const PENDING_DONORS= "Pending Donors " + process.env.DATABASE_DEPLOYMENT;
 
 
