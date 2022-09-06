@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import dotenv from '../dotenv'
 import * as tokenCache from '../cache/tokenCache'
 import jwt from 'jsonwebtoken'
@@ -11,9 +9,12 @@ import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import UnauthorizedError401 from "../response/models/errorTypes/UnauthorizedError401";
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
+import {IDonor} from "../db/models/Donor";
+import {IToken} from "../db/models/Token";
+import {ParsedUrlQuery} from "querystring";
 
 const handleAuthentication = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
-  const token = req.header('x-auth')!
+  const token: string = req.header('x-auth')!
 
   try {
     await jwt.verify(token, dotenv.JWT_SECRET)
@@ -22,7 +23,7 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
   }
 
   // check whether donor is already in cache
-  const cachedUser = tokenCache.get(token)
+  const cachedUser: IDonor | undefined = tokenCache.get(token)
   if (cachedUser) {
     res.locals.middlewareResponse = {
       donor: cachedUser,
@@ -31,19 +32,19 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
     return next()
   }
 
-  const tokenCheckResult = await tokenInterface.findTokenDataByToken(token)
+  const tokenCheckResult: {data?: IToken, message: string, status: string} = await tokenInterface.findTokenDataByToken(token)
   if (tokenCheckResult.status !== 'OK' || !tokenCheckResult.data) {
     return res.status(401).send(new UnauthorizedError401('You have been logged out',{}))
   }
 
-  const tokenData = tokenCheckResult.data
+  const tokenData: IToken = tokenCheckResult.data
 
-  const findDonorResult = await donorInterface.findDonorById(tokenData.donorId)
+  const findDonorResult: {message: string, status: string, data?: IDonor} = await donorInterface.findDonorById(tokenData.donorId)
   if (findDonorResult.status !== 'OK' || !findDonorResult.data) {
     return res.status(500).send(new InternalServerError500('No user found associated with token', {file:'Found in handleAuthentication'},{}))
   }
 
-  const donor = findDonorResult.data
+  const donor: IDonor = findDonorResult.data
   // save the donor to cache
   tokenCache.add(token, donor)
   res.locals.middlewareResponse = {
@@ -75,12 +76,12 @@ const handleHigherDesignationCheck = async (req: Request, res: Response, next:  
   next()
 }
 
-const handleFetchTargetDonor = async (req: Request, res: Response, next:  NextFunction) => {
+const handleFetchTargetDonor = async (req: Request<{donorId: string},{},{donorId: string},{donorId: string}>, res: Response, next:  NextFunction):Promise<Response|void> => {
   /*
     This middleware checks whether the targeted donor is accessible to the logged in user
     Makes sure that the targeted donor id is available in the request
      */
-  let donorId
+  let donorId: string = ""
   if (req.body.donorId) {
     donorId = req.body.donorId
   } else if (req.query.donorId) {
@@ -89,7 +90,7 @@ const handleFetchTargetDonor = async (req: Request, res: Response, next:  NextFu
     donorId = req.params.donorId
   }
 
-  const donorQueryResult = await donorInterface.findDonorByQuery({
+  const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({
     _id: donorId
   })
   if (donorQueryResult.status !== 'OK') {
@@ -99,21 +100,21 @@ const handleFetchTargetDonor = async (req: Request, res: Response, next:  NextFu
   return next()
 }
 
-const handleHallPermissionOrCheckAvailableToAll = async (req: Request, res: Response, next:  NextFunction) => {
-  const targetDonor = res.locals.middlewareResponse.targetDonor
+const handleHallPermissionOrCheckAvailableToAll = async (req: Request, res: Response, next:  NextFunction): Promise<void> => {
+  const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
   if (targetDonor.availableToAll) {
     return next()
   }
   await handleHallPermission(req, res, next)
 }
 
-const handleHallPermission = async (req: Request, res: Response, next:  NextFunction) => {
+const handleHallPermission = async (req: Request, res: Response, next:  NextFunction): Promise<Response|void> => {
   /*
     A super admin can access the data of any hall.
     Every hall admin and volunteer can only access data of their own halls along with the data of
     attached students and covid donors.
      */
-  const targetDonor = res.locals.middlewareResponse.targetDonor
+  const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
   if (targetDonor.hall <= 6 &&
         res.locals.middlewareResponse.donor.hall !== targetDonor.hall &&
         res.locals.middlewareResponse.donor.designation !== 3) {
