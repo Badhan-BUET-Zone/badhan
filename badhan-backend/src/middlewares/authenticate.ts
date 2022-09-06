@@ -3,7 +3,7 @@ import * as tokenCache from '../cache/tokenCache'
 import jwt from 'jsonwebtoken'
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
-import {Request, Response, NextFunction} from 'express'
+import {Request, Response, NextFunction, RequestHandler} from 'express'
 
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import UnauthorizedError401 from "../response/models/errorTypes/UnauthorizedError401";
@@ -11,7 +11,7 @@ import InternalServerError500 from "../response/models/errorTypes/InternalServer
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import {IDonor} from "../db/models/Donor";
 import {IToken} from "../db/models/Token";
-import {ParsedUrlQuery} from "querystring";
+
 
 const handleAuthentication = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   const token: string = req.header('x-auth')!
@@ -76,16 +76,16 @@ const handleHigherDesignationCheck = async (req: Request, res: Response, next:  
   next()
 }
 
-const handleFetchTargetDonor = async (req: Request<{donorId: string},{},{donorId: string},{donorId: string}>, res: Response, next:  NextFunction):Promise<Response|void> => {
+const handleFetchTargetDonor = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   /*
-    This middleware checks whether the targeted donor is accessible to the logged in user
+    This middleware checks whether the targeted donor is accessible to the logged-in user
     Makes sure that the targeted donor id is available in the request
      */
   let donorId: string = ""
   if (req.body.donorId) {
     donorId = req.body.donorId
   } else if (req.query.donorId) {
-    donorId = req.query.donorId
+    donorId = String(req.query.donorId)
   } else if (req.params.donorId) {
     donorId = req.params.donorId
   }
@@ -100,7 +100,7 @@ const handleFetchTargetDonor = async (req: Request<{donorId: string},{},{donorId
   return next()
 }
 
-const handleHallPermissionOrCheckAvailableToAll = async (req: Request, res: Response, next:  NextFunction): Promise<void> => {
+const handleHallPermissionOrCheckAvailableToAll = async (req: Request, res: Response, next:  NextFunction): Promise<Response|void> => {
   const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
   if (targetDonor.availableToAll) {
     return next()
