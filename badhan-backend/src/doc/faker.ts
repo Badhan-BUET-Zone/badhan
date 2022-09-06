@@ -1,17 +1,14 @@
-// @ts-nocheck
-// tslint:disable
 import faker from 'faker'
-import {Response} from "express";
-const phoneOperators = ['88014', '88015', '88016', '88017', '88018', '88019']
-const departments = [
+const phoneOperators: string[] = ['88014', '88015', '88016', '88017', '88018', '88019']
+const departments: string[] = [
   '01', '02', '04', '05', '06', '08', '10', '11', '12', '15', '16', '18'
 ]
 
-const halls = [
+const halls: number[] = [
   0, 1, 2, 3, 4, 5, 6
 ]
 
-const operations = [
+const operations: string[] = [
   'CREATE DONOR',
   'DELETE DONOR',
   'SEARCH DONORS',
@@ -87,8 +84,8 @@ export const getDonationCount = ():number => {
   return getRandomIndex(6)
 }
 export const getDonations = ():{date: number, _id: string, phone: number, donorId: string}[] => {
-  const donations = []
-  for (let i = 0; i < getRandomIndex(5); i++) {
+  const donations:{date: number, _id: string, phone: number, donorId: string}[] = []
+  for (let i:number = 0; i < getRandomIndex(5); i++) {
     donations.push({
       date: getTimestamp(5),
       _id: getId(),
@@ -101,16 +98,16 @@ export const getDonations = ():{date: number, _id: string, phone: number, donorI
 export const getOperation = ():string => {
   return operations[getRandomIndex(operations.length - 1)]
 }
-export const getFakeDateString = () => {
-  const date = new Date()
+export const getFakeDateString = ():string => {
+  const date:Date = new Date()
   return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + getRandInt(1, 28)
 }
 
-export const getEmail = () => {
+export const getEmail = ():string => {
   return faker.internet.email()
 }
 
-export const getExpireAt = () => {
+export const getExpireAt = ():string => {
   return '2021-11-15T11:23:54.231Z'
 }
 

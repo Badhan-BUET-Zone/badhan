@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Document, model, Model, Schema } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import {CallRecordModel} from "./CallRecord";

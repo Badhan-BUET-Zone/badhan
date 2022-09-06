@@ -1,8 +1,6 @@
-// @ts-nocheck
-// tslint:disable
-import axios, {AxiosResponse} from 'axios'
+import axios, {AxiosInstance, AxiosResponse} from 'axios'
 // https://github.com/axios/axios/issues/3612#issuecomment-770224236
-const firebaseAxios = axios.create({
+const firebaseAxios: AxiosInstance = axios.create({
   baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'
 })
 
