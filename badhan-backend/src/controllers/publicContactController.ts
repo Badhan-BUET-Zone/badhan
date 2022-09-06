@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable
 import {Request, Response} from 'express'
 import * as publicContactInterface from '../db/interfaces/publicContactInterface'
 import * as logInterface from '../db/interfaces/logInterface'
@@ -8,9 +6,11 @@ import InternalServerError500 from "../response/models/errorTypes/InternalServer
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
+import {IPublicContact} from "../db/models/PublicContact";
+import {IDonor} from "../db/models/Donor";
 
 const handlePOSTPublicContact = async (req: Request, res: Response):Promise<Response> => {
-  const insertionResult = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup)
+  const insertionResult: { data: IPublicContact; message: string; status: string } = await publicContactInterface.insertPublicContact(req.body.donorId, req.body.bloodGroup)
   if (insertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(insertionResult.message,{},{}))
   }
@@ -22,19 +22,19 @@ const handlePOSTPublicContact = async (req: Request, res: Response):Promise<Resp
 }
 
 const handleGETPublicContacts = async (req: Request, res: Response):Promise<Response> => {
-  const searchResult = await publicContactInterface.findAllPublicContacts()
+  const searchResult: { data: IPublicContact[]; message: string; status: string } = await publicContactInterface.findAllPublicContacts()
   return res.status(200).send(new OKResponse200('All public contacts fetched successfully', {
     publicContacts: searchResult.data
   }))
 }
 
 const handleDELETEPublicContact = async (req: Request<{},{},{},{contactId: string}>, res: Response):Promise<Response> => {
-  const targetDonor = res.locals.middlewareResponse.donor
-  const searchResult = await publicContactInterface.findPublicContactById(req.query.contactId)
+  const targetDonor: IDonor = res.locals.middlewareResponse.donor
+  const searchResult: { data?: IPublicContact; message: string; status: string } = await publicContactInterface.findPublicContactById(req.query.contactId)
   if (searchResult.status !== 'OK') {
     return res.status(404).send(new NotFoundError404('Public contact not found',{}))
   }
-  const deletionResult = await publicContactInterface.deletePublicContactById(req.query.contactId)
+  const deletionResult: { data?: IPublicContact; status: string; message: string } = await publicContactInterface.deletePublicContactById(req.query.contactId)
   if (deletionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500(deletionResult.message,{},{}))
   }
