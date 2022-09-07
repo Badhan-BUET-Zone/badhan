@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npx tsc",
-  "outputDirectory": "dist",
   "builds": [
     {
-      "src": "./dist/bin/www.js",
+      "src": "./src/bin/www.ts",
       "use": "@vercel/node"
     }
   ],
