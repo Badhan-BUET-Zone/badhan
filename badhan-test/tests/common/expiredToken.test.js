@@ -10,13 +10,14 @@ test('invalid jwt token',async()=>{
             "x-auth": signInResponse.data.token
         }
     });
-
-    badhanAxios.post('/users/signout',{
-        headers: {
-            "x-auth": signInResponse.data.token
-        }
-    }).catch(e=>{
+    try{
+        await badhanAxios.post('/users/signout', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        })
+    }catch(e){
         let validationResult = validate(e.response.data, expiredTokenSchema);
         expect(validationResult.errors).toEqual([]);
-    })
+    }
 })
