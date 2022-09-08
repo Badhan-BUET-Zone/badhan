@@ -8,6 +8,8 @@
     "gcp-build": "tsc",
     "lint": "tslint --project tsconfig.json",
     "start": "NODE_ENV=production node ./dist/bin/www.js",
+    "start:dev": "NODE_ENV=development node ./dist/bin/www.js",
+    "start:prod": "NODE_ENV=production node ./dist/bin/www.js",
     "dev": "cross-env NODE_ENV=development node -r source-map-support/register ./dist/bin/www",
     "prod": "cross-env NODE_ENV=production node ./dist/bin/www",
     "serve": "npm run lint && npm run build && npm run dev"

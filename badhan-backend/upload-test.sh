@@ -6,3 +6,4 @@ echo "The commit message is: $message"
 git add .
 git commit -am "$message"
 git push origin test-branch
+gcloud app deploy --project badhan-buet-test  ./app_dev.yaml --quiet
