@@ -39,7 +39,7 @@ export const validateBODYStudentId: ValidationChain = body('studentId')
   .isInt().withMessage('studentId must be integer')
 
 export const validateBODYPassword: ValidationChain = body('password')
-  .exists().not().isEmpty().withMessage('Password is required').customSanitizer((value:any):string => String(value))
+  .exists().withMessage('Password is required').customSanitizer((value:any):string => String(value))
   .trim().isLength({ min: 4 }).withMessage('Password length must be more than 4')
 
 export const validateBODYComment: ValidationChain = body('comment')
