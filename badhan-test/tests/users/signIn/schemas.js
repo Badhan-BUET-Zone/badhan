@@ -21,6 +21,16 @@ const phoneValidationErrorSchema = {
     required:["status","statusCode","message"]
 }
 
+const passwordValidationErrorSchema = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        status: { const: 'ERROR' },
+        statusCode: { const: 400 },
+        message: { const: ''}
+    }
+}
+
 const phoneNotFoundErrorSchema = {
     type: "object",
     additionalProperties: false,
