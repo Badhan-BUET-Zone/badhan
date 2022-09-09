@@ -12,6 +12,7 @@ import guestRouter from './routes/guest'
 import callRecordRouter from './routes/callRecords'
 import publicContactsRouter from './routes/publicContacts'
 import logRouter from './routes/logs'
+import testRouter from './routes/test'
 import activeDonorsRouter from './routes/activeDonors'
 import './db/mongoose'
 import { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } from './response/errorHandlers'
@@ -35,6 +36,7 @@ app.use('/guest', guestRouter)
 app.use('/callrecords', callRecordRouter)
 app.use('/publicContacts', publicContactsRouter)
 app.use('/activeDonors', activeDonorsRouter)
+app.use('/test', testRouter)
 app.use('/', apiRouter)
 app.use('/', logRouter)
 app.use('/', onlineCheckController)
