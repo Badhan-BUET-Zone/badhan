@@ -60,10 +60,22 @@ const internalServerErrorSchema = {
     required:["status","statusCode","message","details"]
 }
 
+const superAdminPermissionErrorSchema = {
+    type: "object",
+    additionalProperties:false,
+    properties: {
+        status:{ const: "ERROR"},
+        statusCode: { const: 403},
+        message:{ const : 'You are not permitted to access this route'}
+    },
+    required:["status","statusCode","message"]
+}
+
 module.exports = {
     jwtInvalidSchema,
     expiredTokenSchema,
     routeNotFoundErrorSchema,
     jsonBodyParseErrorSchema,
-    internalServerErrorSchema
+    internalServerErrorSchema,
+    superAdminPermissionErrorSchema
 }

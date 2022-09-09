@@ -1,5 +1,5 @@
-const {jwtInvalidSchema} = require("./schemas");
-const {badhanAxios} = require("../../api");
+const {jwtInvalidSchema} = require("../schemas");
+const {badhanAxios} = require("../../../api");
 const {validate} = require("jsonschema");
 
 test('invalid jwt token',async()=>{

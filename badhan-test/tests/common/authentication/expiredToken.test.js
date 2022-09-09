@@ -1,7 +1,7 @@
-const {expiredTokenSchema} = require("./schemas");
-const {badhanAxios} = require("../../api");
+const {expiredTokenSchema} = require("../schemas");
+const {badhanAxios} = require("../../../api");
 const {validate} = require("jsonschema");
-const env = require("../../config");
+const env = require("../../../config");
 
 test('invalid jwt token',async()=>{
     let signInResponse = await badhanAxios.post('/users/signin',{phone:env.SUPERADMIN_PHONE,password: env.SUPERADMIN_PASSWORD});
