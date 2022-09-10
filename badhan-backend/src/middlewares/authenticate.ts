@@ -63,7 +63,7 @@ const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFun
 
 const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < 2) {
-    return res.status(403).send(new ForbiddenError403('You are not permitted to access this route',{}))
+    return res.status(403).send(new ForbiddenError403('Only hall admins or above can access this route',{}))
   }
   next()
 }
