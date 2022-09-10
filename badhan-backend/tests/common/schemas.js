@@ -82,6 +82,17 @@ const hallAdminPermissionErrorSchema = {
     required:["status","statusCode","message"]
 }
 
+const higherDesignationPermissionErrorSchema = {
+    type: "object",
+    additionalProperties:false,
+    properties: {
+        status:{ const: "ERROR"},
+        statusCode: { const: 403},
+        message:{ const : 'You cannot modify the details of a Badhan member with higher designation'}
+    },
+    required:["status","statusCode","message"]
+}
+
 module.exports = {
     jwtInvalidSchema,
     expiredTokenSchema,
@@ -89,5 +100,6 @@ module.exports = {
     jsonBodyParseErrorSchema,
     internalServerErrorSchema,
     superAdminPermissionErrorSchema,
-    hallAdminPermissionErrorSchema
+    hallAdminPermissionErrorSchema,
+    higherDesignationPermissionErrorSchema
 }
