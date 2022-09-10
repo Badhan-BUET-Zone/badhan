@@ -71,11 +71,23 @@ const superAdminPermissionErrorSchema = {
     required:["status","statusCode","message"]
 }
 
+const hallAdminPermissionErrorSchema = {
+    type: "object",
+    additionalProperties:false,
+    properties: {
+        status:{ const: "ERROR"},
+        statusCode: { const: 403},
+        message:{ const : 'Only hall admins or above can access this route'}
+    },
+    required:["status","statusCode","message"]
+}
+
 module.exports = {
     jwtInvalidSchema,
     expiredTokenSchema,
     routeNotFoundErrorSchema,
     jsonBodyParseErrorSchema,
     internalServerErrorSchema,
-    superAdminPermissionErrorSchema
+    superAdminPermissionErrorSchema,
+    hallAdminPermissionErrorSchema
 }
