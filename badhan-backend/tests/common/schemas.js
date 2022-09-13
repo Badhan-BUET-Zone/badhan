@@ -93,6 +93,17 @@ const higherDesignationPermissionErrorSchema = {
     required:["status","statusCode","message"]
 }
 
+const sameHallPermissionErrorSchema = {
+    type: "object",
+    additionalProperties:false,
+    properties: {
+        status:{ const: "ERROR"},
+        statusCode: { const: 403},
+        message:{ const : 'You are not authorized to access a donor of different hall'}
+    },
+    required:["status","statusCode","message"]
+}
+
 module.exports = {
     jwtInvalidSchema,
     expiredTokenSchema,
@@ -101,5 +112,6 @@ module.exports = {
     internalServerErrorSchema,
     superAdminPermissionErrorSchema,
     hallAdminPermissionErrorSchema,
-    higherDesignationPermissionErrorSchema
+    higherDesignationPermissionErrorSchema,
+    sameHallPermissionErrorSchema
 }
