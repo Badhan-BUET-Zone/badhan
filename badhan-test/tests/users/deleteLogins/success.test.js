@@ -1,7 +1,7 @@
-const {badhanAxios} = require('../../api');
+const {badhanAxios} = require('../../../api');
 const validate = require('jsonschema').validate;
-const env = require('../../config');
-const {processError} = require('../fixtures/helpers');
+const env = require('../../../config');
+const {processError} = require('../../fixtures/helpers');
 const deleteLogInsSchema = {
     type: "object",
     additionalProperties: false,
