@@ -57,7 +57,7 @@ The admin console is deployed in [Firebase](https://firebase.google.com). The de
 * Run `npm run start`
 * Visit `https://localhost:8080`.
 
-# Setup Backup and Restore
+## Setup Backup and Restore
 The Backup-and-Restore page is a UI for the API implemented in [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). 
 However, this API has not been deployed to a live server and thus, you will need to 
 follow through the instructions written below in order to run the API locally in your
