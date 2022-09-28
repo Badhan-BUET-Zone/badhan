@@ -45,6 +45,9 @@ https://badhan-admin.web.app/backup-restore
 
 - To backup and restore the MongoDB database of the whole platform
 
+# Deployment
+The admin console is deployed in [Firebase](https://firebase.google.com). The deployment can be found at [https://badhan-admin.web.app](https://badhan-admin.web.app)
+
 # Procedure for Local Setup
 * Install [Node.js](https://nodejs.org/en/download/).
 * Clone this repository:
