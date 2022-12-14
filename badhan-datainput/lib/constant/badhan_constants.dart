@@ -57,7 +57,7 @@ class BadhanConst {
   }
 
   static int hallId(String name) {
-    for (int i = 0; i<=6; i++) {
+    for (int i = 0; i <= 6; i++) {
       if (halls[i].toLowerCase() == name.toLowerCase()) return i;
     }
     return 8;
@@ -173,7 +173,8 @@ class BadhanConst {
         try {
           return data as bool;
         } catch (_) {
-          throw MyExpection("Available to all must be either true or false");
+          return false;
+          //throw MyExpection("Available to all must be either true or false");
         }
 
       default:

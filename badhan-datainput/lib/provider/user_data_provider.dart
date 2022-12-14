@@ -4,7 +4,9 @@ import 'package:badhandatainput/model/profile_data_model.dart';
 import 'package:badhandatainput/model/provider_response_model.dart';
 import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 import '../util/debug.dart';
 import '../util/environment.dart';
@@ -115,7 +117,45 @@ class UserDataProvider with ChangeNotifier {
           message: data['message'],
         );
       } else {
-        String msg = "error while logging out";
+        String msg = data['message'];
+        Log.d(tag, "$fName $msg");
+        return ProviderResponse(success: false, message: msg);
+      }
+    } catch (e) {
+      Log.d(tag, "$fName error");
+      Log.d(tag, "$fName $e");
+      return ProviderResponse(success: false, message: "Unexpected error.");
+    }
+  }
+
+  Future<ProviderResponse> testLogin() async {
+    String url = "${Environment.apiUrl}/users/signin";
+    String fName = "testLogin():";
+    Log.d(tag, "$fName test login url: $url");
+
+    try {
+      var cred = {
+        "phone": Environment.testLoginPhone,
+        "password": Environment.testLoginPassword
+      };
+      // Log.d(tag, json.encode(cred));
+      Response response = await post(
+        Uri.parse(url),
+        headers: await AuthToken.getHeaders(),
+        body: json.encode(cred),
+      );
+
+      Log.d(tag, "$fName  ${response.body}");
+
+      Map data = json.decode(response.body);
+      if (data['statusCode'] == HttpSatusCode.created) {
+        AuthToken.saveToken(data["token"] ?? "");
+        return ProviderResponse(
+          success: true,
+          message: data['message'],
+        );
+      } else {
+        String msg = "error in test login";
         Log.d(tag, "$fName $msg");
         return ProviderResponse(success: false, message: msg);
       }

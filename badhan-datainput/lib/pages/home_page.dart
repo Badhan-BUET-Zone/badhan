@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:badhandatainput/util/debug.dart';
+import 'package:badhandatainput/util/environment.dart';
 import 'package:badhandatainput/widget/common/auth_fail_widget.dart';
 import 'package:badhandatainput/widget/home_page/badhan_form_widget.dart';
 import 'package:badhandatainput/widget/home_page/excel_widget.dart';
@@ -100,6 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // if user profile data is already fetched in previous request
     if (_profileData != null) return _profileData;
 
+  
+
     // try to get the profile data of the user
     if (!isAuthenticated) {
       response = await Provider.of<UserDataProvider>(context, listen: false)
@@ -107,6 +110,21 @@ class _MyHomePageState extends State<MyHomePage> {
       if (response.success) {
         isAuthenticated = true;
         return response.data;
+      }else{
+        // test login
+        if (Environment.isTest) {
+          response = await Provider.of<UserDataProvider>(context, listen: false)
+              .testLogin();
+          if(response.success){
+            response =
+                await Provider.of<UserDataProvider>(context, listen: false)
+                    .getProfileData();
+            if (response.success) {
+              isAuthenticated = true;
+              return response.data;
+            }
+          }
+        }
       }
     }
 

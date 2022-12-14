@@ -228,7 +228,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         DateTime? lastDonationDate;
 
         int c = 0; // column number
-        //Log.d(tag, "$row");
+        Log.d(tag, "$row");
         for (Data? data in row) {
           /// handle the empty cells ====================================
           if (data == null) {
@@ -236,7 +236,9 @@ class _ExcelWidgetState extends State<ExcelWidget> {
               continue;
             }
             String h = header[c];
-            if (!(h == "comment" || h == "lastDonation" || h == "address")) {
+            List<String> hList = ["comment", "lastDonation", "address", "availableToAll"];
+            // check if h is in the hList
+            if (!hList.contains(h)) {
               Log.d(tag, "Empty cell of column $h");
               ConstUI.showErrorToast(
                   context, _clearAll, "Empty cell on row $r, column ${c + 1}");
