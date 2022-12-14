@@ -132,7 +132,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
 
     for (DonorCard donor in donorCardList) {
       // donor.upload();
-      if(donor.submissionSection!=null) {
+      if (donor.submissionSection != null) {
         donor.submissionSection!.submit();
       }
     }
@@ -218,7 +218,8 @@ class _ExcelWidgetState extends State<ExcelWidget> {
     msg.write("Sheet: $sheetName");
 
     // now iterate row by row to get the data ==========
-    List<String> header = [];
+    //List<String> header = [];
+    Map<int, String> headerMap = {};
 
     try {
       int r = 1; // row number
@@ -228,22 +229,40 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         DateTime? lastDonationDate;
 
         int c = 0; // column number
-        Log.d(tag, "$row");
+        // Log.d(tag, "$row");
         for (Data? data in row) {
+          if (data == null && r == 1) {
+            c++;
+            continue;
+          }
+          String h = headerMap[c] ?? "";
+          if (h == "" && r>1) {
+            c++;
+            continue;
+          }
+
           /// handle the empty cells ====================================
           if (data == null) {
-            if (c >= header.length) {
-              continue;
-            }
-            String h = header[c];
-            List<String> hList = ["comment", "lastDonation", "address", "availableToAll"];
+            List<String> hList = [
+              "comment",
+              "lastDonation",
+              "address",
+              "availableToAll"
+            ];
             // check if h is in the hList
             if (!hList.contains(h)) {
               Log.d(tag, "Empty cell of column $h");
               ConstUI.showErrorToast(
-                  context, _clearAll, "Empty cell on row $r, column ${c + 1}");
+                  context, _clearAll, "Empty cell on row $r, column $c");
+              c++;
               return;
             } else {
+              //data!.value = "";
+              if(h == "lastDonation") {
+                lastDonationDate = null;
+              } else {
+                dataMap[h] = "";
+              }
               c++;
               continue;
             }
@@ -253,25 +272,22 @@ class _ExcelWidgetState extends State<ExcelWidget> {
             // first row contains the header names
             if (r == 1) {
               if (data.value != null) {
-                header.add(BadhanConst.headerMap(
-                    "${data.value}")); // get the mapped header name
+                // get the mapped header name
+                // header.add(BadhanConst.headerMap("${data.value}"));
+                headerMap[c] = BadhanConst.headerMap("${data.value}");
               }
             } else {
-              if (header.length < 11) {
+              if (headerMap.length < 11) {
                 // at least 11 fields are required
                 ConstUI.showErrorToast(context, _clearAll,
                     "Excel file doesn't contain all the required columns. Please see the instructions!");
                 return;
               }
 
-              if (c >= header.length) {
-                continue;
-              }
-
               //parse last donation separately
-              if (header[c] == "lastDonation") {
+              if (h == "lastDonation") {
                 try {
-                  if (data.value.toString() != "0") {
+                  if (data.value.toString().isNotEmpty && data.value.toString() != "0") {
                     // Log.d(tag, "$r ${c + 1} date: $data");
                     // DateTime dateTime = DateTime.parse(data.value.toString());
                     lastDonationDate = DateTime.parse(data.value.toString());
@@ -284,7 +300,7 @@ class _ExcelWidgetState extends State<ExcelWidget> {
                   return;
                 }
               } else {
-                dataMap[header[c]] = BadhanConst.dataMap(header[c], data.value);
+                dataMap[h]=BadhanConst.dataMap(h, data.value);
               }
             }
           } on Exception catch (e) {
@@ -305,13 +321,11 @@ class _ExcelWidgetState extends State<ExcelWidget> {
         }
         r++; // new row
       }
-    } catch (_) {
+    } catch (e) {
       ConstUI.showErrorToast(context, _clearAll,
           "Error parsing excel information! Please read the instructions carefully.");
     }
 
-    setState(() {});
-
-    /// render the UI with new data
+    setState(() {}); // to render the new data
   }
 }

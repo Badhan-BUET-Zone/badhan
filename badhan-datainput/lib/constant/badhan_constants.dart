@@ -107,12 +107,10 @@ class BadhanConst {
       case "phone":
         try {
           String number = (data.toInt()).toString();
-
           if (number.length != 13) {
             throw MyExpection(
                 "Phone number length must be 13. See instruction for more details");
           }
-
           return number;
         } on NoSuchMethodError catch (_) {
           throw MyExpection("Phone number must be a number");
@@ -176,6 +174,18 @@ class BadhanConst {
           return false;
           //throw MyExpection("Available to all must be either true or false");
         }
+      case "lastDonation":
+        //Log.d(tag, "lastDonation: $data");
+        if (data == "") return 0;
+        try {
+          return DateTime.parse(data);
+        } catch (_) {
+          return 0;
+          //throw MyExpection("Available to all must be either true or false");
+        }
+      case "roomNumber":
+        data = data ?? "";
+        return data.toString().trim();
 
       default:
         return data;
