@@ -67,7 +67,7 @@ class DonorDataProvider with ChangeNotifier {
       if (data['statusCode'] == HttpSatusCode.created) {
         DonorData? donorData;
         Log.d(tag, "$fName ${data['message']}");
-        donorData = DonorData.fromJson(data["newDonor"]); 
+        donorData = DonorData.fromJson(data["newDonor"]);
         return ProviderResponse(
           success: true,
           message: data['message'],
@@ -83,7 +83,42 @@ class DonorDataProvider with ChangeNotifier {
       } else {
         Log.d(tag, "$fName unexpected status code");
         return ProviderResponse(
-            success: false, message: data["message"]??"Error creating donor");
+            success: false, message: data["message"] ?? "Error creating donor");
+      }
+    } catch (e) {
+      Log.d(tag, "$fName error");
+      Log.d(tag, "$fName $e");
+      return ProviderResponse(success: false, message: "error");
+    }
+  }
+
+  Future<ProviderResponse> addDonation(String donorId, int timestamp) async {
+    String url = "${Environment.apiUrl}/donations";
+    String fName = "addDonation(): donor-> $donorId";
+    try {
+      Response response = await post(
+        Uri.parse(url),
+        headers: await AuthToken.getHeaders(),
+        body: json.encode({
+          "donorId": donorId,
+          "date": timestamp,
+        }),
+      );
+
+      Log.d(tag, "$fName  ${response.body}");
+
+      Map data = json.decode(response.body);
+
+      if (data['statusCode'] == HttpSatusCode.created) {
+        Log.d(tag, "$fName ${data['message']}");
+        return ProviderResponse(
+          success: true,
+          message: data['message'],
+        );
+      } else {
+        Log.d(tag, "$fName unexpected status code");
+        return ProviderResponse(
+            success: false, message: data["message"] ?? "Error adding donation");
       }
     } catch (e) {
       Log.d(tag, "$fName error");

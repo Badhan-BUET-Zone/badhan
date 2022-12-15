@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badhandatainput/constant/badhan_constants.dart';
-import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/widget/common/profile_picture.dart';
 import 'package:badhandatainput/widget/home_page/editable_donor_diaglog.dart';
 import 'package:badhandatainput/widget/responsive.dart';

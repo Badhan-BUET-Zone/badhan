@@ -4,9 +4,7 @@ import 'package:badhandatainput/model/profile_data_model.dart';
 import 'package:badhandatainput/model/provider_response_model.dart';
 import 'package:badhandatainput/util/auth_token_util.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
-import 'package:provider/provider.dart';
 
 import '../util/debug.dart';
 import '../util/environment.dart';

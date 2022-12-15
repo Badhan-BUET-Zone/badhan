@@ -1,6 +1,5 @@
 import 'package:badhandatainput/model/donor_model.dart';
 import 'package:badhandatainput/constant/badhan_constants.dart';
-import 'package:badhandatainput/util/custom_exceptions.dart';
 import 'package:badhandatainput/util/debug.dart';
 import 'package:badhandatainput/util/environment.dart';
 import 'package:badhandatainput/widget/common/date_time_pickers.dart';
@@ -237,9 +236,9 @@ class _SubmissionSectionState extends State<SubmissionSection> {
     //Log.d(tag, "checkDuplicate ${widget.newDonor.extraDonationCount}");
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
     if (widget.lastDonation != null &&
-        widget.newDonor.extraDonationCount == 0) {
+        widget.newDonor.extraDonationCount == -1) {
       Log.d(tag, "donation cnt : ${widget.newDonor.extraDonationCount}");
-      submissionStatusText = "Error! Total donation must be equal 1 or more";
+      submissionStatusText = "Total donation must be equal 1 or more";
       submissionStatusTextColor = Colors.red;
       buttonText = "Submit";
       buttonDataColor = Colors.green;
@@ -302,7 +301,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
     if (widget.lastDonation != null &&
-        widget.newDonor.extraDonationCount == 0) {
+        widget.newDonor.extraDonationCount == -1) {
       errorText += "\nTotal donation must be equal 1 or more";
     }
 
@@ -384,6 +383,11 @@ class _SubmissionSectionState extends State<SubmissionSection> {
       return;
     }
 
+    if (widget.lastDonation != null && widget.newDonor.extraDonationCount > 0) {
+      widget.newDonor.extraDonationCount -=
+          1; // will add the last donation date later
+    }
+
     // input data format is ok for submission ==========================
     ProviderResponse response =
         await Provider.of<DonorDataProvider>(context, listen: false)
@@ -402,6 +406,12 @@ class _SubmissionSectionState extends State<SubmissionSection> {
     } else if (response.success && response.data != null) {
       DonorData donorData = response.data;
       donorId = donorData.id;
+
+      if(widget.lastDonation!=null) {
+        await Provider.of<DonorDataProvider>(context, listen: false)
+          .addDonation(donorId!, widget.lastDonation!.millisecondsSinceEpoch);
+      }
+
       setState(() {
         isLoding = false;
         foundDuplicate = false;

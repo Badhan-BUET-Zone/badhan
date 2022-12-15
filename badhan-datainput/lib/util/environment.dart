@@ -1,20 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // https://developer.school/tutorials/how-to-use-environment-variables-with-flutter-dotenv
 class Environment {
-  static const bool debug = true;
   static String get apiUrl {
-    return debug ? dotenv.env['TEST_API_URL']! : dotenv.env['API_URL']!;
+    return isTest ? dotenv.env['TEST_API_URL']! : dotenv.env['API_URL']!;
   }
 
   static String get mainWebsite {
-    return debug
+    return isTest
         ? dotenv.env['TEST_MAIN_WEBSITE']!
         : dotenv.env['MAIN_WEBSITE']!;
   }
 
   static String get badhanDataInputWebsite {
-    return debug
+    return isTest
         ? dotenv.env['TEST_BADHAN_DATA_INPUT_WEBSITE']!
         : dotenv.env['BADHAN_DATA_INPUT_WEBSITE']!;
   }
@@ -24,12 +24,12 @@ class Environment {
   }
 
   static String get testLoginPhone {
-    if (!debug) return "";
+    if (isTest && kDebugMode) return "";
     return dotenv.env['TEST_LOGIN_PHONE']!;
   }
 
   static String get testLoginPassword {
-    if (!debug) return "";
+    if (isTest) return "";
     return dotenv.env['TEST_LOGIN_PASSWORD']!;
   }
 }
