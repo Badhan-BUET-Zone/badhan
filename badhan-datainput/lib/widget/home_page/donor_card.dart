@@ -206,23 +206,27 @@ class _SubmissionSectionState extends State<SubmissionSection> {
   static String tag = "SubmissionSection";
   static String donorCreatedSuccessfully = "Donor created successfully!";
 
-  String submissionStatusText = "";
-  Color submissionStatusTextColor = Colors.blue;
-  String buttonText = "Submit";
-  Color buttonDataColor = Colors.green;
-
-  bool isLoding = false;
-  bool foundDuplicate = false;
   String? donorId;
   DonorData? duplicateDonorData;
 
   bool isDataValid = false;
 
+  // state variables for ui update
+  String submissionStatusText = "";
+  Color submissionStatusTextColor = Colors.blue; // default color
+
+  String buttonText = "Submit";
+  Color buttonDataColor = Colors.green;
+
+  bool isLoding = false; // for loading animation
+  bool foundDuplicate = false; // for duplicate donor check
+  bool submitButtonEnabled = true; // for submit button
+
   @override
   void initState() {
     super.initState();
-    //Log.d(tag, "SubmissionSection initState");
     checkDuplicate();
+    vallidateData();
   }
 
   void redraw() {
@@ -252,113 +256,123 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
   bool vallidateData() {
     NewDonor newDonor = widget.newDonor;
-
-    String error = "Error!";
+    String errorText = "";
 
     // phone number constrainsts ==========
     if (newDonor.phone.length != 13) {
-      throw MyExpection("$error Phone length must be of 13 digits.");
+      errorText += "Phone length must be of 13 digits.";
     }
 
     // name constrains =============
     if (newDonor.name.length < 3 || newDonor.name.length > 500) {
-      throw MyExpection("$error Name length must be between 3 and 500");
+      errorText += "\nName length must be between 3 and 500";
     }
 
     // student id contraints=========
     if (newDonor.studentId.length != 7) {
-      throw MyExpection("$error Student Id must be of 7 digits.");
+      errorText += "\nStudent Id must be of 7 digits.";
     }
 
     // room number constraints =============
     if (newDonor.roomNumber.length < 2 || newDonor.roomNumber.length > 500) {
-      throw MyExpection("$error Room number length must be between 2 and 500");
+      errorText += "\nRoom number length must be between 2 and 500";
     }
 
     // address constraints =============
     if (newDonor.address.length < 2 || newDonor.address.length > 500) {
-      throw MyExpection("$error Address length must be between 2 and 500");
+      errorText += "\nAddress length must be between 2 and 500";
     }
 
     // comment constraints ==============
     if (newDonor.comment.length < 2 || newDonor.comment.length > 500) {
-      throw MyExpection("$error Comment length must be between 2 and 500");
+      errorText += "\nComment length must be between 2 and 500";
     }
 
     // donation count constrainst
     if (newDonor.extraDonationCount < 0) {
-      throw MyExpection("$error donation count can't be negative!");
+      errorText += "\nDonation count can't be negative!";
     }
 
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
     // last donation date must be specified if the donation count does not equal to zero.
     if (newDonor.extraDonationCount > 0 && widget.lastDonation == null) {
-      throw MyExpection(
-          "$error Donation count is more than zero. Please select the donation date!");
+      errorText +=
+          "\nDonation count is more than zero. Please select the donation date!";
     }
 
     // https://github.com/Badhan-BUET-Zone/badhan-datainput/issues/21
     if (widget.lastDonation != null &&
         widget.newDonor.extraDonationCount == 0) {
-      throw MyExpection("$error Total donation must be equal 1 or more");
+      errorText += "\nTotal donation must be equal 1 or more";
     }
+
+    if (errorText.isNotEmpty) {
+      setState(() {
+        isLoding = false; // stop laoding animation
+        submitButtonEnabled = false;
+        foundDuplicate = false;
+        submissionStatusText = errorText;
+        submissionStatusTextColor = Colors.red;
+        buttonDataColor = Colors.green;
+        buttonText = "Submit";
+        Log.d(tag, "${newDonor.name}'s data is not valid");
+        Log.d(tag, "error: $errorText");
+      });
+      return false;
+    }
+
+    setState(() {
+      //Log.d(tag, "${newDonor.name}'s data is valid");
+      submitButtonEnabled = true;
+      submissionStatusTextColor = Colors.green;
+      buttonDataColor = Colors.green;
+      buttonText = "Submit";
+    });
 
     return true;
   }
 
+  /// check if the donor is already created
   bool donorCreated() {
     bool status = submissionStatusText == donorCreatedSuccessfully;
     if (status) {
       redirectToDuplicateDonor();
     }
-    return status;  
+    return status;
   }
 
+  /// redirect to the donor details page
+  /// in the main website
   void redirectToDuplicateDonor() async {
     if (donorId != null) {
-      // then open url in main site
-      // home/details?id=5e677716ca2dc857938d7c73
       String url = "${Environment.mainWebsite}/#/home/details?id=$donorId";
-      Log.d(tag, "opening: $url");
+      Log.d(tag, "redirecting user to: $url");
       if (!await launch(url)) throw 'Could not launch $url';
-      return;
     }
   }
 
   void upload() async {
-    Log.d(
-        tag, "uploading1 ${widget.newDonor.name} , duplicate: $foundDuplicate");
-
+    // check if duplicated donor is found
+    // of donor is already created in previous submission:
+    // 2nd is possible when you submit all multiple times
     if (foundDuplicate || donorCreated()) {
       Log.d(tag, "found duplicate donor!");
       return;
     }
 
+    // uploading is in progress
     if (isLoding) {
       return;
     }
 
-    Log.d(tag, "uploading2 ${widget.newDonor.name}");
-
+    // uploading started
     setState(() {
       isLoding = true;
       submissionStatusText = "";
     });
 
     // fontend validation ================================
-    try {
-      isDataValid = vallidateData();
-    } on MyExpection catch (e) {
-      setState(() {
-        isLoding = false;
-        foundDuplicate = false;
-        submissionStatusText = e.toString();
-        submissionStatusTextColor = Colors.red;
-        buttonDataColor = Colors.green;
-        buttonText = "Submit";
-      });
-      return;
-    }
+    isDataValid = vallidateData();
 
     if (!isDataValid) {
       setState(() {
@@ -367,6 +381,7 @@ class _SubmissionSectionState extends State<SubmissionSection> {
         buttonDataColor = Colors.green;
         buttonText = "Submit";
       });
+      return;
     }
 
     // input data format is ok for submission ==========================
@@ -379,12 +394,10 @@ class _SubmissionSectionState extends State<SubmissionSection> {
       setState(() {
         isLoding = false;
         foundDuplicate = true;
-        if (foundDuplicate) {
-          submissionStatusText = response.message;
-          submissionStatusTextColor = Colors.red;
-          buttonDataColor = Colors.red;
-          buttonText = "See Duplicate";
-        }
+        submissionStatusText = response.message;
+        submissionStatusTextColor = Colors.red;
+        buttonDataColor = Colors.red;
+        buttonText = "See Duplicate";
       });
     } else if (response.success && response.data != null) {
       DonorData donorData = response.data;
@@ -410,7 +423,6 @@ class _SubmissionSectionState extends State<SubmissionSection> {
 
   @override
   Widget build(BuildContext context) {
-    //Log.d(tag, "build submission section");
     checkDuplicate();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
