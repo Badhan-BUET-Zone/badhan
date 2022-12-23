@@ -8,7 +8,7 @@ describe('Logs', () => {
         cy.get("#signInButton").click()
         cy.contains("Signed in successfully")
         cy.get("#hamburgerButtonId").click()
-        cy.get("#superAdminNavigationId").click()
+        cy.get("#superAdminId").click()
         cy.get("#statisticsNavigationId").click()
         cy.get(idStart("dateLogDetailsButtonId_")).first().click()
         cy.get(idStart("personLogExpandButtonId_")).first().click()

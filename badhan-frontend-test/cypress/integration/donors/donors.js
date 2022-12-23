@@ -1,5 +1,7 @@
 import { idStart } from '../../plugins/helpers'
 import env from '../../plugins/env'
+import {getLastDateThatIsNotToday} from "../../plugins/helpers";
+
 describe('Donor Creation', () => {
     it('should create new donor, get donor, promote to volunteer, check volunteer, demote to donor and delete donor', () => {
         cy.visit(env.FRONTEND_URL)
@@ -7,6 +9,7 @@ describe('Donor Creation', () => {
         cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
         cy.get("#signInButton").click()
         cy.get("#hamburgerButtonId").click()
+        cy.get("#donorCreationNavigationId").click()
         cy.get("#donorCreationNavigationId").click()
         cy.get("#newDonorNameTextBoxId").type("Random Donor Name")
         cy.get("#newDonorPhoneTextBoxId").type("01311113278")
@@ -19,7 +22,7 @@ describe('Donor Creation', () => {
         cy.get("#newDonorDonationCountTextFieldId").clear().type("1")
         cy.get("#newDonorPublicDataCheckboxId").parent().click()
         cy.get("#newDonorLastDonationTextFieldId").click()
-        cy.contains('23').click()
+        cy.contains(String(getLastDateThatIsNotToday())).click()
         cy.get('#newDonorLastDonationOkButtonId').click()
         cy.get('#newDonorCreateButtonId').click()
         cy.contains('Donor added successfully')

@@ -9,6 +9,7 @@ describe('Duplicate Donors', () => {
             cy.get("#signInButton").click()
             cy.get("#hamburgerButtonId").click()
             cy.get("#donorCreationNavigationId").click()
+            cy.get("#singleDonorCreationId").click()
             cy.get("#newDonorPhoneTextBoxId").type(env.SUPERADMIN_PHONE)
             cy.get("#newDonorNameTextBoxId").type("Random Donor Name")
             cy.get("#donorCreationSeeDuplicateButtonId").click()

@@ -1,4 +1,4 @@
-import {idStart, getTextFromIdStart} from "../../plugins/helpers";
+import {idStart, getTextFromIdStart, getLastDateThatIsNotToday} from "../../plugins/helpers";
 import env from '../../plugins/env'
 describe('Donations', () => {
     it('should create a donation from person card', async () => {
@@ -12,7 +12,8 @@ describe('Donations', () => {
         cy.get("#filterSearchButtonId").click()
         cy.get(idStart("personCardId_")).first().click()
         cy.get(idStart("personCardDatePickerId_")).click()
-        cy.get(idStart("personCardDatePickerCalenderId_")).first().contains('23').click()
+        console.log(String(getLastDateThatIsNotToday()))
+        cy.get(idStart("personCardDatePickerCalenderId_")).first().contains(String(getLastDateThatIsNotToday())).click()
         cy.get(idStart('personCardDatePickerOkButtonId_')).click()
         cy.get(idStart('personCardDonationButtonId_')).click()
         cy.contains("Successfully added donation")
@@ -22,7 +23,7 @@ describe('Donations', () => {
         cy.get("#confirmationBoxButtonId").click()
         cy.contains("Successfully deleted donation")
         cy.get("#personDetailsNewDonationTextboxId").click()
-        cy.get("#personDetailsNewDonationDatePickerId").contains('23').click()
+        cy.get("#personDetailsNewDonationDatePickerId").contains(String(getLastDateThatIsNotToday())).click()
         cy.get("#personDetailsNewDonationDatePickerOkButtonId").click()
         cy.get("#personDetailsNewDonationOkButtonId").click()
         cy.contains("Added donation")
