@@ -1,0 +1,11 @@
+version: '3'
+services:
+  badhan-backend-service:
+    container_name: badhan-backend-container
+    build:
+      context: .
+    volumes:
+      - '.:/badhan-backend'
+      - './node_modules:/badhan-backend/node_modules'
+    ports:
+      - "3000:3000"
