@@ -68,13 +68,13 @@ const handleGETAppVersions = async (req: Request, res: Response):Promise<Respons
   const browserDownloadURL: string = githubResponse.data.assets[0].browser_download_url
   const githubReleaseVersion: string = githubResponse.data.tag_name
 
-  if (!isValidHttpUrl(browserDownloadURL) || !isValidVersion(githubReleaseVersion)) {
-    return res.status(500).send(new InternalServerError500('Github release browser download URL/ version is not valid',{},{}))
+  if (!isValidHttpUrl(browserDownloadURL)) {
+    return res.status(500).send(new InternalServerError500('Github release browser download URL is not valid',{},{}))
   }
 
   const firebaseResponse: AxiosResponse = await handleGETFirebaseGooglePlayVersion()
   const firebaseValidationResult: ValidatorResult = validate(firebaseResponse.data, firebaseResponseSchema)
-  if (firebaseValidationResult.errors.length !== 0 || !isValidVersion(firebaseResponse.data.version)) {
+  if (firebaseValidationResult.errors.length !== 0) {
     return res.status(500).send(new InternalServerError500('Firebase frontendSettings has invalid format',{},{}))
   }
   return res.status(200).send(new OKResponse200('Github and firebase latest app version fetched', {
