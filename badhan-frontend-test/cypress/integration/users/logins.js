@@ -10,12 +10,20 @@ describe('List of logins Test', () => {
             cy.get("#signInButton").click()
             cy.contains("success")
 
+            cy.clearLocalStorage()
+            cy.reload()
+
+            cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
+            cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
+            cy.get("#signInButton").click()
+            cy.contains("success")
+
             // go to my profile
             cy.get("#hamburgerButtonId").click()
             cy.intercept({
                 method: "GET",
                 url: env.BACKEND_URL+'/donors?donorId=*',
-            }).as("getMyProfileInterceptor");
+            }).as("getMyProfileInterceptor")
             cy.get("#myProfileNavigationId").click()
             cy.wait("@getMyProfileInterceptor")
             cy.get("#getListOfLoginButtonId").click()
@@ -25,11 +33,9 @@ describe('List of logins Test', () => {
             cy.get(idStart("loginDeleteButtonId")).first().click()
             cy.contains('Logged out from specified device')
 
-            // logout
-            cy.get("#topBarVerticalDotsId").click();
-            cy.get("#signOutButtonId").click();
-            cy.get("#confirmationBoxButtonId").click();
-            cy.contains('Logged out successfully')
+            // logout from all devices
+            cy.get('#logoutFromAllDevices').click()
+            cy.contains('Logged out from all devices successfully')
 
         })
     }
