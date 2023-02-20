@@ -22,7 +22,7 @@ describe('Donor Creation', () => {
         cy.get("#newDonorDonationCountTextFieldId").clear().type("1")
         cy.get("#newDonorPublicDataCheckboxId").parent().click()
         cy.get("#newDonorLastDonationTextFieldId").click()
-        cy.contains(String(getLastDateThatIsNotToday())).click()
+        cy.contains("28").click()
         cy.get('#newDonorLastDonationOkButtonId').click()
         cy.get('#newDonorCreateButtonId').click()
         cy.contains('Donor added successfully')

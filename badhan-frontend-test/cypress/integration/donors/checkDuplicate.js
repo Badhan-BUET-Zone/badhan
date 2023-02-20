@@ -13,6 +13,7 @@ describe('Duplicate Donors', () => {
             cy.get("#newDonorPhoneTextBoxId").type(env.SUPERADMIN_PHONE)
             cy.get("#newDonorNameTextBoxId").type("Random Donor Name")
             cy.get("#donorCreationSeeDuplicateButtonId").click()
+            cy.wait(10000)
             cy.scrollTo('top')
             cy.get("#topBarVerticalDotsId").click();
             cy.get("#signOutButtonId").click();
