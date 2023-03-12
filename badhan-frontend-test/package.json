@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "cypress:open": "cypress open",
-    "test": "cypress run --spec 'cypress/integration/**/*'"
+    "test": "cypress run --spec 'cypress/integration/**/*' --headed"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^9.5.2"
+    "cypress": "^9.7.0"
   },
   "dependencies": {
     "cypress-promise": "^1.1.0"
