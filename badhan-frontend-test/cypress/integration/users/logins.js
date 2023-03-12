@@ -1,4 +1,4 @@
-import { idStart, getResponseFromAPI } from "../../plugins/helpers";
+import { idStart } from "../../plugins/helpers";
 import env from '../../plugins/env'
 
 describe('List of logins Test', () => {

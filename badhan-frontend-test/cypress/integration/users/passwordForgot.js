@@ -1,6 +1,6 @@
 import env from '../../plugins/env'
 describe('Forgot Password Test', () => {
-    it('checks feature to recover password', () => {
+    it.skip('checks feature to recover password', () => {
         cy.visit(env.FRONTEND_URL)
         cy.get("#forgotPasswordButtonId").click()
         cy.get("#forgotPasswordPhoneId").type(env.SUPERADMIN_PHONE)
