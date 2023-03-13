@@ -17,6 +17,11 @@ export const ui = {
         }
     },
     components:{
+        notificationSnackBar: {
+            contains: (text)=> {
+                cy.contains(text)
+            }
+        },
         confirmationModal : {
             okButton: {
                 click: ()=>{
@@ -48,9 +53,19 @@ export const ui = {
                         cy.get("#donorCreationNavigationId").click()
                     }
                 },
+                myProfileLink: {
+                    click: ()=>{
+                        cy.get("#myProfileNavigationId").click()
+                    }
+                },
                 singleDonorCreationLink: {
                     click: ()=>{
                         cy.get("#singleDonorCreationId").click()
+                    }
+                },
+                activeDonorLink: {
+                    click: ()=>{
+                        cy.get("#activeDonorNavigationId").click()
                     }
                 }
             }
@@ -114,6 +129,16 @@ export const ui = {
             settingsButton: {
                 click: ()=> {
                     cy.get(idStart("profileSettingsId")).click()
+                }
+            },
+            activeDonorButton: {
+                click: ()=>{
+                    cy.get("#personDetailsActiveDonorButtonId").click()
+                },
+                activeDonorSwitch: {
+                    click: ()=>{
+                        cy.get("#personDetailsActiveDonorSwitchId").click({force:true})
+                    }
                 }
             }
         },

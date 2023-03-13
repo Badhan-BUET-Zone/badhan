@@ -1,30 +1,39 @@
+import { ApiInterceptor } from '../../plugins/backend';
 import env from '../../plugins/env'
+import {ui} from "../../plugins/frontend";
 describe('Active Donors', () => {
     it('mark as active donor, get active donors, and delete active donor', () => {
-        cy.visit(env.FRONTEND_URL)
-        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-        cy.get("#signInButton").click()
-        cy.get("#hamburgerButtonId").click()
-        cy.get("#myProfileNavigationId").click()
-        cy.get("#personDetailsActiveDonorButtonId").click()
-        cy.get("#personDetailsActiveDonorSwitchId").click({force:true})
-        cy.contains("Donor marked as active donor")
-        cy.get("#hamburgerButtonId").click()
-        cy.intercept({
-            method: "GET",
-            url: env.BACKEND_URL+"/activeDonors*",
-        }).as("activeDonorsInterceptor");
-        cy.get("#activeDonorNavigationId").click()
-        cy.wait('@activeDonorsInterceptor').its('response.statusCode').should('equal', 200)
-        cy.get("#hamburgerButtonId").click()
-        cy.get("#myProfileNavigationId").click()
-        cy.wait(500)
-        cy.get("#personDetailsActiveDonorButtonId").click()
-        cy.get("#personDetailsActiveDonorSwitchId").click({force:true})
-        cy.contains("Donor unmarked")
-        cy.get("#topBarVerticalDotsId").click();
-        cy.get("#signOutButtonId").click()
-        cy.get("#confirmationBoxButtonId").click();
+        // sign in
+        ui.control.start()
+        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+        ui.pages.signIn.signInButton.click()
+
+        // make myself active donor
+        ui.components.topBar.drawerButton.click()
+        ui.components.topBar.drawer.myProfileLink.click()
+        ui.pages.personDetails.activeDonorButton.click()
+        ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
+        ui.components.notificationSnackBar.contains("Donor marked as active donor")
+        
+        // go to active donors page
+        ui.components.topBar.drawerButton.click()
+        const activeDonorInterceptor = new ApiInterceptor('GET', '/activeDonors*')
+        ui.components.topBar.drawer.activeDonorLink.click()
+        activeDonorInterceptor.responseStatusCodeShouldBeEqualTo200()
+
+        // mark myself as not active again
+        ui.components.topBar.drawerButton.click()
+        ui.components.topBar.drawer.myProfileLink.click()
+        ui.control.wait(1000)
+        ui.pages.personDetails.activeDonorButton.click()
+        ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
+        ui.components.notificationSnackBar.contains("Donor unmarked")
+
+        // signout
+        ui.components.topBar.tripleDotButton.click()
+        ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+        ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Logged out successfully")
     })})
 
