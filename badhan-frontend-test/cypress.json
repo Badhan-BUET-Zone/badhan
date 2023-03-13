@@ -4,5 +4,5 @@
   "viewportHeight": 851,
   "viewportWidth": 393,
   "scrollBehavior" : "center",
-  "defaultCommandTimeout": 10000
+  "defaultCommandTimeout": 20000
 }

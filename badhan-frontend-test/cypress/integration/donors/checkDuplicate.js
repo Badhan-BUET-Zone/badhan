@@ -1,23 +1,31 @@
-import {idStart} from '../../plugins/helpers'
 import env from '../../plugins/env'
+import {ui} from '../../plugins/frontend'
+import {fakeDonorProfile, seeDuplicateProfileTimeout} from "../../plugins/constants";
 
 describe('Duplicate Donors', () => {
     it('should check whether the phone already exists in donor creation form', () => {
-            cy.visit(env.FRONTEND_URL)
-            cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-            cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-            cy.get("#signInButton").click()
-            cy.get("#hamburgerButtonId").click()
-            cy.get("#donorCreationNavigationId").click()
-            cy.get("#singleDonorCreationId").click()
-            cy.get("#newDonorPhoneTextBoxId").type(env.SUPERADMIN_PHONE)
-            cy.get("#newDonorNameTextBoxId").type("Random Donor Name")
-            cy.get("#donorCreationSeeDuplicateButtonId").click()
-            cy.wait(10000)
-            cy.scrollTo('top')
-            cy.get("#topBarVerticalDotsId").click();
-            cy.get("#signOutButtonId").click();
-            cy.get("#confirmationBoxButtonId").click();
+            // login
+            ui.control.start()
+            ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+            ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+            ui.pages.signIn.signInButton.click()
+
+            // go to single donor creation page
+            ui.components.topBar.drawerButton.click()
+            ui.components.topBar.drawer.donorCreationLink.click()
+            ui.components.topBar.drawer.singleDonorCreationLink.click()
+
+            // type donor phone and click to see duplicate donor
+            ui.pages.singleDonorCreation.phoneTextBox.type(env.SUPERADMIN_PHONE)
+            ui.pages.singleDonorCreation.nameTextBox.type(fakeDonorProfile.name)
+            ui.pages.singleDonorCreation.seeDuplicateButton.click()
+            ui.control.wait(seeDuplicateProfileTimeout)
+
+            // signout
+            ui.control.scroll.top()
+            ui.components.topBar.tripleDotButton.click()
+            ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+            ui.components.confirmationModal.okButton.click()
         }
     )
 })

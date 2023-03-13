@@ -11,10 +11,18 @@ const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
 
 const MASTER_ADMIN_ID = '5e901d56effc5900177ced73'
 
+const fakeDonorProfile = {
+    name: "Random Donor Name",
+}
+
+const seeDuplicateProfileTimeout = 10000
+
 module.exports = {
     designations,
     departments,
     bloodGroups,
     halls,
-    MASTER_ADMIN_ID
+    MASTER_ADMIN_ID,
+    fakeDonorProfile,
+    seeDuplicateProfileTimeout
 }

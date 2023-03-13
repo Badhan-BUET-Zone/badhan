@@ -1,4 +1,4 @@
-import { idStart } from '../../plugins/helpers'
+import { idStart } from '../../plugins/frontend'
 import env from '../../plugins/env'
 describe('Admin Promotion', () => {
     it('should promote volunteer to admin', () => {

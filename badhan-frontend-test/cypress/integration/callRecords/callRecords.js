@@ -1,4 +1,4 @@
-import {idStart } from "../../plugins/helpers";
+import {idStart } from "../../plugins/frontend";
 
 import env from '../../plugins/env'
 describe('Call Records', () => {
@@ -28,7 +28,7 @@ describe('Call Records', () => {
             cy.get('#callCountId_'+sampleDonorId).should('have.text', String(previousCallCount+1))
             cy.get("#personCardSeeProfileButtonId_"+sampleDonorId).click()
             cy.get("#personDetailsCallRecordButtonId").click()
-            cy.get(idStart("callRecordDeleteButtonId_")).first().click()
+            cy.get(idStart("callRecordDeleteButtonId_")).eq(0).click()
             cy.get("#confirmationBoxButtonId").click()
             cy.contains('Successfully deleted call record')
             cy.scrollTo('top')

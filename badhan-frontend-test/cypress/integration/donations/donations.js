@@ -1,4 +1,4 @@
-import {idStart} from "../../plugins/helpers";
+import {idStart} from "../../plugins/frontend";
 import env from '../../plugins/env'
 describe('Donations', () => {
     it('should create a donation from person card', () => {
