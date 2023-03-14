@@ -77,11 +77,39 @@ export const ui = {
                     click: ()=>{
                         cy.get("#activeDonorNavigationId").click()
                     }
+                },
+                membersLink: {
+                    click: ()=>{
+                        cy.get('#membersNavigationId').click()
+                    }
                 }
             }
         },
     },
     pages: {
+        members: {
+            volunteers: {
+                getSample: {
+                    check:()=>{
+                        cy.get(idStart("volunteerId_"))
+                    }
+                }
+            },
+            hallAdmins: {
+                getSample: {
+                    check:()=>{
+                        cy.get(idStart("hallAdminId_"))
+                    }
+                }
+            },
+            superAdmins: {
+                getSample: {
+                    check:()=>{
+                        cy.get(idStart("superAdminId_"))
+                    }
+                }
+            }
+        },
         signIn: {
             phoneTextBox: {
                 type: (text)=> {

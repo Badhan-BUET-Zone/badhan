@@ -1,4 +1,4 @@
-import {idStart, ui} from "../../plugins/frontend";
+import { ui} from "../../plugins/frontend";
 import env from '../../plugins/env'
 describe('Donations', () => {
     it('should create a donation from person card', () => {
