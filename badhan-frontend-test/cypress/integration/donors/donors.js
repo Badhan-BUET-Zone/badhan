@@ -1,103 +1,99 @@
-import { idStart } from '../../plugins/frontend'
+import { ui } from '../../plugins/frontend'
+import {ApiInterceptor} from '../../plugins/backend'
 import env from '../../plugins/env'
 
 describe('Donor Creation', () => {
     it('should create new donor, get donor, promote to volunteer, check volunteer, demote to donor and delete donor', () => {
-        cy.visit(env.FRONTEND_URL)
-        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-        cy.get("#signInButton").click()
+        // sign in
+        ui.control.start()
+        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+        ui.pages.signIn.signInButton.click()
 
-        cy.get('#filterNameTextboxId').type("Random Donor Name")
-        cy.get("#filterPublicDataRadioId").parent().click()
-        cy.get("#filterNotAvailableCheckboxId").parent().click()
-        cy.get("#filterSearchButtonId").click()
-        cy.intercept({
-            method: "GET",
-            url: env.BACKEND_URL+'/search/v3*',
-        }).as("getSearchResultsInterceptor");
-        cy.wait("@getSearchResultsInterceptor", {
-            timeout: 10000
-        }).then(result => {
+        ui.pages.home.filter.nameTextBox.type("Random Donor Name")
+        ui.pages.home.filter.publicDataRadioButton.click()
+        ui.pages.home.filter.notAvailableCheckbox.click()
+
+        const searchInterceptorToCheckForExisting = new ApiInterceptor('GET','/search/v3*')
+        ui.pages.home.filter.searchButton.click()
+        searchInterceptorToCheckForExisting.wait().then(result => {
             //if the donor already was created
             if(result.response.body.filteredDonors.length !== 0){
-                cy.get(idStart("personCardId_")).first().click()
-                cy.get(idStart("personCardSeeProfileButtonId_")).click()
-                cy.get(idStart("profileSettingsId")).click()
-                cy.get("#personDetailsDeleteButtonId").click()
-                cy.get("#confirmationBoxButtonId").click()
-                cy.contains('success')
+                ui.pages.home.searchResult.personCards.getByIndex(0).click()
+                ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
+                ui.pages.personDetails.settings.expansionButton.click()
+                ui.pages.personDetails.settings.expansion.deleteButton.click()
+                ui.components.confirmationModal.okButton.click()
+                ui.components.notificationSnackBar.contains('Deleted donor successfully')
             }
 
             //proceed to create donor
-            cy.get("#hamburgerButtonId").click()
-            cy.get("#donorCreationNavigationId").click()
-            cy.get("#donorCreationNavigationId").click()
-            cy.get("#newDonorNameTextBoxId").type("Random Donor Name")
-            cy.get("#newDonorPhoneTextBoxId").type("01311113278")
-            cy.get("#newDonorStudentIdTextBoxId").type("1605489")
-            cy.get("#newDonorBloodGroupDropDownId").click({force:true});
-            cy.contains('AB+').click();
-            cy.get("#newDonorRoomNumberTextFieldId").type("Random Room Number")
-            cy.get("#newDonorAddressTextFieldId").type("Random Address")
-            cy.get("#newDonorCommentTextFieldId").type("Random Comment")
-            cy.get("#newDonorDonationCountTextFieldId").clear().type("1")
-            cy.get("#newDonorPublicDataCheckboxId").parent().click()
-            cy.get("#newDonorLastDonationTextFieldId").click()
-            cy.contains("28").click()
-            cy.get('#newDonorLastDonationOkButtonId').click()
-            cy.get('#newDonorCreateButtonId').click()
-            cy.contains('Donor added successfully')
+            ui.components.topBar.drawerButton.click()
+            ui.components.topBar.drawer.donorCreationLink.click()
+            ui.components.topBar.drawer.singleDonorCreationLink.click()
+            ui.pages.singleDonorCreation.nameTextBox.type("Random Donor Name")
+            ui.pages.singleDonorCreation.phoneTextBox.type("01311113278")
+            ui.pages.singleDonorCreation.studentIdTextBox.type("1605489")
+            ui.pages.singleDonorCreation.bloodGroupSelection.click()
+            ui.pages.singleDonorCreation.bloodGroupSelection.getSelectionMenuByBloodGroup('AB+').click()
+            ui.pages.singleDonorCreation.roomNumberTextBox.type("Random Room Number")
+            ui.pages.singleDonorCreation.addressTextBox.type("Random Address")
+            ui.pages.singleDonorCreation.commentTextBox.type("Random Comment")
+            ui.pages.singleDonorCreation.donationCountTextBox.type("1")
+            ui.pages.singleDonorCreation.publicDataCheckBox.click()
+            ui.pages.singleDonorCreation.donationDateField.click()
+            ui.pages.singleDonorCreation.donationDatePicker.sampleDate.click()
+            ui.pages.singleDonorCreation.donationDatePicker.okButton.click()
+            ui.pages.singleDonorCreation.donorCreationButton.click()
+            ui.components.notificationSnackBar.contains('Donor added successfully')
 
-            //search thee created donor
-            cy.get("#hamburgerButtonId").click()
-            cy.get('#homeNavigationId').click()
-            cy.get('#filterNameTextboxId').type("random")
-            cy.get("#filterPublicDataRadioId").parent().click()
-            cy.get("#filterNotAvailableCheckboxId").parent().click()
-            cy.get("#filterSearchButtonId").click()
-            cy.get(idStart("personCardId_")).first().click()
-            cy.get(idStart("personCardSeeProfileButtonId_")).click()
+            //search the created donor
+            ui.components.topBar.drawerButton.click()
+            ui.components.topBar.drawer.homeLink.click()
+            ui.pages.home.filter.nameTextBox.type("random")
+            ui.pages.home.filter.publicDataRadioButton.click()
+            ui.pages.home.filter.notAvailableCheckbox.click()
+            ui.pages.home.filter.searchButton.click()
+            ui.pages.home.searchResult.personCards.getByIndex(0).click()
+            ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
 
             // promote the new donor
-            cy.get(idStart("profileSettingsId")).click()
-            cy.get("#promoteToVolunteerButtonId").click()
-            cy.contains("Target user promoted/demoted successfully")
+            ui.pages.personDetails.settings.expansionButton.click()
+            ui.pages.personDetails.settings.expansion.promoteToVolunteerButton.click()
+            ui.components.notificationSnackBar.contains("Target user promoted/demoted successfully")
 
             // check whether promotion was successful
-            cy.get("#pageTitleBackButtonId").click()
-            cy.get("#hamburgerButtonId").click()
-            cy.get("#membersNavigationId").click()
-            cy.contains("Random Donor Name")
+            ui.pages.personDetails.pageTitle.backButton.click()
+            ui.components.topBar.drawerButton.click()
+            ui.components.topBar.drawer.membersLink.click()
+            ui.pages.members.volunteers.check("Random Donor Name")
 
             // search the promoted donor again
-            cy.get("#hamburgerButtonId").click()
-            cy.get('#homeNavigationId').click()
-            cy.get('#filterNameTextboxId').type("random")
-            cy.get("#filterPublicDataRadioId").parent().click()
-            cy.get("#filterNotAvailableCheckboxId").parent().click()
-            cy.get("#filterSearchButtonId").click()
-            cy.get(idStart("personCardId_")).first().click()
-            cy.get(idStart("personCardSeeProfileButtonId_")).click()
-            cy.wait(500)
+            ui.components.topBar.drawerButton.click()
+            ui.components.topBar.drawer.homeLink.click()
+            ui.pages.home.filter.nameTextBox.type("Random Donor Name")
+            ui.pages.home.filter.publicDataRadioButton.click()
+            ui.pages.home.filter.notAvailableCheckbox.click()
+            ui.pages.home.filter.searchButton.click()
+            ui.pages.home.searchResult.personCards.getByIndex(0).click()
+            ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
+            ui.control.wait(500)
 
             // demote the donor
-            cy.get(idStart("profileSettingsId")).click()
-            cy.get("#demoteToDonorButtonId").click()
-            cy.contains("Target user promoted/demoted successfully")
+            ui.pages.personDetails.settings.expansionButton.click()
+            ui.pages.personDetails.settings.expansion.demoteToDonorButton.click()
+            ui.components.notificationSnackBar.contains("Target user promoted/demoted successfully")
 
             //delete the donor
-            cy.get("#personDetailsDeleteButtonId").click()
-            cy.get("#confirmationBoxButtonId").click()
-            cy.contains('success')
+            ui.pages.personDetails.settings.expansion.deleteButton.click()
+            ui.components.confirmationModal.okButton.click()
+            ui.components.notificationSnackBar.contains('Deleted donor successfully')
 
             // sign out
-            cy.scrollTo('top')
-            cy.get("#topBarVerticalDotsId").click();
-            cy.get("#signOutButtonId").click()
-            cy.get("#confirmationBoxButtonId").click();
+            ui.control.scroll.top()
+            ui.components.topBar.tripleDotButton.click()
+            ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+            ui.components.confirmationModal.okButton.click()
         })
-
-
     })
 })
