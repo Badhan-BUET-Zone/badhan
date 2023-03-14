@@ -1,53 +1,50 @@
-import {idStart} from "../../plugins/frontend";
+import {idStart, ui} from "../../plugins/frontend";
 import env from '../../plugins/env'
 describe('Donations', () => {
     it('should create a donation from person card', () => {
-        // Login
-        cy.visit(env.FRONTEND_URL)
-        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-        cy.get("#signInButton").click()
+        // sign in
+        ui.control.start()
+        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+        ui.pages.signIn.signInButton.click()
 
         // search for random donor
-        cy.get('#filterNameTextboxId').type("mr")
-        cy.get("#filterPublicDataRadioId").parent().click()
-        cy.get("#filterNotAvailableCheckboxId").parent().click()
-        cy.get("#filterSearchButtonId").click()
-
-        // get the first search result
-        cy.get(idStart("personCardId_")).first().click()
+        ui.pages.home.filter.nameTextBox.type("mr")
+        ui.pages.home.filter.publicDataRadioButton.click()
+        ui.pages.home.filter.notAvailableCheckbox.click()
+        ui.pages.home.filter.searchButton.click()
 
         // add a donation
-        cy.get(idStart("personCardDatePickerId_")).click()
-        cy.get(idStart("personCardDatePickerCalenderId_")).first().contains("28").click()
-        cy.get(idStart('personCardDatePickerOkButtonId_')).click()
-        cy.get(idStart('personCardDonationButtonId_')).click()
-        cy.contains("Successfully added donation")
+        ui.pages.home.searchResult.personCards.getByIndex(0).click()
+        ui.pages.home.searchResult.personCards.getByIndex(0).donationDateField.click()
+        ui.pages.home.searchResult.personCards.getByIndex(0).donationDatePicker.sampleDate.click()
+        ui.pages.home.searchResult.personCards.getByIndex(0).donationDatePicker.okButton.click()
+        ui.pages.home.searchResult.personCards.getByIndex(0).donateButton.click()
+        ui.components.notificationSnackBar.contains("Successfully added donation")
 
-        // see full profile
-        cy.get(idStart("personCardSeeProfileButtonId_")).click()
-
-        // delete first donation
-        cy.get("#personDetailsDonationHistoryButtonId").click()
-        cy.get(idStart("donationCardDeleteButtonId_")).first().click()
-        cy.get("#confirmationBoxButtonId").click()
-        cy.contains("Successfully deleted donation")
+        // see full profile and delete first donation
+        ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
+        ui.pages.personDetails.donationHistory.expansionButton.click()
+        ui.pages.personDetails.donationHistory.getByIndex(0).deleteButton.click()
+        ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Successfully deleted donation")
 
         // create new donation from profile page
-        cy.get("#personDetailsNewDonationTextboxId").click()
-        cy.get("#personDetailsNewDonationDatePickerId").contains("28").click()
-        cy.get("#personDetailsNewDonationDatePickerOkButtonId").click()
-        cy.get("#personDetailsNewDonationOkButtonId").click()
-        cy.contains("Added donation")
+        ui.pages.personDetails.donationDateField.click()
+        ui.pages.personDetails.donationDatePicker.sampleDate.click()
+        ui.pages.personDetails.donationDatePicker.okButton.click()
+        ui.pages.personDetails.donateButton.click()
+        ui.components.notificationSnackBar.contains("Added donation")
 
         // delete the new donation by picking the first donation
-        cy.get(idStart("donationCardDeleteButtonId_")).first().click()
-        cy.get("#confirmationBoxButtonId").click()
-        cy.contains("Successfully deleted donation")
+        ui.pages.personDetails.donationHistory.getByIndex(0).deleteButton.click()
+        ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Successfully deleted donation")
 
-        // logout
-        cy.get("#pageTitleBackButtonId").click()
-        cy.get("#topBarVerticalDotsId").click();
-        cy.get("#signOutButtonId").click()
-        cy.get("#confirmationBoxButtonId").click();
+        // signout
+        ui.pages.personDetails.pageTitle.backButton.click()
+        ui.components.topBar.tripleDotButton.click()
+        ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+        ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Logged out successfully")
     })})

@@ -15,7 +15,9 @@ const pageTitle= {
 export const ui = {
     control: {
         scroll: {
-            top: ()=>{cy.scrollTo('top')}
+            top: ()=>{
+                cy.scrollTo('top')
+            }
         },
         wait: (milliseconds)=> {
             cy.wait(milliseconds)
@@ -28,7 +30,6 @@ export const ui = {
         notificationSnackBar: {
             contains: (text)=> {
                 cy.get("#notificationTextId").should('have.text', text)
-                // cy.contains(text)
             }
         },
         confirmationModal : {
@@ -151,15 +152,37 @@ export const ui = {
                         return {
                             click: ()=>{
                                 cy.get(idStart("personCardId_")).eq(indexOfPerson).click()
+                            },
+                            seeProfileButton: {
+                                click: ()=>{
+                                    cy.get(idStart("personCardSeeProfileButtonId_")).eq(indexOfPerson).click()
+                                }
+                            },
+                            donationDateField: {
+                                click: ()=>{
+                                    cy.get(idStart("personCardDatePickerId_")).eq(indexOfPerson).click()
+                                }
+                            },
+                            donationDatePicker:{
+                                sampleDate: {
+                                    click: ()=>{
+                                        cy.get(idStart("personCardDatePickerCalenderId_")).eq(indexOfPerson).contains("28").click()
+                                    }
+                                },
+                                okButton: {
+                                    click: ()=>{
+                                        cy.get(idStart('personCardDatePickerOkButtonId_')).eq(indexOfPerson).click()
+                                    }
+                                }
+                            },
+                            donateButton: {
+                                click: ()=>{
+                                    cy.get(idStart('personCardDonationButtonId_')).eq(indexOfPerson).click()
+                                }
                             }
                         }
                     },
                 },
-                seeProfileButton: {
-                    click: ()=> {
-                        cy.get(idStart("personCardSeeProfileButtonId_")).click()
-                    }
-                }
             }
         },
         personDetails: {
@@ -176,6 +199,44 @@ export const ui = {
                 activeDonorSwitch: {
                     click: ()=>{
                         cy.get("#personDetailsActiveDonorSwitchId").click({force:true})
+                    }
+                }
+            },
+            donationDateField: {
+                click: ()=>{
+                    cy.get("#personDetailsNewDonationTextboxId").click()
+                }
+            },
+            donationDatePicker: {
+                sampleDate: {
+                    click: ()=>{
+                        cy.get("#personDetailsNewDonationDatePickerId").contains("28").click()
+                    }
+                },
+                okButton: {
+                    click: ()=>{
+                        cy.get("#personDetailsNewDonationDatePickerOkButtonId").click()
+                    }
+                }
+            },
+            donateButton: {
+                click: ()=>{
+                    cy.get("#personDetailsNewDonationOkButtonId").click()
+                }
+            },
+            donationHistory: {
+                expansionButton: {
+                    click: ()=>{
+                        cy.get("#personDetailsDonationHistoryButtonId").click()
+                    }
+                },
+                getByIndex: (index)=>{
+                    return {
+                        deleteButton: {
+                            click: ()=>{
+                                cy.get(idStart("donationCardDeleteButtonId_")).eq(index).click()
+                            }
+                        }
                     }
                 }
             },
