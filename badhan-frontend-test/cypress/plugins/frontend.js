@@ -4,6 +4,14 @@ export const idStart = (elementId) => {
     return `[id^="${elementId}"]`
 }
 
+const pageTitle= {
+    backButton: {
+        click: ()=>{
+            cy.get("#pageTitleBackButtonId").click()
+        }
+    }
+}
+
 export const ui = {
     control: {
         scroll: {
@@ -19,7 +27,8 @@ export const ui = {
     components:{
         notificationSnackBar: {
             contains: (text)=> {
-                cy.contains(text)
+                cy.get("#notificationTextId").should('have.text', text)
+                // cy.contains(text)
             }
         },
         confirmationModal : {
@@ -114,9 +123,37 @@ export const ui = {
             },
             searchResult: {
                 personCards: {
-                    click: (indexOfPerson)=> {
-                        cy.get(idStart("personCardId_")).eq(indexOfPerson).click()
-                    }
+                    getByDonorId: (donorId)=>{
+                        return {
+                            click: ()=>{
+                                cy.get("#personCardId_"+donorId).click()
+                            },
+                            expansion: {
+                                callCountText: {
+                                    contains: (text)=>{
+                                        cy.get('#callCountId_'+donorId).should('have.text', text)
+                                    }
+                                },
+                                callButton: {
+                                    click: ()=>{
+                                        cy.get("#personCardCallButtonId_"+donorId).click()
+                                    }
+                                },
+                                seeProfileButton: {
+                                    click: ()=>{
+                                        cy.get("#personCardSeeProfileButtonId_"+donorId).click()
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    getByIndex: (indexOfPerson)=>{
+                        return {
+                            click: ()=>{
+                                cy.get(idStart("personCardId_")).eq(indexOfPerson).click()
+                            }
+                        }
+                    },
                 },
                 seeProfileButton: {
                     click: ()=> {
@@ -126,6 +163,7 @@ export const ui = {
             }
         },
         personDetails: {
+            pageTitle,
             settingsButton: {
                 click: ()=> {
                     cy.get(idStart("profileSettingsId")).click()
@@ -138,6 +176,22 @@ export const ui = {
                 activeDonorSwitch: {
                     click: ()=>{
                         cy.get("#personDetailsActiveDonorSwitchId").click({force:true})
+                    }
+                }
+            },
+            callRecords: {
+                getByIndex: (index)=>{
+                    return {
+                        deleteButton: {
+                            click: ()=>{
+                                cy.get(idStart("callRecordDeleteButtonId_")).eq(index).click()
+                            }
+                        }
+                    }
+                },
+                expansionButton: {
+                    click: ()=>{
+                        cy.get("#personDetailsCallRecordButtonId").click()
                     }
                 }
             }

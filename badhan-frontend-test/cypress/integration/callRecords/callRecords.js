@@ -1,40 +1,47 @@
-import {idStart } from "../../plugins/frontend";
+import { ui } from "../../plugins/frontend";
+import { ApiInterceptor } from "../../plugins/backend";
 
 import env from '../../plugins/env'
 describe('Call Records', () => {
     it('should create and delete a call record',() => {
-        cy.visit(env.FRONTEND_URL)
-        cy.get("#signInPhoneTextBox").type(env.SUPERADMIN_PHONE)
-        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-        cy.get("#signInButton").click()
-        cy.get('#filterNameTextboxId').type("mr")
-        cy.get("#filterPublicDataRadioId").parent().click()
-        cy.get("#filterNotAvailableCheckboxId").parent().click()
+        // sign in
+        ui.control.start()
+        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+        ui.pages.signIn.signInButton.click()
 
-        cy.intercept({
-            method: "GET",
-            url: env.BACKEND_URL+'/search/v3*',
-        }).as("getSearchResultsInterceptor");
-        cy.get("#filterSearchButtonId").click()
-        cy.wait("@getSearchResultsInterceptor").then(result => {
+        // search random donor
+        ui.pages.home.filter.nameTextBox.type("mr")
+        ui.pages.home.filter.publicDataRadioButton.click()
+        ui.pages.home.filter.notAvailableCheckbox.click()
+        const searchInterceptor = new ApiInterceptor("GET",'/search/v3*')
+        ui.pages.home.filter.searchButton.click()
+        searchInterceptor.wait().then(result => {
+            // get call record count and check
             const searchResultBody = result.response.body
             const sampleDonorId = searchResultBody.filteredDonors[0]._id
-            const previousCallCount =  searchResultBody.filteredDonors[0].callRecordCount
-            cy.get("#personCardId_"+sampleDonorId).click()
-            cy.get('#callCountId_'+sampleDonorId).should('have.text', String(previousCallCount))
-            cy.get("#personCardCallButtonId_"+sampleDonorId).click()
-            cy.contains("Added call record")
-            cy.get("#personCardId_"+sampleDonorId).click()
-            cy.get('#callCountId_'+sampleDonorId).should('have.text', String(previousCallCount+1))
-            cy.get("#personCardSeeProfileButtonId_"+sampleDonorId).click()
-            cy.get("#personDetailsCallRecordButtonId").click()
-            cy.get(idStart("callRecordDeleteButtonId_")).eq(0).click()
-            cy.get("#confirmationBoxButtonId").click()
-            cy.contains('Successfully deleted call record')
-            cy.scrollTo('top')
-            cy.get("#pageTitleBackButtonId").click()
-            cy.get("#topBarVerticalDotsId").click();
-            cy.get("#signOutButtonId").click()
-            cy.get("#confirmationBoxButtonId").click();
+            const previousCallCount = searchResultBody.filteredDonors[0].callRecordCount
+            ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).click()
+            ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callCountText.contains(String(previousCallCount))
+            
+            // create new call and check
+            ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callButton.click()
+            ui.components.notificationSnackBar.contains("Added call record")
+            ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).click()
+            ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callCountText.contains(String(previousCallCount+1))
+
+            // delete call record
+            ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.seeProfileButton.click()
+            ui.pages.personDetails.callRecords.expansionButton.click()
+            ui.pages.personDetails.callRecords.getByIndex(0).deleteButton.click()
+            ui.components.confirmationModal.okButton.click()
+            ui.components.notificationSnackBar.contains('Successfully deleted call record')
+
+            // signout
+            ui.pages.personDetails.pageTitle.backButton.click()
+            ui.components.topBar.tripleDotButton.click()
+            ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+            ui.components.confirmationModal.okButton.click()
+            ui.components.notificationSnackBar.contains("Logged out successfully")
         })
     })})
