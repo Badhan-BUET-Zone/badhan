@@ -1,6 +1,6 @@
-import {idStart} from "../../plugins/frontend";
+import { idStart } from '../../plugins/frontend/functions'
 import env from '../../plugins/env'
-describe('Logs', () => {
+describe('Set public contact, check and unset', () => {
     it('gets logs', () => {
         cy.visit(env.FRONTEND_URL)
         cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)

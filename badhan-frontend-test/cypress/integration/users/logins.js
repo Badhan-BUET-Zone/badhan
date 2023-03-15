@@ -1,4 +1,4 @@
-import { idStart } from "../../plugins/frontend";
+import { idStart } from '../../plugins/frontend/functions'
 import env from '../../plugins/env'
 
 describe('List of logins Test', () => {
