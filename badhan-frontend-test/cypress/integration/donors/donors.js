@@ -55,9 +55,12 @@ describe('Donor Creation', () => {
             ui.pages.home.filter.notAvailableCheckbox.click()
             ui.pages.home.filter.searchButton.click()
             ui.pages.home.searchResult.personCards.getByIndex(0).click()
+            const interceptor1 = new ApiInterceptor('GET','/donors?donorId*')
             ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
+            interceptor1.wait()
 
             // promote the new donor
+            
             ui.pages.personDetails.settings.expansionButton.click()
             ui.pages.personDetails.settings.expansion.promoteToVolunteerButton.click()
             ui.components.notificationSnackBar.contains("Target user promoted/demoted successfully")
@@ -76,8 +79,9 @@ describe('Donor Creation', () => {
             ui.pages.home.filter.notAvailableCheckbox.click()
             ui.pages.home.filter.searchButton.click()
             ui.pages.home.searchResult.personCards.getByIndex(0).click()
+            const interceptor2 = new ApiInterceptor('GET','/donors?donorId*')
             ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
-            ui.control.wait(500)
+            interceptor2.wait()
 
             // demote the donor
             ui.pages.personDetails.settings.expansionButton.click()
