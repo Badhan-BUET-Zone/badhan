@@ -1,4 +1,3 @@
-import { idStart } from '../../plugins/frontend/functions'
 import env from '../../plugins/env'
 import { ApiInterceptor } from '../../plugins/backend'
 import { ui } from '../../plugins/frontend'
@@ -12,9 +11,9 @@ describe('List of logins Test', () => {
             ui.pages.signIn.signInButton.click()
             ui.components.notificationSnackBar.contains("Signed in successfully")
 
+            // reset token and relogin
             ui.control.clearLocalStorage()
             ui.control.reload()
-
             ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
             ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
             ui.pages.signIn.signInButton.click()

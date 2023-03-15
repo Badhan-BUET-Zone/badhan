@@ -1,7 +1,7 @@
 import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
-describe('Designated Donors', () => {
-    it('should get all designated donors', () => {
+describe('Edit Donors', () => {
+    it('edit all info of donor and revert back', () => {
         // sign in
         ui.control.start()
         ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)

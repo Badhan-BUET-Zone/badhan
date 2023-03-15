@@ -66,7 +66,7 @@ export default {
         },
         publicDataCheckBox: {
             click: ()=>{
-                cy.get("#donorDetailsPublicDataCheckboxId").exists({force: true})
+                cy.get("#donorDetailsPublicDataCheckboxId").check({force: true})
             },
             unClick: ()=>{
                 cy.get("#donorDetailsPublicDataCheckboxId").uncheck({force: true})
@@ -146,6 +146,21 @@ export default {
             }
         },
         expansion: {
+            newPasswordTextBox: {
+                type: (password)=>{
+                    cy.get("#newPasswordFieldId").type(password)
+                }
+            },
+            confirmPasswordTextBox: {
+                type: (password)=>{
+                    cy.get("#confirmPasswordFieldId").type(password)
+                }
+            },
+            changePasswordButton: {
+                click: ()=>{
+                    cy.get("#passwordChangeConfirmedId").click()
+                }
+            },
             deleteButton: {
                 click: ()=>{
                     cy.get("#personDetailsDeleteButtonId").click()

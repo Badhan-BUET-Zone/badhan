@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "cypress:open": "cypress open",
-    "test": "cypress run --spec 'cypress/integration/**/*' --headed"
+    "test:headed": "cypress run --spec 'cypress/integration/**/*' --headed",
+    "test": "cypress run --spec 'cypress/integration/**/*'"
   },
   "author": "",
   "license": "ISC",
