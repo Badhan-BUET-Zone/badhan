@@ -69,7 +69,7 @@ describe('Donor Creation', () => {
             ui.pages.personDetails.pageTitle.backButton.click()
             ui.components.topBar.drawerButton.click()
             ui.components.topBar.drawer.membersLink.click()
-            ui.pages.members.volunteers.check("Random Donor Name")
+            ui.pages.members.volunteers.contains("Random Donor Name")
 
             // search the promoted donor again
             ui.components.topBar.drawerButton.click()
@@ -98,6 +98,7 @@ describe('Donor Creation', () => {
             ui.components.topBar.tripleDotButton.click()
             ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
             ui.components.confirmationModal.okButton.click()
+            ui.components.notificationSnackBar.contains("Logged out successfully")
         })
     })
 })

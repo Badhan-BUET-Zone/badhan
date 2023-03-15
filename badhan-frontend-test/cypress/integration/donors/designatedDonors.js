@@ -20,4 +20,5 @@ describe('Designated Donors', () => {
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Logged out successfully")
     })})
