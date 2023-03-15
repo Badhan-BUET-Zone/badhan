@@ -110,6 +110,34 @@ export default {
             }
         }
     },
+    publicContacts: {
+        publicContactsSelection: {
+            click: ()=>{
+                cy.get("#personDetailsPublicContactSelectId").click({force:true})
+            },
+            getSelectionMenuByBloodGroup: (bloodGroupText)=>{
+                return {
+                    click: ()=>{
+                        cy.contains(bloodGroupText).click()
+                    }
+                }
+            },
+        },
+        saveButton:{
+            click: ()=>{
+                cy.get("#profileDetailsPublicContactButtonId").click()
+            }
+        },
+        publicContactBloodGroups: {
+            getByIndex: (index)=>{
+                return {
+                    click:()=>{
+                        cy.get(idStart("publicContactButtonId_")).eq(index).click()
+                    }
+                }
+            }
+        }
+    },
     pageTitle,
     settings: {
         expansionButton: {

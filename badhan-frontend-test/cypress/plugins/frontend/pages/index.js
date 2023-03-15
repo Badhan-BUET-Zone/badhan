@@ -4,11 +4,13 @@ import signIn from "./signIn"
 import personDetails from "./personDetails"
 import singleDonorCreation from "./singleDonorCreation"
 import logs from "./logs"
+import publicContacts from "./publicContacts"
 export default {
     members,
     signIn,
     home,
     personDetails,
     singleDonorCreation,
-    logs
+    logs,
+    publicContacts
 }

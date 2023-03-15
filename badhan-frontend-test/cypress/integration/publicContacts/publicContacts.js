@@ -1,29 +1,33 @@
-import { idStart } from '../../plugins/frontend/functions'
+import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
-describe('Set public contact, check and unset', () => {
-    it('gets logs', () => {
-        cy.visit(env.FRONTEND_URL)
-        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-        cy.get("#signInButton").click()
-        cy.contains("Signed in successfully")
-        cy.get("#hamburgerButtonId").click()
-        cy.get("#myProfileNavigationId").click()
-        cy.get("#personDetailsPublicContactSelectId").click({force:true})
-        cy.contains("AB+").click()
-        cy.get("#profileDetailsPublicContactButtonId").click()
-        cy.contains("Public Contacts Updated")
-        cy.get("#hamburgerButtonId").click()
-        cy.get("#publicContactsNavigationId").click()
-        cy.wait(1000)
-        cy.contains(env.SUPERADMIN_NAME)
-        cy.get("#hamburgerButtonId").click()
-        cy.get("#myProfileNavigationId").click()
-        cy.get(idStart("publicContactButtonId_")).first().click()
-        cy.contains("Public Contacts Updated")
-        cy.get("#topBarVerticalDotsId").click();
-        cy.get("#signOutButtonId").click();
-        cy.get("#confirmationBoxButtonId").click();
-        cy.contains("Logged out successfully")
+describe('Public Contacts', () => {
+    it('Sets public contacts, checks and unsets', () => {
+        // sign in
+        ui.control.start()
+        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+        ui.pages.signIn.signInButton.click()
+        ui.components.notificationSnackBar.contains("Signed in successfully")
+
+        ui.components.topBar.drawerButton.click()
+        ui.components.topBar.drawer.myProfileLink.click()
+        ui.pages.personDetails.publicContacts.publicContactsSelection.click()
+        ui.pages.personDetails.publicContacts.publicContactsSelection.getSelectionMenuByBloodGroup("AB+").click()
+        ui.pages.personDetails.publicContacts.saveButton.click()
+        ui.components.notificationSnackBar.contains("Public Contacts Updated")
+        ui.components.topBar.drawerButton.click()
+        ui.components.topBar.drawer.publicContactsLink.click()
+        ui.control.wait(1000)
+        ui.pages.publicContacts.contains(env.SUPERADMIN_NAME)
+        ui.components.topBar.drawerButton.click()
+        ui.components.topBar.drawer.myProfileLink.click()
+        ui.pages.personDetails.publicContacts.publicContactBloodGroups.getByIndex(0).click()
+        ui.components.notificationSnackBar.contains("Public Contacts Updated")
+
+        // signout
+        ui.components.topBar.tripleDotButton.click()
+        ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+        ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Logged out successfully")
     })
 })

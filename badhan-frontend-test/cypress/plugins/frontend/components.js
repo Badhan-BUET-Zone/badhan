@@ -76,6 +76,11 @@ export default {
                         cy.get("#statisticsNavigationId").click()
                     }
                 }
+            },
+            publicContactsLink: {
+                click: ()=>{
+                    cy.get("#publicContactsNavigationId").click()
+                }
             }
         }
     },
