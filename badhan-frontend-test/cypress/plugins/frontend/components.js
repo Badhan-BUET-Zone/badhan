@@ -66,6 +66,16 @@ export default {
                 click: ()=>{
                     cy.get('#membersNavigationId').click()
                 }
+            },
+            superAdminLink : {
+                click: ()=>{
+                    cy.get("#superAdminId").click()
+                },
+                statisticsLink: {
+                    click: ()=>{
+                        cy.get("#statisticsNavigationId").click()
+                    }
+                }
             }
         }
     },

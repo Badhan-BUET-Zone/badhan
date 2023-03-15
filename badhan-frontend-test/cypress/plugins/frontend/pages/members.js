@@ -2,7 +2,7 @@ import { idStart } from "../functions"
 export default {
     volunteers: {
         getSample: {
-            check:()=>{
+            exists:()=>{
                 cy.get(idStart("volunteerId_"))
             }
         },
@@ -26,14 +26,14 @@ export default {
     },
     hallAdmins: {
         getSample: {
-            check:()=>{
+            exists:()=>{
                 cy.get(idStart("hallAdminId_"))
             }
         }
     },
     superAdmins: {
         getSample: {
-            check:()=>{
+            exists:()=>{
                 cy.get(idStart("superAdminId_"))
             }
         }

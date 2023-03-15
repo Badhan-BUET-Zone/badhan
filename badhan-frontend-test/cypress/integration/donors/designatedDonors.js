@@ -11,9 +11,9 @@ describe('Designated Donors', () => {
         // go to members page and check whether at lease one volunteer, one hall admin and one super admin exists
         ui.components.topBar.drawerButton.click()
         ui.components.topBar.drawer.membersLink.click()
-        ui.pages.members.volunteers.getSample.check()
-        ui.pages.members.hallAdmins.getSample.check()
-        ui.pages.members.superAdmins.getSample.check()
+        ui.pages.members.volunteers.getSample.exists()
+        ui.pages.members.hallAdmins.getSample.exists()
+        ui.pages.members.superAdmins.getSample.exists()
 
         // signout
         ui.control.scroll.top()

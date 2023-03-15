@@ -66,7 +66,7 @@ export default {
         },
         publicDataCheckBox: {
             click: ()=>{
-                cy.get("#donorDetailsPublicDataCheckboxId").check({force: true})
+                cy.get("#donorDetailsPublicDataCheckboxId").exists({force: true})
             },
             unClick: ()=>{
                 cy.get("#donorDetailsPublicDataCheckboxId").uncheck({force: true})

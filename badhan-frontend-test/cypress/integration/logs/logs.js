@@ -1,26 +1,36 @@
 import { idStart } from '../../plugins/frontend/functions'
+import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
 describe('Logs', () => {
     it('gets logs', () => {
-        cy.visit(env.FRONTEND_URL)
-        cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-        cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-        cy.get("#signInButton").click()
-        cy.contains("Signed in successfully")
-        cy.get("#hamburgerButtonId").click()
-        cy.get("#superAdminId").click()
-        cy.get("#statisticsNavigationId").click()
-        cy.get(idStart("dateLogDetailsButtonId_")).first().click()
-        cy.get(idStart("personLogExpandButtonId_")).first().click()
-        cy.get(idStart("logObjectClickMeButtonId_")).first().click()
-        cy.get(idStart("logObjectClickMeCloseButtonId_")).first().click()
-        cy.get("#statisticsAllVolunteersTabId").click()
-        cy.get("#statisticsAllVolunteersTableId")
-        cy.get("#statisticsStatsTabId").click()
-        cy.get("#statsNumberOfDonors")
-        cy.get("#topBarVerticalDotsId").click();
-        cy.get("#signOutButtonId").click();
-        cy.get("#confirmationBoxButtonId").click();
-        cy.contains("Logged out successfully")
+        // sign in
+        ui.control.start()
+        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+        ui.pages.signIn.signInButton.click()
+        ui.components.notificationSnackBar.contains("Signed in successfully")
+
+        // go to superadmin menus and go to logs by date page
+        ui.components.topBar.drawerButton.click()
+        ui.components.topBar.drawer.superAdminLink.click()
+        ui.components.topBar.drawer.superAdminLink.statisticsLink.click()
+        ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).detailsButton.click()
+        ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).logsByPerson.getByIndex(0).expandButton.click()
+        ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).logsByPerson.getByIndex(0).logObjects.getByIndex(0).clickMeButton.click()
+        ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).logsByPerson.getByIndex(0).logObjects.getByIndex(0).clickMeCloseButton.click()
+
+        // check all volunteers page
+        ui.pages.logs.allMembersTab.click()
+        ui.pages.logs.allMembersTab.membersTable.exists()
+
+        // check stats page
+        ui.pages.logs.statsTab.click()
+        ui.pages.logs.statsTab.numberOfDonors.exists()
+
+        // signout
+        ui.components.topBar.tripleDotButton.click()
+        ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+        ui.components.confirmationModal.okButton.click()
+        ui.components.notificationSnackBar.contains("Logged out successfully")
     })
 })
