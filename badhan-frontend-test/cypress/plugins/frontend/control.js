@@ -3,6 +3,9 @@ export default {
     scroll: {
         top: ()=>{
             cy.scrollTo('top')
+        },
+        botton: ()=>{
+            cy.scrollTo('bottom')
         }
     },
     wait: (milliseconds)=> {
@@ -13,5 +16,8 @@ export default {
     },
     reload: ()=>{
         cy.reload()
+    },
+    clearLocalStorage: ()=>{
+        cy.clearLocalStorage()
     }
 }

@@ -1,42 +1,40 @@
 import { idStart } from '../../plugins/frontend/functions'
 import env from '../../plugins/env'
+import { ApiInterceptor } from '../../plugins/backend'
+import { ui } from '../../plugins/frontend'
 
 describe('List of logins Test', () => {
         it('should get my profile, click for login records and delete a login',  () => {
-            //login the UI
-            cy.visit(env.FRONTEND_URL)
-            cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-            cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-            cy.get("#signInButton").click()
-            cy.contains("success")
+            // sign in
+            ui.control.start()
+            ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+            ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+            ui.pages.signIn.signInButton.click()
+            ui.components.notificationSnackBar.contains("Signed in successfully")
 
-            cy.clearLocalStorage()
-            cy.reload()
+            ui.control.clearLocalStorage()
+            ui.control.reload()
 
-            cy.get('#signInPhoneTextBox').type(env.SUPERADMIN_PHONE)
-            cy.get("#signInPasswordTextBox").type(env.SUPERADMIN_PASSWORD)
-            cy.get("#signInButton").click()
-            cy.contains("success")
+            ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
+            ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+            ui.pages.signIn.signInButton.click()
+            ui.components.notificationSnackBar.contains("Signed in successfully")
 
             // go to my profile
-            cy.get("#hamburgerButtonId").click()
-            cy.intercept({
-                method: "GET",
-                url: env.BACKEND_URL+'/donors?donorId=*',
-            }).as("getMyProfileInterceptor")
-            cy.get("#myProfileNavigationId").click()
-            cy.wait("@getMyProfileInterceptor")
-            cy.get("#getListOfLoginButtonId").click()
-            cy.scrollTo('bottom')
+            ui.components.topBar.drawerButton.click()
+            const interceptor = new ApiInterceptor("GET","/donors?donorId=*")
+            ui.components.topBar.drawer.myProfileLink.click()
+            interceptor.wait()
+            ui.pages.myProfile.settings.listOfLoginsButton.click()
+            ui.control.scroll.botton()
 
             // click to check logins and press delete login
-            cy.get(idStart("loginDeleteButtonId")).first().click()
-            cy.contains('Logged out from specified device')
+            ui.pages.myProfile.settings.listOfLogins.getByIndex(0).deleteButton.click()
+            ui.components.notificationSnackBar.contains('Logged out from specified device')
 
-            // logout from all devices
-            cy.get('#logoutFromAllDevices').click()
-            cy.contains('Logged out from all devices successfully')
-
+            // signout from all devices
+            ui.pages.myProfile.settings.listOfLogins.deleteAllLoginsButton.click()
+            ui.components.notificationSnackBar.contains('Logged out from all devices successfully')
         })
     }
 )
