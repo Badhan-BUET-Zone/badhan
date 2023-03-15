@@ -102,6 +102,20 @@ export const ui = {
                         cy.get(idStart("volunteerId_"))
                     }
                 },
+                getByIndex: (index)=>{
+                    return {
+                        name: {
+                            then: (callBack)=>{
+                                cy.get(idStart('volunteerNameId_')).eq(index).invoke('text').then(callBack)
+                            }
+                        },
+                        batch: {
+                            then: (callBack)=>{
+                                cy.get(idStart('volunteerBatchId_')).eq(index).invoke('text').then(callBack)
+                            }
+                        }
+                    }
+                },
                 contains: (name)=>{
                     cy.contains(name)
                 }
@@ -143,6 +157,16 @@ export const ui = {
                 nameTextBox: {
                     type: (text)=> {
                         cy.get('#filterNameTextboxId').type(text)
+                    }
+                },
+                batchTextBox: {
+                    type: (text)=>{
+                        cy.get('#filterBatchTextboxId').type(text)
+                    }
+                },
+                specifyHallRadioButton: {
+                    click: ()=>{
+                        cy.get("#filterSpecifyHallRadioId").parent().click()
                     }
                 },
                 publicDataRadioButton: {
@@ -350,6 +374,11 @@ export const ui = {
                     promoteToVolunteerButton: {
                         click: ()=>{
                             cy.get("#promoteToVolunteerButtonId").click() 
+                        }
+                    },
+                    promoteToHallAdminButton: {
+                        click: ()=>{
+                            cy.get("#promoteToHallAdminButtonId").click()
                         }
                     },
                     demoteToDonorButton: {
