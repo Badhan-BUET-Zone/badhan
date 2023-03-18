@@ -1,8 +1,8 @@
 import env from './env'
 export class ApiInterceptor {
-    constructor(methodName, url){
-        this.url = env.BACKEND_URL+url
-        this.methodName = methodName
+    constructor(routeInfoObject) {
+        this.url = env.BACKEND_URL+routeInfoObject.url
+        this.methodName = routeInfoObject.method
         this.interceptorName = `Interceptor_${new Date().getTime()}`
         cy.intercept({
             method:this.methodName,

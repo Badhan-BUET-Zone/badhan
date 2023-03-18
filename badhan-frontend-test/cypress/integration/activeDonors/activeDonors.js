@@ -1,6 +1,7 @@
 import { ApiInterceptor } from '../../plugins/backend';
 import env from '../../plugins/env'
 import {ui} from "../../plugins/frontend";
+import {routeInfos} from "../../plugins/constants";
 describe('Active Donors', () => {
     it('mark as active donor, get active donors, and delete active donor', () => {
         // sign in
@@ -18,7 +19,7 @@ describe('Active Donors', () => {
         
         // go to active donors page
         ui.components.topBar.drawerButton.click()
-        const activeDonorInterceptor = new ApiInterceptor('GET', '/activeDonors*')
+        const activeDonorInterceptor = new ApiInterceptor(routeInfos.GETActiveDonors)
         ui.components.topBar.drawer.activeDonorLink.click()
         activeDonorInterceptor.responseStatusCodeShouldBeEqualTo200()
 

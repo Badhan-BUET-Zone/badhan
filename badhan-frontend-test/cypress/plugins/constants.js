@@ -13,6 +13,32 @@ const MASTER_ADMIN_ID = '5e901d56effc5900177ced73'
 
 const fakeDonorProfile = {
     name: "Random Donor Name",
+    phone: "01311113278",
+    studentId: "1605489",
+    bloodGroup: "AB+",
+    roomNumber: "Random Room Number",
+    address: "Random Address",
+    comment: "Random Comment",
+    donationCount: "1",
+}
+
+class RouteInfo {
+    constructor(method, url, notification){
+        this.method = method
+        this.url = url
+        this.notification = notification
+    }
+}
+
+const ROUTE_INFO_UNSPECIFIED = 'NOT SPECIFIED'
+const routeInfos = {
+    GETSearch: new RouteInfo('GET','/search/v3*', 'Donors queried successfully'),
+    PATCHDonorsDesignation: new RouteInfo('PATCH', '/donors/designation?donorId*', "Target user promoted/demoted successfully"),
+    POSTDonors: new RouteInfo('POST','/donors','Donor added successfully'),
+    DELETEDonors: new RouteInfo('DELETE','/donors?donorId=*', 'Deleted donor successfully'),
+    DELETESignOut: new RouteInfo('DELETE','/users/signout','Logged out successfully'),
+    GETDonors: new RouteInfo('GET','/donors?donorId=*', 'Fetched donor details successfully'),
+    GETActiveDonors: new RouteInfo('GET','/activeDonors*', 'Active donor queried successfully'),
 }
 
 const seeDuplicateProfileTimeout = 10000
@@ -24,5 +50,6 @@ module.exports = {
     halls,
     MASTER_ADMIN_ID,
     fakeDonorProfile,
-    seeDuplicateProfileTimeout
+    seeDuplicateProfileTimeout,
+    routeInfos
 }

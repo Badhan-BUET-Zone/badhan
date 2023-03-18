@@ -2,6 +2,7 @@ import { ui } from "../../plugins/frontend";
 import { ApiInterceptor } from "../../plugins/backend";
 
 import env from '../../plugins/env'
+import {routeInfos} from "../../plugins/constants";
 describe('Call Records', () => {
     it('should create and delete a call record',() => {
         // sign in
@@ -14,7 +15,7 @@ describe('Call Records', () => {
         ui.pages.home.filter.nameTextBox.type("mr")
         ui.pages.home.filter.publicDataRadioButton.click()
         ui.pages.home.filter.notAvailableCheckbox.click()
-        const searchInterceptor = new ApiInterceptor("GET",'/search/v3*')
+        const searchInterceptor = new ApiInterceptor(routeInfos.GETSearch)
         ui.pages.home.filter.searchButton.click()
         searchInterceptor.wait().then(result => {
             // get call record count and check

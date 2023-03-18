@@ -1,6 +1,7 @@
 import env from '../../plugins/env'
 import { ApiInterceptor } from '../../plugins/backend'
 import { ui } from '../../plugins/frontend'
+import {routeInfos} from "../../plugins/constants";
 
 describe('List of logins Test', () => {
         it('should get my profile, click for login records and delete a login',  () => {
@@ -21,7 +22,7 @@ describe('List of logins Test', () => {
 
             // go to my profile
             ui.components.topBar.drawerButton.click()
-            const interceptor = new ApiInterceptor("GET","/donors?donorId=*")
+            const interceptor = new ApiInterceptor(routeInfos.GETDonors)
             ui.components.topBar.drawer.myProfileLink.click()
             interceptor.wait()
             ui.pages.myProfile.settings.listOfLoginsButton.click()
