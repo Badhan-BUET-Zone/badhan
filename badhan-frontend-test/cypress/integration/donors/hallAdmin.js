@@ -1,5 +1,6 @@
 import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
+import {routeInfos} from "../../plugins/constants";
 describe('Admin Promotion', () => {
     it('should promote volunteer to admin', () => {
         // sign in
@@ -28,14 +29,14 @@ describe('Admin Promotion', () => {
                 ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
                 ui.pages.personDetails.settings.expansionButton.click()
                 ui.pages.personDetails.settings.expansion.promoteToHallAdminButton.click()
-                ui.components.notificationSnackBar.contains("Successfully changed hall admin")
+                ui.components.notificationSnackBar.contains(routeInfos.PATCHAdmins.notification)
 
                 // sign out from UI
                 ui.pages.personDetails.pageTitle.backButton.click()
                 ui.components.topBar.tripleDotButton.click()
                 ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
                 ui.components.confirmationModal.okButton.click()
-                ui.components.notificationSnackBar.contains("Logged out successfully")
+                ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
             })
         })
     })})

@@ -27,7 +27,7 @@ describe('Call Records', () => {
             
             // create new call and check
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callButton.click()
-            ui.components.notificationSnackBar.contains("Added call record")
+            ui.components.notificationSnackBar.contains(routeInfos.POSTCallRecords.notification)
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).click()
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callCountText.contains(String(previousCallCount+1))
 
@@ -36,13 +36,13 @@ describe('Call Records', () => {
             ui.pages.personDetails.callRecords.expansionButton.click()
             ui.pages.personDetails.callRecords.getByIndex(0).deleteButton.click()
             ui.components.confirmationModal.okButton.click()
-            ui.components.notificationSnackBar.contains('Successfully deleted call record')
+            ui.components.notificationSnackBar.contains(routeInfos.DELETECallRecords.notification)
 
             // signout
             ui.pages.personDetails.pageTitle.backButton.click()
             ui.components.topBar.tripleDotButton.click()
             ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
             ui.components.confirmationModal.okButton.click()
-            ui.components.notificationSnackBar.contains("Logged out successfully")
+            ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
         })
     })})

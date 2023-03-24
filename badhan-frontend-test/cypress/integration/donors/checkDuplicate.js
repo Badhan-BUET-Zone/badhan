@@ -1,6 +1,6 @@
 import env from '../../plugins/env'
 import {ui} from '../../plugins/frontend'
-import {fakeDonorProfile, seeDuplicateProfileTimeout} from "../../plugins/constants";
+import {fakeDonorProfile, routeInfos, seeDuplicateProfileTimeout} from "../../plugins/constants";
 
 describe('Duplicate Donors', () => {
     it('should check whether the phone already exists in donor creation form', () => {
@@ -26,6 +26,6 @@ describe('Duplicate Donors', () => {
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Logged out successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     }
 )})

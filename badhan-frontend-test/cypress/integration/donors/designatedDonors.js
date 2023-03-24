@@ -1,5 +1,6 @@
 import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
+import {routeInfos} from "../../plugins/constants";
 describe('Designated Donors', () => {
     it('should get all designated donors', () => {
         // sign in
@@ -20,5 +21,5 @@ describe('Designated Donors', () => {
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Logged out successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     })})

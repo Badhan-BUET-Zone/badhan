@@ -10,7 +10,7 @@ describe('List of logins Test', () => {
             ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
             ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
             ui.pages.signIn.signInButton.click()
-            ui.components.notificationSnackBar.contains("Signed in successfully")
+            ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
 
             // reset token and relogin
             ui.control.clearLocalStorage()
@@ -18,7 +18,7 @@ describe('List of logins Test', () => {
             ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
             ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
             ui.pages.signIn.signInButton.click()
-            ui.components.notificationSnackBar.contains("Signed in successfully")
+            ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
 
             // go to my profile
             ui.components.topBar.drawerButton.click()
@@ -30,11 +30,11 @@ describe('List of logins Test', () => {
 
             // click to check logins and press delete login
             ui.pages.myProfile.settings.listOfLogins.getByIndex(0).deleteButton.click()
-            ui.components.notificationSnackBar.contains('Logged out from specified device')
+            ui.components.notificationSnackBar.contains(routeInfos.DELETELogins.notification)
 
             // signout from all devices
             ui.pages.myProfile.settings.listOfLogins.deleteAllLoginsButton.click()
-            ui.components.notificationSnackBar.contains('Logged out from all devices successfully')
+            ui.components.notificationSnackBar.contains(routeInfos.DELETEUsersSignOutAll.notification)
         })
     }
 )

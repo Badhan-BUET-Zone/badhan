@@ -30,15 +30,36 @@ class RouteInfo {
     }
 }
 
-const ROUTE_INFO_UNSPECIFIED = 'NOT SPECIFIED'
 const routeInfos = {
+    // GET requests
     GETSearch: new RouteInfo('GET','/search/v3*', 'Donors queried successfully'),
-    PATCHDonorsDesignation: new RouteInfo('PATCH', '/donors/designation?donorId*', "Target user promoted/demoted successfully"),
-    POSTDonors: new RouteInfo('POST','/donors','Donor added successfully'),
-    DELETEDonors: new RouteInfo('DELETE','/donors?donorId=*', 'Deleted donor successfully'),
-    DELETESignOut: new RouteInfo('DELETE','/users/signout','Logged out successfully'),
     GETDonors: new RouteInfo('GET','/donors?donorId=*', 'Fetched donor details successfully'),
     GETActiveDonors: new RouteInfo('GET','/activeDonors*', 'Active donor queried successfully'),
+    GETUsersSignIn: new RouteInfo('GET','/users/signin','Signed in successfully'),
+
+    // POST requests
+    POSTDonors: new RouteInfo('POST','/donors','Donor added successfully'),
+    POSTActiveDonors: new RouteInfo('POST','/activeDonors',"Donor marked as active donor"),
+    POSTCallRecords: new RouteInfo('POST','/callrecords',"Added call record"),
+    POSTDonations: new RouteInfo('POST','/donations',"Donation inserted successfully"),
+    POSTPublicContacts: new RouteInfo('POST','/publicContacts',"Public Contacts Updated"),
+
+    // PATCH requests
+    PATCHDonorsDesignation: new RouteInfo('PATCH', '/donors/designation?donorId*', "Target user promoted/demoted successfully"),
+    PATCHDonors: new RouteInfo('PATCH','/donors','Saved details successfully'),
+    PATCHDonorsComment: new RouteInfo('PATCH','/donors/comment',"Successfully changed comment"),
+    PATCHAdmins: new RouteInfo('PATCH','/admins',"Successfully changed hall admin"),
+    PATCHUsersPassword: new RouteInfo('PATCH','/users/password','Password changed successfully'),
+
+    // DELETE requests
+    DELETEDonors: new RouteInfo('DELETE','/donors?donorId=*', 'Deleted donor successfully'),
+    DELETESignOut: new RouteInfo('DELETE','/users/signout','Logged out successfully'),
+    DELETELogins: new RouteInfo('DELETE', '/logins/*', 'Logged out from specified device'),
+    DELETEUsersSignOutAll: new RouteInfo('DELETE','/signout/all','Logged out from all devices successfully'),
+    DELETEActiveDonors: new RouteInfo('DELETE', '/activeDonors',"Donor unmarked"),
+    DELETECallRecords: new RouteInfo('DELETE','/callrecords','Successfully deleted call record'),
+    DELETEDonations: new RouteInfo('DELETE','/donations',"Successfully deleted donation"),
+    DELETEPublicContacts: new RouteInfo('DELETE','/publicContacts',"Public Contacts Updated"),
 }
 
 const seeDuplicateProfileTimeout = 10000

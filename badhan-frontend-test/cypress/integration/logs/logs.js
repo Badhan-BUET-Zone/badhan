@@ -1,6 +1,7 @@
 import { idStart } from '../../plugins/frontend/functions'
 import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
+import {routeInfos} from "../../plugins/constants";
 describe('Logs', () => {
     it('gets logs', () => {
         // sign in
@@ -8,7 +9,7 @@ describe('Logs', () => {
         ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
         ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
         ui.pages.signIn.signInButton.click()
-        ui.components.notificationSnackBar.contains("Signed in successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
 
         // go to superadmin menus and go to logs by date page
         ui.components.topBar.drawerButton.click()
@@ -31,6 +32,6 @@ describe('Logs', () => {
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Logged out successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     })
 })

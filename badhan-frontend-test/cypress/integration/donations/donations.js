@@ -1,5 +1,6 @@
 import { ui} from "../../plugins/frontend";
 import env from '../../plugins/env'
+import {routeInfos} from "../../plugins/constants";
 describe('Donations', () => {
     it('should create a donation from person card', () => {
         // sign in
@@ -20,31 +21,31 @@ describe('Donations', () => {
         ui.pages.home.searchResult.personCards.getByIndex(0).donationDatePicker.sampleDate.click()
         ui.pages.home.searchResult.personCards.getByIndex(0).donationDatePicker.okButton.click()
         ui.pages.home.searchResult.personCards.getByIndex(0).donateButton.click()
-        ui.components.notificationSnackBar.contains("Successfully added donation")
+        ui.components.notificationSnackBar.contains(routeInfos.POSTDonations.notification)
 
         // see full profile and delete first donation
         ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
         ui.pages.personDetails.donationHistory.expansionButton.click()
         ui.pages.personDetails.donationHistory.getByIndex(0).deleteButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Successfully deleted donation")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETEDonations.notification)
 
         // create new donation from profile page
         ui.pages.personDetails.donationDateField.click()
         ui.pages.personDetails.donationDatePicker.sampleDate.click()
         ui.pages.personDetails.donationDatePicker.okButton.click()
         ui.pages.personDetails.donateButton.click()
-        ui.components.notificationSnackBar.contains("Added donation")
+        ui.components.notificationSnackBar.contains(routeInfos.POSTDonations.notification)
 
         // delete the new donation by picking the first donation
         ui.pages.personDetails.donationHistory.getByIndex(0).deleteButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Successfully deleted donation")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETEDonations.notification)
 
         // signout
         ui.pages.personDetails.pageTitle.backButton.click()
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Logged out successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     })})

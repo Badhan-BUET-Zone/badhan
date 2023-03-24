@@ -15,7 +15,7 @@ describe('Active Donors', () => {
         ui.components.topBar.drawer.myProfileLink.click()
         ui.pages.personDetails.activeDonorButton.click()
         ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
-        ui.components.notificationSnackBar.contains("Donor marked as active donor")
+        ui.components.notificationSnackBar.contains(routeInfos.POSTActiveDonors.notification)
         
         // go to active donors page
         ui.components.topBar.drawerButton.click()
@@ -29,12 +29,12 @@ describe('Active Donors', () => {
         ui.control.wait(1000)
         ui.pages.personDetails.activeDonorButton.click()
         ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
-        ui.components.notificationSnackBar.contains("Donor unmarked")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETEActiveDonors.notification)
 
         // signout
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Logged out successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     })})
 

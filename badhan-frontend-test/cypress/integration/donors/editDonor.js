@@ -1,5 +1,6 @@
 import { ui } from '../../plugins/frontend'
 import env from '../../plugins/env'
+import {routeInfos} from "../../plugins/constants";
 describe('Edit Donors', () => {
     it('edit all info of donor and revert back', () => {
         // sign in
@@ -23,10 +24,10 @@ describe('Edit Donors', () => {
         ui.pages.personDetails.details.hallSelection.getSelectionMenuByHallName("Ahsanullah").click()
         ui.pages.personDetails.details.publicDataCheckBox.click()
         ui.pages.personDetails.details.saveButton.click()
-        ui.components.notificationSnackBar.contains("Saved details successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.PATCHDonors.notification)
         ui.pages.personDetails.details.commentTextBox.type("Random Comment")
         ui.pages.personDetails.details.saveCommentButton.click()
-        ui.components.notificationSnackBar.contains("Successfully changed comment")
+        ui.components.notificationSnackBar.contains(routeInfos.PATCHDonorsComment.notification)
 
         // check that all editted information are persistent
         ui.control.reload()
@@ -54,15 +55,15 @@ describe('Edit Donors', () => {
         ui.pages.personDetails.details.hallSelection.getSelectionMenuByHallName("Suhrawardy").click()
         ui.pages.personDetails.details.publicDataCheckBox.unClick()
         ui.pages.personDetails.details.saveButton.click()
-        ui.components.notificationSnackBar.contains("Saved details successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.PATCHDonors.notification)
         ui.pages.personDetails.details.commentTextBox.type("Is not available for donation")
         ui.pages.personDetails.details.saveCommentButton.click()
-        ui.components.notificationSnackBar.contains("Successfully changed comment")
+        ui.components.notificationSnackBar.contains(routeInfos.PATCHDonorsComment.notification)
 
         // sign out
         ui.control.scroll.top()
         ui.components.topBar.tripleDotButton.click()
         ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
         ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains("Logged out successfully")
+        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     })})
