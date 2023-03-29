@@ -1,4 +1,15 @@
-# Overview
+# Introduction
+badhan-admin-frontend repository consists of the code for the admin console
+frontend for the [android app](https://play.google.com/store/apps/details?id=com.mmmbadhan)
+and [website](https://badhan-buet.web.app) of Badhan, BUET Zone. This repository is a part of the [Badhan, BUET Zone Github Organization](https://github.com/Badhan-BUET-Zone).
+
+# Developers Involved
+* [Mir Mahathir Mohammad](https://github.com/mirmahathir1)
+
+# Technology Stack
+* React.js
+
+# Description
 Badhan Admin Console Website is an extension of the main Badhan, BUET Zone Android app that manages operations accessible by the Super Admins of this platform. This website consists of two repositories: 
 1) Frontend (https://github.com/Badhan-BUET-Zone/badhan-admin-frontend)
 2) Backend (https://github.com/Badhan-BUET-Zone/badhan-admin-api)
@@ -9,6 +20,7 @@ This website can be visited by any one of the following links:
 
 This admin console website consists of the functionalities that were once done manually directly on the database. The reasons why I did not implement these features in the main app is because I wanted to keep the code of the main app lean.
 And it seemed to me that these admin console features will be accessed once in one or two years and I wanted to keep these less used but highly sensitive features seperate from the active app. This app will also allow me to implement features that are necessary for app management without needing to touch the main app.
+
 # Features
 ## Version
 ![image](./doc/version.PNG)
@@ -33,7 +45,19 @@ https://badhan-admin.web.app/backup-restore
 
 - To backup and restore the MongoDB database of the whole platform
 
-# Setup Backup and Restore
+# Deployment
+The admin console is deployed in [Firebase](https://firebase.google.com). The deployment can be found at [https://badhan-admin.web.app](https://badhan-admin.web.app)
+
+# Procedure for Local Setup
+* Install [Node.js](https://nodejs.org/en/download/).
+* Clone this repository:
+
+  `git clone https://github.com/Badhan-BUET-Zone/badhan-admin-frontend`
+* Run `npm i` from inside the cloned repo.
+* Run `npm run start`
+* Visit `https://localhost:8080`.
+
+## Setup Backup and Restore
 The Backup-and-Restore page is a UI for the API implemented in [this repository](https://github.com/Badhan-BUET-Zone/badhan-backup). 
 However, this API has not been deployed to a live server and thus, you will need to 
 follow through the instructions written below in order to run the API locally in your
