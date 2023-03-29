@@ -1,4 +1,3 @@
-[Note: This repository has been deprecated and is not longer maintained by developers]
 ## Brief Description
 
 This is an [API](https://badhan-admin-api.herokuapp.com/) to primarily manage the real time database and file-storage of Firebase for admin related work. 
