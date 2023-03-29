@@ -24,12 +24,6 @@ const pages = {
 
             children: [
                 {
-                    id: 'version',
-                    title: 'App Version',
-                    type: 'item',
-                    url: '/management/version',
-                },
-                {
                     id: 'contributors',
                     title: 'Contributors',
                     type: 'item',

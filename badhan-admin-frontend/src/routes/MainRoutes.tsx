@@ -9,7 +9,6 @@ const MainLayout  = loadable(lazy(()=> import('../layout/MainLayout')))
 const Contributors = loadable(lazy(()=> import('../views/management/Contributors')))
 const SuperAdmin = loadable(lazy(()=> import('../views/management/SuperAdmin')))
 const BackupRestore = loadable(lazy(()=> import('../views/backup-restore')))
-const Version = Loadable(lazy(() => import('../views/management/Version')));
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
@@ -27,10 +26,6 @@ const MainRoutes = {
         {
             path: '/dashboard/default',
             element: <RestrictUnAuthorizedUser><DashboardDefault /></RestrictUnAuthorizedUser>
-        },
-        {
-            path: '/management/version',
-            element: <RestrictUnAuthorizedUser><Version/></RestrictUnAuthorizedUser>
         },
         {
             path: '/management/contributors',

@@ -79,26 +79,10 @@ export const handlePATCHUsersRedirection = async (payload: {token: string}) => {
     }
 }
 
-export const handleGETLogVersion = async () => {
-    try{
-        return await badhanAxios.get('/log/version/v5')
-    }catch (e:any) {
-        return e.response
-    }
-}
-
 export const handleGETDonorsDesignation = async () => {
     try {
         return await badhanAxios.get('/donors/designation')
     }catch (e:any){
-        return e.response
-    }
-}
-
-export const handleGETCredits = async () => {
-    try {
-        return await firebaseAxios.get('/contributors.json')
-    } catch (e: any) {
         return e.response
     }
 }
@@ -201,18 +185,6 @@ export const handlePATCHContributor = async (payload: {
     contribution: string[], links: {link: string, color: string, icon: string}[]})=>{
     try {
         return await badhanAdminAxios.patch(`/contributors/${payload.id}`,payload)
-    }catch (e:any) {
-        return e.response
-    }
-}
-
-export const handlePATCHFrontendSettings = async (payload: {
-    majorVersion: number,
-    minorVersion: number,
-    patchVersion: number,
-}) => {
-    try{
-        return await badhanAdminAxios.patch(`/frontendSettings`,{version: `${payload.majorVersion}.${payload.minorVersion}.${payload.patchVersion}`})
     }catch (e:any) {
         return e.response
     }
