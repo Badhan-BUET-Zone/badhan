@@ -54,7 +54,8 @@ export const getName = ():string => {
   return faker.name.findName()
 }
 export const getStudentId = (): string => {
-  return getRandInt(14, 20) + departments[getRandomIndex(11)] + getRandInt(100, 200)
+  const currentBatch: number = new Date().getFullYear() % 100
+  return getRandInt(currentBatch - 9, currentBatch) + departments[getRandomIndex(11)] + getRandInt(100, 200)
 }
 export const getBloodGroup = ():number => {
   return getRandomIndex(7)

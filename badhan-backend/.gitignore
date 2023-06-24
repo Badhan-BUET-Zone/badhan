@@ -6,4 +6,4 @@ app.yml
 .env.production
 .env.development
 dist
-package-lock.json
+.vscode
