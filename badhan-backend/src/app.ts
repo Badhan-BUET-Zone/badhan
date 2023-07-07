@@ -18,7 +18,7 @@ import './db/mongoose'
 import { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } from './response/errorHandlers'
 import { redirectToDoc } from './doc/redirection'
 import { onlineCheckController } from './controllers/otherControllers'
-import myConsole from "./response/myConsole";
+import myConsole from "./utils/myConsole";
 
 const app:Express = express()
 

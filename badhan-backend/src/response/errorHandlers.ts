@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from 'express';
 import NotFoundError404 from "./models/errorTypes/NotFoundError404";
 import InternalServerError500 from "./models/errorTypes/InternalServerError500";
-import myConsole from "./myConsole";
+import myConsole from "../utils/myConsole";
 export const routeNotFoundHandler: (req: Request, res: Response)=>Response = (req: Request, res: Response):Response => {
   return res.status(404).send(new NotFoundError404('Route not found',{}))
 }

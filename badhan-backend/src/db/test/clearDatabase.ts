@@ -6,22 +6,30 @@ import { CallRecordModel } from '../models/CallRecord';
 import { LogModel } from '../models/Log';
 import { PublicContactModel } from '../models/PublicContact';
 import { TokenModel } from '../models/Token';
+import { Progress } from '../../utils/progress';
+import myConsole from '../../utils/myConsole';
 
 const clearDatabase = async ():Promise<void> => {
+    const progressBar: Progress = new Progress(7)
     try {
         await DonorModel.deleteMany({})
+        progressBar.tick()
         await DonationModel.deleteMany({})
+        progressBar.tick()
         await ActiveDonorModel.deleteMany({})
+        progressBar.tick()
         await CallRecordModel.deleteMany({})
+        progressBar.tick()
         await LogModel.deleteMany({})
+        progressBar.tick()
         await PublicContactModel.deleteMany({})
+        progressBar.tick()
         await TokenModel.deleteMany({})
+        progressBar.tick()
 
-        // tslint:disable-next-line:no-console
-        console.log('Database clearing completed!');
+        myConsole.log('Database clearing completed!');
     } catch (error) {
-        // tslint:disable-next-line:no-console
-        console.error('Error clearing data', error);
+        myConsole.error('Error clearing data', error);
     } finally {
         // Close the database connection
         process.exit(0);

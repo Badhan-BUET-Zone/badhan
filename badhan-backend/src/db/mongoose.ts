@@ -1,6 +1,6 @@
 import dotenv from "../dotenv";
 import mongoose, {ConnectOptions} from 'mongoose'
-import myConsole from "../response/myConsole";
+import myConsole from "../utils/myConsole";
 
 mongoose.Promise = global.Promise
 

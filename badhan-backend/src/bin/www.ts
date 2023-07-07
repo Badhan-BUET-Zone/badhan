@@ -6,7 +6,7 @@ import app from '../app'
 import DebugLibrary from 'debug'
 import SourceMapSupport from 'source-map-support'
 import http from 'http'
-import myConsole from "../response/myConsole";
+import myConsole from "../utils/myConsole";
 import {AddressInfo} from "net";
 
 const debug: DebugLibrary.Debugger = DebugLibrary('badhan-backend:server')

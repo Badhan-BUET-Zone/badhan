@@ -1,6 +1,6 @@
 import useragent, {Agent} from 'useragent'
 import {Request, Response, NextFunction} from "express";
-import myConsole from "../response/myConsole";
+import myConsole from "../utils/myConsole";
 
 export interface IUserAgent {
   os: string,

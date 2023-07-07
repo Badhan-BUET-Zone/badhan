@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import myConsole from "../response/myConsole";
+import myConsole from "../utils/myConsole";
 
 dotenv.config({ path: '.env.' + process.env.NODE_ENV })
 

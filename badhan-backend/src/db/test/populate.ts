@@ -1,80 +1,56 @@
-// tslint:disable:no-console
 import '../mongoose'
-import {DonorModel, IDonor} from '../models/Donor'
-import * as faker from "../../doc/faker";
-import bcrypt from 'bcryptjs'
+import { IDonor } from '../models/Donor'
+import { DonorFactory } from './factories/donorFactory';
+import myConsole from '../../utils/myConsole';
+import { Progress } from '../../utils/progress';
+
 const generateFakeData = async ():Promise<void> => {
     try {
         // Create an array to store user IDs
         const userIds: string[] = []
-        // Generate fake users and save their IDs
-        for (let i: number = 0; i < 1000; i++) {
-            const user: IDonor = new DonorModel({
-                name: faker.getName(),
-                bloodGroup: faker.getBloodGroup(),
-                hall: faker.getHall(),
-                studentId: faker.getStudentId(),
-                email: faker.getEmail(),
-                phone: faker.getPhone(),
-                address: faker.getAddress(),
-                roomNumber: faker.getRoom(),
-                lastDonation: faker.getTimestamp(365),
-                comment: faker.getComment(),
-                availableToAll: faker.getBoolean()
-            });
-            const savedUser: IDonor = await user.save();
-            userIds.push(savedUser._id);
-        }
-        console.log('Created Random Donors')
-        // Generate fake posts with user IDs
-        // for (let i = 0; i < 10; i++) {
-        //     const post = new Post({
-        //         title: faker.lorem.sentence(),
-        //         content: faker.lorem.paragraph(),
-        //         user: faker.random.arrayElement(userIds),
-        //     });
-        //     await post.save();
-        // }
-        // create hall admins
+        const donorFactory: DonorFactory = new DonorFactory()
+
+        const progressBar: Progress = new Progress(7)
+
+        // Generate fake donors and volunteers and save their IDs
         for (let i: number = 0; i < 7; i++) {
-            const hallAdmin: IDonor = new DonorModel({
-                name: faker.getName(),
-                bloodGroup: faker.getBloodGroup(),
+            const hallAdmin: IDonor = donorFactory.createData({
                 hall: i,
-                studentId: faker.getStudentId(),
-                email: faker.getEmail(),
-                phone: faker.getPhone(),
-                address: faker.getAddress(),
-                roomNumber: faker.getRoom(),
-                lastDonation: faker.getTimestamp(365),
-                comment: faker.getComment(),
-                availableToAll: faker.getBoolean(),
                 designation: 2
             });
-            const savedHallAdmin: IDonor = await hallAdmin.save();
+            await hallAdmin.save();
+
+            for (let j: number = 0; j < 15; j++) {
+                const user: IDonor = donorFactory.createData({
+                    hall: i,
+                    designation: 1
+                });
+                await user.save();
+            }
+
+            for (let j: number = 0; j < 100; j++) {
+                const user: IDonor = donorFactory.createData({
+                    designation: 0,
+                    hall: i
+                });
+                const savedUser: IDonor = await user.save();
+                userIds.push(savedUser._id);
+            }
+            progressBar.tick()
         }
 
-        const superAdmin: IDonor = new DonorModel({
-            name: faker.getName(),
-            bloodGroup: faker.getBloodGroup(),
-            hall: 5,
-            studentId: faker.getStudentId(),
-            email: faker.getEmail(),
+        const superAdmin: IDonor = donorFactory.createData({
             phone: 8801500000000,
-            address: faker.getAddress(),
-            roomNumber: faker.getRoom(),
-            lastDonation: faker.getTimestamp(365),
-            comment: faker.getComment(),
-            availableToAll: faker.getBoolean(),
             designation: 3,
+            hall: 5,
             password: 'badhandev'
         });
         await superAdmin.save();
-        console.log('Created Super Admin')
+        myConsole.log('Created Super Admin')
 
-        console.log('Fake data generation completed!');
+        myConsole.log('Fake data generation completed!');
     } catch (error) {
-        console.error('Error generating fake data:', error);
+        myConsole.error('Error generating fake data:', error);
     } finally {
         process.exit(0);
     }
