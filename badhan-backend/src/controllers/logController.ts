@@ -118,9 +118,6 @@ const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<
 }
 
 const handleDELETELogs = async (req: Request, res: Response):Promise<Response>  => {
-  if (!res.locals.middlewareResponse.donor._id.equals(MASTER_ADMIN_ID)) {
-    return res.status(403).send(new ForbiddenError403('Only Master Admin is allowed to access this route',{}))
-  }
   await logInterface.deleteLogs()
   await logInterface.addLogOfMasterAdmin('DELETE LOGS', {})
   return res.status(200).send(new OKResponse200('All logs deleted successfully',{}))
