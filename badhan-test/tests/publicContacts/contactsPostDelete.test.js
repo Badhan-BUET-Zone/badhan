@@ -44,8 +44,14 @@ test('POST&DELETE/publicContacts', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
+        let donorResponse = await badhanAxios.get('/users/me', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
         let contactCreationResponse = await badhanAxios.post("/publicContacts",{
-            donorId:env.SUPERADMIN_ID,
+            donorId: donorResponse.data.donor._id,
             bloodGroup:2
         },{
             headers: {
@@ -59,7 +65,7 @@ test('POST&DELETE/publicContacts', async () => {
 
         // delete/donations part
 
-        let contactDeletionResponse = await badhanAxios.delete("/publicContacts?donorId="+env.SUPERADMIN_ID+"&contactId="+contactCreationResponse.data.publicContact["_id"],  {
+        let contactDeletionResponse = await badhanAxios.delete("/publicContacts?donorId="+donorResponse.data.donor._id+"&contactId="+contactCreationResponse.data.publicContact["_id"],  {
             headers: {
                 "x-auth": signInResponse.data.token
             }
@@ -92,7 +98,7 @@ test('POST&DELETE/guest/publicContacts', async () => {
 
         // delete/donations part
 
-        let contactDeletionResponse = await badhanAxios.delete("/guest/publicContacts?donorId="+env.SUPERADMIN_ID+"&contactId="+contactCreationResponse.data.publicContact["_id"]);
+        let contactDeletionResponse = await badhanAxios.delete("/guest/publicContacts?donorId=blahblah&contactId="+contactCreationResponse.data.publicContact["_id"]);
 
         let validationResult = validate(contactDeletionResponse.data, deletePublicContactsSchema);
         expect(validationResult.errors).toEqual([]);
