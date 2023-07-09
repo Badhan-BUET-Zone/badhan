@@ -1,16 +1,7 @@
-import {MASTER_ADMIN_ID} from "../../constants";
-
 import {ILog, LogModel} from '../models/Log'
 import mongoose, {Aggregate} from 'mongoose'
 
 export const addLog = async (donorId: mongoose.Types.ObjectId, operation: string, details: object): Promise<{message: string, status: string, data?: ILog}> => {
-    if (donorId.equals(MASTER_ADMIN_ID)) {
-        return {
-            message: 'Log insertion of master admin has bee denied',
-            status: 'OK'
-        }
-    }
-
     const log: ILog = new LogModel({donorId, operation, details})
     const data: ILog = await log.save()
     return {
@@ -18,18 +9,6 @@ export const addLog = async (donorId: mongoose.Types.ObjectId, operation: string
         status: 'OK',
         data
     }
-}
-
-export const addLogOfMasterAdmin = async (operation: string, details: object): Promise<{data: ILog, message: string, status: string}> => {
-    const log: ILog = new LogModel({donorId: MASTER_ADMIN_ID, operation, details})
-    const data: ILog = await log.save()
-
-    return {
-        message: 'Log insertion successful',
-        status: 'OK',
-        data
-    }
-
 }
 
 export const deleteLogs = async (): Promise<{status: string, message: string}> => {

@@ -3,7 +3,7 @@ import * as donationInterface from '../db/interfaces/donationInterface'
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
 import {Request, Response} from 'express'
-import { halls, MASTER_ADMIN_ID } from '../constants'
+import { halls } from '../constants'
 
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
@@ -410,10 +410,6 @@ const handleGETDonorsDuplicateMany = async (req: Request<{},{},{},{phoneList: st
 
 const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response):Promise<Response>=>{
   const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
-
-  if (targetDonor._id.equals(MASTER_ADMIN_ID)) {
-    return res.status(403).send(new ForbiddenError403('All hail master admin',{}))
-  }
 
   if(targetDonor.designation!==1 && targetDonor.designation!==3){
     return res.status(409).send(new ConflictError409('Target donor must be a volunteer or super admin',{}))

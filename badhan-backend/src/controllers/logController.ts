@@ -117,7 +117,7 @@ const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<
 
 const handleDELETELogs = async (req: Request, res: Response):Promise<Response>  => {
   await logInterface.deleteLogs()
-  await logInterface.addLogOfMasterAdmin('DELETE LOGS', {})
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE LOGS', {})
   return res.status(200).send(new OKResponse200('All logs deleted successfully',{}))
 }
 

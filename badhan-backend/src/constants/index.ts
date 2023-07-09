@@ -7,4 +7,3 @@ export const departments: string[] = [
 export const halls: string[] = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 export const designations: string[] = ['Donor', 'Volunteer', 'Hall Admin', 'Super Admin']
 export const bloodGroups: string[] = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
-export const MASTER_ADMIN_ID: string = '5e901d56effc5900177ced73'
