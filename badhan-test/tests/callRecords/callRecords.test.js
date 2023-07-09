@@ -58,8 +58,14 @@ test('POST&DELETE/callrecords', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
+        let donorResponse = await badhanAxios.get('/users/me', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
         let recordCreationResponse = await badhanAxios.post("/callrecords",{
-            donorId:env.SUPERADMIN_ID,
+            donorId:donorResponse.data.donor._id,
         },{
             headers: {
                 "x-auth": signInResponse.data.token
@@ -72,7 +78,7 @@ test('POST&DELETE/callrecords', async () => {
 
         // delete/donations part
 
-        let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+env.SUPERADMIN_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
+        let donationDeletionResponse = await badhanAxios.delete("/callrecords?donorId="+donorResponse.data.donor._id+"&callRecordId="+recordCreationResponse.data.callRecord["_id"],  {
             headers: {
                 "x-auth": signInResponse.data.token
             }
@@ -105,7 +111,7 @@ test('POST&DELETE/guest/callrecords', async () => {
 
         // delete/donations part
 
-        let donationDeletionResponse = await badhanAxios.delete("/guest/callrecords?donorId="+env.SUPERADMIN_ID+"&callRecordId="+recordCreationResponse.data.callRecord["_id"]);
+        let donationDeletionResponse = await badhanAxios.delete("/guest/callrecords?donorId=23455&callRecordId="+recordCreationResponse.data.callRecord["_id"]);
 
         let validationResult = validate(donationDeletionResponse.data,deleteCallRecordsSchema );
 
