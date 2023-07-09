@@ -78,7 +78,15 @@ test('GET/search/v3', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let searchResponse = await badhanAxios.get('/search/v3?bloodGroup=2&hall=5&batch=16&name=maha&address=&isAvailable=true&isNotAvailable=true&availableToAll=true', {
+        let donorResponse = await badhanAxios.get('/users/me', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
+        let donor = donorResponse.data.donor
+
+        let searchResponse = await badhanAxios.get(`/search/v3?bloodGroup=${donor.bloodGroup}&hall=${donor.hall}&batch=${donor.studentId.substring(0,2)}&name=${donor.name}&address=&isAvailable=true&isNotAvailable=true&availableToAll=false`, {
             headers: {
                 "x-auth": signInResponse.data.token
             }

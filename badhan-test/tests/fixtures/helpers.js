@@ -4,6 +4,12 @@ const processError=(e)=>{
     }
     throw e;
 }
+
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports={
     processError,
+    sleep
 }

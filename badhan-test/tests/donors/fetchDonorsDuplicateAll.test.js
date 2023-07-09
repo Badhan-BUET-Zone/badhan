@@ -89,10 +89,16 @@ test('GET/donors/phone',async()=>{
         })
         let volunteerToken = donorsPasswordPostResponse.data.token
 
+        let volunteerDonorDetailsResponse = await badhanAxios.get('/users/me', {
+            headers: {
+                "x-auth": volunteerToken
+            }
+        });
+
         let searchQuery
         searchQuery = {
             bloodGroup: 2,
-            hall: env.VOLUNTEER_HALL,
+            hall: volunteerDonorDetailsResponse.data.donor.hall,
             batch: '',
             name: '',
             address: '',
@@ -111,7 +117,7 @@ test('GET/donors/phone',async()=>{
 
         let hallThatIsNotOfVolunteer
         for(hallThatIsNotOfVolunteer = 0; hallThatIsNotOfVolunteer <7; hallThatIsNotOfVolunteer++){
-            if(hallThatIsNotOfVolunteer!==env.VOLUNTEER_HALL){
+            if(hallThatIsNotOfVolunteer !== volunteerDonorDetailsResponse.data.donor.hall){
                 break
             }
         }

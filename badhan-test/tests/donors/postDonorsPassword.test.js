@@ -21,8 +21,14 @@ test('POST/donors/password', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
+        let donorResponse = await badhanAxios.get('/users/me', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
         let response = await badhanAxios.post('/donors/password', {
-            donorId:env.SUPERADMIN_ID
+            donorId:donorResponse.data.donor._id
         },{
             headers: {
                 "x-auth": signInResponse.data.token
