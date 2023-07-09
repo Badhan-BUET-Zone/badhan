@@ -163,7 +163,7 @@ test('GET/guest/log/date/{date}/donorId/{donorId}', async () => {
 
     expect(logByDateOnlyValidationResult.errors).toEqual([])
 
-    let response = await badhanAxios.get('/guest/log/date/' + 123 + '/donorId/' + env.SUPERADMIN_ID)
+    let response = await badhanAxios.get('/guest/log/date/' + 123 + '/donorId/blahblah')
 
     let validationResult = validate(response.data, logByDateAndDonorSchema)
 
