@@ -20,6 +20,7 @@ const fakeDonorProfile = {
     address: "Random Address",
     comment: "Random Comment",
     donationCount: "1",
+    email: "mirmahathir2@gmail.com"
 }
 
 class RouteInfo {
@@ -36,6 +37,7 @@ const routeInfos = {
     GETDonors: new RouteInfo('GET','/donors?donorId=*', 'Fetched donor details successfully'),
     GETActiveDonors: new RouteInfo('GET','/activeDonors*', 'Active donor queried successfully'),
     GETUsersSignIn: new RouteInfo('GET','/users/signin','Signed in successfully'),
+    GETUsersMe: new RouteInfo('GET','/users/me','Fetched donor details successfully'),
 
     // POST requests
     POSTDonors: new RouteInfo('POST','/donors','Donor added successfully'),

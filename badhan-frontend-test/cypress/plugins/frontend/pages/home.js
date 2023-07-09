@@ -93,6 +93,11 @@ export default {
                 }
             },
         },
+        olderBatchResultsButton: {
+            click: ()=>{
+                cy.get("#olderBatchResultsButton").click()
+            }
+        }
     }
 }
     

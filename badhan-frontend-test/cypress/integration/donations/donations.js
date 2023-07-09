@@ -10,7 +10,7 @@ describe('Donations', () => {
         ui.pages.signIn.signInButton.click()
 
         // search for random donor
-        ui.pages.home.filter.nameTextBox.type("mr")
+        ui.pages.home.filter.nameTextBox.type("a")
         ui.pages.home.filter.publicDataRadioButton.click()
         ui.pages.home.filter.notAvailableCheckbox.click()
         ui.pages.home.filter.searchButton.click()

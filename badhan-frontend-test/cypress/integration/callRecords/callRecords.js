@@ -12,7 +12,7 @@ describe('Call Records', () => {
         ui.pages.signIn.signInButton.click()
 
         // search random donor
-        ui.pages.home.filter.nameTextBox.type("mr")
+        ui.pages.home.filter.nameTextBox.type("a")
         ui.pages.home.filter.publicDataRadioButton.click()
         ui.pages.home.filter.notAvailableCheckbox.click()
         const searchInterceptor = new ApiInterceptor(routeInfos.GETSearch)
@@ -22,6 +22,7 @@ describe('Call Records', () => {
             const searchResultBody = result.response.body
             const sampleDonorId = searchResultBody.filteredDonors[0]._id
             const previousCallCount = searchResultBody.filteredDonors[0].callRecordCount
+            ui.pages.home.searchResult.olderBatchResultsButton.click()
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).click()
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callCountText.contains(String(previousCallCount))
             

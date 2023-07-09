@@ -18,7 +18,6 @@ describe('Logs', () => {
         ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).detailsButton.click()
         ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).logsByPerson.getByIndex(0).expandButton.click()
         ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).logsByPerson.getByIndex(0).logObjects.getByIndex(0).clickMeButton.click()
-        ui.pages.logs.logsByDateTab.logsByDate.getByIndex(0).logsByPerson.getByIndex(0).logObjects.getByIndex(0).clickMeCloseButton.click()
 
         // check all volunteers page
         ui.pages.logs.allMembersTab.click()
