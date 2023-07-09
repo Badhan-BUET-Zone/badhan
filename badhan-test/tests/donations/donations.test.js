@@ -54,9 +54,16 @@ test('POST&DELETE/donations', async () => {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
+
+        let donorResponse = await badhanAxios.get('/users/me', {
+            headers: {
+                "x-auth": signInResponse.data.token
+            }
+        });
+
         let donationDate=new Date().getTime();
         let donationCreationResponse = await badhanAxios.post("/donations",{
-            donorId:env.SUPERADMIN_ID,
+            donorId:donorResponse.data.donor._id,
             date:donationDate
         },{
             headers: {
@@ -70,7 +77,7 @@ test('POST&DELETE/donations', async () => {
 
         // delete/donations part
 
-        let donationDeletionResponse = await badhanAxios.delete("/donations?donorId="+env.SUPERADMIN_ID+"&date="+donationDate,  {
+        let donationDeletionResponse = await badhanAxios.delete("/donations?donorId="+donorResponse.data.donor._id+"&date="+donationDate,  {
             headers: {
                 "x-auth": signInResponse.data.token
             }
@@ -103,7 +110,7 @@ test('POST&DELETE/guest/donations', async () => {
         // delete/donations part
 
         let donationDate=new Date().getTime();
-        let donationDeletionResponse = await badhanAxios.delete("/guest/donations?donorId="+env.SUPERADMIN_ID+"&date="+donationDate);
+        let donationDeletionResponse = await badhanAxios.delete("/guest/donations?donorId=12345&date="+donationDate);
         let validationResult = validate(donationDeletionResponse.data, deleteDonationSchema);
         expect(validationResult.errors).toEqual([]);
 
