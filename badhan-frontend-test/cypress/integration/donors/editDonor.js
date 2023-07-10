@@ -24,7 +24,7 @@ describe('Edit Donors', () => {
             ui.pages.personDetails.details.studentIdTextBox.type(fakeDonorProfile.studentId)
             ui.pages.personDetails.details.addressTextBox.type(fakeDonorProfile.address)
             ui.pages.personDetails.details.hallSelection.click()
-            const anyOtherHall = halls[halls.length - donor.hall - 1]
+            const anyOtherHall = halls[donor.hall === 0?1:0]
             ui.pages.personDetails.details.hallSelection.getSelectionMenuByHallName(anyOtherHall).click()
             ui.pages.personDetails.details.publicDataCheckBox.click()
             ui.pages.personDetails.details.saveButton.click()
