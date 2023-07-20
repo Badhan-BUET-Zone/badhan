@@ -65,6 +65,19 @@ const deleteDonorSchema={
     required: ["status", "statusCode", "message"]
 }
 
+const newDonorInfo = {
+    phone: 8801555444777,
+    bloodGroup: 2,
+    hall: 5,
+    name: "Blah Blah",
+    studentId: 1606060,
+    address: "Azimpur",
+    roomNumber: "3009",
+    comment: "developer of badhan",
+    extraDonationCount: 2,
+    availableToAll: true
+}
+
 test('POST&PATCH&DELETE/donors', async () => {
     try {
 
@@ -75,7 +88,7 @@ test('POST&PATCH&DELETE/donors', async () => {
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let duplicateResponse = await badhanAxios.get(`/donors/checkDuplicate?phone=${8801555444777}`,{
+        let duplicateResponse = await badhanAxios.get(`/donors/checkDuplicate?phone=${newDonorInfo.phone}`,{
             headers: {
                 "x-auth": signInResponse.data.token
             }
@@ -89,18 +102,7 @@ test('POST&PATCH&DELETE/donors', async () => {
             })
         }
 
-        let donorCreationResponse = await badhanAxios.post("/donors", {
-            phone: 8801555444777,
-            bloodGroup: 2,
-            hall: 5,
-            name: "Blah Blah",
-            studentId: 1606060,
-            address: "Azimpur",
-            roomNumber: "3009",
-            comment: "developer of badhan",
-            extraDonationCount: 2,
-            availableToAll: true
-        }, {
+        let donorCreationResponse = await badhanAxios.post("/donors", newDonorInfo, {
             headers: {
                 "x-auth": signInResponse.data.token
             }
@@ -115,10 +117,10 @@ test('POST&PATCH&DELETE/donors', async () => {
         let donorUpdateResponse = await badhanAxios.patch("/donors/v2", {
             donorId: donorCreationResponse.data.newDonor["_id"],
             name: "Blah Blah",
-            phone: 8801555444777,
-            studentId: 1606060,
-            bloodGroup: 2,
-            hall: 5,
+            phone: newDonorInfo.phone,
+            studentId: newDonorInfo.studentId,
+            bloodGroup: newDonorInfo.bloodGroup,
+            hall: newDonorInfo.hall,
             roomNumber: "3009",
             address: "Azimpur",
             availableToAll: true,
