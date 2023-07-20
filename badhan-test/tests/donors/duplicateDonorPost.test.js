@@ -23,7 +23,7 @@ test('POST/donors handle duplicate',async ()=>{
 
         try {
             await badhanAxios.post("/donors", {
-                phone: 8801521438557,
+                phone: `${env.SUPERADMIN_PHONE}`,
                 bloodGroup: 2,
                 hall: 5,
                 name: "Blah Blah",
