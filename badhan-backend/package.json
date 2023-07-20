@@ -12,7 +12,9 @@
     "start:prod": "NODE_ENV=production node ./dist/bin/www.js",
     "dev": "cross-env NODE_ENV=development node -r source-map-support/register ./dist/bin/www",
     "prod": "cross-env NODE_ENV=production node ./dist/bin/www",
-    "serve": "npm run lint && npm run build && npm run dev"
+    "serve": "npm run lint && npm run build && npm run dev",
+    "clear_db": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/clearDatabase.js",
+    "populate_db": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js"
   },
   "engines": {
     "node": "14.x.x"
