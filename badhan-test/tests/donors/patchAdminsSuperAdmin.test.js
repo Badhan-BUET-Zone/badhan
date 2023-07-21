@@ -52,7 +52,7 @@ test('PATCH/admins', async () => {
 
         let sampleVolunteerID = designatedDonorsResponse.data.volunteerList[0]._id;
 
-        // promote to hall admin
+        // promote to super admin
         let superAdminPromotionResult = await badhanAxios.patch('/admins/superadmin',{
             donorId: sampleVolunteerID,
             promoteFlag: true
