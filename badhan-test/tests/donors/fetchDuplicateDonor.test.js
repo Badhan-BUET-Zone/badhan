@@ -42,7 +42,7 @@ test('GET/donors/checkDuplicate', async() => {
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let duplicateResponse = await badhanAxios.get('/donors/checkDuplicate?phone=8801521438557', {
+        let duplicateResponse = await badhanAxios.get(`/donors/checkDuplicate?phone=${env.SUPERADMIN_PHONE}`, {
             headers: {
                 "x-auth": signInResponse.data.token
             }
