@@ -14,6 +14,19 @@ const duplicateDonorSchema = {
     required: ["status", "statusCode", "message", "donorId"]
 }
 
+const newDonorInfo = {
+    phone: `${env.SUPERADMIN_PHONE}`,
+    bloodGroup: 2,
+    hall: 5,
+    name: "Blah Blah",
+    studentId: 1606060,
+    address: "Azimpur",
+    roomNumber: "3009",
+    comment: "developer of badhan",
+    extraDonationCount: 2,
+    availableToAll: true
+}
+
 test('POST/donors handle duplicate',async ()=>{
     try{
         let signInResponse = await badhanAxios.post('/users/signin', {
@@ -22,18 +35,7 @@ test('POST/donors handle duplicate',async ()=>{
         });
 
         try {
-            await badhanAxios.post("/donors", {
-                phone: `${env.SUPERADMIN_PHONE}`,
-                bloodGroup: 2,
-                hall: 5,
-                name: "Blah Blah",
-                studentId: 1606060,
-                address: "Azimpur",
-                roomNumber: "3009",
-                comment: "developer of badhan",
-                extraDonationCount: 2,
-                availableToAll: true
-            }, {
+            await badhanAxios.post("/donors", newDonorInfo, {
                 headers: {
                     "x-auth": signInResponse.data.token
                 }
