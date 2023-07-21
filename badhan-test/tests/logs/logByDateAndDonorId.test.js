@@ -83,26 +83,6 @@ test('GET/log/date/{date}/donorId/{donorId}', async () => {
       password: env.SUPERADMIN_PASSWORD
     })
 
-    let designatedDonors = await badhanAxios.get('/donors/designation', {
-      headers: {
-        'x-auth': signInResponse.data.token
-      }
-    })
-    let volunteerId = designatedDonors.data.volunteerList[0]._id
-    let passwordResetTokenResult = await badhanAxios.post('/donors/password', {
-      donorId: volunteerId,
-    },{
-      headers: {
-        'x-auth': signInResponse.data.token
-      }
-    })
-
-    await badhanAxios.delete('/users/signout', {
-      headers: {
-        'x-auth': passwordResetTokenResult.data.token
-      }
-    })
-
     let getLogResponse = await badhanAxios.get('/log',{
       headers:{
         "x-auth":signInResponse.data.token
