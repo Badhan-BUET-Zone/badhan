@@ -1,0 +1,1 @@
+docker-compose run badhan-backup-service node badhan "$@"

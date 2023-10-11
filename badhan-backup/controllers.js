@@ -13,6 +13,7 @@ const backupController = async (callback) => {
     let folderName = new Date().getTime()
 
     console.log('fetching database...')
+    console.log(mongotools.mongodumpPath+" "+"--out=backup/"+folderName+" "+process.env.MONGODB_URI_PROD)
     var child = child_process.spawnSync(mongotools.mongodumpPath, ['--out=backup/' + folderName,
         process.env.MONGODB_URI_PROD], {encoding: 'utf8'})
     console.log('Process finished.')

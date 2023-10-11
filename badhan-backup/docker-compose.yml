@@ -1,0 +1,9 @@
+version: '3'
+services:
+  badhan-backup-service:
+    container_name: badhan-backup-container
+    build:
+      context: .
+    volumes:
+      - '.:/badhan-backup'
+      - './node_modules:/badhan-backup/node_modules'
