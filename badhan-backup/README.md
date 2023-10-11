@@ -3,21 +3,23 @@ badhan-backup is a command line tool written with Node.JS to backup and restore 
 
 `Badhan-Logo` directory contains the python code to generate splash screen images from the base icon for the android app.
 ### Run the code
-* Run `npm i` to install all dependencies.
+* Install Docker.
+* Run `bin/install`
 * Create `config` folder and paste `badhan-buet-2177eeab149f.json` and `config.env` in it (Ask system administrator for these files)
+* Run `bin/up list` to get the list of all backups. You may also try the other commands listed below.
 
 ### Available commands:
 
-`node badhan backup  `       Backup the mongodb database to firebase storage
+`bin/up backup  `       Backup the mongodb database to firebase storage
 
-`node badhan list   `        Get the list of backups of mongodb database from
+`bin/up list   `        Get the list of backups of mongodb database from
 firebase storage
 
-`node badhan delete`         Remove a backup using timestamp
+`bin/up delete`         Remove a backup using timestamp
 
-`node badhan restore`        Restore a backup using timestamp
+`bin/up restore`        Restore a backup using timestamp
 
-`node badhan prune`          Keep latest maximum 3 backups and delete the remaining
+`bin/up prune`          Keep latest maximum 3 backups and delete the remaining
 backups
 
-`node badhan restoreLatest`  Restore the last backup to database
+`bin/up restoreLatest`  Restore the last backup to database
