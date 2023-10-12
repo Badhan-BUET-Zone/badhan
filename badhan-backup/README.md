@@ -7,6 +7,7 @@ badhan-backup is a command line tool written with Node.JS to backup and restore 
 * Run `bin/install`
 * Create `config` folder and paste `badhan-buet-2177eeab149f.json` and `config.env` in it (Ask system administrator for these files)
 * Run `bin/up list` to get the list of all backups. You may also try the other commands listed below.
+* You may also run the server using `bin/up`.
 
 ### Available commands:
 
