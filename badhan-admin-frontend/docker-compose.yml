@@ -1,0 +1,12 @@
+version: '3'
+services:
+  badhan-admin-frontend-service:
+    container_name: badhan-admin-frontend-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/badhan-admin-frontend'
+      - './node_modules:/badhan-admin-frontend/node_modules'
+    ports:
+      - "3000:3000"
