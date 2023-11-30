@@ -1,0 +1,4 @@
+module.exports = {
+    SUPERADMIN_PASSWORD: 'badhandev',
+    SUPERADMIN_PHONE: '8801500000000',
+}
