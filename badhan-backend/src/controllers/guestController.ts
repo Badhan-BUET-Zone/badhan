@@ -388,46 +388,17 @@ const handleGETDonorsDuplicate = async (req: Request, res: Response):Promise<Res
 }
 
 const handleGETLogs = async (req: Request, res: Response):Promise<Response> => {
-  const logs:{ dateString: string, activeUserCount: number, totalLogCount: number }[] = []
+  const logs:{ date: number, _id: string, name: string, operation: string, hall: number }[] = []
   for (let i: number = 0; i < 15; i++) {
     logs.push({
-      dateString: faker.getFakeDateString(),
-      activeUserCount: faker.getRandomIndex(20),
-      totalLogCount: faker.getRandomIndex(20)
+      date: faker.getTimestamp(10),
+      _id: faker.getId(),
+      name: faker.getName(),
+      hall: faker.getHall(),
+      operation: faker.getOperation()
     })
   }
   return res.status(200).send(new OKResponse200('All logs fetched successfully', {
-    logs
-  }))
-}
-
-const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<Response> => {
-  const logs: {_id: string, date: number, operation: string, details: {}}[] = []
-
-  for (let i: number = 0; i < 15; i++) {
-    logs.push({
-      _id: faker.getId(),
-      date: faker.getTimestamp(2),
-      operation: faker.getOperation(),
-      details: {}
-    })
-  }
-  return res.status(200).send(new OKResponse200('Logs fetched by user and date', {
-    logs
-  }))
-}
-
-const handleGETLogsByDate = async (req: Request, res: Response):Promise<Response> => {
-  const logs: {name: string, donorId: string, hall: number, count: number}[] = []
-  for (let i: number = 0; i < 15; i++) {
-    logs.push({
-      name: faker.getName(),
-      donorId: faker.getId(),
-      hall: faker.getHall(),
-      count: faker.getRandomIndex(20)
-    })
-  }
-  return res.status(200).send(new OKResponse200('Logs fetched by date successfully', {
     logs
   }))
 }
@@ -676,8 +647,6 @@ export default {
   handlePOSTCallRecord,
   handleDELETECallRecord,
   handleGETDonorsDuplicate,
-  handleGETLogsByDateAndDonor,
-  handleGETLogsByDate,
   handlePATCHPassword,
   handleGETPublicContacts,
   handleDELETEPublicContact,
