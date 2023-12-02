@@ -96,22 +96,9 @@ const handleGETStatistics = async (req: Request, res: Response):Promise<Response
 }
 
 const handleGETLogs = async (req: Request, res: Response):Promise<Response> => {
-  const logCountsResult: { data: ILog[]; status: string; message: string } = await logInterface.getLogCounts()
-  return res.status(200).send(new OKResponse200('Log counts fetched successfully', {
-    logs: logCountsResult.data
-  }))
-}
-
-const handleGETLogsByDate = async (req: Request<{date: string},{},{},{}>, res: Response):Promise<Response> => {
-  const logsByDateResult: { data: ILog[]; status: string; message: string } = await logInterface.getLogsByDate(parseInt(req.params.date,10))
-  return res.status(200).send(new OKResponse200('Logs fetched by date successfully', {
-    logs: logsByDateResult.data
-  }))
-}
-const handleGETLogsByDateAndDonor = async (req: Request, res: Response):Promise<Response> => {
-  const logsByDateAndDonor: { data: ILog[]; message: string; status: string } = await logInterface.getLogsByDateAndUser(parseInt(req.params.date,10), req.params.donorId)
-  return res.status(200).send(new OKResponse200('Logs fetched by data and donor successfully', {
-    logs: logsByDateAndDonor.data
+  const logsResult: { data: ILog[]; status: string; message: string } = await logInterface.getLogs()
+  return res.status(200).send(new OKResponse200('Logs fetched successfully', {
+    logs: logsResult.data
   }))
 }
 
@@ -125,7 +112,5 @@ export default {
   handleGETStatistics,
   handleGETAppVersions,
   handleGETLogs,
-  handleGETLogsByDate,
-  handleGETLogsByDateAndDonor,
   handleDELETELogs
 }

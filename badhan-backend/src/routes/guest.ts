@@ -106,14 +106,6 @@ router.delete('/callrecords',
   guestController.handleDELETECallRecord
 )
 
-router.get('/log/date/:date/donorId/:donorId',
-  guestController.handleGETLogsByDateAndDonor
-)
-
-router.get('/log/date/:date',
-  guestController.handleGETLogsByDate
-)
-
 router.get('/log',
   guestController.handleGETLogs
 )

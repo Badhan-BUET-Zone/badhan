@@ -7,3 +7,5 @@ app.yml
 .env.development
 dist
 .vscode
+.DS_Store
+src/.DS_Store
