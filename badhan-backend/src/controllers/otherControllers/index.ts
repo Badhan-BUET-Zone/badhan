@@ -9,5 +9,5 @@ export const underMaintenanceController = async (req: Request, res: Response): P
   return res.status(404).send(new NotFoundError404('This feature is currently under maintenance',{}))
 }
 export const onlineCheckController = async (req: Request, res: Response): Promise<Response> => {
-  return res.status(200).send(new OKResponse200(`Badhan backend API is online. environment: ${dotenv.NODE_ENV}`,{}))
+  return res.status(200).send(new OKResponse200(`Badhan backend API is online! environment: ${dotenv.NODE_ENV}`,{}))
 }
