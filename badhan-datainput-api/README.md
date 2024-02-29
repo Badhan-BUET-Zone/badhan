@@ -18,5 +18,5 @@ To utilize the Badhan Data Input API, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/badhan-datainput-api.git
+   https://github.com/Badhan-BUET-Zone/badhan-datainput-api.git
 
