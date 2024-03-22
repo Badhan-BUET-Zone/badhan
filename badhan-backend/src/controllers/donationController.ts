@@ -71,7 +71,25 @@ const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res:
   }))
 }
 
+const handleGETDonationsReport = async (req: Request<{},{},{},{startDate: string, endDate: string}>, res: Response):Promise<Response> => {
+  const reqQuery: {startDate: string, endDate: string} = req.query
+  const startTimeStampNumber: number = parseInt(reqQuery.startDate,10)
+  const endTimeStampNumber: number = parseInt(reqQuery.endDate,10)
+
+  const reportResult: {data: donationInterface.IDonationCountByBloodGroup[], message: string, status: string} = await donationInterface.getDonationCountByTimePeriod(startTimeStampNumber, endTimeStampNumber)
+
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONATIONS REPORT', {
+    ...reportResult.data,
+    name: res.locals.middlewareResponse.donor.name
+  })
+
+  return res.status(200).send(new OKResponse200(reportResult.message, {
+    report: reportResult.data
+  }))
+}
+
 export default {
   handlePOSTDonations,
-  handleDELETEDonations
+  handleDELETEDonations,
+  handleGETDonationsReport
 }

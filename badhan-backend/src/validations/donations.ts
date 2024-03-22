@@ -1,6 +1,6 @@
 import { validate } from './index'
 import { validateBODYDate, validateBODYDonorId } from './validateRequest/validateBody'
-import { validateQUERYDonorId, validateQUERYDate } from './validateRequest/validateQuery'
+import { validateQUERYDonorId, validateQUERYDate, validateQUERYStartDate, validateQUERYEndDate } from './validateRequest/validateQuery'
 import {NextFunction, Request, Response} from "express";
 
 const validatePOSTDonations:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
@@ -13,7 +13,13 @@ const validateDELETEDonations:(req: Request, res: Response, next: NextFunction) 
   validateQUERYDate
 ])
 
+const validateGETDonationsReport:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
+  validateQUERYStartDate,
+  validateQUERYEndDate
+])
+
 export default {
   validatePOSTDonations,
-  validateDELETEDonations
+  validateDELETEDonations,
+  validateGETDonationsReport
 }
