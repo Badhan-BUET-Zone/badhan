@@ -1,6 +1,7 @@
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
+import { ObjectId } from 'bson';
 
 export const insertDonor = async (phone: number, bloodGroup: number, hall: number, name: string, studentId: string, address: string, roomNumber: string, lastDonation: number, comment: string, availableToAll: boolean):Promise<{data: IDonor, message: string, status: string}> => {
     const donor: IDonor = new DonorModel({phone, bloodGroup, hall, name, studentId, address, roomNumber, lastDonation: 0, comment, availableToAll})
@@ -521,5 +522,23 @@ export const findDonorIdsByPhone = async (userDesignation: number, userHall: num
         message: 'Existing donors fetched successfully',
         status: 'OK',
         donors: existingDonors
+    }
+}
+
+export const getCreationCountBetweenTimeStamps = async (startTime: number, endTime: number): Promise<{data: number, message: string, status: string}> => {
+    const startId: ObjectId = new ObjectId(Math.floor(startTime / 1000).toString(16) + "0000000000000000");
+    const endId: ObjectId = new ObjectId(Math.floor(endTime / 1000).toString(16) + "0000000000000000");
+
+    const newDonorCount: number = await DonorModel.countDocuments({
+        _id: {
+            $gte: startId,
+            $lt: endId
+        }
+    });
+
+    return {
+        data: newDonorCount,
+        message: 'Count of newly created donors fetched',
+        status: 'OK'
     }
 }
