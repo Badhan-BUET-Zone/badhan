@@ -24,4 +24,12 @@ router.delete('/',
   donationController.handleDELETEDonations
 )
 
+router.get('/report',
+  donationValidator.validateGETDonationsReport,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  authenticator.handleSuperAdminCheck,
+  donationController.handleGETDonationsReport
+)
+
 export default router
