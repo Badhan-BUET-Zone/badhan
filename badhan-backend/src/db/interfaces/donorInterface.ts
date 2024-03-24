@@ -542,3 +542,43 @@ export const getCreationCountBetweenTimeStamps = async (startTime: number, endTi
         status: 'OK'
     }
 }
+
+export const getCountOfDonorsWhoDonatedForTheFirstTime = async (startTime: number, endTime: number): Promise<{data: number, message: string, status: string}> => {
+    // Insert a few documents into the sales collection.
+    const result:{numberOfFirstDonations: number}[] = await DonorModel.aggregate([
+    {
+        $lookup: {
+            from: "donations",
+            localField: "_id",
+            foreignField: "donorId",
+            as: "donor_donations"
+        }
+    },
+    {
+        $unwind: "$donor_donations"
+    },
+    {
+        $group: {
+            _id: "$_id",
+            firstDonationTime: { $min: "$donor_donations.date" }
+        }
+    },
+    {
+        $match: {
+            firstDonationTime: {
+                $gte: startTime,
+                $lte: endTime
+            }
+        }
+    },
+    {
+        $count: "numberOfFirstDonations"
+    }
+    ])
+
+    return {
+        data: result[0] ? result[0].numberOfFirstDonations : 0,
+        message: 'Successfully fected count of donors who donated for the first time between timestamps',
+        status: 'OK'
+    }
+}

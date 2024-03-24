@@ -79,6 +79,8 @@ const handleGETDonationsReport = async (req: Request<{},{},{},{startDate: string
 
   const reportResult: {data: donationInterface.IDonationCountByBloodGroup[], message: string, status: string} = await donationInterface.getDonationCountByTimePeriod(startTimeStampNumber, endTimeStampNumber)
   const newDonorCreatedResult: {data: number, message: string, status: string} = await donorInterface.getCreationCountBetweenTimeStamps(startTimeStampNumber, endTimeStampNumber)
+  const countOfFirstTimeDonationsOfDonors: {data: number, message: string, status: string} = await donorInterface.getCountOfDonorsWhoDonatedForTheFirstTime(startTimeStampNumber, endTimeStampNumber)
+
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONATIONS REPORT', {
     ...reportResult.data,
     name: res.locals.middlewareResponse.donor.name
@@ -86,7 +88,8 @@ const handleGETDonationsReport = async (req: Request<{},{},{},{startDate: string
 
   return res.status(200).send(new OKResponse200(reportResult.message, {
     report: reportResult.data,
-    newDonorCreated: newDonorCreatedResult.data
+    newDonorCreated: newDonorCreatedResult.data,
+    firstDonationCount: countOfFirstTimeDonationsOfDonors.data
   }))
 }
 
