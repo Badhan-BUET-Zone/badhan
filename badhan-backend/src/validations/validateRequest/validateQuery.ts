@@ -47,6 +47,14 @@ export const validateQUERYDate: ValidationChain = query('date')
   .exists().not().isEmpty().withMessage('date is required')
   .isInt().toInt().withMessage('date must be integer')
 
+export const validateQUERYStartDate: ValidationChain = query('startDate')
+.exists().not().isEmpty().withMessage('startDate is required')
+.isInt().toInt().withMessage('date must be integer')
+
+export const validateQUERYEndDate: ValidationChain = query('endDate')
+.exists().not().isEmpty().withMessage('endDate is required')
+.isInt().toInt().withMessage('date must be integer')
+
 export const validateQUERYCallRecordId: ValidationChain = query('callRecordId')
   .exists().withMessage('callRecordId is required')
   .customSanitizer((value:string):string => String(value))

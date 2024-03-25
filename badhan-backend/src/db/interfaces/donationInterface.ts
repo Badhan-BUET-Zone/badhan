@@ -62,3 +62,70 @@ export const getCount = async ():Promise<{message: string, status: string, data:
     }
 }
 
+export interface IDonationCountByBloodGroup {
+    bloodGroup: number
+    counts: {
+        month: number,
+        year: number,
+        count: number
+    }[]
+}
+
+export const getDonationCountByTimePeriod = async (startTime: number, endTime: number): Promise<{message: string, status: string, data: IDonationCountByBloodGroup[]}> =>{
+    const donationCountByMonthAndBlood: IDonationCountByBloodGroup[] = await DonationModel.aggregate([
+        {
+            $match: {
+                date: {
+                    $gte: startTime,
+                    $lt: endTime
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "donors",
+                localField: "donorId",
+                foreignField: "_id",
+                as: "donor"
+            }
+        },
+        {
+            $unwind: "$donor"
+        },
+        {
+            $group: {
+                _id: {
+                    bloodGroup: "$donor.bloodGroup",
+                    month: { $month: { $toDate: "$date" } },
+                    year: { $year: { $toDate: "$date" } }
+                },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $group: {
+                _id: "$_id.bloodGroup",
+                counts: {
+                    $push: {
+                        month: "$_id.month",
+                        year: "$_id.year",
+                        count: "$count"
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                bloodGroup: "$_id",
+                counts: 1
+            }
+        }
+    ])
+    return {
+        message: 'Fetched donation count by month and blood group',
+        status: 'OK',
+        data: donationCountByMonthAndBlood
+    }
+}
+
