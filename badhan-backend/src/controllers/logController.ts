@@ -108,9 +108,15 @@ const handleDELETELogs = async (req: Request, res: Response):Promise<Response>  
   return res.status(200).send(new OKResponse200('All logs deleted successfully',{}))
 }
 
+const handleGETLogsDonations = async (req: Request, res: Response):Promise<Response>  => {
+  const donationYearMonthCountResult:{message: string, status: string, data: donationInterface.YearMonthCount} = await donationInterface.getDonationCountGroupedByYear()
+  return res.status(200).send(new OKResponse200(donationYearMonthCountResult.message,{countByYearMonth: donationYearMonthCountResult.data}))
+}
+
 export default {
   handleGETStatistics,
   handleGETAppVersions,
   handleGETLogs,
-  handleDELETELogs
+  handleDELETELogs,
+  handleGETLogsDonations
 }
