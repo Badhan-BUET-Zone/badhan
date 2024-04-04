@@ -3,7 +3,6 @@ import donationController from '../controllers/donationController'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
 import donationValidator from '../validations/donations'
-
 const router: AsyncRouterInstance = AsyncRouter()
 
 router.post('/',
@@ -31,5 +30,6 @@ router.get('/report',
   authenticator.handleSuperAdminCheck,
   donationController.handleGETDonationsReport
 )
+
 
 export default router

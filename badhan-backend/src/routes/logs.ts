@@ -18,6 +18,11 @@ router.get('/log/statistics',
   logController.handleGETStatistics
 )
 
+router.get('/log/donations',
+  rateLimiter.commonLimiter,
+  logController.handleGETLogsDonations
+)
+
 router.get('/log',
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
@@ -31,5 +36,7 @@ router.delete('/log',
   authenticator.handleSuperAdminCheck,
   logController.handleDELETELogs
 )
+
+
 
 export default router
