@@ -6,17 +6,13 @@ mongoose.Promise = global.Promise
 
 myConsole.log('Connecting to ' + (String(dotenv.MONGODB_URI).includes('Test') ? 'Test' : 'Production') + ' database...')
 
-const connectToDB = async ():Promise<void> => {
+const connectToDB = async (): Promise<void> => {
   try {
-    mongoose.connect(dotenv.MONGODB_URI, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true
-    } as ConnectOptions, ():void => {
-      myConsole.log('You are connected to the database.')
-    })
+    await mongoose.connect(dotenv.MONGODB_URI);
+    myConsole.log('You are connected to the database.');
   } catch (e: any) {
-    myConsole.log(e.message)
-    process.exit()
+    myConsole.log(e.message);
+    process.exit();
   }
 }
 

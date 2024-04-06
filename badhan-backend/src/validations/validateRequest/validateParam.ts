@@ -1,6 +1,6 @@
 import {param, ValidationChain} from 'express-validator'
 import mongoose from 'mongoose'
-
+import { checkTimeStamp, checkTimeStampMessage } from './others'
 export const validatePARAMDonorId:ValidationChain = param('donorId')
   .exists().withMessage('donorId is required')
   .customSanitizer((value:string):string => String(value))
@@ -8,7 +8,7 @@ export const validatePARAMDonorId:ValidationChain = param('donorId')
 
 export const validatePARAMDate: ValidationChain = param('date')
   .exists().not().isEmpty().withMessage('date is required')
-  .isInt().toInt().withMessage('date must be integer')
+  .isInt().toInt().withMessage('date must be integer').custom(checkTimeStamp).withMessage(checkTimeStampMessage('date'))
 
 export const validatePARAMTokenId: ValidationChain = param('tokenId')
   .exists().withMessage('tokenId is required')

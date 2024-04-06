@@ -1,6 +1,7 @@
 import { body, ValidationChain } from 'express-validator'
 import mongoose from 'mongoose'
 import {checkEmail} from "./others";
+import { checkTimeStamp, checkTimeStampMessage } from './others';
 
 export const validateBODYPhone: ValidationChain = body('phone')
   .exists().withMessage('Phone number is required')
@@ -77,7 +78,7 @@ export const validateBODYPromoteFlag: ValidationChain = body('promoteFlag')
 
 export const validateBODYDate: ValidationChain = body('date')
   .exists().not().isEmpty().withMessage('date is required')
-  .isInt().toInt().withMessage('date must be integer')
+  .isInt().toInt().withMessage('date must be integer').custom(checkTimeStamp).withMessage(checkTimeStampMessage('date'))
 
 export const validateBODYEmail: ValidationChain = body('email')
   .exists().withMessage('email is required')

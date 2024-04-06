@@ -1,4 +1,5 @@
 import { query, ValidationChain } from 'express-validator'
+import { checkTimeStamp, checkTimeStampMessage } from './others'
 import mongoose from 'mongoose'
 
 export const validateQUERYDonorId: ValidationChain = query('donorId')
@@ -45,15 +46,15 @@ export const validateQUERYAvailableToAll: ValidationChain = query('availableToAl
 
 export const validateQUERYDate: ValidationChain = query('date')
   .exists().not().isEmpty().withMessage('date is required')
-  .isInt().toInt().withMessage('date must be integer')
+  .isInt().toInt().withMessage('date must be integer').custom(checkTimeStamp).withMessage(checkTimeStampMessage('date'))
 
 export const validateQUERYStartDate: ValidationChain = query('startDate')
 .exists().not().isEmpty().withMessage('startDate is required')
-.isInt().toInt().withMessage('date must be integer')
+.isInt().toInt().withMessage('date must be integer').custom(checkTimeStamp).withMessage(checkTimeStampMessage('startDate'))
 
 export const validateQUERYEndDate: ValidationChain = query('endDate')
 .exists().not().isEmpty().withMessage('endDate is required')
-.isInt().toInt().withMessage('date must be integer')
+.isInt().toInt().withMessage('date must be integer').custom(checkTimeStamp).withMessage(checkTimeStampMessage('endDate'))
 
 export const validateQUERYCallRecordId: ValidationChain = query('callRecordId')
   .exists().withMessage('callRecordId is required')

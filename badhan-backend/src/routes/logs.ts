@@ -3,6 +3,7 @@ import logController from '../controllers/logController'
 import { deprecatedController } from '../controllers/otherControllers'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
+import donationValidator from '../validations/donations'
 
 const router: AsyncRouterInstance = AsyncRouter()
 
@@ -17,8 +18,8 @@ router.get('/log/statistics',
   authenticator.handleSuperAdminCheck,
   logController.handleGETStatistics
 )
-
 router.get('/log/donations',
+  donationValidator.validateGETDonationsReport,
   rateLimiter.commonLimiter,
   logController.handleGETLogsDonations
 )

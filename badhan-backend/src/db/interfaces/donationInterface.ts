@@ -1,5 +1,6 @@
 import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
+import { Condition } from 'mongoose'
 import {Schema} from 'mongoose'
 
 export const insertDonation = async (phone: number, donorId: Schema.Types.ObjectId, date: number ): Promise<{data: IDonation, message: string, status: string}> => {
@@ -13,7 +14,7 @@ export const insertDonation = async (phone: number, donorId: Schema.Types.Object
     }
 }
 
-export const deleteDonationByQuery = async (query: { donorId: Schema.Types.ObjectId, date: number }): Promise<{data?:IDonation, message: string, status: string}> => {
+export const deleteDonationByQuery = async (query: { donorId: Condition<Schema.Types.ObjectId>, date: number }): Promise<{data?:IDonation, message: string, status: string}> => {
     const data: IDonation | null = await DonationModel.findOneAndDelete(query)
     if (data) {
         return {
@@ -29,7 +30,7 @@ export const deleteDonationByQuery = async (query: { donorId: Schema.Types.Objec
     }
 }
 
-export const findMaxDonationByDonorId = async (id: Schema.Types.ObjectId): Promise<{data?: IDonation[], message: string, status: string}> => {
+export const findMaxDonationByDonorId = async (id: Condition<Schema.Types.ObjectId>): Promise<{data?: IDonation[], message: string, status: string}> => {
     const data: IDonation[] = await DonationModel.find({donorId: id}).sort({date: -1}).limit(1)
     if (data.length !== 0) {
         return {
@@ -134,8 +135,16 @@ export type YearMonthCount = {
         [month: string]: number;
     };
 };
-export const getDonationCountGroupedByYear = async (): Promise<{message: string, status: string, data: YearMonthCount}> =>{
+export const getDonationCountGroupedByYear = async (startTimeStamp: number, endTimeStamp: number): Promise<{message: string, status: string, data: YearMonthCount}> =>{
     const donationCountByYearMonth: YearMonthCount[] = await DonationModel.aggregate([
+        {
+            $match: {
+                date: {
+                    $gte: startTimeStamp,
+                    $lt: endTimeStamp
+                }
+            }
+        },
         {
             $project: {
                 year: { $toString: { $year: { $toDate: "$date" } } },
@@ -188,6 +197,7 @@ export const getDonationCountGroupedByYear = async (): Promise<{message: string,
             }
         }
     ])
+
     return {
         message: 'Fetched donation count by year and month',
         status: 'OK',

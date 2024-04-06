@@ -470,7 +470,6 @@ export const generateSearchQuery = (reqQuery: {
 }
 
 export const findDonorIdsByPhone = async (userDesignation: number, userHall: number, phoneList: number[]): Promise<{donors: IDonor[], message: string, status: string}> => {
-    // phoneList = [8801521438557, 8801786433743, 8801627151097]
     let existingDonors: IDonor[]
     if (userDesignation === 3) {
         existingDonors = await DonorModel.aggregate([
@@ -525,26 +524,7 @@ export const findDonorIdsByPhone = async (userDesignation: number, userHall: num
     }
 }
 
-export const getCreationCountBetweenTimeStamps = async (startTime: number, endTime: number): Promise<{data: number, message: string, status: string}> => {
-    const startId: ObjectId = new ObjectId(Math.floor(startTime / 1000).toString(16) + "0000000000000000");
-    const endId: ObjectId = new ObjectId(Math.floor(endTime / 1000).toString(16) + "0000000000000000");
-
-    const newDonorCount: number = await DonorModel.countDocuments({
-        _id: {
-            $gte: startId,
-            $lt: endId
-        }
-    });
-
-    return {
-        data: newDonorCount,
-        message: 'Count of newly created donors fetched',
-        status: 'OK'
-    }
-}
-
 export const getCountOfDonorsWhoDonatedForTheFirstTime = async (startTime: number, endTime: number): Promise<{data: number, message: string, status: string}> => {
-    // Insert a few documents into the sales collection.
     const result:{numberOfFirstDonations: number}[] = await DonorModel.aggregate([
     {
         $lookup: {
