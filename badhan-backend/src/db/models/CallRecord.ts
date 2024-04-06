@@ -1,4 +1,6 @@
 import {Schema, model, Model, Document} from 'mongoose'
+import { year2000TimeStamp } from '../../constants'
+import { checkNumber, checkTimeStamp } from './validators'
 
 export interface ICallRecord extends Document {
   callerId: Schema.Types.ObjectId,
@@ -23,12 +25,7 @@ const callRecordSchema: Schema = new Schema<ICallRecord>({
     default: 0,
     min: 0,
     required: true,
-    validate: [{
-      validator: (value: number):boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: lastDonation must be an integer'
-    }]
+    validate: [checkNumber('date'),checkTimeStamp('date')]
   },
   expireAt: {
     type: Date,

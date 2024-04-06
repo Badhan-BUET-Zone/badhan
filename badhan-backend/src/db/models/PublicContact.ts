@@ -1,4 +1,5 @@
 import { Schema, model, Model, Document} from 'mongoose'
+import { checkNumber, checkPublicContactBloodGroup } from './validators'
 export interface IPublicContact extends Document {
   donorId: Schema.Types.ObjectId,
   bloodGroup: number,
@@ -12,17 +13,7 @@ const publicContactSchema: Schema = new Schema<IPublicContact>({
   bloodGroup: {
     type: Number,
     default: -1,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: bloodGroup must be an integer'
-    }, {
-      validator: (value: number): boolean => {
-        return [-1, 0, 2, 4, 6].includes(value)
-      },
-      msg: 'DB: Please input a valid bloodGroup'
-    }],
+    validate: [checkNumber('bloodGroup'), checkPublicContactBloodGroup('bloodGroup')],
     required: true
   }
 

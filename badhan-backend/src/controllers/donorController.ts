@@ -3,7 +3,7 @@ import * as donationInterface from '../db/interfaces/donationInterface'
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
 import {Request, Response} from 'express'
-import { halls } from '../constants'
+import { halls, year2000TimeStamp } from '../constants'
 
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
@@ -61,7 +61,7 @@ const handlePOSTDonors = async (req: Request<{},{},{
     dummyDonations.push({
       phone: donorInsertionResult.data.phone,
       donorId: donorInsertionResult.data._id,
-      date: 0
+      date: year2000TimeStamp
     } as IDonation)
   }
 

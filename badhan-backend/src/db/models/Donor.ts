@@ -7,6 +7,8 @@ import {PublicContactModel} from "./PublicContact";
 import {ActiveDonorModel} from "./ActiveDonor";
 import {TokenModel} from "./Token";
 import { checkEmail } from '../../validations/validateRequest/others'
+import { year2000TimeStamp } from '../../constants';
+import { checkNumber, checkTimeStamp } from './validators';
 
 export interface IDonor extends Document {
   phone: number,
@@ -32,10 +34,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     required: true,
     min: 8801000000000,
     max: 8801999999999,
-    validate: {
-      validator: Number.isInteger,
-      message: '{VALUE} is not an integer value'
-    }
+    validate: [checkNumber('phone')]
   },
   password: {
     type: String
@@ -64,12 +63,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     required: true,
     min: 0,
     max: 7,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: bloodGroup must be an integer'
-    }, {
+    validate: [checkNumber('bloodGroup'), {
       validator: (value: number): boolean => {
         return [0, 1, 2, 3, 4, 5, 6, 7].includes(value)
       },
@@ -81,12 +75,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     required: true,
     min: 0,
     max: 8,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: hall must be an integer'
-    }, {
+    validate: [checkNumber('hall'), {
       validator: (value: number): boolean => {
         return [0, 1, 2, 3, 4, 5, 6, 8].includes(value)
       },
@@ -114,12 +103,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     default: 0,
     min: 0,
     max: 3,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: designation must be an integer'
-    }, {
+    validate: [checkNumber('designation'), {
       validator: (value: number): boolean => {
         return [0, 1, 2, 3].includes(value)
       },
@@ -132,12 +116,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     default: 0,
     min: 0,
     required: true,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: lastDonation must be an integer'
-    }]
+    validate: [checkNumber('lastDonation')]
   },
   name: {
     type: String,
@@ -157,14 +136,9 @@ const donorSchema: Schema = new Schema<IDonor>({
   commentTime: {
     type: Number,
     min: 0,
-    default: 0,
+    default: year2000TimeStamp,
     required: true,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: commentTime must be an integer'
-    }]
+    validate: [checkNumber('commentTime'),checkTimeStamp('commentTime')],
   },
 
   availableToAll: {

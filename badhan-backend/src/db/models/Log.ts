@@ -1,4 +1,6 @@
 import {Document, Schema, model, Model} from 'mongoose'
+import { year2000TimeStamp } from '../../constants'
+import { checkNumber, checkTimeStamp } from './validators'
 export interface ILog extends Document {
   donorId: Schema.Types.ObjectId,
   date: number,
@@ -17,12 +19,7 @@ const logSchema: Schema = new Schema<ILog>({
     required: true,
     default: Date.now,
     min: 0,
-    validate: [{
-      validator: (value: number): boolean => {
-        return Number.isInteger(value)
-      },
-      msg: 'DB: lastDonation must be an integer'
-    }]
+    validate: [checkNumber('date'),checkTimeStamp('date')]
   },
   operation: {
     type: String,

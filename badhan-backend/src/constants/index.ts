@@ -7,3 +7,5 @@ export const departments: string[] = [
 export const halls: string[] = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 export const designations: string[] = ['Donor', 'Volunteer', 'Hall Admin', 'Super Admin']
 export const bloodGroups: string[] = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+
+export const year2000TimeStamp: number = new Date('2000-01-01T00:00:00Z').getTime()
