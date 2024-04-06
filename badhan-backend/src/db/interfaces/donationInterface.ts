@@ -135,16 +135,8 @@ export type YearMonthCount = {
         [month: string]: number;
     };
 };
-export const getDonationCountGroupedByYear = async (startTimeStamp: number, endTimeStamp: number): Promise<{message: string, status: string, data: YearMonthCount}> =>{
+export const getDonationCountGroupedByYear = async (): Promise<{message: string, status: string, data: YearMonthCount}> =>{
     const donationCountByYearMonth: YearMonthCount[] = await DonationModel.aggregate([
-        {
-            $match: {
-                date: {
-                    $gte: startTimeStamp,
-                    $lt: endTimeStamp
-                }
-            }
-        },
         {
             $project: {
                 year: { $toString: { $year: { $toDate: "$date" } } },

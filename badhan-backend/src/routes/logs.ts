@@ -19,7 +19,6 @@ router.get('/log/statistics',
   logController.handleGETStatistics
 )
 router.get('/log/donations',
-  donationValidator.validateGETDonationsReport,
   rateLimiter.commonLimiter,
   logController.handleGETLogsDonations
 )

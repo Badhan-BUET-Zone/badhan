@@ -109,12 +109,8 @@ const handleDELETELogs = async (req: Request, res: Response):Promise<Response>  
   return res.status(200).send(new OKResponse200('All logs deleted successfully',{}))
 }
 
-const handleGETLogsDonations = async (req: Request<{},{},{},{startDate: string, endDate: string}>, res: Response):Promise<Response>  => {
-  const reqQuery: {startDate: string, endDate: string} = req.query
-  const startTimeStampNumber: number = parseInt(reqQuery.startDate,10)
-  const endTimeStampNumber: number = parseInt(reqQuery.endDate,10)
-
-  const donationYearMonthCountResult:{message: string, status: string, data: donationInterface.YearMonthCount} = await donationInterface.getDonationCountGroupedByYear(startTimeStampNumber, endTimeStampNumber)
+const handleGETLogsDonations = async (req: Request, res: Response):Promise<Response>  => {
+  const donationYearMonthCountResult:{message: string, status: string, data: donationInterface.YearMonthCount} = await donationInterface.getDonationCountGroupedByYear()
   return res.status(200).send(new OKResponse200(donationYearMonthCountResult.message,{countByYearMonth: donationYearMonthCountResult.data}))
 }
 
