@@ -58,22 +58,20 @@ test('GET/donations/report success', async () => {
       phone: env.SUPERADMIN_PHONE,
       password: env.SUPERADMIN_PASSWORD
     });
+    const authHeader = {headers: {"x-auth": signInResponse.data.token}};
 
-    let getReportsResponse = await badhanAxios.get('/donations/report?startDate=1707237110000&endDate=1717113600000', {
-      headers: {
-        "x-auth": signInResponse.data.token
-      }
-    });
+    const donorId = (await badhanAxios.get('/users/me', authHeader)).data.donor._id;
 
-    let validationResult = validate(getReportsResponse.data, getReportsSchema);
+    const donationDate = new Date().getTime();
+    await badhanAxios.post("/donations",{donorId: donorId,date: donationDate,}, authHeader);
+            
+    // start date 3 months before donation date
+    const startDate = new Date(donationDate - 3 * 30 * 24 * 60 * 60 * 1000).getTime();
+    let getReportsResponse = await badhanAxios.get(`/donations/report?startDate=${startDate}&endDate=${donationDate}`, authHeader);
+    expect(validate(getReportsResponse.data, getReportsSchema).errors).toEqual([]);
 
-    expect(validationResult.errors).toEqual([]);
-
-    await badhanAxios.delete('/users/signout', {
-      headers: {
-        "x-auth": signInResponse.data.token
-      }
-    });
+    await badhanAxios.delete(`/donations?donorId=${donorId}&date=${donationDate}`, authHeader);
+    await badhanAxios.delete('/users/signout', authHeader);
 
   } catch (e) {
     throw processError(e);
@@ -82,50 +80,28 @@ test('GET/donations/report success', async () => {
 
 // invalid request test
 test('GET/donations/report invalid request', async () => {
+  // no date query params
   try {
-    let signInResponse = await badhanAxios.post('/users/signin', {
-      phone: env.SUPERADMIN_PHONE,
-      password: env.SUPERADMIN_PASSWORD
-    });
-
-    // no date query params
-    try {
-      await badhanAxios.get('/donations/report', {
-        "x-auth": signInResponse.data.token
-      });
-    } catch (e) {
-      let validationResult = validate(e.response.data, invalidRequestSchema);
-      expect(validationResult.errors).toEqual([]);
-    }
-
-    // invalid start date
-    try {
-      await badhanAxios.get('/donations/report?startDate=2&endDate=1717113600000', {
-        "x-auth": signInResponse.data.token
-      });
-    } catch (e) {
-      let validationResult = validate(e.response.data, invalidRequestSchema);
-      expect(validationResult.errors).toEqual([]);
-    }
-
-    // invalid end date
-    try {
-      await badhanAxios.get('/donations/report?startDate=1707237110000&endDate=2', {
-        "x-auth": signInResponse.data.token
-      });
-    } catch (e) {
-      let validationResult = validate(e.response.data, invalidRequestSchema);
-      expect(validationResult.errors).toEqual([]);
-    }
-
-    await badhanAxios.delete('/users/signout', {
-      headers: {
-        "x-auth": signInResponse.data.token
-      }
-    });
-
+    await badhanAxios.get('/donations/report');
   } catch (e) {
-    throw processError(e);
+    let validationResult = validate(e.response.data, invalidRequestSchema);
+    expect(validationResult.errors).toEqual([]);
+  }
+
+  // invalid start date
+  try {
+    await badhanAxios.get('/donations/report?startDate=2&endDate=1717113600000');
+  } catch (e) {
+    let validationResult = validate(e.response.data, invalidRequestSchema);
+    expect(validationResult.errors).toEqual([]);
+  }
+
+  // invalid end date
+  try {
+    await badhanAxios.get('/donations/report?startDate=1707237110000&endDate=2');
+  } catch (e) {
+    let validationResult = validate(e.response.data, invalidRequestSchema);
+    expect(validationResult.errors).toEqual([]);
   }
 })
 
