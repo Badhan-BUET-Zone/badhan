@@ -47,7 +47,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     maxlength: 7,
     validate: [{
       validator: (value: string): boolean => {
-        return [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 18].includes(parseInt(value.substr(2, 2), 10))
+        return [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 17, 18].includes(parseInt(value.substr(2, 2), 10))
       },
       msg: 'DB: Please input a valid department number'
     }, {

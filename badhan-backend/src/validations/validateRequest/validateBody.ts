@@ -32,7 +32,7 @@ export const validateBODYStudentId: ValidationChain = body('studentId')
   .exists().withMessage('studentId is required')
   .customSanitizer((value:any):string => String(value)).escape().trim()
   .isLength({ min: 7, max: 7 }).withMessage('studentId must be of 7 digits')
-  .custom((value: string):boolean => [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 18].includes(parseInt(value.substr(2, 2),10))).withMessage('Please input a valid department number')
+  .custom((value: string):boolean => [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 17, 18].includes(parseInt(value.substr(2, 2),10))).withMessage('Please input a valid department number')
   .custom((value:string):boolean => {
     const inputYear: number = parseInt('20' + value.substr(0, 2),10)
     return inputYear <= new Date().getFullYear() && inputYear >= 2001
