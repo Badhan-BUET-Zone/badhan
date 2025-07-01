@@ -27,13 +27,22 @@ Response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. envi
 Testing Deployment: `curl https://badhan-buet-test.uc.r.appspot.com`
 
 Response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development"}`
-# Procedure for Local Setup
+# Procedure for Local Setup (with Docker)
 * Install [Docker](https://docs.docker.com/engine/install/).
 * Clone this repository:
 `git clone https://github.com/Badhan-BUET-Zone/badhan-backend`.
 * Run `bin/install` from inside the cloned repo.
 * Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
 * Run `bin/up` to start the server.
+* Run `curl http://localhost:3000` in another terminal. You should see the response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development"}`
+
+# Procedure for Local Setup (without Docker)
+* Clone this repository:
+`git clone https://github.com/Badhan-BUET-Zone/badhan-backend`.
+* Change directory to `badhan-backend` folder.
+* Run `npm i`.
+* Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
+* Run `npm run serve`
 * Run `curl http://localhost:3000` in another terminal. You should see the response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development"}`
 
 That's it. The badhan-backend is now running in your local machine.
