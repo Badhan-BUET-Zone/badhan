@@ -1,0 +1,8 @@
+{
+  "projectId": "badhan-frontend-test",
+  "video": false,
+  "viewportHeight": 851,
+  "viewportWidth": 393,
+  "scrollBehavior" : "center",
+  "defaultCommandTimeout": 20000
+}

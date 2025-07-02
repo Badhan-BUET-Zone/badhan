@@ -1,0 +1,19 @@
+{
+  "name": "badhan-frontend-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "test:headed": "cypress run --spec 'cypress/integration/**/*' --headed",
+    "test": "cypress run --spec 'cypress/integration/**/*'"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^9.7.0"
+  },
+  "dependencies": {
+    "cypress-promise": "^1.1.0"
+  }
+}
