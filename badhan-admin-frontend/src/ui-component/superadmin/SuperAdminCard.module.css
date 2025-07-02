@@ -1,0 +1,10 @@
+.superAdminCard {
+    max-width: 275px;
+    margin: 10px
+}
+.superAdminCardTitle {
+    font-size: 14px;
+}
+.superAdminCardPhone {
+    margin-bottom: 1.5rem;
+}

@@ -1,0 +1,27 @@
+.contributorCard {
+    max-width: 300px;
+    margin-bottom: 10px;
+}
+.contributorCardImageBox {
+    height: 100px;
+    border-radius: 50px
+}
+.contributorCardContributorTypeSelect {
+    margin: 5px
+}
+.contributorCardContributionList {
+    margin: 10px
+}
+.contributorCardContributionChip {
+    margin: 5px
+}
+.contributorCardLinkList {
+    margin: 10px
+}
+.contributorCardLinkListTitle {
+    margin: 10px
+}
+.contributorCardLinkDetail {
+    width: 200px;
+    overflow-wrap: break-word;
+}
