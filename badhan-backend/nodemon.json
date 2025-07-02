@@ -1,0 +1,5 @@
+{
+  "exec": "npm run serve",
+  "watch": ["src/"],
+  "ext": "ts, html, css, env"
+}
