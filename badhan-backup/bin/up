@@ -1,0 +1,6 @@
+
+if [ -z "$1" ]; then
+  docker-compose up
+else
+  docker-compose run badhan-backup-service node badhan "$@"
+fi
