@@ -35,6 +35,4 @@ const callRecordSchema: Schema = new Schema<ICallRecord>({
   }
 }, { versionKey: false, id: false })
 
-callRecordSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
-
 export const CallRecordModel: Model<ICallRecord> = model<ICallRecord>('CallRecords', callRecordSchema)

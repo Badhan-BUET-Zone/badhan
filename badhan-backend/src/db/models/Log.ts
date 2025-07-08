@@ -39,6 +39,4 @@ const logSchema: Schema = new Schema<ILog>({
 
 }, { versionKey: false, id: false })
 
-logSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
-
 export const LogModel: Model<ILog> = model<ILog>('Logs', logSchema)
