@@ -77,6 +77,18 @@ There should not be any failed test.
 * Close the server
 
 ## Deploying to GCP App Engine
+* Install `gcloud` from https://cloud.google.com/sdk/docs/install
+* Verify gcloud installation. `gcloud -v`
+
+The output should look something like below:
+```
+Google Cloud SDK 529.0.0
+bq 2.1.19
+core 2025.06.27
+gcloud-crc32c 1.0.0
+gsutil 5.35
+```
+
 * `gcloud auth login`
 * Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.
 
