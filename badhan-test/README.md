@@ -17,4 +17,4 @@ Example: `npm test -- signIn/success` or `npm t -- signIn/success` in short.
 * Install Docker.
 * Run `bin/install`
 * Run `bin/up` to run all tests at once in series
-* Or, run `bin/run npm run test $$specific_test$$` to run any specific test. (e.g. `bin/run npm run test /tests/users/signIn/success.test.js`)
+* Or, run `bin/run npm run test $$specific_test$$` to run any specific test. (e.g. `bin/run npm run test ./tests/users/signIn/success.test.js`)

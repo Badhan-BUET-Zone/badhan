@@ -1,7 +1,7 @@
 const {badhanAxios} = require('../../api');
 const validate = require('jsonschema').validate;
 const env = require('../../config');
-const {processError}=require('../fixtures/helpers');
+const {processError, sleep}=require('../fixtures/helpers');
 const logInsSchema={
     type: "object",
     additionalProperties: false,
@@ -41,19 +41,8 @@ const logInsSchema={
 
 test('GET/users/logins',async()=>{
     try {
+        await sleep(2000);
         let signInResponse = await badhanAxios.post('/users/signIn', {
-            phone: env.SUPERADMIN_PHONE,
-            password: env.SUPERADMIN_PASSWORD
-        });
-        await badhanAxios.post('/users/signIn', {
-            phone: env.SUPERADMIN_PHONE,
-            password: env.SUPERADMIN_PASSWORD
-        });
-        await badhanAxios.post('/users/signIn', {
-            phone: env.SUPERADMIN_PHONE,
-            password: env.SUPERADMIN_PASSWORD
-        });
-        await badhanAxios.post('/users/signIn', {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
