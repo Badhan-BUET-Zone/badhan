@@ -13,46 +13,94 @@ and [website](https://badhan-buet.web.app) of Badhan, BUET Zone. This repository
 * MongoDB
 * Mongoose
 # Description
-badhan-backend is a REST API consisting of route endpoints that end up adding, editing, getting and deleting data from a MongoDB database and sends responses as JSON to a web client. The list of route names can be found [here](http://badhan-doc.herokuapp.com/). These routes can be accessed by curl. For example, type the following command on a terminal of your PC to test whether the backend is active:
+badhan-backend is a REST API consisting of route endpoints that end up adding, editing, getting and deleting data from a MongoDB database and sends responses as JSON to a web client. These routes can be accessed by curl. For example, type the following command on a terminal of your PC to test whether the backend is active:
 
 `curl https://badhan-buet.uc.r.appspot.com`
 
-Result: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: production"}`
+Expected output:
+```
+{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: production. Last deployed: 7 July 2025 at 06:23:30 PM"}
+```
 
 # Deployment
 The code consists of two deployments: the production deployment and the test deployment. The databases of these deployments are separate. The testing deployment is used for testing purposes without hampering the production database and deployment. You can check whether these deployments are active using the following commands:
 
 Production Deployment: `curl https://badhan-buet.uc.r.appspot.com`
 
-Response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: production"}`
+Response: 
+```
+{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: production. Last deployed: 7 July 2025 at 06:23:30 PM"}
+```
 
 Testing Deployment: `curl https://badhan-buet-test.uc.r.appspot.com`
 
-Response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development"}`
+Response: 
+```
+{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development. Last deployed: 7 July 2025 at 06:23:30 PM"}
+```
 
-# Procedure for Local Setup (with Docker)
-* Install [Docker](https://docs.docker.com/engine/install/).
+# Development Server Deployment Procedure from Scratch
+## Install Node.js
+* Install `nvm` from https://github.com/coreybutler/nvm-windows (If you are on windows) or https://github.com/nvm-sh/nvm (If you are on MacOS/Linux)
+* Verify nvm by `nvm --version`.
+* `nvm install 22`
+* `nvm use 22`
+
+## Setting up the backend
 * Clone this repository:
 `git clone https://github.com/Badhan-BUET-Zone/badhan`.
-* `cd badhan/badhan-backend`
-* Run `bin/install` from inside the cloned repo.
-* Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
-* Run `bin/up` to start the server.
-* Run `curl http://localhost:3000` in another terminal. You should see the response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development"}`
-
-# Procedure for Local Setup (without Docker)
-* Clone this repository:
-`git clone https://github.com/Badhan-BUET-Zone/badhan`.
-* `cd badhan/badhan-backend`
+* Open VSCode.
+* Open a bash terminal (We will refer to it as terminal1).
+* `git checkout test-branch` 
+* Change directory to `badhan-backend`
 * Run `npm i`.
 * Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
 * Run `npm run serve`
-* Run `curl http://localhost:3000` in another terminal. You should see the response: `{"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development"}`
 
-# Production Server Deployment Procedure
-* Clone this repository:
-`git clone https://github.com/Badhan-BUET-Zone/badhan`.
-* `cd badhan/badhan-backend`
-* 
+## Setting up the backend testing routine
+* Open a second terminal window (terminal2)
+* Change directory to `badhan-test` folder
+* Run `npm i`
+* Run `npm run test`
+The following output should be there:
+```
+Test Suites: 1 skipped, 47 passed, 47 of 48 total
+Tests:       1 skipped, 75 passed, 76 total
+Snapshots:   0 total
+Time:        31.223 s, estimated 34 s
+Ran all test suites.
+```
+There should not be any failed test.
 
-That's it. The badhan-backend is now running in your local machine.
+* Close terminal2
+* Return to terminal1
+* Close the server
+
+## Deploying to GCP App Engine
+* `gcloud auth login`
+* Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.
+
+* `bash ./upload-gcloud-test.sh`. If this command does not run, it means that you do not have permission in the project.
+
+Expected output:
+```
+File upload done.
+Updating service [default]...done.
+Setting traffic split for service [default]...done.
+Deployed service [default] to [https://badhan-buet-test.uc.r.appspot.com]
+
+You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+```
+
+* Wait 1 minute
+* `curl https://badhan-buet-test.uc.r.appspot.com`.
+
+Expected output:
+```
+{"status":"OK","statusCode":200,"message":"Badhan backend API is online! environment: development. Last deployed: 7 July 2025 at 06:23:30 PM"}
+```
+You should see an updated time.
