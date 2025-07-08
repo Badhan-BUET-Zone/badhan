@@ -1,39 +1,47 @@
-import dotenv from 'dotenv'
-import myConsole from "../utils/myConsole";
+import fs from 'fs';
+import dotenv, { DotenvConfigOutput } from 'dotenv';
+import myConsole from '../utils/myConsole';
 
-dotenv.config({ path: '.env.' + process.env.NODE_ENV })
+// ── resolve and verify env file ──────────────────────────────────────────
+const envPath: string = `.env.${process.env.NODE_ENV ?? 'development'}`;  // ← explicit type
 
-interface DotenvEnvFile {
-  NODE_ENV: string,
-  JWT_SECRET: string,
-  // GMAIL_CLIENT_ID: string,
-  // GMAIL_CLIENT_SECRET: string,
-  // GMAIL_REDIRECT_URI: string,
-  // GMAIL_REFRESH_TOKEN: string,
-  VUE_APP_FRONTEND_BASE: string,
-  RATE_LIMITER_ENABLE: string,
-  MONGODB_URI: string
+if (!fs.existsSync(envPath)) {
+  myConsole.log(`🛑  Environment file "${envPath}" not found. Program will exit.`);
+  process.exit(1);
 }
 
+const dotenvResult: DotenvConfigOutput = dotenv.config({ path: envPath });
+if (dotenvResult.error) {
+  myConsole.log(`🛑  Failed to load "${envPath}": ${dotenvResult.error.message}`);
+  process.exit(1);
+}
+
+// ── typed interface for process.env ─────────────────────────────────────
+interface DotenvEnvFile {
+  NODE_ENV: string;
+  JWT_SECRET: string;
+  VUE_APP_FRONTEND_BASE: string;
+  RATE_LIMITER_ENABLE: string;
+  MONGODB_URI: string;
+}
+
+// All required keys—each value asserted non-nullable with !
 const dotenvEnvFile: DotenvEnvFile = {
   NODE_ENV: process.env.NODE_ENV!,
   JWT_SECRET: process.env.JWT_SECRET!,
-  // GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID!,
-  // GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET!,
-  // GMAIL_REDIRECT_URI: process.env.GMAIL_REDIRECT_URI!,
-  // GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN!,
   VUE_APP_FRONTEND_BASE: process.env.VUE_APP_FRONTEND_BASE!,
   RATE_LIMITER_ENABLE: process.env.RATE_LIMITER_ENABLE!,
-  MONGODB_URI: process.env.MONGODB_URI!
-}
+  MONGODB_URI: process.env.MONGODB_URI!,
+};
 
-Object.entries(dotenvEnvFile).forEach(([key, value]:[string,string], index:number):void => {
-  if (value === undefined) {
-    myConsole.log(key, 'is not defined in config. Program will exit')
-    process.exit(1)
+// ── check for missing vars ──────────────────────────────────────────────
+Object.entries(dotenvEnvFile).forEach(
+  ([key, value]: [string, string], _index: number): void => {  // ← types on both params + return
+    if (value === undefined) {
+      myConsole.log(`${key} is not defined in config. Program will exit.`);
+      process.exit(1);
+    }
   }
-});
+);
 
-export default dotenvEnvFile
-
-
+export default dotenvEnvFile;
