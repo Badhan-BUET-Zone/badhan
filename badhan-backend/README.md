@@ -51,7 +51,6 @@ Response:
 `git clone https://github.com/Badhan-BUET-Zone/badhan`.
 * Open VSCode.
 * Open a bash terminal (We will refer to it as terminal1).
-* `git fetch`
 * `git checkout test-branch` 
 * Change directory to `badhan-backend`
 * Run `npm i`.
