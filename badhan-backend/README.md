@@ -80,7 +80,7 @@ There should not be any failed test.
 * `gcloud auth login`
 * Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.
 
-* `bash ./upload-gcloud-test.sh`. If this command does not run, it means that you do not have permission in the project.
+* `bash ./upload-gcloud.sh`
 
 Expected output:
 ```
