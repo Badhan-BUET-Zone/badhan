@@ -55,7 +55,7 @@ Response:
 * Change directory to `badhan-backend`
 * Run `npm i`.
 * Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
-* Run `npm run serve`
+* Run `npx nodemon`
 
 ## Setting up the backend testing routine
 * Open a second terminal window (terminal2)
