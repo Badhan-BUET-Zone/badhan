@@ -116,3 +116,5 @@ Expected output:
 {"status":"OK","statusCode":200,"message":"Badhan backend API is online! environment: development. Last deployed: 7 July 2025 at 06:23:30 PM"}
 ```
 You should see an updated time.
+
+* Directly check the logs from `https://console.cloud.google.com/logs/query`
