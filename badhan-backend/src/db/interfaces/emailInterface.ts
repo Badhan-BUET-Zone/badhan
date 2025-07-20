@@ -56,16 +56,3 @@ export const checkIfEmailExists = async (email) => {
   return result.valid
 }
 
-export const generatePasswordForgotHTML = (token) => {
-  const url = dotenv.VUE_APP_FRONTEND_BASE + '#/passwordReset?token=' + token
-  return `
-    <p>Password Recovery Email</p>
-    <br>
-    <p>Click <a href="${url}">here</a> to reset your password</p>
-    <br>
-    <p>Sincerely Yours,</p>
-    <p>Mir Mahathir Mohammad</p>
-    <p>Administrator of Badhan Web and App</p>
-    `
-}
-

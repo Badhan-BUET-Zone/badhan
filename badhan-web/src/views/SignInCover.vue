@@ -104,12 +104,7 @@
                       Sign In
                     </v-btn>
                     <br>
-                    <div class="d-flex">
-                      <v-btn id="forgotPasswordButtonId" x-small text color="primary" rounded class="ma-1"
-                             :to="'/forgotPassword'"
-                             style="text-decoration: none">
-                        Forgot Password?
-                      </v-btn>
+                    <!-- <div class="d-flex"> -->
                       <v-btn
                           id="guestSignInButtonId"
                           x-small
@@ -122,7 +117,7 @@
                       >
                         Or, login as guest
                       </v-btn>
-                    </div>
+                    <!-- </div> -->
                   </div>
                 </v-col>
                 <v-col class="text-center" cols="12" sm="4">

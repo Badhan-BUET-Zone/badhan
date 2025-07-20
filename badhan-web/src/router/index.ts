@@ -253,17 +253,6 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    name: 'ForgotPassword',
-    path: '/forgotPassword',
-    component: () => import('../views/ForgotPassword.vue'),
-    meta: {
-      requiresAuth: false,
-      title: 'Password Recovery',
-      designation: 0,
-      reRouteIfAuthorized: true
-    }
-  },
-  {
     name: 'RedirectionPage',
     path: '/redirection',
     component: () => import('../views/Redirection.vue'),

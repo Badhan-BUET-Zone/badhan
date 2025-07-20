@@ -123,42 +123,6 @@ const handlePATCHRedirectedAuthentication = async (req: Request, res: Response):
   }))
 }
 
-const handlePOSTPasswordForgot = async (req: Request, res: Response):Promise<Response> => {
-  const phone: number = req.body.phone
-  const queryByPhoneResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByPhone(phone)
-  if (queryByPhoneResult.status !== 'OK') {
-    return res.status(404).send(new NotFoundError404('Phone number not recognized',{}))
-  }
-
-  const donor: IDonor = queryByPhoneResult.data!
-  const email: string | undefined = donor.email
-
-  if (donor.designation === 0) {
-    return res.status(404).send(new NotFoundError404('Account not found',{}))
-  }
-
-  if (email === '') {
-    return res.status(404).send(new NotFoundError404('No recovery email found for this phone number',{}))
-  }
-
-  const tokenInsertResult: {data: IToken, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
-
-  if (tokenInsertResult.status !== 'OK') {
-    return res.status(500).send(new InternalServerError500('Token insertion failed', {file: 'found in handlePOSTPasswordForgot when tokenInterface.insertAndSaveToken'},{}))
-  }
-
-  const emailHtml: string = emailInterface.generatePasswordForgotHTML(tokenInsertResult.data.token)
-
-  const emailResult: {emailResult: any, message: string, status: string} | {message: string, error: any, status: string} = await emailInterface.sendMail(email, 'Password Recovery Email from Badhan', emailHtml)
-  if (emailResult.status !== 'OK') {
-    return res.status(500).send(new InternalServerError500(emailResult.message, {error: emailResult},{}))
-  }
-
-  await logInterface.addLog(donor._id, 'POST USERS PASSWORD FORGOT', {})
-
-  return res.status(200).send(new OKResponse200('A recovery mail has been sent to your email address',{}))
-}
-
 const handlePATCHPassword = async (req: Request, res: Response):Promise<Response> => {
   const reqBody: {password: string} = req.body
   const donor: IDonor = res.locals.middlewareResponse.donor
@@ -225,7 +189,6 @@ export default {
   handlePOSTRedirection,
   handlePATCHRedirectedAuthentication,
   handlePATCHPassword,
-  handlePOSTPasswordForgot,
   handleGETLogins,
   handleDELETELogins,
   handleGETMe

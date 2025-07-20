@@ -436,13 +436,7 @@ const handleDELETECallRecord = async (payload: DELETECalLRecordPayloadInterface)
 export interface POSTPasswordForgetPayloadInterface {
   phone: number
 }
-const handlePOSTPasswordForgot = async (payload: POSTPasswordForgetPayloadInterface) => {
-  try {
-    return await badhanAxios.post('/users/password/forgot', { phone: payload.phone })
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
+
 const handleGETDonorsDesignation = async () => {
   try {
     return await badhanAxios.get('/donors/designation')
@@ -596,7 +590,6 @@ export {
   handleGETDonationsReport,
   handlePOSTCallRecord,
   handleDELETECallRecord,
-  handlePOSTPasswordForgot,
   handleGETDonorsDesignation,
   handleGETPublicContacts,
   handlePOSTPublicContacts,

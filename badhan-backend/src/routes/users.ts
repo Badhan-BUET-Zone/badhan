@@ -42,13 +42,6 @@ router.patch('/redirection',
   userController.handlePATCHRedirectedAuthentication
 )
 
-router.post('/password/forgot',
-    underMaintenanceController
-  // rateLimiter.passwordForgotLimiter,
-  // userValidator.validatePOSTPasswordForgot,
-  // userController.handlePOSTPasswordForgot
-)
-
 router.patch('/password',
   rateLimiter.commonLimiter,
   userValidator.validatePATCHPassword,

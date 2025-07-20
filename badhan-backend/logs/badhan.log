@@ -419,3 +419,228 @@
 2025‑07‑19 01:39:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
 2025‑07‑19 01:39:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
 2025‑07‑19 01:39:36  [31merror[39m  SIGINT received → closing MongoDB connection…
+2025‑07‑20 17:27:57  [32minfo[39m  Connecting to Test database…
+2025‑07‑20 17:27:57  [32minfo[39m  server environment is development
+2025‑07‑20 17:27:57  [32minfo[39m  rate limiter off
+2025‑07‑20 17:27:58  [32minfo[39m  ✅  Connected to MongoDB.
+2025‑07‑20 17:27:59  [32minfo[39m  ✅  All indexes are already in sync.
+2025‑07‑20 17:29:30  [32minfo[39m  Connecting to Test database…
+2025‑07‑20 17:29:30  [32minfo[39m  server environment is development
+2025‑07‑20 17:29:30  [32minfo[39m  rate limiter off
+2025‑07‑20 17:29:30  [32minfo[39m  ✅  Connected to MongoDB.
+2025‑07‑20 17:29:32  [32minfo[39m  ✅  All indexes are already in sync.
+2025‑07‑20 17:29:53  [31merror[39m  SIGINT received → closing MongoDB connection…
+2025‑07‑20 17:32:46  [32minfo[39m  Connecting to Test database…
+2025‑07‑20 17:32:46  [32minfo[39m  server environment is development
+2025‑07‑20 17:32:46  [32minfo[39m  rate limiter off
+2025‑07‑20 17:32:47  [32minfo[39m  ✅  Connected to MongoDB.
+2025‑07‑20 17:32:48  [32minfo[39m  ✅  All indexes are already in sync.
+2025‑07‑20 17:32:57  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:58  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:32:59  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:00  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:01  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:01  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:01  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:01  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:01  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:01  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:02  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:02  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:02  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:02  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:02  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:02  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:03  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:04  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:05  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:05  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:05  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:05  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:05  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:05  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:06  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:07  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:08  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:09  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:10  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:11  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:12  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:13  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:14  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:14  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:14  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:14  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:14  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:14  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:15  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:16  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:17  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:18  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:19  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:20  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:21  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  INTERNAL SERVER ERROR
+2025‑07‑20 17:33:22  [32minfo[39m  [object Object]
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:33:22  [32minfo[39m  INTERNAL SERVER ERROR
+2025‑07‑20 17:33:22  [32minfo[39m  [object Object]
+2025‑07‑20 17:33:22  [32minfo[39m  useragent os-> Other 0.0.0  device-> Other 0.0.0  family-> Other  ip-> ::ffff:127.0.0.1
+2025‑07‑20 17:34:10  [31merror[39m  SIGINT received → closing MongoDB connection…

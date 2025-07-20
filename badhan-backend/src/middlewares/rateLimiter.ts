@@ -52,12 +52,6 @@ const passwordRequestLimiter: RequestHandler = rateLimit({
   message: commonRateLimiterError
 })
 
-const passwordForgotLimiter: RequestHandler = rateLimit({
-  windowMs: 3 * minute,
-  max: 1,
-  message: new TooManyRequestsError429('Please try again after 3 minutes',{})
-})
-
 const publicContactInsertionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
@@ -78,7 +72,6 @@ export default {
   redirectionSignInLimiter,
   commonLimiter,
   passwordRequestLimiter,
-  passwordForgotLimiter,
   publicContactInsertionLimiter,
   publicContactDeletionLimiter
 }

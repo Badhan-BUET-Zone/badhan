@@ -11,10 +11,6 @@ const validatePATCHPassword:(req: Request, res: Response, next: NextFunction) =>
   validateBODYPassword
 ])
 
-const validatePOSTPasswordForgot:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
-  validateBODYPhone
-])
-
 const validateDELETELogins:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validatePARAMTokenId
 ])
@@ -22,6 +18,5 @@ const validateDELETELogins:(req: Request, res: Response, next: NextFunction) => 
 export default {
   validateLogin,
   validatePATCHPassword,
-  validatePOSTPasswordForgot,
   validateDELETELogins
 }
