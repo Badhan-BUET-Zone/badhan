@@ -2,4 +2,4 @@
 cd ../badhan-backend
 npm run reset_db
 cd ../badhan-test
-npm run test
+npm run test $1
