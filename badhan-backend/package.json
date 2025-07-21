@@ -7,15 +7,19 @@
     "postinstall": "tsc",
     "gcp-build": "tsc",
     "lint": "tslint --project tsconfig.json",
-    "start": "NODE_ENV=production node ./dist/bin/www.js",
+
+    "__comment_of_start_scripts": "these are scripts that are only runnable in a GCP enviornment for both development and production environment",
     "start:dev": "NODE_ENV=development node ./dist/bin/www.js",
     "start:prod": "NODE_ENV=production node ./dist/bin/www.js",
-    "dev": "cross-env NODE_ENV=development node -r source-map-support/register ./dist/bin/www",
-    "prod": "cross-env NODE_ENV=production node ./dist/bin/www",
-    "serve": "npm run lint && npm run build && npm run dev",
-    "serve:prod": "npm run lint && npm run build && npm run prod",
+
+    "__comment_of_cross_env_scripts": "these are cross platform scripts for development and production to be run on any machine for development purposes",
+    "serve:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/bin/www",
+    "serve:prod": "npm run lint && npm run build && cross-env NODE_ENV=production node ./dist/bin/www",
+
+    "__comment_on_db_reset_scripts": "these are the scripts for resetting the development environment database",
     "clear_db": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/clearDatabase.js",
-    "populate_db": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js"
+    "populate_db": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js",
+    "reset_db": "npm run clear_db && npm run populate_db"
   },
   "engines": {
     "node": "22.x.x"

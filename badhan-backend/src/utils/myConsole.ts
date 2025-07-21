@@ -1,25 +1,22 @@
 import winston from 'winston';
-import { isEnvironmentProduction } from '../dotenv';
-import { TransformableInfo } from 'logform';
+import { TransformableInfo, Format } from 'logform';   // ← import Format
 
-const isProd: boolean = isEnvironmentProduction();               // ✅ typed
+/* ── single formatter (pretty console output) ──────────────── */
+const commonFormat: Format = winston.format.combine(          // ← type added
+  winston.format.colorize(),
+  winston.format.timestamp({ format: 'YYYY‑MM‑DD HH:mm:ss' }),
+  winston.format.printf(
+    ({ timestamp, level, message, ...meta }: TransformableInfo): string =>
+      `${timestamp}  ${level.padEnd(5)}  ${message}${
+        Object.keys(meta).length ? ` ${JSON.stringify(meta, null, 2)}` : ''
+      }`,
+  ),
+);
 
-const logger: winston.Logger = winston.createLogger({            // ✅ typed
-  level: isProd ? 'info' : 'debug',
-  format: isProd
-    ? winston.format.json()
-    : winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp({ format: 'YYYY‑MM‑DD HH:mm:ss' }),
-        winston.format.printf(
-          (info: TransformableInfo): string => {                 // ✅ typed
-            const { timestamp, level, message, ...meta } = info;
-            return `${timestamp}  ${level.padEnd(5)}  ${message}${
-              Object.keys(meta).length ? ` ${JSON.stringify(meta, null, 2)}` : ''
-            }`;
-          },
-        ),
-      ),
+/* ── logger and wrapper (unchanged) ────────────────────────── */
+const logger: winston.Logger = winston.createLogger({
+  level: 'debug',
+  format: commonFormat,
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
