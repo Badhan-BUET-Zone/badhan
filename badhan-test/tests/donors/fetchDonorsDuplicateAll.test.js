@@ -12,7 +12,7 @@ const duplicateDonorsManySchema = {
         message: {type: "string"},
         donors: {
             type: "array",
-            minItems: 10,
+            minItems: 1,
             items: {
                 type: "object",
                 additionalProperties: false,
@@ -32,107 +32,79 @@ const duplicateDonorsManySchema = {
     required: ["status", "statusCode", "message", "donors"]
 }
 
+const newDonor_1_info = {
+    phone: 8801500000001,
+    bloodGroup: 2,
+    hall: 2,
+    name: "Blah Blah",
+    studentId: 1606060,
+    address: "Azimpur",
+    roomNumber: "3009",
+    comment: "developer of badhan",
+    extraDonationCount: 2,
+    availableToAll: true
+}
+
+const newDonor_2_info = {
+    phone: 8801500000002,
+    bloodGroup: 2,
+    hall: 3,
+    name: "Blah Blah",
+    studentId: 1606061,
+    address: "Azimpur",
+    roomNumber: "3009",
+    comment: "developer of badhan",
+    extraDonationCount: 2,
+    availableToAll: true
+}
+
 test('GET/donors/phone',async()=>{
     try{
-        let superAdminSignInResponse = await badhanAxios.post('/users/signin', {
+        const superAdminSignInResponse = await badhanAxios.post('/users/signin', {
             phone: env.SUPERADMIN_PHONE,
             password: env.SUPERADMIN_PASSWORD
         });
 
-        let designationResponse = await badhanAxios.get('/donors/designation', {
+        const donor_1_creationResponse = await badhanAxios.post("/donors", newDonor_1_info, {
+            headers: {
+                "x-auth": superAdminSignInResponse.data.token
+            }
+        });
+        const donor_2_creationResponse = await badhanAxios.post("/donors", newDonor_2_info, {
             headers: {
                 "x-auth": superAdminSignInResponse.data.token
             }
         });
 
-        let volunteerTokenResponse = await badhanAxios.post('/donors/password', {
-            donorId:designationResponse.data.volunteerList[0]._id
+        await badhanAxios.patch('/donors/designation', {
+            donorId: donor_1_creationResponse.data.newDonor._id,
+            promoteFlag: true
         },{
             headers: {
                 "x-auth": superAdminSignInResponse.data.token
             }
         });
 
-        const volunteerToken = volunteerTokenResponse.data.token
-
-        let volunteerDonorDetailsResponse = await badhanAxios.get('/users/me', {
+        const volunteer_1_token_response = await badhanAxios.post('/donors/password', {
+            donorId:donor_1_creationResponse.data.newDonor._id
+        },{
             headers: {
-                "x-auth": volunteerToken
+                "x-auth": superAdminSignInResponse.data.token
             }
         });
+        const voluneer_1_token = volunteer_1_token_response.data.token
 
-        let searchQuery
-        searchQuery = {
-            bloodGroup: 2,
-            hall: volunteerDonorDetailsResponse.data.donor.hall,
-            batch: '',
-            name: '',
-            address: '',
-            isAvailable: true,
-            isNotAvailable: true,
-            availableToAll: false,
-        }
-
-        let superAdminSearchResultsForVolunteersHall = await badhanAxios.get(`/search/v3?bloodGroup=${searchQuery.bloodGroup}&hall=${searchQuery.hall}&batch=${searchQuery.batch}&name=${searchQuery.name}&address=${searchQuery.address}&isAvailable=${searchQuery.isAvailable}&isNotAvailable=${searchQuery.isNotAvailable}&availableToAll=${searchQuery.availableToAll}`,{
+        const listOfPhones = [newDonor_1_info.phone, newDonor_2_info.phone]
+        const phoneListQuery = '?phoneList='+listOfPhones.join('&phoneList=')
+    
+        const existingDonorsResponse_1 = await badhanAxios.get(`/donors/phone${phoneListQuery}`,{
             headers: {
-                "x-auth": superAdminSignInResponse.data.token
+                "x-auth": voluneer_1_token
             }
         })
 
-        expect(superAdminSearchResultsForVolunteersHall.data.filteredDonors.length).toBeGreaterThanOrEqual(5)
-
-        let hallThatIsNotOfVolunteer
-        for(hallThatIsNotOfVolunteer = 0; hallThatIsNotOfVolunteer <7; hallThatIsNotOfVolunteer++){
-            if(hallThatIsNotOfVolunteer !== volunteerDonorDetailsResponse.data.donor.hall){
-                break
-            }
-        }
-
-        searchQuery = {
-            bloodGroup: 2,
-            hall: hallThatIsNotOfVolunteer,
-            batch: '',
-            name: '',
-            address: '',
-            isAvailable: true,
-            isNotAvailable: true,
-            availableToAll: false,
-        }
-
-        let superAdminSearchResultsForOtherHall = await badhanAxios.get(`/search/v3?bloodGroup=${searchQuery.bloodGroup}&hall=${searchQuery.hall}&batch=${searchQuery.batch}&name=${searchQuery.name}&address=${searchQuery.address}&isAvailable=${searchQuery.isAvailable}&isNotAvailable=${searchQuery.isNotAvailable}&availableToAll=${searchQuery.availableToAll}`,{
-            headers: {
-                "x-auth": superAdminSignInResponse.data.token
-            }
-        })
-
-        expect(superAdminSearchResultsForOtherHall.data.filteredDonors.length).toBeGreaterThanOrEqual(5)
-
-        let listOfPhones = []
-        listOfPhones.push(...superAdminSearchResultsForOtherHall.data.filteredDonors.map(donor=>donor.phone))
-        listOfPhones.push(...superAdminSearchResultsForVolunteersHall.data.filteredDonors.map(donor=>donor.phone))
-
-        let phoneListQuery = '?phoneList='+listOfPhones.join('&phoneList=')
-        let existingDonorsResponse = await badhanAxios.get(`/donors/phone${phoneListQuery}`,{
-            headers: {
-                "x-auth": volunteerToken
-            }
-        })
-        let existingDonorValidationResult = validate(existingDonorsResponse.data, duplicateDonorsManySchema)
-
+        const existingDonorValidationResult = validate(existingDonorsResponse_1.data, duplicateDonorsManySchema)
         expect(existingDonorValidationResult.errors).toEqual([]);
-
-        await badhanAxios.delete('/users/signout', {
-            headers: {
-                "x-auth": volunteerToken
-            }
-        });
-
-        await badhanAxios.delete('/users/signout', {
-            headers: {
-                "x-auth": superAdminSignInResponse.data.token
-            }
-        });
-
 
     } catch (e) {
         throw processError(e);
