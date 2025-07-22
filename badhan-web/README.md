@@ -15,7 +15,7 @@ The android app is a hybrid app built using a library named [Capacitor](https://
 # Deployment
 The android app can be found in this [Google Play link](https://play.google.com/store/apps/details?id=com.mmmbadhan).
 
-The website is active in two deployments: Test deployment in [Netflify](https://www.netlify.com/) ([https://badhan-buet-test.netlify.app/](https://badhan-buet-test.netlify.app/)) and Production deployment in [Firebase](https://firebase.google.com/) ([https://badhan-buet.web.app/](https://badhan-buet.web.app/))
+The website is active in two deployments: Test deployment in ([https://badhan-buet-test-46eca.web.app](https://badhan-buet-test-46eca.web.app)) and Production deployment in ([https://badhan-buet.web.app/](https://badhan-buet.web.app/))
 
 # Procedure for local setup
 * Install [Node.js](https://nodejs.org/en/download/).
