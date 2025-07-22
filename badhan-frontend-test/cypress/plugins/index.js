@@ -1,23 +1,20 @@
+// cypress/plugins/index.js
 /// <reference types="cypress" />
-// ***********************************************************
-// This example plugins/index.js can be used to load plugins
-//
-// You can change the location of this file or turn off loading
-// the plugins file with the 'pluginsFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/plugins-guide
-// ***********************************************************
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
+const { execSync } = require('child_process');
 
 /**
  * @type {Cypress.PluginConfig}
  */
-// eslint-disable-next-line no-unused-vars
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+  // Fires **once per “cypress run …”** (single spec or glob)
+  on('before:run', () => {
+    console.log('🔄  Resetting test DB …');
+    execSync('cd ../badhan-backend && npm run reset_db', {
+      stdio: 'inherit',   // stream the output so you can see errors
+    });
+  });
 
-}
+  // always return the config object
+  return config;
+};
