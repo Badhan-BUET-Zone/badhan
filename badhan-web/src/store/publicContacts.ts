@@ -39,7 +39,6 @@ const actions = {
     const cachedPublicContactResult = ldb.publicContacts.load()
     if (cachedPublicContactResult.status === 'OK') {
       commit('setPublicContacts', cachedPublicContactResult.data)
-      return
     } else if (cachedPublicContactResult.status === 'ERROR') {
       commit('publicContactsLoaderFlagOn')
     } else if (cachedPublicContactResult.status === 'EXPIRED') {
