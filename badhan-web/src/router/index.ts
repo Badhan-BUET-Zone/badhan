@@ -231,17 +231,6 @@ const routes: CustomRouteConfig[] = [
     ]
   },
   {
-    name: 'ArchivePage',
-    path: '/archive',
-    component: () => import('../views/Archive.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Archived Donors',
-      designation: 2,
-      reRouteIfAuthorized: false
-    }
-  },
-  {
     name: 'PasswordReset',
     path: '/passwordReset',
     component: () => import('../views/PasswordReset.vue'),
