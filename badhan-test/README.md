@@ -8,15 +8,15 @@
 * `npm install` or `npm i`
 
 ## To run all tests
-* `npm run test`
+* `bash start`
 
 The following output should be shown:
 
 ![alt text](readmeimages/image.png)
 
 ## To run only a single test file
-* `npm test -- <path to the test file>`.
+* `bash start <path to the test file>`.
 
-Example: `npm test -- ./users/signIn/success.test.js`
+Example: `bash start ./users/signIn/success.test.js`
 The following output should be shown.
 ![alt text](readmeimages/image2.png)

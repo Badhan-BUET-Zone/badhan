@@ -55,13 +55,13 @@ Response:
 * Change directory to `badhan-backend`
 * Run `npm i`.
 * Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
-* Run `npx nodemon`
+* Run `bash start`. The backend should be up and running.
 
 ## Setting up the backend testing routine
 * Open a second terminal window (terminal2)
 * Change directory to `badhan-test` folder
 * Run `npm i`
-* Run `npm run test`
+* Run `bash start`
 The following output should be there:
 ```
 Test Suites: 1 skipped, 47 passed, 47 of 48 total

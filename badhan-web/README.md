@@ -17,13 +17,10 @@ The android app can be found in this [Google Play link](https://play.google.com/
 
 The website is active in two deployments: Test deployment in [Netflify](https://www.netlify.com/) ([https://badhan-buet-test.netlify.app/](https://badhan-buet-test.netlify.app/)) and Production deployment in [Firebase](https://firebase.google.com/) ([https://badhan-buet.web.app/](https://badhan-buet.web.app/))
 
-# Procedure for Local Setup
-* Install [Docker](https://docs.docker.com/engine/install/).
-* Clone this repository:
+# Procedure for local setup
+* Install [Node.js](https://nodejs.org/en/download/).
+* Change working directory to `badhan-web`.
+* Run `npm i`.
+* Run `bash start`.
 
-  `git clone https://github.com/Badhan-BUET-Zone/badhan-web`
-* Run `bin/install` from inside the cloned repo.
-* Run `bin/up`
-* Visit `https://localhost:8080` to check the development version of the website.
-
-That's it. The badhan-web frontend is now running in your local machine.
+That's it. The badhan-web frontend is now running in your local machine. Visit http://localhost:8080 to check the UI.

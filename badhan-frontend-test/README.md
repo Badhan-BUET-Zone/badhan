@@ -23,9 +23,8 @@ The code is currently not part of any CI/CD platform. We are hoping to get this 
 * Install [Node.js](https://nodejs.org/en/download/).
 * Clone this repository:
 
-  `git clone https://github.com/Badhan-BUET-Zone/badhan-web`
+`git clone https://github.com/Badhan-BUET-Zone/badhan`
+* Change active directory to `badhan-frontend-test`
 * Run `npm i`
-* Get the `env.testing` file from our Super Admin and put it in `env` folder
-* Change the line
-`import env from '../../env/env.development'` of `/cypress/plugins/env.js` to `import env from '../../env/env.testing'`
-* Run `npm run cypress:open`
+* Get the `env.development.js` file from our Super Admin and put it in `env` folder
+* run `bash start`
