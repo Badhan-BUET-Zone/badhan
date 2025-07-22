@@ -114,9 +114,12 @@ const mutations = {
         people: groupedPersons[key]
       })
     })
+
+    const countOfBatchesToShow = 5;
+
     sortedBatches.sort(compareObject)
-    state.personGroups = sortedBatches.slice(0,4)
-    state.morePersonGroups = sortedBatches.slice(4)
+    state.personGroups = sortedBatches.slice(0,countOfBatchesToShow)
+    state.morePersonGroups = sortedBatches.slice(countOfBatchesToShow)
     state.isMorePersonGroupsAvailable = state.morePersonGroups.length !== 0
 
     state.searchResultShown = true
