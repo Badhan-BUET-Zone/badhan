@@ -56,7 +56,6 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import { mapGetters, mapActions } from 'vuex'
 import Container from '../components/Wrappers/Container'
 import PersonCredit from '../components/Credits/PersonCredit'
 import { handleGETContributors } from '@/api'
@@ -65,9 +64,6 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 export default {
   name: 'CreditsPage',
   components: { LoadingMessage, PersonCredit, Container, PageTitle },
-  computed: {
-    ...mapGetters('statistics', ['getCredits', 'getCreditsLoaderFlag'])
-  },
   data () {
     return {
       contributorsLoader: false,
@@ -77,14 +73,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions('statistics', ['fetchCredits']),
     goTo (url) {
       window.open(url, '_blank')
     }
   },
   async mounted () {
     this.$vuetify.goTo(0)
-    // this.fetchCredits()
     this.contributorsLoader = true
     const response = await handleGETContributors()
     this.contributorsLoader = false
