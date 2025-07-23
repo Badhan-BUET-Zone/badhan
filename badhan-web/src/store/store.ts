@@ -14,8 +14,6 @@ import consoleStore from './consoleStore'
 import messageBox from './messageBox'
 import members from './members'
 import publicContacts from './publicContacts'
-import frontendSettings from './frontendSettings'
-import activeDonors from './activeDonors'
 import confirmationBox from './confirmationBox'
 import donation from './donation'
 import donate from './donate'
@@ -73,8 +71,6 @@ export const store = new Vuex.Store({
     confirmationBox,
     members,
     publicContacts,
-    frontendSettings,
-    activeDonors,
     donation,
     comment,
     callrecord,

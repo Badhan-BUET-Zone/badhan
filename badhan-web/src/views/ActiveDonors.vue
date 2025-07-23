@@ -57,7 +57,6 @@
 <script>
 import PageTitle from '../components/PageTitle'
 import ContainerFlat from '../components/Wrappers/ContainerFlat'
-import { mapActions, mapGetters } from 'vuex'
 import PersonCardNew from '../components/PersonCardNew'
 import Filters from '../components/Filters'
 import { bloodGroups, halls } from '@/mixins/constants'
@@ -65,12 +64,11 @@ import Button from '../components/UI Components/Button'
 import NoticeCard from '../components/UI Components/NoticeCard'
 import Vue from 'vue'
 import LoadingMessage from '@/components/LoadingMessage.vue'
+import { handleGETActiveDonors } from '@/api'
 export default {
   name: 'ActiveDonors',
   components: { LoadingMessage, Filters, PersonCardNew, PageTitle, ContainerFlat, Button },
   methods: {
-    ...mapActions('activeDonors', ['fetchActiveDonors']),
-    ...mapActions('activeDonors', ['fetchActiveDonors']),
     async checkBoxChanged (lastValueOfCheckbox) {
       await this.search({
         ...this.lastSearched,
@@ -162,8 +160,9 @@ export default {
     async search (payloadForGetActiveDonors) {
       this.activeDonorsLoader = true
       this.clearNoDonorComponent()
-      await this.fetchActiveDonors(payloadForGetActiveDonors)
-      this.activeDonors = this.getActiveDonors
+      const activeDonorsResult = await handleGETActiveDonors(payloadForGetActiveDonors)
+      if (activeDonorsResult.status !== 200) return
+      this.activeDonors = activeDonorsResult.data.activeDonors
       if (this.activeDonors.length === 0) {
         this.createNoDonorComponent()
       }
@@ -172,10 +171,6 @@ export default {
     resetClicked () {
       // skip
     }
-  },
-  computed: {
-    ...mapGetters('activeDonors', ['getActiveDonors'])
-
   },
   mounted () {
     this.getAllActiveDonors()
