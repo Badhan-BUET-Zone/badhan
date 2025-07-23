@@ -20,11 +20,11 @@ A video demonstration can be found in the following link:
 The code is currently not part of any CI/CD platform. We are hoping to get this code to be part of the CI/CD pipeline of the deployment of the main frontend in future.
 
 # Procedure for Local Setup
-* Install [Node.js](https://nodejs.org/en/download/).
-* Clone this repository:
-
-`git clone https://github.com/Badhan-BUET-Zone/badhan`
+* Make sure the frontend server is running.
+* Open a new terminal.
 * Change active directory to `badhan-frontend-test`
 * Run `npm i`
 * Get the `env.development.js` file from our Super Admin and put it in `env` folder
-* run `bash start`
+* run `bash start` to run all tests.
+* run `bash start cypress/integration/users/logins.js` to run single test case.
+* use `--headed` flag to run tests in browser UI.
