@@ -4,33 +4,63 @@ const env = require('../../config');
 const {processError} = require('../fixtures/helpers');
 
 const duplicateDonorsManySchema = {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-        status: {type: "string"},
-        statusCode: {const: 200},
-        message: {type: "string"},
-        donors: {
-            type: "array",
-            minItems: 1,
-            items: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                    donorId: {
-                        "anyOf":[{
-                            type: "string", minLength: 24, maxLength: 24
-                        },{
-                            const : "FORBIDDEN"
-                        }]},
-                    phone: {type: "number"}
-                },
-                required: ["donorId","phone"]
-            },
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    status:      { type: "string" },
+    statusCode:  { const: 200 },
+    message:     { type: "string" },
+
+    donors: {
+      type: "array",
+      minItems: 1,
+
+      /* every item must still satisfy the per‑element rules … */
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          donorId: {
+            oneOf: [
+              { type: "string", minLength: 24, maxLength: 24 },
+              { const: "FORBIDDEN" }
+            ]
+          },
+          phone: { type: "number" }
         },
-    },
-    required: ["status", "statusCode", "message", "donors"]
-}
+        required: ["donorId", "phone"]
+      },
+
+      /* …and the array, as a whole, must contain BOTH kinds */
+      allOf: [
+        /* ➊ at least one 24‑character donorId */
+        {
+          contains: {
+            type: "object",
+            required: ["donorId"],
+            properties: {
+              donorId: { type: "string", minLength: 24, maxLength: 24 }
+            }
+          }
+          /* 1 is the default, so minContains isn’t needed */
+        },
+
+        /* ➋ at least one "FORBIDDEN" donorId */
+        {
+          contains: {
+            type: "object",
+            required: ["donorId"],
+            properties: {
+              donorId: { const: "FORBIDDEN" }
+            }
+          }
+        }
+      ]
+    }
+  },
+  required: ["status", "statusCode", "message", "donors"]
+};
+
 
 const newDonor_1_info = {
     phone: 8801500000001,
@@ -55,7 +85,7 @@ const newDonor_2_info = {
     roomNumber: "3009",
     comment: "developer of badhan",
     extraDonationCount: 2,
-    availableToAll: true
+    availableToAll: false
 }
 
 test('GET/donors/phone',async()=>{
