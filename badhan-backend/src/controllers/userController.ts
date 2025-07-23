@@ -7,7 +7,6 @@ import {Request, Response} from 'express'
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
 import * as logInterface from '../db/interfaces/logInterface'
-import * as emailInterface from '../db/interfaces/emailInterface'
 
 import InternalServerError500 from "../response/models/errorTypes/InternalServerError500";
 import NotFoundError404 from "../response/models/errorTypes/NotFoundError404";
