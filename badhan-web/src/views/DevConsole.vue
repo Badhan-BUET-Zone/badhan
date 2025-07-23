@@ -5,33 +5,25 @@
       <v-card-title>
         Logs
       </v-card-title>
-      <MyConsoleLog v-for="(log, index) in getConsoleLogs" :key="index" :log="log"></MyConsoleLog>
+      <MyConsoleLog v-for="(log, index) in $store.getters['consoleStore/getConsoleLogs']" :key="index" :log="log"></MyConsoleLog>
     </Container>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
 import PageTitle from '../components/PageTitle'
 import Container from '../components/Wrappers/Container'
 import MyConsoleLog from '../components/DevConsole/MyConsoleLog'
-
+import { DESIGNATIONS_INDEX } from '@/mixins/constants'
 export default {
   name: 'DevConsole',
-  computed: {
-    ...mapGetters(['getDesignation']),
-    ...mapGetters('consoleStore', ['getConsoleLogs'])
-  },
   components: {
     MyConsoleLog,
     Container,
     PageTitle
   },
-  methods: {
-    ...mapMutations('consoleStore', ['addConsoleLog'])
-  },
   async mounted () {
-    if (this.getDesignation !== 3) {
+    if (this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.$router.push({ name: 'NotFound' })
     }
   }

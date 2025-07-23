@@ -30,7 +30,6 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import { mapActions, mapGetters } from 'vuex'
 import { isGuestEnabled, handlePOSTRedirection } from '@/api'
 import Container from '../components/Wrappers/Container'
 import ContainerFlat from '../components/Wrappers/ContainerFlat'
@@ -45,14 +44,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getHall', 'getDesignation']),
     isGuestEnabled () {
       return isGuestEnabled()
     }
   },
   methods: {
-    ...mapActions('notification', ['notifyError', 'notifySuccess', 'notifyInfo']),
-    ...mapActions(['requestRedirectionToken']),
     async redirectExcelUpload () {
       this.excelUploadRedirectionFlag = true
       const redirectionTokenResponse = await handlePOSTRedirection()

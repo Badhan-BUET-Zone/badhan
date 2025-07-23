@@ -301,7 +301,6 @@ export default {
           download: false
         }
       })
-      // navigator.clipboard.writeText(process.env.VUE_APP_FRONTEND_BASE+routeData.href);
       this.$copyText(environmentService.getFrontendBaseURL()+ '/' + routeData.href).then((_e) => {
         this.showTooltip = true
         setTimeout(() => {
