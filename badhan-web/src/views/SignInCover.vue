@@ -95,7 +95,7 @@
                         rounded
                         class="ma-1"
                         @click="signInClicked()"
-                        :disabled="getSignInLoaderFlag || $v.$anyError"
+                        :disabled="$store.getters['getSignInLoaderFlag'] || $v.$anyError"
                         id="signInButton"
                     >
                       <v-icon left>
@@ -113,7 +113,7 @@
                           rounded
                           class="ma-1"
                           @click="guestSignInClicked"
-                          :disabled="getSignInLoaderFlag"
+                          :disabled="$store.getters['getSignInLoaderFlag']"
                       >
                         Or, login as guest
                       </v-btn>
@@ -174,7 +174,6 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import { handleGETLogsDonations } from '@/api'
 import { Bar as BarChart } from 'vue-chartjs'
@@ -239,7 +238,6 @@ export default {
   },
   watch: {},
   computed: {
-    ...mapGetters(['getSignInLoaderFlag', 'getAutoRedirectionPath']),
     getBuildTime () {
       return new Date(document.documentElement.dataset.buildTimestampUtc).toLocaleString()
     },
@@ -267,9 +265,6 @@ export default {
     this.getDonationStats()
   },
   methods: {
-    ...mapActions('notification', ['notifySuccess', 'notifyError']),
-    ...mapActions(['login', 'guestLogin']),
-    ...mapMutations(['clearSignInError', 'setAutoRedirectionPath', 'unsetAutoRedirectionPath']),
     async populateNext(){
       const date = new Date(this.currentYear, this.currentMonth - 1)
       date.setMonth(date.getMonth() + 6)
@@ -347,16 +342,16 @@ export default {
         return
       }
 
-      const isSignInOk = await this.login({
+      const isSignInOk = await this.$store.dispatch('login',{
         phone: this.phone,
         password: this.password,
         rememberFlag: true
       })
 
       if (isSignInOk) {
-        if (this.getAutoRedirectionPath) {
-          await this.$router.push(this.getAutoRedirectionPath)
-          this.unsetAutoRedirectionPath()
+        if (this.$store.getters['getAutoRedirectionPath']) {
+          await this.$router.push(this.$store.getters['getAutoRedirectionPath'])
+          this.$store.commit('unsetAutoRedirectionPath')
           return
         }
         await this.$router.push('/home')
@@ -364,7 +359,7 @@ export default {
     },
 
     async guestSignInClicked () {
-      await this.guestLogin()
+      await this.$store.dispatch('guestLogin')
       await this.$router.push('/home')
     },
   },

@@ -8,7 +8,6 @@
 <script>
 import PersonDetails from '../../components/Home/PersonDetails'
 import PageTitle from '../../components/PageTitle'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'DetailsPage',
@@ -17,7 +16,6 @@ export default {
     PersonDetails
   },
   computed:{
-    ...mapGetters(['getAppBarLoadingFlag'])
   },
   data: () => {
     return {

@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import NewPersonCard from '../components/BatchInsertion/NewPersonCard'
 import PageTitle from '../components/PageTitle'
 import HelpTooltip from '../components/UI Components/HelpTooltip'
@@ -64,7 +63,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getHall', 'getDesignation'])
   },
   methods: {
     reset () {
@@ -74,7 +72,7 @@ export default {
         studentId: null,
         bloodGroup: null,
 
-        hall: this.getHall,
+        hall: this.$store.getters['getHall'],
 
         address: null,
         roomNumber: null,

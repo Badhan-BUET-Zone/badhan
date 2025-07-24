@@ -27,31 +27,23 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
 import { handleGETLogs } from '@/api'
 import DateLog from '../../components/Statistics/DateLog'
 import Container from '../../components/Wrappers/Container'
 import LoadingMessage from '@/components/LoadingMessage.vue'
+import { DESIGNATIONS_INDEX } from '@/mixins/constants'
 
 export default {
   name: 'LogsByDate',
   components: { LoadingMessage, Container, DateLog },
   computed: {
-    ...mapGetters('statistics', ['getStatisticsLoaderFlag', 'getStatistics', 'getLogs', 'getLogsLoaderFlag', 'getLogDeleteFLag', 'getVolunteers', 'getVolunteerLoaderFlag']),
-    ...mapGetters(['getDesignation'])
 
   },
   methods: {
-    ...mapActions('notification', ['notifyError', 'notifySuccess', 'notifyInfo']),
-    ...mapActions('statistics', ['fetchStatistics', 'removeAllLogs', 'getFilteredLogs', 'fetchAllVolunteers']),
 
-    async showStats () {
-      this.fetchStatistics()
-      this.statsShown = true
-    }
   },
   async mounted () {
-    if (this.getDesignation !== 3) {
+    if (this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.$router.push({ name: 'NotFound' })
       return
     }
@@ -103,7 +95,7 @@ export default {
       logCountLoader: false,
       logs: [],
       valuesForSparkLine: [],
-      labelsForSparkLine: []
+      labelsForSparkLine: [],
     }
   }
 

@@ -87,12 +87,11 @@
 </template>
   
 <script>
-import { mapGetters } from 'vuex'
 import Container from '../../components/Wrappers/Container'
 import { handleGETDonationsReport } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button.vue'
-import { bloodGroups } from '@/mixins/constants'
+import { bloodGroups, DESIGNATIONS_INDEX } from '@/mixins/constants'
   
 export default {
     name: 'DonationsReport',
@@ -114,7 +113,6 @@ export default {
       }
     },
     computed: {
-        ...mapGetters(['getDesignation']),
         disableGenerateReportButton(){
             return this.reportLoader || (this.startDate === '' && this.endDate === '')
         }
@@ -203,7 +201,7 @@ export default {
         }
     },
     async mounted () {
-        if (this.getDesignation !== 3) {
+        if (this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
             this.$router.push({ name: 'NotFound' })
             return
         }

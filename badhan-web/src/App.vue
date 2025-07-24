@@ -1,7 +1,7 @@
 <template>
   <v-app id="app" app>
     <TopProgressBar/>
-    <app-bar v-if="getToken"></app-bar>
+    <app-bar v-if="$store.getters['getToken']"></app-bar>
     <v-main>
       <transition name="slide-fade" mode="out-in">
         <router-view app class="container"></router-view>
@@ -17,7 +17,6 @@
 import AppBar from './components/AppBar'
 
 import Notification from './components/Notification'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
 import MessageBox from './components/MessageBox'
 import ConfirmationBox from './components/ConfirmationBox'
 import TopProgressBar from '@/components/TopProgressBar.vue'
@@ -36,19 +35,12 @@ export default {
     Notification,
   },
   computed: {
-    ...mapGetters(['getSignInLoaderFlag', 'getIsLoggedIn', 'getToken']),
   },
   methods: {
-    ...mapActions('frontendSettings', ['fetchSettings']),
-    ...mapMutations(['loadTokenFromLocalStorage','loadMyProfileFromLocalStorage']),
-    ...mapActions(['autoLogin']),
-    async versionCheck () {
-      await this.fetchSettings()
-    }
   },
 
   async mounted () {
-    if(this.getToken && !await this.autoLogin()){
+    if(this.$store.getters['getToken'] && !await this.$store.dispatch('autoLogin')){
       await this.$router.push('/')
     }
   }
