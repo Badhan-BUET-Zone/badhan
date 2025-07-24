@@ -1,9 +1,9 @@
 <template>
   <div>
     <PageTitle>
-      <ShareProfileButton :id="getID"></ShareProfileButton>
+      <ShareProfileButton :id="$store.getters['getID']"></ShareProfileButton>
     </PageTitle>
-    <PersonDetails :donorId="getID"></PersonDetails>
+    <PersonDetails :donorId="$store.getters['getID']"></PersonDetails>
     <transition appear name="slide-fade-down">
       <Container>
         <v-card-title>Settings</v-card-title>
@@ -89,7 +89,6 @@
 
 <script>
 import PersonDetails from '../components/Home/PersonDetails'
-import { mapActions, mapGetters } from 'vuex'
 import PageTitle from '../components/PageTitle'
 import ShareProfileButton from '../components/ShareProfileButton'
 import Container from '../components/Wrappers/Container'
@@ -113,7 +112,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getID']),
     darkTheme: {
       // getter
       get () {
@@ -127,10 +125,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('notification', ['notifySuccess', 'notifyError']),
-    ...mapActions(['logoutAll']),
     async deleteAccount(){
-      await this.notifyError('Account deletion is still under under construction');
+      await this.$store.dispatch('notification/notifyError', 'Account deletion is still under under construction');
     },
     async getLogins () {
       this.getLoginsLoader = true
@@ -145,13 +141,13 @@ export default {
       const response = await handleDELETELogins({ tokenId })
       if (response.status !== 200) return
       this.logins = this.logins.filter(login => login._id !== tokenId)
-      this.notifySuccess(response.data.message)
+      this.$store.dispatch('notification/notifySuccess', response.data.message);
     },
     shareClicked () {
       const routeData = this.$router.resolve({
         name: 'DetailsPage',
         query: {
-          id: this.getID
+          id: this.$store.getters['getID']
         }
       })
       this.$copyText(environmentService.getFrontendBaseURL() + '/' + routeData.href).then((_e) => {
@@ -163,7 +159,8 @@ export default {
     },
     async logoutFromAllDevices(){
       this.logoutAllLoader = true
-      await this.logoutAll()
+      await this.$store.dispatch('logoutAll');
+
       this.logoutAllLoader = false
       await this.$router.push('/')
 
