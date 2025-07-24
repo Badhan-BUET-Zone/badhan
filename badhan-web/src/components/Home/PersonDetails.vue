@@ -694,7 +694,6 @@ export default {
     ...mapActions('details', ['getDetails']),
     ...mapActions('donate', ['donate']),
     ...mapMutations('donation', ['addDonation']),
-    ...mapMutations(['deletePerson']),
     ...mapMutations(['setToken', 'saveTokenToLocalStorage']),
     ...mapActions('callrecord', ['postCallRecord', 'deleteCallRecord']),
     ...mapActions('notification', ['notifySuccess']),
@@ -797,7 +796,6 @@ export default {
       const response = await handleDELETEDonors({ donorId: this.id })
       this.deleteDonorFlag = false
       if (response.status !== 200) return
-      this.deletePerson({ _id: this.id, studentId: this.studentId })
       this.notifySuccess('Deleted donor successfully')
       await this.$router.push('/home')
     },

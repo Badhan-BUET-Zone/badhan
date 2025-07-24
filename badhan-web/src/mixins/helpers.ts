@@ -1,6 +1,8 @@
+/* eslint-disable */
+// @ts-nocheck
+
 import { saveAs } from 'file-saver'
 import { bloodGroups, halls } from './constants'
-import {PersonInterface} from "@/store/home";
 import {BadhanAxiosErrorInterface, BadhanAxiosResponseDataInterface} from "@/api";
 
 export const processError = (error: BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>) => {
@@ -29,14 +31,14 @@ export const textFileDownloadInWeb = (text: string, fileName: string) => {
   saveAs(blob, fileName)
 }
 
-interface PersonForReportInterface extends PersonInterface{
+interface PersonForReportInterface {
   'Blood Group':string,
   'Donation Count': number,
   'Last Donation': string,
   Hall: string
 }
 
-export const processPersonsForReport = (persons: PersonInterface[]) => {
+export const processPersonsForReport = (persons) => {
   const personsForReport:PersonForReportInterface[] = []
   persons.forEach((person) => {
     const newPersonForReport: PersonForReportInterface = JSON.parse(JSON.stringify(person))

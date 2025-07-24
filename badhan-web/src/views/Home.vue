@@ -21,14 +21,14 @@
           <Filters :reset-clicked="clearFields" :search-clicked="searchClickedFromFilterComponent"></Filters>
         </v-col>
         <v-col cols="12" lg="8" id="results">
-          <div v-if="isSearchLoading" :key="'searchLoading'">
+          <div v-if="searchLoaderFlag" :key="'searchLoading'">
             <LoadingMessage/>
           </div>
-          <div style="height: fit-content" v-if="isSearchResultShown">
+          <div style="height: fit-content" v-if="searchResultShown">
             <div >
               <v-alert dense class="rounded-xl" color="tertiary">
                 <div>
-                  Found {{ getNumberOfDonors }} donors
+                  Found {{ numOfDonor }} donors
                 </div>
               </v-alert>
             </div>
@@ -63,7 +63,7 @@
                   </v-col>
                 </v-row>
               </div>
-              <div v-for="(obj, index) in getPersonGroups" :key="index">
+              <div v-for="(obj, index) in personGroups" :key="index">
                 <v-alert dense class="rounded-xl" color="tertiary">
                     Batch {{ obj.batch }}:
                 </v-alert>
@@ -75,7 +75,7 @@
                     :person="person"
                 ></person-card>
               </div>
-              <v-btn id="olderBatchResultsButton" v-if="getIsMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
+              <v-btn id="olderBatchResultsButton" v-if="isMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
                 <v-icon left>
                   mdi-more
                 </v-icon>
@@ -97,7 +97,7 @@ import PersonCard from '../components/Home/PersonCard'
 import { bloodGroups, halls } from '@/mixins/constants'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
-import { isGuestEnabled } from '@/api'
+import { isGuestEnabled, handleGETSearchV3 } from '@/api'
 import { convertObjectToCSV, textFileDownloadInWeb, processPersonsForReport } from '@/mixins/helpers'
 import Filters from '../components/Filters'
 import { environmentService } from '@/mixins/environment'
@@ -106,7 +106,7 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 export default {
   name: 'HomePage',
   computed: {
-    ...mapGetters(['getPersonGroups', 'isSearchResultShown', 'getNumberOfDonors', 'getPersons', 'getSearchedHall', 'getDesignation', 'getHall', 'isSearchLoading', 'getIsMorePersonGroupsAvailable']),
+    ...mapGetters(['getDesignation', 'getHall']),
     isGuestEnabled () {
       return isGuestEnabled()
     },
@@ -167,7 +167,18 @@ export default {
       showFab: false,
 
       downloadCSVMessageFlag: false,
-      downloadCSVLoader: false
+      downloadCSVLoader: false,
+
+      //vuex variables
+      searchLoaderFlag: false,
+      searchResultShown: false,
+      personGroups: [],
+      morePersonGroups: [],
+      isMorePersonGroupsAvailable: false,
+      searchedHall: 0,
+
+      persons: [],
+      numOfDonor: 0
     }
   },
   validations: () => {
@@ -207,15 +218,88 @@ export default {
     }
   },
   beforeRouteLeave (to, from, next) {
-    this.resetSearchResults()
+    this.personGroups = []
+    this.persons = []
+    this.searchResultShown = false
     next()
   },
   methods: {
     ...mapActions(['search']),
     ...mapActions('notification', ['notifyError']),
-    ...mapMutations(['hideSearchResults', 'resetSearchResults', 'concatenateMorePersonGroups']),
     ...mapActions(['logout', 'logoutAll', 'requestRedirectionToken']),
     ...mapMutations('messageBox', ['setMessage']),
+    compareObject(a, b){
+      if (a.batch < b.batch) {
+        return 1
+      } else {
+        return -1
+      }
+    },
+    async search (payload) {
+      // clear previous search results
+      this.searchResultShown = false
+      this.searchLoaderFlag = true
+
+      const sendData = {
+        name: payload.inputName,
+        bloodGroup: bloodGroups.indexOf(payload.bloodGroup),
+        batch: payload.inputBatch.toString(),
+        hall: halls.indexOf(payload.hall),
+        isAvailable: payload.availability,
+        isNotAvailable: payload.notAvailability,
+        address: payload.inputAddress,
+        availableToAll: payload.availableToAll
+      }
+
+      this.searchLoaderFlag = true
+
+      const response = await handleGETSearchV3(sendData)
+      this.searchLoaderFlag = false
+      if (response.status !== 200) {
+        return
+      }
+      this.personGroups = []
+      this.numOfDonor = response.data.filteredDonors.length
+
+      const persons = response.data.filteredDonors
+
+      this.persons = response.data.filteredDonors
+
+      const groupedPersons = persons.reduce(function (obj, person) {
+        const batch = person.studentId.substr(0, 2)
+        if (!Object.prototype.hasOwnProperty.call(obj, batch)) {
+          obj[batch] = []
+        }
+        obj[batch].push(person)
+        return obj
+      }, {})
+
+      const sortedBatches = []
+
+      Object.keys(groupedPersons).forEach(function (key) {
+        sortedBatches.push({
+          batch: key,
+          people: groupedPersons[key]
+        })
+      })
+
+      const countOfBatchesToShow = 5;
+
+      sortedBatches.sort(this.compareObject)
+      this.personGroups = sortedBatches.slice(0,countOfBatchesToShow)
+      this.morePersonGroups = sortedBatches.slice(countOfBatchesToShow)
+      this.isMorePersonGroupsAvailable = this.morePersonGroups.length !== 0
+
+      this.searchResultShown = true
+      
+      this.searchedHall = payload.hall
+    },
+    concatenateMorePersonGroups () {
+      if(this.isMorePersonGroupsAvailable){
+        this.isMorePersonGroupsAvailable = false
+        this.personGroups.push(...this.morePersonGroups)
+      }
+    },
     async searchClickedFromFilterComponent (filterValues) {
       this.name = filterValues.name
       this.batch = filterValues.batch
@@ -228,14 +312,14 @@ export default {
       await this.searchClicked()
     },
     downloadInWeb () {
-      const processedPersons = processPersonsForReport(this.getPersons)
+      const processedPersons = processPersonsForReport(this.persons)
       const keys = ['name', 'Hall', 'studentId', 'Last Donation', 'Blood Group', 'address', 'roomNumber', 'Donation Count']
       if (this.getDesignation === 3) {
         keys.push('comment')
         keys.push('phone')
       }
       const csv = convertObjectToCSV(processedPersons, keys, ',')
-      textFileDownloadInWeb(csv, 'badhan_' + this.getSearchedHall + '.csv')
+      textFileDownloadInWeb(csv, 'badhan_' + this.searchedHall + '.csv')
       this.setMessage('CSV downloaded')
     },
 
@@ -344,7 +428,7 @@ export default {
       this.name = ''
       this.error = ''
       this.address = ''
-      this.hideSearchResults()
+      this.searchResultShown = false
       this.showFab = false
     },
 

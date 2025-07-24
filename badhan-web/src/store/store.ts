@@ -4,7 +4,6 @@ import Vuex from 'vuex'
 import auth from './auth'
 import myprofile from './myprofile'
 import halladmin from './halladmin'
-import home from './home'
 import superadmin from './superadmin'
 import details from './details'
 import userDetails from './userDetails'
@@ -60,7 +59,6 @@ export const store = new Vuex.Store({
     auth,
     myprofile,
     halladmin,
-    home,
     superadmin,
     details,
     userDetails,
