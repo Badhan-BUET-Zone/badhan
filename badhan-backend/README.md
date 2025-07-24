@@ -59,7 +59,7 @@ Response:
 
 ## Setting up the backend testing routine
 * Open a second terminal window (terminal2)
-* Change directory to `badhan-test` folder
+* Change directory to `badhan-backend-test` folder
 * Run `npm i`
 * Run `bash start`
 The following output should be there:

@@ -1,5 +1,5 @@
 # Introduction
-badhan-web repository consists of the code for the main
+badhan-frontend repository consists of the code for the main
 frontend for the [android app](https://play.google.com/store/apps/details?id=com.mmmbadhan)
 and [website](https://badhan-buet.web.app) of Badhan, BUET Zone. This repository is a part of the [Badhan, BUET Zone Github Organization](https://github.com/Badhan-BUET-Zone).
 
@@ -10,7 +10,7 @@ and [website](https://badhan-buet.web.app) of Badhan, BUET Zone. This repository
 * Cypress
 
 # Description
-Welcome to Our E2E UI testing Repository. We present our end to end UI testing code. The code automatically tests all UI features of our [main frontend](https://github.com/Badhan-BUET-Zone/badhan-web). The E2E testing is implemented using [Cypress](https://www.cypress.io/).
+Welcome to Our E2E UI testing Repository. We present our end to end UI testing code. The code automatically tests all UI features of our [main frontend](https://github.com/Badhan-BUET-Zone/badhan/badhan-frontend). The E2E testing is implemented using [Cypress](https://www.cypress.io/).
 
 # Features
 A video demonstration can be found in the following link:

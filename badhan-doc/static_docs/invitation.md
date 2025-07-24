@@ -15,7 +15,7 @@ Our Codebase: [Github Organization](https://github.com/Badhan-BUET-Zone)
 * Skill Requirement: Vue.js / Flutter
 * Responsibilities: 
   * If you are proficient in Vue.js, you will be tasked to implement features 
-under the guidance of [Mir Mahathir Mohammad](https://www.facebook.com/MirMahathirMohammad) in the [Badhan Frontend Codebase](https://github.com/Badhan-BUET-Zone/badhan-web).
+under the guidance of [Mir Mahathir Mohammad](https://www.facebook.com/MirMahathirMohammad) in the [Badhan Frontend Codebase](https://github.com/Badhan-BUET-Zone/badhan-frontend).
   * If you are skilled in Flutter, you will be assigned to implement features under the 
 guidance of [Hasan Masum](https://www.facebook.com/hmasum52) in the [Badhan Datainput Codebase](https://github.com/Badhan-BUET-Zone/badhan-datainput).
 
