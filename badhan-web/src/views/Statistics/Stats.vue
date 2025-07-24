@@ -4,11 +4,11 @@
         Activity Summary
       </v-card-title>
       <transition name="slide-fade-down-snapout" mode="out-in">
-        <LoadingMessage :key="'loadingStats'" v-if="getStatisticsLoaderFlag"/>
-        <v-card-text :key="'loadedStats'" v-if="getStatistics!==null">
-          <p id="statsNumberOfDonors"><b>Number of donors: </b><br>{{ getStatistics.donorCount }}</p>
-          <p><b>Number of donations: </b><br>{{ getStatistics.donationCount }}</p>
-          <p><b>Number of volunteers: </b><br>{{ getStatistics.volunteerCount }}</p>
+        <LoadingMessage :key="'loadingStats'" v-if="statisticsLoaderFlag"/>
+        <v-card-text :key="'loadedStats'" v-if="statistics!==null">
+          <p id="statsNumberOfDonors"><b>Number of donors: </b><br>{{ statistics.donorCount }}</p>
+          <p><b>Number of donations: </b><br>{{ statistics.donationCount }}</p>
+          <p><b>Number of volunteers: </b><br>{{ statistics.volunteerCount }}</p>
         </v-card-text>
       </transition>
     </Container>
@@ -16,8 +16,8 @@
 
 <script>
 import Container from '../../components/Wrappers/Container'
-import { mapActions, mapGetters } from 'vuex'
 import LoadingMessage from '@/components/LoadingMessage.vue'
+import { handleGETStatistics } from '@/api'
 
 export default {
   name: 'StatsPage',
@@ -27,19 +27,22 @@ export default {
   },
   data: () => {
     return {
-      statsShown: false
+      statsShown: false,
+      statistics: null,
+      statisticsLoaderFlag: false,
     }
   },
   computed: {
-    ...mapGetters('statistics', ['getStatisticsLoaderFlag', 'getStatistics', 'getLogs', 'getLogsLoaderFlag', 'getLogDeleteFLag', 'getVolunteers', 'getVolunteerLoaderFlag'])
   },
   methods: {
-    ...mapActions('statistics', ['fetchStatistics'])
-
   },
-  mounted () {
-    this.fetchStatistics()
+  async mounted () {
+    this.statisticsLoaderFlag = true
+    const response = await handleGETStatistics()
+    if (response.status !== 200) return
+    this.statistics = response.data.statistics
     this.statsShown = true
+    this.statisticsLoaderFlag = false
   }
 }
 </script>
