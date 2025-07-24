@@ -31,7 +31,7 @@
                 :color="'secondary'"
                 :click="()=>{directCallClicked(contact.phone)}"
             ></Button>
-            <Button v-if="getIsLoggedIn"
+            <Button v-if="$store.getters['getIsLoggedIn']"
                 :icon="'mdi-delete'"
                 :text="'Delete'"
                 :disabled="deleteButtonDisabledFlag[contact.contactId]"
@@ -70,7 +70,6 @@
 <script>
 import PageTitle from '../components/PageTitle'
 import Container from '../components/Wrappers/Container'
-import { mapMutations, mapGetters } from 'vuex'
 import ContainerOutlined from '../components/Wrappers/ContainerOutlined'
 import ContainerFlat from '../components/Wrappers/ContainerFlat'
 import Button from '../components/UI Components/Button'
@@ -97,14 +96,11 @@ export default {
     }
   },
   computed:{
-    ...mapGetters(['getIsLoggedIn', 'getDesignation']),
     isDeletable(){
-      return this.getDesignation == DESIGNATIONS_INDEX.SUPER_ADMIN && this.getIsLoggedIn
+      return this.$store.getters['getDesignation'] == DESIGNATIONS_INDEX.SUPER_ADMIN && this.$store.getters['getIsLoggedIn']
     }
   },
   methods: {
-    ...mapMutations('messageBox', ['setMessage']),
-    ...mapMutations('confirmationBox', ['setConfirmationMessage']),
     directCallClicked (phone) {
       directCall(phone)
     },
@@ -112,7 +108,7 @@ export default {
       const linkText = 'জরুরি রক্ত ডোনেশন পেতে নিচের লিংকে ক্লিক করে বাঁধন বুয়েট জোনের সদস্যদের সাথে যোগাযোগ করুন।\n' +
           'https://badhan-buet.web.app/#/contacts'
       this.$copyText(linkText).then((_e) => {
-        this.setMessage('লিংক কপি হয়েছে। প্রয়োজনমতো জায়গায় শেয়ার করুন।')
+        this.$store.commit('messageBox/setMessage','লিংক কপি হয়েছে। প্রয়োজনমতো জায়গায় শেয়ার করুন।')
       })
     },
     async deleteConfirmed(){
@@ -141,7 +137,7 @@ export default {
     deletePublicContactPrompt (donorId, contactId) {
       this.deletableContactId = contactId;
       this.deletableDonorId = donorId;
-      this.setConfirmationMessage({
+      this.$store.commit('confirmationBox/setConfirmationMessage',{
         confirmationMessage: 'Delete this public contact?',
         confirmationAction: this.deleteConfirmed
       })
