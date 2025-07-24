@@ -29,7 +29,6 @@ import Container from '../components/Wrappers/Container'
 import PageTitle from '../components/PageTitle'
 import { handlePATCHUsersPassword } from '@/api'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
-import { mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'PasswordReset',
@@ -62,9 +61,9 @@ export default {
     Container
   },
   async mounted () {
-    this.setToken(this.$route.query.token)
+    this.$store.commit('setToken', this.$route.query.token)
     this.tokenCheckLoader = true
-    const donor = await this.checkToken()
+    const donor = await this.$store.dispatch('checkToken')
     if (donor) {
       this.name = donor.name
       this.designation = donor.designation
@@ -88,9 +87,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations(['setToken']),
-    ...mapActions(['checkToken']),
-    ...mapActions('notification', ['notifySuccess']),
     async changePasswordClicked () {
       await this.$v.$touch()
       if (this.$v.$anyError) {
@@ -105,7 +101,7 @@ export default {
         this.$store.commit('removeToken')
         return
       }
-      this.notifySuccess(response.data.message)
+      this.$store.dispatch('notification/notifySuccess', response.data.message)
       this.$store.commit('setToken', response.data.token)
       this.$store.commit('saveTokenToLocalStorage')
       if (await this.$store.dispatch('autoLogin')) {
