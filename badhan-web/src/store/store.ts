@@ -11,7 +11,6 @@ import notification from './notification'
 import statistics from './statistics'
 import consoleStore from './consoleStore'
 import messageBox from './messageBox'
-import members from './members'
 import publicContacts from './publicContacts'
 import confirmationBox from './confirmationBox'
 import donation from './donation'
@@ -67,7 +66,6 @@ export const store = new Vuex.Store({
     consoleStore,
     messageBox,
     confirmationBox,
-    members,
     publicContacts,
     donation,
     comment,

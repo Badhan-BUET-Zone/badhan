@@ -4,10 +4,10 @@
     </PageTitle>
     <Container>
       <transition name="slide-fade-down" mode="out-in">
-        <LoadingMessage v-if="getMemberLoaderFlag" :key="'membersLoading'"/>
+        <LoadingMessage v-if="memberLoaderFlag" :key="'membersLoading'"/>
         <div v-else :key="'membersLoaded'">
           <v-card-title :key="'volunteerTitle'">
-            Volunteers of {{ getHall | getHallName }} hall
+            Volunteers of {{ $store.getters.getHall | getHallName }} hall
           </v-card-title>
           <v-card-subtitle>
             List is sorted based on activity
@@ -24,7 +24,7 @@
                 </thead>
                 <tbody>
                 <tr
-                  v-for="(volunteer,index) in getVolunteers"
+                  v-for="(volunteer,index) in volunteers"
                   :key="index"
                   :id="`volunteerId_${volunteer._id}`"
                 >
@@ -54,7 +54,7 @@
                 </thead>
                 <tbody>
                 <tr
-                  v-for="(hallAdmin,index) in getHallAdmins"
+                  v-for="(hallAdmin,index) in hallAdmins"
                   :key="index"
                   :id="`hallAdminId_${hallAdmin._id}`"
                 >
@@ -83,7 +83,7 @@
                 </thead>
                 <tbody>
                 <tr
-                  v-for="(superAdmin,index) in getSuperAdmins"
+                  v-for="(superAdmin,index) in superAdmins"
                   :key="index"
                   :id="`superAdminId_${superAdmin._id}`"
                 >
@@ -104,21 +104,32 @@
 <script>
 import PageTitle from '../components/PageTitle'
 import Container from '../components/Wrappers/Container'
-import { mapActions, mapGetters } from 'vuex'
 import LoadingMessage from '@/components/LoadingMessage.vue'
+import { handleGETDonorsDesignation } from '@/api'
 
 export default {
   name: 'MembersPage',
   components: { LoadingMessage, Container, PageTitle },
   computed: {
-    ...mapGetters('members', ['getVolunteers', 'getHallAdmins', 'getSuperAdmins', 'getMemberLoaderFlag']),
-    ...mapGetters(['getHall'])
   },
   methods: {
-    ...mapActions('members', ['fetchMembers'])
+  },
+  data: function () {
+    return {
+      memberLoaderFlag: false,
+      hallAdmins: [],
+      superAdmins: [],
+      volunteers: []
+    }
   },
   async mounted () {
-    await this.fetchMembers()
+    this.memberLoaderFlag = true;
+    const response = await handleGETDonorsDesignation();
+    if (response.status !== 200) return
+    this.hallAdmins = response.data.adminList
+    this.superAdmins = response.data.superAdminList
+    this.volunteers = response.data.volunteerList
+    this.memberLoaderFlag = false;
   }
 }
 </script>
