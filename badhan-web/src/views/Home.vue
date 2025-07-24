@@ -94,8 +94,7 @@
 
 <script>
 import PersonCard from '../components/Home/PersonCard'
-import { bloodGroups, halls } from '@/mixins/constants'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { bloodGroups, DESIGNATIONS_INDEX, halls } from '@/mixins/constants'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
 import { isGuestEnabled, handleGETSearchV3 } from '@/api'
 import { convertObjectToCSV, textFileDownloadInWeb, processPersonsForReport } from '@/mixins/helpers'
@@ -106,16 +105,15 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 export default {
   name: 'HomePage',
   computed: {
-    ...mapGetters(['getDesignation', 'getHall']),
     isGuestEnabled () {
       return isGuestEnabled()
     },
     availableHalls () {
-      if (this.getDesignation !== null) {
-        if (this.getDesignation === 3) {
+      if (this.$store.getters['getDesignation'] !== null) {
+        if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
           return halls.slice(0, 7)
         } else {
-          return [halls[this.getHall]]
+          return [halls[this.$store.getters['getHall']]]
         }
       }
       return halls
@@ -148,7 +146,7 @@ export default {
       bloodGroup: -1,
       batch: '',
       address: '',
-      hall: halls[this.$store.getters.getHall],
+      hall: halls[this.$store.getters['getHall']],
       availability: true,
       notAvailability: false,
       download: false,
@@ -192,7 +190,7 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.getHall !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.getDesignation !== 3)
+          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.$store.getters['getDesignation'] !== 3)
         }
       }
     }
@@ -204,7 +202,7 @@ export default {
     this.bloodGroup = query.bloodGroup ? query.bloodGroup : -1
     this.batch = query.batch ? query.batch : ''
     this.address = query.address ? query.address : ''
-    this.hall = query.hall ? query.hall : halls[this.$store.getters.getHall]
+    this.hall = query.hall ? query.hall : halls[this.$store.getters['getHall']]
     this.availability = query.availability !== 'false'
     this.notAvailability = query.notAvailability === 'true'
     this.radios = query.radios === 'SpecifyHall' ? 'SpecifyHall' : 'AvailableToAll'
@@ -224,10 +222,6 @@ export default {
     next()
   },
   methods: {
-    ...mapActions(['search']),
-    ...mapActions('notification', ['notifyError']),
-    ...mapActions(['logout', 'logoutAll', 'requestRedirectionToken']),
-    ...mapMutations('messageBox', ['setMessage']),
     compareObject(a, b){
       if (a.batch < b.batch) {
         return 1
@@ -314,13 +308,13 @@ export default {
     downloadInWeb () {
       const processedPersons = processPersonsForReport(this.persons)
       const keys = ['name', 'Hall', 'studentId', 'Last Donation', 'Blood Group', 'address', 'roomNumber', 'Donation Count']
-      if (this.getDesignation === 3) {
+      if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
         keys.push('comment')
         keys.push('phone')
       }
       const csv = convertObjectToCSV(processedPersons, keys, ',')
       textFileDownloadInWeb(csv, 'badhan_' + this.searchedHall + '.csv')
-      this.setMessage('CSV downloaded')
+      this.$store.commit('messageBox/setMessage', 'CSV downloaded');
     },
 
     onScroll (e) {
@@ -395,7 +389,7 @@ export default {
 
     async downloadInMobileClicked () {
       this.downloadCSVLoader = true
-      const redirectionTokenResponse = await this.requestRedirectionToken()
+      const redirectionTokenResponse = this.$store.dispatch('requestRedirectionToken')
       this.downloadCSVLoader = false
       if (redirectionTokenResponse.status !== 201) return
       const searchRouteData = this.$router.resolve({
@@ -423,7 +417,7 @@ export default {
     clearFields () {
       this.$v.$reset()
       this.batch = ''
-      this.hall = halls[this.getHall]
+      this.hall = halls[this.$store.getters['getHall']]
       this.bloodGroup = -1
       this.name = ''
       this.error = ''
