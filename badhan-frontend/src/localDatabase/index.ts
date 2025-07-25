@@ -1,6 +1,5 @@
 import token from './token'
 import theme from './theme'
-import publicContacts from './publicContacts'
 import myProfile from "./myProfile";
 import donationCountYearMonth from './donationCountYearMonth'
 const reset = () => {
@@ -10,7 +9,6 @@ const reset = () => {
 export default {
   token,
   theme,
-  publicContacts,
   myProfile,
   donationCountYearMonth,
   reset

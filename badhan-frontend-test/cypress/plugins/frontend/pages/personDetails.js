@@ -142,7 +142,7 @@ export default {
     settings: {
         expansionButton: {
             click: ()=>{
-                cy.get(idStart("profileSettingsId")).click()
+                cy.get("#profileSettingsId").click()
             }
         },
         expansion: {

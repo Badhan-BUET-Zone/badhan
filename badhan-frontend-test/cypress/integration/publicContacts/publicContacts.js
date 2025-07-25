@@ -13,6 +13,7 @@ describe('Public Contacts', () => {
             ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
             ui.components.topBar.drawerButton.click()
             ui.components.topBar.drawer.myProfileLink.click()
+            ui.control.wait(1000)
             ui.pages.personDetails.publicContacts.publicContactsSelection.click()
             ui.pages.personDetails.publicContacts.publicContactsSelection.getSelectionMenuByBloodGroup("AB+").click()
             ui.pages.personDetails.publicContacts.saveButton.click()

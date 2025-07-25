@@ -122,7 +122,7 @@
         Discard
       </v-btn>
       <v-btn id="newDonorCreateButtonId" small color="primary" rounded @click="createDonorClicked"
-             :disabled="donorCreationLoader|| $v.$anyError || warnings.length!==0 || getNewDonorLoader">
+             :disabled="donorCreationLoader|| $v.$anyError || warnings.length!==0 ">
         <v-icon left>
           mdi-account-plus
         </v-icon>
@@ -137,8 +137,7 @@
 <script>
 import { halls, bloodGroups, departments, nullDepartment } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
-import { mapActions, mapGetters } from 'vuex'
-import { handleGETDonorsDuplicate } from '@/api'
+import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '../Wrappers/Container'
 import { environmentService } from '@/mixins/environment'
 import { createNewPopUpWindow } from '@/mixins/helpers'
@@ -167,6 +166,8 @@ export default {
 
           if (response.status !== 200) return false
 
+          this.$store.dispatch('notification/notifySuccess', 'Donor added successfully')
+
           this.duplicateDonorId = response.data.donor ? response.data.donor._id : null
           this.duplicateDonorMessage = response.data.message
           return !response.data.found
@@ -193,7 +194,7 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.getHall !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.getDesignation !== 3)
+          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.$store.getters['getDesignation'] !== 3)
         }
       },
       donationCount: {
@@ -215,8 +216,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getHall', 'getDesignation']),
-    ...mapGetters('halladmin', ['getNewDonorLoader']),
     computedPhone: {
       get () {
         return this.phone
@@ -326,7 +325,8 @@ export default {
       phoneDuplicateCheckLoader: false,
       duplicateDonorMessage: '',
 
-      menu: false
+      menu: false,
+      newDonorLoader: false
     }
   },
 
@@ -362,8 +362,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions('halladmin', ['saveDonor']),
-
     async createDonorClicked () {
       await this.$v.$touch()
       if (this.$v.$anyError) {
@@ -396,7 +394,7 @@ export default {
       }
 
       this.donorCreationLoader = true
-      const response = await this.saveDonor(newDonor)
+      const response = await handlePOSTDonors(newDonor)
       if (response.status === 409) {
         this.duplicateDonorId = response.data.donor._id
       }
@@ -417,7 +415,7 @@ export default {
       this.studentId = null
       this.bloodGroup = null
 
-      this.hall = halls[this.getHall]
+      this.hall = halls[this.$store.getters['getHall']]
 
       this.address = null
       this.roomNumber = null

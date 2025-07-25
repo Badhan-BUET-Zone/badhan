@@ -1,7 +1,7 @@
 <template>
   <div>
     <transition name="slide-fade-down-snapout" mode="out-in">
-      <LoadingMessage v-if="getDonorLoaderFlag" :key="'donorLoading'"/>
+      <LoadingMessage v-if="donorLoaderFlag" :key="'donorLoading'"/>
       <Container v-else-if="donorErrorHappened" :key="'donorError'">
         <PageTitle></PageTitle>
         <v-card class="mx-auto mt-2" max-width="700">
@@ -78,7 +78,7 @@
           <v-chip class="mr-1 mb-1" v-if="availableIn > 0" color="warning">{{ availableIn }} Days remaining</v-chip>
           <v-chip class="mr-1 mb-1" dark v-else color="green">Available</v-chip>
           <br>
-          <div class="row" v-if="!getLoadingFlag">
+          <div class="row" v-if="!$store.getters['getLoadingFlag']">
             <div class="col-lg-6 col-md-12 col-sm-12" id="firstColumn">
               <ContainerOutlined>
                 <v-card-title>
@@ -130,9 +130,9 @@
                                   dense
                                   label="Public Data"></v-checkbox>
 
-                      <div v-if="getDesignation > designation || $isMe(id)">
+                      <div v-if="$store.getters['getDesignation'] > designation || $isMe(id)">
                         <v-btn id="donorDetailsSaveButtonId" color="primary" rounded class="white--text ml-2" small
-                               :disabled="getDetailsLoaderFlag || !isDetailsEditable || $v.name.$error || $v.phone.$error || $v.studentId.$error || $v.email.$error"
+                               :disabled="detailsLoaderFlag || !isDetailsEditable || $v.name.$error || $v.phone.$error || $v.studentId.$error || $v.email.$error"
                                @click="saveDetailsClicked()">
                           <v-icon left>
                             mdi-content-save
@@ -143,12 +143,12 @@
                     </div>
                     <v-textarea id="donorDetailsCommentTextBoxId" rounded dense class="mt-5" name="comment" outlined v-model="comment"
                                 label="Comment" auto-grow
-                                :disabled="getCommentLoaderFlag" :rows="1"
+                                :disabled="commentLoaderFlag" :rows="1"
                                 :messages="'Last Updated: '+ (commentTime==0?'Unknown':new Date(commentTime).toDateString()+' on '+new Date(commentTime).toLocaleTimeString())">
                     </v-textarea>
 
                     <v-btn id="donorDetailsCommentSaveButtonId" color="primary" rounded small
-                           :disabled="getCommentLoaderFlag"
+                           :disabled="commentLoaderFlag"
                            @click="saveCommentClicked()">
                       <v-icon left>
                         mdi-content-save
@@ -159,7 +159,7 @@
                 </transition>
               </ContainerOutlined>
 
-              <ContainerOutlined v-if="getDesignation >= designation || $isMe(id)">
+              <ContainerOutlined v-if="$store.getters['getDesignation'] >= designation || $isMe(id)">
                 <v-card-title>
                   <v-btn rounded
                          id="profileSettingsId"
@@ -256,8 +256,8 @@
                         Delete this person
                       </v-btn>
                       <v-btn id="promoteToHallAdminButtonId" key="promoteToHallAdmin" small class="ma-1" rounded color="primary"
-                             v-if="getDesignation===3 && designation===1"
-                             :disabled="getChangeAdminLoaderFlag || !isDetailsEditable"
+                             v-if="$store.getters['getDesignation']===3 && designation===1"
+                             :disabled="changeAdminLoaderFlag || !isDetailsEditable"
                              @click="changeHallAdminClicked()">
                         <v-icon left dark>mdi-arrow-up</v-icon>
                         Promote to Hall admin
@@ -385,7 +385,7 @@
                 </transition>
               </ContainerOutlined>
 
-              <ContainerOutlined v-if="getDesignation === 3">
+              <ContainerOutlined v-if="$store.getters['getDesignation'] === 3">
                 <v-card-title>
                   Public Contacts
                 </v-card-title>
@@ -393,12 +393,6 @@
                   <p class="mt-2 h6 font-weight-bold">Existing Public Contacts:</p>
                   <p v-if="publicContacts.length===0">This contact is not published for the public to see</p>
                   <transition-group name="slide-fade-down" tag="p">
-<!--                  <v-chip :disabled="deletePublicContactLoader" class="ma-1" v-for="publicContact in publicContacts"-->
-<!--                          :key="publicContact._id"-->
-<!--                          color="secondary" close-->
-<!--                          @click:close="()=>{deletePublicContactClicked(publicContact._id)}">-->
-<!--                    {{ publicContact.bloodGroup | getBloodGroupString }}-->
-<!--                  </v-chip>-->
                     <v-btn :id="`publicContactButtonId_${publicContact._id}`" rounded :disabled="deletePublicContactLoader" class="ma-1" v-for="publicContact in publicContacts" :key="publicContact._id" color="secondary" x-small @click="()=>{deletePublicContactClicked(publicContact._id)}">
                       {{ publicContact.bloodGroup | getBloodGroupString }}
                       <v-icon right>
@@ -441,7 +435,6 @@
 
 <script>
 import { halls, bloodGroups } from '@/mixins/constants'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { required, minLength, maxLength, numeric, sameAs } from 'vuelidate/lib/validators'
 import CallRecordCard from '../../components/Home/CallRecordCard'
 import HelpTooltip from '../../components/UI Components/HelpTooltip'
@@ -455,7 +448,11 @@ import {
   handleDELETEDonors,
   handlePOSTDonorsPasswordRequest,
   handleDELETEPublicContacts,
-  handlePOSTPublicContacts, handlePOSTDonations
+  handlePOSTPublicContacts, handlePOSTDonations,
+  handlePATCHDonorsComment,
+  handlePATCHDonors, handlePOSTCallRecord, handleGETDonors,
+  handleDELETEDonations,
+  handlePATCHAdmins
 } from '../../api'
 import DonationCard from './DonationCard'
 import Button from '../UI Components/Button'
@@ -563,7 +560,17 @@ export default {
       markedBy: null,
       activeDonorLoader: false,
       donationList: [],
-      newDonationLoader: false
+      newDonationLoader: false,
+
+      commentLoaderFlag: false,
+
+      detailsLoaderFlag: false,
+
+      donorLoaderFlag: false,
+
+      profile: null,
+
+      changeAdminLoaderFlag: false
     }
   },
   validations: {
@@ -605,29 +612,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('details', ['getDonorLoaderFlag', 'getProfile']),
-    ...mapGetters(['getLoadingFlag', 'getDesignation', 'getHall', 'getID', 'getToken']),
-    ...mapGetters('userDetails', ['getDetailsLoaderFlag']),
-    ...mapGetters(['getChangeAdminLoaderFlag']),
-    ...mapGetters('comment', ['getCommentLoaderFlag']),
-    ...mapGetters('donate', ['getDonationLoaderFlag']),
-    ...mapGetters('callrecord', ['getNewCallRecordLoaderFlag', 'getCallRecords', 'getCallRecordsLoader', 'getDeleteCallRecordLoaderFlag']),
-    ...mapGetters(['getName']),
     isAllowedToPromoteToVolunteer () {
-      return this.designation === 0 && halls.indexOf(this.hall) <= 6 && (this.getDesignation === 3 || (this.getHall === halls.indexOf(this.hall) && this.getDesignation === 2))
+      return this.designation === 0 && halls.indexOf(this.hall) <= 6 && (this.$store.getters['getDesignation'] === 3 || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === 2))
     },
     isAllowedToDemoteToDonor () {
-      return this.designation === 1 && halls.indexOf(this.hall) <= 6 && (this.getDesignation === 3 || (this.getHall === halls.indexOf(this.hall) && this.getDesignation === 2))
+      return this.designation === 1 && halls.indexOf(this.hall) <= 6 && (this.$store.getters['getDesignation'] === 3 || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === 2))
     },
     isPasswordLinkResetable () {
-      return !isGuestEnabled() && !this.$isMe(this.id) && this.designation !== 0 && (this.getDesignation === 3 || (this.getHall === halls.indexOf(this.hall) && this.getDesignation > this.designation))
+      return !isGuestEnabled() && !this.$isMe(this.id) && this.designation !== 0 && (this.$store.getters['getDesignation'] === 3 || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation))
     },
     isDeletable () {
-      return !this.$isMe(this.id) && this.designation <= 1 && (this.getDesignation === 3 || halls.indexOf(this.hall) === 8 || (this.getDesignation > this.designation && this.getHall === halls.indexOf(this.hall)))
+      return !this.$isMe(this.id) && this.designation <= 1 && (this.$store.getters['getDesignation'] === 3 || halls.indexOf(this.hall) === 8 || (this.$store.getters['getDesignation'] > this.designation && this.$store.getters['getHall'] === halls.indexOf(this.hall)))
     },
 
     isDetailsEditable () {
-      return this.getDesignation === 3 || this.$isMe(this.id) || (this.getHall === halls.indexOf(this.hall) && this.getDesignation > this.designation) || halls.indexOf(this.hall) === 8
+      return this.$store.getters['getDesignation'] === 3 || this.$isMe(this.id) || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation) || halls.indexOf(this.hall) === 8
     },
 
     phoneErrors () {
@@ -675,31 +674,24 @@ export default {
     },
 
     availableHalls () {
-      if (this.getDesignation !== null) {
-        if (this.getDesignation === 3) {
+      if (this.$store.getters['getDesignation'] !== null) {
+        if (this.$store.getters['getDesignation'] === 3) {
           return [...halls.slice(0, 7), halls[8]]
         } else {
-          return [halls[this.getHall], halls[8]]
+          return [halls[this.$store.getters['getHall']], halls[8]]
         }
       }
       return halls
     }
   },
   methods: {
-    ...mapActions('comment', ['saveComment']),
-    ...mapActions('userDetails', ['saveUserDetails']),
-    ...mapActions('details', ['getDetails']),
-    ...mapActions('donate', ['donate']),
-    ...mapMutations(['setToken', 'saveTokenToLocalStorage']),
-    ...mapActions('callrecord', ['postCallRecord', 'deleteCallRecord']),
-    ...mapMutations('confirmationBox', ['setConfirmationMessage']),
     async markAsActiveDonorHandler (markFlag) {
       this.activeDonorLoader = true
       if (markFlag) {
         const result = await handlePOSTActiveDonors({ donorId: this.id })
         this.activeDonorLoader = false
         if (result.status !== 201) return
-        this.markedBy = this.getName
+        this.markedBy = this.$store.getters['getName']
         this.$store.dispatch('notification/notifySuccess', 'Donor marked as active donor')
         return
       }
@@ -775,13 +767,15 @@ export default {
       })
     },
     async changeHallAdminClicked () {
-      const response = await this.$store.dispatch('changeHallAdmin', { donorId: this.id })
-      if (response) {
-        this.designation = 2
-      }
+      this.changeAdminLoaderFlag = true
+      const response = await handlePATCHAdmins( { donorId: this.id })
+      this.changeAdminLoaderFlag = false
+      if (response.status !== 200) return
+      this.$store.dispatch('notification/notifySuccess', "Successfully changed hall admin")
+      this.designation = 2
     },
     deleteDonorPrompt () {
-      this.setConfirmationMessage({
+      this.$store.commit('confirmationBox/setConfirmationMessage', {
         confirmationMessage: 'Delete this donor?',
         confirmationAction: this.deleteDonorConfirmed
       })
@@ -795,7 +789,16 @@ export default {
       await this.$router.push('/home')
     },
     async callFromDialer () {
-      await this.postCallRecord({ donorId: this.id })
+      const response = await handlePOSTCallRecord({ donorId: this.id })
+      if (response.status !== 200) return
+      const callRecords = this.callRecords
+      const name = this.$store.getters['getName']
+      callRecords.unshift({
+        ...response.data.callRecord,
+        callerId: { name, hall: this.$store.getters['getHall'], designation: this.$store.getters['getDesignation'] }
+      })
+      this.callRecords = callRecords
+      this.$store.dispatch('notification/notifySuccess', 'Added call record')
       directCall('88'+this.phone)
       this.$forceUpdate()
     },
@@ -818,18 +821,27 @@ export default {
       if (this.comment === '') {
         comment = '(Unknown)'
       }
-      await this.$store.saveComment({
+
+      this.commentLoaderFlag=true
+      const response = await handlePATCHDonorsComment({
         donorId: this.id,
         comment: comment
       })
+      this.commentLoaderFlag=false
+      if (response.status !== 200) return
+
+      this.$store.dispatch('notification/notifySuccess', 'Successfully changed comment')
       this.commentTime = new Date().getTime()
     },
 
     async deleteDonationClicked (date) {
-      await this.$store.dispatch('donation/deleteDonation')({
+      const response = await handleDELETEDonations({
         donorId: this.id,
         date: date
       })
+
+      if(response.status !== 200) return
+      this.$store.dispatch('notification/notifySuccess', 'Successfully deleted donation')
 
       for (let i = 0; i < this.donationList.length; i++) {
         if (this.donationList[i].date === date) {
@@ -861,6 +873,8 @@ export default {
         (newDate.getMonth() + 1) +
         '/' +
         newDate.getFullYear()
+
+
     },
 
     async promoteClicked () {
@@ -904,8 +918,8 @@ export default {
         return
       }
       if(!isGuestEnabled()) {
-        this.setToken(response.data.token)
-        this.saveTokenToLocalStorage()
+        this.$store.commit('setToken', response.data.token)
+        this.$store.commit('saveTokenToLocalStorage')
       }
       this.passwordChangeFlag = false
       this.$store.dispatch('notification/notifySuccess', response.data.message)
@@ -941,7 +955,11 @@ export default {
         address: address,
         availableToAll: this.availableToAll
       }
-      await this.saveUserDetails(sendData)
+      this.detailsLoaderFlag = true
+      const response = await handlePATCHDonors(sendData)
+      this.detailsLoaderFlag = false
+      if (response.status !== 200) return
+      this.$store.dispatch('notification/notifySuccess', 'Saved details successfully')
     },
     async donateClicked () {
       this.newDonationLoader = true
@@ -971,16 +989,25 @@ export default {
   async mounted () {
     this.donorErrorHappened = false
     this.dataLoaded = false
+  
+    const params = {
+      donorId: this.$props.donorId
+    }
+    this.donorLoaderFlag = true
 
-    // let success = await this.getDetails(this.$route.query.id);
-    const success = await this.getDetails(this.$props.donorId)
+    const response = await handleGETDonors(params)
 
-    if (!success) {
+    this.donorLoaderFlag = false
+    if (response.status !== 200){
       this.donorErrorHappened = true
       return
     }
 
-    const profile = this.getProfile
+    this.profile = response.data.donor
+    this.callRecords = response.data.donor.callRecords
+    this.donationList = response.data.donor.donations.map((a) => a.date)
+
+    const profile = this.profile
     this.id = profile._id
     this.name = profile.name
     this.phone = profile.phone.toString().substr(2)

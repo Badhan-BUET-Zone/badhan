@@ -2,21 +2,11 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import auth from './auth'
-import myprofile from './myprofile'
-import halladmin from './halladmin'
-import superadmin from './superadmin'
-import details from './details'
-import userDetails from './userDetails'
 import notification from './notification'
-import statistics from './statistics'
 import consoleStore from './consoleStore'
 import messageBox from './messageBox'
-import publicContacts from './publicContacts'
 import confirmationBox from './confirmationBox'
-import donation from './donation'
-import donate from './donate'
-import comment from './comment'
-import callrecord from './callrecord'
+import myprofile from './myprofile'
 
 Vue.use(Vuex)
 
@@ -56,21 +46,11 @@ export const store = new Vuex.Store({
   },
   modules: {
     auth,
-    myprofile,
-    halladmin,
-    superadmin,
-    details,
-    userDetails,
     notification,
-    statistics,
     consoleStore,
     messageBox,
     confirmationBox,
-    publicContacts,
-    donation,
-    comment,
-    callrecord,
-    donate
+    myprofile
   }
 })
 

@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
 import { designations } from '@/mixins/constants'
+import { handleDELETECallRecord } from '@/api'
 
 export default {
   name: 'CallRecordCard',
@@ -48,18 +48,17 @@ export default {
     // Dialog
   },
   methods: {
-    ...mapActions('callrecord', ['deleteCallRecord']),
-    ...mapMutations('confirmationBox', ['setConfirmationMessage']),
     async deletePrompt () {
-      this.setConfirmationMessage({
+      this.$store.commit('confirmationBox/setConfirmationMessage',{
         confirmationMessage: 'Delete this call record?',
         confirmationAction: this.deletionConfirmed
       })
     },
     async deletionConfirmed () {
       this.deleteLoaderFlag = true
-      await this.deleteCallRecord({ donorId: this.callRecord.calleeId, callRecordId: this.callRecord._id })
+      await handleDELETECallRecord({ donorId: this.callRecord.calleeId, callRecordId: this.callRecord._id })
       this.deleteLoaderFlag = false
+      this.$store.dispatch('notification/notifySuccess', 'Successfully deleted call record')
       this.deleted(this.callRecord._id)
     }
   },

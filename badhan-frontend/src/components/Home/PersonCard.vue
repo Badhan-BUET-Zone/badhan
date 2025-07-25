@@ -144,8 +144,8 @@
               rounded
               small
               style="width: 100%"
-              @click="donateClicked()"
-              :disabled="getDonationLoaderFlag || newDonationDate.length === 0"
+              @click="donateClicked"
+              :disabled="donationLoaderFlag || newDonationDate.length === 0"
           >Done
           </v-btn>
         </v-card-text>
@@ -156,8 +156,8 @@
 
 <script>
 import { directCall, fixBackSlash } from '@/mixins/helpers'
-import { mapActions, mapGetters } from 'vuex'
 import VueMarkdown from 'vue-markdown'
+import { handlePOSTCallRecord, handlePOSTDonations } from '@/api'
 
 export default {
   name: 'PersonCard',
@@ -200,24 +200,25 @@ export default {
       donationCount: 0,
 
       markedBy: null,
-      lastCalled: null
+      lastCalled: null,
+
+      donationLoaderFlag: false,
 
     }
   },
   computed: {
-    ...mapGetters('donate', ['getDonationLoaderFlag'])
   },
   mounted () {
     this.setInformation(this.person)
   },
   methods: {
-    ...mapActions('donate', ['donate']),
-    ...mapActions('callrecord', ['postCallRecordFromCard']),
     async callFromDialer () {
       directCall(this.phone)
       this.newCallRecordLoader = true
-      await this.postCallRecordFromCard({ donorId: this.id })
+      const response = await handlePOSTCallRecord({ donorId: this.id })
       this.newCallRecordLoader = false
+      if (response.status!== 201) return
+      this.$store.dispatch('notification/notifySuccess', 'Added call record')
       // this.callRecords.push({ date: new Date().getTime() })
       this.lastCalled = new Date().getTime()
       this.callRecordCount++
@@ -229,16 +230,21 @@ export default {
       })
     },
     async donateClicked () {
-      const success = await this.donate({
+      this.donationLoaderFlag = true;
+      const response = await handlePOSTDonations({
+        phone: this.phone,
         donorId: this.id,
-        newDonationDate: this.newDonationDate
+        date: new Date(this.newDonationDate).getTime()
       })
+      this.donationLoaderFlag = false;
 
-      if (success) {
-        this.setAvailableIn(this.newDonationDate)
+      if (response.status !== 201) return;
 
-        this.newDonationDate = ''
-      }
+      this.setAvailableIn(this.newDonationDate)
+
+      this.newDonationDate = ''
+
+      this.$store.dispatch('notification/notifySuccess', 'Donation inserted successfully')
     },
     async expansionClicked () {
       this.showExtensionFlag = !this.showExtensionFlag

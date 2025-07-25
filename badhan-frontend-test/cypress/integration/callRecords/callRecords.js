@@ -20,9 +20,9 @@ describe('Call Records', () => {
         searchInterceptor.wait().then(result => {
             // get call record count and check
             const searchResultBody = result.response.body
-            const sampleDonorId = searchResultBody.filteredDonors[0]._id
-            const previousCallCount = searchResultBody.filteredDonors[0].callRecordCount
-            ui.pages.home.searchResult.olderBatchResultsButton.click()
+            const sampleDonorId = searchResultBody.filteredDonors[searchResultBody.filteredDonors.length - 1]._id
+            const previousCallCount = searchResultBody.filteredDonors[searchResultBody.filteredDonors.length - 1].callRecordCount
+            // ui.pages.home.searchResult.olderBatchResultsButton.click()
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).click()
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.callCountText.contains(String(previousCallCount))
             

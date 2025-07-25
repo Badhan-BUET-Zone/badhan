@@ -235,7 +235,7 @@ export default {
       })
     },
     async signOutModalPrompted () {
-      this.$store.commit('setConfirmationMessage', {
+      this.$store.commit('confirmationBox/setConfirmationMessage', {
         confirmationMessage: 'Sign out?',
         confirmationAction: this.signOutModalConfirmed
       })

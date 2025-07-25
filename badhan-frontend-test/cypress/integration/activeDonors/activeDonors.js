@@ -13,6 +13,7 @@ describe('Active Donors', () => {
         // make myself active donor
         ui.components.topBar.drawerButton.click()
         ui.components.topBar.drawer.myProfileLink.click()
+        ui.control.wait(1000)
         ui.pages.personDetails.activeDonorButton.click()
         ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
         ui.components.notificationSnackBar.contains(routeInfos.POSTActiveDonors.notification)

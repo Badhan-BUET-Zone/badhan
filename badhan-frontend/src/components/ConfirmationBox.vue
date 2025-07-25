@@ -35,7 +35,7 @@ export default {
   methods: {
     confirmClicked () {
       this.$store.getters['confirmationBox/getConfirmationAction']()
-      this.$store.commit("resetConfirmationBox")
+      this.$store.commit("confirmationBox/resetConfirmationBox")
     },
     cancelClicked () {
       this.$store.commit('confirmationBox/setConfirmationFlag', false)
