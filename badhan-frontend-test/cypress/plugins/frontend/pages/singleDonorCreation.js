@@ -26,6 +26,18 @@ export default {
             }
         }
     },
+    hallSelection: {
+        click: ()=>{
+            cy.get('[data-cy=hall-select]').click();
+        },
+        getSelectionMenuByHall: (hallNameText)=>{
+            return {
+                click: ()=>{
+                    cy.contains('[data-cy^=hall-option-]', hallNameText).click();
+                }
+            }
+        }
+    },
     roomNumberTextBox: {
         type: (text)=> {
             cy.get("#newDonorRoomNumberTextFieldId").type(text)

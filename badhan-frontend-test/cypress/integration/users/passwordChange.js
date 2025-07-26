@@ -1,6 +1,9 @@
 import env from '../../plugins/env'
 import { ui } from '../../plugins/frontend'
 import {routeInfos} from "../../plugins/constants";
+
+const newPassword = '123456789'
+
 describe('Change password', () => {
     it('should change password and check', () => {
         // sign in
@@ -15,8 +18,8 @@ describe('Change password', () => {
         ui.components.topBar.drawer.myProfileLink.click()
         ui.control.wait(1000)
         ui.pages.personDetails.settings.expansionButton.click()
-        ui.pages.personDetails.settings.expansion.newPasswordTextBox.type('123456789')
-        ui.pages.personDetails.settings.expansion.confirmPasswordTextBox.type('123456789')
+        ui.pages.personDetails.settings.expansion.newPasswordTextBox.type(newPassword)
+        ui.pages.personDetails.settings.expansion.confirmPasswordTextBox.type(newPassword)
         ui.pages.personDetails.settings.expansion.changePasswordButton.click()
         ui.components.notificationSnackBar.contains(routeInfos.PATCHUsersPassword.notification)
 
@@ -27,7 +30,7 @@ describe('Change password', () => {
         
         // login with new password
         ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type('123456789')
+        ui.pages.signIn.passwordTextBox.type(newPassword)
         ui.pages.signIn.signInButton.click()
         ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
         

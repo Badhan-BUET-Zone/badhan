@@ -62,8 +62,28 @@
                     :error-messages="donationCountErrors"></v-text-field>
       <v-card outlined class="rounded-xl">
         <v-card-text>
-          <v-select id="newDonorHallDropdownId" class="required" rounded :items="availableHalls" label="Select Hall" outlined dense v-model="hall"
-                    @blur="$v.hall.$touch()" :error-messages="hallErrors"></v-select>
+          <v-select
+            id="newDonorHallDropdownId"
+            data-cy="hall-select"
+            class="required"
+            rounded
+            :items="availableHalls"
+            item-text="label"
+            item-value="value"
+            label="Select Hall"
+            outlined
+            dense
+            v-model="hall"
+            @blur="$v.hall.$touch()"
+            :error-messages="hallErrors"
+          >
+            <template v-slot:item="{ item }">
+              <v-list-item :data-cy="`hall-option-${item}`">
+                <v-list-item-title>{{ item }}</v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-select>
+
           <v-checkbox id="newDonorPublicDataCheckboxId" :disabled="halls.indexOf(hall)===8" dense v-model="availableToAll"
                       @blur="$v.availableToAll.$touch()" :error-messages="availableToAllErrors"
                       label="Public Data"></v-checkbox>

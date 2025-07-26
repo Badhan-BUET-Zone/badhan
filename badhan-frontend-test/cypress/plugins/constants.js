@@ -15,12 +15,13 @@ const fakeDonorProfile = {
     name: "Random Donor Name",
     phone: "01311113278",
     studentId: "1605489",
-    bloodGroup: "AB+",
+    bloodGroup: bloodGroups[6],
     roomNumber: "Random Room Number",
     address: "Random Address",
     comment: "Random Comment",
     donationCount: "1",
-    email: "mirmahathir2@gmail.com"
+    email: "mirmahathir2@gmail.com",
+    hall: halls[5]
 }
 
 class RouteInfo {

@@ -1,3 +1,4 @@
+import { ui } from ".."
 import { idStart } from "../functions"
 export default {
     filter: {
@@ -98,6 +99,9 @@ export default {
                 cy.get("#olderBatchResultsButton").click()
             }
         }
+    },
+    isCurrentPage: ()=>{
+        cy.url().should('eq', 'http://localhost:8080/#/home');
     }
 }
     
