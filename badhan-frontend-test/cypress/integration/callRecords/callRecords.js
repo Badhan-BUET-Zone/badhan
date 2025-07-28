@@ -34,6 +34,7 @@ describe('Call Records', () => {
 
             // delete call record
             ui.pages.home.searchResult.personCards.getByDonorId(sampleDonorId).expansion.seeProfileButton.click()
+            ui.control.wait(1000)
             ui.pages.personDetails.callRecords.expansionButton.click()
             ui.pages.personDetails.callRecords.getByIndex(0).deleteButton.click()
             ui.components.confirmationModal.okButton.click()

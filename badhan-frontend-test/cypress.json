@@ -1,6 +1,6 @@
 {
   "projectId": "badhan-frontend-test",
-  "video": true,
+  "video": false,
   "videoCompression": 0,
   "videosFolder": "cypress/videos",
   "viewportHeight": 851,

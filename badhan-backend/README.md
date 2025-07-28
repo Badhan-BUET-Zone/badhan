@@ -51,7 +51,7 @@ Response:
 `git clone https://github.com/Badhan-BUET-Zone/badhan`.
 * Open VSCode.
 * Open a bash terminal (We will refer to it as terminal1).
-* `git checkout test-branch` 
+* `git checkout test-branch`
 * Change directory to `badhan-backend`
 * Run `npm i`.
 * Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.

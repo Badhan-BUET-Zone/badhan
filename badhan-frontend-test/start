@@ -1,28 +1,23 @@
 #!/usr/bin/env bash
 # Wrapper to run Cypress tests the way *I* want
-# ------------------------------------------------
-#  • bash start                       → all tests, headless
-#  • bash start path/to/spec.js       → single test, headless
-#  • bash start --headed              → all tests, headed
-#  • bash start path/to/spec.js --headed
-#    or bash start --headed path/to/spec.js  → single test, headed
-# ------------------------------------------------
 
-# Default pattern: run everything
 SPEC="**/*"
 HEADED=""
+CFG_OPTS=""
 
-# Parse arguments
 for ARG in "$@"; do
   case "$ARG" in
-    --headed) HEADED="--headed" ;;              # UI mode
+    --headed) HEADED="--headed" ;;
+    --video)  CFG_OPTS="$CFG_OPTS --config video=true" ;;
+    --no-video) CFG_OPTS="$CFG_OPTS --config video=false" ;;
+    --compression=*)  CFG_OPTS="$CFG_OPTS --config videoCompression=${ARG#*=}" ;;
+    --videosFolder=*) CFG_OPTS="$CFG_OPTS --config videosFolder=${ARG#*=}" ;;
     -h|--help)
-      echo "Usage: bash start [specPattern] [--headed]"
+      echo "Usage: bash start [specPattern] [--headed] [--video|--no-video] [--compression=N] [--videosFolder=path]"
       exit 0
       ;;
-    *) SPEC="$ARG" ;;                           # Treat anything else as spec pattern
+    *) SPEC="$ARG" ;;
   esac
 done
 
-# Run Cypress via the locally‑installed binary
-npx cypress run --spec "cypress/integration/$SPEC" $HEADED
+npx cypress run --spec "cypress/integration/$SPEC" $HEADED $CFG_OPTS

@@ -24,6 +24,7 @@ describe('Public Contacts', () => {
             ui.pages.publicContacts.contains(result.response.body.donor.name)
             ui.components.topBar.drawerButton.click()
             ui.components.topBar.drawer.myProfileLink.click()
+            ui.control.wait(1000)
             ui.pages.personDetails.publicContacts.publicContactBloodGroups.getByIndex(0).click()
             ui.components.notificationSnackBar.contains(routeInfos.DELETEPublicContacts.notification)
 

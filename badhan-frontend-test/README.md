@@ -28,3 +28,4 @@ The code is currently not part of any CI/CD platform. We are hoping to get this 
 * run `bash start` to run all tests.
 * run `bash start users/logins.js` to run single test case.
 * use `--headed` flag to run tests in browser UI.
+* use `--video` flag to save videos of the test runs in `cypress/videos` folder.
