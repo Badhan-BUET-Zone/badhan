@@ -48,14 +48,24 @@
           ></v-text-field>
 
           <v-select
+            data-cy="bloodgroup-select"
             id="filterBloodgroupDropdownId"
-              rounded
-              v-model="bloodGroup"
-              :items="bloodGroups"
-              label="Blood Group"
-              outlined
-              dense
-          ></v-select>
+            v-model="bloodGroup"
+            :items="bloodGroups"
+            item-text="label"
+            item-value="value"
+            outlined dense rounded
+          >
+            <template #item="{ item, on, attrs }">
+              <v-list-item
+                v-bind="attrs"
+                v-on="on"
+                :data-cy="`bloodgroup-option-${item}`"
+              >
+                <v-list-item-title>{{ item }}</v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-select>
 
           <!--        Input field for batch-->
           <v-text-field
@@ -94,35 +104,50 @@
             </v-radio>
           </v-radio-group>
           <v-select
-              id="filterSpecifyHallDropdownId"
-              :disabled="radios!== 'SpecifyHall'"
-              rounded
-              v-model="hall"
-              :items="availableHalls"
-              label="Select Hall"
-              outlined
-              dense
-              @blur="$v.hall.$touch()"
-              :error-messages="hallErrors"
-          ></v-select>
+            id="filterSpecifyHallDropdownId"
+            data-cy="hall-select"
+            :disabled="radios !== 'SpecifyHall'"
+            v-model="hall"
+            :items="availableHalls"
+            item-text="label"
+            item-value="value"
+            label="Select Hall"
+            outlined dense rounded
+            @blur="$v.hall.$touch()"
+            :error-messages="hallErrors"
+          >
+            <template #item="{ item, on, attrs }">
+              <v-list-item
+                v-bind="attrs"
+                v-on="on"
+                :data-cy="`hall-option-${item}`"
+              >
+                <v-list-item-title>{{ item }}</v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-select>
+
           <v-row>
             <v-col>
-              <v-checkbox
+              <div data-cy="available-checkbox">
+                <v-checkbox
                   id="filterAvailableCheckboxId"
                   dense
                   v-model="availability"
-                  :label="'Available'"
+                  label="Available"
                   :error-messages="availabilityErrors"
-              ></v-checkbox>
+                />
+              </div>
             </v-col>
             <v-col>
-              <v-checkbox
+              <div data-cy="not-available-checkbox">
+                <v-checkbox
                   id="filterNotAvailableCheckboxId"
                   dense
                   v-model="notAvailability"
-                  :label="'Not Available'"
-                  :error="!!availabilityErrors"
-              ></v-checkbox>
+                  label="Not Available"
+                />
+              </div>
             </v-col>
           </v-row>
 

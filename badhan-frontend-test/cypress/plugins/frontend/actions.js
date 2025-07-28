@@ -39,5 +39,34 @@ export default {
 
         ui.components.topBar.drawerButton.click()
         ui.components.topBar.drawer.homeLink.click()
+    },
+    searchDonor: (searchOptions)=>{
+        ui.pages.home.isCurrentPage()
+        ui.pages.home.filter.nameTextBox.type(searchOptions.name)
+        ui.pages.home.filter.bloodGroupSelect(searchOptions.bloodGroup).click()
+        ui.pages.home.filter.batchTextBox.type(searchOptions.batch)
+        if(searchOptions.address !== null){
+            ui.pages.home.filter.addressTextBox.type(searchOptions.address)
+        }
+        if (searchOptions.publicData === true){
+            ui.pages.home.filter.publicDataRadioButton.click()
+        }
+        if(searchOptions.specifyHall === true){
+            ui.pages.home.filter.specifyHallRadioButton.click()
+            ui.pages.home.filter.hallSelect(searchOptions.hall).click()
+        }
+        if(searchOptions.available === true){
+            ui.pages.home.filter.availableCheckBox.check()
+        }
+        else{
+            ui.pages.home.filter.availableCheckBox.uncheck()
+        }
+        if(searchOptions.notAvailable === true){
+            ui.pages.home.filter.notAvailableCheckbox.check()
+        }else{
+            ui.pages.home.filter.notAvailableCheckbox.uncheck()
+        }
+
+        ui.pages.home.filter.searchButton.click()
     }
 }

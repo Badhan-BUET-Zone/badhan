@@ -17,14 +17,51 @@ export default {
                 cy.get("#filterSpecifyHallRadioId").parent().click()
             }
         },
+        hallSelect: (hall)=>{
+            return {
+                click: ()=>{
+                    cy.get('[data-cy=hall-select]').click();
+                    cy.get(`[data-cy=hall-option-${CSS.escape(hall)}]`).click();
+                    cy.get('[data-cy=hall-select] input').should('have.value', hall); // or value
+                }
+            }
+        },
+        addressTextBox: {
+            type: (text)=>{
+                cy.get("#filterAddressTextboxId").type(text)
+            }
+        },
         publicDataRadioButton: {
             click: ()=>{
                 cy.get("#filterPublicDataRadioId").parent().click()
             }
         },
         notAvailableCheckbox: {
-            click: () => {
-                cy.get("#filterNotAvailableCheckboxId").parent().click()
+            check: ()=>{
+                cy.get('[data-cy=not-available-checkbox]')
+                .find('input[type="checkbox"]')  // now it exists
+                .check({ force: true })
+                .should('be.checked');
+            },
+            uncheck: ()=>{
+                cy.get('[data-cy=not-available-checkbox]')
+                .find('input[type="checkbox"]')  // now it exists
+                .uncheck({ force: true })
+                .should('not.be.checked');
+            }
+        },
+        availableCheckBox: {
+            check: () =>{
+                cy.get('[data-cy=available-checkbox]')
+                .find('input[type="checkbox"]')  // now it exists
+                .check({ force: true })
+                .should('be.checked');
+            },
+            uncheck: () =>{
+                cy.get('[data-cy=available-checkbox]')
+                .find('input[type="checkbox"]')  // now it exists
+                .uncheck({ force: true })
+                .should('not.be.checked');
             }
         },
         searchButton: {
@@ -32,9 +69,21 @@ export default {
                 cy.get("#filterSearchButtonId").click()
             }
         },
+        bloodGroupSelect: (bloodGroup)=>{
+            return {
+                click: ()=>{
+                    cy.get('[data-cy=bloodgroup-select]').click();
+                    cy.get(`[data-cy=bloodgroup-option-${CSS.escape(bloodGroup)}]`).click();
+                }
+            }
+
+        }
     },
     searchResult: {
         personCards: {
+            isDonorPresent: (name)=>{
+                cy.contains('[data-cy=search-person-name]', name).should('be.visible');
+            },
             getByDonorId: (donorId)=>{
                 return {
                     click: ()=>{

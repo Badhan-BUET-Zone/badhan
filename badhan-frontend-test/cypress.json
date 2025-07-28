@@ -1,8 +1,10 @@
 {
   "projectId": "badhan-frontend-test",
-  "video": false,
+  "video": true,
+  "videoCompression": 0,
+  "videosFolder": "cypress/videos",
   "viewportHeight": 851,
   "viewportWidth": 393,
-  "scrollBehavior" : "center",
+  "scrollBehavior": "center",
   "defaultCommandTimeout": 20000
 }

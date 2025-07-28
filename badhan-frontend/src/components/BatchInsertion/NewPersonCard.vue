@@ -186,8 +186,6 @@ export default {
 
           if (response.status !== 200) return false
 
-          this.$store.dispatch('notification/notifySuccess', 'Donor added successfully')
-
           this.duplicateDonorId = response.data.donor ? response.data.donor._id : null
           this.duplicateDonorMessage = response.data.message
           return !response.data.found
@@ -417,8 +415,12 @@ export default {
       const response = await handlePOSTDonors(newDonor)
       if (response.status === 409) {
         this.duplicateDonorId = response.data.donor._id
+      }else{
+        this.$store.dispatch('notification/notifySuccess', 'Donor added successfully')
       }
       this.donorCreationLoader = false
+
+
     },
     goToDuplicateProfile () {
       createNewPopUpWindow(environmentService.getFrontendBaseURL()+ '#/home/details?id=' + this.duplicateDonorId)
