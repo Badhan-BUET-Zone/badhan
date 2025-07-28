@@ -16,16 +16,59 @@ Welcome to Our E2E UI testing Repository. We present our end to end UI testing c
 A video demonstration can be found in the following link:
 
 [![Video demo](https://img.youtube.com/vi/ucAffOi29vs/0.jpg)](https://www.youtube.com/watch?v=ucAffOi29vs)
-# Deployment
-The code is currently not part of any CI/CD platform. We are hoping to get this code to be part of the CI/CD pipeline of the deployment of the main frontend in future.
 
 # Procedure for Local Setup
-* Make sure the frontend server is running.
+* Follow the procedure of [this readme](../README.md)
 * Open a new terminal.
 * Change active directory to `badhan-frontend-test`
-* Run `npm i`
-* Get the `env.development.js` file from our Super Admin and put it in `env` folder
-* run `bash start` to run all tests.
-* run `bash start users/logins.js` to run single test case.
-* use `--headed` flag to run tests in browser UI.
-* use `--video` flag to save videos of the test runs in `cypress/videos` folder.
+* Run `bash start` to run all tests. The following output should appear.
+
+```
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped   
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐ 
+  │ ✔  activeDonors/activeDonors.js             00:08        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  callRecords/callRecords.js               00:07        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donations/donations.js                   00:10        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donors/checkDuplicate.js                 00:16        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donors/designatedDonors.js               00:04        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donors/donors.js                         00:15        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donors/editDonor.js                      00:14        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donors/hallAdmin.js                      00:08        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  donors/search.js                         00:08        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  logs/logs.js                             00:05        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  publicContacts/publicContacts.js         00:08        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  users/logins.js                          00:05        1        1        -        -        - │ 
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+  │ ✔  users/passwordChange.js                  00:09        1        1        -        -        - │ 
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘ 
+    ✔  All specs passed!                        02:03       13       13        -        -        - 
+```
+* Run `bash start users/logins.js` to run single test case. The following output should occur:
+
+```
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped   
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐ 
+  │ ✔  users/logins.js                          00:06        1        1        -        -        - │ 
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘ 
+    ✔  All specs passed!                        00:06        1        1        -        -        -
+```
+
+* Use `--headed` flag to run tests in browser UI.
+* Use `--video` flag to save videos of the test runs in `cypress/videos` folder.

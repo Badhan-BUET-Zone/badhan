@@ -39,42 +39,6 @@ Response:
 {"status":"OK","statusCode":200,"message":"Badhan API is online. environment: development. Last deployed: 7 July 2025 at 06:23:30 PM"}
 ```
 
-# Development Server Deployment Procedure from Scratch
-## Install Node.js
-* Install `nvm` from https://github.com/coreybutler/nvm-windows (If you are on windows) or https://github.com/nvm-sh/nvm (If you are on MacOS/Linux)
-* Verify nvm by `nvm --version`.
-* `nvm install 22`
-* `nvm use 22`
-
-## Setting up the backend
-* Clone this repository:
-`git clone https://github.com/Badhan-BUET-Zone/badhan`.
-* Open VSCode.
-* Open a bash terminal (We will refer to it as terminal1).
-* `git checkout test-branch`
-* Change directory to `badhan-backend`
-* Run `npm i`.
-* Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
-* Run `bash start`. The backend should be up and running.
-
-## Setting up the backend testing routine
-* Open a second terminal window (terminal2)
-* Change directory to `badhan-backend-test` folder
-* Run `npm i`
-* Run `bash start`
-The following output should be there:
-```
-Test Suites: 1 skipped, 47 passed, 47 of 48 total
-Tests:       1 skipped, 75 passed, 76 total
-Snapshots:   0 total
-Time:        31.223 s, estimated 34 s
-Ran all test suites.
-```
-There should not be any failed test.
-
-* Close terminal2
-* Return to terminal1
-* Close the server
 
 ## Deploying to GCP App Engine
 * Install `gcloud` from https://cloud.google.com/sdk/docs/install
@@ -91,7 +55,7 @@ gsutil 5.35
 
 * `gcloud auth login`
 * Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.
-
+* Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
 * `bash ./upload-gcloud.sh`
 
 Expected output:

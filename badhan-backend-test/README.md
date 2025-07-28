@@ -3,16 +3,20 @@
 
 
 ## Local setup
-* Follow the instructions of [badhan-backend README.md](../badhan-backend/README.md) without deploying the backend. Keep the backend server running.
+* Follow the instructions of [this readme](../README.md)
 * Open a new bash/zsh terminal with `badhan-backend-test` folder as the working directory.
-* `npm install` or `npm i`
 
 ## To run all tests
-* `bash start`
-
-The following output should be shown:
-
-![alt text](readmeimages/image.png)
+* Run `bash start`
+The following output should be there:
+```
+Test Suites: 1 skipped, 47 passed, 47 of 48 total
+Tests:       1 skipped, 75 passed, 76 total
+Snapshots:   0 total
+Time:        31.223 s, estimated 34 s
+Ran all test suites.
+```
+There should not be any failed test.
 
 ## To run only a single test file
 * `bash start <path to the test file>`.

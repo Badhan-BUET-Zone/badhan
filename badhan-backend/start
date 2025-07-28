@@ -1,3 +1,5 @@
 #/bin/bash
-
+cd ../badhan-backup
+bash scripts/wait-for-port.sh 27017
+cd ../badhan-backend
 npx nodemon
