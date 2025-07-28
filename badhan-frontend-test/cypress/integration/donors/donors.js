@@ -13,7 +13,7 @@ describe('Donor Creation', () => {
 
         ui.pages.home.filter.nameTextBox.type(fakeDonorProfile.name)
         ui.pages.home.filter.publicDataRadioButton.click()
-        ui.pages.home.filter.notAvailableCheckbox.click()
+        ui.pages.home.filter.notAvailableCheckbox.check()
 
         const searchInterceptorToCheckForExisting = new ApiInterceptor(
             routeInfos.GETSearch)
@@ -54,7 +54,7 @@ describe('Donor Creation', () => {
             ui.components.topBar.drawer.homeLink.click()
             ui.pages.home.filter.nameTextBox.type(fakeDonorProfile.name)
             ui.pages.home.filter.publicDataRadioButton.click()
-            ui.pages.home.filter.notAvailableCheckbox.click()
+            ui.pages.home.filter.notAvailableCheckbox.check()
             ui.pages.home.filter.searchButton.click()
             ui.pages.home.searchResult.personCards.getByIndex(0).click()
             const interceptor1 = new ApiInterceptor(routeInfos.GETDonors)
@@ -78,7 +78,7 @@ describe('Donor Creation', () => {
             ui.components.topBar.drawer.homeLink.click()
             ui.pages.home.filter.nameTextBox.type(fakeDonorProfile.name)
             ui.pages.home.filter.publicDataRadioButton.click()
-            ui.pages.home.filter.notAvailableCheckbox.click()
+            ui.pages.home.filter.notAvailableCheckbox.check()
             ui.pages.home.filter.searchButton.click()
             ui.pages.home.searchResult.personCards.getByIndex(0).click()
             const interceptor2 = new ApiInterceptor(routeInfos.GETDonors)

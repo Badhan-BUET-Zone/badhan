@@ -9,7 +9,7 @@
 # ------------------------------------------------
 
 # Default pattern: run everything
-SPEC="cypress/integration/**/*"
+SPEC="**/*"
 HEADED=""
 
 # Parse arguments
@@ -25,4 +25,4 @@ for ARG in "$@"; do
 done
 
 # Run Cypress via the locally‑installed binary
-npx cypress run --spec "$SPEC" $HEADED
+npx cypress run --spec "cypress/integration/$SPEC" $HEADED

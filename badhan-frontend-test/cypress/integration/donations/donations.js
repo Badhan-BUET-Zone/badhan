@@ -12,7 +12,7 @@ describe('Donations', () => {
         // search for random donor
         ui.pages.home.filter.nameTextBox.type("a")
         ui.pages.home.filter.publicDataRadioButton.click()
-        ui.pages.home.filter.notAvailableCheckbox.click()
+        ui.pages.home.filter.notAvailableCheckbox.check()
         ui.pages.home.filter.searchButton.click()
 
         // add a donation

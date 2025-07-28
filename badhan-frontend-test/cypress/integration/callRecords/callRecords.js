@@ -14,7 +14,7 @@ describe('Call Records', () => {
         // search random donor
         ui.pages.home.filter.nameTextBox.type("a")
         ui.pages.home.filter.publicDataRadioButton.click()
-        ui.pages.home.filter.notAvailableCheckbox.click()
+        ui.pages.home.filter.notAvailableCheckbox.check()
         const searchInterceptor = new ApiInterceptor(routeInfos.GETSearch)
         ui.pages.home.filter.searchButton.click()
         searchInterceptor.wait().then(result => {

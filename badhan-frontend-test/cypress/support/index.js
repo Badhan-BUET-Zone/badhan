@@ -18,9 +18,3 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-
-before(() => {
-  cy.task('resetDbOnce').then(status => {
-    if (status === 'done') cy.log('DB reset complete');
-  });
-});

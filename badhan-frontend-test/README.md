@@ -26,5 +26,5 @@ The code is currently not part of any CI/CD platform. We are hoping to get this 
 * Run `npm i`
 * Get the `env.development.js` file from our Super Admin and put it in `env` folder
 * run `bash start` to run all tests.
-* run `bash start cypress/integration/users/logins.js` to run single test case.
+* run `bash start users/logins.js` to run single test case.
 * use `--headed` flag to run tests in browser UI.

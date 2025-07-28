@@ -21,12 +21,13 @@ describe('Admin Promotion', () => {
                 ui.pages.home.filter.nameTextBox.type(firstVolunteerName)
                 ui.pages.home.filter.batchTextBox.type(firstVolunteerBatch)
                 ui.pages.home.filter.specifyHallRadioButton.click()
-                ui.pages.home.filter.notAvailableCheckbox.click()
+                ui.pages.home.filter.notAvailableCheckbox.check()
                 ui.pages.home.filter.searchButton.click()
                 
                 // promote the volunteer to hall admin
                 ui.pages.home.searchResult.personCards.getByIndex(0).click()
                 ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
+                ui.control.wait(1000)
                 ui.pages.personDetails.settings.expansionButton.click()
                 ui.pages.personDetails.settings.expansion.promoteToHallAdminButton.click()
                 ui.components.notificationSnackBar.contains(routeInfos.PATCHAdmins.notification)
