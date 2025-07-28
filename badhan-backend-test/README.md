@@ -23,4 +23,14 @@ There should not be any failed test.
 
 Example: `bash start ./users/signIn/success.test.js`
 The following output should be shown.
-![alt text](readmeimages/image2.png)
+
+```
+ PASS  tests/users/signIn/success.test.js
+  √ POST/users/signIn: success (141 ms)
+                                                                                                     
+Test Suites: 1 passed, 1 total                                                                       
+Tests:       1 passed, 1 total                                                                       
+Snapshots:   0 total
+Time:        3.616 s
+Ran all test suites matching /.\\users\\signIn\\success.test.js/i
+```
