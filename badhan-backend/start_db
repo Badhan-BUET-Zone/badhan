@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+# run_local_mongo.sh — single-file, no-root MongoDB launcher (Linux/macOS/Git-Bash)
+# Usage: just run it:  ./run_local_mongo.sh
+# Environment overrides (no CLI parsing):
+#   MONGO_VERSION=7.0.14 PORT=27017 BIND_IP=127.0.0.1 ROOT_DIR="$PWD/mongodb_local"  ./run_local_mongo.sh
+# Stops when you hit Ctrl+C (runs in foreground).
+
+set -euo pipefail
+
+# ------------------- Config (env overridable) -------------------
+MONGO_VERSION="${MONGO_VERSION:-7.0.14}"
+PORT="${PORT:-27017}"
+BIND_IP="${BIND_IP:-127.0.0.1}"
+ROOT_DIR="${ROOT_DIR:-$PWD/mongodb_local}"          # binaries + data
+BIN_DIR="$ROOT_DIR/bin"
+DATA_DIR="$ROOT_DIR/data"
+LOG_FILE="$ROOT_DIR/mongod.log"
+
+# ------------------- Helpers -------------------
+die(){ echo "❌ $*" >&2; exit 1; }
+need(){ command -v "$1" >/dev/null 2>&1 || die "Need '$1' in PATH"; }
+
+detect_platform(){
+  local os="$(uname -s 2>/dev/null || echo Unknown)"
+  local arch="$(uname -m 2>/dev/null || echo x86_64)"
+
+  case "$os" in
+    Linux*)   OS="linux" ;;
+    Darwin*)  OS="macos" ;;
+    MINGW*|MSYS*|CYGWIN*) OS="windows" ;;  # Git Bash/MSYS
+    *) die "Unsupported OS: $os";;
+  esac
+
+  case "$arch" in
+    x86_64|amd64) ARCH="x86_64" ;;
+    arm64|aarch64) ARCH="arm64" ;;
+    *) ARCH="x86_64"; echo "⚠️  Unknown arch '$arch', defaulting to x86_64" ;;
+  esac
+
+  if [[ "$OS" == "windows" ]]; then
+    FILE="mongodb-windows-x86_64-$MONGO_VERSION.zip"
+    URL="https://fastdl.mongodb.org/windows/$FILE"
+    EXT="zip"
+    EXE_SUFFIX=".exe"
+  elif [[ "$OS" == "macos" ]]; then
+    FILE="mongodb-macos-$ARCH-$MONGO_VERSION.tgz"
+    URL="https://fastdl.mongodb.org/osx/$FILE"
+    EXT="tgz"
+    EXE_SUFFIX=""
+  else
+    FILE="mongodb-linux-$ARCH-$MONGO_VERSION.tgz"
+    URL="https://fastdl.mongodb.org/linux/$FILE"
+    EXT="tgz"
+    EXE_SUFFIX=""
+  fi
+}
+
+fetch(){
+  local url="$1" out="$2"
+  if command -v curl >/dev/null 2>&1; then
+    curl -Lf "$url" -o "$out"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q "$url" -O "$out"
+  else
+    die "Need 'curl' or 'wget' to download files"
+  fi
+}
+
+download_and_extract(){
+  mkdir -p "$ROOT_DIR" "$BIN_DIR"
+  local tmpdir
+  tmpdir="$(mktemp -d)"
+  echo "⬇️  Downloading MongoDB $MONGO_VERSION ($OS/$ARCH)…"
+  fetch "$URL" "$tmpdir/$FILE"
+
+  echo "📦 Extracting…"
+  if [[ "$EXT" == "zip" ]]; then
+    if command -v unzip >/dev/null 2>&1; then
+      unzip -q "$tmpdir/$FILE" -d "$tmpdir"
+    elif command -v 7z >/dev/null 2>&1; then
+      7z x "$tmpdir/$FILE" -o"$tmpdir" >/dev/null
+    else
+      die "Need 'unzip' or '7z' to extract ZIP on Windows"
+    fi
+  else
+    need tar
+    tar -xzf "$tmpdir/$FILE" -C "$tmpdir"
+  fi
+
+  local extracted
+  extracted="$(find "$tmpdir" -maxdepth 1 -type d -name 'mongodb-*' | head -n1)"
+  [[ -d "$extracted"/bin ]] || die "Extraction failed"
+
+  # Move only the contents of bin/ to our BIN_DIR (avoid nested bin/bin)
+  mv "$extracted"/bin/* "$BIN_DIR"/
+
+  # Safety: flatten if nested bin slipped through
+  if [[ -d "$BIN_DIR/bin" ]]; then
+    mv "$BIN_DIR/bin/"* "$BIN_DIR"/ && rmdir "$BIN_DIR/bin"
+  fi
+
+  rm -rf "$tmpdir"
+  echo "✅ MongoDB binaries ready in $BIN_DIR"
+}
+
+start_mongod(){
+  mkdir -p "$DATA_DIR"
+  touch "$LOG_FILE"
+
+  local MONGOD="$BIN_DIR/mongod$EXE_SUFFIX"
+  [[ -x "$MONGOD" ]] || die "mongod not found at $MONGOD"
+
+  echo "🚀 Starting mongod on port $PORT (dbpath: $DATA_DIR)…"
+  echo "📄 Logs: $LOG_FILE"
+  echo "⛔ Press Ctrl+C to stop."
+  exec "$MONGOD" \
+    --dbpath "$DATA_DIR" \
+    --port "$PORT" \
+    --bind_ip "$BIND_IP" \
+    --logpath "$LOG_FILE" \
+    --logappend
+}
+
+# ------------------- Main -------------------
+detect_platform
+
+if [[ ! -x "$BIN_DIR/mongod${EXE_SUFFIX:-}" ]]; then
+  download_and_extract
+else
+  echo "✅ Found existing MongoDB in $BIN_DIR — skipping download."
+fi
+
+start_mongod

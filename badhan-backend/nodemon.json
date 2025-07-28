@@ -1,5 +1,5 @@
 {
-  "exec": "npm run serve:dev",
+  "exec": "npm run serve:local",
   "watch": ["src/"],
   "ext": "ts, html, css, env"
 }

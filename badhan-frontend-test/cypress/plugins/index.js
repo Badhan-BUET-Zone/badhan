@@ -10,7 +10,7 @@ module.exports = (on, config) => {
   // Fires **once per “cypress run …”** (single spec or glob)
   on('before:run', () => {
     console.log('🔄  Resetting test DB …');
-    execSync('cd ../badhan-backend && npm run reset_db', {
+    execSync('cd ../badhan-backend && npm run reset_db:local', {
       stdio: 'inherit',   // stream the output so you can see errors
     });
   });

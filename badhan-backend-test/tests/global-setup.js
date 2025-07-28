@@ -5,6 +5,6 @@ const { execSync } = require('child_process');
 
 module.exports = async () => {
   console.log('🔄  Resetting test DB …');
-  execSync('cd ../badhan-backend && npm run reset_db', { stdio: 'inherit' });   // blocks until finished
+  execSync('cd ../badhan-backend && npm run reset_db:local', { stdio: 'inherit' });   // blocks until finished
   // await clearDatabase();                             // if you prefer JS instead of shell
 };
