@@ -16,6 +16,7 @@ describe('Donations', () => {
         ui.pages.home.filter.searchButton.click()
 
         // add a donation
+        ui.control.wait(1000)
         ui.pages.home.searchResult.personCards.getByIndex(0).click()
         ui.pages.home.searchResult.personCards.getByIndex(0).donationDateField.click()
         ui.pages.home.searchResult.personCards.getByIndex(0).donationDatePicker.sampleDate.click()
@@ -25,6 +26,7 @@ describe('Donations', () => {
 
         // see full profile and delete first donation
         ui.pages.home.searchResult.personCards.getByIndex(0).seeProfileButton.click()
+        ui.control.wait(1000)
         ui.pages.personDetails.donationHistory.expansionButton.click()
         ui.pages.personDetails.donationHistory.getByIndex(0).deleteButton.click()
         ui.components.confirmationModal.okButton.click()

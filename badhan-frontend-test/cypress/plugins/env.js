@@ -1,5 +1,5 @@
-import env from '../../env/env.development'
-// import env from '../../env/env.testing'
+// import env from '../../env/env.development'
+import env from '../../env/env.local'
 
 const config = {
     SUPERADMIN_PHONE: env.SUPERADMIN_PHONE,
