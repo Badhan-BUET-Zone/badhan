@@ -1,1 +1,1 @@
-badhan-backup/scripts/parallel.sh "cd badhan-backend && bash start_db" "cd badhan-backend && bash start" "cd badhan-frontend && bash start"
+bash badhan-backup/scripts/parallel.sh "cd badhan-backend && bash start_db" "cd badhan-backend && bash start" "cd badhan-frontend && bash start"

@@ -599,8 +599,6 @@ const handleGETActiveDonors = async (req: Request, res: Response): Promise<Respo
   }))
 }
 
-const handleGETAppVersions: RequestHandler = logController.handleGETAppVersions
-
 const handlePATCHAdminsSuperAdmin = async (req: Request,res: Response): Promise<Response> => {
   return res.status(200).send(new OKResponse200('Donor has been promoted to Super Admin',{
     donor: {
@@ -657,6 +655,5 @@ export default {
   handleDELETEActiveDonors,
   handlePOSTActiveDonors,
   handleGETActiveDonors,
-  handleGETAppVersions,
   handlePATCHAdminsSuperAdmin
 }
