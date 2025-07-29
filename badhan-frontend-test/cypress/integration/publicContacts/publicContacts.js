@@ -10,6 +10,7 @@ describe('Public Contacts', () => {
         ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
         ui.pages.signIn.signInButton.click()
         new ApiInterceptor(routeInfos.GETUsersMe).wait().then((result)=>{
+            ui.control.wait(500)
             ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
             ui.components.topBar.drawerButton.click()
             ui.components.topBar.drawer.myProfileLink.click()
@@ -17,6 +18,7 @@ describe('Public Contacts', () => {
             ui.pages.personDetails.publicContacts.publicContactsSelection.click()
             ui.pages.personDetails.publicContacts.publicContactsSelection.getSelectionMenuByBloodGroup("AB+").click()
             ui.pages.personDetails.publicContacts.saveButton.click()
+            ui.control.wait(500)
             ui.components.notificationSnackBar.contains(routeInfos.POSTPublicContacts.notification)
             ui.components.topBar.drawerButton.click()
             ui.components.topBar.drawer.publicContactsLink.click()
