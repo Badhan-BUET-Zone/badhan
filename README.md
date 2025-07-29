@@ -31,4 +31,53 @@ The following output will make sure that the database, backend and frontend is r
 * Visit http://localhost:8080 to start navigating the UI
 
 # Run Backend and Frontend Tests
-* Visit the [Backend Testing Documentation](badhan-backend-test/README.md) and [Frontend Testing Documentation](badhan-frontend-test/README.md).
+* Open a second bash terminal with `badhan` as the working directory.
+* Run `cd badhan-backend-test && bash start`. The following output should occur:
+```
+Test Suites: 46 passed, 46 total
+Tests:       73 passed, 73 total
+Snapshots:   0 total
+Time:        3.818 s, estimated 4 s
+Ran all test suites.
+```
+
+* Make `badhan` the working directory.
+* Run `cd badhan-frontend-test && bash start`. The following output should occur:
+```
+====================================================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  activeDonors/activeDonors.js             00:10        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  callRecords/callRecords.js               00:10        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donations/donations.js                   00:13        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donors/checkDuplicate.js                 00:19        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donors/designatedDonors.js               00:07        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donors/donors.js                         00:18        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donors/editDonor.js                      00:16        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donors/hallAdmin.js                      00:10        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  donors/search.js                         00:12        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  logs/logs.js                             00:07        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  publicContacts/publicContacts.js         00:11        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  users/logins.js                          00:08        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  users/passwordChange.js                  00:12        1        1        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✔  All specs passed!                        02:39       13       13        -        -        -  
+```
+
+That's it. You have done the local setup for developing the app.
