@@ -1,5 +1,0 @@
-#/bin/bash
-cd ../badhan-backup
-bash scripts/wait-for-port.sh 3000
-cd ../badhan-frontend
-npm run serve:local
