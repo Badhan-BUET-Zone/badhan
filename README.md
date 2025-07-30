@@ -6,13 +6,10 @@
 * `nvm install 22`
 * `nvm use 22`
 
-## Install All Packages
+## Run the Servers
 * Clone this repository.
 * Open VSCode
 * Open a bash terminal in VSCode.
-* Run `bash install`
-
-## Run the Servers
 * Run `bash start`
 
 The following output will make sure that the database, backend and frontend is running without any error
