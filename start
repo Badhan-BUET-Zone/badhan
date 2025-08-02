@@ -9,7 +9,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$ROOT_DIR/badhan-backup/scripts"
 
 # ---------- Port Cleanup -----------
-bash $SCRIPTS_DIR/port_cleanup.sh
+bash $SCRIPTS_DIR/dockeralike/port_cleanup.sh 27017 3000 8080
 
 # ---------- CLI parsing ----------
 CLEAN=false
@@ -44,14 +44,14 @@ done
 # ---------- (3) Compose backend command ----------
 if $CLEAN; then
   # On a fresh slate, reset the DB before starting Nodemon
-  BACKEND_RUN='bash ../badhan-backup/scripts/wait-for-port.sh 27017 && npm run reset_db:local && npx nodemon'
+  BACKEND_RUN='bash ../badhan-backup/scripts/dockeralike/wait-for-port.sh 27017 && npm run reset_db:local && npx nodemon'
 else
-  BACKEND_RUN='bash ../badhan-backup/scripts/wait-for-port.sh 27017 && npx nodemon'
+  BACKEND_RUN='bash ../badhan-backup/scripts/dockeralike/wait-for-port.sh 27017 && npx nodemon'
 fi
 
 # ---------- (4) Launch the stack in parallel ----------
 echo "🚀  Starting stack..."
-bash "$SCRIPTS_DIR/parallel.sh" \
+bash "$SCRIPTS_DIR/dockeralike/parallel.sh" \
   "cd badhan-backend  && bash start_db" \
   "cd badhan-backend  && ${BACKEND_RUN}" \
-  "cd badhan-frontend && bash ../badhan-backup/scripts/wait-for-port.sh 3000 && npm run serve:local"
+  "cd badhan-frontend && bash ../badhan-backup/scripts/dockeralike/wait-for-port.sh 3000 && npm run serve:local"

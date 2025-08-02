@@ -1,25 +1,67 @@
 #!/usr/bin/env bash
-# run_local_mongo.sh — single-file, no-root MongoDB launcher (Linux/macOS/Git-Bash)
-# Usage: just run it:  ./run_local_mongo.sh
+# run_local_mongo.sh — single-file, no-root MongoDB launcher (Linux ▸ macOS ▸ Git-Bash)
+# Usage:  ./run_local_mongo.sh
+#
 # Environment overrides (no CLI parsing):
-#   MONGO_VERSION=7.0.14 PORT=27017 BIND_IP=127.0.0.1 ROOT_DIR="$PWD/mongodb_local"  ./run_local_mongo.sh
-# Stops when you hit Ctrl+C (runs in foreground).
+#   MONGO_VERSION=7.0.14 PORT=27017 BIND_IP=127.0.0.1 ROOT_DIR="$PWD/mongodb_local" ./run_local_mongo.sh
+#
+# Runs in the foreground; hit Ctrl-C to stop.
 
 set -euo pipefail
 
-# ------------------- Config (env overridable) -------------------
+# ───────────────── Config (env-overridable) ──────────────────────
 MONGO_VERSION="${MONGO_VERSION:-7.0.14}"
 PORT="${PORT:-27017}"
 BIND_IP="${BIND_IP:-127.0.0.1}"
-ROOT_DIR="${ROOT_DIR:-$PWD/mongodb_local}"          # binaries + data
+ROOT_DIR="${ROOT_DIR:-$PWD/mongodb_local}"      # binaries + data
 BIN_DIR="$ROOT_DIR/bin"
 DATA_DIR="$ROOT_DIR/data"
 LOG_FILE="$ROOT_DIR/mongod.log"
 
-# ------------------- Helpers -------------------
+# ───────────────── Helpers ───────────────────────────────────────
 die(){ echo "❌ $*" >&2; exit 1; }
 need(){ command -v "$1" >/dev/null 2>&1 || die "Need '$1' in PATH"; }
 
+# Check if the requested PORT is already in use
+port_in_use() {
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1
+  else
+    netstat -an 2>/dev/null | grep -E "[:.]${PORT}[[:space:]]+.*LISTEN" >/dev/null
+  fi
+}
+port_in_use && die "Port $PORT is already in use – another mongod (or something else) is running."
+
+# ─────── Directory-scoped lock with stale-lock detection ─────────
+LOCK_DIR="$ROOT_DIR/.run_local_mongo.lock"
+mkdir -p "$ROOT_DIR"
+
+acquire_lock() {
+  if mkdir "$LOCK_DIR" 2>/dev/null; then          # got it
+    echo "$$" >"$LOCK_DIR/pid"
+    trap 'rm -rf "$LOCK_DIR"' EXIT                # clean up on exit / Ctrl-C
+    return 0
+  fi
+
+  # lock exists – inspect
+  if [[ -f "$LOCK_DIR/pid" ]]; then
+    oldpid="$(cat "$LOCK_DIR/pid")"
+    if kill -0 "$oldpid" 2>/dev/null; then
+      die "Another run_local_mongo.sh instance (PID $oldpid) is already running in $ROOT_DIR"
+    else
+      echo "⚠️  Stale lock detected (PID $oldpid is not running). Cleaning up…"
+      rm -rf "$LOCK_DIR" || die "Cannot remove stale lock; check permissions."
+      acquire_lock          # retry once
+    fi
+  else
+    echo "⚠️  Lock directory exists without pid file. Cleaning up…"
+    rm -rf "$LOCK_DIR" || die "Cannot remove malformed lock; check permissions."
+    acquire_lock            # retry once
+  fi
+}
+acquire_lock
+
+# ───────────────── Platform detection ────────────────────────────
 detect_platform(){
   local os="$(uname -s 2>/dev/null || echo Unknown)"
   local arch="$(uname -m 2>/dev/null || echo x86_64)"
@@ -27,8 +69,8 @@ detect_platform(){
   case "$os" in
     Linux*)   OS="linux" ;;
     Darwin*)  OS="macos" ;;
-    MINGW*|MSYS*|CYGWIN*) OS="windows" ;;  # Git Bash/MSYS
-    *) die "Unsupported OS: $os";;
+    MINGW*|MSYS*|CYGWIN*) OS="windows" ;;   # Git-Bash / MSYS / Cygwin
+    *) die "Unsupported OS: $os" ;;
   esac
 
   case "$arch" in
@@ -47,7 +89,7 @@ detect_platform(){
     URL="https://fastdl.mongodb.org/osx/$FILE"
     EXT="tgz"
     EXE_SUFFIX=""
-  else
+  else   # linux
     FILE="mongodb-linux-$ARCH-$MONGO_VERSION.tgz"
     URL="https://fastdl.mongodb.org/linux/$FILE"
     EXT="tgz"
@@ -55,6 +97,7 @@ detect_platform(){
   fi
 }
 
+# ───────────────── Downloader / extractor ────────────────────────
 fetch(){
   local url="$1" out="$2"
   if command -v curl >/dev/null 2>&1; then
@@ -68,8 +111,7 @@ fetch(){
 
 download_and_extract(){
   mkdir -p "$ROOT_DIR" "$BIN_DIR"
-  local tmpdir
-  tmpdir="$(mktemp -d)"
+  local tmpdir; tmpdir="$(mktemp -d)"
   echo "⬇️  Downloading MongoDB $MONGO_VERSION ($OS/$ARCH)…"
   fetch "$URL" "$tmpdir/$FILE"
 
@@ -80,7 +122,7 @@ download_and_extract(){
     elif command -v 7z >/dev/null 2>&1; then
       7z x "$tmpdir/$FILE" -o"$tmpdir" >/dev/null
     else
-      die "Need 'unzip' or '7z' to extract ZIP on Windows"
+      die "Need 'unzip' or '7z' to extract ZIP archives"
     fi
   else
     need tar
@@ -89,20 +131,20 @@ download_and_extract(){
 
   local extracted
   extracted="$(find "$tmpdir" -maxdepth 1 -type d -name 'mongodb-*' | head -n1)"
-  [[ -d "$extracted"/bin ]] || die "Extraction failed"
+  [[ -d "$extracted/bin" ]] || die "Extraction failed"
 
-  # Move only the contents of bin/ to our BIN_DIR (avoid nested bin/bin)
-  mv "$extracted"/bin/* "$BIN_DIR"/
+  mv "$extracted/bin/"* "$BIN_DIR/"
 
-  # Safety: flatten if nested bin slipped through
+  # Flatten if a nested bin/ made it through
   if [[ -d "$BIN_DIR/bin" ]]; then
-    mv "$BIN_DIR/bin/"* "$BIN_DIR"/ && rmdir "$BIN_DIR/bin"
+    mv "$BIN_DIR/bin/"* "$BIN_DIR/" && rmdir "$BIN_DIR/bin"
   fi
 
   rm -rf "$tmpdir"
   echo "✅ MongoDB binaries ready in $BIN_DIR"
 }
 
+# ───────────────── Launch mongod ─────────────────────────────────
 start_mongod(){
   mkdir -p "$DATA_DIR"
   touch "$LOG_FILE"
@@ -114,14 +156,14 @@ start_mongod(){
   echo "📄 Logs: $LOG_FILE"
   echo "⛔ Press Ctrl+C to stop."
   exec "$MONGOD" \
-    --dbpath "$DATA_DIR" \
-    --port "$PORT" \
-    --bind_ip "$BIND_IP" \
-    --logpath "$LOG_FILE" \
-    --logappend
+      --dbpath "$DATA_DIR" \
+      --port   "$PORT" \
+      --bind_ip "$BIND_IP" \
+      --logpath "$LOG_FILE" \
+      --logappend
 }
 
-# ------------------- Main -------------------
+# ───────────────── Main flow ─────────────────────────────────────
 detect_platform
 
 if [[ ! -x "$BIN_DIR/mongod${EXE_SUFFIX:-}" ]]; then

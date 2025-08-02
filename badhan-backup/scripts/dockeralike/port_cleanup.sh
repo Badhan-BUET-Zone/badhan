@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# kill_ports_nosudo.sh — kill whatever you own on 27017, 3000, 8080
-#   • macOS / Linux: lsof   (no sudo)
-#   • Windows Git‑Bash: netstat + taskkill
+# kill_ports_nosudo.sh — kill whatever you own on the ports you pass in
+#   macOS / Linux: lsof (no sudo needed)
+#   Windows Git-Bash: netstat + taskkill
+# Usage examples:
+#   bash kill_ports_nosudo.sh        # uses default 27017 3000 8080
+#   bash kill_ports_nosudo.sh 5432   # just PostgreSQL
+#   bash kill_ports_nosudo.sh 8000 8080 3000
 
 set -euo pipefail
-PORTS=(27017 3000 8080)
+
+# ── ports to clean ───────────────────────────────────────────────
+PORTS=("$@")
+[[ ${#PORTS[@]} -eq 0 ]] && PORTS=(27017 3000 8080)
 
 is_windows() { [[ $(uname -s) =~ ^(MINGW|MSYS|CYGWIN) ]]; }
 
@@ -18,7 +25,7 @@ kill_pid_unix() {
 kill_pid_windows() {
   local pid=$1 port=$2
   if taskkill //PID "$pid" //F //T &>/dev/null; then
-    printf "✔︎ Task‑killed PID %s on port %s\n" "$pid" "$port"
+    printf "✔︎ Task-killed PID %s on port %s\n" "$pid" "$port"
   fi
 }
 
@@ -40,12 +47,9 @@ for port in "${PORTS[@]}"; do
         [[ -n $pid ]] && { kill_pid_windows "$pid" "$port"; killed_any=true; }
       done < <(netstat -ano | awk -v p=":$port" '$0 ~ p && /LISTEN|LISTENING/ {print $NF}' | sort -u)
     else
-      # netstat -nlp without sudo may show only your own processes (Linux);
-      # on macOS the -p column is absent, so this usually finds nothing.
       while read -r pid; do
         [[ -n $pid ]] && { kill_pid_unix "$pid" "$port"; killed_any=true; }
-      done < <(netstat -nlp 2>/dev/null | \
-               awk -v p=":$port" '$0 ~ p {split($7,a,"/"); print a[1]}' | sort -u)
+      done < <(netstat -nlp 2>/dev/null | awk -v p=":$port" '$0 ~ p {split($7,a,"/"); print a[1]}' | sort -u)
     fi
   fi
 
