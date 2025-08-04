@@ -2,31 +2,39 @@ const { badhanAxios } = require("../../api");
 const validate = require("jsonschema").validate;
 const env = require("../../config");
 const { processError } = require("../fixtures/helpers");
-const { deleteLogsSchema } = require("./schemas");
+const { passwordSchema } = require("./schemas");
 
-test("DELETE/log: delete logs", async () => {
+test("POST/donors/password: success", async () => {
   try {
     let signInResponse = await badhanAxios.post("/users/signin", {
       phone: env.SUPERADMIN_PHONE,
       password: env.SUPERADMIN_PASSWORD,
     });
 
-    let deleteLogsResult = await badhanAxios.delete("/log", {
+    let donorResponse = await badhanAxios.get("/users/me", {
       headers: {
         "x-auth": signInResponse.data.token,
       },
     });
 
-    let deleteLogsValidationResult = validate(
-      deleteLogsResult.data,
-      deleteLogsSchema
+    let response = await badhanAxios.post(
+      "/donors/password",
+      {
+        donorId: donorResponse.data.donor._id,
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
     );
 
-    expect(deleteLogsValidationResult.errors).toEqual([]);
+    let validationResult = validate(response.data, passwordSchema);
 
+    expect(validationResult.errors).toEqual([]);
     await badhanAxios.delete("/users/signout", {
       headers: {
-        "x-auth": signInResponse.data.token,
+        "x-auth": response.data.token,
       },
     });
   } catch (e) {
