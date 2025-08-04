@@ -47,7 +47,7 @@ case "$current_branch" in
     firebase_project="badhan-buet"
     ;;
   test-branch)
-    build_cmd="npm run build:testing"
+    build_cmd="npm run build:development"
     firebase_project="badhan-buet-test"
     ;;
   *)
