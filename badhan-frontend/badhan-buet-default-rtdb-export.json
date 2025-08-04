@@ -1,0 +1,266 @@
+{
+  "data": {
+    "1659897711": {
+      "calender": "January 2020- Present",
+      "contribution": [
+        "UX Design",
+        "Web Frontend Development",
+        "Hybrid Android App",
+        "E2E UI Automated Testing",
+        "API Development",
+        "Admin Console"
+      ],
+      "id": 1659897711,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1659897711.png?alt=media",
+      "links": [
+        {
+          "color": "red",
+          "icon": "gmail",
+          "link": "mailto:mirmahathir1@gmail.com"
+        },
+        {
+          "color": "blue",
+          "icon": "linkedin",
+          "link": "https://www.linkedin.com/in/mir-mahathir-mohammad-59bb671a5/"
+        },
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/mirmahathir1"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/MirMahathirMohammad"
+        }
+      ],
+      "name": "Mir Mahathir Mohammad",
+      "type": "Active Developers"
+    },
+    "1754340963": {
+      "calender": "Aug 2025 - Present",
+      "contribution": [
+        "Refactor Automated Backend Testing"
+      ],
+      "id": 1754340963,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1754340963.jpeg?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/iftialmin10"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/ifti.alamin"
+        },
+        {
+          "color": "blue",
+          "icon": "linkedin",
+          "link": "https://www.linkedin.com/in/md-al-amin-ifti-72b723234/"
+        },
+        {
+          "color": "red",
+          "icon": "gmail",
+          "link": "mailto:iftialmin73@gmail.com"
+        }
+      ],
+      "name": "Md. Al Amin Ifti",
+      "type": "Active Developers"
+    },
+    "1660030146": {
+      "calender": "June 2021 - May 2022",
+      "contribution": [
+        "API Development",
+        "Backend Documentation",
+        "Automated Testing",
+        "Admin API"
+      ],
+      "id": 1660030146,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660030146.png?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/sumaiyaazad"
+        }
+      ],
+      "name": "Sumaiya Azad",
+      "type": "Legacy Developers"
+    },
+    "1660030380": {
+      "calender": "July 2021 - Present",
+      "contribution": [
+        "Data Input Frontend",
+        "Prototyping and UX Design",
+        "Testing and Bug Report"
+      ],
+      "id": 1660030380,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660030380.png?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/hmasum52"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/hmasum52/"
+        },
+        {
+          "color": "red",
+          "icon": "gmail",
+          "link": "mailto:1805052@ugrad.cse.buet.ac.bd"
+        }
+      ],
+      "name": "Hasan Masum",
+      "type": "Active Developers"
+    },
+    "1660030845": {
+      "calender": "July 2021 - Feb 2024",
+      "contribution": [
+        "Google Play Management",
+        "Data Input API",
+        "Testing and Bug Report"
+      ],
+      "id": 1660030845,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660030845.png?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/Sanju-Basak"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/sanju.basak.71"
+        },
+        {
+          "color": "red",
+          "icon": "gmail",
+          "link": "mailto:sanjubasakndc18@gmail.com"
+        }
+      ],
+      "name": "Sanju Basak",
+      "type": "Legacy Developers"
+    },
+    "1660032466": {
+      "calender": "January 2020 - Present",
+      "contribution": [
+        "Initiator of Badhan App",
+        "Test and Bug Report",
+        "Promo Video Editor"
+      ],
+      "id": 1660032466,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660032466.png?alt=media",
+      "links": [
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/mhrahat01"
+        }
+      ],
+      "name": "MH Rahat",
+      "type": "Contributors of Badhan"
+    },
+    "1660032826": {
+      "calender": "January 2020 - Present",
+      "contribution": [
+        "Active User"
+      ],
+      "id": 1660032826,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660032826.png?alt=media",
+      "links": [
+        {
+          "color": "blue",
+          "icon": "linkedin",
+          "link": "https://www.linkedin.com/in/showrov1996"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/share/1CV2HFGWPe/"
+        }
+      ],
+      "name": "Shadman Sakib Showrov",
+      "type": "Contributors of Badhan"
+    },
+    "1660032906": {
+      "calender": "January 2020 - April 2021",
+      "contribution": [
+        "API Development",
+        "Database Administration"
+      ],
+      "id": 1660032906,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660032906.png?alt=media",
+      "links": [
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/aniruddhags3927"
+        }
+      ],
+      "name": "Aniruddha GS",
+      "type": "Legacy Developers"
+    },
+    "1660033000": {
+      "calender": "January 2020 - May 2020",
+      "contribution": [
+        "Flutter Android App"
+      ],
+      "id": 1660033000,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660033000.png?alt=media",
+      "links": [
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/profile.php?id=100010509641367"
+        }
+      ],
+      "name": "Priyeta Saha",
+      "type": "Legacy Developers"
+    },
+    "1660033054": {
+      "calender": "January 2020 - June 2020",
+      "contribution": [
+        "API Development"
+      ],
+      "id": 1660033054,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660033054.png?alt=media",
+      "links": [
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/anisha.islam.1690"
+        }
+      ],
+      "name": "Anisha Islam",
+      "type": "Legacy Developers"
+    },
+    "1660033110": {
+      "calender": "April 2021 - May 2021",
+      "contribution": [
+        "Data Processing"
+      ],
+      "id": 1660033110,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/badhan-admin-api%2F1660033110.png?alt=media",
+      "links": [
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/Shiroe041"
+        }
+      ],
+      "name": "Atiqur Rahman Shuvo",
+      "type": "Legacy Developers"
+    }
+  },
+  "frontendSettings": {
+    "backendBaseURL": "https://badhan-buet.uc.r.appspot.com",
+    "backendTestBaseURL": "https://badhan-web-test.herokuapp.com",
+    "version": "87"
+  }
+}
