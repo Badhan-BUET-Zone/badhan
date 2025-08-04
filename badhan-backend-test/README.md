@@ -1,3 +1,8 @@
+# Developers Involved
+* [Mir Mahathir Mohammad](https://github.com/mirmahathir1)
+* [Sumaiya Azad](https://github.com/sumaiyaazad)
+* [Md. Al Amin Ifti](https://github.com/iftialmin10)
+
 # badhan-backend-test
 `badhan-backend-test` contains the automated API testing script written using Node.JS. The API being tested is currently the active backend for Badhan, BUET Zone Android app (https://play.google.com/store/apps/details?id=com.mmmbadhan) and Website (https://badhan-buet.web.app)
 
