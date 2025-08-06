@@ -1,65 +1,63 @@
 #!/usr/bin/env bash
-# run_parallel.sh — run ANY number of long‑running commands side‑by‑side
-# Works in: Linux, macOS, Windows Git Bash (MINGW)
-#
-# Usage:
-#   ./run_parallel.sh "npm run dev" "python api.py" "mongod --config mongod.conf"
-#   ./run_parallel.sh cmd1 cmd2 cmd3 ...
-#
-# Notes:
-#  • Each command's stdout/stderr is line-buffered and prefixed: [01], [02], …
-#  • Ctrl+C cleanly stops all children.
-
+# parallel.sh — run any number of commands in parallel, prefixing their output
+# Works on Linux, macOS, Windows Git-Bash / MSYS – **no setsid required**
 set -euo pipefail
 
-usage() {
-  cat <<'EOF'
-Usage:
-  run_parallel.sh "cmd1" "cmd2" ...
 
-Runs all commands in parallel and prefixes their output.
-EOF
+(( $# )) || { echo "Usage: $0 \"cmd1\" \"cmd2\" …" >&2; exit 1; }
+
+pad () { printf "%02d" "$1"; }
+
+# ─── Track PIDs of the *command* shells we start ────────────────
+cmd_pids=()
+
+# ─── Prefix helper — runs in a subshell, keeps the caller's tag ─
+prefix() {
+  local tag=$1
+  while IFS= read -r line || [[ -n $line ]]; do
+    printf '[%s] %s\n' "$tag" "$line"
+  done
 }
 
-(( $# )) || { usage >&2; exit 1; }
+# ─── Launch each command -------------------------------------------------------
+idx=0
+for cmd in "$@"; do
+  idx=$((idx+1)); tag=$(pad "$idx")
 
-# ------------- Helpers -------------
-pids=()
+  #   bash -c "$cmd"   → gives us a PID we can kill later
+  #   > >(prefix "$tag")  → process substitution prefixes the output
+  bash -c "$cmd" 2>&1 > >(prefix "$tag") &
+  cmd_pids+=( "$!" )
+done
+
+# ─── Clean-up: kill command PID plus any children it spawned ──────────────────
+kill_tree() {
+  local pid=$1
+
+  # 1️⃣  Ask politely
+  command -v pkill >/dev/null 2>&1 && pkill -INT -P "$pid" 2>/dev/null || true
+  kill  -INT "$pid" 2>/dev/null || true
+
+  # 2️⃣  Wait a beat, then force-kill anything that’s still around
+  sleep 1
+  command -v pkill >/dev/null 2>&1 && pkill -TERM -P "$pid" 2>/dev/null || true
+  kill  -TERM "$pid" 2>/dev/null || true
+}
+
 cleanup() {
-  # propagate signal to children
-  for p in "${pids[@]:-}"; do
-    kill "$p" 2>/dev/null || true
+  echo -e "\n⏹️  Stopping all tasks…"
+  for pid in "${cmd_pids[@]:-}"; do
+    kill_tree "$pid"
   done
-  # wait to avoid zombies
-  wait || true
+  wait 2>/dev/null || true
 }
 trap 'cleanup; exit 130' INT TERM
-trap 'cleanup' EXIT
+trap cleanup EXIT
 
-pad() { printf "%02d" "$1"; }
-
-# ------------- Launch commands -------------
-i=0
-for cmd in "$@"; do
-  i=$((i+1))
-  tag="$(pad "$i")"
-
-  # Run each command in its own subshell, pipe through a prefixer, background it
-  {
-    # Use eval to allow shell features in the command string
-    eval "$cmd" 2>&1 | while IFS= read -r line || [[ -n "$line" ]]; do
-      printf '[%s] %s\n' "$tag" "$line"
-    done
-  } &
-  pids+=("$!")
-done
-
-# ------------- Wait & propagate exit codes -------------
+# ─── Wait for all, propagate the first non-zero exit code ─────────────────────
 exit_code=0
-for p in "${pids[@]}"; do
-  if ! wait "$p"; then
-    exit_code=1
-  fi
+for pid in "${cmd_pids[@]}"; do
+  wait "$pid" || exit_code=$?
 done
-
+echo "\n\n\n"
 exit "$exit_code"
