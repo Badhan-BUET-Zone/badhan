@@ -8,6 +8,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$ROOT_DIR/badhan-backup/scripts"
 
+source $SCRIPTS_DIR/cross-platform-scripts/enable_node.sh
+
 # ---------- Port Cleanup -----------
 bash $SCRIPTS_DIR/cross-platform-scripts/port_cleanup.sh 27017 3000 8080
 

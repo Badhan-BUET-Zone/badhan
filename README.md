@@ -1,12 +1,6 @@
 # How to Start Development of Badhan
 
-## Install Node.js
-* Install `nvm` from https://github.com/coreybutler/nvm-windows (If you are on windows) or https://github.com/nvm-sh/nvm (If you are on MacOS/Linux)
-* Verify nvm by `nvm --version`.
-* `nvm install 22`
-* `nvm use 22`
-
-## Run the Servers
+## Run the Code
 * Clone this repository.
 * Open VSCode
 * Open a bash terminal in VSCode.
@@ -29,7 +23,7 @@ The following output will make sure that the database, backend and frontend is r
 
 # Run Backend and Frontend Tests
 * Open a second bash terminal with `badhan` as the working directory.
-* Run `cd badhan-backend-test && bash start`. The following output should occur:
+* Run `bash badhan-backend-test/start`. 
 ```
 Test Suites: 46 passed, 46 total
 Tests:       73 passed, 73 total
@@ -39,7 +33,7 @@ Ran all test suites.
 ```
 
 * Make `badhan` the working directory.
-* Run `cd badhan-frontend-test && bash start`. The following output should occur:
+* Run `bash badhan-frontend-test/start`. The following output should occur:
 ```
 ====================================================================================================
 
