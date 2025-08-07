@@ -1,57 +1,18 @@
 #!/usr/bin/env bash
-# run_badhan_stack.sh — install deps (idempotent) and start the dev stack
-# Usage:  ./run_badhan_stack.sh [--clean]
 
-set -euo pipefail
-
-# ---------- Paths ----------
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="$ROOT_DIR/badhan-backup/scripts"
-
-# ---------- Port Cleanup -----------
-bash $SCRIPTS_DIR/cross-platform-scripts/port_cleanup.sh 27017 3000 8080
-
-# ---------- CLI parsing ----------
 CLEAN=false
 for arg in "$@"; do
-  case "$arg" in
-    --clean) CLEAN=true ;;
-    -h|--help)
-      echo "Usage: $(basename "$0") [--clean]"
-      exit 0
-      ;;
-    *) echo "❌  Unknown option: $arg" >&2; exit 1 ;;
-  esac
+  if [[ "$arg" == "--clean" ]]; then
+    CLEAN=true
+    break
+  fi
 done
 
-# ---------- (1) Optional clean ----------
-if $CLEAN; then
-  echo "🧹  Cleaning all dependencies..."
-  bash "$SCRIPTS_DIR/clean_all_dependencies.sh"
+if [ "$CLEAN" = true ]; then
+  echo "🧹 Cleaning up node..."
+  rm -rf badhan-backup/scripts/nodejs
 fi
 
-# ---------- (2) Ensure npm installs ----------
-for app in \
-  badhan-backend \
-  badhan-frontend \
-  badhan-backend-test \
-  badhan-frontend-test
-do
-  echo "📦  Ensuring dependencies for ${app}..."
-  bash "$SCRIPTS_DIR/ensure_npm_install.sh" "${app}"
-done
+source badhan-backup/scripts/enable_node.sh
 
-# ---------- (3) Compose backend command ----------
-if $CLEAN; then
-  # On a fresh slate, reset the DB before starting Nodemon
-  BACKEND_RUN='bash ../badhan-backup/scripts/cross-platform-scripts/wait-for-port.sh 27017 && npm run reset_db:local && npx nodemon'
-else
-  BACKEND_RUN='bash ../badhan-backup/scripts/cross-platform-scripts/wait-for-port.sh 27017 && npx nodemon'
-fi
-
-# ---------- (4) Launch the stack in parallel ----------
-echo "🚀  Starting stack..."
-bash "$SCRIPTS_DIR/cross-platform-scripts/parallel.sh" \
-  "cd badhan-backend  && bash start_db" \
-  "cd badhan-backend  && ${BACKEND_RUN}" \
-  "cd badhan-frontend && bash ../badhan-backup/scripts/cross-platform-scripts/wait-for-port.sh 3000 && npm run serve:local"
+node badhan-backup/scripts/start.mjs $@
