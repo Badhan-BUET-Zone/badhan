@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail                   # exit on error, unset var, or failed pipe
 
+source ../badhan-backup/scripts/enable_node.sh
+
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 # ── helpers ──────────────────────────────────────────────────────────────
