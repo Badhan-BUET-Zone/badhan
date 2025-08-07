@@ -2,8 +2,7 @@ import { runProcessesInParallel } from './parallel.mjs';
 import { killPorts } from './port_cleanup.mjs';
 import { cleanUp } from './clean_all_dependencies.mjs';
 import { ensureNpmInstall } from './ensure_npm_install.mjs';
-import { exit } from 'node:process';
-// Parse command-line arguments
+
 const args = process.argv.slice(2);
 
 await killPorts([27017, 3000, 8080]);
@@ -37,7 +36,7 @@ const jobs = [
 ];
 
 if(cleanUpRequired){
-  jobs.splice(1, 0, { workingDir: './badhan-backend', cmd: 'npm run reset_db:local', label: 'database reset'})
+  jobs.splice(1, 0, { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npm run reset_db:local', label: 'database reset'})
 }
 
 runProcessesInParallel(jobs).catch(err => {
