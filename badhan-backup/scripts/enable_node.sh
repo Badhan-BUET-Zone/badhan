@@ -64,20 +64,23 @@ if [ ! -f "${BIN_DIR}/node" ] && [ ! -f "${BIN_DIR}/node.exe" ]; then
 
   echo "Node.js v${NODE_VERSION} installed successfully to ${INSTALL_DIR}"
 else
-  echo "Node.js is already installed in ${INSTALL_DIR}"
+  # echo "Node.js is already installed in ${INSTALL_DIR}"
+  :
 fi
 
 # Add the bin directory to PATH if not already there
 if [[ ":$PATH:" != *":${BIN_DIR}:"* ]]; then
   export PATH="${BIN_DIR}:$PATH"
-  echo "Added Node.js to PATH for this session"
+  # echo "Added Node.js to PATH for this session"
+  :
 fi
 
 # Verify installation
 if [ -f "${BIN_DIR}/node" ] || [ -f "${BIN_DIR}/node.exe" ]; then
-  echo "Node.js environment ready:"
-  echo "Node.js version: $("${BIN_DIR}/node" --version)"
-  echo "npm version: $(npm --version)"
+  :
+  # echo "Node.js environment ready:"
+  # echo "Node.js version: $("${BIN_DIR}/node" --version)"
+  # echo "npm version: $(npm --version)"
 else
   echo "Node.js installation failed"
   exit 1

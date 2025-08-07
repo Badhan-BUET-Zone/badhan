@@ -1,0 +1,5 @@
+source ../badhan-backup/scripts/enable_node.sh
+
+node ../badhan-backup/scripts/wait_for_port.mjs 3000
+
+npm run serve:local

@@ -1,4 +1,4 @@
 #/bin/bash
-source badhan-backup/scripts/cross-platform-scripts/enable_node.sh
+source badhan-backup/scripts/enable_node.sh
 cd badhan-backend-test || exit 1
 npm run test $1
