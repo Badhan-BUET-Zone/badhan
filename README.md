@@ -75,7 +75,7 @@ That's it. You have done the local setup for developing the app.
 
 # Backend Server API Documentation
 
-We provide the documentation of all endpoints of our `badhan-backend` API. Visit https://badhan-buet-test.uc.r.appspot.com/docs/ to see and use the API endpoints directly.
+We provide the documentation of all endpoints of our `badhan-backend` API. Visit https://badhan-buet-test.uc.r.appspot.com/docs/ to see and use the API endpoints directly. Visit this (video)[https://youtu.be/vHnDgW04c1w] for instructions on using the API.
 
 <img width="1799" height="928" alt="image" src="https://github.com/user-attachments/assets/33501a52-c932-4202-af77-82fd179a632e" />
 
