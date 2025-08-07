@@ -32,12 +32,12 @@ await ensureNpmInstall("./badhan-frontend-test")
 
 const jobs = [
   { workingDir: './badhan-backup', cmd: 'node scripts/start_db.mjs', label: 'database'},
-  { workingDir: './badhan-frontend', cmd: 'bash start', label: 'frontend'},
-  { workingDir: './badhan-backend', cmd: 'bash start', label: 'backend'}
+  { workingDir: './badhan-frontend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npm run serve:local', label: 'frontend'},
+  { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 3000 && npm run serve:local', label: 'backend'}
 ];
 
 if(cleanUpRequired){
-  jobs.splice(1, 0, { workingDir: './badhan-backend', cmd: 'npm run reset_db:local', label: 'backend'})
+  jobs.splice(1, 0, { workingDir: './badhan-backend', cmd: 'npm run reset_db:local', label: 'database reset'})
 }
 
 runProcessesInParallel(jobs).catch(err => {
