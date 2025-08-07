@@ -19,6 +19,8 @@
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
+source ../badhan-backup/scripts/enable_node.sh
+
 # ──────────────────────────────────────────────────────────────
 # 0. Ensure firebase-tools is available locally (auto‑install if needed)
 # ──────────────────────────────────────────────────────────────
