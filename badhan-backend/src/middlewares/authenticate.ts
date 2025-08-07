@@ -12,7 +12,16 @@ import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import {IDonor} from "../db/models/Donor";
 import {IToken} from "../db/models/Token";
 
-
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     ApiKeyAuth:
+ *       type: apiKey
+ *       in: header
+ *       name: x-auth
+ *
+ */
 const handleAuthentication = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   const token: string = req.header('x-auth')!
 
