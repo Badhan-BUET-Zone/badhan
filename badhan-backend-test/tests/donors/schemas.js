@@ -26,6 +26,7 @@ const searchSchema = {
           availableToAll: { type: "boolean" },
           donationCount: { type: "integer" },
           callRecordCount: { type: "integer" },
+          callCountLast3Days: { type: "integer" },
           lastCalled: {
             type: {
               anyOf: [

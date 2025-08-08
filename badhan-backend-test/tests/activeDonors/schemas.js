@@ -67,6 +67,7 @@ const activeDonorSearchResultSchema = {
           markerName: { type: "string" },
           donationCount: { type: "integer" },
           callRecordCount: { type: "integer" },
+          callCountLast3Days: { type: "integer" },
           lastCallRecord: {
             type: {
               anyOf: [{ type: "integer" }, { type: "null" }],

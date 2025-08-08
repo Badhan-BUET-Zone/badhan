@@ -8,6 +8,31 @@ export interface ILog extends Document {
   details: object,
   expireAt?: number
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Logs:
+ *       type: object
+ *       properties:
+ *         donorId:
+ *           type: string
+ *           description: id of donor who accessed an api
+ *           example: abcdef123456789
+ *         date:
+ *           type: number
+ *           description: timestamp of api access
+ *           example: 1234578161648
+ *         operation:
+ *           type: string
+ *           description: short detail of the API route
+ *           example: POST SIGNIN
+ *         details:
+ *           type: object
+ *           description: any further information needed to be kept in logs
+ */
+
 const logSchema: Schema = new Schema<ILog>({
   donorId: {
     type: Schema.Types.ObjectId,

@@ -59,7 +59,7 @@
         <span><b>Address: </b>{{address}}</span><br>
         <span><b>Marked by: </b>{{markerName}} (On {{markedTime}})</span><br>
         <span><b>Last called: </b>On {{lastCallRecord}}</span><br>
-        <span>Called {{callRecordCount}} times in last 3 days</span><br>
+        <span>Called {{callCountLast3Days}} times in last 3 days</span><br>
         <span><VueMarkdown>**Comment:** {{comment }} (Last Updated:{{commentTime === 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown></span>
       </v-card-text>
     </v-card>
@@ -94,7 +94,7 @@ export default {
     this.markerName = donor.markerName
     this.markedTime = new Date(donor.markedTime).toLocaleString()
     this.lastCallRecord = donor.lastCallRecord === 0 ? 'Unknown' : new Date(donor.lastCallRecord).toLocaleString()
-    this.callRecordCount = donor.callRecordCount
+    this.callCountLast3Days = donor.callCountLast3Days
     this.lastDonation = donor.lastDonation
     this.donationCount = donor.donationCount
 
@@ -108,7 +108,7 @@ export default {
       this.$store.dispatch('notification/notifySuccess', 'Added call record')
       this.newCallRecordLoader = false
       this.lastCallRecord = new Date().toLocaleString()
-      this.callRecordCount++
+      this.callCountLast3Days++
     },
     setAvailableIn (donationDate) {
       this.availableIn =
@@ -136,7 +136,7 @@ export default {
       lastDonation: 0,
       callCount: 0,
       donationCount: 0,
-      callRecordCount: 0,
+      callCountLast3Days: 0,
       newCallRecordLoader: false,
       donorDetailsExpansion: false,
 

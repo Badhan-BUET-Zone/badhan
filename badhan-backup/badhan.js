@@ -41,6 +41,11 @@ yargs.command({
             demandOption: true,
             type: 'number'
         },
+        development: {
+            describe: 'If true, then the backup will be restored to the development database',
+            type: 'boolean',
+            default: false,
+        },
         production: {
             describe: 'If true, then the backup will be restored to the production database',
             type: 'boolean',

@@ -7,16 +7,13 @@
     "postinstall": "tsc",
     "gcp-build": "tsc",
     "lint": "tslint --project tsconfig.json",
-
     "__comment_of_start_scripts": "these are scripts that are only runnable in a GCP enviornment for both development and production environment",
     "start:dev": "NODE_ENV=development node ./dist/bin/www.js",
     "start:prod": "NODE_ENV=production node ./dist/bin/www.js",
-
     "__comment_of_cross_env_scripts": "these are cross platform scripts for development and production to be run on any machine for development purposes",
     "serve:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/bin/www",
     "serve:prod": "npm run lint && npm run build && cross-env NODE_ENV=production node ./dist/bin/www",
     "serve:local": "npm run lint && npm run build && cross-env NODE_ENV=local node ./dist/bin/www",
-
     "__comment_on_db_reset_scripts": "these are the scripts for resetting the development environment database",
     "reset_db:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/clearDatabase.js && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js",
     "reset_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/clearDatabase.js && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/populate.js"
@@ -49,9 +46,14 @@
     "morgan": "~1.9.1",
     "nodemailer": "^6.6.3",
     "progress": "^2.0.3",
+    "redoc-express": "^2.1.0",
     "source-map-support": "^0.5.21",
+    "swagger-ui-express": "^5.0.1",
     "useragent": "^2.3.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "swagger-jsdoc": "^6.2.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

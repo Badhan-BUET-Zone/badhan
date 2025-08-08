@@ -34,89 +34,9 @@
  *                   example: 4.7.3
  */
 
-/**
- * @openapi
- * /log/statistics:
- *   get:
- *     tags:
- *       - Logs
- *     summary: Endpoint to fetch donation statistics
- *     security:
- *       - ApiKeyAuth: []
- *     description: Fetch statistics about the current donor count and volunteer count
- *     responses:
- *       200:
- *         description: Donation statistics fetch successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Statistics fetched successfully
- *                 statistics:
- *                   type: object
- *                   properties:
- *                     donorCount:
- *                       type: number
- *                       example: 2600
- *                     donationCount:
- *                       type: number
- *                       example: 1200
- *                     volunteerCount:
- *                       type: number
- *                       example: 130
- */
 
-/**
- * @openapi
- * /log:
- *   get:
- *     tags:
- *       - Logs
- *     summary: Get count of logged in user and logs
- *     security:
- *       - ApiKeyAuth: []
- *     description: Get date wise count of api calls
- *     responses:
- *       200:
- *         description: Log counts fetched successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: Log counts fetched successfully
- *                 logs:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       dateString:
- *                         type: string
- *                         example: 2021-05-06
- *                       activeUserCount:
- *                         type: number
- *                         example: 23
- *                       totalLogCount:
- *                         type: number
- *                         example: 256
- */
+
+
 
 /**
  * @openapi
@@ -223,31 +143,4 @@
  *                         type: object
  */
 
-/**
- * @openapi
- * /log:
- *   delete:
- *     tags:
- *       - Logs
- *     summary: Endpoint to delete logs
- *     security:
- *       - ApiKeyAuth: []
- *     description: Delete all logs
- *     responses:
- *       200:
- *         description: All logs deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: OK
- *                 statusCode:
- *                   type: number
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: All logs deleted successfully
- */
+

@@ -8,6 +8,27 @@ export interface IActiveDonor extends Document {
   time: number;
 }
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ActiveDonors:
+ *       type: object
+ *       properties:
+ *         donorId:
+ *           type: string
+ *           description: id of donor
+ *           example: dabcd6465166516
+ *         markerId:
+ *           type: string
+ *           description: id of the badhan member who marked the donor
+ *           example: dabcd6465166516
+ *         time:
+ *           type: number
+ *           description: timestamp of marking
+ *           example: 1234578161648
+ */
+
 const activeDonorSchema: Schema = new Schema<IActiveDonor>({
   donorId: {
     type: Schema.Types.ObjectId,

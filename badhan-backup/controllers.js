@@ -84,10 +84,12 @@ const restoreController = async (argv) => {
     console.log('time: ', argv.time)
     console.log('restore to production: ', argv.production)
 
-    let mongoURI = process.env.MONGODB_URI_TEST
+    let mongoURI = process.env.MONGODB_URI_LOCAL
 
     if (argv.production === true) {
         mongoURI = process.env.MONGODB_URI_PROD
+    }else if (argv.development === true) {
+        mongoURI = process.env.MONGODB_URI_TEST
     }
 
     console.log('fetching backups from cloud...')
