@@ -104,6 +104,7 @@ export const findDonorsByAggregate = async (reqQuery: {
     availableToAll: boolean
 }): Promise<{data: IDonor[], message: string, status: string}> => {
     const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
+    const threeDaysAgo: number = Date.now() - 3 * 24 * 60 * 60 * 1000;
     const data: IDonor[] = await DonorModel.aggregate([{
         $match: queryBuilder
     }, {
@@ -133,7 +134,16 @@ export const findDonorsByAggregate = async (reqQuery: {
                 donationCount: {$size: '$donations'},
                 callRecordCount: {$size: '$callRecords'},
                 markerId: {$arrayElemAt: ['$activeDonors.markerId', 0]},
-                lastCalled: {$max: '$callRecords.date'}
+                lastCalled: {$max: '$callRecords.date'},
+                callCountLast3Days: {
+                    $size: {
+                        $filter: {
+                            input: '$callRecords',
+                            as: 'record',
+                            cond: { $gte: ['$$record.date', threeDaysAgo] }
+                        }
+                    }
+                }
             }
         },
         {
@@ -280,6 +290,7 @@ export const generateAggregatePipeline = (reqQuery: {
     markedByMe: boolean
 }, donorId: Schema.Types.ObjectId) : PipelineStage[] => {
     const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
+    const threeDaysAgo: number = Date.now() - 3 * 24 * 60 * 60 * 1000;
     const aggregatePipeline: PipelineStage[] = [{
         $lookup: {
             from: 'donors',
@@ -341,7 +352,16 @@ export const generateAggregatePipeline = (reqQuery: {
     }, {
         $addFields: {
             callRecordCount: {$size: '$callRecords'},
-            lastCallRecord: {$max: '$callRecords.date'}
+            lastCallRecord: {$max: '$callRecords.date'},
+            callCountLast3Days: {
+                $size: {
+                    $filter: {
+                        input: '$callRecords',
+                        as: 'record',
+                        cond: { $gte: ['$$record.date', threeDaysAgo] }
+                    }
+                }
+            }
         }
     }, {
         $project: {

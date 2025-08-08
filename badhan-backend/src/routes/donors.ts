@@ -454,6 +454,9 @@ router.get('/donors/me',
  *                       lastCalled:
  *                         type: number
  *                         example: 135496813489
+ *                       callCountLast3Days:
+ *                         type: number
+ *                         example: 3
  *                       marker:
  *                         type: object
  *                         properties:

@@ -1,0 +1,5 @@
+#/bin/bash
+
+source ./scripts/enable_node.sh
+
+"$@"

@@ -70,7 +70,7 @@
               <span v-else>Unknown</span>
               <br>
             </span>
-              <span>Called <span :id="`callCountId_${id}`">{{ callRecordCount }}</span> times in last 3 days</span>
+              <span>Called <span :id="`callCountId_${id}`">{{ callCountLast3Days }}</span> times in last 3 days</span>
               <span v-if="comment!==undefined && comment!==null && comment.length !==0"><VueMarkdown>**Comment:** {{comment }} (Last Updated:
                 {{commentTime == 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown> </span>
             </v-col>
@@ -196,7 +196,7 @@ export default {
       id: null,
       hall: null,
       commentTime: 0,
-      callRecordCount: 0,
+      callCountLast3Days: 0,
       donationCount: 0,
 
       markedBy: null,
@@ -221,7 +221,7 @@ export default {
       this.$store.dispatch('notification/notifySuccess', 'Added call record')
       // this.callRecords.push({ date: new Date().getTime() })
       this.lastCalled = new Date().getTime()
-      this.callRecordCount++
+      this.callCountLast3Days++
     },
     async loadPersonDetails () {
       await this.$router.push({
@@ -276,7 +276,7 @@ export default {
       this.roomNumber = person.roomNumber
       this.id = person._id
       this.commentTime = person.commentTime
-      this.callRecordCount = person.callRecordCount
+      this.callCountLast3Days = person.callCountLast3Days
       this.donationCount = person.donationCount
       this.markedBy = person.marker.name
       this.lastCalled = person.lastCalled

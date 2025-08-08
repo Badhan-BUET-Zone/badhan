@@ -312,6 +312,9 @@ router.delete('/:donorId',
  *                       lastCallRecord:
  *                         type: number
  *                         example: 135496813489
+ *                       callCountLast3Days:
+ *                         type: number
+ *                         example: 3
  *                       lastCalled:
  *                         type: number
  *                         example: 135496813489
