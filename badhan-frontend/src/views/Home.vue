@@ -35,22 +35,22 @@
             <div>
               <div>
                 <v-row no-gutters>
-                  <v-col>
+                  <v-col class="ma-2">
                     <v-btn @click="downloadInWeb" small
-                           color="secondary" rounded class="mb-4" style="width: 100%">
+                           color="secondary" rounded style="width: 100%">
                       <v-icon left>
                         mdi-download
                       </v-icon>
                       Download Report
                     </v-btn>
                   </v-col>
-                  <v-col>
+                  <v-col class="ma-2">
                     <v-tooltip
                         v-model="showTooltip"
                         top
                     >
                       <template v-slot:activator="{ attrs }">
-                        <v-btn small color="secondary" rounded class="mb-4" style="width: 100%" v-bind="attrs"
+                        <v-btn small color="secondary" rounded style="width: 100%" v-bind="attrs"
                                @click="shareClicked">
                           <v-icon left>
                             mdi-share

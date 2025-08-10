@@ -5,15 +5,15 @@
       <img src="../assets/images/badhanlogo.png" alt="Badhan" style="height: 40px; width: 40px" class="mr-4">
       <v-toolbar-title>Badhan BUET Zone</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-menu right rounded>
+      <v-menu right content-class="rounded-xl overflow-hidden">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on" id="topBarVerticalDotsId">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
 
-        <v-list>
-          <v-list-item @click="signOutModalPrompted" id="signOutButtonId">
+        <v-list content-class="rounded-xl">
+          <v-list-item content-class="rounded-xl" @click="signOutModalPrompted" id="signOutButtonId">
             <v-list-item-icon>
               <v-icon>
                 mdi-logout

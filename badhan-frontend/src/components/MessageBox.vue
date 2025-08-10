@@ -3,8 +3,9 @@
       v-model="dialogOpened"
       width="500"
       persistent
+      content-class="rounded-xl overflow-hidden"
   >
-    <v-card rounded>
+    <v-card class="rounded-xl">
       <v-card-title>
         Message
       </v-card-title>
@@ -54,6 +55,14 @@ export default {
 }
 </script>
 
-<style scoped>
 
+<style scoped>
+.custom-rounded-dialog .v-overlay__content {
+  border-radius: 0.75rem; /* match rounded-xl */
+  overflow: hidden;       /* clips backdrop & ripple */
+}
+
+.custom-rounded-dialog .v-card {
+  border-radius: 0.75rem !important; /* enforce on card */
+}
 </style>
