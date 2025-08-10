@@ -50,6 +50,7 @@
           <v-select
             data-cy="bloodgroup-select"
             id="filterBloodgroupDropdownId"
+            label="Blood Group"
             v-model="bloodGroup"
             :items="bloodGroups"
             item-text="label"
