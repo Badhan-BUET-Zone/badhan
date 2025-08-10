@@ -1,14 +1,15 @@
 <template>
-  <div class="mb-2">
+  <div class="mb-2 rounded-xl">
     <v-card
-        style="width: 100%; height: 100%;" rounded
+        style="width: 100%; height: 100%; overflow: hidden;"
+        class="rounded-xl"
         @click="donorDetailsExpansion = !donorDetailsExpansion"
     >
       <v-row no-gutters>
         <v-col align-self="center" cols="4">
           <v-card
               v-if="availableIn > 0"
-              class="text-center"
+              class="text-center rounded-xl"
               color="errorLight"
               flat rounded
           >
@@ -20,7 +21,7 @@
           </v-card>
           <v-card
               v-else
-              class="text-center"
+              class="text-center rounded-xl"
               color="successLight"
               flat rounded
           >

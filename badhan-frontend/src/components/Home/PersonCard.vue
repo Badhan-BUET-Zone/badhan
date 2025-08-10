@@ -1,15 +1,16 @@
 <template>
   <!--  Person card-->
-  <div class="mb-2" style="width: 100%">
+  <div class="mb-2 rounded-xl" style="width: 100%">
     <v-card
-        style="width: 100%; height: 100%;"
+        class="rounded-xl"
+        style="width: 100%; height: 100%; overflow: hidden;"
         @click="expansionClicked" rounded
     >
       <v-row no-gutters>
         <v-col align-self="center" cols="4">
           <v-card
               v-if="availableInRendered > 0"
-              class="text-center"
+              class="text-center rounded-xl"
               color="errorLight"
               flat rounded
           >
@@ -21,7 +22,7 @@
           </v-card>
           <v-card
               v-else
-              class="text-center"
+              class="text-center rounded-xl"
               color="successLight"
               flat rounded
           >
