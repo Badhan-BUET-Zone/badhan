@@ -61,7 +61,7 @@
                 <v-col class="text-center"
                        cols="12"
                        sm="4">
-                  <div style="max-width: 300px">
+                  <div>
                     <v-text-field
                         :type="'text'"
                         outlined
