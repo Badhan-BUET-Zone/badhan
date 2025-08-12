@@ -619,6 +619,30 @@ const handlePATCHAdminsSuperAdmin = async (req: Request,res: Response): Promise<
     }
   }))
 }
+const handleGETDonorsNew = async (req: Request, res: Response): Promise<Response> => {
+  // Simulate a list of donors created in a time range
+  const donors: any[] = [];
+  const count: number = faker.getRandInt(1, 20);
+  for (let i: number = 0; i < count; i++) {
+    donors.push({
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      name: faker.getName(),
+      studentId: faker.getStudentId(),
+      bloodGroup: faker.getBloodGroup(),
+      hall: faker.getHall(),
+      address: faker.getAddress(),
+      roomNumber: faker.getRoom(),
+      designation: faker.getDesignation(),
+      lastDonation: faker.getTimestamp(240),
+      comment: faker.getComment(),
+      commentTime: faker.getTimestamp(240),
+      availableToAll: faker.getBoolean(),
+      email: faker.getEmail()
+    });
+  }
+  return res.status(200).send(new OKResponse200('Donors created in time range fetched successfully', { donors }));
+};
 
 export default {
   handlePOSTLogIn,
@@ -655,5 +679,6 @@ export default {
   handleDELETEActiveDonors,
   handlePOSTActiveDonors,
   handleGETActiveDonors,
-  handlePATCHAdminsSuperAdmin
+  handlePATCHAdminsSuperAdmin,
+  handleGETDonorsNew
 }

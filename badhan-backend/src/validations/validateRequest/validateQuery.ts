@@ -2,6 +2,16 @@ import { query, ValidationChain } from 'express-validator'
 import { checkTimeStamp, checkTimeStampMessage } from './others'
 import mongoose from 'mongoose'
 
+export const validateQUERYStartTime: ValidationChain = query('startTime')
+  .exists().withMessage('startTime is required')
+  .not().isEmpty().withMessage('startTime cannot be empty')
+  .isNumeric().withMessage('startTime must be a number');
+
+export const validateQUERYEndTime: ValidationChain = query('endTime')
+  .exists().withMessage('endTime is required')
+  .not().isEmpty().withMessage('endTime cannot be empty')
+  .isNumeric().withMessage('endTime must be a number');
+
 export const validateQUERYDonorId: ValidationChain = query('donorId')
   .exists().withMessage('donorId is required')
   .customSanitizer((value:string):string => String(value))

@@ -1,3 +1,53 @@
+const donorsNewSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    status: { type: "string" },
+    statusCode: { const: 200 },
+    message: { type: "string" },
+    donors: {
+      type: "array",
+      minItems: 1,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          _id: { type: "string" },
+          phone: { type: "integer" },
+          name: { type: "string" },
+          studentId: { type: "string" },
+          email: { type: "string" },
+          lastDonation: { type: "integer" },
+          bloodGroup: { type: "integer" },
+          hall: { type: "integer" },
+          roomNumber: { type: "string" },
+          address: { type: "string" },
+          comment: { type: "string" },
+          commentTime: { type: "integer" },
+          designation: { type: "integer" },
+          availableToAll: { type: "boolean" }
+        },
+        required: [
+          "_id",
+          "phone",
+          "name",
+          "studentId",
+          "email",
+          "lastDonation",
+          "bloodGroup",
+          "hall",
+          "roomNumber",
+          "address",
+          "comment",
+          "commentTime",
+          "designation",
+          "availableToAll"
+        ]
+      }
+    }
+  },
+  required: ["status", "statusCode", "message", "donors"]
+};
 const searchSchema = {
   type: "object",
   additionalProperties: false,
@@ -612,4 +662,5 @@ module.exports = {
   postDonorSchema,
   patchDonorSchema,
   deleteDonorSchema,
+  donorsNewSchema,
 };

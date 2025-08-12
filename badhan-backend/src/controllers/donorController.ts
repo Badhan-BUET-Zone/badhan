@@ -430,6 +430,33 @@ const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response):Promise<
   }))
 
 }
+/**
+ * Get donors created in a specific time range using the _id timestamp.
+ * Expects req.query.startTime and req.query.endTime as UNIX timestamps (ms or s).
+ */
+const handleGETDonorsNew = async (req: Request, res: Response): Promise<Response> => {
+  // Accepts startTime and endTime as either ms or s, normalize to ms
+  const { startTime, endTime } = req.query as { startTime?: string, endTime?: string };
+  let start: number = Number(startTime);
+  let end: number = Number(endTime);
+  // If seconds, convert to ms
+  if (start < 1e12) start *= 1000;
+  if (end < 1e12) end *= 1000;
+  // MongoDB ObjectId timestamp is in seconds, so convert ms to seconds
+  const startObjId: any = require('mongoose').Types.ObjectId.createFromTime(Math.floor(start / 1000));
+  const endObjId: any = require('mongoose').Types.ObjectId.createFromTime(Math.floor(end / 1000) + 1); // +1 to be inclusive
+
+  // Find donors whose _id is in the range
+  const result: { data: IDonor[]; message: string; status: string } = await donorInterface.findDonorsByIdRange(startObjId, endObjId);
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS NEW', {
+    startTime: start,
+    endTime: end,
+    resultCount: result.data.length
+  });
+  return res.status(200).send(new OKResponse200('Donors created in time range fetched successfully', {
+    donors: result.data
+  }));
+};
 
 export default {
   handlePOSTDonors,
@@ -446,5 +473,6 @@ export default {
   handlePOSTDonorsPasswordRequest,
   handleGETSearchV3,
   handleGETDonorsDuplicateMany,
-  handlePATCHAdminsSuperAdmin
+  handlePATCHAdminsSuperAdmin,
+  handleGETDonorsNew
 }

@@ -1,7 +1,28 @@
+import { Types } from 'mongoose';
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
 import { ObjectId } from 'bson';
+
+
+/**
+ * Find donors whose _id (ObjectId) is in the given range (created between start and end ObjectId).
+ * @param startObjId - ObjectId representing the start time (inclusive)
+ * @param endObjId - ObjectId representing the end time (exclusive)
+ */
+export const findDonorsByIdRange = async (startObjId: Types.ObjectId, endObjId: Types.ObjectId): Promise<{ data: IDonor[]; message: string; status: string }> => {
+  const data: IDonor[] = await DonorModel.find({
+    _id: {
+      $gte: startObjId,
+      $lt: endObjId
+    }
+  });
+  return {
+    data,
+    message: 'Donors found in _id range',
+    status: 'OK'
+  };
+};
 
 export const insertDonor = async (phone: number, bloodGroup: number, hall: number, name: string, studentId: string, address: string, roomNumber: string, lastDonation: number, comment: string, availableToAll: boolean):Promise<{data: IDonor, message: string, status: string}> => {
     const donor: IDonor = new DonorModel({phone, bloodGroup, hall, name, studentId, address, roomNumber, lastDonation: 0, comment, availableToAll})

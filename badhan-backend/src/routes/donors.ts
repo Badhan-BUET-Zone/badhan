@@ -10,6 +10,76 @@ const router: AsyncRouterInstance = AsyncRouter()
 
 /**
  * @openapi
+ * /donors/new:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get donors created in a specific time range
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Fetch donors created between startTime and endTime (UNIX timestamp, ms or s) using ObjectId.
+ *     parameters:
+ *       - in: query
+ *         name: startTime
+ *         description: Start of time range (UNIX timestamp, ms or s)
+ *         required: true
+ *         schema:
+ *           type: number
+ *           example: 1711929600000
+ *       - in: query
+ *         name: endTime
+ *         description: End of time range (UNIX timestamp, ms or s)
+ *         required: true
+ *         schema:
+ *           type: number
+ *           example: 1712016000000
+ *     responses:
+ *       200:
+ *         description: Donors created in the specified time range
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donors created in time range fetched successfully
+ *                 donors:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Donors'
+ *       400:
+ *         description: Missing or invalid query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ERROR
+ *                 statusCode:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: startTime and endTime query params are required
+ */
+router.get('/donors/new',
+  donorValidator.validateGETDonorsNew,
+  rateLimiter.commonLimiter,
+  authenticator.handleAuthentication,
+  donorController.handleGETDonorsNew
+)
+
+/**
+ * @openapi
  * /donors:
  *   post:
  *     tags:
