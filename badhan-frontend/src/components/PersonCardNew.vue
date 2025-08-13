@@ -54,14 +54,23 @@
       <v-card-text style="font-size: small">
         <div style="float: right;">
           <v-btn @click="callFromDialer" :disabled="newCallRecordLoader" depressed class="ma-1" x-small fab color="green" dark><v-icon>mdi-phone</v-icon></v-btn>
-          <v-btn style="text-decoration: none" :to="'/activeDonors/details?id='+id" depressed class="ma-1" x-small fab color="blue" dark><v-icon>mdi-account-details</v-icon></v-btn>
+          <v-btn style="text-decoration: none" :to="detailsBasePath + '/details?id='+id" depressed class="ma-1" x-small fab color="blue" dark><v-icon>mdi-account-details</v-icon></v-btn>
         </div>
-        <span><b>Department: </b>{{department}}</span><br>
-        <span><b>Address: </b>{{address}}</span><br>
-        <span><b>Marked by: </b>{{markerName}} (On {{markedTime}})</span><br>
-        <span><b>Last called: </b>On {{lastCallRecord}}</span><br>
-        <span>Called {{callCountLast3Days}} times in last 3 days</span><br>
-        <span><VueMarkdown>**Comment:** {{comment }} (Last Updated:{{commentTime === 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown></span>
+    <span><b>Department: </b>{{department}}</span><br>
+    <span><b>Address: </b>{{address}}</span><br>
+    <span v-if="markerName && markedTime">
+      <b>Marked by: </b>{{markerName}} (On {{markedTime}})
+      <br>
+    </span>
+    <span v-if="lastCallRecord">
+      <b>Last called: </b>On {{lastCallRecord}}
+      <br>
+    </span>
+    <span v-if="callCountLast3Days">
+      Called {{callCountLast3Days}} times in last 3 days
+      <br>
+    </span>
+    <span><VueMarkdown>**Comment:** {{comment }} (Last Updated:{{commentTime === 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown></span>
       </v-card-text>
     </v-card>
   </div>
@@ -77,6 +86,10 @@ export default {
   props: {
     donor: {
       type: Object
+    },
+    detailsBasePath: {
+      type: String,
+      default: '/activeDonors'
     }
   },
   components: { VueMarkdown },
@@ -92,10 +105,14 @@ export default {
     this.address = donor.address
     this.comment = donor.comment
     this.commentTime = donor.commentTime === 0 ? 'Unknown' : new Date(donor.commentTime).toLocaleString()
-    this.markerName = donor.markerName
-    this.markedTime = new Date(donor.markedTime).toLocaleString()
-    this.lastCallRecord = donor.lastCallRecord === 0 ? 'Unknown' : new Date(donor.lastCallRecord).toLocaleString()
-    this.callCountLast3Days = donor.callCountLast3Days
+    this.markerName = donor.markerName !== null ? donor.markerName : null
+    this.markedTime = donor.markedTime !== null ? new Date(donor.markedTime).toLocaleString() : null
+    if (donor.lastCallRecord && !isNaN(new Date(donor.lastCallRecord))) {
+      this.lastCallRecord = new Date(donor.lastCallRecord).toLocaleString()
+    } else {
+      this.lastCallRecord = null
+    }
+    this.callCountLast3Days = donor.callCountLast3Days !== null ? donor.callCountLast3Days : null
     this.lastDonation = donor.lastDonation
     this.donationCount = donor.donationCount
 
@@ -133,11 +150,11 @@ export default {
       commentTime: '',
       markerName: null,
       markedTime: '',
-      lastCallRecord: '',
+      lastCallRecord: null,
       lastDonation: 0,
       callCount: 0,
       donationCount: 0,
-      callCountLast3Days: 0,
+      callCountLast3Days: null,
       newCallRecordLoader: false,
       donorDetailsExpansion: false,
 

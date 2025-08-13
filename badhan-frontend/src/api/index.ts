@@ -416,6 +416,18 @@ const handleGETDonationsReport = async (payload: GETDonationsReportPayloadInterf
   }
 }
 
+export interface GETDonorsNewPayloadInterface {
+  startTime: number
+  endTime: number
+}
+const handleGETDonorsNew = async (payload: GETDonorsNewPayloadInterface) => {
+  try {
+    return await badhanAxios.get('/donors/new', { params: payload })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 export interface POSTCallRecordPayloadInterface {
   donorId: string
 }
@@ -592,6 +604,7 @@ export {
   handlePATCHAdmins,
   handleDELETEDonations,
   handleGETDonationsReport,
+  handleGETDonorsNew,
   handlePOSTCallRecord,
   handleDELETECallRecord,
   handleGETDonorsDesignation,

@@ -75,6 +75,7 @@ router.get('/donors/new',
   donorValidator.validateGETDonorsNew,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
+  authenticator.handleHallAdminCheck,
   donorController.handleGETDonorsNew
 )
 

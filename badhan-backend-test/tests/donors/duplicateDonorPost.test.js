@@ -5,7 +5,7 @@ const { processError } = require("../fixtures/helpers");
 const { duplicateDonorSchema } = require("./schemas");
 const { newDonorInfo } = require("./infos");
 
-test("POST/donors handle duplicate: duplicate donar post", async () => {
+test("POST/donors handle duplicate: duplicate donor post", async () => {
   try {
     let signInResponse = await badhanAxios.post("/users/signin", {
       phone: env.SUPERADMIN_PHONE,

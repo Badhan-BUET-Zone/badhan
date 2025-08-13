@@ -275,6 +275,30 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    name: 'NewDonors',
+    path: '/newDonors',
+    component: () => import('../views/NewDonors.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Newly Created Donors',
+      designation: 3,
+      reRouteIfAuthorized: false
+    },
+    children: [
+      {
+        name: 'NewDonorDetails',
+        path: 'details',
+        component: Details,
+        meta: {
+          title: 'Donor Details',
+          requiresAuth: true,
+          designation: 2,
+          reRouteIfAuthorized: false
+        }
+      }
+    ]
+  },
+  {
     name: 'NotFound',
     path: '/*',
     component: () => import('../views/NotFound.vue'),

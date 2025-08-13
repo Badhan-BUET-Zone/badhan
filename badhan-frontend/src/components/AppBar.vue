@@ -137,6 +137,13 @@ export default {
             to: '/donorCreation',
             id: 'donorCreationId',
             designation: 1
+          },
+          {
+            icon: 'mdi-account-search',
+            text: 'Newly Created Donors',
+            to: '/newDonors',
+            id: 'newDonorsNavigationId',
+            designation: 2
           }
           ]
         },
