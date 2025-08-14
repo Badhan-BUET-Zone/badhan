@@ -13,6 +13,6 @@ if [ "$CLEAN" = true ]; then
   rm -rf badhan-backup/scripts/nodejs
 fi
 
-source badhan-backup/scripts/enable_node.sh
+# source badhan-backup/scripts/enable_node.sh
 
 node badhan-backup/scripts/start.mjs $@
