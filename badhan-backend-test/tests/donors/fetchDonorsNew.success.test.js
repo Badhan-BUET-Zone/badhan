@@ -31,8 +31,12 @@ test('GET /donors/new', async () => {
     });
     expect(res.status).toBe(200);
     const validationResult = validate(res.data, donorsNewSchema);
-    expect(validationResult.valid).toBe(true);
+    expect(validationResult.errors).toStrictEqual([]);
     // Check that only one donor matches the created donor
     const matchingDonors = res.data.donors.filter(d => d._id === donorId);
     expect(matchingDonors.length).toBe(1);
+    // Verify 'created' exists and is within the time range for the created donor
+    expect(typeof matchingDonors[0].created).toBe('number');
+    expect(matchingDonors[0].created).toBeGreaterThanOrEqual(startTime-1000);// small tolerance
+    expect(matchingDonors[0].created).toBeLessThanOrEqual(endTime + 1000); // small tolerance
 });

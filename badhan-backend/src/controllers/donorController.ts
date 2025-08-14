@@ -435,19 +435,11 @@ const handlePATCHAdminsSuperAdmin = async (req: Request, res: Response):Promise<
  * Expects req.query.startTime and req.query.endTime as UNIX timestamps (ms or s).
  */
 const handleGETDonorsNew = async (req: Request, res: Response): Promise<Response> => {
-  // Accepts startTime and endTime as either ms or s, normalize to ms
   const { startTime, endTime } = req.query as { startTime?: string, endTime?: string };
-  let start: number = Number(startTime);
-  let end: number = Number(endTime);
-  // If seconds, convert to ms
-  if (start < 1e12) start *= 1000;
-  if (end < 1e12) end *= 1000;
-  // MongoDB ObjectId timestamp is in seconds, so convert ms to seconds
-  const startObjId: any = require('mongoose').Types.ObjectId.createFromTime(Math.floor(start / 1000));
-  const endObjId: any = require('mongoose').Types.ObjectId.createFromTime(Math.floor(end / 1000) + 1); // +1 to be inclusive
+  const start: number = Number(startTime);
+  const end: number = Number(endTime);
 
-  // Find donors whose _id is in the range
-  const result: { data: IDonor[]; message: string; status: string } = await donorInterface.findDonorsByIdRange(startObjId, endObjId);
+  const result: { data: (IDonor & { created: number })[]; message: string; status: string } = await donorInterface.findDonorsCreatedBetween(start, end);
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS NEW', {
     startTime: start,
     endTime: end,

@@ -53,7 +53,14 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                 donors:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Donors'
+ *                     allOf:
+ *                       - $ref: '#/components/schemas/Donors'
+ *                       - type: object
+ *                         properties:
+ *                           created:
+ *                             type: number
+ *                             description: Creation time derived from ObjectId timestamp (ms since epoch)
+ *                             example: 1711933200000
  *       400:
  *         description: Missing or invalid query parameters
  *         content:

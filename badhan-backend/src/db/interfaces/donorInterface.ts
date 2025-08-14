@@ -2,26 +2,54 @@ import { Types } from 'mongoose';
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
-import { ObjectId } from 'bson';
 
 
 /**
- * Find donors whose _id (ObjectId) is in the given range (created between start and end ObjectId).
- * @param startObjId - ObjectId representing the start time (inclusive)
- * @param endObjId - ObjectId representing the end time (exclusive)
+ * Find donors created between the given times using ObjectId timestamp.
+ * Accepts startTime and endTime as UNIX timestamps in ms or s.
+ * Returns donors with an additional 'created' field (ms since epoch) derived from _id.
  */
-export const findDonorsByIdRange = async (startObjId: Types.ObjectId, endObjId: Types.ObjectId): Promise<{ data: IDonor[]; message: string; status: string }> => {
-  const data: IDonor[] = await DonorModel.find({
-    _id: {
-      $gte: startObjId,
-      $lt: endObjId
-    }
-  });
-  return {
-    data,
-    message: 'Donors found in _id range',
-    status: 'OK'
-  };
+export const findDonorsCreatedBetween = async (
+    startTime: number,
+    endTime: number
+): Promise<{ data: (IDonor & { created: number })[]; message: string; status: string }> => {
+    // Normalize times to ms
+    let startMs: number = Number(startTime);
+    let endMs: number = Number(endTime);
+    if (startMs < 1e12) startMs *= 1000; // seconds -> ms
+    if (endMs < 1e12) endMs *= 1000; // seconds -> ms
+
+    // Build ObjectId bounds (ObjectId timestamp is in seconds)
+    const startObjId: Types.ObjectId = Types.ObjectId.createFromTime(Math.floor(startMs / 1000));
+    const endObjId: Types.ObjectId = Types.ObjectId.createFromTime(Math.floor(endMs / 1000) + 1); // +1 sec to be inclusive
+
+    const data: (IDonor & { created: number })[] = await DonorModel.aggregate([
+        {
+            $match: {
+                _id: {
+                    $gte: startObjId,
+                    $lt: endObjId
+                }
+            }
+        },
+        {
+            $addFields: {
+                // Convert ObjectId to Date then to epoch ms number
+                created: { $toLong: { $toDate: '$_id' } }
+            }
+        },
+        {
+            $project: {
+                password: 0
+            }
+        }
+    ]) as unknown as (IDonor & { created: number })[];
+
+    return {
+        data,
+        message: 'Donors found in creation time range',
+        status: 'OK'
+    };
 };
 
 export const insertDonor = async (phone: number, bloodGroup: number, hall: number, name: string, studentId: string, address: string, roomNumber: string, lastDonation: number, comment: string, availableToAll: boolean):Promise<{data: IDonor, message: string, status: string}> => {

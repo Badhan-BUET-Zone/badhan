@@ -58,6 +58,7 @@
         </div>
     <span><b>Department: </b>{{department}}</span><br>
     <span><b>Address: </b>{{address}}</span><br>
+  <span v-if="created"><b>Created: </b>{{ created }}</span><br v-if="created">
     <span v-if="markerName && markedTime">
       <b>Marked by: </b>{{markerName}} (On {{markedTime}})
       <br>
@@ -107,6 +108,12 @@ export default {
     this.commentTime = donor.commentTime === 0 ? 'Unknown' : new Date(donor.commentTime).toLocaleString()
     this.markerName = donor.markerName !== null ? donor.markerName : null
     this.markedTime = donor.markedTime !== null ? new Date(donor.markedTime).toLocaleString() : null
+    // Created timestamp derived from ObjectId (if provided by API)
+    if (typeof donor.created === 'number' && !isNaN(donor.created)) {
+      this.created = new Date(donor.created).toLocaleString()
+    } else {
+      this.created = null
+    }
     if (donor.lastCallRecord && !isNaN(new Date(donor.lastCallRecord))) {
       this.lastCallRecord = new Date(donor.lastCallRecord).toLocaleString()
     } else {
@@ -157,7 +164,7 @@ export default {
       callCountLast3Days: null,
       newCallRecordLoader: false,
       donorDetailsExpansion: false,
-
+  created: null,
       availableIn: 0
     }
   }

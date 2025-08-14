@@ -638,7 +638,9 @@ const handleGETDonorsNew = async (req: Request, res: Response): Promise<Response
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(240),
       availableToAll: faker.getBoolean(),
-      email: faker.getEmail()
+  email: faker.getEmail(),
+  // Simulated creation timestamp
+  created: faker.getTimestamp(240)
     });
   }
   return res.status(200).send(new OKResponse200('Donors created in time range fetched successfully', { donors }));

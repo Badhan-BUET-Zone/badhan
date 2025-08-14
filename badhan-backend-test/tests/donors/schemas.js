@@ -25,7 +25,8 @@ const donorsNewSchema = {
           comment: { type: "string" },
           commentTime: { type: "integer" },
           designation: { type: "integer" },
-          availableToAll: { type: "boolean" }
+          availableToAll: { type: "boolean" },
+          created: { type: "integer" }
         },
         required: [
           "_id",
@@ -41,7 +42,8 @@ const donorsNewSchema = {
           "comment",
           "commentTime",
           "designation",
-          "availableToAll"
+          "availableToAll",
+          "created"
         ]
       }
     }
