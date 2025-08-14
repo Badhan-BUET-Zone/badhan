@@ -1,5 +1,5 @@
 #/bin/bash
 set -euo pipefail  # safer script
-source badhan-backup/scripts/enable_node.sh
+# source badhan-backup/scripts/enable_node.sh
 cd badhan-backend-test || exit 1
 npm run test "${1:-}"
