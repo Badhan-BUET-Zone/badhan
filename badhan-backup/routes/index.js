@@ -54,7 +54,7 @@ router.post('/restore/:date',
     rateLimiter.commonLimiter,
     queue.commonQueue,
     async(req, res) => {
-        const response = await restoreController({production: req.query.production === 'true', time: parseInt(req.params.date)})
+        const response = await restoreController({production: req.query.production === 'true', development: req.query.development == 'true', time: parseInt(req.params.date)})
         return res.status(response.statusCode).send(response)
     })
 

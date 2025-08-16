@@ -275,6 +275,17 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    name: 'BackupRestore',
+    path: '/backupRestore',
+    component: () => import('../views/BackupRestore.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Backup and Restore',
+      designation: 3,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'NewDonors',
     path: '/newDonors',
     component: () => import('../views/NewDonors.vue'),

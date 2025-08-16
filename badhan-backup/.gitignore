@@ -3,4 +3,5 @@ node_modules/
 backup
 package-lock.json
 .DS_Store
+mongotools
 mongodb_local

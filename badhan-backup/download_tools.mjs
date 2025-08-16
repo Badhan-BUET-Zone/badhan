@@ -143,6 +143,26 @@ function installBinaries(extractedRoot, outDir) {
 
 (async () => {
   try {
+    // Parse --clean argument
+    const args = process.argv.slice(2);
+    const clean = args.includes('--clean');
+
+    // If --clean, remove OUT_DIR
+    if (clean && existsSync(OUT_DIR)) {
+      console.log(`--clean specified: removing ${OUT_DIR}`);
+      rmSync(OUT_DIR, { recursive: true, force: true });
+    }
+
+    // If not --clean and BIN_DIR exists and has binaries, skip install
+    if (!clean && existsSync(BIN_DIR)) {
+      const bins = ['mongodump', 'mongorestore'].map(b => PLATFORM === 'win32' ? `${b}.exe` : b);
+      const present = bins.every(b => existsSync(join(BIN_DIR, b)));
+      if (present) {
+        console.log(`Binaries already installed in ${BIN_DIR}. Skipping download and install.`);
+        process.exit(0);
+      }
+    }
+
     const archMapped = mapArch(PLATFORM, ARCH);
     const filename = buildFilename(PLATFORM, archMapped, TOOLS_VERSION);
     const url = BASE + filename;
@@ -177,9 +197,7 @@ function installBinaries(extractedRoot, outDir) {
     try { rmSync(extractDir, { recursive: true, force: true }); } catch {}
 
     console.log(`\nAll set! Binaries in: ${BIN_DIR}`);
-    console.log(`Add to PATH (example):\n  ${PLATFORM === 'win32'
-      ? `setx PATH "%PATH%;${BIN_DIR.replace(/\//g, '\\')}"`
-      : `export PATH="${BIN_DIR}:$PATH"`}`);
+    process.exit(0);
   } catch (err) {
     console.error('❌ Error:', err.message);
     process.exit(1);

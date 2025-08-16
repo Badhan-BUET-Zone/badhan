@@ -1,4 +1,4 @@
-source ../badhan-backup/scripts/enable_node.sh
+# bash
 
 node ../badhan-backup/scripts/wait_for_port.mjs 3000
 

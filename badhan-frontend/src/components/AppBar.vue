@@ -196,6 +196,13 @@ export default {
               designation: 3
             },
             {
+              to: '/backupRestore',
+              icon: 'mdi-database',
+              text: 'Backup & Restore',
+              id: 'backupRestoreNavigationId',
+              designation: 3
+            },
+            {
               icon: 'mdi-shield-crown-outline',
               text: 'Admin Console',
               to: '/adminconsole',

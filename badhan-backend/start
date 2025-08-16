@@ -2,7 +2,6 @@
 # Launch backend after Mongo is up.  Works on Linux, macOS, Windows (Git-Bash).
 
 set -euo pipefail
-source ../badhan-backup/scripts/enable_node.sh
 
 # Block until MongoDB is accepting connections on 27017
 node ../badhan-backup/scripts/wait_for_port.mjs 27017

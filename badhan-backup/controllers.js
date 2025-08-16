@@ -5,7 +5,7 @@ const AdmZip = require("adm-zip");
 const mongotools = require('./mongotools')
 
 const firebaseStorage = require('./storage');
-const {InternalServerError500, BadRequestError400, NotFoundError404} = require("./response/errorTypes");
+const {InternalServerError500, BadRequestError400, NotFoundError404, ForbiddenError403} = require("./response/errorTypes");
 const {CreatedResponse201, OKResponse200} = require("./response/successTypes");
 
 const backupController = async (callback) => {
@@ -88,6 +88,7 @@ const restoreController = async (argv) => {
 
     if (argv.production === true) {
         mongoURI = process.env.MONGODB_URI_PROD
+        return new ForbiddenError403('Production restore is not allowed')
     }else if (argv.development === true) {
         mongoURI = process.env.MONGODB_URI_TEST
     }
