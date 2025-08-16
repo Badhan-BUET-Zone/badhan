@@ -52,10 +52,10 @@ const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res:
     return res.status(404).send(new NotFoundError404('Matching donation not found',{}))
   }
 
-  const maxDonationResult: {data?: IDonation[], message: string, status: string} = await donationInterface.findMaxDonationByDonorId(donor._id)
+  const latestDonationResult: {data?: IDonation[], message: string, status: string} = await donationInterface.findLatestDonationByDonorId(donor._id)
 
-  if (maxDonationResult.status === 'OK') {
-    donor.lastDonation = maxDonationResult.data![0].date
+  if (latestDonationResult.status === 'OK') {
+    donor.lastDonation = latestDonationResult.data![0].date
   } else {
     donor.lastDonation = 0
   }

@@ -94,6 +94,14 @@ router.delete('/donations',
   guestController.handlePOSTDeleteDonation
 )
 
+router.post('/platelet-donations',
+  guestController.handlePOSTInsertPlateletDonation
+)
+
+router.delete('/platelet-donations',
+  guestController.handlePOSTDeletePlateletDonation
+)
+
 router.get('/log/statistics',
   guestController.handleGETStatistics
 )

@@ -103,8 +103,9 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
   isAvailable: string,
   isNotAvailable: string,
   availableToAll:string,
+  donationType?: 'Blood' | 'Platelet' | string
 }>, res: Response):Promise<Response> => {
-  const reqQuery: { bloodGroup: number; isAvailable: boolean; address: string; batch: string; name: string; isNotAvailable: boolean; availableToAll: boolean; hall: number } = {
+  const reqQuery: { bloodGroup: number; isAvailable: boolean; address: string; batch: string; name: string; isNotAvailable: boolean; availableToAll: boolean; hall: number; donationType: 'Blood' | 'Platelet' } = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),
     batch: req.query.batch,
@@ -113,6 +114,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
     isAvailable: req.query.isAvailable === 'true',
     isNotAvailable: req.query.isNotAvailable === 'true',
     availableToAll: req.query.availableToAll === 'true',
+    donationType: req.query.donationType === 'Platelet' ? 'Platelet' : 'Blood'
   }
 
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
@@ -254,6 +256,10 @@ const handleGETDonors = async (req: Request, res: Response):Promise<Response> =>
   await donor.populate([
     {
       path: 'donations',
+      options: { sort: { date: -1 } }
+    },
+    {
+      path: 'plateletDonations',
       options: { sort: { date: -1 } }
     },
     {

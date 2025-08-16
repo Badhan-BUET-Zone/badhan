@@ -299,9 +299,31 @@ const handlePOSTInsertDonation = async (req: Request, res: Response):Promise<Res
   }))
 }
 
+const handlePOSTInsertPlateletDonation = async (req: Request, res: Response):Promise<Response> => {
+  return res.status(201).send(new CreatedResponse201('Platelet donation inserted successfully', {
+    newPlateletDonation: {
+      date: faker.getTimestamp(10),
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      donorId: faker.getId()
+    }
+  }))
+}
+
 const handlePOSTDeleteDonation = async (req: Request, res: Response):Promise<Response> => {
   return res.status(200).send(new OKResponse200('Deleted donation successfully',{
     deletedDonation: {
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      donorId: faker.getId(),
+      date: faker.getTimestamp(5)
+    }
+  }))
+}
+
+const handlePOSTDeletePlateletDonation = async (req: Request, res: Response):Promise<Response> => {
+  return res.status(200).send(new OKResponse200('Deleted platelet donation successfully',{
+    deletedPlateletDonation: {
       _id: faker.getId(),
       phone: faker.getPhone(),
       donorId: faker.getId(),
@@ -315,6 +337,7 @@ const handleGETStatistics = async (req: Request, res: Response):Promise<Response
     statistics: {
       donorCount: faker.getRandomIndex(2600),
       donationCount: faker.getRandomIndex(1200),
+  plateletDonationCount: faker.getRandomIndex(300),
       volunteerCount: faker.getRandomIndex(130)
     }
   }))
@@ -664,6 +687,8 @@ export default {
   handlePOSTShowHallAdmins,
   handlePOSTInsertDonation,
   handlePOSTDeleteDonation,
+  handlePOSTInsertPlateletDonation,
+  handlePOSTDeletePlateletDonation,
   handleGETStatistics,
   handleGETLogs,
   handleDELETELogs,

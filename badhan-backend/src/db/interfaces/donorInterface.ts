@@ -1,3 +1,41 @@
+export const getCountOfDonorsWhoDonatedPlateletForTheFirstTime = async (startTime: number, endTime: number): Promise<{data: number, message: string, status: string}> => {
+    const result:{numberOfFirstPlateletDonations: number}[] = await DonorModel.aggregate([
+    {
+        $lookup: {
+            from: "plateletdonations",
+            localField: "_id",
+            foreignField: "donorId",
+            as: "donor_platelet_donations"
+        }
+    },
+    {
+        $unwind: "$donor_platelet_donations"
+    },
+    {
+        $group: {
+            _id: "$_id",
+            firstPlateletDonationTime: { $min: "$donor_platelet_donations.date" }
+        }
+    },
+    {
+        $match: {
+            firstPlateletDonationTime: {
+                $gte: startTime,
+                $lte: endTime
+            }
+        }
+    },
+    {
+        $count: "numberOfFirstPlateletDonations"
+    }
+    ])
+
+    return {
+        data: result[0] ? result[0].numberOfFirstPlateletDonations : 0,
+        message: 'Successfully fetched count of donors who donated platelet for the first time between timestamps',
+        status: 'OK'
+    }
+}
 import { Types } from 'mongoose';
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
@@ -150,7 +188,8 @@ export const findDonorsByAggregate = async (reqQuery: {
     address: string,
     isAvailable: boolean,
     isNotAvailable: boolean,
-    availableToAll: boolean
+    availableToAll: boolean,
+    donationType?: 'Blood' | 'Platelet'
 }): Promise<{data: IDonor[], message: string, status: string}> => {
     const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
     const threeDaysAgo: number = Date.now() - 3 * 24 * 60 * 60 * 1000;
@@ -361,6 +400,7 @@ export const generateAggregatePipeline = (reqQuery: {
             comment: '$donorDetails.comment',
             commentTime: '$donorDetails.commentTime',
             lastDonation: '$donorDetails.lastDonation',
+            lastPlateletDonation: '$donorDetails.lastPlateletDonation',
             availableToAll: '$donorDetails.availableToAll',
             bloodGroup: '$donorDetails.bloodGroup',
             studentId: '$donorDetails.studentId',
@@ -438,16 +478,7 @@ interface IQueryBuilder {
     availableToAll?: boolean
     studentId?: { $regex: string, $options: string }
     name?: { $regex: string, $options: string }
-    $and?: {
-        $or: {
-            comment?: { $regex: string, $options: string },
-            address?: { $regex: string, $options: string },
-            hall?: number,
-            availableToAll?: boolean,
-        }[] | {
-            lastDonation?: { $lt?: number, $gt?: number }
-        }[]
-    }[]
+    $and?: any[]
 }
 
 export const generateSearchQuery = (reqQuery: {
@@ -458,7 +489,8 @@ export const generateSearchQuery = (reqQuery: {
     address: string,
     isAvailable: boolean,
     isNotAvailable: boolean,
-    availableToAll: boolean
+    availableToAll: boolean,
+    donationType?: 'Blood' | 'Platelet'
     availableToAllOrHall?: boolean
 }): IQueryBuilder => {
     const queryBuilder: IQueryBuilder = {}
@@ -516,24 +548,28 @@ export const generateSearchQuery = (reqQuery: {
         )
     }
 
-    const availableLimit: number = new Date().getTime() - 120 * 24 * 3600 * 1000
+    // Determine which field to use for availability based on donationType and window size
+    const usePlatelet: boolean = reqQuery.donationType === 'Platelet'
+    const windowDays: number = usePlatelet ? 12 : 120
+    const availableLimit: number = new Date().getTime() - windowDays * 24 * 3600 * 1000
+    const availabilityField: 'lastDonation' | 'lastPlateletDonation' = usePlatelet ? 'lastPlateletDonation' : 'lastDonation'
 
-    const lastDonationAvailability: { lastDonation?: { $lt?: number, $gt?: number } }[] = []
+    const lastDonationAvailability: { [key: string]: { $lt?: number, $gt?: number } }[] = []
 
     if (reqQuery.isAvailable) {
         lastDonationAvailability.push({
-            lastDonation: {$lt: availableLimit}
+            [availabilityField]: {$lt: availableLimit}
         })
     }
 
     if (reqQuery.isNotAvailable) {
         lastDonationAvailability.push({
-            lastDonation: {$gt: availableLimit}
+            [availabilityField]: {$gt: availableLimit}
         })
     }
 
     if (reqQuery.isNotAvailable || reqQuery.isAvailable) {
-        queryBuilder.$and.push({$or: lastDonationAvailability})
+        queryBuilder.$and.push({$or: lastDonationAvailability as any})
     }
     return queryBuilder
 }

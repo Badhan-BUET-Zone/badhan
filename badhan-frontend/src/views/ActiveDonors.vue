@@ -44,7 +44,7 @@
     </div>
 
     <div style="max-width: 700px" class="mx-auto" v-else>
-  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :donor="donor" :detailsBasePath="'/activeDonors'">
+  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :donor="donor" :donationType="donationType" :detailsBasePath="'/activeDonors'">
 
       </PersonCardNew>
     </div>
@@ -102,7 +102,7 @@ export default {
         this.$refs.noPostFoundHolder.removeChild(this.$refs.noPostFoundHolder.children[0])
       }
     },
-    async getAllActiveDonors () {
+  async getAllActiveDonors () {
       this.markedByMe = false
       const payloadForGetActiveDonors = {
         bloodGroup: -1,
@@ -114,7 +114,8 @@ export default {
         isNotAvailable: true,
         availableToAll: true,
         markedByMe: false,
-        availableToAllOrHall: true
+  availableToAllOrHall: true,
+  donationType: this.donationType
       }
       this.lastSearched = payloadForGetActiveDonors
       await this.search(payloadForGetActiveDonors)
@@ -151,8 +152,11 @@ export default {
         address: inputAddress,
         availableToAll: searchQueries.availableToAll === 'AvailableToAll',
         markedByMe: this.markedByMe,
-        availableToAllOrHall: false
+        availableToAllOrHall: false,
+        donationType: searchQueries.donationType
       }
+      // keep local donationType in sync for card rendering
+      this.donationType = searchQueries.donationType
       this.lastSearched = payloadForGetActiveDonors
       this.filterListMenu = false
       await this.search(payloadForGetActiveDonors)
@@ -181,7 +185,8 @@ export default {
       activeDonorsLoader: false,
       filterListMenu: false,
       markedByMe: false,
-      lastSearched: null
+  lastSearched: null,
+  donationType: 'Blood'
     }
   }
 }

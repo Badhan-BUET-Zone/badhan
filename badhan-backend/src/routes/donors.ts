@@ -280,6 +280,9 @@ router.post('/donors',
  *                     lastDonation:
  *                       type: number
  *                       example: 786534785
+ *                     lastPlateletDonation:
+ *                       type: number
+ *                       example: 786534785
  *                     bloodGroup:
  *                       type: number
  *                       example: 2
@@ -334,6 +337,23 @@ router.post('/donors',
  *                             type: string
  *                             example: 2021-08-27T17:10:07.0662
  *                     donations:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           date:
+ *                             type: number
+ *                             example: 1543764822
+ *                           _id:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                           phone:
+ *                             type: number
+ *                             example: 881521438557
+ *                           donorId:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                     plateletDonations:
  *                       type: array
  *                       items:
  *                         type: object
@@ -465,6 +485,14 @@ router.get('/donors/me',
  *         schema:
  *           type: boolean
  *           example: true
+ *       - in: query
+ *         name: donationType
+ *         required: false
+ *         description: Filter donors by donation type availability window. Defaults to Blood.
+ *         schema:
+ *           type: string
+ *           enum: [Blood, Platelet]
+ *           example: Blood
  *     responses:
  *       200:
  *         description: Donors queried successfully

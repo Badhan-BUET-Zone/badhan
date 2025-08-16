@@ -75,8 +75,11 @@
             <span v-else>Super Admin</span>
           </v-chip>
           <v-chip class="mr-1 mb-1" color="secondary">{{ donationList.length }} Donations</v-chip>
-          <v-chip class="mr-1 mb-1" v-if="availableIn > 0" color="warning">{{ availableIn }} Days remaining</v-chip>
-          <v-chip class="mr-1 mb-1" dark v-else color="green">Available</v-chip>
+          <v-chip class="mr-1 mb-1" color="secondary">{{ plateletDonationList.length }} Platelet</v-chip>
+          <v-chip class="mr-1 mb-1" v-if="availableIn > 0" color="warning">{{ availableIn }} Days remaining (Blood)</v-chip>
+          <v-chip class="mr-1 mb-1" dark v-else color="green">Available (Blood)</v-chip>
+          <v-chip class="mr-1 mb-1" v-if="plateletAvailableIn > 0" color="warning">{{ plateletAvailableIn }} Days remaining (Platelet)</v-chip>
+          <v-chip class="mr-1 mb-1" dark v-else color="green">Available (Platelet)</v-chip>
           <br>
           <div class="row" v-if="!$store.getters['getLoadingFlag']">
             <div class="col-lg-6 col-md-12 col-sm-12" id="firstColumn">
@@ -158,6 +161,8 @@
                   </v-card-text>
                 </transition>
               </ContainerOutlined>
+
+              
 
               <ContainerOutlined v-if="$store.getters['getDesignation'] >= designation || $isMe(id)">
                 <v-card-title>
@@ -276,6 +281,10 @@
                 </v-card-title>
                 <v-card-text>
                   <!--              NEW DONATION SECTION-->
+                  <v-radio-group v-model="newDonationType" row>
+                    <v-radio label="Blood" value="Blood"></v-radio>
+                    <v-radio label="Platelet" value="Platelet"></v-radio>
+                  </v-radio-group>
                   <div>
                     <v-menu
                       ref="menu"
@@ -352,6 +361,42 @@
                       </transition-group>
                       <br/>
                     <p v-if="donationList.length===0">
+                      No donations found
+                    </p>
+                    </span>
+                    </transition>
+                  </template>
+                  <span v-else>(Unknown)</span>
+                </v-card-text>
+              </ContainerOutlined>
+
+              <ContainerOutlined>
+                <v-card-title>
+                  Platelet Donations
+                </v-card-title>
+                <v-card-text>
+                  <p class="mt-2 h6 font-weight-bold">Last Platelet Donation:</p>
+                  <template v-if="lastPlateletDonation !== 0">
+                    <p>{{ lastPlateletDonation }}</p>
+                    <p class="h6 font-weight-bold">Platelet Donation History:</p>
+                    <Button
+                      :id="`personDetailsPlateletDonationHistoryButtonId`"
+                      :icon="plateletDonationsCollapseFlag?'mdi-arrow-down':'mdi-arrow-up'"
+                      :text="plateletDonationsCollapseFlag?'Show '+plateletDonationList.length+' donations':'Hide donations'"
+                      :click="()=>{this.plateletDonationsCollapseFlag=!this.plateletDonationsCollapseFlag}"
+                      :color="'info'"></Button>
+                    <transition name="slide-fade-down">
+                    <span v-if="!plateletDonationsCollapseFlag">
+                      <transition-group name="slide-fade-down" tag="p">
+                          <DonationCard
+                            v-for="date in plateletDonationList"
+                            :key="date._id"
+                            :date-object="date"
+                            :delete-donation="deletePlateletDonationClicked">
+                          </DonationCard>
+                      </transition-group>
+                      <br/>
+                    <p v-if="plateletDonationList.length===0">
                       No donations found
                     </p>
                     </span>
@@ -451,7 +496,7 @@ import {
   handlePOSTPublicContacts, handlePOSTDonations,
   handlePATCHDonorsComment,
   handlePATCHDonors, handlePOSTCallRecord, handleGETDonors,
-  handleDELETEDonations,
+  handleDELETEDonations, handlePOSTPlateletDonations, handleDELETEPlateletDonations,
   handlePATCHAdmins
 } from '../../api'
 import DonationCard from './DonationCard'
@@ -490,6 +535,7 @@ export default {
       email: '',
       bloodGroup: '',
       availableIn: '',
+  plateletAvailableIn: '',
       designation: '',
       hall: '',
       room: '',
@@ -525,6 +571,7 @@ export default {
       newPasswordFlag: false,
 
       newDonationDate: '',
+  newDonationType: 'Blood',
       menu: false,
 
       dataLoaded: false,
@@ -555,12 +602,15 @@ export default {
       callRecords: [],
       callRecordsCollapseFlag: true,
       donationsCollapseFlag: true,
+  plateletDonationsCollapseFlag: true,
 
       markedAsActiveDonor: false,
       markedBy: null,
       activeDonorLoader: false,
       donationList: [],
       newDonationLoader: false,
+  plateletDonationList: [],
+  lastPlateletDonation: '',
 
       commentLoaderFlag: false,
 
@@ -964,26 +1014,83 @@ export default {
     async donateClicked () {
       this.newDonationLoader = true
       const newDonationTimestamp = new Date(this.newDonationDate).getTime()
-      const donationResponse = await handlePOSTDonations({
-        donorId: this.id,
-        date: newDonationTimestamp
-      })
+      let donationResponse
+      if (this.newDonationType === 'Platelet') {
+        donationResponse = await handlePOSTPlateletDonations({
+          donorId: this.id,
+          date: newDonationTimestamp
+        })
+      } else {
+        donationResponse = await handlePOSTDonations({
+          donorId: this.id,
+          date: newDonationTimestamp
+        })
+      }
       this.newDonationLoader = false
       if (donationResponse.status !== 201) return
       this.$store.dispatch('notification/notifySuccess', donationResponse.data.message)
-      const newAvailableIn =
-        120 -
-        Math.round(
-          (Math.round(new Date().getTime()) -
-            newDonationTimestamp) /
-          (1000 * 3600 * 24)
-        )
-      this.donationList.push(donationResponse.data.newDonation)
-      if (newAvailableIn > this.availableIn) {
-        this.availableIn = newAvailableIn
-        this.lastDonation = this.datePrint(newDonationTimestamp)
+      if (this.newDonationType === 'Platelet') {
+        this.plateletDonationList.push(donationResponse.data.newPlateletDonation)
+        // compute platelet availability (12-day window for platelet)
+        const newPlateletAvailableIn =
+          12 -
+          Math.round(
+            (Math.round(new Date().getTime()) - newDonationTimestamp) /
+            (1000 * 3600 * 24)
+          )
+        if (newPlateletAvailableIn > this.plateletAvailableIn) {
+          this.plateletAvailableIn = newPlateletAvailableIn
+        }
+        this.lastPlateletDonation = this.datePrint(newDonationTimestamp)
+      } else {
+        const newAvailableIn =
+          120 -
+          Math.round(
+            (Math.round(new Date().getTime()) - newDonationTimestamp) /
+            (1000 * 3600 * 24)
+          )
+        this.donationList.push(donationResponse.data.newDonation)
+        if (newAvailableIn > this.availableIn) {
+          this.availableIn = newAvailableIn
+          this.lastDonation = this.datePrint(newDonationTimestamp)
+        }
       }
       this.newDonationDate = ''
+      // keep type selection as-is for quick repeated entries
+    },
+    async deletePlateletDonationClicked (date) {
+      const response = await handleDELETEPlateletDonations({
+        donorId: this.id,
+        date
+      })
+      if (response.status !== 200) return
+      this.$store.dispatch('notification/notifySuccess', 'Successfully deleted platelet donation')
+
+      for (let i = 0; i < this.plateletDonationList.length; i++) {
+        if (this.plateletDonationList[i].date === date) {
+          this.plateletDonationList.splice(i, 1)
+          break
+        }
+      }
+
+      let lastDonation = 0
+      this.plateletDonationList.forEach((donationObject) => {
+        if (lastDonation < donationObject.date) {
+          lastDonation = donationObject.date
+        }
+      })
+      const newDate = new Date(lastDonation)
+      this.plateletAvailableIn =
+        12 -
+        Math.round(
+          (Math.round(new Date().getTime()) - newDate.getTime()) /
+          (1000 * 3600 * 24)
+        )
+      if (lastDonation === 0) {
+        this.lastPlateletDonation = '(Unknown)'
+        return
+      }
+      this.lastPlateletDonation = this.datePrint(lastDonation)
     }
   },
   async mounted () {
@@ -1005,7 +1112,8 @@ export default {
 
     this.profile = response.data.donor
     this.callRecords = response.data.donor.callRecords
-    this.donationList = response.data.donor.donations.map((a) => a.date)
+  this.donationList = response.data.donor.donations.map((a) => a.date)
+  this.plateletDonationList = (response.data.donor.plateletDonations || []).map((a) => a.date)
 
     const profile = this.profile
     this.id = profile._id
@@ -1025,7 +1133,8 @@ export default {
     this.availableToAll = profile.availableToAll
     this.publicContacts = profile.publicContacts
     this.callRecords = profile.callRecords
-    this.donationList = profile.donations
+  this.donationList = profile.donations
+  this.plateletDonationList = profile.plateletDonations || []
     this.markedBy = profile.markedBy ? profile.markedBy.markerId.name : null
     this.markedAsActiveDonor = !!this.markedBy
 
@@ -1040,10 +1149,28 @@ export default {
       this.lastDonation = '(Unknown)'
     }
 
+  const plateletDate = new Date(profile.lastPlateletDonation || 0)
+    this.lastPlateletDonation =
+      plateletDate.getDate() +
+      '/' +
+      (plateletDate.getMonth() + 1) +
+      '/' +
+      plateletDate.getFullYear()
+    if (!profile.lastPlateletDonation || profile.lastPlateletDonation === 0) {
+      this.lastPlateletDonation = '(Unknown)'
+    }
+
     this.availableIn =
       120 -
       Math.round(
         (Math.round(new Date().getTime()) - date.getTime()) /
+        (1000 * 3600 * 24)
+      )
+
+    this.plateletAvailableIn =
+      12 -
+      Math.round(
+        (Math.round(new Date().getTime()) - plateletDate.getTime()) /
         (1000 * 3600 * 24)
       )
 

@@ -15,7 +15,7 @@
           >
             <v-card-text style="font-size: 10px;  line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>{{ availableIn }} day</span><br>
+              <span>{{ availableIn }} day ({{ donationType==='Platelet' ? 'Platelet' : 'Blood' }})</span><br>
               <span>{{ donationCount }} donations</span>
             </v-card-text>
           </v-card>
@@ -27,7 +27,7 @@
           >
             <v-card-text style="font-size: 10px; line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>Available</span><br>
+              <span>Available ({{ donationType==='Platelet' ? 'Platelet' : 'Blood' }})</span><br>
               <span>{{ donationCount }} donations</span>
             </v-card-text>
           </v-card>
@@ -91,6 +91,10 @@ export default {
     detailsBasePath: {
       type: String,
       default: '/activeDonors'
+    },
+    donationType: {
+      type: String,
+      default: 'Blood'
     }
   },
   components: { VueMarkdown },
@@ -120,7 +124,7 @@ export default {
       this.lastCallRecord = null
     }
     this.callCountLast3Days = donor.callCountLast3Days !== null ? donor.callCountLast3Days : null
-    this.lastDonation = donor.lastDonation
+  this.lastDonation = this.donationType === 'Platelet' ? (donor.lastPlateletDonation || 0) : donor.lastDonation
     this.donationCount = donor.donationCount
 
     this.setAvailableIn(this.lastDonation)
@@ -136,8 +140,9 @@ export default {
       this.callCountLast3Days++
     },
     setAvailableIn (donationDate) {
+      const windowDays = this.donationType === 'Platelet' ? 12 : 120
       this.availableIn =
-          120 -
+          windowDays -
           Math.round(
             (Math.round(new Date().getTime()) - donationDate) /
               (1000 * 3600 * 24)
