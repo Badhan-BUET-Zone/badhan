@@ -13,8 +13,11 @@ test('GET /donors/new', async () => {
     // Save start time before donor creation
     const startTime = Date.now();
 
+    let donorInfoCopy = JSON.parse(JSON.stringify(newDonorInfo));
+
+    donorInfoCopy.phone = 8801711332312;
     // Create donor
-    const postRes = await badhanAxios.post('/donors', newDonorInfo, {
+    const postRes = await badhanAxios.post('/donors', donorInfoCopy, {
         headers: { 'x-auth': signInResponse.data.token },
     });
     expect(postRes.status).toBe(201);
@@ -39,4 +42,7 @@ test('GET /donors/new', async () => {
     expect(typeof matchingDonors[0].created).toBe('number');
     expect(matchingDonors[0].created).toBeGreaterThanOrEqual(startTime-1000);// small tolerance
     expect(matchingDonors[0].created).toBeLessThanOrEqual(endTime + 1000); // small tolerance
+    await badhanAxios.delete(`/donors/${donorId}`, {
+        headers: { 'x-auth': signInResponse.data.token },
+    });
 });
