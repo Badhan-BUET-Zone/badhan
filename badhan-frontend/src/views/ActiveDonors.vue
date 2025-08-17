@@ -44,7 +44,7 @@
     </div>
 
     <div style="max-width: 700px" class="mx-auto" v-else>
-  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :donor="donor" :donationType="donationType" :detailsBasePath="'/activeDonors'">
+  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :donor="donor" :detailsBasePath="'/activeDonors'">
 
       </PersonCardNew>
     </div>
@@ -114,8 +114,7 @@ export default {
         isNotAvailable: true,
         availableToAll: true,
         markedByMe: false,
-  availableToAllOrHall: true,
-  donationType: this.donationType
+  availableToAllOrHall: true
       }
       this.lastSearched = payloadForGetActiveDonors
       await this.search(payloadForGetActiveDonors)
@@ -150,13 +149,10 @@ export default {
         isAvailable: searchQueries.availability,
         isNotAvailable: searchQueries.notAvailability,
         address: inputAddress,
-        availableToAll: searchQueries.availableToAll === 'AvailableToAll',
-        markedByMe: this.markedByMe,
-        availableToAllOrHall: false,
-        donationType: searchQueries.donationType
+  availableToAll: searchQueries.availableToAll === 'AvailableToAll',
+  markedByMe: this.markedByMe,
+  availableToAllOrHall: false
       }
-      // keep local donationType in sync for card rendering
-      this.donationType = searchQueries.donationType
       this.lastSearched = payloadForGetActiveDonors
       this.filterListMenu = false
       await this.search(payloadForGetActiveDonors)
@@ -185,8 +181,7 @@ export default {
       activeDonorsLoader: false,
       filterListMenu: false,
       markedByMe: false,
-  lastSearched: null,
-  donationType: 'Blood'
+  lastSearched: null
     }
   }
 }

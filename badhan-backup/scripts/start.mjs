@@ -5,7 +5,7 @@ import { ensureNpmInstall } from './ensure_npm_install.mjs';
 
 const args = process.argv.slice(2);
 
-await killPorts([27017, 3000, 8080]);
+await killPorts([27017, 3000, 8080, 4000]);
 
 const cleanUpRequired = args.includes('--clean')
 
@@ -26,11 +26,12 @@ await ensureNpmInstall("./badhan-backend")
 await ensureNpmInstall("./badhan-frontend")
 await ensureNpmInstall("./badhan-backend-test")
 await ensureNpmInstall("./badhan-frontend-test")
-
+await ensureNpmInstall("./badhan-backup");
 
 
 const jobs = [
   { workingDir: './badhan-backup', cmd: 'node scripts/start_db.mjs', label: 'database'},
+  { workingDir: './badhan-backup', cmd: 'node download_tools.mjs && npx nodemon', label: 'backup'},
   { workingDir: './badhan-frontend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 3000 && npm run serve:local', label: 'frontend'},
   { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npx nodemon', label: 'backend'}
 ];

@@ -90,8 +90,8 @@ export const findDonorsCreatedBetween = async (
     };
 };
 
-export const insertDonor = async (phone: number, bloodGroup: number, hall: number, name: string, studentId: string, address: string, roomNumber: string, lastDonation: number, comment: string, availableToAll: boolean):Promise<{data: IDonor, message: string, status: string}> => {
-    const donor: IDonor = new DonorModel({phone, bloodGroup, hall, name, studentId, address, roomNumber, lastDonation: 0, comment, availableToAll})
+export const insertDonor = async (phone: number, bloodGroup: number, hall: number, name: string, studentId: string, address: string, roomNumber: string, comment: string, availableToAll: boolean):Promise<{data: IDonor, message: string, status: string}> => {
+    const donor: IDonor = new DonorModel({phone, bloodGroup, hall, name, studentId, address, roomNumber, comment, availableToAll})
     const data: IDonor = await donor.save()
     return {
         message: 'Donor insertion successful',
@@ -188,10 +188,12 @@ export const findDonorsByAggregate = async (reqQuery: {
     address: string,
     isAvailable: boolean,
     isNotAvailable: boolean,
-    availableToAll: boolean,
-    donationType?: 'Blood' | 'Platelet'
+    availableToAll: boolean
 }): Promise<{data: IDonor[], message: string, status: string}> => {
     const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
+    const now: number = Date.now()
+    const bloodLimit: number = now - 120 * 24 * 3600 * 1000
+    const plateletLimit: number = now - 12 * 24 * 3600 * 1000
     const threeDaysAgo: number = Date.now() - 3 * 24 * 60 * 60 * 1000;
     const data: IDonor[] = await DonorModel.aggregate([{
         $match: queryBuilder
@@ -201,6 +203,32 @@ export const findDonorsByAggregate = async (reqQuery: {
             localField: '_id',
             foreignField: 'donorId',
             as: 'donations'
+        }
+    }, {
+        $lookup: {
+            from: 'plateletdonations',
+            localField: '_id',
+            foreignField: 'donorId',
+            as: 'plateletDonations'
+        }
+    }, {
+        $addFields: {
+            lastDonationDate: { $ifNull: [{ $max: '$donations.date' }, 0] },
+            lastPlateletDonationDate: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
+        }
+    }, ...(reqQuery.isAvailable || reqQuery.isNotAvailable ? [{
+        $match: {
+            $expr: {
+                $or: [
+                    ...(reqQuery.isAvailable ? [{ $and: [ { $lt: [ '$lastDonationDate', bloodLimit ] }, { $lt: [ '$lastPlateletDonationDate', plateletLimit ] } ] }] : []),
+                    ...(reqQuery.isNotAvailable ? [{ $or: [ { $gt: [ '$lastDonationDate', bloodLimit ] }, { $gt: [ '$lastPlateletDonationDate', plateletLimit ] } ] }] : [])
+                ]
+            }
+        }
+    }] : []), {
+        $project: {
+            lastDonationDate: 0,
+            lastPlateletDonationDate: 0
         }
     }, {
         $lookup: {
@@ -259,6 +287,7 @@ export const findDonorsByAggregate = async (reqQuery: {
                 activeDonors: 0,
                 callRecords: 0,
                 donations: 0,
+                plateletDonations: 0,
                 email: 0,
                 markerDetails: 0,
                 designation: 0,
@@ -378,6 +407,9 @@ export const generateAggregatePipeline = (reqQuery: {
     markedByMe: boolean
 }, donorId: Schema.Types.ObjectId) : PipelineStage[] => {
     const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
+    const now: number = Date.now()
+    const bloodLimit: number = now - 120 * 24 * 3600 * 1000
+    const plateletLimit: number = now - 12 * 24 * 3600 * 1000
     const threeDaysAgo: number = Date.now() - 3 * 24 * 60 * 60 * 1000;
     const aggregatePipeline: PipelineStage[] = [{
         $lookup: {
@@ -399,16 +431,12 @@ export const generateAggregatePipeline = (reqQuery: {
             address: '$donorDetails.address',
             comment: '$donorDetails.comment',
             commentTime: '$donorDetails.commentTime',
-            lastDonation: '$donorDetails.lastDonation',
-            lastPlateletDonation: '$donorDetails.lastPlateletDonation',
             availableToAll: '$donorDetails.availableToAll',
             bloodGroup: '$donorDetails.bloodGroup',
             studentId: '$donorDetails.studentId',
             phone: '$donorDetails.phone',
             markedTime: '$time'
         }
-    }, {
-        $match: queryBuilder
     }, {
         $lookup: {
             from: 'donors',
@@ -426,6 +454,34 @@ export const generateAggregatePipeline = (reqQuery: {
             localField: '_id',
             foreignField: 'donorId',
             as: 'donations'
+        }
+    }, {
+        $lookup: {
+            from: 'plateletdonations',
+            localField: '_id',
+            foreignField: 'donorId',
+            as: 'plateletDonations'
+        }
+    }, {
+        $addFields: {
+            lastDonationDate: { $ifNull: [{ $max: '$donations.date' }, 0] },
+            lastPlateletDonationDate: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
+        }
+    }, {
+        $match: queryBuilder
+    }, ...(reqQuery.isAvailable || reqQuery.isNotAvailable ? [{
+        $match: {
+            $expr: {
+                $or: [
+                    ...(reqQuery.isAvailable ? [{ $and: [ { $lt: [ '$lastDonationDate', bloodLimit ] }, { $lt: [ '$lastPlateletDonationDate', plateletLimit ] } ] }] : []),
+                    ...(reqQuery.isNotAvailable ? [{ $or: [ { $gt: [ '$lastDonationDate', bloodLimit ] }, { $gt: [ '$lastPlateletDonationDate', plateletLimit ] } ] }] : [])
+                ]
+            }
+        }
+    }] : []), {
+        $project: {
+            lastDonationDate: 0,
+            lastPlateletDonationDate: 0
         }
     }, {
         $lookup: {
@@ -457,6 +513,7 @@ export const generateAggregatePipeline = (reqQuery: {
             markerDetails: 0,
             markerId: 0,
             donations: 0,
+            plateletDonations: 0,
             callRecords: 0
         }
     }
@@ -490,7 +547,6 @@ export const generateSearchQuery = (reqQuery: {
     isAvailable: boolean,
     isNotAvailable: boolean,
     availableToAll: boolean,
-    donationType?: 'Blood' | 'Platelet'
     availableToAllOrHall?: boolean
 }): IQueryBuilder => {
     const queryBuilder: IQueryBuilder = {}
@@ -548,29 +604,7 @@ export const generateSearchQuery = (reqQuery: {
         )
     }
 
-    // Determine which field to use for availability based on donationType and window size
-    const usePlatelet: boolean = reqQuery.donationType === 'Platelet'
-    const windowDays: number = usePlatelet ? 12 : 120
-    const availableLimit: number = new Date().getTime() - windowDays * 24 * 3600 * 1000
-    const availabilityField: 'lastDonation' | 'lastPlateletDonation' = usePlatelet ? 'lastPlateletDonation' : 'lastDonation'
-
-    const lastDonationAvailability: { [key: string]: { $lt?: number, $gt?: number } }[] = []
-
-    if (reqQuery.isAvailable) {
-        lastDonationAvailability.push({
-            [availabilityField]: {$lt: availableLimit}
-        })
-    }
-
-    if (reqQuery.isNotAvailable) {
-        lastDonationAvailability.push({
-            [availabilityField]: {$gt: availableLimit}
-        })
-    }
-
-    if (reqQuery.isNotAvailable || reqQuery.isAvailable) {
-        queryBuilder.$and.push({$or: lastDonationAvailability as any})
-    }
+    // Availability is computed in aggregation using donation lookups now.
     return queryBuilder
 }
 

@@ -22,11 +22,6 @@ const handlePOSTPlateletDonations = async (req: Request, res: Response): Promise
     return res.status(500).send(new InternalServerError500(plateletDonationInsertionResult.message,{},{}))
   }
 
-  if (donor.lastPlateletDonation < req.body.date) {
-    donor.lastPlateletDonation = req.body.date
-  }
-
-  await donor.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST PLATELET DONATIONS', {
     ...plateletDonationInsertionResult.data,
@@ -53,14 +48,6 @@ const handleDELETEPlateletDonations = async (req: Request<{},{},{},{date: string
   }
 
   const latestPlateletDonationResult: {data?: IPlateletDonation[], message: string, status: string} = await plateletDonationInterface.findLatestPlateletDonationByDonorId(donor._id)
-
-  if (latestPlateletDonationResult.status === 'OK' && latestPlateletDonationResult.data && latestPlateletDonationResult.data.length > 0) {
-    donor.lastPlateletDonation = latestPlateletDonationResult.data[0].date
-  } else {
-    donor.lastPlateletDonation = 0
-  }
-
-  await donor.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE PLATELET DONATIONS', {
     ...plateletDonationDeletionResult.data,

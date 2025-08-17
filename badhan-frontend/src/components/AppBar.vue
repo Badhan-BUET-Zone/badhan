@@ -203,13 +203,6 @@ export default {
               designation: 3
             },
             {
-              icon: 'mdi-shield-crown-outline',
-              text: 'Admin Console',
-              to: '/adminconsole',
-              id: 'adminConsoleNavigationId',
-              designation: 3
-            },
-            {
               icon: 'mdi-developer-board',
               text: 'Dev Console',
               to: '/devconsole',

@@ -67,6 +67,7 @@ const searchSchema = {
           address: { type: "string" },
           roomNumber: { type: "string" },
           lastDonation: { type: "integer" },
+          lastPlateletDonation: { type: "integer" },
           comment: { type: "string" },
           commentTime: { type: "integer" },
           _id: { type: "string" },

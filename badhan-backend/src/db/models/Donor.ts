@@ -7,6 +7,8 @@ import {PublicContactModel} from "./PublicContact";
 import {ActiveDonorModel} from "./ActiveDonor";
 import {TokenModel} from "./Token";
 import { PlateletDonationModel } from "./PlateletDonation";
+import { IDonation } from './Donation'
+import { IPlateletDonation } from './PlateletDonation'
 import { checkEmail } from '../../validations/validateRequest/others'
 import { year2000TimeStamp } from '../../constants';
 import { checkNumber, checkTimeStamp } from './validators';
@@ -20,8 +22,9 @@ export interface IDonor extends Document {
   address: string;
   roomNumber: string;
   designation?: number;
-  lastDonation: number;
-  lastPlateletDonation: number;
+  // Virtuals: latest donation docs (populated when requested)
+  lastDonation?: IDonation | null;
+  lastPlateletDonation?: IPlateletDonation | null;
   name: string;
   comment: string;
   commentTime?: number;
@@ -182,20 +185,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     }],
     required: true
   },
-  lastDonation: {
-    type: Number,
-    default: 0,
-    min: 0,
-    required: true,
-    validate: [checkNumber('lastDonation')]
-  },
-  lastPlateletDonation: {
-    type: Number,
-    default: 0,
-    min: 0,
-    required: true,
-    validate: [checkNumber('lastPlateletDonation')]
-  },
+  // lastDonation and lastPlateletDonation are now virtuals that return latest docs
   name: {
     type: String,
     trim: true,
@@ -256,6 +246,23 @@ donorSchema.virtual('plateletDonations', {
   ref: 'PlateletDonations',
   localField: '_id',
   foreignField: 'donorId'
+})
+
+// Latest donation docs as virtuals
+donorSchema.virtual('lastDonation', {
+  ref: 'Donations',
+  localField: '_id',
+  foreignField: 'donorId',
+  justOne: true,
+  options: { sort: { date: -1 } }
+})
+
+donorSchema.virtual('lastPlateletDonation', {
+  ref: 'PlateletDonations',
+  localField: '_id',
+  foreignField: 'donorId',
+  justOne: true,
+  options: { sort: { date: -1 } }
 })
 
 donorSchema.virtual('donationCountOptimized', {

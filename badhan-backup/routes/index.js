@@ -4,7 +4,7 @@ const validation = require('../validation')
 const rateLimiter = require('../rateLimiter')
 const {OKResponse200} = require("../response/successTypes");
 const queue = require('../queue')
-const {backupController, listController, deleteController, pruneController, restoreController} = require("../controllers");
+const {backupController, resetController, listController, deleteController, pruneController, restoreController} = require("../controllers");
 
 const wait = () => {
     return new Promise((resolve, reject) => setTimeout(()=>{
@@ -57,5 +57,14 @@ router.post('/restore/:date',
         const response = await restoreController({production: req.query.production === 'true', development: req.query.development == 'true', time: parseInt(req.params.date)})
         return res.status(response.statusCode).send(response)
     })
+
+router.post('/reset-local-db',
+    rateLimiter.commonLimiter,
+    queue.commonQueue,
+    async(req, res) => {
+        const response = await resetController()
+        return res.status(response.statusCode).send(response)
+    }
+)
 
 module.exports = router

@@ -467,14 +467,14 @@ router.get('/donors/me',
  *       - in: query
  *         name: isAvailable
  *         required: true
- *         description: make this true if you want to get the donors who have not donated blood in the last 120 days
+ *         description: true to get donors available to donate (last blood donation older than 120 days AND last platelet donation older than 12 days)
  *         schema:
  *           type: boolean
  *           example: true
  *       - in: query
  *         name: isNotAvailable
  *         required: true
- *         description: make this false if you want to get the donors who have donated blood in the last 120 days
+ *         description: true to include donors not available to donate (blood within 120 days OR platelet within 12 days)
  *         schema:
  *           type: boolean
  *           example: false
@@ -485,14 +485,6 @@ router.get('/donors/me',
  *         schema:
  *           type: boolean
  *           example: true
- *       - in: query
- *         name: donationType
- *         required: false
- *         description: Filter donors by donation type availability window. Defaults to Blood.
- *         schema:
- *           type: string
- *           enum: [Blood, Platelet]
- *           example: Blood
  *     responses:
  *       200:
  *         description: Donors queried successfully

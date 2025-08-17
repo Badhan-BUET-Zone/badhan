@@ -22,12 +22,8 @@
           <li><b>Specify Hall: </b>If you choose this option, donors of specified hall will be fetched. You can only
             search your own hall for donors in such case.
           </li>
-          <li><b>Available: </b>If you specify this option, donors who have given blood before {{ availabilityDays }} days will be
-            fetched. These donors are basically available for donations.
-          </li>
-          <li><b>Not Available: </b>If you specify this option, donors who have given blood in a span of {{ availabilityDays }} days will
-            be shown
-          </li>
+          <li><b>Available: </b>Available only if last blood donation was before 120 days AND last platelet donation was before 12 days.</li>
+          <li><b>Not Available: </b>Not available if blood donated within 120 days OR platelet donated within 12 days.</li>
         </ul>
       </div>
       </HelpTooltip>
@@ -152,18 +148,7 @@
             </v-col>
           </v-row>
 
-          <v-radio-group row v-model="donationType" dense>
-            <v-radio value="Blood" id="filterDonationTypeBloodRadioId">
-              <template v-slot:label>
-                Blood
-              </template>
-            </v-radio>
-            <v-radio value="Platelet" id="filterDonationTypePlateletRadioId">
-              <template v-slot:label>
-                Platelet
-              </template>
-            </v-radio>
-          </v-radio-group>
+          
 
           <!--        A button to reset the form fields-->
           <v-btn rounded color="secondary" @click="clearFields" class="ma-2">
@@ -222,7 +207,6 @@ export default {
       this.error = ''
       this.address = ''
       this.showFab = false
-      this.donationType = 'Blood'
       this.resetClicked()
     },
     async searchClickInsideComponent () {
@@ -239,8 +223,7 @@ export default {
         availability: this.availability,
         notAvailability: this.notAvailability,
         address: this.address,
-        availableToAll: this.radios,
-        donationType: this.donationType
+  availableToAll: this.radios
       })
       this.isSearchLoading = false
     }
@@ -267,9 +250,7 @@ export default {
     }
   },
   computed: {
-    availabilityDays () {
-      return this.donationType === 'Platelet' ? 12 : 120
-    },
+    
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
         if (this.$store.getters['getDesignation'] === 3) {
@@ -310,7 +291,7 @@ export default {
       hall: halls[this.$store.getters['getHall']],
       availability: true,
       notAvailability: false,
-  donationType: 'Blood',
+  
 
       // GUI flags
       filterShown: true,

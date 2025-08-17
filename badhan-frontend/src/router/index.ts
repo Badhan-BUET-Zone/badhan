@@ -264,24 +264,13 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    name: 'AdminConsole',
-    path: '/adminconsole',
-    component: () => import('../views/AdminConsole.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Admin Console',
-      designation: 3,
-      reRouteIfAuthorized: false
-    }
-  },
-  {
     name: 'BackupRestore',
     path: '/backupRestore',
     component: () => import('../views/BackupRestore.vue'),
     meta: {
       requiresAuth: true,
       title: 'Backup and Restore',
-      designation: 3,
+      designation: 0,
       reRouteIfAuthorized: false
     }
   },

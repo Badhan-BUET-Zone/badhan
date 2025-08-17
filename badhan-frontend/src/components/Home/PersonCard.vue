@@ -16,7 +16,7 @@
           >
             <v-card-text style="font-size: 10px;  line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>{{ availableInRendered }} day ({{ donationType==='Platelet' ? 'Platelet' : 'Blood' }})</span><br>
+              <span>{{ availableInRendered }} day</span><br>
               <span>{{ donationCount }} donations</span>
             </v-card-text>
           </v-card>
@@ -28,7 +28,7 @@
           >
             <v-card-text style="font-size: 10px; line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>Available ({{ donationType==='Platelet' ? 'Platelet' : 'Blood' }})</span><br>
+              <span>Available</span><br>
               <span>{{ donationCount }} donations</span>
             </v-card-text>
           </v-card>
@@ -169,14 +169,13 @@ import { handlePOSTCallRecord, handlePOSTDonations, handlePOSTPlateletDonations 
 export default {
   name: 'PersonCard',
   props: [
-    'person',
-    'donationType'
+  'person'
   ],
   components: { VueMarkdown },
   data: function () {
     return {
       newDonationDate: '',
-  newDonationType: this.donationType === 'Platelet' ? 'Platelet' : 'Blood',
+  newDonationType: 'Blood',
       error: '',
       success: '',
 
@@ -215,13 +214,7 @@ export default {
 
     }
   },
-  watch: {
-    donationType () {
-      // Recompute availability and counts when the filter switches between Blood and Platelet
-      this.availableInRendered = 0
-      this.setInformation(this.person)
-    }
-  },
+  watch: {},
   computed: {
   },
   mounted () {
@@ -256,16 +249,14 @@ export default {
 
       if (response.status !== 201) return;
 
-      // Update availability/count only if the added donation matches current card mode
-      if ((this.donationType === 'Platelet' && isPlatelet) || (this.donationType !== 'Platelet' && !isPlatelet)) {
-        this.setAvailableIn(this.newDonationDate)
-        // optimistic count bump when possible
-        this.donationCount = (this.donationCount || 0) + 1
-      }
+  // Recalculate availability after adding a donation
+  this.setAvailableInFromPerson({ ...this.person, lastDonation: isPlatelet ? this.person.lastDonation : timestamp, lastPlateletDonation: isPlatelet ? timestamp : this.person.lastPlateletDonation })
+  // optimistic count bump when possible
+  this.donationCount = (this.donationCount || 0) + 1
 
       this.newDonationDate = ''
-      // default radio back to current page filter to avoid confusion
-      this.newDonationType = this.donationType === 'Platelet' ? 'Platelet' : 'Blood'
+  // default radio back to Blood
+  this.newDonationType = 'Blood'
 
       this.$store.dispatch('notification/notifySuccess', isPlatelet ? 'Platelet donation inserted successfully' : 'Donation inserted successfully')
     },
@@ -273,41 +264,29 @@ export default {
       this.showExtensionFlag = !this.showExtensionFlag
     },
 
-    setAvailableIn (donationDate) {
-      const windowDays = this.donationType === 'Platelet' ? 12 : 120
-      const newAvailableIn =
-          windowDays -
-          Math.round(
-            (Math.round(new Date().getTime()) -
-                  new Date(donationDate).getTime()) /
-              (1000 * 3600 * 24)
-          )
-      if (newAvailableIn > this.availableInRendered) {
-        this.availableInRendered = newAvailableIn
-      }
+    setAvailableInFromPerson (person) {
+      const daysSinceBlood = Math.floor((Date.now() - (person.lastDonation || 0)) / (1000*3600*24))
+      const daysSincePlatelet = Math.floor((Date.now() - (person.lastPlateletDonation || 0)) / (1000*3600*24))
+      const neededBlood = Math.max(0, 120 - daysSinceBlood)
+      const neededPlatelet = Math.max(0, 12 - daysSincePlatelet)
+      this.availableInRendered = Math.max(neededBlood, neededPlatelet)
     },
 
     setInformation (person) {
-      if (this.donationType === 'Platelet') {
-        this.setAvailableIn(person.lastPlateletDonation)
-      } else {
-        this.setAvailableIn(person.lastDonation)
-      }
+  this.setAvailableInFromPerson(person)
       this.phone = person.phone
       this.name = person.name
       this.hall = person.hall
       this.bloodGroup = person.bloodGroup
       this.studentId = person.studentId
-      this.lastDonation = this.donationType === 'Platelet' ? person.lastPlateletDonation : person.lastDonation
+  this.lastDonation = person.lastDonation
       this.comment = fixBackSlash(person.comment)
       this.address = person.address
       this.roomNumber = person.roomNumber
       this.id = person._id
       this.commentTime = person.commentTime
       this.callCountLast3Days = person.callCountLast3Days
-      this.donationCount = this.donationType === 'Platelet'
-        ? (person.plateletDonationCount ?? person.donationCount)
-        : person.donationCount
+  this.donationCount = person.donationCount
       this.markedBy = person.marker.name
       this.lastCalled = person.lastCalled
     }

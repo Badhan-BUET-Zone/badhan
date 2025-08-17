@@ -59,6 +59,7 @@ const activeDonorSearchResultSchema = {
           comment: { type: "string" },
           commentTime: { type: "integer" },
           lastDonation: { type: "integer" },
+          lastPlateletDonation: { type: "integer" },
           availableToAll: { type: "boolean" },
           bloodGroup: { type: "integer" },
           studentId: { type: "string" },

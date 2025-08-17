@@ -21,7 +21,6 @@ const handlePOSTDonors = async (req: Request<{},{},{
   hall: number,
   address: string,
   roomNumber: string,
-  lastDonation: number,
   name: string,
   comment: string,
   availableToAll: boolean,
@@ -51,7 +50,7 @@ const handlePOSTDonors = async (req: Request<{},{},{
     availableToAll = true
   }
 
-  const donorInsertionResult: { data: IDonor; message: string; status: string } = await donorInterface.insertDonor(req.body.phone, req.body.bloodGroup, req.body.hall, req.body.name, req.body.studentId, req.body.address, req.body.roomNumber, 0, req.body.comment, availableToAll)
+  const donorInsertionResult: { data: IDonor; message: string; status: string } = await donorInterface.insertDonor(req.body.phone, req.body.bloodGroup, req.body.hall, req.body.name, req.body.studentId, req.body.address, req.body.roomNumber, req.body.comment, availableToAll)
   if (donorInsertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('New donor insertion unsuccessful',{},{}))
   }
@@ -102,10 +101,9 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
   address: string,
   isAvailable: string,
   isNotAvailable: string,
-  availableToAll:string,
-  donationType?: 'Blood' | 'Platelet' | string
+  availableToAll:string
 }>, res: Response):Promise<Response> => {
-  const reqQuery: { bloodGroup: number; isAvailable: boolean; address: string; batch: string; name: string; isNotAvailable: boolean; availableToAll: boolean; hall: number; donationType: 'Blood' | 'Platelet' } = {
+  const reqQuery: { bloodGroup: number; isAvailable: boolean; address: string; batch: string; name: string; isNotAvailable: boolean; availableToAll: boolean; hall: number } = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),
     batch: req.query.batch,
@@ -113,8 +111,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
     address: req.query.address,
     isAvailable: req.query.isAvailable === 'true',
     isNotAvailable: req.query.isNotAvailable === 'true',
-    availableToAll: req.query.availableToAll === 'true',
-    donationType: req.query.donationType === 'Platelet' ? 'Platelet' : 'Blood'
+    availableToAll: req.query.availableToAll === 'true'
   }
 
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
@@ -259,7 +256,15 @@ const handleGETDonors = async (req: Request, res: Response):Promise<Response> =>
       options: { sort: { date: -1 } }
     },
     {
+      path: 'lastDonation',
+      options: { sort: { date: -1 } }
+    },
+    {
       path: 'plateletDonations',
+      options: { sort: { date: -1 } }
+    },
+    {
+      path: 'lastPlateletDonation',
       options: { sort: { date: -1 } }
     },
     {

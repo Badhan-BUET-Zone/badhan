@@ -571,13 +571,11 @@ export interface GETActiveDonorsPayloadInterface {
   address: string,
   availableToAll: boolean,
   markedByMe: boolean,
-  availableToAllOrHall: boolean,
-  donationType?: 'Blood' | 'Platelet'
+  availableToAllOrHall: boolean
 }
 const handleGETActiveDonors = async (payload: GETActiveDonorsPayloadInterface) => {
   try {
-    const donationType = payload.donationType ? `&donationType=${payload.donationType}` : ''
-    return await badhanAxios.get(`/activeDonors?bloodGroup=${payload.bloodGroup}&hall=${payload.hall}&batch=${payload.batch}&name=${payload.name}&address=${payload.address}&isAvailable=${payload.isAvailable}&isNotAvailable=${payload.isNotAvailable}&availableToAll=${payload.availableToAll}&markedByMe=${payload.markedByMe}&availableToAllOrHall=${payload.availableToAllOrHall}${donationType}`)
+    return await badhanAxios.get(`/activeDonors?bloodGroup=${payload.bloodGroup}&hall=${payload.hall}&batch=${payload.batch}&name=${payload.name}&address=${payload.address}&isAvailable=${payload.isAvailable}&isNotAvailable=${payload.isNotAvailable}&availableToAll=${payload.availableToAll}&markedByMe=${payload.markedByMe}&availableToAllOrHall=${payload.availableToAllOrHall}`)
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }

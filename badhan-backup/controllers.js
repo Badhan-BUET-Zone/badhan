@@ -165,11 +165,45 @@ const restoreLatestController = async (argv) => {
     await restoreController(argv)
 }
 
+const resetController = async () =>{
+    console.log('reset command initiated')
+
+    const backendPath = resolve(__dirname, '..', 'badhan-backend')
+    console.log('running `npm run reset_db:local` in', backendPath)
+
+    const child = child_process.spawnSync('npm', ['run', 'reset_db:local'], {cwd: backendPath, encoding: 'utf8'})
+    console.log('Process finished.')
+
+    if (child.error) {
+        console.log('ERROR: ', child.error)
+        return new InternalServerError500('Error in spawning child process', {error: child.error})
+    }
+
+    console.log('stdout: ', child.stdout)
+    console.log('stderr: ', child.stderr)
+    console.log('exit code: ', child.status)
+
+    if (child.status !== 0) {
+        return new InternalServerError500('Reset script failed', {
+            output: child.stdout,
+            error: child.stderr,
+            childStatus: child.status
+        })
+    }
+
+    return new OKResponse200('Successfully reset local database', {
+        output: child.stdout,
+        error: child.stderr,
+        childStatus: child.status
+    })
+}
+
 module.exports = {
     backupController,
     deleteController,
     listController,
     restoreController,
     pruneController,
-    restoreLatestController
+    restoreLatestController,
+    resetController
 }

@@ -54,8 +54,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
   isAvailable: string,
   isNotAvailable: string,
   availableToAll:string,
-  markedByMe: string,
-  donationType?: 'Blood' | 'Platelet'
+  markedByMe: string
 }>, res: Response): Promise<Response> => {
   const reqQuery:{
     bloodGroup: number,
@@ -66,8 +65,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
     isAvailable: boolean,
     isNotAvailable: boolean,
     availableToAll: boolean,
-    markedByMe: boolean,
-    donationType?: 'Blood' | 'Platelet'
+    markedByMe: boolean
   } = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
     hall: parseInt(req.query.hall,10),
@@ -77,8 +75,7 @@ const handleGETActiveDonors = async (req: Request<{},{},{},{
     isAvailable: req.query.isAvailable === 'true',
     isNotAvailable: req.query.isNotAvailable === 'true',
     availableToAll: req.query.availableToAll === 'true',
-    markedByMe: req.query.markedByMe === 'true',
-    donationType: req.query.donationType === 'Platelet' ? 'Platelet' : 'Blood'
+    markedByMe: req.query.markedByMe === 'true'
   }
 
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&

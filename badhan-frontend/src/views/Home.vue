@@ -73,7 +73,6 @@
                     v-for="(person) in obj.people"
                     :key="person._id"
           :person="person"
-          :donation-type="donationType"
                 ></person-card>
               </div>
               <v-btn id="olderBatchResultsButton" v-if="isMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
@@ -150,7 +149,7 @@ export default {
       hall: halls[this.$store.getters['getHall']],
       availability: true,
       notAvailability: false,
-  donationType: 'Blood',
+  
       download: false,
 
       // GUI flags
@@ -209,7 +208,7 @@ export default {
     this.notAvailability = query.notAvailability === 'true'
     this.radios = query.radios === 'SpecifyHall' ? 'SpecifyHall' : 'AvailableToAll'
     this.download = query.download === 'true'
-  this.donationType = (query.donationType === 'Platelet') ? 'Platelet' : 'Blood'
+  
 
     if (Object.keys(this.$route.query).length === 9) {
       await this.searchClicked()
@@ -246,7 +245,7 @@ export default {
         isNotAvailable: payload.notAvailability,
         address: payload.inputAddress,
         availableToAll: payload.availableToAll,
-        donationType: this.donationType
+        
       }
 
       this.searchLoaderFlag = true
@@ -307,7 +306,7 @@ export default {
       this.radios = filterValues.availableToAll
       this.availability = filterValues.availability
       this.notAvailability = filterValues.notAvailability
-  this.donationType = filterValues.donationType
+  
       await this.searchClicked()
     },
     downloadInWeb () {
@@ -382,7 +381,7 @@ export default {
           notAvailability: this.notAvailability,
           radios: this.radios,
       download: false,
-      donationType: this.donationType
+      
         }
       })
       this.$copyText(environmentService.getFrontendBaseURL()+ '/' + routeData.href).then((_e) => {

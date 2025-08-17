@@ -15,7 +15,7 @@
           >
             <v-card-text style="font-size: 10px;  line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>{{ availableIn }} day ({{ donationType==='Platelet' ? 'Platelet' : 'Blood' }})</span><br>
+              <span>{{ availableIn }} day</span><br>
               <span>{{ donationCount }} donations</span>
             </v-card-text>
           </v-card>
@@ -27,7 +27,7 @@
           >
             <v-card-text style="font-size: 10px; line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>Available ({{ donationType==='Platelet' ? 'Platelet' : 'Blood' }})</span><br>
+              <span>Available</span><br>
               <span>{{ donationCount }} donations</span>
             </v-card-text>
           </v-card>
@@ -71,7 +71,7 @@
       Called {{callCountLast3Days}} times in last 3 days
       <br>
     </span>
-    <span><VueMarkdown>**Comment:** {{comment }} (Last Updated:{{commentTime === 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown></span>
+  <span><VueMarkdown>**Comment:** {{comment }} (Last Updated:{{commentTime === 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown></span>
       </v-card-text>
     </v-card>
   </div>
@@ -91,11 +91,7 @@ export default {
     detailsBasePath: {
       type: String,
       default: '/activeDonors'
-    },
-    donationType: {
-      type: String,
-      default: 'Blood'
-    }
+  }
   },
   components: { VueMarkdown },
   name: 'PersonCardNew',
@@ -124,7 +120,13 @@ export default {
       this.lastCallRecord = null
     }
     this.callCountLast3Days = donor.callCountLast3Days !== null ? donor.callCountLast3Days : null
-  this.lastDonation = this.donationType === 'Platelet' ? (donor.lastPlateletDonation || 0) : donor.lastDonation
+  // Determine next availability days based on combined rule
+    const daysSinceBlood = Math.floor((Date.now() - (donor.lastDonation || 0)) / (1000*3600*24))
+    const daysSincePlatelet = Math.floor((Date.now() - (donor.lastPlateletDonation || 0)) / (1000*3600*24))
+    const neededBlood = Math.max(0, 120 - daysSinceBlood)
+    const neededPlatelet = Math.max(0, 12 - daysSincePlatelet)
+    this.availableIn = Math.max(neededBlood, neededPlatelet)
+    this.lastDonation = donor.lastDonation
     this.donationCount = donor.donationCount
 
     this.setAvailableIn(this.lastDonation)
@@ -139,15 +141,17 @@ export default {
       this.lastCallRecord = new Date().toLocaleString()
       this.callCountLast3Days++
     },
-    setAvailableIn (donationDate) {
-      const windowDays = this.donationType === 'Platelet' ? 12 : 120
-      this.availableIn =
-          windowDays -
-          Math.round(
-            (Math.round(new Date().getTime()) - donationDate) /
-              (1000 * 3600 * 24)
-          )
-    }
+  setAvailableIn (lastDonation) {
+      // Recompute availability days using both blood and platelet rules.
+      // lastDonation may be passed; otherwise use stored value.
+      const lastDon = typeof lastDonation === 'number' ? lastDonation : this.lastDonation
+      const lastPlatelet = (this.$props.donor && this.$props.donor.lastPlateletDonation) ? this.$props.donor.lastPlateletDonation : 0
+      const daysSinceBlood = Math.floor((Date.now() - (lastDon || 0)) / (1000 * 3600 * 24))
+      const daysSincePlatelet = Math.floor((Date.now() - (lastPlatelet || 0)) / (1000 * 3600 * 24))
+      const neededBlood = Math.max(0, 120 - daysSinceBlood)
+      const neededPlatelet = Math.max(0, 12 - daysSincePlatelet)
+      this.availableIn = Math.max(neededBlood, neededPlatelet)
+  }
   },
   data: () => {
     return {
@@ -170,7 +174,7 @@ export default {
       newCallRecordLoader: false,
       donorDetailsExpansion: false,
   created: null,
-      availableIn: 0
+  availableIn: 0
     }
   }
 }

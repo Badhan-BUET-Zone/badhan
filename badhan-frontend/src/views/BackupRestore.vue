@@ -35,8 +35,15 @@
               icon="mdi-content-cut"
               text="Trim Backups"
             />
+            <Button
+              :disabled="resetLocalLoaderFlag"
+              :click="handleResetLocalDB"
+              color="error"
+              icon="mdi-database-refresh"
+              text="Reset Local DB"
+            />
             <v-progress-circular
-              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag"
+              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || resetLocalLoaderFlag"
               indeterminate
               color="primary"
               size="20"
@@ -151,6 +158,7 @@ export default {
 
     createNewBackupLoaderFlag: false,
     trimBackupsLoaderFlag: false,
+  resetLocalLoaderFlag: false,
   }),
   computed: {
   },
@@ -167,10 +175,10 @@ export default {
     return !!(this.deleteLoaderFlagsArray[index] || this.restoreToTestFlagsArray[index] || this.restoreToProductionFlagsArray[index] || this.restoreToLocalFlagsArray[index])
     },
     initRowFlags (length) {
-      this.deleteLoaderFlagsArray = Array(length).fill(false)
-      this.restoreToProductionFlagsArray = Array(length).fill(false)
-      this.restoreToTestFlagsArray = Array(length).fill(false)
-    this.restoreToLocalFlagsArray = Array(length).fill(false)
+  this.deleteLoaderFlagsArray = Array(length).fill(false)
+  this.restoreToProductionFlagsArray = Array(length).fill(false)
+  this.restoreToTestFlagsArray = Array(length).fill(false)
+  this.restoreToLocalFlagsArray = Array(length).fill(false)
     },
     setFlagForSpecificIndex (arr, index) {
       const copy = [...arr]
@@ -298,6 +306,23 @@ export default {
         this.$store.dispatch('notification/notifySuccess', 'Successfully trimmed backups')
       } catch (e) {
         this.trimBackupsLoaderFlag = false
+        const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
+        this.$store.dispatch('notification/notifyError', msg)
+      }
+    }
+    ,
+    async handleResetLocalDB () {
+      this.resetLocalLoaderFlag = true
+      try {
+        const response = await this.backupAPIAxios.post('/reset-local-db')
+        this.resetLocalLoaderFlag = false
+        if (response.status !== 200) {
+          this.$store.dispatch('notification/notifyError', response.data.message)
+          return
+        }
+        this.$store.dispatch('notification/notifySuccess', 'Successfully reset local database')
+      } catch (e) {
+        this.resetLocalLoaderFlag = false
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
         this.$store.dispatch('notification/notifyError', msg)
       }
