@@ -60,6 +60,13 @@
                   <v-icon left>mdi-delete</v-icon>
                   Delete
                 </v-btn>
+                <v-btn class="ma-2" small color="success"
+                        :loading="restoreToLocalFlagsArray[0]"
+                        :disabled="anyRowBusy(0)"
+                        @click="handleRestoreToLocal(backupTimestamps[0], 0)">
+                  <v-icon left>mdi-laptop</v-icon>
+                  Restore to Local
+                </v-btn>
                 <v-btn class="ma-2" small color="info"
                        :loading="restoreToTestFlagsArray[0]"
                        :disabled="anyRowBusy(0)"
@@ -74,6 +81,7 @@
                   <v-icon left>mdi-cloud-upload</v-icon>
                   Restore to Production
                 </v-btn>
+
             </v-card>
 
             <v-subheader class="pl-0">All Backups</v-subheader>
@@ -90,6 +98,13 @@
                         <v-icon left small>mdi-delete</v-icon>
                         Delete
                     </v-btn>
+                    <v-btn class="ma-2" x-small color="success"
+                        :loading="restoreToLocalFlagsArray[index]"
+                        :disabled="anyRowBusy(index)"
+                        @click="handleRestoreToLocal(timestamp, index)">
+                      <v-icon left small>mdi-laptop</v-icon>
+                      Restore to Local
+                    </v-btn>
                     <v-btn class="ma-2" x-small color="info"
                             :loading="restoreToTestFlagsArray[index]"
                             :disabled="anyRowBusy(index)"
@@ -104,6 +119,7 @@
                         <v-icon left small>mdi-cloud-upload</v-icon>
                         Restore Prod
                     </v-btn>
+
                 </v-card>
               </v-col>
             </v-row>
@@ -131,6 +147,7 @@ export default {
     restoreToTestFlagsArray: [],
     restoreToProductionFlagsArray: [],
     deleteLoaderFlagsArray: [],
+    restoreToLocalFlagsArray: [],
 
     createNewBackupLoaderFlag: false,
     trimBackupsLoaderFlag: false,
@@ -147,12 +164,13 @@ export default {
       }
     },
     anyRowBusy (index) {
-      return !!(this.deleteLoaderFlagsArray[index] || this.restoreToTestFlagsArray[index] || this.restoreToProductionFlagsArray[index])
+    return !!(this.deleteLoaderFlagsArray[index] || this.restoreToTestFlagsArray[index] || this.restoreToProductionFlagsArray[index] || this.restoreToLocalFlagsArray[index])
     },
     initRowFlags (length) {
       this.deleteLoaderFlagsArray = Array(length).fill(false)
       this.restoreToProductionFlagsArray = Array(length).fill(false)
       this.restoreToTestFlagsArray = Array(length).fill(false)
+    this.restoreToLocalFlagsArray = Array(length).fill(false)
     },
     setFlagForSpecificIndex (arr, index) {
       const copy = [...arr]
@@ -230,6 +248,22 @@ export default {
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
         this.$store.dispatch('notification/notifyError', msg)
       }
+      },
+      async handleRestoreToLocal (timestamp, index) {
+        this.restoreToLocalFlagsArray = this.setFlagForSpecificIndex(this.restoreToLocalFlagsArray, index)
+        try {
+          const response = await this.backupAPIAxios.post(`/restore/${timestamp}`)
+          this.initRowFlags(this.backupTimestamps.length)
+          if (response.status !== 200) {
+            this.$store.dispatch('notification/notifyError', response.data.message)
+            return
+          }
+          this.$store.dispatch('notification/notifySuccess', 'Successfully restored backup to local environment')
+        } catch (e) {
+          this.initRowFlags(this.backupTimestamps.length)
+          const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
+          this.$store.dispatch('notification/notifyError', msg)
+        }
     },
     async handleCreateBackup () {
       this.createNewBackupLoaderFlag = true
