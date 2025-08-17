@@ -1,0 +1,12 @@
+{
+  "search.exclude": {
+    "**/trash/**": true
+  },
+  "files.exclude": {
+    "**/trash": true,
+    "**/trash/**": true
+  },
+  "files.watcherExclude": {
+    "**/trash/**": true
+  }
+}

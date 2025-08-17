@@ -1,4 +1,6 @@
-#/bin/bash
+#!/bin/bash
 set -euo pipefail  # safer script
 
-npm run test "${1:-}"
+# Forward all passed arguments to the npm script. Using `--` tells npm to forward
+# the remaining args to the script (so flags like --no-reset reach Jest/process.argv).
+npm run test -- "$@"
