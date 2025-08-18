@@ -1,6 +1,6 @@
-const { badhanAxios } = require("../../api");
+const { badhanAxios } = require("../../../api");
 const validate = require("jsonschema").validate;
-const { processError } = require("../fixtures/helpers");
+const { processError } = require("../../fixtures/helpers");
 const {
   postDonorSchema,
   patchDonorSchema,
