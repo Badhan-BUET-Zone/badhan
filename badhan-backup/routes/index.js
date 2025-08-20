@@ -59,7 +59,6 @@ router.post('/restore/:date',
     })
 
 router.post('/reset-local-db',
-    rateLimiter.commonLimiter,
     queue.commonQueue,
     async(req, res) => {
         const response = await resetController()
