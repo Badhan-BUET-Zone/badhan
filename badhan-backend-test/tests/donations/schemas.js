@@ -1,4 +1,4 @@
-const getPlateletDonationReportsSchema = {
+const getReportsSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
@@ -30,9 +30,9 @@ const getPlateletDonationReportsSchema = {
         },
       },
     },
-  firstPlateletDonationCount: { type: "integer" },
+    firstDonationCount: { type: "integer" },
   },
-  required: ["status", "statusCode", "message", "report", "firstPlateletDonationCount"],
+  required: ["status", "statusCode", "message", "report", "firstDonationCount"],
 };
 
 const invalidRequestSchema = {
@@ -46,14 +46,14 @@ const invalidRequestSchema = {
   required: ["status", "statusCode", "message"],
 };
 
-const postPlateletDonationSchema = {
+const postDonationSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
     status: { type: "string" },
     statusCode: { const: 201 },
     message: { type: "string" },
-  newPlateletDonation: {
+    newDonation: {
       type: "object",
       additionalProperties: false,
       properties: {
@@ -65,17 +65,17 @@ const postPlateletDonationSchema = {
       required: ["date", "_id", "phone", "donorId"],
     },
   },
-  required: ["status", "statusCode", "message", "newPlateletDonation"],
+  required: ["status", "statusCode", "message", "newDonation"],
 };
 
-const deletePlateletDonationSchema = {
+const deleteDonationSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
     status: { type: "string" },
     statusCode: { const: 200 },
     message: { type: "string" },
-  deletedPlateletDonation: {
+    deletedDonation: {
       type: "object",
       additionalProperties: false,
       properties: {
@@ -87,12 +87,12 @@ const deletePlateletDonationSchema = {
       required: ["_id", "date", "donorId", "phone"],
     },
   },
-  required: ["status", "statusCode", "message", "deletedPlateletDonation"],
+  required: ["status", "statusCode", "message", "deletedDonation"],
 };
 
 module.exports = {
-  getPlateletDonationReportsSchema,
+  getReportsSchema,
   invalidRequestSchema,
-  postPlateletDonationSchema,
-  deletePlateletDonationSchema,
+  postDonationSchema,
+  deleteDonationSchema,
 };
