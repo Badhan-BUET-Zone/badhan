@@ -1,5 +1,7 @@
 module.exports = {
   testEnvironment: 'node',
+  // Limit test discovery to the tests folder
+  roots: ['<rootDir>/tests'],
   globalSetup:    '<rootDir>/tests/global-setup.js',
   globalTeardown: '<rootDir>/tests/global-teardown.js',
   // Run setup file after the test framework is installed in the environment.

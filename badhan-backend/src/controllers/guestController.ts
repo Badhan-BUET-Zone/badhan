@@ -24,7 +24,7 @@ const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Prom
     designation: number
     availableToAll: boolean
     email: string
-    lastDonation: number
+    // lastDonation: number
   } = {
     _id: faker.getId(),
     phone: faker.getPhone(),
@@ -39,7 +39,7 @@ const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Prom
     designation: 3,
     availableToAll: faker.getBoolean(),
     email: faker.getEmail(),
-    lastDonation: faker.getTimestamp(240)
+    // lastDonation: faker.getTimestamp(240)
   }
 
   return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
@@ -83,7 +83,8 @@ const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Respo
     name: string,
     studentId: string,
     hall: number,
-    lastDonation: number,
+    lastDonationDate: number,
+    lastPlateletDonationDate: number,
     bloodGroup: number,
     address: string,
     roomNumber: string,
@@ -110,7 +111,8 @@ const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Respo
       name: faker.getName(),
       studentId: faker.getStudentId(),
       hall: faker.getHall(),
-      lastDonation: faker.getTimestamp(240),
+      lastDonationDate: faker.getTimestamp(240),
+      lastPlateletDonationDate: faker.getTimestamp(240),
       bloodGroup: faker.getBloodGroup(),
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),

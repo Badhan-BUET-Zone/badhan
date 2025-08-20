@@ -3,6 +3,70 @@
 
 const axios = require('axios');
 
+const processError = (e) => {
+    if (e.response && e.response.data) {
+        const consoleErrorPrint = {
+            url: "",
+            data: e.response.data,
+            stack: e.stack
+        }
+        if (e.response.config) {
+            consoleErrorPrint.url = e.response.config.url
+        }
+        throw new Error(JSON.stringify(consoleErrorPrint, null, 2));
+    }
+    throw e;
+}
+
+// Global test wrapper: ensures any error thrown inside a test gets formatted
+// via processError so failures print useful API response details without
+// needing per-test try/catch blocks.
+(() => {
+  const wrap = (fn) => {
+    if (!fn) return fn;
+    return async (...args) => {
+      try {
+        return await fn(...args);
+      } catch (e) {
+        // processError throws a formatted Error; rethrow that
+        try { processError(e); } catch (formatted) { throw formatted; }
+        // Fallback, though we shouldn't get here
+        throw e;
+      }
+    };
+  };
+
+  const patch = (name) => {
+    const original = global[name];
+    if (!original) return;
+
+    const patched = (title, fn, timeout) => original(title, wrap(fn), timeout);
+    // Preserve common modifiers
+    patched.only = (title, fn, timeout) => original.only(title, wrap(fn), timeout);
+    patched.skip = (title, fn, timeout) => original.skip(title, fn, timeout);
+    if (typeof original.todo === 'function') patched.todo = original.todo.bind(original);
+    if (original.each) {
+      patched.each = (...eachArgs) => {
+        const eachOrig = original.each(...eachArgs);
+        const bound = (title, fn, timeout) => eachOrig(title, wrap(fn), timeout);
+        bound.only = (title, fn, timeout) => eachOrig.only(title, wrap(fn), timeout);
+        bound.skip = (title, fn, timeout) => eachOrig.skip(title, fn, timeout);
+        return bound;
+      };
+    }
+    if (original.concurrent) {
+      patched.concurrent = (title, fn, timeout) => original.concurrent(title, wrap(fn), timeout);
+      if (original.concurrent.only) patched.concurrent.only = (title, fn, timeout) => original.concurrent.only(title, wrap(fn), timeout);
+      if (original.concurrent.skip) patched.concurrent.skip = (title, fn, timeout) => original.concurrent.skip(title, fn, timeout);
+    }
+
+    global[name] = patched;
+  };
+
+  patch('test');
+  patch('it');
+})();
+
 // The backup service exposes a reset endpoint that runs the DB reset script.
 // You can override the URL via the BACKUP_RESET_URL environment variable.
 const RESET_URL = process.env.BACKUP_RESET_URL || 'http://localhost:4000/reset-local-db';

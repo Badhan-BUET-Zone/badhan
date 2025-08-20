@@ -50,91 +50,103 @@ const donorsNewSchema = {
   },
   required: ["status", "statusCode", "message", "donors"]
 };
-const searchSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    status: { type: "string" },
-    statusCode: { const: 200 },
-    message: { type: "string" },
-    filteredDonors: {
-      type: "array",
-      minItems: 1,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          address: { type: "string" },
-          roomNumber: { type: "string" },
-          lastDonation: { type: "integer" },
-          lastPlateletDonation: { type: "integer" },
-          comment: { type: "string" },
-          commentTime: { type: "integer" },
-          _id: { type: "string" },
-          studentId: { type: "string" },
-          name: { type: "string" },
-          bloodGroup: { type: "integer" },
-          phone: { type: "integer" },
-          hall: { type: "integer" },
-          availableToAll: { type: "boolean" },
-          donationCount: { type: "integer" },
-          callRecordCount: { type: "integer" },
-          callCountLast3Days: { type: "integer" },
-          lastCalled: {
-            type: {
-              anyOf: [
-                {
-                  type: "integer",
-                },
-                {
-                  type: "null",
-                },
-              ],
-            },
-          },
-          marker: {
-            type: {
-              anyOf: [
-                {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {
-                    name: { type: "string" },
-                    time: { type: "integer" },
-                  },
-                  required: ["name", "time"],
-                },
-                {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {},
-                },
-              ],
-            },
+const searchSchema = ({ totalItems } = {}) => {
+  // Build filteredDonors schema conditionally depending on whether totalItems is provided
+  const filteredDonors = {
+    type: "array",
+    // minItems/maxItems will be added only when totalItems is specified
+    items: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        address: { type: "string" },
+        roomNumber: { type: "string" },
+        lastDonationDate: { type: "integer" },
+        lastPlateletDonationDate: { type: "integer" },
+        comment: { type: "string" },
+        commentTime: { type: "integer" },
+        _id: { type: "string" },
+        studentId: { type: "string" },
+        name: { type: "string" },
+        bloodGroup: { type: "integer" },
+        phone: { type: "integer" },
+        hall: { type: "integer" },
+        availableToAll: { type: "boolean" },
+        donationCount: { type: "integer" },
+        callRecordCount: { type: "integer" },
+        callCountLast3Days: { type: "integer" },
+        lastCalled: {
+          type: {
+            anyOf: [
+              {
+                type: "integer",
+              },
+              {
+                type: "null",
+              },
+            ],
           },
         },
-        required: [
-          "address",
-          "roomNumber",
-          "lastDonation",
-          "comment",
-          "commentTime",
-          "_id",
-          "studentId",
-          "name",
-          "bloodGroup",
-          "hall",
-          "phone",
-          "availableToAll",
-          "donationCount",
-          "callRecordCount",
-          "marker",
-        ],
+        marker: {
+          type: {
+            anyOf: [
+              {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                  name: { type: "string" },
+                  time: { type: "integer" },
+                },
+                required: ["name", "time"],
+              },
+              {
+                type: "object",
+                additionalProperties: false,
+                properties: {},
+              },
+            ],
+          },
+        },
       },
+      required: [
+        "address",
+        "roomNumber",
+        "lastDonationDate",
+        "lastPlateletDonationDate",
+        "comment",
+        "commentTime",
+        "_id",
+        "studentId",
+        "name",
+        "bloodGroup",
+        "hall",
+        "phone",
+        "availableToAll",
+        "donationCount",
+        "callRecordCount",
+        "marker",
+      ],
     },
-  },
-  required: ["status", "statusCode", "message", "filteredDonors"],
-};
+  };
+
+  // Only enforce a fixed count when totalItems is explicitly provided (not null/undefined)
+  if (totalItems != null) {
+    filteredDonors.minItems = totalItems;
+    filteredDonors.maxItems = totalItems;
+  }
+
+  return {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      status: { type: "string" },
+      statusCode: { const: 200 },
+      message: { type: "string" },
+      filteredDonors,
+    },
+    required: ["status", "statusCode", "message", "filteredDonors"],
+  };
+}
 
 const passwordSchema = {
   type: "object",
@@ -596,7 +608,7 @@ const postDonorSchema = {
         address: { type: "string" },
         roomNumber: { type: "string" },
         designation: { type: "integer" },
-        lastDonation: { type: "integer" },
+        // lastDonation: { type: "integer" },
         comment: { type: "string" },
         commentTime: { type: "integer" },
         email: { type: "string" },
@@ -612,7 +624,7 @@ const postDonorSchema = {
         "address",
         "roomNumber",
         "designation",
-        "lastDonation",
+        // "lastDonation",
         "comment",
         "commentTime",
         "email",
