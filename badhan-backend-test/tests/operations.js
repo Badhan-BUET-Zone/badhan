@@ -14,10 +14,15 @@ const { signInSchema } = require("./users/signIn/schemas");
 const { donorSchema } = require("./users/fetchMe/schemas");
 const { postCallRecordsSchema, deleteCallRecordsSchema } = require("./callRecords/schemas");
 const { postActiveDonorSchema } = require("./activeDonors/schemas");
+const { patchDonorsDesignationSchema, patchAdminsSchema, patchAdminsSuperAdminSchema } = require("./donors/schemas");
 
 
 const {postDonationSchema, deleteDonationSchema} = require("./donations/schemas");
 const { postPlateletDonationSchema, deletePlateletDonationSchema } = require("./plateletDonations/schemas");
+const { logInsSchema } = require("./users/logIns/schemas");
+const { patchPasswordSchema } = require("./users/password/schemas");
+const { deleteLogInsSchema } = require("./users/deleteLogins/schemas");
+const { signOutSchema } = require("./users/signOut/schemas");
 
 // Helper function to create a donor
 async function createDonor(donorInfo, signInResponse) {
@@ -171,16 +176,170 @@ async function markDonorAsActive(donorId, signInResponse) {
 	return createActiveDonorResponse
 }
 
+async function promoteToVolunteer(donorId, signInResponse) {
+    let promotionResponse = await badhanAxios.patch(
+      "/donors/designation",
+      {
+        donorId: donorId,
+        promoteFlag: true,
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
+    );
+
+    //validate the promotion response
+    let promotionValidationResult = validate(
+      promotionResponse.data,
+      patchDonorsDesignationSchema
+    );
+
+    expect(promotionValidationResult.errors).toEqual([]);
+	return promotionResponse
+}
+
+async function demoteToDonor(donorId, signInResponse) {
+    let promotionResponse = await badhanAxios.patch(
+      "/donors/designation",
+      {
+        donorId: donorId,
+        promoteFlag: false,
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
+    );
+
+    //validate the promotion response
+    let promotionValidationResult = validate(
+      promotionResponse.data,
+      patchDonorsDesignationSchema
+    );
+
+    expect(promotionValidationResult.errors).toEqual([]);
+	return promotionResponse
+}
+
+async function promoteToHallAdmin(donorId, signInResponse) {
+	let hallAdminPromotionResult = await badhanAxios.patch(
+	  "/admins",
+	  {
+		donorId,
+	  },
+	  {
+		headers: {
+		  "x-auth": signInResponse.data.token,
+		},
+	  }
+	);
+
+	// validate hall admin promotion result
+	let hallAdminPromotionValidation = validate(
+	  hallAdminPromotionResult.data,
+	  patchAdminsSchema
+	);
+
+	expect(hallAdminPromotionValidation.errors).toEqual([]);
+}
+
+async function promoteToSuperAdmin(donorId, signInResponse) {
+    let superAdminPromotionResult = await badhanAxios.patch(
+      "/admins/superadmin",
+      {
+        donorId,
+        promoteFlag: true,
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
+    );
+
+    // validate hall admin promotion result
+    let superAdminPromotionValidation = validate(
+      superAdminPromotionResult.data,
+      patchAdminsSuperAdminSchema
+    );
+
+    expect(superAdminPromotionValidation.errors).toEqual([]);
+	return superAdminPromotionResult;
+}
+
+async function getLogins(signInResponse) {
+  let logInsResponse = await badhanAxios.get("/users/logins", {
+    headers: {
+      "x-auth": signInResponse.data.token,
+    },
+  });
+  let validationResult = validate(logInsResponse.data, logInsSchema);
+
+  expect(validationResult.errors).toEqual([]);
+  return logInsResponse;
+}
+
+async function deleteLogin(loginId, signInResponse) {
+  let deleteResponse = await badhanAxios.delete(
+    "/users/logins/" + loginId,
+    {
+      headers: {
+        "x-auth": signInResponse.data.token,
+      },
+    }
+  );
+  let validationResult = validate(deleteResponse.data, deleteLogInsSchema);
+  expect(validationResult.errors).toEqual([]);
+}
+
+async function changePassword(newPassword, signInResponse) {
+    let passwordResponse = await badhanAxios.patch(
+      "/users/password",
+      {
+        password: newPassword,
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
+    );
+    let validationResult = validate(passwordResponse.data, patchPasswordSchema);
+    expect(validationResult.errors).toEqual([]);
+    return passwordResponse;
+}
+
+async function signOut(signInResponse) {
+  let signOutResponse = await badhanAxios.delete('/users/signout', {
+      headers: {
+          "x-auth": signInResponse.data.token
+      }
+  });
+  let validationResult = validate(signOutResponse.data,signOutSchema);
+  expect(validationResult.errors).toEqual([]);
+  return signOutResponse;
+}
 module.exports = {
 	createDonor,
 	signInSuperAdmin,
+  signOut,
 	getMe,
 	createDonation,
 	deleteDonor,
 	searchDonors,
-    deleteDonation,
-    createPlateletDonation,
-    deletePlateletDonation,
+  deleteDonation,
+  createPlateletDonation,
+  deletePlateletDonation,
 	createCallRecord,
-	markDonorAsActive
+	markDonorAsActive,
+	promoteToVolunteer,
+	promoteToHallAdmin,
+	demoteToDonor,
+	promoteToSuperAdmin,
+  getLogins,
+  deleteLogin,
+  changePassword
 };

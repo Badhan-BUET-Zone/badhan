@@ -693,7 +693,6 @@ const handlePATCHAdminsSuperAdmin = async (req: Request,res: Response): Promise<
       designation: 3,
       availableToAll: faker.getBoolean(),
       email: faker.getEmail(),
-      lastDonation: faker.getTimestamp(240)
     }
   }))
 }

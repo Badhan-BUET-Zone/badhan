@@ -1,5 +1,7 @@
 module.exports = {
   testEnvironment: 'node',
+  // Increase default test timeout to 30s to match package.json
+  testTimeout: 30000,
   // Limit test discovery to the tests folder
   roots: ['<rootDir>/tests'],
   globalSetup:    '<rootDir>/tests/global-setup.js',

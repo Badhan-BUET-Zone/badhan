@@ -1,6 +1,6 @@
-const { badhanAxios } = require("../../api");
+const { badhanAxios } = require("../../../api");
 const validate = require("jsonschema").validate;
-const { patchAdminsSuperAdminSchema } = require("./schemas");
+const { patchAdminsSuperAdminSchema } = require("../schemas");
 
 test("PATCH/guest/admins: guest", async () => {
   let superAdminPromotionResult = await badhanAxios.patch(

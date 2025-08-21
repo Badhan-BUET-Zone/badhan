@@ -1,11 +1,9 @@
-const { badhanAxios } = require("../../api");
+const { badhanAxios } = require("../../../api");
 const validate = require("jsonschema").validate;
-const env = require("../../config");
-const { processError } = require("../fixtures/helpers");
-const { allDesignatedDonorSchema } = require("./schemas");
+const env = require("../../../config");
+const { allDesignatedDonorSchema } = require("../schemas");
 
 test("GET/donors/designation/all: success", async () => {
-  try {
     let signInResponse = await badhanAxios.post("/users/signin", {
       phone: env.SUPERADMIN_PHONE,
       password: env.SUPERADMIN_PASSWORD,
@@ -26,13 +24,4 @@ test("GET/donors/designation/all: success", async () => {
     );
 
     expect(validationResult.errors).toEqual([]);
-
-    await badhanAxios.delete("/users/signout", {
-      headers: {
-        "x-auth": signInResponse.data.token,
-      },
-    });
-  } catch (e) {
-    throw processError(e);
-  }
 });
