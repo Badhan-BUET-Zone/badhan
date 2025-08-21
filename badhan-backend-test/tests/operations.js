@@ -12,6 +12,9 @@ const {
 
 const { signInSchema } = require("./users/signIn/schemas");
 const { donorSchema } = require("./users/fetchMe/schemas");
+const { postCallRecordsSchema, deleteCallRecordsSchema } = require("./callRecords/schemas");
+const { postActiveDonorSchema } = require("./activeDonors/schemas");
+
 
 const {postDonationSchema, deleteDonationSchema} = require("./donations/schemas");
 const { postPlateletDonationSchema, deletePlateletDonationSchema } = require("./plateletDonations/schemas");
@@ -124,6 +127,50 @@ async function deletePlateletDonation(donorId, date, signInResponse) {
     return response;
 }
 
+async function createCallRecord(donorId, signInResponse) {
+    let recordCreationResponse = await badhanAxios.post(
+      "/callrecords",
+      {
+        donorId
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
+    );
+
+    let validationRecordResult = validate(
+      recordCreationResponse.data,
+      postCallRecordsSchema
+    );
+
+    expect(validationRecordResult.errors).toEqual([]);
+	return recordCreationResponse;
+}
+
+async function markDonorAsActive(donorId, signInResponse) {
+	    let createActiveDonorResponse = await badhanAxios.post(
+      "/activeDonors",
+      {
+        donorId
+      },
+      {
+        headers: {
+          "x-auth": signInResponse.data.token,
+        },
+      }
+    );
+
+    let createActiveDonorValidationResult = validate(
+      createActiveDonorResponse.data,
+      postActiveDonorSchema
+    );
+
+    expect(createActiveDonorValidationResult.errors).toEqual([]);
+	return createActiveDonorResponse
+}
+
 module.exports = {
 	createDonor,
 	signInSuperAdmin,
@@ -133,5 +180,7 @@ module.exports = {
 	searchDonors,
     deleteDonation,
     createPlateletDonation,
-    deletePlateletDonation
+    deletePlateletDonation,
+	createCallRecord,
+	markDonorAsActive
 };
