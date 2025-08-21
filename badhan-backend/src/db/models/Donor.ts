@@ -22,9 +22,6 @@ export interface IDonor extends Document {
   address: string;
   roomNumber: string;
   designation?: number;
-  // Virtuals: latest donation docs (populated when requested)
-  lastDonation?: IDonation | null;
-  lastPlateletDonation?: IPlateletDonation | null;
   name: string;
   comment: string;
   commentTime?: number;
@@ -246,23 +243,6 @@ donorSchema.virtual('plateletDonations', {
   ref: 'PlateletDonations',
   localField: '_id',
   foreignField: 'donorId'
-})
-
-// Latest donation docs as virtuals
-donorSchema.virtual('lastDonation', {
-  ref: 'Donations',
-  localField: '_id',
-  foreignField: 'donorId',
-  justOne: true,
-  options: { sort: { date: -1 } }
-})
-
-donorSchema.virtual('lastPlateletDonation', {
-  ref: 'PlateletDonations',
-  localField: '_id',
-  foreignField: 'donorId',
-  justOne: true,
-  options: { sort: { date: -1 } }
 })
 
 donorSchema.virtual('donationCountOptimized', {

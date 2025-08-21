@@ -333,9 +333,6 @@ router.post('/donors',
  *                           date:
  *                             type: number
  *                             example: 1627492207064
- *                           expireAt:
- *                             type: string
- *                             example: 2021-08-27T17:10:07.0662
  *                     donations:
  *                       type: array
  *                       items:

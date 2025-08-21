@@ -11,7 +11,7 @@ import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import {IDonation} from "../db/models/Donation";
-import {IDonor} from "../db/models/Donor";
+import {DonorModel, IDonor} from "../db/models/Donor";
 import {IToken} from "../db/models/Token";
 
 const handlePOSTDonors = async (req: Request<{},{},{
@@ -249,64 +249,126 @@ const handlePATCHAdmins = async (req: Request, res: Response):Promise<Response> 
 }
 
 const handleGETDonors = async (req: Request, res: Response):Promise<Response> => {
-  const donor: IDonor = res.locals.middlewareResponse.targetDonor
-  await donor.populate([
+  const donorId: any = res.locals.middlewareResponse.targetDonor._id;
+  // Aggregate donor info and last donation timestamps
+  const donorAggResult: any[] = await DonorModel.aggregate([
+    { $match: { _id: donorId } },
     {
-      path: 'donations',
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'lastDonation',
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'plateletDonations',
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'lastPlateletDonation',
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'callRecords',
-      populate: {
-        path: 'callerId',
-        select: {
-          _id: 1,
-          name: 1,
-          hall: 1,
-          designation: 1
-        }
-      },
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'publicContacts',
-      select: {
-        _id: 1,
-        bloodGroup: 1
+      $lookup: {
+        from: 'donations',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'donations'
       }
     },
     {
-      path: 'markedBy',
-      select: {
-        markerId: 1,
-        time: 1,
-        _id: 0
-      },
-      populate: {
-        path: 'markerId',
-        model: 'Donor',
-        select: { name: 1 }
+      $lookup: {
+        from: 'plateletdonations',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'plateletDonations'
+      }
+    },
+    {
+      $lookup: {
+        from: 'callrecords',
+        let: { donorId: '$_id' },
+        pipeline: [
+          { $match: { $expr: { $eq: ['$calleeId', '$$donorId'] } } },
+          {
+            $lookup: {
+              from: 'donors',
+              let: { callerId: '$callerId' },
+              pipeline: [
+                { $match: { $expr: { $eq: ['$_id', '$$callerId'] } } },
+                { $project: { _id: 1, name: 1, hall: 1, designation: 1 } }
+              ],
+              as: 'caller'
+            }
+          },
+          {
+            $addFields: {
+              callerId: { $arrayElemAt: ['$caller', 0] }
+            }
+          },
+          { $project: { caller: 0 } }
+        ],
+        as: 'callRecords'
+      }
+    },
+    {
+      $lookup: {
+        from: 'publiccontacts',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'publicContacts'
+      }
+    },
+    {
+      $lookup: {
+        from: 'activedonors',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'activeDonorInfo'
+      }
+    },
+    {
+      $addFields: {
+        lastDonation: {
+          $max: {
+            $map: {
+              input: '$donations',
+              as: 'don',
+              in: '$$don.date'
+            }
+          }
+        },
+        lastPlateletDonation: {
+          $max: {
+            $map: {
+              input: '$plateletDonations',
+              as: 'pd',
+              in: '$$pd.date'
+            }
+          }
+        },
+        activeDonorInfo: { $arrayElemAt: ['$activeDonorInfo', 0] }
+      }
+    },
+    {
+      $lookup: {
+        from: 'donors',
+        let: { markerId: '$activeDonorInfo.markerId' },
+        pipeline: [
+          { $match: { $expr: { $eq: ['$_id', '$$markerId'] } } },
+          { $project: { name: 1 } }
+        ],
+        as: 'markedBy'
+      }
+    },
+    {
+      $addFields: {
+        markedBy: {
+          $cond: [
+            { $gt: [ { $size: '$markedBy' }, 0 ] },
+            { $arrayElemAt: ['$markedBy', 0] },
+            null
+          ]
+        }
+      }
+    },
+    {
+      $project: {
+        password: 0,
+        activeDonorInfo: 0
       }
     }
-  ])
-
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS', { name: donor.name })
-
+  ]);
+  const donor: any = donorAggResult[0];
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS', { name: donor.name });
   return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     donor
-  }))
+  }));
 }
 
 const handleGETDesignatedDonorsAll = async (req: Request, res: Response):Promise<Response> => {

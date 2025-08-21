@@ -47,9 +47,6 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                 calleeId:
  *                   type: string
  *                   example: 5e68514546b0e
- *                 expireAt:
- *                   type: string
- *                   example: 2021-11-15T11:23:54.231Z
  *                 callRecord:
  *                   type: object
  *                   properties:
