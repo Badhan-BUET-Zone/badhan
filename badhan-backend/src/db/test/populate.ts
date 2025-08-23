@@ -50,13 +50,13 @@ const generateFakeData = async ():Promise<void> => {
             progressBar.tick()
         }
 
-        const superAdmin: IDonor = donorFactory.createData({
-            phone: SUPERADMIN_PHONE_NUMBER,
-            designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
-            password: SUPERADMIN_PASSWORD
-        });
-        await superAdmin.save();
-        myConsole.log('Created Super Admin')
+        // const superAdmin: IDonor = donorFactory.createData({
+        //     phone: SUPERADMIN_PHONE_NUMBER,
+        //     designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
+        //     password: SUPERADMIN_PASSWORD
+        // });
+        // await superAdmin.save();
+        // myConsole.log('Created Super Admin')
 
         myConsole.log('Fake data generation completed!');
     } catch (error) {

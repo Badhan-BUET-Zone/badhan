@@ -24,7 +24,6 @@ const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Prom
     designation: number
     availableToAll: boolean
     email: string
-    // lastDonation: number
   } = {
     _id: faker.getId(),
     phone: faker.getPhone(),
@@ -39,7 +38,6 @@ const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Prom
     designation: 3,
     availableToAll: faker.getBoolean(),
     email: faker.getEmail(),
-    // lastDonation: faker.getTimestamp(240)
   }
 
   return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
@@ -53,7 +51,6 @@ const handlePOSTInsertDonor = async (req: Request, res: Response):Promise<Respon
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       designation: faker.getDesignation(),
-      // lastDonation: faker.getTimestamp(240),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(240),
       _id: faker.getId(),
@@ -83,8 +80,8 @@ const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Respo
     name: string,
     studentId: string,
     hall: number,
-    lastDonationDate: number,
-    lastPlateletDonationDate: number,
+    lastDonation: number,
+    lastPlateletDonation: number,
     bloodGroup: number,
     address: string,
     roomNumber: string,
@@ -111,8 +108,8 @@ const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Respo
       name: faker.getName(),
       studentId: faker.getStudentId(),
       hall: faker.getHall(),
-      lastDonationDate: faker.getTimestamp(240),
-      lastPlateletDonationDate: faker.getTimestamp(240),
+      lastDonation: faker.getTimestamp(240),
+      lastPlateletDonation: faker.getTimestamp(240),
       bloodGroup: faker.getBloodGroup(),
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
@@ -450,7 +447,6 @@ const handleGETDonorsDuplicate = async (req: Request, res: Response):Promise<Res
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       designation: faker.getDesignation(),
-      // lastDonation: faker.getTimestamp(30),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(30),
       email: faker.getEmail(),
@@ -711,7 +707,6 @@ const handleGETDonorsNew = async (req: Request, res: Response): Promise<Response
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       designation: faker.getDesignation(),
-      // lastDonation: faker.getTimestamp(240),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(240),
       availableToAll: faker.getBoolean(),

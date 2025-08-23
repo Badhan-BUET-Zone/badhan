@@ -143,7 +143,6 @@ export default {
     },
   setAvailableIn (lastDonation) {
       // Recompute availability days using both blood and platelet rules.
-      // lastDonation may be passed; otherwise use stored value.
       const lastDon = typeof lastDonation === 'number' ? lastDonation : this.lastDonation
       const lastPlatelet = (this.$props.donor && this.$props.donor.lastPlateletDonation) ? this.$props.donor.lastPlateletDonation : 0
       const daysSinceBlood = Math.floor((Date.now() - (lastDon || 0)) / (1000 * 3600 * 24))

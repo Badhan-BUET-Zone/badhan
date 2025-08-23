@@ -225,8 +225,8 @@ export const findDonorsByAggregate = async (reqQuery: {
         // 4. Add last donation dates for blood and platelet
         pipeline.push({
             $addFields: {
-                lastDonationDate: { $ifNull: [{ $max: '$donations.date' }, 0] },
-                lastPlateletDonationDate: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
+                lastDonation: { $ifNull: [{ $max: '$donations.date' }, 0] },
+                lastPlateletDonation: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
             }
         })
 
@@ -237,8 +237,8 @@ export const findDonorsByAggregate = async (reqQuery: {
             // Donor is available for both blood and platelet
             const availableCondition: any = {
                 $and: [
-                    { $lt: [ '$lastDonationDate', bloodLimit ] },
-                    { $lt: [ '$lastPlateletDonationDate', plateletLimit ] }
+                    { $lt: [ '$lastDonation', bloodLimit ] },
+                    { $lt: [ '$lastPlateletDonation', plateletLimit ] }
                 ]
             };
             availabilityConditions.push(availableCondition);
@@ -248,8 +248,8 @@ export const findDonorsByAggregate = async (reqQuery: {
             // Donor is not available for either blood or platelet
             const notAvailableCondition: any = {
                 $or: [
-                    { $gt: [ '$lastDonationDate', bloodLimit ] },
-                    { $gt: [ '$lastPlateletDonationDate', plateletLimit ] }
+                    { $gt: [ '$lastDonation', bloodLimit ] },
+                    { $gt: [ '$lastPlateletDonation', plateletLimit ] }
                 ]
             };
             availabilityConditions.push(notAvailableCondition);
@@ -513,8 +513,8 @@ export const generateAggregatePipeline = (reqQuery: {
         }
     }, {
         $addFields: {
-            lastDonationDate: { $ifNull: [{ $max: '$donations.date' }, 0] },
-            lastPlateletDonationDate: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
+            lastDonation: { $ifNull: [{ $max: '$donations.date' }, 0] },
+            lastPlateletDonation: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
         }
     }, {
         $match: queryBuilder
@@ -522,15 +522,15 @@ export const generateAggregatePipeline = (reqQuery: {
         $match: {
             $expr: {
                 $or: [
-                    ...(reqQuery.isAvailable ? [{ $and: [ { $lt: [ '$lastDonationDate', bloodLimit ] }, { $lt: [ '$lastPlateletDonationDate', plateletLimit ] } ] }] : []),
-                    ...(reqQuery.isNotAvailable ? [{ $or: [ { $gt: [ '$lastDonationDate', bloodLimit ] }, { $gt: [ '$lastPlateletDonationDate', plateletLimit ] } ] }] : [])
+                    ...(reqQuery.isAvailable ? [{ $and: [ { $lt: [ '$lastDonation', bloodLimit ] }, { $lt: [ '$lastPlateletDonation', plateletLimit ] } ] }] : []),
+                    ...(reqQuery.isNotAvailable ? [{ $or: [ { $gt: [ '$lastDonation', bloodLimit ] }, { $gt: [ '$lastPlateletDonation', plateletLimit ] } ] }] : [])
                 ]
             }
         }
     }] : []), {
         $project: {
-            lastDonationDate: 0,
-            lastPlateletDonationDate: 0
+            lastDonation: 0,
+            lastPlateletDonation: 0
         }
     }, {
         $lookup: {

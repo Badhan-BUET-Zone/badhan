@@ -273,20 +273,20 @@ export default {
     },
 
     setInformation (person) {
-  this.setAvailableInFromPerson(person)
+      this.setAvailableInFromPerson(person)
       this.phone = person.phone
       this.name = person.name
       this.hall = person.hall
       this.bloodGroup = person.bloodGroup
       this.studentId = person.studentId
-  this.lastDonation = person.lastDonation
+      this.lastDonation = person.lastDonation
       this.comment = fixBackSlash(person.comment)
       this.address = person.address
       this.roomNumber = person.roomNumber
       this.id = person._id
       this.commentTime = person.commentTime
       this.callCountLast3Days = person.callCountLast3Days
-  this.donationCount = person.donationCount
+      this.donationCount = person.donationCount
       this.markedBy = person.marker.name
       this.lastCalled = person.lastCalled
     }

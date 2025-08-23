@@ -182,7 +182,6 @@ const donorSchema: Schema = new Schema<IDonor>({
     }],
     required: true
   },
-  // lastDonation and lastPlateletDonation are now virtuals that return latest docs
   name: {
     type: String,
     trim: true,

@@ -1,12 +1,16 @@
 {
   "search.exclude": {
-    "**/trash/**": true
+    "**/trash/**": true,
+    "**/badhan-datainput-frontend/**": true
   },
   "files.exclude": {
     "**/trash": true,
-    "**/trash/**": true
+    "**/trash/**": true,
+    "**/badhan-datainput-frontend": true,
+    "**/badhan-datainput-frontend/**": true
   },
   "files.watcherExclude": {
-    "**/trash/**": true
+    "**/trash/**": true,
+    "**/badhan-datainput-frontend/**": true
   }
 }
