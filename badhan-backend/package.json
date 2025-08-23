@@ -15,8 +15,11 @@
     "serve:prod": "npm run lint && npm run build && cross-env NODE_ENV=production node ./dist/bin/www",
     "serve:local": "npm run lint && npm run build && cross-env NODE_ENV=local node ./dist/bin/www",
     "__comment_on_db_reset_scripts": "these are the scripts for resetting the development environment database",
-    "reset_db:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/clearDatabase.js && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js",
-    "reset_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/clearDatabase.js && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/populate.js"
+    "reset_db:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/clearDatabase.js",
+    "reset_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/clearDatabase.js",
+
+    "populate_db:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js",
+    "populate_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/populate.js"
   },
   "engines": {
     "node": "22.x.x"

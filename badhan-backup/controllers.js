@@ -165,6 +165,33 @@ const restoreLatestController = async (argv) => {
     await restoreController(argv)
 }
 
+const populateController = async () =>{
+    console.log('populate command initiated')
+    const backendPath = resolve(__dirname, '..', 'badhan-backend')
+    console.log('running `npm run populate_db:local` in', backendPath)
+    const child = child_process.spawnSync('npm', ['run', 'populate_db:local'], {cwd: backendPath, encoding: 'utf8'})
+    console.log('Process finished.')
+    if (child.error) {
+        console.log('ERROR: ', child.error)
+        return new InternalServerError500('Error in spawning child process',{error:child.error})
+    }
+    console.log('stdout: ', child.stdout)
+    console.log('stderr: ', child.stderr)
+    console.log('exit code: ', child.status)
+    if (child.status !== 0) {
+        return new InternalServerError500('Populate script failed',{
+            output: child.stdout,
+            error: child.stderr,
+            childStatus: child.status
+        })
+    }
+    return new OKResponse200('Successfully populated local database',{
+        output: child.stdout,
+        error: child.stderr,
+        childStatus: child.status
+    })
+}
+
 const resetController = async () =>{
     console.log('reset command initiated')
 
@@ -205,5 +232,6 @@ module.exports = {
     restoreController,
     pruneController,
     restoreLatestController,
-    resetController
+    resetController,
+    populateController
 }
