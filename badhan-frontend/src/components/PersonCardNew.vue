@@ -16,7 +16,7 @@
             <v-card-text style="font-size: 10px;  line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
               <span>{{ availableIn }} day</span><br>
-              <span>{{ donationCount }} donations</span>
+              <span>{{ totalDonationCount }} donations</span>
             </v-card-text>
           </v-card>
           <v-card
@@ -28,7 +28,7 @@
             <v-card-text style="font-size: 10px; line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
               <span>Available</span><br>
-              <span>{{ donationCount }} donations</span>
+              <span>{{ totalDonationCount }} donations</span>
             </v-card-text>
           </v-card>
 
@@ -69,6 +69,19 @@
     </span>
     <span v-if="callCountLast3Days">
       Called {{callCountLast3Days}} times in last 3 days
+      <br>
+    </span>
+    <span>
+      <b>Blood donations:</b> {{ donationCount }} | <b>Platelet donations:</b> {{ plateletDonationCount }}
+      <br>
+    </span>
+    <span>
+      <b>Blood availability:</b> {{ neededBlood === 0 ? 'Available' : (neededBlood + ' day' + (neededBlood>1?'s':'')) }} |
+      <b>Platelet availability:</b> {{ neededPlatelet === 0 ? 'Available' : (neededPlatelet + ' day' + (neededPlatelet>1?'s':'')) }}
+      <br>
+    </span>
+    <span>
+      <b>Overall availability:</b> {{ availableIn === 0 ? 'Available now' : ('Available in ' + availableIn + ' day' + (availableIn>1?'s':'')) }} (gated by {{ gatingType }})
       <br>
     </span>
   <span><VueMarkdown>**Comment:** {{comment }} (Last Updated:{{commentTime === 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown></span>
@@ -128,6 +141,15 @@ export default {
     this.availableIn = Math.max(neededBlood, neededPlatelet)
     this.lastDonation = donor.lastDonation
     this.donationCount = donor.donationCount
+    this.plateletDonationCount = donor.plateletDonationCount || 0
+    this.totalDonationCount = this.donationCount + this.plateletDonationCount
+
+    // store detailed availability numbers
+    this.neededBlood = neededBlood
+    this.neededPlatelet = neededPlatelet
+    this.gatingType = this.availableIn === neededBlood && this.availableIn === neededPlatelet
+      ? 'blood & platelet'
+      : (this.availableIn === neededBlood ? 'blood' : 'platelet')
 
     this.setAvailableIn(this.lastDonation)
   },
@@ -169,11 +191,16 @@ export default {
       lastDonation: 0,
       callCount: 0,
       donationCount: 0,
+    plateletDonationCount: 0,
+    totalDonationCount: 0,
       callCountLast3Days: null,
       newCallRecordLoader: false,
       donorDetailsExpansion: false,
   created: null,
-  availableIn: 0
+  availableIn: 0,
+  neededBlood: 0,
+  neededPlatelet: 0,
+  gatingType: ''
     }
   }
 }

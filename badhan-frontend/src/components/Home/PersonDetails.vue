@@ -76,10 +76,19 @@
           </v-chip>
           <v-chip class="mr-1 mb-1" color="secondary">{{ donationList.length }} Donations</v-chip>
           <v-chip class="mr-1 mb-1" color="secondary">{{ plateletDonationList.length }} Platelet</v-chip>
-          <v-chip class="mr-1 mb-1" v-if="availableIn > 0" color="warning">{{ availableIn }} Days remaining (Blood)</v-chip>
-          <v-chip class="mr-1 mb-1" dark v-else color="green">Available (Blood)</v-chip>
-          <v-chip class="mr-1 mb-1" v-if="plateletAvailableIn > 0" color="warning">{{ plateletAvailableIn }} Days remaining (Platelet)</v-chip>
-          <v-chip class="mr-1 mb-1" dark v-else color="green">Available (Platelet)</v-chip>
+          <!-- Availability chips logic:
+               If both types are currently unavailable (have remaining days), show only the one with the larger remaining days.
+               If only one is unavailable, show that one.
+               If both are available, show both green chips. -->
+          <template v-if="furthestPendingType === 'blood'">
+            <v-chip class="mr-1 mb-1" color="warning">{{ availableIn }} Days remaining</v-chip>
+          </template>
+          <template v-else-if="furthestPendingType === 'platelet'">
+            <v-chip class="mr-1 mb-1" color="warning">{{ plateletAvailableIn }} Days remaining</v-chip>
+          </template>
+          <template v-else>
+            <v-chip class="mr-1 mb-1" dark color="green">Available for Donation</v-chip>
+          </template>
           <br>
           <div class="row" v-if="!$store.getters['getLoadingFlag']">
             <div class="col-lg-6 col-md-12 col-sm-12" id="firstColumn">
@@ -732,6 +741,18 @@ export default {
         }
       }
       return halls
+    },
+    // Determine which donation type is still pending and furthest from availability
+    // Returns 'blood', 'platelet', or null (when both available)
+    furthestPendingType () {
+      const bloodPending = this.availableIn > 0
+      const plateletPending = this.plateletAvailableIn > 0
+      if (bloodPending && plateletPending) {
+        return this.availableIn >= this.plateletAvailableIn ? 'blood' : 'platelet'
+      }
+      if (bloodPending) return 'blood'
+      if (plateletPending) return 'platelet'
+      return null
     }
   },
   methods: {
@@ -1135,7 +1156,10 @@ export default {
     this.callRecords = profile.callRecords
   this.donationList = profile.donations
   this.plateletDonationList = profile.plateletDonations || []
-    this.markedBy = profile.markedBy ? profile.markedBy.markerId.name : null
+    // Some donors may have markedBy present without a populated markerId (or markerId without name); guard to avoid TypeError
+    this.markedBy = (profile && profile.markedBy && profile.markedBy.name)
+      ? profile.markedBy.name
+      : null
     this.markedAsActiveDonor = !!this.markedBy
 
     const date = new Date(profile.lastDonation)

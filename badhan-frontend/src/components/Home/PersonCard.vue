@@ -16,8 +16,8 @@
           >
             <v-card-text style="font-size: 10px;  line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
-              <span>{{ availableInRendered }} day</span><br>
-              <span>{{ donationCount }} donations</span>
+              <span>{{ availableInRendered }} day<span v-if="availableInRendered>1">s</span><span v-if="availabilityType"> ({{ availabilityType }})</span></span><br>
+              <span>{{ totalDonations }} Donations</span>
             </v-card-text>
           </v-card>
           <v-card
@@ -29,7 +29,7 @@
             <v-card-text style="font-size: 10px; line-height: 1.6;">
               <span>{{ bloodGroup | getBloodGroupString }}</span><br>
               <span>Available</span><br>
-              <span>{{ donationCount }} donations</span>
+              <span>{{ totalDonations }} Donations</span>
             </v-card-text>
           </v-card>
 
@@ -72,6 +72,9 @@
               <br>
             </span>
               <span>Called <span :id="`callCountId_${id}`">{{ callCountLast3Days }}</span> times in last 3 days</span>
+              <br>
+              <span><b>Blood Donations:</b> {{ donationCount }}</span><br>
+              <span><b>Platelet Donations:</b> {{ plateletDonationCount }}</span>
               <span v-if="comment!==undefined && comment!==null && comment.length !==0"><VueMarkdown>**Comment:** {{comment }} (Last Updated:
                 {{commentTime == 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown> </span>
             </v-col>
@@ -175,7 +178,7 @@ export default {
   data: function () {
     return {
       newDonationDate: '',
-  newDonationType: 'Blood',
+      newDonationType: 'Blood',
       error: '',
       success: '',
 
@@ -205,7 +208,12 @@ export default {
       hall: null,
       commentTime: 0,
       callCountLast3Days: 0,
-  donationCount: 0,
+      donationCount: 0,
+  plateletDonationCount: 0,
+
+  lastPlateletDonation: 0,
+
+  availabilityType: '', // indicates which donation type still needs days ('Blood' or 'Platelet')
 
       markedBy: null,
       lastCalled: null,
@@ -216,6 +224,9 @@ export default {
   },
   watch: {},
   computed: {
+    totalDonations () {
+      return (this.donationCount || 0) + (this.plateletDonationCount || 0)
+    }
   },
   mounted () {
     this.setInformation(this.person)
@@ -249,10 +260,25 @@ export default {
 
       if (response.status !== 201) return;
 
-  // Recalculate availability after adding a donation
-  this.setAvailableInFromPerson({ ...this.person, lastDonation: isPlatelet ? this.person.lastDonation : timestamp, lastPlateletDonation: isPlatelet ? timestamp : this.person.lastPlateletDonation })
-  // optimistic count bump when possible
-  this.donationCount = (this.donationCount || 0) + 1
+      // Update local last donation times
+      if (isPlatelet) {
+        this.lastPlateletDonation = timestamp
+      } else {
+        this.lastDonation = timestamp
+      }
+
+      // Recalculate availability after adding a donation
+      this.setAvailableInFromPerson({
+        ...this.person,
+        lastDonation: isPlatelet ? this.person.lastDonation : timestamp,
+        lastPlateletDonation: isPlatelet ? timestamp : this.person.lastPlateletDonation
+      })
+      // optimistic count bump when possible
+      if (isPlatelet) {
+        this.plateletDonationCount = (this.plateletDonationCount || 0) + 1
+      } else {
+        this.donationCount = (this.donationCount || 0) + 1
+      }
 
       this.newDonationDate = ''
   // default radio back to Blood
@@ -265,11 +291,21 @@ export default {
     },
 
     setAvailableInFromPerson (person) {
-      const daysSinceBlood = Math.floor((Date.now() - (person.lastDonation || 0)) / (1000*3600*24))
-      const daysSincePlatelet = Math.floor((Date.now() - (person.lastPlateletDonation || 0)) / (1000*3600*24))
+      const now = Date.now()
+      const daysSinceBlood = Math.floor((now - (person.lastDonation || 0)) / (1000 * 3600 * 24))
+      const daysSincePlatelet = Math.floor((now - (person.lastPlateletDonation || 0)) / (1000 * 3600 * 24))
       const neededBlood = Math.max(0, 120 - daysSinceBlood)
       const neededPlatelet = Math.max(0, 12 - daysSincePlatelet)
-      this.availableInRendered = Math.max(neededBlood, neededPlatelet)
+      if (neededBlood === 0 && neededPlatelet === 0) {
+        this.availableInRendered = 0
+        this.availabilityType = ''
+      } else if (neededBlood >= neededPlatelet) {
+        this.availableInRendered = neededBlood
+        this.availabilityType = 'Blood'
+      } else {
+        this.availableInRendered = neededPlatelet
+        this.availabilityType = 'Platelet'
+      }
     },
 
     setInformation (person) {
@@ -280,6 +316,7 @@ export default {
       this.bloodGroup = person.bloodGroup
       this.studentId = person.studentId
       this.lastDonation = person.lastDonation
+      this.lastPlateletDonation = person.lastPlateletDonation
       this.comment = fixBackSlash(person.comment)
       this.address = person.address
       this.roomNumber = person.roomNumber
@@ -287,6 +324,7 @@ export default {
       this.commentTime = person.commentTime
       this.callCountLast3Days = person.callCountLast3Days
       this.donationCount = person.donationCount
+  this.plateletDonationCount = person.plateletDonationCount
       this.markedBy = person.marker.name
       this.lastCalled = person.lastCalled
     }

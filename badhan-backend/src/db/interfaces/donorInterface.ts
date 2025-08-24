@@ -287,6 +287,7 @@ export const findDonorsByAggregate = async (reqQuery: {
         pipeline.push({
             $addFields: {
                 donationCount: { $size: '$donations' },
+                plateletDonationCount: { $size: '$plateletDonations' },
                 callRecordCount: { $size: '$callRecords' },
                 markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] },
                 lastCalled: { $max: '$callRecords.date' },
@@ -528,11 +529,6 @@ export const generateAggregatePipeline = (reqQuery: {
             }
         }
     }] : []), {
-        $project: {
-            lastDonation: 0,
-            lastPlateletDonation: 0
-        }
-    }, {
         $lookup: {
             from: 'callrecords',
             localField: '_id',
@@ -541,7 +537,8 @@ export const generateAggregatePipeline = (reqQuery: {
         }
     }, {
         $addFields: {
-            donationCount: {$size: '$donations'}
+            donationCount: { $size: '$donations' },
+            plateletDonationCount: { $size: '$plateletDonations' }
         }
     }, {
         $addFields: {

@@ -37,7 +37,7 @@ const jobs = [
 ];
 
 if(cleanUpRequired){
-  jobs.splice(1, 0, { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npm run reset_db:local', label: 'database reset'})
+  jobs.splice(1, 0, { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npm run reset_db:local && npm run populate_db:local', label: 'database reset'})
 }
 
 runProcessesInParallel(jobs).catch(err => {
