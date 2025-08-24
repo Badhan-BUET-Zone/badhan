@@ -19,7 +19,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field rounded v-model="startDate" label="Start Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
             </template>
-            <v-date-picker v-model="startDate" no-title scrollable>
+            <v-date-picker v-model="startDate" no-title scrollable :max="today">
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="startDateMenu = false">Cancel</v-btn>
               <v-btn text color="primary" @click="$refs.startDateMenu.save(startDate)">OK</v-btn>
@@ -39,7 +39,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field rounded v-model="endDate" label="End Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
             </template>
-            <v-date-picker v-model="endDate" no-title scrollable>
+            <v-date-picker v-model="endDate" no-title scrollable :max="today">
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="endDateMenu = false">Cancel</v-btn>
               <v-btn text color="primary" @click="$refs.endDateMenu.save(endDate)">OK</v-btn>
@@ -95,7 +95,8 @@ export default {
   // loader + result
   fetchLoader: false,
   resultCount: null,
-  donors: []
+  donors: [],
+  today: new Date().toISOString().substr(0, 10)
   }),
   computed: {
     disableFetchButton () {

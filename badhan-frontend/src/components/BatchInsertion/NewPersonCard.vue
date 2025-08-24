@@ -119,11 +119,12 @@
               v-on="on"
           ></v-text-field>
         </template>
-        <v-date-picker
-            v-model="lastDonation"
-            no-title
-            scrollable
-        >
+    <v-date-picker
+      v-model="lastDonation"
+      no-title
+      scrollable
+      :max="today"
+    >
           <v-spacer></v-spacer>
           <v-btn
               text
@@ -162,11 +163,12 @@
               v-on="on"
           ></v-text-field>
         </template>
-        <v-date-picker
-            v-model="lastPlateletDonation"
-            no-title
-            scrollable
-        >
+    <v-date-picker
+      v-model="lastPlateletDonation"
+      no-title
+      scrollable
+      :max="today"
+    >
           <v-spacer></v-spacer>
           <v-btn
               text
@@ -421,6 +423,10 @@ export default {
   menuPlatelet: false,
       newDonorLoader: false
     }
+  },
+  
+  created () {
+    this.today = new Date().toISOString().substr(0, 10)
   },
 
   mounted () {

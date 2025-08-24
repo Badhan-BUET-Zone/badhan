@@ -128,7 +128,7 @@
                     dense
                 ></v-text-field>
               </template>
-              <v-date-picker :id="`personCardDatePickerCalenderId_${id}`" v-model="newDonationDate" no-title scrollable>
+              <v-date-picker :id="`personCardDatePickerCalenderId_${id}`" v-model="newDonationDate" no-title scrollable :max="today">
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
                 <v-btn
@@ -181,6 +181,8 @@ export default {
       newDonationType: 'Blood',
       error: '',
       success: '',
+  // disallow future dates in pickers
+  today: new Date().toISOString().substr(0, 10),
 
       // vuetify date picker
       menu: false,

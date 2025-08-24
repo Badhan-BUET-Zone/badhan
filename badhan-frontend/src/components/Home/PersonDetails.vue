@@ -318,7 +318,7 @@
                           dense
                         ></v-text-field>
                       </template>
-                      <v-date-picker id="personDetailsNewDonationDatePickerId" v-model="newDonationDate" no-title scrollable>
+                      <v-date-picker id="personDetailsNewDonationDatePickerId" v-model="newDonationDate" no-title scrollable :max="today">
                         <v-spacer></v-spacer>
                         <v-btn small rounded text color="primary" @click="menu = false">Cancel</v-btn>
                         <v-btn id="personDetailsNewDonationDatePickerOkButtonId" small rounded text color="primary" @click="$refs.menu.save(newDonationDate)">OK</v-btn>
@@ -631,6 +631,9 @@ export default {
 
       changeAdminLoaderFlag: false
     }
+  },
+  created () {
+    this.today = new Date().toISOString().substr(0, 10)
   },
   validations: {
     phone: {

@@ -15,7 +15,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field rounded v-model="startDate" label="Start Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
                 </template>
-                <v-date-picker v-model="startDate" no-title scrollable>
+                <v-date-picker v-model="startDate" no-title scrollable :max="today">
                     <v-spacer></v-spacer>
                     <v-btn text color="primary" @click="startDateMenu = false">Cancel</v-btn>
                     <v-btn text
@@ -40,7 +40,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field rounded v-model="endDate" label="End Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
                 </template>
-                <v-date-picker v-model="endDate" no-title scrollable>
+                <v-date-picker v-model="endDate" no-title scrollable :max="today">
                     <v-spacer></v-spacer>
                     <v-btn text color="primary" @click="endDateMenu = false">Cancel</v-btn>
                     <v-btn text
@@ -133,7 +133,8 @@ export default {
         endDate: '',
         headers: ['Name of Month', ...bloodGroups, 'Total'],
     firstDonationOfDonorCount: 0,
-    firstPlateletDonationOfDonorCount: 0
+    firstPlateletDonationOfDonorCount: 0,
+    today: new Date().toISOString().substr(0, 10)
       }
     },
     computed: {
