@@ -131,6 +131,15 @@ router.get('/donors/new',
  *               extraDonationCount:
  *                 type: number
  *                 example: 1605011
+ *               lastDonation:
+ *                 type: number
+ *                 example: 1711929600000
+ *               extraPlateletDonationCount:
+ *                 type: number
+ *                 example: 2
+ *               lastPlateletDonation:
+ *                 type: number
+ *                 example: 1711929600000
  *               availableToAll:
  *                 type: boolean
  *                 example: true

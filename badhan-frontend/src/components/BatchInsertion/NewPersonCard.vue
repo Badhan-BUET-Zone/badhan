@@ -60,6 +60,9 @@
       <v-text-field id="newDonorDonationCountTextFieldId" class="required" type="number" rounded outlined label="Donation count" dense v-model="donationCount"
                     @blur="$v.donationCount.$touch()"
                     :error-messages="donationCountErrors"></v-text-field>
+  <v-text-field id="newDonorPlateletDonationCountTextFieldId" type="number" rounded outlined label="Platelet donation count" dense v-model="plateletDonationCount"
+        @blur="$v.plateletDonationCount.$touch()"
+        :error-messages="plateletDonationCountErrors"></v-text-field>
       <v-card outlined class="rounded-xl">
         <v-card-text>
         <v-select
@@ -134,6 +137,49 @@
               text
               color="primary"
               @click="$refs.menu.save(lastDonation)"
+          >
+            OK
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+      <v-menu
+          ref="menuPlatelet"
+          v-model="menuPlatelet"
+          :close-on-content-click="false"
+          :return-value.sync="lastPlateletDonation"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+              id="newDonorLastPlateletDonationTextFieldId"
+              v-model="lastPlateletDonation"
+              label="Last Platelet Donation"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+            v-model="lastPlateletDonation"
+            no-title
+            scrollable
+        >
+          <v-spacer></v-spacer>
+          <v-btn
+              text
+              color="primary"
+              @click="menuPlatelet = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+              id="newDonorLastPlateletDonationOkButtonId"
+              text
+              color="primary"
+              @click="$refs.menuPlatelet.save(lastPlateletDonation)"
           >
             OK
           </v-btn>
@@ -232,6 +278,17 @@ export default {
           return !(this.lastDonation !== null && parseInt(value) === 0)
         }
       },
+      plateletDonationCount: {
+        maxLength: maxLength(2),
+        numeric,
+        // optional (can be zero without date)
+        lastDonationCheck (value) {
+          return !(this.lastPlateletDonation === null && value !== null && parseInt(value) !== 0)
+        },
+        lastDonationCheck2 (value) {
+          return !(this.lastPlateletDonation !== null && parseInt(value) === 0)
+        }
+      },
       availableToAll: {
         isBoolean: (value) => {
           return typeof value === 'boolean'
@@ -304,6 +361,15 @@ export default {
       !this.$v.donationCount.lastDonationCheck2 && errors.push('Donation count must be non-zero if last donation is specified')
       return errors
     },
+    plateletDonationCountErrors () {
+      const errors = []
+      if (!this.$v.plateletDonationCount.$dirty) return errors
+      !this.$v.plateletDonationCount.maxLength && errors.push('Max platelet donation count can be 99')
+      !this.$v.plateletDonationCount.numeric && errors.push('Platelet donation count must be numeric')
+      !this.$v.plateletDonationCount.lastDonationCheck && errors.push('Last platelet donation must be specified if count is non-zero')
+      !this.$v.plateletDonationCount.lastDonationCheck2 && errors.push('Platelet donation count must be non-zero if last platelet donation is specified')
+      return errors
+    },
     availableToAllErrors () {
       const errors = []
       if (!this.$v.availableToAll.$dirty) return errors
@@ -337,6 +403,8 @@ export default {
       comment: null,
       donationCount: 0,
       lastDonation: null,
+  plateletDonationCount: 0,
+  lastPlateletDonation: null,
       availableToAll: false,
 
       donorCreationLoader: false,
@@ -350,12 +418,14 @@ export default {
       duplicateDonorMessage: '',
 
       menu: false,
+  menuPlatelet: false,
       newDonorLoader: false
     }
   },
 
   mounted () {
-    const keysExpected = ['name', 'phone', 'studentId', 'bloodGroup', 'hall', 'address', 'roomNumber', 'comment', 'donationCount', 'lastDonation', 'key', 'availableToAll']
+  const keysExpected = ['name', 'phone', 'studentId', 'bloodGroup', 'hall', 'address', 'roomNumber', 'comment', 'donationCount', 'lastDonation', 'plateletDonationCount', 'lastPlateletDonation', 'key', 'availableToAll']
+  // Accept new platelet fields but don't warn if missing (backward compatibility)
     Object.keys(this.$props.donor).forEach((key) => {
       if (!keysExpected.includes(key)) {
         this.warnings.push('Unwanted key found: ' + key)
@@ -381,6 +451,14 @@ export default {
     this.donationCount = this.$props.donor.donationCount
     this.availableToAll = this.$props.donor.availableToAll
 
+    // platelet optional initialization
+    if (this.$props.donor.plateletDonationCount !== undefined) {
+      this.plateletDonationCount = this.$props.donor.plateletDonationCount
+    }
+    if (this.$props.donor.lastPlateletDonation) {
+      this.lastPlateletDonation = (new Date(this.$props.donor.lastPlateletDonation)).toISOString().substr(0, 10)
+    }
+
     if (this.$props.donor.lastDonation !== 0 && this.$props.donor.lastDonation !== null) {
       this.lastDonation = (new Date(this.$props.donor.lastDonation)).toISOString().substr(0, 10)
     }
@@ -399,6 +477,13 @@ export default {
         lastDonation = new Date(this.lastDonation).getTime()
       }
 
+      let lastPlateletDonation
+      if (this.lastPlateletDonation === null) {
+        lastPlateletDonation = 0
+      } else {
+        lastPlateletDonation = new Date(this.lastPlateletDonation).getTime()
+      }
+
       if (this.comment === '' || this.comment === null) this.comment = '(Unknown)'
       if (this.address === '' || this.address === null) this.address = '(Unknown)'
       if (this.roomNumber === '' || this.roomNumber === null) this.roomNumber = '(Unknown)'
@@ -414,7 +499,9 @@ export default {
         comment: this.comment,
         lastDonation: lastDonation,
         extraDonationCount: lastDonation === 0 ? 0 : this.donationCount - 1,
-        availableToAll: this.availableToAll
+  availableToAll: this.availableToAll,
+  lastPlateletDonation: lastPlateletDonation,
+  extraPlateletDonationCount: lastPlateletDonation === 0 ? 0 : this.plateletDonationCount - 1
       }
 
       this.donorCreationLoader = true
@@ -450,6 +537,8 @@ export default {
       this.comment = null
       this.donationCount = null
       this.lastDonation = null
+  this.plateletDonationCount = null
+  this.lastPlateletDonation = null
 
       this.availableToAll = false
 

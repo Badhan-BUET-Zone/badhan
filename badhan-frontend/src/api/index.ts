@@ -285,7 +285,10 @@ export interface POSTDonorsPayloadInterface {
   comment: string,
   lastDonation: number,
   extraDonationCount: number,
-  availableToAll: boolean
+  availableToAll: boolean,
+  // new platelet related fields (optional)
+  lastPlateletDonation?: number,
+  extraPlateletDonationCount?: number
 }
 const handlePOSTDonors = async (payload: POSTDonorsPayloadInterface) => {
   try {

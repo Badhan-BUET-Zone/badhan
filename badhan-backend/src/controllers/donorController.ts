@@ -1,5 +1,7 @@
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as donationInterface from '../db/interfaces/donationInterface'
+import * as plateletDonationInterface from '../db/interfaces/plateletDonationInterface'
+import { IPlateletDonation } from "../db/models/PlateletDonation";
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
 import {Request, Response} from 'express'
@@ -24,7 +26,11 @@ const handlePOSTDonors = async (req: Request<{},{},{
   name: string,
   comment: string,
   availableToAll: boolean,
-  extraDonationCount: number
+  extraDonationCount: number,
+  lastDonation?: number,
+  // new optional platelet related fields
+  lastPlateletDonation?: number,
+  extraPlateletDonationCount?: number
 },{}>, res: Response): Promise<Response> => {
   const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
 
@@ -55,19 +61,61 @@ const handlePOSTDonors = async (req: Request<{},{},{
     return res.status(500).send(new InternalServerError500('New donor insertion unsuccessful',{},{}))
   }
 
-  const dummyDonations: IDonation[] = []
-  for (let i: number = 0; i < req.body.extraDonationCount; i++) {
-    dummyDonations.push({
-      phone: donorInsertionResult.data.phone,
-      donorId: donorInsertionResult.data._id,
-      date: year2000TimeStamp
-    } as IDonation)
+  // Blood donations (existing behaviour): create dummy donations based on extraDonationCount
+  try {
+    const dummyDonations: IDonation[] = []
+    for (let i: number = 0; i < req.body.extraDonationCount; i++) {
+      dummyDonations.push({
+        phone: donorInsertionResult.data.phone,
+        donorId: donorInsertionResult.data._id,
+        date: year2000TimeStamp
+      } as IDonation)
+    }
+    if (dummyDonations.length > 0) {
+      const dummyInsertionResult: { data: IDonation[]; message: string; status: string } = await donationInterface.insertManyDonations(dummyDonations)
+      if (dummyInsertionResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Dummy donations insertion unsuccessful',{},{}))
+      }
+    }
+    // Insert a real lastDonation if provided (>0)
+    if (req.body.lastDonation && req.body.lastDonation > 0) {
+      const lastDonationInsertResult: {data: IDonation; message: string; status: string} = await donationInterface.insertDonation(donorInsertionResult.data.phone, donorInsertionResult.data._id, req.body.lastDonation)
+      if (lastDonationInsertResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Last donation insertion unsuccessful',{},{}))
+      }
+    }
+  } catch (e) {
+    return res.status(500).send(new InternalServerError500('Donation insertion workflow failed',{},{}))
   }
 
-  const dummyInsertionResult: { data: IDonation[]; message: string; status: string } = await donationInterface.insertManyDonations(dummyDonations)
-
-  if (dummyInsertionResult.status !== 'OK') {
-    return res.status(500).send(new InternalServerError500('Dummy donations insertion unsuccessful',{},{}))
+  // Platelet donations (new feature)
+  try {
+    const plateletCount: number = req.body.extraPlateletDonationCount || 0
+    const lastPlateletDonation: number = (req.body.lastPlateletDonation && req.body.lastPlateletDonation > 0) ? req.body.lastPlateletDonation : 0
+    // Insert dummy platelet donations first (using year2000TimeStamp) analogous to blood donations
+    for (let i: number = 0; i < plateletCount; i++) {
+      const plateletDummyResult: {data: IPlateletDonation; message: string; status: string} = await plateletDonationInterface.insertPlateletDonation(
+        donorInsertionResult.data.phone,
+        donorInsertionResult.data._id,
+        year2000TimeStamp
+      )
+      if (plateletDummyResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Dummy platelet donations insertion unsuccessful',{},{}))
+      }
+    }
+    // Insert real last platelet donation if provided
+    if (lastPlateletDonation > 0) {
+      const plateletLastResult: {data: IPlateletDonation; message: string; status: string} = await plateletDonationInterface.insertPlateletDonation(
+        donorInsertionResult.data.phone,
+        donorInsertionResult.data._id,
+        lastPlateletDonation
+      )
+      if (plateletLastResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Last platelet donation insertion unsuccessful',{},{}))
+      }
+    }
+  } catch (e) {
+    return res.status(500).send(new InternalServerError500('Platelet donation insertion workflow failed',{},{}))
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONORS', donorInsertionResult.data)

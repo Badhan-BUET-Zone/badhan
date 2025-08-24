@@ -1,6 +1,6 @@
 import { validateQUERYStartTime, validateQUERYEndTime } from './validateRequest/validateQuery'
 import { validate } from './index'
-import { validateBODYEmail, validateBODYPromoteFlag, validateBODYPassword, validateBODYDonorId, validateBODYAddress, validateBODYRoomNumber, validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId } from './validateRequest/validateBody'
+import { validateBODYEmail, validateBODYPromoteFlag, validateBODYPassword, validateBODYDonorId, validateBODYAddress, validateBODYRoomNumber, validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId, validateBODYExtraPlateletDonationCount, validateBODYLastPlateletDonation, validateBODYLastDonation } from './validateRequest/validateBody'
 import { validateQUERYPhoneList, validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName } from './validateRequest/validateQuery'
 import {NextFunction, Request, Response} from "express";
 
@@ -14,7 +14,11 @@ const validatePOSTDonors:(req: Request, res: Response, next: NextFunction) => Pr
   validateBODYDonationCount,
   validateBODYAvailableToAll,
   validateBODYAddress,
-  validateBODYRoomNumber
+  validateBODYRoomNumber,
+  // optional platelet fields
+  validateBODYExtraPlateletDonationCount,
+  validateBODYLastPlateletDonation,
+  validateBODYLastDonation
 ])
 
 const validatePATCHDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
