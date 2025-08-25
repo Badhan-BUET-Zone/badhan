@@ -1,29 +1,7 @@
-const { badhanAxios } = require("../../api");
-const validate = require("jsonschema").validate;
 const { postActiveDonorSchema, deleteActiveDonorSchema } = require("./schemas");
+const operations = require("../operations");
 
 test("POST & DELETE /guest/activeDonors: guest", async () => {
-    let createActiveDonorResponse = await badhanAxios.post(
-      "/guest/activeDonors",
-      {},
-      {}
-    );
-
-    let createActiveDonorValidationResult = validate(
-      createActiveDonorResponse.data,
-      postActiveDonorSchema
-    );
-
-    expect(createActiveDonorValidationResult.errors).toEqual([]);
-
-    let deleteActiveDonorResponse = await badhanAxios.delete(
-      `/guest/activeDonors/123456`,
-      {}
-    );
-
-    let deleteActiveDonorValidateResult = validate(
-      deleteActiveDonorResponse.data,
-      deleteActiveDonorSchema
-    );
-    expect(deleteActiveDonorValidateResult.errors).toEqual([]);
+  await operations.guestPost('/guest/activeDonors', {}, postActiveDonorSchema);
+  await operations.guestDelete('/guest/activeDonors/123456', deleteActiveDonorSchema);
 });

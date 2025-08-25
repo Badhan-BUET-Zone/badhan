@@ -1,9 +1,4 @@
-const { badhanAxios } = require("../../../api");
-const validate = require("jsonschema").validate;
-const env = require("../../../config");
-const { patchAdminsSuperAdminSchema } = require("../schemas");
-
-const { createDonor, signInSuperAdmin, promoteToVolunteer, demoteToDonor, promoteToSuperAdmin } = require("../../operations");
+const { createDonor, signInSuperAdmin, promoteToVolunteer, promoteToSuperAdmin } = require("../../operations");
 
 test("PATCH/admins: success", async () => {
     //sign in for authorization

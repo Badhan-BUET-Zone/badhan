@@ -1,7 +1,3 @@
-const { badhanAxios } = require("../../../api");
-const validate = require("jsonschema").validate;
-const env = require("../../../config");
-const { patchAdminsSchema } = require("../schemas");
 const { promoteToVolunteer, promoteToHallAdmin, createDonor, signInSuperAdmin } = require("../../operations");
 
 test("PATCH/admins: success", async () => {
@@ -27,7 +23,7 @@ test("PATCH/admins: success", async () => {
     // promote the donor to volunteer
     await promoteToVolunteer(createActiveDonorResponse.data.newDonor._id, signInResponse);
 
-    // promote the volunteer to hall admin
-    await promoteToHallAdmin(createActiveDonorResponse.data.newDonor._id, signInResponse);
+  // promote the volunteer to hall admin
+  await promoteToHallAdmin(createActiveDonorResponse.data.newDonor._id, signInResponse);
 
 });

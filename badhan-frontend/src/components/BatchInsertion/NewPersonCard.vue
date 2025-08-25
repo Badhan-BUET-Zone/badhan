@@ -512,14 +512,9 @@ export default {
 
       this.donorCreationLoader = true
       const response = await handlePOSTDonors(newDonor)
-      if (response.status === 409) {
-        this.duplicateDonorId = response.data.donor._id
-      }else{
-        this.$store.dispatch('notification/notifySuccess', 'Donor added successfully')
-      }
+      if (response.status !== 201) return
+      this.$store.dispatch('notification/notifySuccess', 'Donor added successfully')
       this.donorCreationLoader = false
-
-
     },
     goToDuplicateProfile () {
       createNewPopUpWindow(environmentService.getFrontendBaseURL()+ '#/home/details?id=' + this.duplicateDonorId)
