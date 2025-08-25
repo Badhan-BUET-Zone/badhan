@@ -315,9 +315,14 @@ export default {
       this.resetLocalLoaderFlag = true
       try {
         const response = await this.backupAPIAxios.post('/reset-local-db')
+        const response2 = await this.backupAPIAxios.post('/populate-local-db')
         this.resetLocalLoaderFlag = false
         if (response.status !== 200) {
           this.$store.dispatch('notification/notifyError', response.data.message)
+          return
+        }
+        if(response2.status !== 200){
+          this.$store.dispatch('notification/notifyError', response2.data.message)
           return
         }
         this.$store.dispatch('notification/notifySuccess', 'Successfully reset local database')

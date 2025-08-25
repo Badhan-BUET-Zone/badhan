@@ -12,3 +12,6 @@ src/.DS_Store
 last_deployed.txt
 logs
 mongodb_local
+backup
+config
+mongotools
