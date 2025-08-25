@@ -1,16 +1,8 @@
-import { mongoose } from '../mongoose'
+import { mongoose, waitForConnection } from '../mongoose'
 import myConsole from '../../utils/myConsole';
 import { DonorFactory } from './factories/donorFactory';
 import { DESIGNATIONS_INDEX } from '../../constants';
 import { IDonor } from '../models/Donor';
-
-const waitForConnection = async (): Promise<void> => {
-    if (mongoose.connection.readyState === 1) return; // already connected
-    await new Promise<void>((resolve: () => void, reject: (err: Error) => void): void => {
-        mongoose.connection.once('open', (): void => resolve());
-        mongoose.connection.once('error', (err: Error): void => reject(err));
-    });
-};
 
 const clearDatabase = async (): Promise<void> => {
     const SUPERADMIN_PHONE_NUMBER: number = 8801500000000;

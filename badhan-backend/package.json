@@ -19,7 +19,9 @@
     "reset_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/clearDatabase.js",
 
     "populate_db:dev": "npm run lint && npm run build && cross-env NODE_ENV=development node -r source-map-support/register ./dist/db/test/populate.js",
-    "populate_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/populate.js"
+    "populate_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/populate.js",
+
+    "migrate_db:local":"npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/reportInconsistencies.js"
   },
   "engines": {
     "node": "22.x.x"

@@ -31,7 +31,16 @@ async function connectToDB(): Promise<void> {
   }
 }
 
-connectToDB();
+const waitForConnection = async (): Promise<void> => {
+    if (mongoose.connection.readyState === 1) return; // already connected
+    await new Promise<void>((resolve: () => void, reject: (err: Error) => void): void => {
+        mongoose.connection.once('open', (): void => resolve());
+        mongoose.connection.once('error', (err: Error): void => reject(err));
+    });
+};
+
+// Keep a single promise representing full readiness (connected + models loaded + indexes synced)
+const dbReady: Promise<void> = connectToDB();
 
 /* ────────────────────────────────────────────────────────────── */
 /* Graceful shutdown                                             */
@@ -51,4 +60,4 @@ process.on('SIGTERM', async (signal: string): Promise<void> =>
 );
 
 /* ────────────────────────────────────────────────────────────── */
-export { mongoose };
+export { mongoose, waitForConnection, dbReady };
