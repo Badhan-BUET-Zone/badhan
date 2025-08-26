@@ -268,7 +268,7 @@ const routes: CustomRouteConfig[] = [
     path: '/backupRestore',
     component: () => import('../views/BackupRestore.vue'),
     meta: {
-      requiresAuth: true,
+      requiresAuth: false,
       title: 'Backup and Restore',
       designation: 0,
       reRouteIfAuthorized: false
@@ -279,7 +279,7 @@ const routes: CustomRouteConfig[] = [
     path: '/schema-inconsistencies',
     component: () => import('../views/SchemaInconsistencies.vue'),
     meta: {
-      requiresAuth: true,
+      requiresAuth: false,
       title: 'Schema Inconsistencies',
       designation: 3,
       reRouteIfAuthorized: false

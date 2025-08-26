@@ -16,7 +16,8 @@
           >
           </v-sparkline>
           <v-row>
-            <v-col cols="12" sm="4" v-for="(log,i) in logs" :key="i">
+            <!-- Render logs in reverse (most recent date groups first) -->
+            <v-col cols="12" sm="4" v-for="(log,i) in reversedLogs" :key="i">
               <DateLog :groupedLog="log" :key="i"/>
             </v-col>
           </v-row>
@@ -37,7 +38,10 @@ export default {
   name: 'LogsByDate',
   components: { LoadingMessage, Container, DateLog },
   computed: {
-
+    // Show newest date groups first without mutating original logs array
+    reversedLogs () {
+      return [...this.logs].reverse()
+    }
   },
   methods: {
 
@@ -66,9 +70,10 @@ export default {
       }
       return acc;
     }, []);
-    const reverseLogs = this.logs.slice(0, 14)
-    this.labelsForSparkLine = reverseLogs.map(a => a.dateString.split('/')[1])
-    this.valuesForSparkLine = reverseLogs.map(a => a.group.length)
+  // Take the last 15 days (or fewer if not available) for the sparkline instead of the first 15
+  const recentLogs = this.logs.slice(-15)
+  this.labelsForSparkLine = recentLogs.map(a => a.dateString.split('/')[1])
+  this.valuesForSparkLine = recentLogs.map(a => a.group.length)
   },
   data () {
     return {
