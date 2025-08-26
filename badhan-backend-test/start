@@ -1,6 +1,15 @@
 #!/bin/bash
 set -euo pipefail  # safer script
 
+LOG_ROOT="$(cd "$(dirname "$0")" && pwd)/logs"
+SUCCESS_DIR="$LOG_ROOT/success"
+ERROR_DIR="$LOG_ROOT/error"
+
+echo "[start] Clearing logs directory: $LOG_ROOT" >&2
+mkdir -p "$SUCCESS_DIR" "$ERROR_DIR"
+rm -f "$SUCCESS_DIR"/*.txt || true
+rm -f "$ERROR_DIR"/*.txt || true
+
 # Forward all passed arguments to the npm script. Using `--` tells npm to forward
 # the remaining args to the script (so flags like --no-reset reach Jest/process.argv).
 npm run test -- "$@"

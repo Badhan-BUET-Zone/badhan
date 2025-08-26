@@ -91,7 +91,7 @@ beforeEach(async () => {
   // Call the backup service to reset the local test database before each individual test.
   try {
   // POST without payload; configure a reasonable timeout.
-  process.stdout.write('🔄 test before each resetting test DB …\n');
+  // process.stdout.write('🔄 test before each resetting test DB …\n');
     await axios.post(RESET_URL, {}, { timeout: 60000 });
     // Optionally set a global marker for debugging
     // global.__TEST_DB_RESET_AT__ = Date.now();
