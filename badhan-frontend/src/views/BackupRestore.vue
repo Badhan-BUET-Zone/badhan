@@ -42,8 +42,15 @@
               icon="mdi-database-refresh"
               text="Reset Local DB"
             />
+            <Button
+              :disabled="copyToLocalLoaderFlag"
+              :click="handleCopyToLocal"
+              color="secondary"
+              icon="mdi-content-copy"
+              text="Copy to Local DB"
+            />
             <v-progress-circular
-              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || resetLocalLoaderFlag"
+              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || resetLocalLoaderFlag || copyToLocalLoaderFlag"
               indeterminate
               color="primary"
               size="20"
@@ -158,6 +165,7 @@ export default {
 
     createNewBackupLoaderFlag: false,
     trimBackupsLoaderFlag: false,
+  copyToLocalLoaderFlag: false,
   resetLocalLoaderFlag: false,
   }),
   computed: {
@@ -329,6 +337,35 @@ export default {
       } catch (e) {
         this.resetLocalLoaderFlag = false
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
+        this.$store.dispatch('notification/notifyError', msg)
+      }
+    },
+    async handleCopyToLocal () {
+      this.copyToLocalLoaderFlag = true
+      try {
+        // Step 1: Create a new backup
+        const backupResponse = await this.backupAPIAxios.post('/backup')
+        if (backupResponse.status !== 201) {
+          this.copyToLocalLoaderFlag = false
+          this.$store.dispatch('notification/notifyError', backupResponse.data.message || 'Failed to create backup')
+          return
+        }
+        const createdAt = backupResponse.data.time || (backupResponse.data.data && backupResponse.data.data.time)
+        if (createdAt) {
+          this.backupTimestamps = [createdAt, ...this.backupTimestamps]
+          this.initRowFlags(this.backupTimestamps.length)
+        }
+        // Step 2: Restore that backup to local
+        const restoreResponse = await this.backupAPIAxios.post(`/restore/${createdAt}`)
+        this.copyToLocalLoaderFlag = false
+        if (restoreResponse.status !== 200) {
+          this.$store.dispatch('notification/notifyError', restoreResponse.data.message || 'Failed to restore newly created backup locally')
+          return
+        }
+        this.$store.dispatch('notification/notifySuccess', 'Successfully copied to local database')
+      } catch (e) {
+        this.copyToLocalLoaderFlag = false
+        const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured during copy to local'
         this.$store.dispatch('notification/notifyError', msg)
       }
     }
