@@ -8,6 +8,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// Remove ANSI color codes so log files remain plain text without escape sequences.
+const stripAnsi = (s) => (typeof s === 'string' ? s.replace(/\u001b\[[0-9;]*m/g, '') : s);
+
 function sanitize(str) {
 	return str
 		.replace(/[\n\r]/g, ' ')
@@ -38,7 +41,7 @@ class PerTestLogReporter {
 			if (tr.status === 'passed') {
 				const filePath = path.join(this._successDir, `${baseName}_success.txt`);
 				const content = [
-					`TEST: ${tr.title}`,
+					`TEST: ${stripAnsi(tr.title)}`,
 					`FILE: ${relativePath}`,
 					`STATUS: SUCCESS`,
 					`DURATION_MS: ${tr.duration}`,
@@ -46,7 +49,7 @@ class PerTestLogReporter {
 				].join('\n');
 				fs.writeFileSync(filePath, content, 'utf8');
 			} else if (tr.status === 'failed') {
-				const failureMessages = tr.failureMessages || [];
+				const failureMessages = (tr.failureMessages || []).map(stripAnsi);
 				// Derive a short failure tag from first message
 				let failureTag = 'failure';
 				if (failureMessages[0]) {
@@ -55,7 +58,7 @@ class PerTestLogReporter {
 				}
 				const filePath = path.join(this._errorDir, `${baseName}_${failureTag}.txt`);
 				const content = [
-					`TEST: ${tr.title}`,
+					`TEST: ${stripAnsi(tr.title)}`,
 					`FILE: ${relativePath}`,
 					`STATUS: FAILURE`,
 					`DURATION_MS: ${tr.duration}`,
@@ -69,6 +72,20 @@ class PerTestLogReporter {
 				// Could optionally log skipped tests; ignoring for brevity.
 			}
 		});
+	}
+
+	onRunComplete(contexts, aggregatedResult) {
+		// Multi-line summary (one metric per line) without detailed failure info.
+		const { numFailedTests, numPassedTests, numPendingTests, numTodoTests, numTotalTests, startTime } = aggregatedResult;
+		const durationMs = Date.now() - startTime;
+		let summary = 'Test Summary =>\n';
+		summary += `Total: ${numTotalTests}\n`;
+		summary += `Passed: ${numPassedTests}\n`;
+		summary += `Failed: ${numFailedTests}\n`;
+		if (numPendingTests) summary += `Pending: ${numPendingTests}\n`;
+		if (numTodoTests) summary += `Todo: ${numTodoTests}\n`;
+		summary += `Duration(ms): ${durationMs}\n`;
+		process.stdout.write(summary);
 	}
 }
 

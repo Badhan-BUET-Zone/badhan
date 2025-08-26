@@ -9,8 +9,9 @@ module.exports = {
   // Run setup file after the test framework is installed in the environment.
   // This file can register global hooks like beforeEach / afterEach.
   setupFilesAfterEnv: ['<rootDir>/tests/setup-after-env.js'],
+  // Use only the custom reporter so Jest does not print full error stacks to console.
+  // The custom reporter writes per-test logs and a concise summary (no individual failure details).
   reporters: [
-    'default',
     '<rootDir>/tests/custom-failure-reporter.js'
   ]
 };

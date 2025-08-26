@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --config jest.config.js --runInBand"
+  "test": "FORCE_COLOR=0 jest --no-color --config jest.config.js --runInBand"
   },
   "jest": {
     "testTimeout": 30000
