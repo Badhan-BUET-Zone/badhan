@@ -16,6 +16,7 @@ const env         = process.env;
 const VERSION     = env.MONGO_VERSION || '7.0.14';
 const PORT        = env.PORT         || '27017';
 const BIND_IP     = env.BIND_IP      || '127.0.0.1';
+// ROOT_DIR now lives inside badhan-backend (this script's working dir)
 const ROOT_DIR    = resolve(env.ROOT_DIR || './mongodb_local');
 const BIN_DIR     = join(ROOT_DIR, 'bin');
 const DATA_DIR    = join(ROOT_DIR, 'data');
@@ -34,7 +35,7 @@ const portInUse = () => {
     if (platform() === 'win32') {
       // Keep rows whose state is LISTENING and have a non-zero PID
       const out = execSync(
-        `netstat -ano -p tcp | findstr /R /C:":${PORT} .*LISTENING"`
+        `netstat -ano -p tcp | findstr /R /C":"${PORT} .*LISTENING"`
       ).toString();
       return out.trim().length > 0;     // true ↔ someone is really listening
     }
