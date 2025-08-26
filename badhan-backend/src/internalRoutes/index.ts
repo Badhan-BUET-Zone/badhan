@@ -246,40 +246,49 @@ const pruneController = async () => {
   return new OKResponse200('Deleted all older databases', {})
 }
 
-const populateController = async () => {
-  const backendPath = path.resolve(process.cwd())
-  const child = spawnSync('npm', ['run', 'populate_db:local'], { cwd: backendPath, encoding: 'utf8' })
-  if (child.error || child.status !== 0) {
-    return new InternalServerError500('Populate script failed', { error: child.error }, {
-      output: child.stdout,
-      error: child.stderr,
-      childStatus: child.status
-    })
+// Lazy imports to avoid heavy dev/test modules on startup
+let generateFakeDataFn: undefined | (() => Promise<{ ok: boolean, error?: unknown }>)
+const ensurePopulateFn = () => {
+  if (!generateFakeDataFn) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    generateFakeDataFn = require('../db/test/populate').generateFakeData
   }
-  return new OKResponse200('Successfully populated local database', {
-    output: child.stdout,
-    error: child.stderr,
-    childStatus: child.status
-  })
+}
+const populateController = async () => {
+  try {
+    ensurePopulateFn()
+    if (!generateFakeDataFn) throw new Error('populate function not available')
+    const result = await generateFakeDataFn()
+    if (!result.ok) {
+      return new InternalServerError500('Populate script failed', { error: (result as any).error }, {})
+    }
+    return new OKResponse200('Successfully populated local database', {})
+  } catch (e: any) {
+    return new InternalServerError500('Populate script threw exception', { error: e?.message }, {})
+  }
 }
 
-const resetController = async () => {
-  const backendPath = path.resolve(process.cwd())
-  console.log('[reset] resetting local database...')
-  const child = spawnSync('npm', ['run', 'reset_db:local'], { cwd: backendPath, encoding: 'utf8' })
-  if (child.error || child.status !== 0) {
-    return new InternalServerError500('Reset script failed', { error: child.error }, {
-      output: child.stdout,
-      error: child.stderr,
-      childStatus: child.status
-    })
+let clearDatabaseFn: undefined | (() => Promise<{ ok: boolean, error?: unknown }>)
+const ensureClearDbFn = () => {
+  if (!clearDatabaseFn) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    clearDatabaseFn = require('../db/test/clearDatabase').clearDatabase
   }
-  console.log('[reset] local database reset successfully')
-  return new OKResponse200('Successfully reset local database', {
-    output: child.stdout,
-    error: child.stderr,
-    childStatus: child.status
-  })
+}
+const resetController = async () => {
+  console.log('[reset] resetting local database...')
+  try {
+    ensureClearDbFn()
+    if (!clearDatabaseFn) throw new Error('clearDatabase function not available')
+    const result = await clearDatabaseFn()
+    if (!result.ok) {
+      return new InternalServerError500('Reset script failed', { error: (result as any).error }, {})
+    }
+    console.log('[reset] local database reset successfully')
+    return new OKResponse200('Successfully reset local database', {})
+  } catch (e: any) {
+    return new InternalServerError500('Reset script threw exception', { error: e?.message }, {})
+  }
 }
 
 // small helper to simulate original wait for prune route
