@@ -203,6 +203,13 @@ export default {
               designation: 3
             },
             {
+              to: '/schema-inconsistencies',
+              icon: 'mdi-file-alert',
+              text: 'Schema Inconsistencies',
+              id: 'schemaInconsistenciesNavigationId',
+              designation: 3
+            },
+            {
               icon: 'mdi-developer-board',
               text: 'Dev Console',
               to: '/devconsole',

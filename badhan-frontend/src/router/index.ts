@@ -275,6 +275,17 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    name: 'SchemaInconsistencies',
+    path: '/schema-inconsistencies',
+    component: () => import('../views/SchemaInconsistencies.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Schema Inconsistencies',
+      designation: 3,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'NewDonors',
     path: '/newDonors',
     component: () => import('../views/NewDonors.vue'),

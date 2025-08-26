@@ -45,6 +45,7 @@ import BadRequestError400 from '../response/models/errorTypes/BadRequestError400
 import NotFoundError404 from '../response/models/errorTypes/NotFoundError404'
 import ForbiddenError403 from '../response/models/errorTypes/ForbiddenError403'
 import InternalServerError500 from '../response/models/errorTypes/InternalServerError500'
+import { generateSchemaInconsistencies } from '../services/schemaInconsistencies'
 
 // Router containing only internal endpoints (backup utilities etc). NOT mounted publicly.
 const router: Router = express.Router()
@@ -354,6 +355,19 @@ router.post('/populate-local-db',
   async (_req: Request, res: Response) => {
     const response: any = await populateController()
     return res.status(response.statusCode).send(response)
+  })
+
+// Generate in-memory schema inconsistencies report (no filesystem writes)
+router.get('/schema-inconsistencies',
+  commonQueue,
+  async (_req: Request, res: Response) => {
+    try {
+      const data = await generateSchemaInconsistencies()
+      // Direct JSON (not wrapped in OKResponse200 to preserve nested key names as specified)
+      return res.status(200).json(data)
+    } catch (e: any) {
+      return res.status(500).json({ error: 'Failed to generate schema inconsistencies', message: e?.message })
+    }
   })
 
 export default router

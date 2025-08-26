@@ -14,9 +14,6 @@
  * Run (development):  ts-node -r tsconfig-paths/register src/db/test/reportInconsistencies.ts
  * Or build first then: node dist/db/test/reportInconsistencies.js
  */
-// Ensure NODE_ENV is set so downstream config that depends on it works when invoking via ts-node.
-process.env.NODE_ENV = 'local'; // default environment for ad-hoc scripts
-
 import {mongoose, dbReady} from '../mongoose' // side-effect: connects + loads models + syncs indexes
 import { Model, SchemaType, Schema } from 'mongoose';
 import fs from 'fs';
