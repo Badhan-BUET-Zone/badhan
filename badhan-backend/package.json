@@ -22,7 +22,9 @@
     "populate_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/populate.js",
 
     "migrate_db:local":"npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/reportInconsistencies.js",
-    "internal-server": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/bin/internalServer"
+  "internal-server": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/bin/internalServer",
+  "migrate:list": "ts-node --transpile-only scripts/migrations/index.ts list",
+  "migrate": "ts-node --transpile-only scripts/migrations/index.ts"
 
   },
   "engines": {
@@ -83,6 +85,7 @@
     "cross-env": "^7.0.3",
     "nodemon": "^2.0.22",
     "tslint": "^6.1.3",
-    "typescript": "^4.7.4"
+  "typescript": "^4.7.4",
+  "ts-node": "^10.9.1"
   }
 }

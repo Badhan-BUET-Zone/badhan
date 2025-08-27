@@ -131,12 +131,13 @@ async function analyzeModel(model: Model<any>): Promise<ModelReport> {
   function ensureDocConstraint(): Record<string, { kind: string; message: string; value: any }> { if (!report.docLevel.constraintViolations[docId]) report.docLevel.constraintViolations[docId] = {}; return report.docLevel.constraintViolations[docId]; }
   function recordRaw(): void { if (!report.docLevel.rawDocs[docId]) report.docLevel.rawDocs[docId] = plain; }
 
-    // Extra fields
+    // Extra fields (ignore internal Mongoose version key __v and _id)
     for (const k of docKeys) {
-      if (!schemaPathSet.has(k) && k !== '_id') {
+      if (k === '_id' || k === '__v') continue; // internal
+      if (!schemaPathSet.has(k)) {
         ensureStats(report.extraFields, k, plain[k]);
-  ensureDocExtra()[k] = plain[k];
-  recordRaw();
+        ensureDocExtra()[k] = plain[k];
+        recordRaw();
       }
     }
 
