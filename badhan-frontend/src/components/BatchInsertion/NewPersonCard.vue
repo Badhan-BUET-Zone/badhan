@@ -123,7 +123,7 @@
       v-model="lastDonation"
       no-title
       scrollable
-      :max="today"
+      :max="tomorrow"
     >
           <v-spacer></v-spacer>
           <v-btn
@@ -167,7 +167,7 @@
       v-model="lastPlateletDonation"
       no-title
       scrollable
-      :max="today"
+      :max="tomorrow"
     >
           <v-spacer></v-spacer>
           <v-btn
@@ -426,7 +426,10 @@ export default {
   },
   
   created () {
-    this.today = new Date().toISOString().substr(0, 10)
+    const now = new Date()
+    this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString().substr(0, 10)
+    const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+    this.tomorrow = tomorrowDate.toISOString().substr(0, 10)
   },
 
   mounted () {

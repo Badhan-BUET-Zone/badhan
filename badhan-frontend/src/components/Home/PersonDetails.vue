@@ -74,8 +74,8 @@
             <span v-else-if="designation === 2">Hall Admin</span>
             <span v-else>Super Admin</span>
           </v-chip>
-          <v-chip class="mr-1 mb-1" color="secondary">{{ donationList.length }} Donations</v-chip>
-          <v-chip class="mr-1 mb-1" color="secondary">{{ plateletDonationList.length }} Platelet</v-chip>
+          <v-chip class="mr-1 mb-1" color="secondary">{{ donationList.length }} Blood Donations</v-chip>
+          <v-chip class="mr-1 mb-1" color="secondary">{{ plateletDonationList.length }} Platelet Donations</v-chip>
           <!-- Availability chips logic:
                If both types are currently unavailable (have remaining days), show only the one with the larger remaining days.
                If only one is unavailable, show that one.
@@ -318,7 +318,7 @@
                           dense
                         ></v-text-field>
                       </template>
-                      <v-date-picker id="personDetailsNewDonationDatePickerId" v-model="newDonationDate" no-title scrollable :max="today">
+                      <v-date-picker id="personDetailsNewDonationDatePickerId" v-model="newDonationDate" no-title scrollable :max="tomorrow">
                         <v-spacer></v-spacer>
                         <v-btn small rounded text color="primary" @click="menu = false">Cancel</v-btn>
                         <v-btn id="personDetailsNewDonationDatePickerOkButtonId" small rounded text color="primary" @click="$refs.menu.save(newDonationDate)">OK</v-btn>
@@ -345,13 +345,13 @@
 
               <ContainerOutlined>
                 <v-card-title>
-                  Donations
+                  Blood Donations
                 </v-card-title>
                 <v-card-text>
-                  <p class="mt-2 h6 font-weight-bold">Last Donation:</p>
+                  <p class="mt-2 h6 font-weight-bold">Last Blood Donation:</p>
                   <template v-if="lastDonation !== 0">
                     <p>{{ lastDonation }}</p>
-                    <p class="h6 font-weight-bold">Donation History:</p>
+                    <p class="h6 font-weight-bold">Blood Donation History:</p>
                     <Button
                       :id="`personDetailsDonationHistoryButtonId`"
                       :icon="donationsCollapseFlag?'mdi-arrow-down':'mdi-arrow-up'"
@@ -633,7 +633,10 @@ export default {
     }
   },
   created () {
-    this.today = new Date().toISOString().substr(0, 10)
+    const now = new Date()
+    this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString().substr(0, 10)
+    const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+    this.tomorrow = tomorrowDate.toISOString().substr(0, 10)
   },
   validations: {
     phone: {
