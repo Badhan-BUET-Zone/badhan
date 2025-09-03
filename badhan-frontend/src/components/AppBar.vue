@@ -196,10 +196,17 @@ export default {
               designation: 3
             },
             {
-              icon: 'mdi-shield-crown-outline',
-              text: 'Admin Console',
-              to: '/adminconsole',
-              id: 'adminConsoleNavigationId',
+              to: '/backupRestore',
+              icon: 'mdi-database',
+              text: 'Backup & Restore',
+              id: 'backupRestoreNavigationId',
+              designation: 3
+            },
+            {
+              to: '/schema-inconsistencies',
+              icon: 'mdi-file-alert',
+              text: 'Schema Inconsistencies',
+              id: 'schemaInconsistenciesNavigationId',
               designation: 3
             },
             {

@@ -1,18 +1,2 @@
 #!/usr/bin/env bash
-
-CLEAN=false
-for arg in "$@"; do
-  if [[ "$arg" == "--clean" ]]; then
-    CLEAN=true
-    break
-  fi
-done
-
-if [ "$CLEAN" = true ]; then
-  echo "🧹 Cleaning up node..."
-  rm -rf badhan-backup/scripts/nodejs
-fi
-
-# source badhan-backup/scripts/enable_node.sh
-
 node badhan-backup/scripts/start.mjs $@

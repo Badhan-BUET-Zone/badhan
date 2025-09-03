@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail                   # exit on error, unset var, or failed pipe
 
-source ../badhan-backup/scripts/enable_node.sh
-
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 # ── helpers ──────────────────────────────────────────────────────────────
@@ -25,15 +23,9 @@ case "$current_branch" in
     update_last_deployed
     gcloud app deploy --project badhan-buet ./app_prod.yaml --quiet
     ;;
-
-  test-branch)
+  *)
     require_file ".env.development"
     update_last_deployed
     gcloud app deploy --project badhan-buet-test ./app_dev.yaml --quiet
-    ;;
-
-  *)
-    echo "🛑  Deploy halted: branch \"$current_branch\" is not allowed."
-    exit 1
     ;;
 esac

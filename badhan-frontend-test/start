@@ -20,6 +20,4 @@ for ARG in "$@"; do
   esac
 done
 
-source badhan-backup/scripts/enable_node.sh
-cd badhan-frontend-test || exit 1
 npx cypress run --spec "cypress/integration/$SPEC" $HEADED $CFG_OPTS

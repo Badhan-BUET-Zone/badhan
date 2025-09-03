@@ -53,6 +53,20 @@ export const validateBODYDonationCount: ValidationChain = body('extraDonationCou
   .isInt().toInt().withMessage('extraDonationCount must be an integer')
   .custom((value:number):boolean => value < 99 && value >= 0).withMessage('Max extra donation count must be between 0 and 99')
 
+// Optional platelet donation count (mirrors blood donation count but optional to keep backward compatibility)
+export const validateBODYExtraPlateletDonationCount: ValidationChain = body('extraPlateletDonationCount')
+  .optional()
+  .isInt().toInt().withMessage('extraPlateletDonationCount must be an integer')
+  .custom((value:number):boolean => value < 99 && value >= 0).withMessage('Max extraPlateletDonationCount must be between 0 and 99')
+
+export const validateBODYLastPlateletDonation: ValidationChain = body('lastPlateletDonation')
+  .optional()
+  .isInt().toInt().withMessage('lastPlateletDonation must be an integer representing a timestamp')
+
+export const validateBODYLastDonation: ValidationChain = body('lastDonation')
+  .optional()
+  .isInt().toInt().withMessage('lastDonation must be an integer representing a timestamp')
+
 export const validateBODYAvailableToAll: ValidationChain = body('availableToAll')
   .exists().withMessage('availableToAll is required')
   .isBoolean().toBoolean().withMessage('availableToAll must be boolean')

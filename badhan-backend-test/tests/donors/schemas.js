@@ -17,7 +17,6 @@ const donorsNewSchema = {
           name: { type: "string" },
           studentId: { type: "string" },
           email: { type: "string" },
-          lastDonation: { type: "integer" },
           bloodGroup: { type: "integer" },
           hall: { type: "integer" },
           roomNumber: { type: "string" },
@@ -34,7 +33,6 @@ const donorsNewSchema = {
           "name",
           "studentId",
           "email",
-          "lastDonation",
           "bloodGroup",
           "hall",
           "roomNumber",
@@ -50,90 +48,106 @@ const donorsNewSchema = {
   },
   required: ["status", "statusCode", "message", "donors"]
 };
-const searchSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    status: { type: "string" },
-    statusCode: { const: 200 },
-    message: { type: "string" },
-    filteredDonors: {
-      type: "array",
-      minItems: 1,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          address: { type: "string" },
-          roomNumber: { type: "string" },
-          lastDonation: { type: "integer" },
-          comment: { type: "string" },
-          commentTime: { type: "integer" },
-          _id: { type: "string" },
-          studentId: { type: "string" },
-          name: { type: "string" },
-          bloodGroup: { type: "integer" },
-          phone: { type: "integer" },
-          hall: { type: "integer" },
-          availableToAll: { type: "boolean" },
-          donationCount: { type: "integer" },
-          callRecordCount: { type: "integer" },
-          callCountLast3Days: { type: "integer" },
-          lastCalled: {
-            type: {
-              anyOf: [
-                {
-                  type: "integer",
-                },
-                {
-                  type: "null",
-                },
-              ],
-            },
-          },
-          marker: {
-            type: {
-              anyOf: [
-                {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {
-                    name: { type: "string" },
-                    time: { type: "integer" },
-                  },
-                  required: ["name", "time"],
-                },
-                {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {},
-                },
-              ],
-            },
+const searchSchema = ({ totalItems } = {}) => {
+  // Build filteredDonors schema conditionally depending on whether totalItems is provided
+  const filteredDonors = {
+    type: "array",
+    // minItems/maxItems will be added only when totalItems is specified
+    items: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        address: { type: "string" },
+        roomNumber: { type: "string" },
+        lastDonation: { type: "integer" },
+        lastPlateletDonation: { type: "integer" },
+        donationCount: { type: "integer" },
+        plateletDonationCount: { type: "integer" },
+        comment: { type: "string" },
+        commentTime: { type: "integer" },
+        _id: { type: "string" },
+        studentId: { type: "string" },
+        name: { type: "string" },
+        bloodGroup: { type: "integer" },
+        phone: { type: "integer" },
+        hall: { type: "integer" },
+        availableToAll: { type: "boolean" },
+        callRecordCount: { type: "integer" },
+        callCountLast3Days: { type: "integer" },
+        lastCalled: {
+          type: {
+            anyOf: [
+              {
+                type: "integer",
+              },
+              {
+                type: "null",
+              },
+            ],
           },
         },
-        required: [
-          "address",
-          "roomNumber",
-          "lastDonation",
-          "comment",
-          "commentTime",
-          "_id",
-          "studentId",
-          "name",
-          "bloodGroup",
-          "hall",
-          "phone",
-          "availableToAll",
-          "donationCount",
-          "callRecordCount",
-          "marker",
-        ],
+        marker: {
+          type: {
+            anyOf: [
+              {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                  name: { type: "string" },
+                  time: { type: "integer" },
+                },
+                required: ["name", "time"],
+              },
+              {
+                type: "object",
+                additionalProperties: false,
+                properties: {},
+              },
+            ],
+          },
+        },
       },
+      required: [
+        "address",
+        "roomNumber",
+        "lastDonation",
+        "lastPlateletDonation",
+        "donationCount",
+        "plateletDonationCount",
+        "comment",
+        "commentTime",
+        "_id",
+        "studentId",
+        "name",
+        "bloodGroup",
+        "hall",
+        "phone",
+        "availableToAll",
+        "donationCount",
+        "callRecordCount",
+        "marker",
+      ],
     },
-  },
-  required: ["status", "statusCode", "message", "filteredDonors"],
-};
+  };
+
+  // Only enforce a fixed count when totalItems is explicitly provided (not null/undefined)
+  if (totalItems != null) {
+    filteredDonors.minItems = totalItems;
+    filteredDonors.maxItems = totalItems;
+  }
+
+  return {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      status: { type: "string" },
+      statusCode: { const: 200 },
+      message: { type: "string" },
+      filteredDonors,
+    },
+    required: ["status", "statusCode", "message", "filteredDonors"],
+  };
+}
 
 const passwordSchema = {
   type: "object",
@@ -199,7 +213,6 @@ const patchAdminsSuperAdminSchema = {
         name: { type: "string" },
         studentId: { type: "string" },
         email: { type: "string" },
-        lastDonation: { type: "integer" },
         bloodGroup: { type: "integer" },
         hall: { type: "integer" },
         roomNumber: { type: "string" },
@@ -215,7 +228,6 @@ const patchAdminsSuperAdminSchema = {
         "name",
         "studentId",
         "email",
-        "lastDonation",
         "bloodGroup",
         "hall",
         "roomNumber",
@@ -250,40 +262,43 @@ const duplicateDonorSchema = {
     message: { type: "string" },
     found: { type: "boolean" },
     donor: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        address: { type: "string" },
-        roomNumber: { type: "string" },
-        designation: { type: "integer" },
-        lastDonation: { type: "integer" },
-        comment: { type: "string" },
-        commentTime: { type: "integer" },
-        email: { type: "string" },
-        _id: { type: "string" },
-        studentId: { type: "string" },
-        phone: { type: "integer" },
-        bloodGroup: { type: "integer" },
-        hall: { type: "integer" },
-        name: { type: "string" },
-        availableToAll: { type: "boolean" },
-      },
-      required: [
-        "address",
-        "roomNumber",
-        "designation",
-        "lastDonation",
-        "comment",
-        "commentTime",
-        "email",
-        "_id",
-        "studentId",
-        "phone",
-        "bloodGroup",
-        "hall",
-        "name",
-        "availableToAll",
-      ],
+      anyOf: [
+        {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            address: { type: "string" },
+            roomNumber: { type: "string" },
+            designation: { type: "integer" },
+            comment: { type: "string" },
+            commentTime: { type: "integer" },
+            email: { type: "string" },
+            _id: { type: "string" },
+            studentId: { type: "string" },
+            phone: { type: "integer" },
+            bloodGroup: { type: "integer" },
+            hall: { type: "integer" },
+            name: { type: "string" },
+            availableToAll: { type: "boolean" },
+          },
+          required: [
+            "address",
+            "roomNumber",
+            "designation",
+            "comment",
+            "commentTime",
+            "email",
+            "_id",
+            "studentId",
+            "phone",
+            "bloodGroup",
+            "hall",
+            "name",
+            "availableToAll",
+          ],
+        },
+        { type: "null" }
+      ]
     },
   },
   required: ["status", "statusCode", "message", "donor", "found"],
@@ -438,6 +453,7 @@ const donorsSchema = {
         studentId: { type: "string" },
         email: { type: "string" },
         lastDonation: { type: "integer" },
+        lastPlateletDonation: { type: "integer" },
         bloodGroup: { type: "integer" },
         hall: { type: "integer" },
         roomNumber: { type: "string" },
@@ -467,12 +483,26 @@ const donorsSchema = {
               },
               calleeId: { type: "string" },
               date: { type: "integer" },
-              expireAt: { type: "string" },
             },
-            required: ["callerId", "calleeId", "date", "expireAt"],
+            required: ["callerId", "calleeId", "date"],
           },
         },
         donations: {
+          type: "array",
+          minItems: 1,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              _id: { type: "string" },
+              donorId: { type: "string" },
+              phone: { type: "integer" },
+              date: { type: "integer" },
+            },
+            required: ["_id", "donorId", "phone", "date"],
+          },
+        },
+        plateletDonations: {
           type: "array",
           minItems: 1,
           items: {
@@ -508,19 +538,10 @@ const donorsSchema = {
                 type: "object",
                 additionalProperties: false,
                 properties: {
-                  markerId: {
-                    type: "object",
-                    additionalProperties: false,
-                    required: ["_id", "name"],
-                    properties: {
-                      _id: { type: "string" },
-                      name: { type: "name" },
-                    },
-                  },
-                  donorId: { type: "string" },
-                  time: { type: "integer" },
+                  _id: { type: "string" },
+                  name: { type: "string" },
                 },
-                required: ["markerId", "time", "donorId"],
+                required: ["_id", "name"],
               },
               {
                 type: "null",
@@ -536,6 +557,7 @@ const donorsSchema = {
         "studentId",
         "email",
         "lastDonation",
+        "lastPlateletDonation",
         "bloodGroup",
         "hall",
         "roomNumber",
@@ -546,6 +568,7 @@ const donorsSchema = {
         "availableToAll",
         "callRecords",
         "donations",
+        "plateletDonations",
         "publicContacts",
         "markedBy",
       ],
@@ -595,7 +618,6 @@ const postDonorSchema = {
         address: { type: "string" },
         roomNumber: { type: "string" },
         designation: { type: "integer" },
-        lastDonation: { type: "integer" },
         comment: { type: "string" },
         commentTime: { type: "integer" },
         email: { type: "string" },
@@ -611,7 +633,6 @@ const postDonorSchema = {
         "address",
         "roomNumber",
         "designation",
-        "lastDonation",
         "comment",
         "commentTime",
         "email",

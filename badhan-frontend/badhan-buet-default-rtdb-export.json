@@ -84,6 +84,21 @@
           "color": "grey",
           "icon": "github",
           "link": "https://github.com/sumaiyaazad"
+        },
+        {
+          "color": "red",
+          "icon": "gmail",
+          "link": "mailto:azadsumaiya00@gmail.com"
+        },
+        {
+          "color": "blue",
+          "icon": "linkedin",
+          "link": "https://www.linkedin.com/in/sumaiyaazad/"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/su.maiya.3388"
         }
       ],
       "name": "Sumaiya Azad",
@@ -256,11 +271,124 @@
       ],
       "name": "Atiqur Rahman Shuvo",
       "type": "Legacy Developers"
+    },
+    "1747180800": {
+      "calender": "May 2025 - Present",
+      "contribution": [
+        "Figma UX Design",
+        "Feature Review",
+        "Q/A & Test"
+      ],
+      "id": 1747180800,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Ffuad.png?alt=media",
+      "links": [
+        {
+          "color": "red",
+          "icon": "gmail",
+          "link": "mailto:mmfuad01@gmail.com"
+        },
+        {
+          "color": "blue",
+          "icon": "linkedin",
+          "link": "https://www.linkedin.com/in/md-muqtadir-fuad/"
+        },
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/md-muqtadir-fuad"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://fb.com/md.muqtadir.fuad"
+        }
+      ],
+      "name": "Md. Muqtadir Fuad",
+      "type": "Contributors of Badhan"
+    },
+    "1754006400": {
+      "calender": "August 2025 - Present",
+      "contribution": [
+        "Q/A & Test"
+      ],
+      "id": 1754006400,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fmasud.jpg?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/ilhnmsd01"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/ilhnmsd.01"
+        }
+      ],
+      "name": "Ilhan Masud",
+      "type": "Contributors of Badhan"
+    },
+    "1659312000": {
+      "calender": "August 2022 - Present",
+      "contribution": [
+        "Q/A & Test"
+      ],
+      "id": 1659312000,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Ftanzid.jpeg?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/mdtanzidhasan"
+        }
+      ],
+      "name": "Tanzid Hasan Shuvo",
+      "type": "Contributors of Badhan"
+    },
+    "1698796800": {
+      "calender": "November 2023 - Present",
+      "contribution": [
+        "Q/A & Test",
+        "Feature Review"
+      ],
+      "id": 1698796800,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Fakon.jpg?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/orgs/Badhan-BUET-Zone/people/mahmudakonam"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/mahmudakonam"
+        }
+      ],
+      "name": "Mahmud Akon",
+      "type": "Contributors of Badhan"
+    },
+    "1754006401": {
+      "calender": "August 2025 - Present",
+      "contribution": [
+        "Q/A & Test"
+      ],
+      "id": 1754006401,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/badhan-buet.appspot.com/o/profilepics%2Favatar.jpg?alt=media",
+      "links": [
+        {
+          "color": "grey",
+          "icon": "github",
+          "link": "https://github.com/neospark31"
+        },
+        {
+          "color": "blue",
+          "icon": "facebook",
+          "link": "https://www.facebook.com/nobel.dey.58"
+        }
+      ],
+      "name": "Nobel Dey",
+      "type": "Contributors of Badhan"
     }
-  },
-  "frontendSettings": {
-    "backendBaseURL": "https://badhan-buet.uc.r.appspot.com",
-    "backendTestBaseURL": "https://badhan-web-test.herokuapp.com",
-    "version": "87"
   }
 }

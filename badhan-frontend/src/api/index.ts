@@ -285,7 +285,10 @@ export interface POSTDonorsPayloadInterface {
   comment: string,
   lastDonation: number,
   extraDonationCount: number,
-  availableToAll: boolean
+  availableToAll: boolean,
+  // new platelet related fields (optional)
+  lastPlateletDonation?: number,
+  extraPlateletDonationCount?: number
 }
 const handlePOSTDonors = async (payload: POSTDonorsPayloadInterface) => {
   try {
@@ -301,6 +304,17 @@ export interface POSTDonationsPayloadInterface {
 const handlePOSTDonations = async (payload: POSTDonationsPayloadInterface) => {
   try {
     return await badhanAxios.post('/donations', payload)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+export interface POSTPlateletDonationsPayloadInterface {
+  donorId: string
+  date: number
+}
+const handlePOSTPlateletDonations = async (payload: POSTPlateletDonationsPayloadInterface) => {
+  try {
+    return await badhanAxios.post('/platelet-donations', payload)
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
@@ -404,6 +418,17 @@ const handleDELETEDonations = async (payload: DELETEDonationsPayloadInterface) =
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
+export interface DELETEPlateletDonationsPayloadInterface {
+  donorId: string
+  date: number
+}
+const handleDELETEPlateletDonations = async (payload: DELETEPlateletDonationsPayloadInterface) => {
+  try {
+    return await badhanAxios.delete('/platelet-donations', { params: payload })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
 export interface GETDonationsReportPayloadInterface {
   startDate: number,
   endDate: number
@@ -411,6 +436,18 @@ export interface GETDonationsReportPayloadInterface {
 const handleGETDonationsReport = async (payload: GETDonationsReportPayloadInterface) => {
   try {
     return await badhanAxios.get('/donations/report', { params: payload })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+export interface GETPlateletDonationsReportPayloadInterface {
+  startDate: number,
+  endDate: number
+}
+const handleGETPlateletDonationsReport = async (payload: GETPlateletDonationsReportPayloadInterface) => {
+  try {
+    return await badhanAxios.get('/platelet-donations/report', { params: payload })
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
@@ -593,6 +630,7 @@ export {
   handlePOSTSignIn,
   handlePOSTDonors,
   handlePOSTDonations,
+  handlePOSTPlateletDonations,
   handleGETDonors,
   handleGETSearchV3,
   handleGETStatistics,
@@ -603,7 +641,9 @@ export {
   handlePATCHDonors,
   handlePATCHAdmins,
   handleDELETEDonations,
+  handleDELETEPlateletDonations,
   handleGETDonationsReport,
+  handleGETPlateletDonationsReport,
   handleGETDonorsNew,
   handlePOSTCallRecord,
   handleDELETECallRecord,

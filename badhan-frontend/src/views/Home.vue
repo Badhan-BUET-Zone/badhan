@@ -68,11 +68,11 @@
                     Batch {{ obj.batch }}:
                 </v-alert>
 
-                <person-card
+        <person-card
                     :id="'personCardId_'+person._id"
                     v-for="(person) in obj.people"
                     :key="person._id"
-                    :person="person"
+          :person="person"
                 ></person-card>
               </div>
               <v-btn id="olderBatchResultsButton" v-if="isMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
@@ -149,6 +149,7 @@ export default {
       hall: halls[this.$store.getters['getHall']],
       availability: true,
       notAvailability: false,
+  
       download: false,
 
       // GUI flags
@@ -207,6 +208,7 @@ export default {
     this.notAvailability = query.notAvailability === 'true'
     this.radios = query.radios === 'SpecifyHall' ? 'SpecifyHall' : 'AvailableToAll'
     this.download = query.download === 'true'
+  
 
     if (Object.keys(this.$route.query).length === 9) {
       await this.searchClicked()
@@ -242,7 +244,8 @@ export default {
         isAvailable: payload.availability,
         isNotAvailable: payload.notAvailability,
         address: payload.inputAddress,
-        availableToAll: payload.availableToAll
+        availableToAll: payload.availableToAll,
+        
       }
 
       this.searchLoaderFlag = true
@@ -295,7 +298,7 @@ export default {
       }
     },
     async searchClickedFromFilterComponent (filterValues) {
-      this.name = filterValues.name
+  this.name = filterValues.name
       this.batch = filterValues.batch
       this.address = filterValues.address
       this.bloodGroup = filterValues.bloodGroup
@@ -303,6 +306,7 @@ export default {
       this.radios = filterValues.availableToAll
       this.availability = filterValues.availability
       this.notAvailability = filterValues.notAvailability
+  
       await this.searchClicked()
     },
     downloadInWeb () {
@@ -365,7 +369,7 @@ export default {
     },
 
     shareClicked () {
-      const routeData = this.$router.resolve({
+    const routeData = this.$router.resolve({
         name: 'Home',
         query: {
           name: this.name,
@@ -376,7 +380,8 @@ export default {
           availability: this.availability,
           notAvailability: this.notAvailability,
           radios: this.radios,
-          download: false
+      download: false,
+      
         }
       })
       this.$copyText(environmentService.getFrontendBaseURL()+ '/' + routeData.href).then((_e) => {

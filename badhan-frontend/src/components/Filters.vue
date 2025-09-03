@@ -22,12 +22,8 @@
           <li><b>Specify Hall: </b>If you choose this option, donors of specified hall will be fetched. You can only
             search your own hall for donors in such case.
           </li>
-          <li><b>Available: </b>If you specify this option, donors who have given blood before 120 days will be
-            fetched. These donors are basically available for donations.
-          </li>
-          <li><b>Not Available: </b>If you specify this option, donors who have given blood in a span of 120 days will
-            be shown
-          </li>
+          <li><b>Available: </b>Available only if last blood donation was before 120 days AND last platelet donation was before 12 days.</li>
+          <li><b>Not Available: </b>Not available if blood donated within 120 days OR platelet donated within 12 days.</li>
         </ul>
       </div>
       </HelpTooltip>
@@ -152,6 +148,8 @@
             </v-col>
           </v-row>
 
+          
+
           <!--        A button to reset the form fields-->
           <v-btn rounded color="secondary" @click="clearFields" class="ma-2">
             <v-icon left>
@@ -225,7 +223,7 @@ export default {
         availability: this.availability,
         notAvailability: this.notAvailability,
         address: this.address,
-        availableToAll: this.radios
+  availableToAll: this.radios
       })
       this.isSearchLoading = false
     }
@@ -252,6 +250,7 @@ export default {
     }
   },
   computed: {
+    
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
         if (this.$store.getters['getDesignation'] === 3) {
@@ -292,6 +291,7 @@ export default {
       hall: halls[this.$store.getters['getHall']],
       availability: true,
       notAvailability: false,
+  
 
       // GUI flags
       filterShown: true,

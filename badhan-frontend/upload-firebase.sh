@@ -4,8 +4,8 @@
 # ---------------------------------------------------------------------------
 # Build & deploy Vue app to the correct Firebase Hosting project.
 #
-#   • **main**        → `npm run build`         → Firebase project **badhan‑buet**
-#   • **test-branch** → `npm run build:testing` → Firebase project **badhan‑buet‑test**
+#   • **main**        → `npm run build`               → Firebase project **badhan‑buet**
+#   • **any other**   → `npm run build:development`   → Firebase project **badhan‑buet‑test**
 #
 # 🔧 **Setup / First‑Time Use**
 # ---------------------------------------------------------------------------
@@ -18,8 +18,6 @@
 #   4. Deploy `dist/` to the chosen Firebase Hosting site via `npx firebase`.
 # ---------------------------------------------------------------------------
 set -euo pipefail
-
-source ../badhan-backup/scripts/enable_node.sh
 
 # ──────────────────────────────────────────────────────────────
 # 0. Ensure firebase-tools is available locally (auto‑install if needed)
@@ -48,13 +46,9 @@ case "$current_branch" in
     build_cmd="npm run build"
     firebase_project="badhan-buet"
     ;;
-  test-branch)
+  *)
     build_cmd="npm run build:development"
     firebase_project="badhan-buet-test"
-    ;;
-  *)
-    echo "⚠️  Branch '$current_branch' is not mapped to a Firebase project. Skipping deployment." >&2
-    exit 0
     ;;
 esac
 

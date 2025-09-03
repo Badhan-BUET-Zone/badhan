@@ -41,6 +41,9 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                     donationCount:
  *                       type: number
  *                       example: 1200
+ *                     plateletDonationCount:
+ *                       type: number
+ *                       example: 300
  *                     volunteerCount:
  *                       type: number
  *                       example: 130

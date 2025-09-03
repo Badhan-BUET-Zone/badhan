@@ -22,11 +22,6 @@ const handlePOSTDonations = async (req: Request, res: Response): Promise<Respons
     return res.status(500).send(new InternalServerError500(donationInsertionResult.message,{},{}))
   }
 
-  if (donor.lastDonation < req.body.date) {
-    donor.lastDonation = req.body.date
-  }
-
-  await donor.save()
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONATIONS', {
     ...donationInsertionResult.data,
@@ -52,15 +47,7 @@ const handleDELETEDonations = async (req: Request<{},{},{},{date: string}>, res:
     return res.status(404).send(new NotFoundError404('Matching donation not found',{}))
   }
 
-  const maxDonationResult: {data?: IDonation[], message: string, status: string} = await donationInterface.findMaxDonationByDonorId(donor._id)
-
-  if (maxDonationResult.status === 'OK') {
-    donor.lastDonation = maxDonationResult.data![0].date
-  } else {
-    donor.lastDonation = 0
-  }
-
-  await donor.save()
+  const latestDonationResult: {data?: IDonation[], message: string, status: string} = await donationInterface.findLatestDonationByDonorId(donor._id)
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'DELETE DONATIONS', {
     ...donationDeletionResult.data,

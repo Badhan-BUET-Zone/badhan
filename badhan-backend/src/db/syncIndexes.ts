@@ -1,4 +1,4 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose from 'mongoose';
 import myConsole from '../utils/myConsole';
 import fs from 'fs';
 import path from 'path';
@@ -37,9 +37,8 @@ export function loadAllModels(): void {
 /* 2.  Align indexes for every registered model & report diff.
 /* ────────────────────────────────────────────────────────────── */
 export async function syncAllModels(): Promise<void> {
-  const models: [string, Model<unknown>][] = Object.entries(
-    mongoose.connection.models
-  ) as [string, Model<unknown>][];                        // cast for TS 4.x
+  // Loosen typing here to avoid TS circular reference issues with deep mapped types in mongoose@8 + TS 4.x
+  const models: [string, mongoose.Model<any>][] = Object.entries(mongoose.connection.models as Record<string, mongoose.Model<any>>) as [string, mongoose.Model<any>][];
 
   const summaries: { name: string; added: string[]; dropped: string[] }[] = [];
 

@@ -22,9 +22,10 @@ const statisticsSchema = {
       properties: {
         donorCount: { type: "integer" },
         donationCount: { type: "integer" },
+        plateletDonationCount: { type: "integer" },
         volunteerCount: { type: "integer" },
       },
-      required: ["donorCount", "donationCount", "volunteerCount"],
+      required: ["donorCount", "donationCount", "plateletDonationCount", "volunteerCount"],
     },
   },
   required: ["status", "statusCode", "message", "statistics"],

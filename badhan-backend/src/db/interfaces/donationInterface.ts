@@ -30,7 +30,7 @@ export const deleteDonationByQuery = async (query: { donorId: Condition<Schema.T
     }
 }
 
-export const findMaxDonationByDonorId = async (id: Condition<Schema.Types.ObjectId>): Promise<{data?: IDonation[], message: string, status: string}> => {
+export const findLatestDonationByDonorId = async (id: Condition<Schema.Types.ObjectId>): Promise<{data?: IDonation[], message: string, status: string}> => {
     const data: IDonation[] = await DonationModel.find({donorId: id}).sort({date: -1}).limit(1)
     if (data.length !== 0) {
         return {

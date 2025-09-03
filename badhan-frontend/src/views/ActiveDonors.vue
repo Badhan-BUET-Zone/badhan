@@ -102,7 +102,7 @@ export default {
         this.$refs.noPostFoundHolder.removeChild(this.$refs.noPostFoundHolder.children[0])
       }
     },
-    async getAllActiveDonors () {
+  async getAllActiveDonors () {
       this.markedByMe = false
       const payloadForGetActiveDonors = {
         bloodGroup: -1,
@@ -114,7 +114,7 @@ export default {
         isNotAvailable: true,
         availableToAll: true,
         markedByMe: false,
-        availableToAllOrHall: true
+  availableToAllOrHall: true
       }
       this.lastSearched = payloadForGetActiveDonors
       await this.search(payloadForGetActiveDonors)
@@ -149,9 +149,9 @@ export default {
         isAvailable: searchQueries.availability,
         isNotAvailable: searchQueries.notAvailability,
         address: inputAddress,
-        availableToAll: searchQueries.availableToAll === 'AvailableToAll',
-        markedByMe: this.markedByMe,
-        availableToAllOrHall: false
+  availableToAll: searchQueries.availableToAll === 'AvailableToAll',
+  markedByMe: this.markedByMe,
+  availableToAllOrHall: false
       }
       this.lastSearched = payloadForGetActiveDonors
       this.filterListMenu = false
@@ -181,7 +181,7 @@ export default {
       activeDonorsLoader: false,
       filterListMenu: false,
       markedByMe: false,
-      lastSearched: null
+  lastSearched: null
     }
   }
 }

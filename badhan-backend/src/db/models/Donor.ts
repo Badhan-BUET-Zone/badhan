@@ -6,25 +6,27 @@ import {LogModel} from "./Log";
 import {PublicContactModel} from "./PublicContact";
 import {ActiveDonorModel} from "./ActiveDonor";
 import {TokenModel} from "./Token";
+import { PlateletDonationModel } from "./PlateletDonation";
+import { IDonation } from './Donation'
+import { IPlateletDonation } from './PlateletDonation'
 import { checkEmail } from '../../validations/validateRequest/others'
 import { year2000TimeStamp } from '../../constants';
 import { checkNumber, checkTimeStamp } from './validators';
 
 export interface IDonor extends Document {
-  phone: number,
-  password?: string,
-  studentId: string,
-  bloodGroup: number,
-  hall: number,
-  address: string,
-  roomNumber: string,
-  designation?: number,
-  lastDonation: number,
-  name: string,
-  comment: string,
-  commentTime?: number,
-  availableToAll: boolean,
-  email?: string,
+  phone: number;
+  password?: string;
+  studentId: string;
+  bloodGroup: number;
+  hall: number;
+  address: string;
+  roomNumber: string;
+  designation?: number;
+  name: string;
+  comment: string;
+  commentTime?: number;
+  availableToAll: boolean;
+  email?: string;
 }
 
 /**
@@ -69,6 +71,10 @@ export interface IDonor extends Document {
  *         lastDonation:
  *           type: number
  *           description: timestamp of last donation by donor
+ *           example: 1234578161648
+ *         lastPlateletDonation:
+ *           type: number
+ *           description: timestamp of last platelet donation by donor
  *           example: 1234578161648
  *         name:
  *           type: string
@@ -176,13 +182,6 @@ const donorSchema: Schema = new Schema<IDonor>({
     }],
     required: true
   },
-  lastDonation: {
-    type: Number,
-    default: 0,
-    min: 0,
-    required: true,
-    validate: [checkNumber('lastDonation')]
-  },
   name: {
     type: String,
     trim: true,
@@ -239,8 +238,21 @@ donorSchema.virtual('donations', {
   foreignField: 'donorId'
 })
 
+donorSchema.virtual('plateletDonations', {
+  ref: 'PlateletDonations',
+  localField: '_id',
+  foreignField: 'donorId'
+})
+
 donorSchema.virtual('donationCountOptimized', {
   ref: 'Donations',
+  localField: '_id',
+  foreignField: 'donorId',
+  count: true
+})
+
+donorSchema.virtual('plateletDonationCount', {
+  ref: 'PlateletDonations',
   localField: '_id',
   foreignField: 'donorId',
   count: true
@@ -293,10 +305,12 @@ donorSchema.pre<IDonor>('save', function (next: (err?: Error) => void):void{
   }
 })
 
+
 donorSchema.post('findOneAndDelete', async (donor: IDonor):Promise<void> => {
   await CallRecordModel.deleteMany({ callerId: donor._id })
   await CallRecordModel.deleteMany({ calleeId: donor._id })
   await DonationModel.deleteMany({ donorId: donor._id })
+  await PlateletDonationModel.deleteMany({ donorId: donor._id })
   await LogModel.deleteMany({ donorId: donor._id })
   await PublicContactModel.deleteMany({ donorId: donor._id })
   await TokenModel.deleteMany({ donorId: donor._id })

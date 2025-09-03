@@ -1,5 +1,7 @@
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as donationInterface from '../db/interfaces/donationInterface'
+import * as plateletDonationInterface from '../db/interfaces/plateletDonationInterface'
+import { IPlateletDonation } from "../db/models/PlateletDonation";
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
 import {Request, Response} from 'express'
@@ -11,7 +13,7 @@ import ConflictError409 from "../response/models/errorTypes/ConflictError409";
 import CreatedResponse201 from "../response/models/successTypes/CreatedResponse201";
 import OKResponse200 from "../response/models/successTypes/OKResponse200";
 import {IDonation} from "../db/models/Donation";
-import {IDonor} from "../db/models/Donor";
+import {DonorModel, IDonor} from "../db/models/Donor";
 import {IToken} from "../db/models/Token";
 
 const handlePOSTDonors = async (req: Request<{},{},{
@@ -21,11 +23,14 @@ const handlePOSTDonors = async (req: Request<{},{},{
   hall: number,
   address: string,
   roomNumber: string,
-  lastDonation: number,
   name: string,
   comment: string,
   availableToAll: boolean,
-  extraDonationCount: number
+  extraDonationCount: number,
+  lastDonation?: number,
+  // new optional platelet related fields
+  lastPlateletDonation?: number,
+  extraPlateletDonationCount?: number
 },{}>, res: Response): Promise<Response> => {
   const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
 
@@ -51,24 +56,66 @@ const handlePOSTDonors = async (req: Request<{},{},{
     availableToAll = true
   }
 
-  const donorInsertionResult: { data: IDonor; message: string; status: string } = await donorInterface.insertDonor(req.body.phone, req.body.bloodGroup, req.body.hall, req.body.name, req.body.studentId, req.body.address, req.body.roomNumber, 0, req.body.comment, availableToAll)
+  const donorInsertionResult: { data: IDonor; message: string; status: string } = await donorInterface.insertDonor(req.body.phone, req.body.bloodGroup, req.body.hall, req.body.name, req.body.studentId, req.body.address, req.body.roomNumber, req.body.comment, availableToAll)
   if (donorInsertionResult.status !== 'OK') {
     return res.status(500).send(new InternalServerError500('New donor insertion unsuccessful',{},{}))
   }
 
-  const dummyDonations: IDonation[] = []
-  for (let i: number = 0; i < req.body.extraDonationCount; i++) {
-    dummyDonations.push({
-      phone: donorInsertionResult.data.phone,
-      donorId: donorInsertionResult.data._id,
-      date: year2000TimeStamp
-    } as IDonation)
+  // Blood donations (existing behaviour): create dummy donations based on extraDonationCount
+  try {
+    const dummyDonations: IDonation[] = []
+    for (let i: number = 0; i < req.body.extraDonationCount; i++) {
+      dummyDonations.push({
+        phone: donorInsertionResult.data.phone,
+        donorId: donorInsertionResult.data._id,
+        date: year2000TimeStamp
+      } as IDonation)
+    }
+    if (dummyDonations.length > 0) {
+      const dummyInsertionResult: { data: IDonation[]; message: string; status: string } = await donationInterface.insertManyDonations(dummyDonations)
+      if (dummyInsertionResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Dummy donations insertion unsuccessful',{},{}))
+      }
+    }
+    // Insert a real lastDonation if provided (>0)
+    if (req.body.lastDonation && req.body.lastDonation > 0) {
+      const lastDonationInsertResult: {data: IDonation; message: string; status: string} = await donationInterface.insertDonation(donorInsertionResult.data.phone, donorInsertionResult.data._id, req.body.lastDonation)
+      if (lastDonationInsertResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Last donation insertion unsuccessful',{},{}))
+      }
+    }
+  } catch (e) {
+    return res.status(500).send(new InternalServerError500('Donation insertion workflow failed',{},{}))
   }
 
-  const dummyInsertionResult: { data: IDonation[]; message: string; status: string } = await donationInterface.insertManyDonations(dummyDonations)
-
-  if (dummyInsertionResult.status !== 'OK') {
-    return res.status(500).send(new InternalServerError500('Dummy donations insertion unsuccessful',{},{}))
+  // Platelet donations (new feature)
+  try {
+    const plateletCount: number = req.body.extraPlateletDonationCount || 0
+    const lastPlateletDonation: number = (req.body.lastPlateletDonation && req.body.lastPlateletDonation > 0) ? req.body.lastPlateletDonation : 0
+    // Insert dummy platelet donations first (using year2000TimeStamp) analogous to blood donations
+    for (let i: number = 0; i < plateletCount; i++) {
+      const plateletDummyResult: {data: IPlateletDonation; message: string; status: string} = await plateletDonationInterface.insertPlateletDonation(
+        donorInsertionResult.data.phone,
+        donorInsertionResult.data._id,
+        year2000TimeStamp
+      )
+      if (plateletDummyResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Dummy platelet donations insertion unsuccessful',{},{}))
+      }
+    }
+    // Insert real last platelet donation if provided
+    if (lastPlateletDonation > 0) {
+      const plateletLastResult: {data: IPlateletDonation; message: string; status: string} = await plateletDonationInterface.insertPlateletDonation(
+        donorInsertionResult.data.phone,
+        donorInsertionResult.data._id,
+        lastPlateletDonation
+      )
+      if (plateletLastResult.status !== 'OK') {
+        return res.status(500).send(new InternalServerError500('Last platelet donation insertion unsuccessful',{},{}))
+      }
+    }
+  } catch (e) {
+    return res.status(500).send(new InternalServerError500('Platelet donation insertion workflow failed',{},{}))
   }
 
   await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'POST DONORS', donorInsertionResult.data)
@@ -102,7 +149,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
   address: string,
   isAvailable: string,
   isNotAvailable: string,
-  availableToAll:string,
+  availableToAll:string
 }>, res: Response):Promise<Response> => {
   const reqQuery: { bloodGroup: number; isAvailable: boolean; address: string; batch: string; name: string; isNotAvailable: boolean; availableToAll: boolean; hall: number } = {
     bloodGroup: parseInt(req.query.bloodGroup,10),
@@ -112,7 +159,7 @@ const handleGETSearchV3 = async (req: Request<{},{},{},{
     address: req.query.address,
     isAvailable: req.query.isAvailable === 'true',
     isNotAvailable: req.query.isNotAvailable === 'true',
-    availableToAll: req.query.availableToAll === 'true',
+    availableToAll: req.query.availableToAll === 'true'
   }
 
   if (reqQuery.hall !== res.locals.middlewareResponse.donor.hall &&
@@ -250,52 +297,126 @@ const handlePATCHAdmins = async (req: Request, res: Response):Promise<Response> 
 }
 
 const handleGETDonors = async (req: Request, res: Response):Promise<Response> => {
-  const donor: IDonor = res.locals.middlewareResponse.targetDonor
-  await donor.populate([
+  const donorId: any = res.locals.middlewareResponse.targetDonor._id;
+  // Aggregate donor info and last donation timestamps
+  const donorAggResult: any[] = await DonorModel.aggregate([
+    { $match: { _id: donorId } },
     {
-      path: 'donations',
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'callRecords',
-      populate: {
-        path: 'callerId',
-        select: {
-          _id: 1,
-          name: 1,
-          hall: 1,
-          designation: 1
-        }
-      },
-      options: { sort: { date: -1 } }
-    },
-    {
-      path: 'publicContacts',
-      select: {
-        _id: 1,
-        bloodGroup: 1
+      $lookup: {
+        from: 'donations',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'donations'
       }
     },
     {
-      path: 'markedBy',
-      select: {
-        markerId: 1,
-        time: 1,
-        _id: 0
-      },
-      populate: {
-        path: 'markerId',
-        model: 'Donor',
-        select: { name: 1 }
+      $lookup: {
+        from: 'plateletdonations',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'plateletDonations'
+      }
+    },
+    {
+      $lookup: {
+        from: 'callrecords',
+        let: { donorId: '$_id' },
+        pipeline: [
+          { $match: { $expr: { $eq: ['$calleeId', '$$donorId'] } } },
+          {
+            $lookup: {
+              from: 'donors',
+              let: { callerId: '$callerId' },
+              pipeline: [
+                { $match: { $expr: { $eq: ['$_id', '$$callerId'] } } },
+                { $project: { _id: 1, name: 1, hall: 1, designation: 1 } }
+              ],
+              as: 'caller'
+            }
+          },
+          {
+            $addFields: {
+              callerId: { $arrayElemAt: ['$caller', 0] }
+            }
+          },
+          { $project: { caller: 0 } }
+        ],
+        as: 'callRecords'
+      }
+    },
+    {
+      $lookup: {
+        from: 'publiccontacts',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'publicContacts'
+      }
+    },
+    {
+      $lookup: {
+        from: 'activedonors',
+        localField: '_id',
+        foreignField: 'donorId',
+        as: 'activeDonorInfo'
+      }
+    },
+    {
+      $addFields: {
+        lastDonation: {
+          $max: {
+            $map: {
+              input: '$donations',
+              as: 'don',
+              in: '$$don.date'
+            }
+          }
+        },
+        lastPlateletDonation: {
+          $max: {
+            $map: {
+              input: '$plateletDonations',
+              as: 'pd',
+              in: '$$pd.date'
+            }
+          }
+        },
+        activeDonorInfo: { $arrayElemAt: ['$activeDonorInfo', 0] }
+      }
+    },
+    {
+      $lookup: {
+        from: 'donors',
+        let: { markerId: '$activeDonorInfo.markerId' },
+        pipeline: [
+          { $match: { $expr: { $eq: ['$_id', '$$markerId'] } } },
+          { $project: { name: 1 } }
+        ],
+        as: 'markedBy'
+      }
+    },
+    {
+      $addFields: {
+        markedBy: {
+          $cond: [
+            { $gt: [ { $size: '$markedBy' }, 0 ] },
+            { $arrayElemAt: ['$markedBy', 0] },
+            null
+          ]
+        }
+      }
+    },
+    {
+      $project: {
+        password: 0,
+        activeDonorInfo: 0
       }
     }
-  ])
-
-  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS', { name: donor.name })
-
+  ]);
+  const donor: any = donorAggResult[0];
+  await logInterface.addLog(res.locals.middlewareResponse.donor._id, 'GET DONORS', { name: donor.name });
   return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
     donor
-  }))
+  }));
 }
 
 const handleGETDesignatedDonorsAll = async (req: Request, res: Response):Promise<Response> => {

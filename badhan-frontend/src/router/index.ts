@@ -264,12 +264,23 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    name: 'AdminConsole',
-    path: '/adminconsole',
-    component: () => import('../views/AdminConsole.vue'),
+    name: 'BackupRestore',
+    path: '/backupRestore',
+    component: () => import('../views/BackupRestore.vue'),
     meta: {
-      requiresAuth: true,
-      title: 'Admin Console',
+      requiresAuth: false,
+      title: 'Backup and Restore',
+      designation: 0,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
+    name: 'SchemaInconsistencies',
+    path: '/schema-inconsistencies',
+    component: () => import('../views/SchemaInconsistencies.vue'),
+    meta: {
+      requiresAuth: false,
+      title: 'Schema Inconsistencies',
       designation: 3,
       reRouteIfAuthorized: false
     }

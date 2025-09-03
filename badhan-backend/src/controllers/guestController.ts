@@ -24,7 +24,6 @@ const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Prom
     designation: number
     availableToAll: boolean
     email: string
-    lastDonation: number
   } = {
     _id: faker.getId(),
     phone: faker.getPhone(),
@@ -39,7 +38,6 @@ const handlePOSTViewDonorDetailsSelf = async (req: Request, res: Response): Prom
     designation: 3,
     availableToAll: faker.getBoolean(),
     email: faker.getEmail(),
-    lastDonation: faker.getTimestamp(240)
   }
 
   return res.status(200).send(new OKResponse200('Fetched donor details successfully', {
@@ -53,7 +51,6 @@ const handlePOSTInsertDonor = async (req: Request, res: Response):Promise<Respon
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       designation: faker.getDesignation(),
-      lastDonation: faker.getTimestamp(240),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(240),
       _id: faker.getId(),
@@ -84,11 +81,13 @@ const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Respo
     studentId: string,
     hall: number,
     lastDonation: number,
+    lastPlateletDonation: number,
     bloodGroup: number,
     address: string,
     roomNumber: string,
     comment: string,
     donationCount: number,
+    plateletDonationCount: number,
     commentTime: number,
     availableToAll: boolean,
     callRecordCount: number,
@@ -111,11 +110,13 @@ const handlePOSTSearchDonors = async (req: Request, res: Response):Promise<Respo
       studentId: faker.getStudentId(),
       hall: faker.getHall(),
       lastDonation: faker.getTimestamp(240),
+      lastPlateletDonation: faker.getTimestamp(240),
       bloodGroup: faker.getBloodGroup(),
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       comment: faker.getComment(),
       donationCount: faker.getDonationCount(),
+      plateletDonationCount: faker.getDonationCount(),
       commentTime: faker.getTimestamp(240),
       availableToAll: faker.getBoolean(),
       callRecordCount: faker.getRandomIndex(3),
@@ -166,7 +167,6 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
       name: string
     },
     calleeId: string
-    expireAt: string
   }[] = []
   for (let i: number = 0; i < 2; i++) {
     callRecords.push({
@@ -178,8 +178,7 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
         hall: faker.getHall(),
         name: faker.getName()
       },
-      calleeId: faker.getId(),
-      expireAt: faker.getExpireAt()
+      calleeId: faker.getId()
     }
     )
   }
@@ -189,8 +188,21 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
     phone: number,
     donorId: string
   }[] = []
+  const plateletDonations: {
+    date: number,
+    _id: string,
+    phone: number,
+    donorId: string
+  }[] = []
   for (let i: number = 0; i < 2; i++) {
     donations.push({
+      date: faker.getTimestamp(240),
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      donorId: faker.getId()
+    }
+    )
+    plateletDonations.push({
       date: faker.getTimestamp(240),
       _id: faker.getId(),
       phone: faker.getPhone(),
@@ -211,23 +223,66 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
     }
   ]
 
-  const randomMarker: { donorId: string; time: number; markerId: { name: string; _id: string } } | null = faker.getBoolean()
+  const randomMarker: { name: string; _id: string } | null = faker.getBoolean()
     ? {
-        donorId: faker.getId(),
-        markerId: {
-          _id: faker.getId(),
-          name: faker.getName()
-        },
-        time: faker.getTimestamp(20)
+        _id: faker.getId(),
+        name: faker.getName()
       }
     : null
 
-  const obj: { roomNumber: string; address: string; donations: { date: number; _id: string; phone: number; donorId: string }[]; callRecords: { date: number; calleeId: string; _id: string; callerId: { name: string; hall: number; designation: number; _id: string }; expireAt: string }[]; availableToAll: boolean; hall: number; commentTime: number; studentId: string; bloodGroup: number; phone: number; lastDonation: number; name: string; publicContacts: { bloodGroup: number; _id: string; donorId: string }[]; comment: string; _id: string; designation: number; markedBy: { donorId: string; time: number; markerId: { name: string; _id: string } } | null; email: string } = {
+  const obj: {
+    roomNumber: string;
+    address: string;
+    donations: {
+      date: number;
+      _id: string;
+      phone: number;
+      donorId: string
+    }[];
+    plateletDonations: {
+      date: number;
+      _id: string;
+      phone: number;
+      donorId: string
+    }[];
+    callRecords: {
+      date: number;
+      _id: string;
+      callerId: {
+        name: string;
+        hall: number;
+        designation: number;
+        _id: string
+      };
+    }[];
+    availableToAll: boolean;
+    hall: number;
+    commentTime: number;
+    studentId: string;
+    bloodGroup: number;
+    phone: number;
+    lastDonation: number;
+    lastPlateletDonation: number;
+    name: string;
+    publicContacts: {
+      bloodGroup: number;
+      _id: string;
+      donorId: string }[];
+      comment: string;
+      _id: string;
+      designation: number;
+      markedBy: {
+          name: string;
+          _id: string
+        } | null;
+        email: string
+      } = {
     _id: faker.getId(),
     phone: faker.getPhone(),
     name: faker.getName(),
     studentId: faker.getStudentId(),
     lastDonation: faker.getTimestamp(240),
+    lastPlateletDonation: faker.getTimestamp(240),
     bloodGroup: faker.getBloodGroup(),
     hall: faker.getHall(),
     roomNumber: faker.getRoom(),
@@ -237,6 +292,7 @@ const handleGETViewDonorDetails = async (req: Request, res: Response):Promise<Re
     commentTime: faker.getTimestamp(240),
     callRecords,
     donations,
+    plateletDonations,
     publicContacts,
     availableToAll: faker.getBoolean(),
     email: faker.getEmail(),
@@ -299,9 +355,31 @@ const handlePOSTInsertDonation = async (req: Request, res: Response):Promise<Res
   }))
 }
 
+const handlePOSTInsertPlateletDonation = async (req: Request, res: Response):Promise<Response> => {
+  return res.status(201).send(new CreatedResponse201('Platelet donation inserted successfully', {
+    newPlateletDonation: {
+      date: faker.getTimestamp(10),
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      donorId: faker.getId()
+    }
+  }))
+}
+
 const handlePOSTDeleteDonation = async (req: Request, res: Response):Promise<Response> => {
   return res.status(200).send(new OKResponse200('Deleted donation successfully',{
     deletedDonation: {
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      donorId: faker.getId(),
+      date: faker.getTimestamp(5)
+    }
+  }))
+}
+
+const handlePOSTDeletePlateletDonation = async (req: Request, res: Response):Promise<Response> => {
+  return res.status(200).send(new OKResponse200('Deleted platelet donation successfully',{
+    deletedPlateletDonation: {
       _id: faker.getId(),
       phone: faker.getPhone(),
       donorId: faker.getId(),
@@ -315,6 +393,7 @@ const handleGETStatistics = async (req: Request, res: Response):Promise<Response
     statistics: {
       donorCount: faker.getRandomIndex(2600),
       donationCount: faker.getRandomIndex(1200),
+  plateletDonationCount: faker.getRandomIndex(300),
       volunteerCount: faker.getRandomIndex(130)
     }
   }))
@@ -348,7 +427,6 @@ const handlePOSTCallRecord = async (req: Request, res: Response):Promise<Respons
       _id: faker.getId(),
       callerId: faker.getId(),
       calleeId: faker.getId(),
-      expireAt: '2021-11-21T09:28:52.764Z'
     }
   }))
 }
@@ -360,7 +438,6 @@ const handleDELETECallRecord = async (req: Request, res: Response):Promise<Respo
       _id: faker.getId(),
       callerId: faker.getId(),
       calleeId: faker.getId(),
-      expireAt: '2021-11-21T09:28:52.764Z'
     }
   }))
 }
@@ -372,7 +449,6 @@ const handleGETDonorsDuplicate = async (req: Request, res: Response):Promise<Res
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       designation: faker.getDesignation(),
-      lastDonation: faker.getTimestamp(30),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(30),
       email: faker.getEmail(),
@@ -615,7 +691,6 @@ const handlePATCHAdminsSuperAdmin = async (req: Request,res: Response): Promise<
       designation: 3,
       availableToAll: faker.getBoolean(),
       email: faker.getEmail(),
-      lastDonation: faker.getTimestamp(240)
     }
   }))
 }
@@ -634,7 +709,6 @@ const handleGETDonorsNew = async (req: Request, res: Response): Promise<Response
       address: faker.getAddress(),
       roomNumber: faker.getRoom(),
       designation: faker.getDesignation(),
-      lastDonation: faker.getTimestamp(240),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(240),
       availableToAll: faker.getBoolean(),
@@ -664,6 +738,8 @@ export default {
   handlePOSTShowHallAdmins,
   handlePOSTInsertDonation,
   handlePOSTDeleteDonation,
+  handlePOSTInsertPlateletDonation,
+  handlePOSTDeletePlateletDonation,
   handleGETStatistics,
   handleGETLogs,
   handleDELETELogs,

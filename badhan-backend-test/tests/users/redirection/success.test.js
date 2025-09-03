@@ -1,14 +1,12 @@
 const { badhanAxios } = require("../../../api");
 const validate = require("jsonschema").validate;
 const env = require("../../../config");
-const { processError } = require("../../fixtures/helpers");
 const {
   postUsersRedirectionSchema,
   patchUsersRedirectionSchema,
 } = require("./schemas");
 
 test("POST&PATCH/users/redirection: success", async () => {
-  try {
     //post/users/redirection part
 
     let signInResponse = await badhanAxios.post("/users/signin", {
@@ -49,7 +47,4 @@ test("POST&PATCH/users/redirection: success", async () => {
       patchUsersRedirectionSchema
     );
     expect(validationResult.errors).toEqual([]);
-  } catch (e) {
-    throw processError(e);
-  }
 });

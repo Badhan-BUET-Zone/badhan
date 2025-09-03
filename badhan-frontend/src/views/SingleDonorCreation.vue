@@ -79,6 +79,8 @@ export default {
         comment: null,
         donationCount: 0,
         lastDonation: null,
+  plateletDonationCount: 0,
+  lastPlateletDonation: null,
 
         availableToAll: false,
 

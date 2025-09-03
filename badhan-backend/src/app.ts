@@ -8,6 +8,7 @@ import cors from 'cors'
 import apiRouter from './routes/donors'
 import usersRouter from './routes/users'
 import donationsRouter from './routes/donations'
+import plateletDonationsRouter from './routes/plateletDonations'
 import guestRouter from './routes/guest'
 import callRecordRouter from './routes/callRecords'
 import publicContactsRouter from './routes/publicContacts'
@@ -67,6 +68,7 @@ app.get(
 
 app.use('/users', usersRouter)
 app.use('/donations', donationsRouter)
+app.use('/platelet-donations', plateletDonationsRouter)
 app.use('/guest', guestRouter)
 app.use('/callrecords', callRecordRouter)
 app.use('/publicContacts', publicContactsRouter)

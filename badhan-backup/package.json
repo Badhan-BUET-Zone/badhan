@@ -27,6 +27,7 @@
     "firebase-admin": "^9.10.0",
     "fs-extra": "^10.0.0",
     "morgan": "^1.10.0",
+    "nodemon": "^3.1.10",
     "unzipper": "^0.10.11",
     "yargs": "^16.2.0"
   }

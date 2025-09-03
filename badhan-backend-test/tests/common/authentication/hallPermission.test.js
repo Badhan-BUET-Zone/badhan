@@ -1,30 +1,35 @@
-const {badhanAxios} = require("../../../api");
-const {validate} = require("jsonschema");
-const {sameHallPermissionErrorSchema} = require('../schemas')
-const env = require('../../../config')
-test('same hall permission test',async()=>{
-    let signInResponse
-    let sampleVolunteerId1
-    let passwordRecoveryResponse
-    try{
-        signInResponse = await badhanAxios.post('/users/signin', {phone: env.SUPERADMIN_PHONE, password: env.SUPERADMIN_PASSWORD});
-        let designationResponse = await badhanAxios.get('/donors/designation', {headers: {"x-auth": signInResponse.data.token}});
-        sampleVolunteerId1 = designationResponse.data.volunteerList[0]._id
+const { sameHallPermissionErrorSchema } = require('../schemas');
+const operations = require("../../operations");
 
-        passwordRecoveryResponse = await badhanAxios.post('/donors/password', {donorId:sampleVolunteerId1},{headers: {"x-auth": signInResponse.data.token}});
-
-        const profileResponse = await badhanAxios.get('/users/me',{headers: {"x-auth": passwordRecoveryResponse.data.token}})
-
-        const sampleVolunteerId2 = designationResponse.data.adminList.filter((admin)=>{
-            return profileResponse.data.donor.hall !== admin.hall
-        })[0]._id
-
-        await badhanAxios.post('/donors/password', {donorId:sampleVolunteerId2},{headers: {"x-auth": passwordRecoveryResponse.data.token}});
-
-    }catch (e) {
-        let validationResult = validate(e.response.data, sameHallPermissionErrorSchema);
-        expect(validationResult.errors).toEqual([]);
-        await badhanAxios.delete('/users/signout', {headers: {"x-auth": passwordRecoveryResponse.data.token}});
-        await badhanAxios.delete('/users/signout', {headers: {"x-auth": signInResponse.data.token}});
-    }
-})
+test('same hall permission test', async () => {
+    const signInResponse = await operations.signInSuperAdmin();
+    const donor1 = await operations.createDonor({
+        phone: 8801555444777,
+        bloodGroup: 2,
+        hall: 1,
+        name: 'Blah Blah',
+        studentId: 1606060,
+        address: 'Azimpur',
+        roomNumber: '3009',
+        comment: 'developer of badhan',
+        extraDonationCount: 0,
+        availableToAll: true,
+    }, signInResponse);
+    const donor2 = await operations.createDonor({
+        phone: 8801555444778,
+        bloodGroup: 2,
+        hall: 2,
+        name: 'Blah Blah',
+        studentId: 1606060,
+        address: 'Azimpur',
+        roomNumber: '3009',
+        comment: 'developer of badhan',
+        extraDonationCount: 0,
+        availableToAll: true,
+    }, signInResponse);
+    const volunteerId = donor1.data.newDonor._id;
+    await operations.promoteToVolunteer(volunteerId, signInResponse);
+    const volunteerTokenResponse = await operations.issueDonorPassword(volunteerId, signInResponse);
+    await operations.expectErrorWithToken('post', '/donors/password', volunteerTokenResponse.data.token, sameHallPermissionErrorSchema, { donorId: donor2.data.newDonor._id });
+    await operations.signOut(signInResponse);
+});

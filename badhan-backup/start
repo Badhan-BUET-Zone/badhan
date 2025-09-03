@@ -1,5 +1,9 @@
-#/bin/bash
+# /bin/bash
 
-source ./scripts/enable_node.sh
+node download_tools.mjs
+if [ $? -ne 0 ]; then
+  echo "Failed to download tools. Please check the error messages above."
+  exit 1
+fi
 
-"$@"
+npx nodemon

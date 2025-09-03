@@ -131,6 +131,15 @@ router.get('/donors/new',
  *               extraDonationCount:
  *                 type: number
  *                 example: 1605011
+ *               lastDonation:
+ *                 type: number
+ *                 example: 1711929600000
+ *               extraPlateletDonationCount:
+ *                 type: number
+ *                 example: 2
+ *               lastPlateletDonation:
+ *                 type: number
+ *                 example: 1711929600000
  *               availableToAll:
  *                 type: boolean
  *                 example: true
@@ -280,6 +289,9 @@ router.post('/donors',
  *                     lastDonation:
  *                       type: number
  *                       example: 786534785
+ *                     lastPlateletDonation:
+ *                       type: number
+ *                       example: 786534785
  *                     bloodGroup:
  *                       type: number
  *                       example: 2
@@ -330,10 +342,24 @@ router.post('/donors',
  *                           date:
  *                             type: number
  *                             example: 1627492207064
- *                           expireAt:
- *                             type: string
- *                             example: 2021-08-27T17:10:07.0662
  *                     donations:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           date:
+ *                             type: number
+ *                             example: 1543764822
+ *                           _id:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                           phone:
+ *                             type: number
+ *                             example: 881521438557
+ *                           donorId:
+ *                             type: string
+ *                             example: 584abcde6744144441
+ *                     plateletDonations:
  *                       type: array
  *                       items:
  *                         type: object
@@ -447,14 +473,14 @@ router.get('/donors/me',
  *       - in: query
  *         name: isAvailable
  *         required: true
- *         description: make this true if you want to get the donors who have not donated blood in the last 120 days
+ *         description: true to get donors available to donate (last blood donation older than 120 days AND last platelet donation older than 12 days)
  *         schema:
  *           type: boolean
  *           example: true
  *       - in: query
  *         name: isNotAvailable
  *         required: true
- *         description: make this false if you want to get the donors who have donated blood in the last 120 days
+ *         description: true to include donors not available to donate (blood within 120 days OR platelet within 12 days)
  *         schema:
  *           type: boolean
  *           example: false
