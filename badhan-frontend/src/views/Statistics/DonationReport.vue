@@ -3,53 +3,10 @@
         <v-card-title>Donations Report</v-card-title>
         <v-card-text>
             <div class="mt-2">
-                <v-menu
-                    ref="startDateMenu"
-                    v-model="startDateMenu"
-                    :close-on-content-click="false"
-                    :return-value.sync="startDate"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field rounded v-model="startDate" label="Start Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
-                </template>
-                <v-date-picker v-model="startDate" no-title scrollable :max="tomorrow">
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="startDateMenu = false">Cancel</v-btn>
-                    <v-btn text
-                        color="primary"
-                        @click="$refs.startDateMenu.save(startDate)"
-                    >OK
-                    </v-btn
-                    >
-                </v-date-picker>
-                </v-menu>
+                <DatePicker v-model="startDate" label="Start Date" />
             </div>
             <div class="mt-2">
-                <v-menu
-                    ref="endDateMenu"
-                    v-model="endDateMenu"
-                    :close-on-content-click="false"
-                    :return-value.sync="endDate"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field rounded v-model="endDate" label="End Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
-                </template>
-                <v-date-picker v-model="endDate" no-title scrollable :max="tomorrow">
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="endDateMenu = false">Cancel</v-btn>
-                    <v-btn text
-                        color="primary"
-                        @click="$refs.endDateMenu.save(endDate)"
-                    >OK
-                    </v-btn>
-                </v-date-picker>
-                </v-menu>
+                <DatePicker v-model="endDate" label="End Date" />
             </div>
         </v-card-text>
         <v-card-actions>
@@ -113,6 +70,7 @@ import Container from '../../components/Wrappers/Container'
 import { handleGETDonationsReport, handleGETPlateletDonationsReport } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button.vue'
+import DatePicker from '@/components/DatePicker.vue'
 import { bloodGroups, DESIGNATIONS_INDEX } from '@/mixins/constants'
   
 export default {
@@ -120,22 +78,19 @@ export default {
     components: {
       Container,
       LoadingMessage,
-      Button
+      Button,
+      DatePicker
     },
     data () {
       return {
         report: [],
     plateletReport: [],
         reportLoader: false,
-        startDateMenu: false,
         startDate: '',
-        endDateMenu: false,
         endDate: '',
         headers: ['Name of Month', ...bloodGroups, 'Total'],
     firstDonationOfDonorCount: 0,
     firstPlateletDonationOfDonorCount: 0,
-    today: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString().substr(0, 10),
-    tomorrow: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1).toISOString().substr(0, 10)
       }
     },
     computed: {

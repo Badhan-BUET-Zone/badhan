@@ -295,35 +295,13 @@
                     <v-radio label="Platelet" value="Platelet"></v-radio>
                   </v-radio-group>
                   <div>
-                    <v-menu
-                      ref="menu"
-                      v-model="menu"
-                      :close-on-content-click="false"
-                      :return-value.sync="newDonationDate"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          id="personDetailsNewDonationTextboxId"
-                          rounded
-                          v-model="newDonationDate"
-                          label="Add a donation date"
-                          prepend-icon="mdi-calendar"
-                          readonly
-                          outlined
-                          v-bind="attrs"
-                          v-on="on"
-                          dense
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker id="personDetailsNewDonationDatePickerId" v-model="newDonationDate" no-title scrollable :max="tomorrow">
-                        <v-spacer></v-spacer>
-                        <v-btn small rounded text color="primary" @click="menu = false">Cancel</v-btn>
-                        <v-btn id="personDetailsNewDonationDatePickerOkButtonId" small rounded text color="primary" @click="$refs.menu.save(newDonationDate)">OK</v-btn>
-                      </v-date-picker>
-                    </v-menu>
+                    <DatePicker
+                      v-model="newDonationDate"
+                      label="Add a donation date"
+                      text-field-id="personDetailsNewDonationTextboxId"
+                      :picker-id="'personDetailsNewDonationDatePickerId'"
+                      :ok-button-id="'personDetailsNewDonationDatePickerOkButtonId'"
+                    />
                   </div>
                   <v-btn
                     id="personDetailsNewDonationOkButtonId"
@@ -513,6 +491,7 @@ import Button from '../UI Components/Button'
 import { directCall, fixBackSlash } from '../../mixins/helpers'
 import { environmentService } from '@/mixins/environment'
 import LoadingMessage from '@/components/LoadingMessage.vue'
+import DatePicker from '@/components/DatePicker.vue'
 
 export default {
   name: 'PersonDetails',
@@ -526,7 +505,8 @@ export default {
 
     CallRecordCard,
     HelpTooltip,
-    PageTitle
+    PageTitle,
+    DatePicker
   },
   data: function () {
     return {
@@ -581,7 +561,6 @@ export default {
 
       newDonationDate: '',
   newDonationType: 'Blood',
-      menu: false,
 
       dataLoaded: false,
       showTooltip: false,
@@ -635,8 +614,6 @@ export default {
   created () {
     const now = new Date()
     this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString().substr(0, 10)
-    const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
-    this.tomorrow = tomorrowDate.toISOString().substr(0, 10)
   },
   validations: {
     phone: {

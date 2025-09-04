@@ -99,94 +99,18 @@
         </v-card-text>
       </v-card>
 
-      <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          :return-value.sync="lastDonation"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-              id="newDonorLastDonationTextFieldId"
-              v-model="lastDonation"
-              label="Last Donation"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-          ></v-text-field>
-        </template>
-    <v-date-picker
-      v-model="lastDonation"
-      no-title
-      scrollable
-      :max="tomorrow"
-    >
-          <v-spacer></v-spacer>
-          <v-btn
-              text
-              color="primary"
-              @click="menu = false"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-              id="newDonorLastDonationOkButtonId"
-              text
-              color="primary"
-              @click="$refs.menu.save(lastDonation)"
-          >
-            OK
-          </v-btn>
-        </v-date-picker>
-      </v-menu>
-      <v-menu
-          ref="menuPlatelet"
-          v-model="menuPlatelet"
-          :close-on-content-click="false"
-          :return-value.sync="lastPlateletDonation"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-              id="newDonorLastPlateletDonationTextFieldId"
-              v-model="lastPlateletDonation"
-              label="Last Platelet Donation"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-          ></v-text-field>
-        </template>
-    <v-date-picker
-      v-model="lastPlateletDonation"
-      no-title
-      scrollable
-      :max="tomorrow"
-    >
-          <v-spacer></v-spacer>
-          <v-btn
-              text
-              color="primary"
-              @click="menuPlatelet = false"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-              id="newDonorLastPlateletDonationOkButtonId"
-              text
-              color="primary"
-              @click="$refs.menuPlatelet.save(lastPlateletDonation)"
-          >
-            OK
-          </v-btn>
-        </v-date-picker>
-      </v-menu>
+      <DatePicker
+        v-model="lastDonation"
+        label="Last Donation"
+        text-field-id="newDonorLastDonationTextFieldId"
+        ok-button-id="newDonorLastDonationOkButtonId"
+      />
+      <DatePicker
+        v-model="lastPlateletDonation"
+        label="Last Platelet Donation"
+        text-field-id="newDonorLastPlateletDonationTextFieldId"
+        ok-button-id="newDonorLastPlateletDonationOkButtonId"
+      />
     </v-card-text>
     <v-card-actions>
       <v-btn small color="primary" rounded @click="discardClicked">
@@ -213,6 +137,7 @@ import { halls, bloodGroups, departments, nullDepartment } from '@/mixins/consta
 import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '../Wrappers/Container'
+import DatePicker from '@/components/DatePicker.vue'
 import { environmentService } from '@/mixins/environment'
 import { createNewPopUpWindow } from '@/mixins/helpers'
 
@@ -220,7 +145,8 @@ export default {
   name: 'NewPersonCard',
   props: ['donor', 'discardDonor'],
   components: {
-    Container
+    Container,
+    DatePicker
   },
   validations: () => {
     return {
@@ -410,7 +336,6 @@ export default {
       availableToAll: false,
 
       donorCreationLoader: false,
-      lastDonationMenu: false,
       warnings: [],
       duplicateDonorId: null,
 
@@ -419,8 +344,7 @@ export default {
       phoneDuplicateCheckLoader: false,
       duplicateDonorMessage: '',
 
-      menu: false,
-  menuPlatelet: false,
+      
       newDonorLoader: false
     }
   },

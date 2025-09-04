@@ -105,42 +105,13 @@
             >
           </div>
           <div class="mt-2">
-            <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                :return-value.sync="newDonationDate"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                    :id="`personCardDatePickerId_${id}`"
-                    rounded
-                    v-model="newDonationDate"
-                    label="Add a donation date"
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    outlined
-                    v-bind="attrs"
-                    v-on="on"
-                    dense
-                ></v-text-field>
-              </template>
-              <v-date-picker :id="`personCardDatePickerCalenderId_${id}`" v-model="newDonationDate" no-title scrollable :max="tomorrow">
-                <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                <v-btn
-                    :id="`personCardDatePickerOkButtonId_${id}`"
-                    text
-                    color="primary"
-                    @click="$refs.menu.save(newDonationDate)"
-                >OK
-                </v-btn
-                >
-              </v-date-picker>
-            </v-menu>
+            <DatePicker
+              v-model="newDonationDate"
+              label="Add a donation date"
+              :text-field-id="`personCardDatePickerId_${id}`"
+              :picker-id="`personCardDatePickerCalenderId_${id}`"
+              :ok-button-id="`personCardDatePickerOkButtonId_${id}`"
+            />
           </div>
           <div class="mt-2">
             <v-radio-group v-model="newDonationType" row dense>
@@ -168,13 +139,14 @@
 import { directCall, fixBackSlash } from '@/mixins/helpers'
 import VueMarkdown from 'vue-markdown'
 import { handlePOSTCallRecord, handlePOSTDonations, handlePOSTPlateletDonations } from '@/api'
+import DatePicker from '@/components/DatePicker.vue'
 
 export default {
   name: 'PersonCard',
   props: [
   'person'
   ],
-  components: { VueMarkdown },
+  components: { VueMarkdown, DatePicker },
   data: function () {
     return {
       newDonationDate: '',
@@ -183,10 +155,6 @@ export default {
       success: '',
   // disallow selecting beyond tomorrow
   today: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString().substr(0, 10),
-  tomorrow: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1).toISOString().substr(0, 10),
-
-      // vuetify date picker
-      menu: false,
 
       showExtensionFlag: false,
       seeDetailsLoaderFlag: false,

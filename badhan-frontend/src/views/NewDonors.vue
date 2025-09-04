@@ -7,44 +7,10 @@
       </v-card-title>
       <v-card-text>
         <div class="mt-2">
-          <v-menu
-            ref="startDateMenu"
-            v-model="startDateMenu"
-            :close-on-content-click="false"
-            :return-value.sync="startDate"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field rounded v-model="startDate" label="Start Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
-            </template>
-            <v-date-picker v-model="startDate" no-title scrollable :max="tomorrow">
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="startDateMenu = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.startDateMenu.save(startDate)">OK</v-btn>
-            </v-date-picker>
-          </v-menu>
+          <DatePicker v-model="startDate" label="Start Date" />
         </div>
         <div class="mt-2">
-          <v-menu
-            ref="endDateMenu"
-            v-model="endDateMenu"
-            :close-on-content-click="false"
-            :return-value.sync="endDate"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field rounded v-model="endDate" label="End Date" prepend-icon="mdi-calendar" readonly outlined v-bind="attrs" v-on="on" dense></v-text-field>
-            </template>
-            <v-date-picker v-model="endDate" no-title scrollable :max="tomorrow">
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="endDateMenu = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.endDateMenu.save(endDate)">OK</v-btn>
-            </v-date-picker>
-          </v-menu>
+          <DatePicker v-model="endDate" label="End Date" />
         </div>
       </v-card-text>
       <v-card-actions>
@@ -82,22 +48,20 @@ import Container from '../components/Wrappers/Container'
 import Button from '../components/UI Components/Button'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import PersonCardNew from '@/components/PersonCardNew'
+import DatePicker from '@/components/DatePicker.vue'
 import { handleGETDonorsNew } from '@/api'
 
 export default {
   name: 'NewDonors',
   data: () => ({
     // date pickers
-    startDateMenu: false,
-    endDateMenu: false,
     startDate: '',
     endDate: '',
   // loader + result
   fetchLoader: false,
   resultCount: null,
   donors: [],
-  today: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString().substr(0, 10),
-  tomorrow: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1).toISOString().substr(0, 10)
+  today: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString().substr(0, 10)
   }),
   computed: {
     disableFetchButton () {
@@ -150,7 +114,8 @@ export default {
     Container,
     PageTitle,
   LoadingMessage,
-  PersonCardNew
+  PersonCardNew,
+  DatePicker
   },
   mounted () {
     this.setDates()
