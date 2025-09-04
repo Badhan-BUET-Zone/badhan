@@ -4,7 +4,7 @@ export default {
         top: ()=>{
             cy.scrollTo('top')
         },
-        botton: ()=>{
+        bottom: ()=>{
             cy.scrollTo('bottom')
         }
     },

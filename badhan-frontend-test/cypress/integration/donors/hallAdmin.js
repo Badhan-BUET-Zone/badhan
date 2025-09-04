@@ -1,13 +1,10 @@
 import { ui } from '../../plugins/frontend'
-import env from '../../plugins/env'
 import {routeInfos} from "../../plugins/constants";
 describe('Admin Promotion', () => {
     it('should promote volunteer to admin', () => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
 
         // go to members page and get name and batch of first volunteer
         ui.components.topBar.drawerButton.click()

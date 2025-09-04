@@ -1,34 +1,35 @@
 import { ui } from "."
 import env from '../../plugins/env'
 import { routeInfos } from "../constants"
+import { ApiInterceptor } from '../backend'
 export default {
-    completeSignIn: ()=>{
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
+    completeSignIn: (phone = env.SUPERADMIN_PHONE, password = env.SUPERADMIN_PASSWORD)=>{
+        ui.pages.signIn.phoneTextBox.type(phone)
+        ui.pages.signIn.passwordTextBox.type(password)
         ui.pages.signIn.signInButton.click()
         ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
     },
     visitFirstPage: ()=>{
         ui.control.start()
     },
-    createDonor: (fakeDonorProfile)=>{
+    createDonor: (donorProfile)=>{
         ui.pages.home.isCurrentPage();
 
         ui.components.topBar.drawerButton.click()
         ui.components.topBar.drawer.donorCreationLink.click()
         ui.components.topBar.drawer.singleDonorCreationLink.click()
 
-        ui.pages.singleDonorCreation.nameTextBox.type(fakeDonorProfile.name)
-        ui.pages.singleDonorCreation.phoneTextBox.type(fakeDonorProfile.phone)
-        ui.pages.singleDonorCreation.studentIdTextBox.type(fakeDonorProfile.studentId)
+        ui.pages.singleDonorCreation.nameTextBox.type(donorProfile.name)
+        ui.pages.singleDonorCreation.phoneTextBox.type(donorProfile.phone)
+        ui.pages.singleDonorCreation.studentIdTextBox.type(donorProfile.studentId)
         ui.pages.singleDonorCreation.bloodGroupSelection.click()
-        ui.pages.singleDonorCreation.bloodGroupSelection.getSelectionMenuByBloodGroup(fakeDonorProfile.bloodGroup).click()
+        ui.pages.singleDonorCreation.bloodGroupSelection.getSelectionMenuByBloodGroup(donorProfile.bloodGroup).click()
         ui.pages.singleDonorCreation.hallSelection.click()
-        ui.pages.singleDonorCreation.hallSelection.getSelectionMenuByHall(fakeDonorProfile.hall).click()
-        ui.pages.singleDonorCreation.roomNumberTextBox.type(fakeDonorProfile.roomNumber)
-        ui.pages.singleDonorCreation.addressTextBox.type(fakeDonorProfile.address)
-        ui.pages.singleDonorCreation.commentTextBox.type(fakeDonorProfile.comment)
-        ui.pages.singleDonorCreation.donationCountTextBox.type(fakeDonorProfile.donationCount)
+        ui.pages.singleDonorCreation.hallSelection.getSelectionMenuByHall(donorProfile.hall).click()
+        ui.pages.singleDonorCreation.roomNumberTextBox.type(donorProfile.roomNumber)
+        ui.pages.singleDonorCreation.addressTextBox.type(donorProfile.address)
+        ui.pages.singleDonorCreation.commentTextBox.type(donorProfile.comment)
+        ui.pages.singleDonorCreation.donationCountTextBox.type(donorProfile.donationCount)
         ui.pages.singleDonorCreation.publicDataCheckBox.click()
 
         ui.pages.singleDonorCreation.donationDateField.click()
@@ -68,5 +69,40 @@ export default {
         }
 
         ui.pages.home.filter.searchButton.click()
+    },
+    goToMyProfile: ()=>{
+        ui.components.topBar.drawerButton.click()
+        const interceptor = new ApiInterceptor(routeInfos.GETDonors)
+        ui.components.topBar.drawer.myProfileLink.click()
+        interceptor.wait()
+    },
+    markActiveDonor: ()=>{
+        ui.pages.personDetails.activeDonorButton.click()
+        ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
+        ui.components.notificationSnackBar.contains(routeInfos.POSTActiveDonors.notification)
+    },
+    unmarkActiveDonor: ()=>{
+        ui.pages.personDetails.activeDonorButton.click()
+        ui.pages.personDetails.activeDonorButton.activeDonorSwitch.click()
+        ui.components.notificationSnackBar.contains(routeInfos.DELETEActiveDonors.notification)
+    },
+    changePassword: (newPassword)=>{
+        ui.control.wait(1000)
+        ui.pages.personDetails.settings.expansionButton.click()
+        ui.pages.personDetails.settings.expansion.newPasswordTextBox.type(newPassword)
+        ui.pages.personDetails.settings.expansion.confirmPasswordTextBox.type(newPassword)
+        ui.pages.personDetails.settings.expansion.changePasswordButton.click()
+        ui.components.notificationSnackBar.contains(routeInfos.PATCHUsersPassword.notification)
+    },
+    signOut: ()=>{
+        ui.components.topBar.tripleDotButton.click()
+        ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
+        ui.components.confirmationModal.okButton.click()
+    },
+    goToActiveDonors: ()=>{
+        ui.components.topBar.drawerButton.click()
+        const interceptor = new ApiInterceptor(routeInfos.GETActiveDonors)
+        ui.components.topBar.drawer.activeDonorLink.click()
+        interceptor.wait()
     }
 }

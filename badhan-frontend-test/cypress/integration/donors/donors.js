@@ -1,15 +1,12 @@
 import { ui } from '../../plugins/frontend'
 import {ApiInterceptor} from '../../plugins/backend'
-import env from '../../plugins/env'
 import { routeInfos, fakeDonorProfile } from '../../plugins/constants'
 
 describe('Donor Creation', () => {
     it('should create new donor, get donor, promote to volunteer, check volunteer, demote to donor and delete donor', () => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
 
         ui.pages.home.filter.nameTextBox.type(fakeDonorProfile.name)
         ui.pages.home.filter.publicDataRadioButton.click()

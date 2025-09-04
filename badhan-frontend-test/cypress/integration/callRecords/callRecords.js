@@ -6,10 +6,8 @@ import {routeInfos} from "../../plugins/constants";
 describe('Call Records', () => {
     it('should create and delete a call record',() => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
 
         // search random donor
         ui.pages.home.filter.nameTextBox.type("a")

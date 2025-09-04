@@ -5,10 +5,8 @@ import { ApiInterceptor } from '../../plugins/backend';
 describe('Public Contacts', () => {
     it('Sets public contacts, checks and unsets', () => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
         new ApiInterceptor(routeInfos.GETUsersMe).wait().then((result)=>{
             ui.control.wait(500)
             ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)

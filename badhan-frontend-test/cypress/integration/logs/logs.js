@@ -5,11 +5,8 @@ import {routeInfos} from "../../plugins/constants";
 describe('Logs', () => {
     it('gets logs', () => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
-        ui.components.notificationSnackBar.contains(routeInfos.GETUsersSignIn.notification)
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
 
         // go to superadmin menus and go to logs by date page
         ui.components.topBar.drawerButton.click()

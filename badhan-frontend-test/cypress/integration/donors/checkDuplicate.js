@@ -5,10 +5,8 @@ import {fakeDonorProfile, routeInfos, seeDuplicateProfileTimeout} from "../../pl
 describe('Duplicate Donors', () => {
     it('should check whether the phone already exists in donor creation form', () => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
 
         // go to single donor creation page
         ui.components.topBar.drawerButton.click()

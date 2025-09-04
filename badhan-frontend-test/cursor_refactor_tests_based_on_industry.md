@@ -44,7 +44,6 @@ import { idStart } from '../../plugins/frontend/functions'
 ```23:34:/Users/mirmahathirmohammad/Documents/badhan/badhan-frontend-test/cypress/integration/users/logins.js
 // ...
 ui.pages.myProfile.settings.listOfLoginsButton.click()
-ui.control.scroll.botton() // likely intended to be `bottom()`
 // ...
 ui.pages.myProfile.settings.listOfLogins.getByIndex(0).deleteButton.click()
 ui.components.notificationSnackBar.contains(routeInfos.DELETELogins.notification)
@@ -64,7 +63,7 @@ ui.components.notificationSnackBar.contains(routeInfos.DELETELogins.notification
 
 ### Targeted changes per file (high value)
 
-- **`users/logins.js`**: Use `cy.session` for auth; fix `scroll.botton()`; replace relogin by clearing local storage with `cy.session` or explicit sign-in command; wait on the GET donors/profile call instead of static scrolling.
+- **`users/logins.js`**: replace relogin by clearing local storage with `cy.session` or explicit sign-in command; wait on the GET donors/profile call instead of static scrolling.
 - **`donors/donors.js`**: Replace conditional “if donor exists, delete” with deterministic data creation; split actions into multiple tests using shared setup; prefer selector by donorId to index.
 - **`donors/search.js`**: Good use of `ui.actions`—use this pattern elsewhere; add a network wait for the search call; assert result count or specific card presence.
 - **`activeDonors/activeDonors.js`**: Replace `wait(1000)` with an intercept for the profile fetch; ensure final toggle state is asserted after notification.
@@ -146,7 +145,7 @@ import { idStart } from '../../plugins/frontend/functions'
 ```javascript
 // ...
 ui.pages.myProfile.settings.listOfLoginsButton.click()
-ui.control.scroll.botton() // likely intended to be `bottom()`
+ui.control.scroll.bottom() // likely intended to be `bottom()`
 // ...
 ui.pages.myProfile.settings.listOfLogins.getByIndex(0).deleteButton.click()
 ui.components.notificationSnackBar.contains(routeInfos.DELETELogins.notification)

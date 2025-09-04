@@ -1,13 +1,10 @@
 import { ui } from '../../plugins/frontend'
-import env from '../../plugins/env'
 import {routeInfos} from "../../plugins/constants";
 describe('Designated Donors', () => {
     it('should get all designated donors', () => {
         // sign in
-        ui.control.start()
-        ui.pages.signIn.phoneTextBox.type(env.SUPERADMIN_PHONE)
-        ui.pages.signIn.passwordTextBox.type(env.SUPERADMIN_PASSWORD)
-        ui.pages.signIn.signInButton.click()
+        ui.actions.visitFirstPage()
+        ui.actions.completeSignIn()
 
         // go to members page and check whether at lease one volunteer, one hall admin and one super admin exists
         ui.components.topBar.drawerButton.click()
