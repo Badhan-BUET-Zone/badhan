@@ -173,11 +173,12 @@ import { Bar as BarChart } from 'vue-chartjs'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import localDatabase from '@/localDatabase'
+import TextField from '@/components/UI Components/TextField.vue'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Filler)
 export default {
   name: 'SignInCover',
-  components: { BarChart, LoadingMessage },
+  components: { BarChart, LoadingMessage, TextField },
   data () {
     return {
       detailsFlag: false,

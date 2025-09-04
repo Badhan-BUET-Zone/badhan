@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^9.7.0"
+    "cypress": "^9.7.0",
+    "axios": "^1.6.8"
   },
   "dependencies": {
     "cypress-promise": "^1.1.0"

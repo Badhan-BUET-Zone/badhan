@@ -18,3 +18,10 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Reset and populate DB before each test
+beforeEach(() => {
+  // Ensure backend is in a known state for every Cypress test
+  cy.task('resetDb');
+  cy.task('populateDb');
+});

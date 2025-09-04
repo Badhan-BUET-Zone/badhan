@@ -1,20 +1,35 @@
 // cypress/plugins/index.js
 /// <reference types="cypress" />
 
-const { execSync } = require('child_process');
+const axios = require('axios');
 
 /**
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
-  // Fires **once per “cypress run …”** (single spec or glob)
-  on('before:run', () => {
-    console.log('🔄  Resetting test DB …');
-    execSync('cd ../badhan-backend && npm run reset_db:local', {
-      stdio: 'inherit',   // stream the output so you can see errors
-    });
+  // Provide Node tasks to reset and populate DB via backup service
+  on('task', {
+    async resetDb() {
+      const url = process.env.BACKUP_RESET_URL || 'http://localhost:4000/reset-local-db';
+      try {
+        await axios.post(url, {}, { timeout: 60000 });
+        return true;
+      } catch (e) {
+        console.error('[plugin] resetDb failed:', e && e.message ? e.message : e);
+        throw e;
+      }
+    },
+    async populateDb() {
+      const url = process.env.BACKUP_POPULATE_URL || 'http://localhost:4000/populate-local-db';
+      try {
+        await axios.post(url, {}, { timeout: 60000 });
+        return true;
+      } catch (e) {
+        console.error('[plugin] populateDb failed:', e && e.message ? e.message : e);
+        throw e;
+      }
+    },
   });
 
-  // always return the config object
   return config;
 };
