@@ -2,8 +2,8 @@ import Vue from 'vue'
 import VueRouter, {RouteConfig, Route, NavigationGuardNext} from 'vue-router'
 import Home from '@/views/Home.vue'
 
-import SignInCover from '../views/SignInCover.vue'
-import Details from '../views/Home/Details.vue'
+import SignInCover from '@/views/SignInCover.vue'
+import Details from '@/views/Home/Details.vue'
 import { store } from '@/store/store'
 
 Vue.use(VueRouter)

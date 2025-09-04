@@ -55,13 +55,13 @@
 </template>
 
 <script>
-import PageTitle from '../components/PageTitle'
-import ContainerFlat from '../components/Container/ContainerFlat'
-import PersonCardNew from '../components/PersonCardNew'
-import Filters from '../components/Filters'
+import PageTitle from '@/components/PageTitle'
+import ContainerFlat from '@/components/Container/ContainerFlat'
+import PersonCardNew from '@/components/PersonCardNew'
+import Filters from '@/components/Filters'
 import { bloodGroups, halls } from '@/mixins/constants'
-import Button from '../components/UI Components/Button'
-import NoticeCard from '../components/UI Components/NoticeCard'
+import Button from '@/components/UI Components/Button'
+import NoticeCard from '@/components/UI Components/NoticeCard'
 import Vue from 'vue'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { handleGETActiveDonors } from '@/api'

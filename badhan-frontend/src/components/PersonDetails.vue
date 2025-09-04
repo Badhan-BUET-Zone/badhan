@@ -463,7 +463,7 @@
 <script>
 import { halls, bloodGroups } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric, sameAs } from 'vuelidate/lib/validators'
-import CallRecordCard from './CallRecordCard'
+import CallRecordCard from '@/views/Home/components/CallRecordCard'
 import HelpTooltip from '@/components/UI Components/HelpTooltip'
 import PageTitle from '@/components/PageTitle'
 import Container from '@/components/Container/Container'
@@ -481,7 +481,7 @@ import {
   handleDELETEDonations, handlePOSTPlateletDonations, handleDELETEPlateletDonations,
   handlePATCHAdmins
 } from '@/api'
-import DonationCard from './DonationCard'
+import DonationCard from '@/views/Home/components/DonationCard'
 import Button from '@/components/UI Components/Button'
 import { directCall, fixBackSlash } from '@/mixins/helpers'
 import { environmentService } from '@/mixins/environment'
@@ -522,7 +522,7 @@ export default {
       email: '',
       bloodGroup: '',
       availableIn: '',
-  plateletAvailableIn: '',
+      plateletAvailableIn: '',
       designation: '',
       hall: '',
       room: '',
@@ -535,8 +535,8 @@ export default {
       halls,
       bloodGroups,
       showDetails: false,
-      oldPassword: null,
-      newPassword: null,
+      oldPassword: '',
+      newPassword: '',
       confirmPassword: '',
       comment: '',
       availableToAll: false,
@@ -558,7 +558,7 @@ export default {
       newPasswordFlag: false,
 
       newDonationDate: '',
-  newDonationType: 'Blood',
+      newDonationType: 'Blood',
 
       dataLoaded: false,
       showTooltip: false,
@@ -582,15 +582,15 @@ export default {
       callRecords: [],
       callRecordsCollapseFlag: true,
       donationsCollapseFlag: true,
-  plateletDonationsCollapseFlag: true,
+      plateletDonationsCollapseFlag: true,
 
       markedAsActiveDonor: false,
       markedBy: null,
       activeDonorLoader: false,
       donationList: [],
       newDonationLoader: false,
-  plateletDonationList: [],
-  lastPlateletDonation: '',
+      plateletDonationList: [],
+      lastPlateletDonation: '',
 
       commentLoaderFlag: false,
 
@@ -1109,8 +1109,8 @@ export default {
 
     this.profile = response.data.donor
     this.callRecords = response.data.donor.callRecords
-  this.donationList = response.data.donor.donations.map((a) => a.date)
-  this.plateletDonationList = (response.data.donor.plateletDonations || []).map((a) => a.date)
+    this.donationList = response.data.donor.donations.map((a) => a.date)
+    this.plateletDonationList = (response.data.donor.plateletDonations || []).map((a) => a.date)
 
     const profile = this.profile
     this.id = profile._id
@@ -1130,8 +1130,8 @@ export default {
     this.availableToAll = profile.availableToAll
     this.publicContacts = profile.publicContacts
     this.callRecords = profile.callRecords
-  this.donationList = profile.donations
-  this.plateletDonationList = profile.plateletDonations || []
+    this.donationList = profile.donations
+    this.plateletDonationList = profile.plateletDonations || []
     // Some donors may have markedBy present without a populated markerId (or markerId without name); guard to avoid TypeError
     this.markedBy = (profile && profile.markedBy && profile.markedBy.name)
       ? profile.markedBy.name
@@ -1149,7 +1149,7 @@ export default {
       this.lastDonation = '(Unknown)'
     }
 
-  const plateletDate = new Date(profile.lastPlateletDonation || 0)
+    const plateletDate = new Date(profile.lastPlateletDonation || 0)
     this.lastPlateletDonation =
       plateletDate.getDate() +
       '/' +
@@ -1184,3 +1184,5 @@ export default {
 <style>
 
 </style>
+
+

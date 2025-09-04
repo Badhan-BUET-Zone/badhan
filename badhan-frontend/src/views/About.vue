@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import PageTitle from '../components/PageTitle'
+import PageTitle from '@/components/PageTitle'
 import VueMarkdown from 'vue-markdown'
 import overview from '../../overview.md'
-import Container from '../components/Container/Container'
+import Container from '@/components/Container/Container'
 import {
   getIsTWA
 } from '@/plugins/android_support'

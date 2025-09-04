@@ -92,7 +92,7 @@
 
 <script>
 import { isGuestEnabled } from '@/api'
-import ldb from '../../localDatabase'
+import ldb from '@/localDatabase'
 import { environmentService } from '@/mixins/environment'
 
 export default {

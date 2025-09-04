@@ -146,7 +146,7 @@
 
 <script>
 import TextField from '@/components/UI Components/TextField.vue'
-import HelpTooltip from '../components/UI Components/HelpTooltip'
+import HelpTooltip from '@/components/UI Components/HelpTooltip'
 import Selector from '@/components/UI Components/Selector.vue'
 import { bloodGroups, halls } from '@/mixins/constants'
 import { maxLength, minLength, numeric, required } from 'vuelidate/lib/validators'

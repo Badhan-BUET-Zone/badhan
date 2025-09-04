@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import PageTitle from '../components/PageTitle'
+import PageTitle from '@/components/PageTitle'
 
 export default {
   name: 'StatisticsPage',

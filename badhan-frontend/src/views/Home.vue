@@ -93,12 +93,12 @@
 </template>
 
 <script>
-import PersonCard from './Home/components/PersonCard'
+import PersonCardNew from '@/components/PersonCardNew'
 import { bloodGroups, DESIGNATIONS_INDEX, halls } from '@/mixins/constants'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
 import { isGuestEnabled, handleGETSearchV3 } from '@/api'
 import { convertObjectToCSV, textFileDownloadInWeb, processPersonsForReport } from '@/mixins/helpers'
-import Filters from '../components/Filters'
+import Filters from '@/components/Filters'
 import { environmentService } from '@/mixins/environment'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 
@@ -138,7 +138,7 @@ export default {
   components: {
     LoadingMessage,
     Filters,
-    'person-card': PersonCard,
+    'person-card': PersonCardNew,
   },
   data: function () {
     return {

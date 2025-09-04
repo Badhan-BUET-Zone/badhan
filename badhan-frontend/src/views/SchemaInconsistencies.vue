@@ -26,10 +26,10 @@
 
 <script>
 import axios from 'axios'
-import PageTitle from '../components/PageTitle'
-import Container from '../components/Container/Container'
-import Button from '../components/UI Components/Button'
-import JsonTree from '../components/UI Components/JsonTree.vue'
+import PageTitle from '@/components/PageTitle'
+import Container from '@/components/Container/Container'
+import Button from '@/components/UI Components/Button'
+import JsonTree from '@/components/UI Components/JsonTree.vue'
 
 export default {
   name: 'SchemaInconsistencies',

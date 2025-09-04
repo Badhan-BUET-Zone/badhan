@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib/framework'
-import ldb from '../localDatabase'
+import ldb from '@/localDatabase'
 import colors from 'vuetify/lib/util/colors'
 Vue.use(Vuetify)
 

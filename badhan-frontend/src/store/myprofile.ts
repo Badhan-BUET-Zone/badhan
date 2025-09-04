@@ -1,4 +1,4 @@
-import ldb from '../localDatabase'
+import ldb from '@/localDatabase'
 export interface MyProfileStateInterface {
   _id: string | null
   name: string | null

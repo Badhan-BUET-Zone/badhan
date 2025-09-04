@@ -9,7 +9,7 @@ import {
   resetBaseURL
 } from '@/api'
 
-import ldb from '../localDatabase'
+import ldb from '@/localDatabase'
 import {Commit, Dispatch} from "vuex";
 
 interface AuthStoreStateInterface {

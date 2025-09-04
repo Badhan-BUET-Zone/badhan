@@ -45,9 +45,9 @@
 
 <script>
 import NewPersonCard from '@/views/SingleDonorCreation/components/NewPersonCard'
-import PageTitle from '../components/PageTitle'
-import HelpTooltip from '../components/UI Components/HelpTooltip'
-import ContainerFlat from '../components/Container/ContainerFlat'
+import PageTitle from '@/components/PageTitle'
+import HelpTooltip from '@/components/UI Components/HelpTooltip'
+import ContainerFlat from '@/components/Container/ContainerFlat'
 
 export default {
   name: 'SingleDonorCreation',

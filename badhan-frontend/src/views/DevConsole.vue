@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import PageTitle from '../components/PageTitle'
-import Container from '../components/Container/Container'
+import PageTitle from '@/components/PageTitle'
+import Container from '@/components/Container/Container'
 import MyConsoleLog from '@/views/DevConsole/components/MyConsoleLog'
 import { DESIGNATIONS_INDEX } from '@/mixins/constants'
 export default {

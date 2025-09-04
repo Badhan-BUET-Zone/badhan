@@ -68,11 +68,11 @@
 </template>
 
 <script>
-import PageTitle from '../components/PageTitle'
-import Container from '../components/Container/Container'
-import ContainerOutlined from '../components/Container/ContainerOutlined'
-import ContainerFlat from '../components/Container/ContainerFlat'
-import Button from '../components/UI Components/Button'
+import PageTitle from '@/components/PageTitle'
+import Container from '@/components/Container/Container'
+import ContainerOutlined from '@/components/Container/ContainerOutlined'
+import ContainerFlat from '@/components/Container/ContainerFlat'
+import Button from '@/components/UI Components/Button'
 import { directCall } from '@/mixins/helpers'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import {DESIGNATIONS_INDEX } from '@/mixins/constants'

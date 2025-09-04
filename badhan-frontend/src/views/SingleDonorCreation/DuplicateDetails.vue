@@ -5,8 +5,8 @@
   </v-card>
 </template>
 <script>
-import PersonDetails from '../../views/Home/components/PersonDetails'
-import PageTitle from '../../components/PageTitle'
+import PersonDetails from '@/components/PersonDetails'
+import PageTitle from '@/components/PageTitle'
 
 export default {
   name: 'DuplicateDetails',

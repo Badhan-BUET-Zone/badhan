@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import PersonDetails from '../Home/components/PersonDetails'
-import PageTitle from '../../components/PageTitle'
+import PersonDetails from '@/components/PersonDetails'
+import PageTitle from '@/components/PageTitle'
 
 export default {
   name: 'DetailsPage',

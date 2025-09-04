@@ -26,8 +26,8 @@
 
 <script>
 import TextField from '@/components/UI Components/TextField.vue'
-import Container from '../components/Container/Container'
-import PageTitle from '../components/PageTitle'
+import Container from '@/components/Container/Container'
+import PageTitle from '@/components/PageTitle'
 import { handlePATCHUsersPassword } from '@/api'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 

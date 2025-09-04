@@ -88,13 +88,13 @@
 </template>
 
 <script>
-import PersonDetails from './Home/components/PersonDetails'
-import PageTitle from '../components/PageTitle'
-import ShareProfileButton from './MyProfile/components/ShareProfileButton'
-import Container from '../components/Container/Container'
-import ldb from '../localDatabase'
-import Button from '../components/UI Components/Button'
-import LoginCard from './MyProfile/components/LoginCard'
+import PersonDetails from '@/components/PersonDetails'
+import PageTitle from '@/components/PageTitle'
+import ShareProfileButton from '@/views/MyProfile/components/ShareProfileButton'
+import Container from '@/components/Container/Container'
+import ldb from '@/localDatabase'
+import Button from '@/components/UI Components/Button'
+import LoginCard from '@/views/MyProfile/components/LoginCard'
 import { handleGETLogins, handleDELETELogins } from '@/api'
 import { environmentService } from '@/mixins/environment'
 
