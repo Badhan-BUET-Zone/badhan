@@ -43,26 +43,13 @@
               dense
           ></v-text-field>
 
-          <v-select
+          <Selector
             data-cy="bloodgroup-select"
             id="filterBloodgroupDropdownId"
             label="Blood Group"
             v-model="bloodGroup"
             :items="bloodGroups"
-            item-text="label"
-            item-value="value"
-            outlined dense rounded
-          >
-            <template #item="{ item, on, attrs }">
-              <v-list-item
-                v-bind="attrs"
-                v-on="on"
-                :data-cy="`bloodgroup-option-${item}`"
-              >
-                <v-list-item-title>{{ item }}</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-select>
+          />
 
           <!--        Input field for batch-->
           <v-text-field
@@ -100,29 +87,16 @@
               </template>
             </v-radio>
           </v-radio-group>
-          <v-select
+          <Selector
             id="filterSpecifyHallDropdownId"
             data-cy="hall-select"
             :disabled="radios !== 'SpecifyHall'"
             v-model="hall"
             :items="availableHalls"
-            item-text="label"
-            item-value="value"
             label="Select Hall"
-            outlined dense rounded
             @blur="$v.hall.$touch()"
             :error-messages="hallErrors"
-          >
-            <template #item="{ item, on, attrs }">
-              <v-list-item
-                v-bind="attrs"
-                v-on="on"
-                :data-cy="`hall-option-${item}`"
-              >
-                <v-list-item-title>{{ item }}</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-select>
+          />
 
           <v-row>
             <v-col>
@@ -179,6 +153,7 @@
 
 <script>
 import HelpTooltip from '../components/UI Components/HelpTooltip'
+import Selector from '@/components/Selector.vue'
 import { bloodGroups, halls } from '@/mixins/constants'
 import { maxLength, minLength, numeric, required } from 'vuelidate/lib/validators'
 
@@ -195,7 +170,8 @@ export default {
     }
   },
   components: {
-    HelpTooltip
+    HelpTooltip,
+    Selector
   },
   methods: {
     clearFields () {

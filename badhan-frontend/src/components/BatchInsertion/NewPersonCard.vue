@@ -50,9 +50,9 @@
         </template>
       </v-text-field>
 
-      <v-select id="newDonorBloodGroupDropDownId" class="required" rounded v-model="bloodGroup" :items="bloodGroups" label="Blood Group" outlined dense
+      <Selector id="newDonorBloodGroupDropDownId" data-cy="newDonorBloodGroupDropDownId" class="required" v-model="bloodGroup" :items="bloodGroups" label="Blood Group"
                 @blur="$v.bloodGroup.$touch()"
-                :error-messages="bloodGroupErrors"></v-select>
+                :error-messages="bloodGroupErrors" />
 
       <v-text-field id="newDonorRoomNumberTextFieldId" rounded outlined label="Room" dense v-model="roomNumber"></v-text-field>
       <v-text-field id="newDonorAddressTextFieldId" rounded outlined label="Address" dense v-model="address"></v-text-field>
@@ -65,32 +65,16 @@
         :error-messages="plateletDonationCountErrors"></v-text-field>
       <v-card outlined class="rounded-xl">
         <v-card-text>
-        <v-select
+        <Selector
           id="newDonorHallDropdownId"
           data-cy="hall-select"
           class="required"
-          rounded
           :items="availableHalls"
-          item-text="label"
-          item-value="value"
           label="Select Hall"
-          outlined
-          dense
           v-model="hall"
           @blur="$v.hall.$touch()"
           :error-messages="hallErrors"
-        >
-          <!-- forward attrs/on that Vuetify injects -->
-          <template #item="slot">
-            <v-list-item
-              v-bind="slot.attrs"
-              v-on="slot.on"
-              :data-cy="`hall-option-${slot.item}`"
-            >
-              <v-list-item-title>{{ slot.item }}</v-list-item-title>
-            </v-list-item>
-          </template>
-        </v-select>
+        />
 
 
           <v-checkbox id="newDonorPublicDataCheckboxId" :disabled="halls.indexOf(hall)===8" dense v-model="availableToAll"
@@ -138,6 +122,7 @@ import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validator
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '../Wrappers/Container'
 import DatePicker from '@/components/DatePicker.vue'
+import Selector from '@/components/Selector.vue'
 import { environmentService } from '@/mixins/environment'
 import { createNewPopUpWindow } from '@/mixins/helpers'
 
@@ -146,7 +131,8 @@ export default {
   props: ['donor', 'discardDonor'],
   components: {
     Container,
-    DatePicker
+    DatePicker,
+    Selector
   },
   validations: () => {
     return {

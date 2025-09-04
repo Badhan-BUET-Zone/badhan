@@ -124,8 +124,8 @@
                         :error-messages="emailErrors">
                       </v-text-field>
                       <span id="donorDetailsBloodGroupSpanId">
-                      <v-select id="donorDetailsBloodGroupDropDownId" rounded dense v-model="bloodGroup" :items="bloodGroups" label="Blood Group" outlined
-                                :disabled="!isDetailsEditable"></v-select>
+                      <Selector id="donorDetailsBloodGroupDropDownId" data-cy="donorDetailsBloodGroupDropDownId" v-model="bloodGroup" :items="bloodGroups" label="Blood Group"
+                                :disabled="!isDetailsEditable" />
                       </span>
                       <v-text-field id="donorDetailsStudentIdTextBoxId" rounded dense type="'text'" outlined label="Student ID: " v-model="studentId"
                                     :disabled="!isDetailsEditable" @blur="$v.studentId.$touch()"
@@ -135,8 +135,8 @@
                       <v-text-field id="donorDetailsAddressTextBoxId" rounded dense type="'text'" outlined label="Address" v-model="address"
                                     :disabled="!isDetailsEditable"></v-text-field>
                       <span id="donorDetailsHallDropDownSpan">
-                      <v-select id="donorDetailsHallDropDownId" rounded dense v-model="hall" :items="availableHalls" label="Hall" outlined
-                                :disabled="!isDetailsEditable || designation === 2 || designation === 1"></v-select>
+                      <Selector id="donorDetailsHallDropDownId" data-cy="donorDetailsHallDropDownId" v-model="hall" :items="availableHalls" label="Hall"
+                                :disabled="!isDetailsEditable || designation === 2 || designation === 1" />
                       </span>
                       <v-checkbox id="donorDetailsPublicDataCheckboxId" :disabled="!isDetailsEditable || halls.indexOf(hall)===8" v-model="availableToAll"
                                   dense
@@ -436,23 +436,18 @@
                     <v-progress-linear indeterminate v-if="deletePublicContactLoader"></v-progress-linear>
                   </transition>
                   <p class="mt-4 h6 font-weight-bold">New Public Contact</p>
-                  <v-select
+                  <Selector
                     id="personDetailsPublicContactSelectId"
-                    rounded
-                    dense
-                    outlined
+                    data-cy="personDetailsPublicContactSelectId"
                     v-model="selectedNewPublicContact"
-                    :items="publicContactBloodGroups"
-                    item-text="name"
-                    item-value="code"
+                    :items="publicContactBloodGroupNames"
                     label="Blood Group"
-                    return-object
-                  ></v-select>
+                  />
 
                   <Button
                     id="profileDetailsPublicContactButtonId"
                     :click="publishToPublicContactClicked"
-                    :disabled="newPublicContactLoader || selectedNewPublicContact===null"
+                    :disabled="newPublicContactLoader || !selectedNewPublicContact"
                     :color="'primary'" :text="'Publish'" :icon="'mdi-content-save'">
                   </Button>
                 </v-card-text>
@@ -492,6 +487,7 @@ import { directCall, fixBackSlash } from '../../mixins/helpers'
 import { environmentService } from '@/mixins/environment'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import DatePicker from '@/components/DatePicker.vue'
+import Selector from '@/components/Selector.vue'
 
 export default {
   name: 'PersonDetails',
@@ -502,11 +498,11 @@ export default {
     DonationCard,
     ContainerOutlined,
     Container,
-
     CallRecordCard,
     HelpTooltip,
     PageTitle,
-    DatePicker
+    DatePicker,
+    Selector
   },
   data: function () {
     return {
@@ -576,14 +572,8 @@ export default {
       deleteDonorDialogFlag: false,
 
       publicContacts: [],
-      publicContactBloodGroups: [
-        { name: 'A+', code: 0 },
-        { name: 'B+', code: 2 },
-        { name: 'O+', code: 4 },
-        { name: 'AB+', code: 6 },
-        { name: 'All Negative', code: -1 }
-      ],
-      selectedNewPublicContact: null,
+      publicContactBloodGroupNames: ['A+', 'B+', 'O+', 'AB+', 'All Negative'],
+      selectedNewPublicContact: '',
       newPublicContactLoader: false,
       deletePublicContactLoader: false,
 
@@ -762,13 +752,14 @@ export default {
     },
     async publishToPublicContactClicked () {
       this.newPublicContactLoader = true
+      const groupNameToCode = { 'A+': 0, 'B+': 2, 'O+': 4, 'AB+': 6, 'All Negative': -1 }
       const response = await handlePOSTPublicContacts({
         donorId: this.id,
-        bloodGroup: this.selectedNewPublicContact.code
+        bloodGroup: groupNameToCode[this.selectedNewPublicContact]
       })
       this.newPublicContactLoader = false
       if (response.status !== 201) return
-      this.publicContacts.push({ _id: response.data.publicContact._id, bloodGroup: this.selectedNewPublicContact.code })
+      this.publicContacts.push({ _id: response.data.publicContact._id, bloodGroup: groupNameToCode[this.selectedNewPublicContact] })
       this.$store.dispatch('notification/notifySuccess', 'Public Contacts Updated')
     },
 
