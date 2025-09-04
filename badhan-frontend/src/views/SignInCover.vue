@@ -62,26 +62,19 @@
                        cols="12"
                        sm="4">
                   <div>
-                    <v-text-field
-                        :type="'text'"
-                        outlined
-                        rounded
-                        label="Phone"
+                    <TextField
                         id="signInPhoneTextBox"
-                        class="input-group--focused"
-                        dense
+                        label="Phone"
                         :hint="'Enter your 11 digit phone number'"
+                        class="input-group--focused"
                         v-model="phone"
                         @blur="$v.phone.$touch()"
                         :error-messages="phoneErrors"
-                    ></v-text-field>
-                    <v-text-field
+                    />
+                    <TextField
                         id="signInPasswordTextBox"
-                        rounded
-                        outlined
                         label="Password"
                         class="input-group--focused"
-                        dense
                         :append-icon="passwordFlag ? 'mdi-eye' : 'mdi-eye-off'"
                         :type="passwordFlag ? 'text' : 'password'"
                         v-model="password"
@@ -89,7 +82,7 @@
                         @blur="$v.password.$touch()"
                         :error-messages="passwordErrors"
                         :hint="'Enter your password'"
-                    ></v-text-field>
+                    />
                     <v-btn
                         color="primary"
                         rounded

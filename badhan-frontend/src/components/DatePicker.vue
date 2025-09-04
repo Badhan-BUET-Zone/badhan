@@ -8,11 +8,8 @@
     min-width="auto"
   >
     <template v-slot:activator="{ on, attrs }">
-      <v-text-field
+      <TextField
         :id="textFieldId"
-        rounded
-        outlined
-        dense
         :label="label"
         :prepend-icon="prependIcon"
         readonly
@@ -20,7 +17,8 @@
         v-bind="attrs"
         v-on="on"
         :disabled="disabled"
-      ></v-text-field>
+        :hint="''"
+      />
     </template>
     <v-date-picker
       :id="pickerId"
@@ -37,8 +35,10 @@
 </template>
 
 <script>
+import TextField from '@/components/UI Components/TextField.vue'
 export default {
   name: 'DatePicker',
+  components: { TextField },
   props: {
     value: {
       type: String,

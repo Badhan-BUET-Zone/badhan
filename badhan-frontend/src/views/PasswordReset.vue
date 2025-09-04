@@ -6,11 +6,11 @@
         Welcome back {{name}} ({{designation|getDesignationString}}). Please specify new password to reset your password.
       </v-card-text>
       <v-card-text>
-        <v-text-field @blur="$v.newPassword.$touch()"
-                      :error-messages="newPasswordErrors" @click:append="newPasswordFlag = !newPasswordFlag" :type="newPasswordFlag ? 'text' : 'password'" :append-icon="newPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'" v-model="newPassword" dense outlined rounded label="New Password"></v-text-field>
-        <v-text-field @blur="$v.confirmPassword.$touch()"
+        <TextField @blur="$v.newPassword.$touch()"
+                      :error-messages="newPasswordErrors" @click:append="newPasswordFlag = !newPasswordFlag" :type="newPasswordFlag ? 'text' : 'password'" :append-icon="newPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'" v-model="newPassword" label="New Password" :hint="''"></TextField>
+        <TextField @blur="$v.confirmPassword.$touch()"
                       :error-messages="confirmPasswordErrors" @click:append="confirmPasswordFlag = !confirmPasswordFlag" :append-icon="confirmPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
-                      :type="confirmPasswordFlag ? 'text' : 'password'" v-model="confirmPassword" dense outlined rounded label="Confirm Password"></v-text-field>
+                      :type="confirmPasswordFlag ? 'text' : 'password'" v-model="confirmPassword" label="Confirm Password" :hint="''"></TextField>
       </v-card-text>
       <v-card-actions>
         <v-btn @click="changePasswordClicked" :disabled="passwordChangeFlag || $v.$anyError" rounded color="primary">
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import TextField from '@/components/UI Components/TextField.vue'
 import Container from '../components/Wrappers/Container'
 import PageTitle from '../components/PageTitle'
 import { handlePATCHUsersPassword } from '@/api'
@@ -58,7 +59,8 @@ export default {
   },
   components: {
     PageTitle,
-    Container
+    Container,
+    TextField
   },
   async mounted () {
     this.$store.commit('setToken', this.$route.query.token)

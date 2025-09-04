@@ -1,12 +1,12 @@
 <template>
   <Container>
     <v-card-text>
-      <v-text-field id="newDonorNameTextBoxId" class="required" rounded outlined label="Name of Donor" dense v-model="name"
+      <TextField id="newDonorNameTextBoxId" class="required" label="Name of Donor" v-model="name"
+                    :hint="''"
                     @blur="$v.name.$touch()"
-                    :error-messages="nameErrors"></v-text-field>
-      <v-text-field id="newDonorPhoneTextBoxId" :loading="phoneDuplicateCheckLoader" :disabled="phoneDuplicateCheckLoader" class="required" rounded
-                    outlined label="Phone" dense v-model="computedPhone" @blur="$v.phone.$touch()"
-                    :error-messages="phoneErrors"></v-text-field>
+                    :error-messages="nameErrors"></TextField>
+      <TextField id="newDonorPhoneTextBoxId" :loading="phoneDuplicateCheckLoader" :disabled="phoneDuplicateCheckLoader" class="required" label="Phone" v-model="computedPhone" :hint="''" @blur="$v.phone.$touch()"
+                    :error-messages="phoneErrors"></TextField>
       <transition name="slide-fade-down">
         <v-btn id="donorCreationSeeDuplicateButtonId" v-if="duplicateDonorId!==null" small class="mb-2" color="primary" rounded @click="goToDuplicateProfile">
           <v-icon left>
@@ -16,10 +16,9 @@
         </v-btn>
       </transition>
 
-      <v-text-field id="newDonorStudentIdTextBoxId" class="required" rounded outlined label="Student ID" dense v-model="studentId"
+      <TextField id="newDonorStudentIdTextBoxId" class="required" label="Student ID" v-model="studentId" :hint="'If the department is unknown, give 00 as dept. code'"
                     @blur="$v.studentId.$touch()"
                     :error-messages="studentIdErrors"
-                    hint="If the department is unknown, give 00 as dept. code"
       >
         <template v-slot:message>
           <span>{{ studentIdErrors[0] }}</span>
@@ -48,21 +47,23 @@
             </v-menu>
           </div>
         </template>
-      </v-text-field>
+      </TextField>
 
       <Selector id="newDonorBloodGroupDropDownId" data-cy="newDonorBloodGroupDropDownId" class="required" v-model="bloodGroup" :items="bloodGroups" label="Blood Group"
                 @blur="$v.bloodGroup.$touch()"
                 :error-messages="bloodGroupErrors" />
 
-      <v-text-field id="newDonorRoomNumberTextFieldId" rounded outlined label="Room" dense v-model="roomNumber"></v-text-field>
-      <v-text-field id="newDonorAddressTextFieldId" rounded outlined label="Address" dense v-model="address"></v-text-field>
-      <v-text-field id="newDonorCommentTextFieldId" rounded outlined label="Comment" dense v-model="comment"></v-text-field>
-      <v-text-field id="newDonorDonationCountTextFieldId" class="required" type="number" rounded outlined label="Donation count" dense v-model="donationCount"
+      <TextField id="newDonorRoomNumberTextFieldId" label="Room" v-model="roomNumber" :hint="''"></TextField>
+      <TextField id="newDonorAddressTextFieldId" label="Address" v-model="address" :hint="''"></TextField>
+      <TextField id="newDonorCommentTextFieldId" label="Comment" v-model="comment" :hint="''"></TextField>
+      <TextField id="newDonorDonationCountTextFieldId" class="required" label="Donation count" v-model="donationCount"
+                    :hint="''"
                     @blur="$v.donationCount.$touch()"
-                    :error-messages="donationCountErrors"></v-text-field>
-  <v-text-field id="newDonorPlateletDonationCountTextFieldId" type="number" rounded outlined label="Platelet donation count" dense v-model="plateletDonationCount"
+                    :error-messages="donationCountErrors"></TextField>
+  <TextField id="newDonorPlateletDonationCountTextFieldId" label="Platelet donation count" v-model="plateletDonationCount"
+        :hint="''"
         @blur="$v.plateletDonationCount.$touch()"
-        :error-messages="plateletDonationCountErrors"></v-text-field>
+        :error-messages="plateletDonationCountErrors"></TextField>
       <v-card outlined class="rounded-xl">
         <v-card-text>
         <Selector
@@ -122,6 +123,7 @@ import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validator
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '../Wrappers/Container'
 import DatePicker from '@/components/DatePicker.vue'
+import TextField from '@/components/UI Components/TextField.vue'
 import Selector from '@/components/Selector.vue'
 import { environmentService } from '@/mixins/environment'
 import { createNewPopUpWindow } from '@/mixins/helpers'
@@ -132,7 +134,8 @@ export default {
   components: {
     Container,
     DatePicker,
-    Selector
+    Selector,
+    TextField
   },
   validations: () => {
     return {

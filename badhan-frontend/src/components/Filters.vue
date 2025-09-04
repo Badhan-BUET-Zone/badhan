@@ -32,16 +32,13 @@
 <!--      </v-card-subtitle>-->
         <v-container>
           <!--        Input field for name-->
-          <v-text-field
+          <TextField
             id="filterNameTextboxId"
-              rounded
-              v-model="name"
-              :hint="'Search any donor by name'"
-              outlined
-              label="Name of Donor"
-              clearable
-              dense
-          ></v-text-field>
+            v-model="name"
+            :hint="'Search any donor by name'"
+            label="Name of Donor"
+            clearable
+          />
 
           <Selector
             data-cy="bloodgroup-select"
@@ -52,28 +49,24 @@
           />
 
           <!--        Input field for batch-->
-          <v-text-field
+          <TextField
               id="filterBatchTextboxId"
-              rounded
               v-model="batch"
-              outlined
               label="Batch"
+              :hint="'Batch number (two digits)'"
               clearable
-              dense
               @blur="$v.batch.$touch()"
               :error-messages="batchErrors"
-          ></v-text-field>
+          />
 
           <!--        Input field for hall-->
-          <v-text-field
+          <TextField
               id="filterAddressTextboxId"
-              rounded
-              outlined
               label="Address/ Comment"
+              :hint="'Search in address/comment'"
               clearable
               v-model="address"
-              dense
-          ></v-text-field>
+          />
 
           <v-radio-group row v-model="radios" dense>
             <v-radio value="AvailableToAll" id="filterPublicDataRadioId">
@@ -152,6 +145,7 @@
 </template>
 
 <script>
+import TextField from '@/components/UI Components/TextField.vue'
 import HelpTooltip from '../components/UI Components/HelpTooltip'
 import Selector from '@/components/Selector.vue'
 import { bloodGroups, halls } from '@/mixins/constants'
@@ -171,7 +165,8 @@ export default {
   },
   components: {
     HelpTooltip,
-    Selector
+    Selector,
+    TextField
   },
   methods: {
     clearFields () {

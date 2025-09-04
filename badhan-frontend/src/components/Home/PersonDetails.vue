@@ -108,32 +108,32 @@
                 <transition name="slide-fade-down-snapout" mode="out-in">
                   <v-card-text v-if="personDetailCollapseFlag">
                     <div>
-                      <v-text-field id="donorDetailsNameTextBoxId" rounded dense type="'text'" outlined label="Name" v-model="name"
+                      <TextField id="donorDetailsNameTextBoxId" label="Name" v-model="name" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.name.$touch()"
-                                    :error-messages="nameErrors"></v-text-field>
-                      <v-text-field id="donorDetailsPhoneTextBoxId" rounded dense type="'text'" outlined label="Phone" v-model="phone"
+                                    :error-messages="nameErrors"></TextField>
+                      <TextField id="donorDetailsPhoneTextBoxId" label="Phone" v-model="phone" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.phone.$touch()"
-                                    :error-messages="phoneErrors"></v-text-field>
-                      <v-text-field
+                                    :error-messages="phoneErrors"></TextField>
+                      <TextField
                         id="donorDetailsEmailTextBoxId"
                         :hint="(designation!==0 && !$isMe(id))?'You cannot edit this email':'Password Recovery Email'"
-                        :persistent-hint="(designation!==0 && !$isMe(id))" rounded dense outlined :label="'Email'"
+                        :persistent-hint="(designation!==0 && !$isMe(id))" :label="'Email'"
                         v-model="email"
                         :disabled="!isDetailsEditable || (designation!==0 && !$isMe(id)) "
                         @blur="$v.email.$touch()"
                         :error-messages="emailErrors">
-                      </v-text-field>
+                      </TextField>
                       <span id="donorDetailsBloodGroupSpanId">
                       <Selector id="donorDetailsBloodGroupDropDownId" data-cy="donorDetailsBloodGroupDropDownId" v-model="bloodGroup" :items="bloodGroups" label="Blood Group"
                                 :disabled="!isDetailsEditable" />
                       </span>
-                      <v-text-field id="donorDetailsStudentIdTextBoxId" rounded dense type="'text'" outlined label="Student ID: " v-model="studentId"
+                      <TextField id="donorDetailsStudentIdTextBoxId" label="Student ID: " v-model="studentId" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.studentId.$touch()"
-                                    :error-messages="studentIdErrors"></v-text-field>
-                      <v-text-field id="donorDetailsRoomTextBoxId" rounded dense type="'text'" outlined label="Room" v-model="room"
-                                    :disabled="!isDetailsEditable"></v-text-field>
-                      <v-text-field id="donorDetailsAddressTextBoxId" rounded dense type="'text'" outlined label="Address" v-model="address"
-                                    :disabled="!isDetailsEditable"></v-text-field>
+                                    :error-messages="studentIdErrors"></TextField>
+                      <TextField id="donorDetailsRoomTextBoxId" label="Room" v-model="room" :hint="''"
+                                    :disabled="!isDetailsEditable"></TextField>
+                      <TextField id="donorDetailsAddressTextBoxId" label="Address" v-model="address" :hint="''"
+                                    :disabled="!isDetailsEditable"></TextField>
                       <span id="donorDetailsHallDropDownSpan">
                       <Selector id="donorDetailsHallDropDownId" data-cy="donorDetailsHallDropDownId" v-model="hall" :items="availableHalls" label="Hall"
                                 :disabled="!isDetailsEditable || designation === 2 || designation === 1" />
@@ -235,21 +235,21 @@
                       </v-btn>
 
                       <div key="passwordChange" v-if="$isMe(id)">
-                        <v-text-field id="newPasswordFieldId" rounded dense :append-icon="newPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
-                                      :type="newPasswordFlag ? 'text' : 'password'" outlined
-                                      label="New Password" v-model="newPassword"
+                        <TextField id="newPasswordFieldId" :append-icon="newPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
+                                      :type="newPasswordFlag ? 'text' : 'password'"
+                                      label="New Password" v-model="newPassword" :hint="''"
                                       class="input-group--focused"
                                       @click:append="newPasswordFlag = !newPasswordFlag"
                                       :disabled="!isDetailsEditable"
                                       @blur="$v.newPassword.$touch()"
-                                      :error-messages="newPasswordErrors"></v-text-field>
-                        <v-text-field id="confirmPasswordFieldId" rounded dense :append-icon="confirmPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
-                                      :type="confirmPasswordFlag ? 'text' : 'password'" outlined
-                                      label="Confirm Password" v-model="confirmPassword" class="input-group--focused"
+                                      :error-messages="newPasswordErrors"></TextField>
+                        <TextField id="confirmPasswordFieldId" :append-icon="confirmPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
+                                      :type="confirmPasswordFlag ? 'text' : 'password'"
+                                      label="Confirm Password" v-model="confirmPassword" class="input-group--focused" :hint="''"
                                       @click:append="confirmPasswordFlag = !confirmPasswordFlag"
                                       :disabled="!isDetailsEditable"
                                       @blur="$v.confirmPassword.$touch()"
-                                      :error-messages="confirmPasswordErrors"></v-text-field>
+                                      :error-messages="confirmPasswordErrors"></TextField>
                         <v-btn small class="ma-1" color="secondary" style="text-decoration: none" to="/home" rounded>
                           <v-icon left>mdi-window-close</v-icon>
                           Cancel
@@ -487,6 +487,7 @@ import { directCall, fixBackSlash } from '../../mixins/helpers'
 import { environmentService } from '@/mixins/environment'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import DatePicker from '@/components/DatePicker.vue'
+import TextField from '@/components/UI Components/TextField.vue'
 import Selector from '@/components/Selector.vue'
 
 export default {
@@ -502,7 +503,8 @@ export default {
     HelpTooltip,
     PageTitle,
     DatePicker,
-    Selector
+    Selector,
+    TextField
   },
   data: function () {
     return {
