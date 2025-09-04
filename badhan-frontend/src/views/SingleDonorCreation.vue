@@ -44,10 +44,10 @@
 </template>
 
 <script>
-import NewPersonCard from '../components/BatchInsertion/NewPersonCard'
+import NewPersonCard from '@/views/SingleDonorCreation/components/NewPersonCard'
 import PageTitle from '../components/PageTitle'
 import HelpTooltip from '../components/UI Components/HelpTooltip'
-import ContainerFlat from '../components/Wrappers/ContainerFlat'
+import ContainerFlat from '../components/Container/ContainerFlat'
 
 export default {
   name: 'SingleDonorCreation',

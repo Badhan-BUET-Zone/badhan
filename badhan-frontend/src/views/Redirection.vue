@@ -9,7 +9,7 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import Container from '../components/Wrappers/Container'
+import Container from '../components/Container/Container'
 
 export default {
   name: 'RedirectionPage',

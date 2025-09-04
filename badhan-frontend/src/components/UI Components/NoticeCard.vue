@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Container from '../Wrappers/Container'
+import Container from '../Container/Container'
 export default {
   name: 'NoticeCard',
   components: { Container }

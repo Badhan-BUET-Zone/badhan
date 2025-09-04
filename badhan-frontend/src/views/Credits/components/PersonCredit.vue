@@ -5,7 +5,7 @@
         color="grey"
         class="ma-2"
     >
-      <v-img :src="person.imageUrl" lazy-src="../../assets/account.png">
+      <v-img :src="person.imageUrl" lazy-src="@/assets/account.png">
         <template v-slot:placeholder>
           <v-row
               class="fill-height ma-0"
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import ContainerOutlined from '../Wrappers/ContainerOutlined'
+import ContainerOutlined from '@/components/Container/ContainerOutlined'
 
 export default {
   props: ['person'],

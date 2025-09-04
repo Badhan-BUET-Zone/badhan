@@ -121,7 +121,7 @@
 import { halls, bloodGroups, departments, nullDepartment } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
-import Container from '../Wrappers/Container'
+import Container from '@/components/Container/Container'
 import DatePicker from '@/components/UI Components/DatePicker.vue'
 import TextField from '@/components/UI Components/TextField.vue'
 import Selector from '@/components/UI Components/Selector.vue'

@@ -69,9 +69,9 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import Container from '../components/Wrappers/Container'
-import ContainerOutlined from '../components/Wrappers/ContainerOutlined'
-import ContainerFlat from '../components/Wrappers/ContainerFlat'
+import Container from '../components/Container/Container'
+import ContainerOutlined from '../components/Container/ContainerOutlined'
+import ContainerFlat from '../components/Container/ContainerFlat'
 import Button from '../components/UI Components/Button'
 import { directCall } from '@/mixins/helpers'
 import LoadingMessage from '@/components/LoadingMessage.vue'

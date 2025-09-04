@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import ContainerOutlined from '../Wrappers/ContainerOutlined'
-import Button from '../UI Components/Button'
+import ContainerOutlined from '@/components/Container/ContainerOutlined'
+import Button from '@/components/UI Components/Button'
 export default {
   name: 'LoginCard',
   props: {

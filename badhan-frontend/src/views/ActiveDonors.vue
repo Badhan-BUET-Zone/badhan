@@ -56,7 +56,7 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import ContainerFlat from '../components/Wrappers/ContainerFlat'
+import ContainerFlat from '../components/Container/ContainerFlat'
 import PersonCardNew from '../components/PersonCardNew'
 import Filters from '../components/Filters'
 import { bloodGroups, halls } from '@/mixins/constants'

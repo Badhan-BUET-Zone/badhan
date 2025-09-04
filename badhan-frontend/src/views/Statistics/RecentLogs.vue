@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Container from '../../components/Wrappers/Container'
+import Container from '../../components/Container/Container'
 export default {
   name: 'RecentLogs',
   components: { Container }

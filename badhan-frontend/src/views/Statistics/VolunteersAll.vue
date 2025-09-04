@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Container from '../../components/Wrappers/Container'
+import Container from '../../components/Container/Container'
 import { handleGETDonorDesignatedAll } from '@/api'
 
 export default {

@@ -463,11 +463,11 @@
 <script>
 import { halls, bloodGroups } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric, sameAs } from 'vuelidate/lib/validators'
-import CallRecordCard from '../../components/Home/CallRecordCard'
-import HelpTooltip from '../../components/UI Components/HelpTooltip'
-import PageTitle from '../PageTitle'
-import Container from '../Wrappers/Container'
-import ContainerOutlined from '../Wrappers/ContainerOutlined'
+import CallRecordCard from './CallRecordCard'
+import HelpTooltip from '@/components/UI Components/HelpTooltip'
+import PageTitle from '@/components/PageTitle'
+import Container from '@/components/Container/Container'
+import ContainerOutlined from '@/components/Container/ContainerOutlined'
 import {
   handleDELETEActiveDonors, handlePOSTActiveDonors, isGuestEnabled,
   handlePATCHDonorsDesignation,
@@ -480,10 +480,10 @@ import {
   handlePATCHDonors, handlePOSTCallRecord, handleGETDonors,
   handleDELETEDonations, handlePOSTPlateletDonations, handleDELETEPlateletDonations,
   handlePATCHAdmins
-} from '../../api'
+} from '@/api'
 import DonationCard from './DonationCard'
-import Button from '../UI Components/Button'
-import { directCall, fixBackSlash } from '../../mixins/helpers'
+import Button from '@/components/UI Components/Button'
+import { directCall, fixBackSlash } from '@/mixins/helpers'
 import { environmentService } from '@/mixins/environment'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import DatePicker from '@/components/UI Components/DatePicker.vue'

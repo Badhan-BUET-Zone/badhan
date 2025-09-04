@@ -56,8 +56,8 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import Container from '../components/Wrappers/Container'
-import PersonCredit from '../components/Credits/PersonCredit'
+import Container from '../components/Container/Container'
+import PersonCredit from '@/views/Credits/components/PersonCredit'
 import { handleGETContributors } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import PersonDetails from '../../components/Home/PersonDetails'
+import PersonDetails from '../Home/components/PersonDetails'
 import PageTitle from '../../components/PageTitle'
 
 export default {

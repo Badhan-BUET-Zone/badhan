@@ -27,7 +27,7 @@
 <script>
 import axios from 'axios'
 import PageTitle from '../components/PageTitle'
-import Container from '../components/Wrappers/Container'
+import Container from '../components/Container/Container'
 import Button from '../components/UI Components/Button'
 import JsonTree from '../components/UI Components/JsonTree.vue'
 

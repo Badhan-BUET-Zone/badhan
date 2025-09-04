@@ -10,7 +10,7 @@
 
 <script>
 import ldb from '@/localDatabase'
-import ContainerFlat from '@/components/Wrappers/ContainerFlat.vue'
+import ContainerFlat from '@/components/Container/ContainerFlat.vue'
 
 export default {
   name: 'LoadingMessage',

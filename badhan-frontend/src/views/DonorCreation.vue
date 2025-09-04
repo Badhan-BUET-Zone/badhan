@@ -31,8 +31,8 @@
 <script>
 import PageTitle from '../components/PageTitle'
 import { isGuestEnabled, handlePOSTRedirection } from '@/api'
-import Container from '../components/Wrappers/Container'
-import ContainerFlat from '../components/Wrappers/ContainerFlat'
+import Container from '../components/Container/Container'
+import ContainerFlat from '../components/Container/ContainerFlat'
 import Button from '../components/UI Components/Button'
 import { environmentService } from '@/mixins/environment'
 

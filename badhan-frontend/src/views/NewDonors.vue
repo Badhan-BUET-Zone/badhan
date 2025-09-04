@@ -44,7 +44,7 @@
 
 <script>
 import PageTitle from '../components/PageTitle'
-import Container from '../components/Wrappers/Container'
+import Container from '../components/Container/Container'
 import Button from '../components/UI Components/Button'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import PersonCardNew from '@/components/PersonCardNew'

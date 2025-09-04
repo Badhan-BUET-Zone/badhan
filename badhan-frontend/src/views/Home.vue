@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import PersonCard from '../components/Home/PersonCard'
+import PersonCard from './Home/components/PersonCard'
 import { bloodGroups, DESIGNATIONS_INDEX, halls } from '@/mixins/constants'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
 import { isGuestEnabled, handleGETSearchV3 } from '@/api'

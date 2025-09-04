@@ -29,8 +29,8 @@
 
 <script>
 import { handleGETLogs } from '@/api'
-import DateLog from '../../components/Statistics/DateLog'
-import Container from '../../components/Wrappers/Container'
+import DateLog from './components/DateLog'
+import Container from '../../components/Container/Container'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { DESIGNATIONS_INDEX } from '@/mixins/constants'
 

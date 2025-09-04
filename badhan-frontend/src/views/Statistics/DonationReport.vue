@@ -66,7 +66,7 @@
 </template>
   
 <script>
-import Container from '../../components/Wrappers/Container'
+import Container from '../../components/Container/Container'
 import { handleGETDonationsReport, handleGETPlateletDonationsReport } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button.vue'
