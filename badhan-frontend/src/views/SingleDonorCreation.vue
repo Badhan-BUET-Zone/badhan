@@ -30,7 +30,7 @@
       </HelpTooltip>
     </PageTitle>
 
-    <NewPersonCard v-if="donor!==null" :donor="donor" :discard-donor="null"></NewPersonCard>
+    <NewPersonCard v-if="donor!==null" :person="donor" :discard-donor="null"></NewPersonCard>
 
     <ContainerFlat>
       <v-btn rounded to="/donorCreation" color="secondary" style="text-decoration: none" text>

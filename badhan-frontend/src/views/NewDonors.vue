@@ -29,7 +29,7 @@
             <PersonCardNew
               v-for="d in donors"
               :key="d._id"
-              :donor="d"
+              :person="d"
               :detailsBasePath="'/newDonors'"
             />
             <transition name="slide-fade" mode="out-in">

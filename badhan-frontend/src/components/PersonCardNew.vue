@@ -139,9 +139,6 @@ import { handlePOSTCallRecord, handlePOSTDonations, handlePOSTPlateletDonations 
 
 export default {
   props: {
-    donor: {
-      type: Object
-    },
     person: {
       type: Object
     },
@@ -153,8 +150,7 @@ export default {
   components: { VueMarkdown, DatePicker },
   name: 'PersonCardNew',
   mounted () {
-    const person = this.$props.person || this.$props.donor
-    this.setInformation(person)
+    this.setInformation(this.$props.person)
   },
   methods: {
     async callFromDialer () {

@@ -44,7 +44,7 @@
     </div>
 
     <div style="max-width: 700px" class="mx-auto" v-else>
-  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :donor="donor" :detailsBasePath="'/activeDonors'">
+  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :person="donor" :detailsBasePath="'/activeDonors'">
 
       </PersonCardNew>
     </div>
