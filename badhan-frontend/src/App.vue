@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import AppBar from './components/AppBar'
+import AppBar from './components/AppShell/AppBar'
 
-import Notification from './components/Notification'
-import MessageBox from './components/MessageBox'
-import ConfirmationBox from './components/ConfirmationBox'
-import TopProgressBar from '@/components/TopProgressBar.vue'
+import Notification from './components/AppShell/Notification'
+import MessageBox from './components/AppShell/MessageBox'
+import ConfirmationBox from './components/AppShell/ConfirmationBox'
+import TopProgressBar from '@/components/AppShell/TopProgressBar.vue'
 
 export default {
   name: 'app',

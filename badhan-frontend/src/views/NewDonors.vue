@@ -48,7 +48,7 @@ import Container from '../components/Wrappers/Container'
 import Button from '../components/UI Components/Button'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import PersonCardNew from '@/components/PersonCardNew'
-import DatePicker from '@/components/DatePicker.vue'
+import DatePicker from '@/components/UI Components/DatePicker.vue'
 import { handleGETDonorsNew } from '@/api'
 
 export default {

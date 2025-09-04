@@ -90,7 +90,7 @@
 <script>
 import PersonDetails from '../components/Home/PersonDetails'
 import PageTitle from '../components/PageTitle'
-import ShareProfileButton from '../components/ShareProfileButton'
+import ShareProfileButton from '../components/MyProfile/ShareProfileButton'
 import Container from '../components/Wrappers/Container'
 import ldb from '../localDatabase'
 import Button from '../components/UI Components/Button'

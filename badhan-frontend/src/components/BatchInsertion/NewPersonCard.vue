@@ -122,9 +122,9 @@ import { halls, bloodGroups, departments, nullDepartment } from '@/mixins/consta
 import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '../Wrappers/Container'
-import DatePicker from '@/components/DatePicker.vue'
+import DatePicker from '@/components/UI Components/DatePicker.vue'
 import TextField from '@/components/UI Components/TextField.vue'
-import Selector from '@/components/Selector.vue'
+import Selector from '@/components/UI Components/Selector.vue'
 import { environmentService } from '@/mixins/environment'
 import { createNewPopUpWindow } from '@/mixins/helpers'
 
@@ -313,7 +313,7 @@ export default {
       name: null,
       phone: null,
       studentId: null,
-      bloodGroup: null,
+      bloodGroup: '',
       hall: null,
       address: null,
       roomNumber: null,
@@ -445,7 +445,7 @@ export default {
       this.name = null
       this.phone = null
       this.studentId = null
-      this.bloodGroup = null
+      this.bloodGroup = ''
 
       this.hall = halls[this.$store.getters['getHall']]
 

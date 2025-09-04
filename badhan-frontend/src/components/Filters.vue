@@ -147,7 +147,7 @@
 <script>
 import TextField from '@/components/UI Components/TextField.vue'
 import HelpTooltip from '../components/UI Components/HelpTooltip'
-import Selector from '@/components/Selector.vue'
+import Selector from '@/components/UI Components/Selector.vue'
 import { bloodGroups, halls } from '@/mixins/constants'
 import { maxLength, minLength, numeric, required } from 'vuelidate/lib/validators'
 
@@ -173,7 +173,7 @@ export default {
       this.$v.$reset()
       this.batch = ''
       this.hall = halls[this.$store.getters['getHall']]
-      this.bloodGroup = -1
+      this.bloodGroup = ''
       this.name = ''
       this.error = ''
       this.address = ''
@@ -256,7 +256,7 @@ export default {
   data: function () {
     return {
       name: '',
-      bloodGroup: -1,
+      bloodGroup: '',
       batch: '',
       address: '',
       hall: halls[this.$store.getters['getHall']],

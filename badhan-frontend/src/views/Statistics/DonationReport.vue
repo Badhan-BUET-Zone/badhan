@@ -70,7 +70,7 @@ import Container from '../../components/Wrappers/Container'
 import { handleGETDonationsReport, handleGETPlateletDonationsReport } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button.vue'
-import DatePicker from '@/components/DatePicker.vue'
+import DatePicker from '@/components/UI Components/DatePicker.vue'
 import { bloodGroups, DESIGNATIONS_INDEX } from '@/mixins/constants'
   
 export default {

@@ -486,9 +486,9 @@ import Button from '../UI Components/Button'
 import { directCall, fixBackSlash } from '../../mixins/helpers'
 import { environmentService } from '@/mixins/environment'
 import LoadingMessage from '@/components/LoadingMessage.vue'
-import DatePicker from '@/components/DatePicker.vue'
+import DatePicker from '@/components/UI Components/DatePicker.vue'
 import TextField from '@/components/UI Components/TextField.vue'
-import Selector from '@/components/Selector.vue'
+import Selector from '@/components/UI Components/Selector.vue'
 
 export default {
   name: 'PersonDetails',

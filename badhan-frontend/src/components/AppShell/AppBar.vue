@@ -2,7 +2,7 @@
   <fragment>
     <v-app-bar color="primary" dark app clipped-left collapse-on-scroll class="rounded-b-xl">
       <v-app-bar-nav-icon id="hamburgerButtonId" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <img src="../assets/images/badhanlogo.png" alt="Badhan" style="height: 40px; width: 40px" class="mr-4">
+      <img src="../../assets/images/badhanlogo.png" alt="Badhan" style="height: 40px; width: 40px" class="mr-4">
       <v-toolbar-title>Badhan BUET Zone</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-menu right content-class="rounded-xl overflow-hidden">
@@ -92,7 +92,7 @@
 
 <script>
 import { isGuestEnabled } from '@/api'
-import ldb from '../localDatabase'
+import ldb from '../../localDatabase'
 import { environmentService } from '@/mixins/environment'
 
 export default {
@@ -284,3 +284,4 @@ export default {
   }
 }
 </script>
+

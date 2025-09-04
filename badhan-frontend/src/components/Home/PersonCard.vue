@@ -139,7 +139,7 @@
 import { directCall, fixBackSlash } from '@/mixins/helpers'
 import VueMarkdown from 'vue-markdown'
 import { handlePOSTCallRecord, handlePOSTDonations, handlePOSTPlateletDonations } from '@/api'
-import DatePicker from '@/components/DatePicker.vue'
+import DatePicker from '@/components/UI Components/DatePicker.vue'
 
 export default {
   name: 'PersonCard',

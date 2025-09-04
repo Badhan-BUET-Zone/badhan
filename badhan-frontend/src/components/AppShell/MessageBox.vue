@@ -66,3 +66,4 @@ export default {
   border-radius: 0.75rem !important; /* enforce on card */
 }
 </style>
+
