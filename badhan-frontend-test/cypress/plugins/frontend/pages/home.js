@@ -126,7 +126,7 @@ export default {
                     donationDatePicker:{
                         sampleDate: {
                             click: ()=>{
-                                cy.get(idStart("personCardDatePickerCalenderId_")).eq(indexOfPerson).contains("28").click()
+                                cy.get(idStart("personCardDatePickerCalenderId_")).eq(indexOfPerson).contains("1").click()
                             }
                         },
                         okButton: {

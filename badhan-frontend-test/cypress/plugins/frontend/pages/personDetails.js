@@ -201,7 +201,7 @@ export default {
     donationDatePicker: {
         sampleDate: {
             click: ()=>{
-                cy.get("#personDetailsNewDonationDatePickerId").contains("28").click()
+                cy.get("#personDetailsNewDonationDatePickerId").contains("1").click()
             }
         },
         okButton: {

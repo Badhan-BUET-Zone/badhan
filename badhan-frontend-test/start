@@ -20,4 +20,12 @@ for ARG in "$@"; do
   esac
 done
 
-npx cypress run --spec "cypress/integration/$SPEC" $HEADED $CFG_OPTS
+# Determine final spec path. If an absolute or already-rooted path is provided,
+# pass it through. Otherwise, assume it's relative to cypress/integration/.
+if [[ "$SPEC" == /* || "$SPEC" == ./* || "$SPEC" == cypress/* ]]; then
+  SPEC_PATH="$SPEC"
+else
+  SPEC_PATH="cypress/integration/$SPEC"
+fi
+
+npx cypress run --spec "$SPEC_PATH" $HEADED $CFG_OPTS

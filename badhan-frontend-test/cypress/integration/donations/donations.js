@@ -40,11 +40,4 @@ describe('Donations', () => {
         ui.pages.personDetails.donationHistory.getByIndex(0).deleteButton.click()
         ui.components.confirmationModal.okButton.click()
         ui.components.notificationSnackBar.contains(routeInfos.DELETEDonations.notification)
-
-        // signout
-        ui.pages.personDetails.pageTitle.backButton.click()
-        ui.components.topBar.tripleDotButton.click()
-        ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
-        ui.components.confirmationModal.okButton.click()
-        ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
     })})

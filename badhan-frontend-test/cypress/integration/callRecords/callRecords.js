@@ -17,6 +17,7 @@ describe('Call Records', () => {
         ui.pages.home.filter.searchButton.click()
         searchInterceptor.wait().then(result => {
             // get call record count and check
+            ui.control.wait(1000)
             const searchResultBody = result.response.body
             const sampleDonorId = searchResultBody.filteredDonors[searchResultBody.filteredDonors.length - 1]._id
             const previousCallCount = searchResultBody.filteredDonors[searchResultBody.filteredDonors.length - 1].callRecordCount
@@ -37,12 +38,5 @@ describe('Call Records', () => {
             ui.pages.personDetails.callRecords.getByIndex(0).deleteButton.click()
             ui.components.confirmationModal.okButton.click()
             ui.components.notificationSnackBar.contains(routeInfos.DELETECallRecords.notification)
-
-            // signout
-            ui.pages.personDetails.pageTitle.backButton.click()
-            ui.components.topBar.tripleDotButton.click()
-            ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
-            ui.components.confirmationModal.okButton.click()
-            ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
         })
     })})

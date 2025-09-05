@@ -1,6 +1,7 @@
 <template>
   <div class="mb-2 rounded-xl">
     <v-card
+        :id="`personCardId_${id}`"
         style="width: 100%; height: 100%; overflow: hidden;"
         class="rounded-xl"
         @click="expansionClicked"
