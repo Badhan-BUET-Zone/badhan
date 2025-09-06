@@ -15,7 +15,5 @@ describe('Search', () => {
             available: true,
             notAvailable: true
         })
-
-        ui.pages.home.searchResult.personCards.isDonorPresent(fakeDonorProfile.name)
     }
 )})

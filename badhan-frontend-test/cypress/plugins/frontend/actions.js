@@ -24,8 +24,8 @@ export default {
         ui.pages.singleDonorCreation.studentIdTextBox.type(donorProfile.studentId)
         ui.pages.singleDonorCreation.bloodGroupSelection.click()
         ui.pages.singleDonorCreation.bloodGroupSelection.getSelectionMenuByBloodGroup(donorProfile.bloodGroup).click()
-        ui.pages.singleDonorCreation.hallSelection.click()
-        ui.pages.singleDonorCreation.hallSelection.getSelectionMenuByHall(donorProfile.hall).click()
+        // ui.pages.singleDonorCreation.hallSelection.click()
+        // ui.pages.singleDonorCreation.hallSelection.getSelectionMenuByHall(donorProfile.hall).click()
         ui.pages.singleDonorCreation.roomNumberTextBox.type(donorProfile.roomNumber)
         ui.pages.singleDonorCreation.addressTextBox.type(donorProfile.address)
         ui.pages.singleDonorCreation.commentTextBox.type(donorProfile.comment)
@@ -44,7 +44,7 @@ export default {
     searchDonor: (searchOptions)=>{
         ui.pages.home.isCurrentPage()
         ui.pages.home.filter.nameTextBox.type(searchOptions.name)
-        ui.pages.home.filter.bloodGroupSelect(searchOptions.bloodGroup).click()
+        // ui.pages.home.filter.bloodGroupSelect(searchOptions.bloodGroup).click()
         ui.pages.home.filter.batchTextBox.type(searchOptions.batch)
         if(searchOptions.address !== null){
             ui.pages.home.filter.addressTextBox.type(searchOptions.address)

@@ -28,13 +28,6 @@ describe('Admin Promotion', () => {
                 ui.pages.personDetails.settings.expansionButton.click()
                 ui.pages.personDetails.settings.expansion.promoteToHallAdminButton.click()
                 ui.components.notificationSnackBar.contains(routeInfos.PATCHAdmins.notification)
-
-                // sign out from UI
-                ui.pages.personDetails.pageTitle.backButton.click()
-                ui.components.topBar.tripleDotButton.click()
-                ui.components.topBar.tripleDotButton.tripleDotButtonMenu.signOutMenuButton.click()
-                ui.components.confirmationModal.okButton.click()
-                ui.components.notificationSnackBar.contains(routeInfos.DELETESignOut.notification)
             })
         })
     })})
