@@ -71,7 +71,7 @@ export default {
     donationDatePicker:{
         sampleDate: {
             click:()=>{
-                cy.contains("28").click()
+                cy.contains("1").click()
             }
         },
         okButton: {

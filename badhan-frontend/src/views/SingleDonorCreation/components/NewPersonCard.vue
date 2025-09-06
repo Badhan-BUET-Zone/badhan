@@ -189,10 +189,10 @@ export default {
         numeric,
         required,
         lastDonationCheck (value) {
-          return !(this.lastDonation === null && parseInt(value) !== 0)
+          return !((this.lastDonation === null || this.lastDonation === '') && parseInt(value) !== 0)
         },
         lastDonationCheck2 (value) {
-          return !(this.lastDonation !== null && parseInt(value) === 0)
+          return !((this.lastDonation !== null && this.lastDonation !== '') && parseInt(value) === 0)
         }
       },
       plateletDonationCount: {
@@ -200,10 +200,10 @@ export default {
         numeric,
         // optional (can be zero without date)
         lastDonationCheck (value) {
-          return !(this.lastPlateletDonation === null && value !== null && parseInt(value) !== 0)
+          return !((this.lastPlateletDonation === null || this.lastPlateletDonation === '') && value !== null && parseInt(value) !== 0)
         },
         lastDonationCheck2 (value) {
-          return !(this.lastPlateletDonation !== null && parseInt(value) === 0)
+          return !((this.lastPlateletDonation !== null && this.lastPlateletDonation !== '') && parseInt(value) === 0)
         }
       },
       availableToAll: {
@@ -310,18 +310,19 @@ export default {
       departments,
       nullDepartment,
 
-      name: null,
-      phone: null,
-      studentId: null,
+      name: '',
+      phone: '',
+      studentId: '',
       bloodGroup: '',
-      hall: null,
-      address: null,
-      roomNumber: null,
-      comment: null,
+      // hall: halls[this.$store.getters['getHall']],
+      hall: '',
+      address: '',
+      roomNumber: '',
+      comment: '',
       donationCount: 0,
-      lastDonation: null,
-  plateletDonationCount: 0,
-  lastPlateletDonation: null,
+      lastDonation: '',
+      plateletDonationCount: 0,
+      lastPlateletDonation: '',
       availableToAll: false,
 
       donorCreationLoader: false,
@@ -348,6 +349,7 @@ export default {
   mounted () {
   const keysExpected = ['name', 'phone', 'studentId', 'bloodGroup', 'hall', 'address', 'roomNumber', 'comment', 'donationCount', 'lastDonation', 'plateletDonationCount', 'lastPlateletDonation', 'key', 'availableToAll']
   // Accept new platelet fields but don't warn if missing (backward compatibility)
+    if (this.$props && this.$props.donor) {
     Object.keys(this.$props.donor).forEach((key) => {
       if (!keysExpected.includes(key)) {
         this.warnings.push('Unwanted key found: ' + key)
@@ -359,29 +361,34 @@ export default {
         this.warnings.push('Missing key: ' + expectedKey)
       }
     })
+    }
 
-    this.name = this.$props.donor.name
-    this.phone = this.$props.donor.phone
-    this.studentId = this.$props.donor.studentId
-    this.bloodGroup = this.bloodGroups[this.$props.donor.bloodGroup]
+    this.name = this.$props.donor && this.$props.donor.name ? String(this.$props.donor.name) : ''
+    this.phone = this.$props.donor && this.$props.donor.phone != null ? String(this.$props.donor.phone).replace(/^88/, '') : ''
+    this.studentId = this.$props.donor && this.$props.donor.studentId != null ? String(this.$props.donor.studentId) : ''
+    this.bloodGroup = (this.$props.donor && typeof this.$props.donor.bloodGroup === 'number' && this.bloodGroups[this.$props.donor.bloodGroup] !== undefined)
+      ? this.bloodGroups[this.$props.donor.bloodGroup]
+      : ''
 
-    this.hall = this.halls[this.$props.donor.hall]
+    this.hall = (this.$props.donor && typeof this.$props.donor.hall === 'number' && this.halls[this.$props.donor.hall] !== undefined)
+      ? this.halls[this.$props.donor.hall]
+      : ''
 
-    this.address = this.$props.donor.address
-    this.roomNumber = this.$props.donor.roomNumber
-    this.comment = this.$props.donor.comment
-    this.donationCount = this.$props.donor.donationCount
-    this.availableToAll = this.$props.donor.availableToAll
+    this.address = this.$props.donor && this.$props.donor.address ? String(this.$props.donor.address) : ''
+    this.roomNumber = this.$props.donor && this.$props.donor.roomNumber ? String(this.$props.donor.roomNumber) : ''
+    this.comment = this.$props.donor && this.$props.donor.comment ? String(this.$props.donor.comment) : ''
+    this.donationCount = this.$props.donor && this.$props.donor.donationCount != null ? Number(this.$props.donor.donationCount) : 0
+    this.availableToAll = !!(this.$props.donor && this.$props.donor.availableToAll)
 
     // platelet optional initialization
-    if (this.$props.donor.plateletDonationCount !== undefined) {
-      this.plateletDonationCount = this.$props.donor.plateletDonationCount
+    if (this.$props.donor && this.$props.donor.plateletDonationCount !== undefined && this.$props.donor.plateletDonationCount !== null) {
+      this.plateletDonationCount = Number(this.$props.donor.plateletDonationCount)
     }
-    if (this.$props.donor.lastPlateletDonation) {
+    if (this.$props.donor && this.$props.donor.lastPlateletDonation) {
       this.lastPlateletDonation = (new Date(this.$props.donor.lastPlateletDonation)).toISOString().substr(0, 10)
     }
 
-    if (this.$props.donor.lastDonation !== 0 && this.$props.donor.lastDonation !== null) {
+    if (this.$props.donor && this.$props.donor.lastDonation !== 0 && this.$props.donor.lastDonation !== null) {
       this.lastDonation = (new Date(this.$props.donor.lastDonation)).toISOString().substr(0, 10)
     }
   },
@@ -393,14 +400,14 @@ export default {
       }
 
       let lastDonation
-      if (this.lastDonation === null) {
+      if (this.lastDonation === null || this.lastDonation === '') {
         lastDonation = 0
       } else {
         lastDonation = new Date(this.lastDonation).getTime()
       }
 
       let lastPlateletDonation
-      if (this.lastPlateletDonation === null) {
+      if (this.lastPlateletDonation === null || this.lastPlateletDonation === '') {
         lastPlateletDonation = 0
       } else {
         lastPlateletDonation = new Date(this.lastPlateletDonation).getTime()
@@ -442,20 +449,20 @@ export default {
       }
       await this.$v.$reset()
 
-      this.name = null
-      this.phone = null
-      this.studentId = null
+      this.name = ''
+      this.phone = ''
+      this.studentId = ''
       this.bloodGroup = ''
 
       this.hall = halls[this.$store.getters['getHall']]
 
-      this.address = null
-      this.roomNumber = null
-      this.comment = null
-      this.donationCount = null
-      this.lastDonation = null
-  this.plateletDonationCount = null
-  this.lastPlateletDonation = null
+      this.address = ''
+      this.roomNumber = ''
+      this.comment = ''
+      this.donationCount = 0
+      this.lastDonation = ''
+  this.plateletDonationCount = 0
+  this.lastPlateletDonation = ''
 
       this.availableToAll = false
 
