@@ -1,31 +1,49 @@
 #!/usr/bin/env bash
-# Wrapper to run Cypress tests the way *I* want
+set -euo pipefail
 
-SPEC="**/*"
-HEADED=""
-CFG_OPTS=""
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-for ARG in "$@"; do
-  case "$ARG" in
-    --headed) HEADED="--headed" ;;
-    --video)  CFG_OPTS="$CFG_OPTS --config video=true" ;;
-    --no-video) CFG_OPTS="$CFG_OPTS --config video=false" ;;
-    --compression=*)  CFG_OPTS="$CFG_OPTS --config videoCompression=${ARG#*=}" ;;
-    --videosFolder=*) CFG_OPTS="$CFG_OPTS --config videosFolder=${ARG#*=}" ;;
-    -h|--help)
-      echo "Usage: bash start [specPattern] [--headed] [--video|--no-video] [--compression=N] [--videosFolder=path]"
-      exit 0
+SPEC_PATH="${1:-}"
+if [[ -z "${SPEC_PATH}" ]]; then
+  echo "Usage: bash start <spec-path> [--headed] [--video]"
+  exit 1
+fi
+
+# Parse flags
+HEADED=false
+VIDEO=false
+for arg in "${@:2}"; do
+  case "$arg" in
+    --headed)
+      HEADED=true
       ;;
-    *) SPEC="$ARG" ;;
+    --video)
+      VIDEO=true
+      ;;
+    *)
+      ;;
   esac
 done
 
-# Determine final spec path. If an absolute or already-rooted path is provided,
-# pass it through. Otherwise, assume it's relative to cypress/integration/.
-if [[ "$SPEC" == /* || "$SPEC" == ./* || "$SPEC" == cypress/* ]]; then
-  SPEC_PATH="$SPEC"
+# Normalize spec path to project-relative if inside project
+if [[ "$SPEC_PATH" = $PROJECT_DIR/* ]]; then
+  REL_SPEC="${SPEC_PATH#"$PROJECT_DIR"/}"
 else
-  SPEC_PATH="cypress/integration/$SPEC"
+  REL_SPEC="$SPEC_PATH"
 fi
 
-npx cypress run --spec "$SPEC_PATH" $HEADED $CFG_OPTS
+cd "$PROJECT_DIR"
+
+CMD=(npx cypress run --spec "$REL_SPEC")
+
+if $HEADED; then
+  CMD+=(--headed --browser chrome --env openDevTools=true)
+fi
+
+if $VIDEO; then
+  CMD+=(--config video=true)
+fi
+
+exec "${CMD[@]}"
+
+

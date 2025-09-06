@@ -1,20 +1,26 @@
 {
   "name": "badhan-frontend-test",
   "version": "1.0.0",
-  "description": "",
+  "description": "E2E tests for Badhan frontend using Cypress + TypeScript",
   "main": "index.js",
   "scripts": {
     "cypress:open": "cypress open",
-    "test:headed": "cypress run --spec 'cypress/integration/**/*' --headed",
-    "test": "cypress run --spec 'cypress/integration/**/*'"
+    "cypress:run": "cypress run",
+    "test": "cypress run"
   },
+  "keywords": [
+    "cypress",
+    "typescript",
+    "e2e"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^9.7.0",
-    "axios": "^1.6.8"
-  },
-  "dependencies": {
-    "cypress-promise": "^1.1.0"
+    "@cypress/webpack-preprocessor": "^7.0.1",
+    "@types/node": "^24.3.1",
+    "axios": "^1.11.0",
+    "cypress": "^15.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }

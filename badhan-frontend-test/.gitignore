@@ -1,7 +1,5 @@
-cypress.env.json
-.idea
 node_modules
-cypress/screenshots
-
 .DS_Store
-videos
+cypress/screenshots
+cypress/videos
+cypress/downloads
