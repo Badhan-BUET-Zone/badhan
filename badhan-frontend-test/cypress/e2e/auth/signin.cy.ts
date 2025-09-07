@@ -1,5 +1,6 @@
 import { SignInPage } from '../../support/pages/SignInPage';
 import { NotificationComponent } from '../../support/components/Notification';
+import { AUTH_CREDENTIALS } from '../../support/auth/credentials';
 
 // Exact message from backend on successful sign in
 const SUCCESS_MESSAGE = 'Signed in successfully';
@@ -9,12 +10,7 @@ describe('Sign In Flow', () => {
   const notification = new NotificationComponent();
 
   it('signs in from base url and shows correct notification', () => {
-    page.visit();
-
-    // Phone in UI is without country code; store prefixes '88' internally
-    page.typePhone('01500000000');
-    page.typePassword('badhandev');
-    page.submit();
+    page.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
 
     notification.getText().should('equal', SUCCESS_MESSAGE);
   });

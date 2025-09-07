@@ -14,6 +14,13 @@ export class SignInPage {
   submit(): void {
     cy.get('#signInButton').click();
   }
+
+  signIn(phone: string, password: string): void {
+    this.visit();
+    this.typePhone(phone);
+    this.typePassword(password);
+    this.submit();
+  }
 }
 
 
