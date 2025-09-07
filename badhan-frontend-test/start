@@ -3,16 +3,13 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-SPEC_PATH="${1:-}"
-if [[ -z "${SPEC_PATH}" ]]; then
-  echo "Usage: bash start <spec-path> [--headed] [--video]"
-  exit 1
-fi
+# Defaults
+SPEC_PATH=""
 
 # Parse flags
 HEADED=false
 VIDEO=false
-for arg in "${@:2}"; do
+for arg in "$@"; do
   case "$arg" in
     --headed)
       HEADED=true
@@ -20,21 +17,34 @@ for arg in "${@:2}"; do
     --video)
       VIDEO=true
       ;;
+    --*)
+      # ignore other flags
+      ;;
     *)
+      # first non-flag argument is treated as spec path
+      if [[ -z "$SPEC_PATH" ]]; then
+        SPEC_PATH="$arg"
+      fi
       ;;
   esac
 done
 
-# Normalize spec path to project-relative if inside project
-if [[ "$SPEC_PATH" = $PROJECT_DIR/* ]]; then
-  REL_SPEC="${SPEC_PATH#"$PROJECT_DIR"/}"
-else
-  REL_SPEC="$SPEC_PATH"
+# Normalize spec path to project-relative if inside project (only if provided)
+REL_SPEC=""
+if [[ -n "$SPEC_PATH" ]]; then
+  if [[ "$SPEC_PATH" = $PROJECT_DIR/* ]]; then
+    REL_SPEC="${SPEC_PATH#"$PROJECT_DIR"/}"
+  else
+    REL_SPEC="$SPEC_PATH"
+  fi
 fi
 
 cd "$PROJECT_DIR"
 
-CMD=(npx cypress run --spec "$REL_SPEC")
+CMD=(npx cypress run)
+if [[ -n "$REL_SPEC" ]]; then
+  CMD+=(--spec "$REL_SPEC")
+fi
 
 if $HEADED; then
   CMD+=(--headed --browser chrome --env openDevTools=true)

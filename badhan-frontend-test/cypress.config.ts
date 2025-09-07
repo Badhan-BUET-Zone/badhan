@@ -21,18 +21,39 @@ export default defineConfig({
           throw error;
         }
       });
-      // If env var is set by start script, force devtools to open in headed mode
-      if (config.env.openDevTools) {
-        on('before:browser:launch', (browser: Cypress.Browser, launchOptions) => {
-          if (browser.name === 'chrome' || browser.family === 'chromium') {
+      // Conditionally open DevTools only when requested and avoid unsupported Electron args
+      on('before:browser:launch', (browser: Cypress.Browser, launchOptions) => {
+        const shouldOpenDevTools = Boolean((config as any).env?.openDevTools);
+
+        if (browser.name === 'chrome' || browser.family === 'chromium' || browser.name === 'edge') {
+          if (shouldOpenDevTools) {
             launchOptions.args.push('--auto-open-devtools-for-tabs')
           }
-          if (browser.name === 'electron') {
-            launchOptions.preferences.devTools = true
+        }
+
+        if (browser.name === 'electron') {
+          // Electron does not support args; remove to prevent warnings
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          delete (launchOptions as any).args;
+          if (shouldOpenDevTools) {
+            launchOptions.preferences = {
+              ...launchOptions.preferences,
+              devTools: true,
+            }
           }
-          return launchOptions
-        })
-      }
+        }
+
+        if (browser.name === 'firefox') {
+          if (shouldOpenDevTools) {
+            launchOptions.args.push('-devtools')
+            launchOptions.preferences = {
+              ...launchOptions.preferences,
+              'devtools.toolbox.selectedTool': 'webconsole',
+            }
+          }
+        }
+        return launchOptions
+      })
       return config
     },
   },
