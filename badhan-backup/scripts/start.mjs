@@ -32,7 +32,7 @@ await ensureNpmInstall("./badhan-backup");
 const jobs = [
   { workingDir: './badhan-backend', cmd: 'node scripts/start_db.mjs', label: 'database'},
   { workingDir: './badhan-frontend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 3000 && npm run serve:local', label: 'frontend'},
-  { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npm run internal-server', label: 'backend internal'},
+  { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 3000 && npx nodemon --watch dist --ext js,map --delay 200ms --exec "npm run internal-server"', label: 'backend internal'},
   { workingDir: './badhan-backend', cmd: 'node ../badhan-backup/scripts/wait_for_port.mjs 27017 && npx nodemon', label: 'backend'}
 ];
 

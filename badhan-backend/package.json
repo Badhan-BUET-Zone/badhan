@@ -16,7 +16,7 @@
     "serve:local": "npm run lint && npm run build && cross-env NODE_ENV=local node ./dist/bin/www",
     "__comment_on_db_reset_scripts": "these are the scripts for resetting the development environment database",
     "migrate_db:local":"npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/reportInconsistencies.js",
-    "internal-server": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/bin/internalServer",
+    "internal-server": "cross-env NODE_ENV=local node -r source-map-support/register ./dist/bin/internalServer",
     "migrate:list": "ts-node --transpile-only scripts/migrations/index.ts list",
     "migrate": "ts-node --transpile-only scripts/migrations/index.ts"
   },

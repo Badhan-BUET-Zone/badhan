@@ -7,6 +7,8 @@ import { param, validationResult } from 'express-validator'
 import { spawnSync } from 'child_process'
 import path from 'path'
 import fs from 'fs'
+import { clearDatabase } from '../db/test/clearDatabase'
+import { generateFakeData } from '../db/test/populate'
 
 // --- Load config/config.env into process.env (non‑destructive) -----------------
 // Provides MONGODB_URI_PROD, MONGODB_URI_TEST, MONGODB_URI_LOCAL for backup utilities
@@ -247,19 +249,9 @@ const pruneController = async () => {
   return new OKResponse200('Deleted all older databases', {})
 }
 
-// Lazy imports to avoid heavy dev/test modules on startup
-let generateFakeDataFn: undefined | (() => Promise<{ ok: boolean, error?: unknown }>)
-const ensurePopulateFn = () => {
-  if (!generateFakeDataFn) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    generateFakeDataFn = require('../db/test/populate').generateFakeData
-  }
-}
 const populateController = async () => {
   try {
-    ensurePopulateFn()
-    if (!generateFakeDataFn) throw new Error('populate function not available')
-    const result = await generateFakeDataFn()
+    const result = await generateFakeData()
     if (!result.ok) {
       return new InternalServerError500('Populate script failed', { error: (result as any).error }, {})
     }
@@ -269,19 +261,10 @@ const populateController = async () => {
   }
 }
 
-let clearDatabaseFn: undefined | (() => Promise<{ ok: boolean, error?: unknown }>)
-const ensureClearDbFn = () => {
-  if (!clearDatabaseFn) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    clearDatabaseFn = require('../db/test/clearDatabase').clearDatabase
-  }
-}
 const resetController = async () => {
   console.log('[reset] resetting local database...')
   try {
-    ensureClearDbFn()
-    if (!clearDatabaseFn) throw new Error('clearDatabase function not available')
-    const result = await clearDatabaseFn()
+    const result = await clearDatabase()
     if (!result.ok) {
       return new InternalServerError500('Reset script failed', { error: (result as any).error }, {})
     }

@@ -1,8 +1,11 @@
 import { mongoose, waitForConnection } from '../mongoose'
 import myConsole from '../../utils/myConsole'
 import { DonorFactory } from './factories/donorFactory'
-import { DESIGNATIONS_INDEX } from '../../constants'
+import { DESIGNATIONS_INDEX, HALLS_INDEX } from '../../constants'
 import { IDonor } from '../models/Donor'
+import { DonorModel } from '../models/Donor'
+import * as faker from '../../doc/faker'
+
 
 /**
  * Clears the active MongoDB database and re-seeds required initial data.
@@ -21,11 +24,19 @@ export const clearDatabase = async (): Promise<{ ok: boolean, error?: unknown }>
         await db.dropDatabase()
         myConsole.log('Database dropped successfully.')
         // Re-create essential seed data (Super Admin)
-        const donorFactory: DonorFactory = new DonorFactory()
-        const superAdmin: IDonor = donorFactory.createData({
+        const superAdmin: IDonor = new DonorModel({
+            name: "Mir Mahathir Mohammad",
+            bloodGroup: 2,
+            hall: HALLS_INDEX.SUHRAWARDY,
+            studentId: faker.getStudentId(),
+            email: faker.getEmail(),
             phone: SUPERADMIN_PHONE_NUMBER,
-            designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
-            password: SUPERADMIN_PASSWORD
+            address: faker.getAddress(),
+            roomNumber: faker.getRoom(),
+            comment: faker.getComment(),
+            availableToAll: true,
+            designation: 3,
+            password: SUPERADMIN_PASSWORD,
         })
         await superAdmin.save()
         myConsole.log('Super Admin user created.')

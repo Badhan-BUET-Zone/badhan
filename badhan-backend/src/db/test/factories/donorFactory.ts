@@ -12,7 +12,6 @@ export class DonorFactory extends DataFactory {
             phone: faker.getPhone(),
             address: faker.getAddress(),
             roomNumber: faker.getRoom(),
-            lastDonation: faker.getTimestamp(365),
             comment: faker.getComment(),
             availableToAll: faker.getBoolean(),
             designation: faker.getDesignation(),
