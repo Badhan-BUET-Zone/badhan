@@ -1,33 +1,32 @@
-import { SignInPage } from '../../support/pages/SignInPage';
-import { NavigationDrawer } from '../../support/pages/NavigationDrawer';
-import { NotificationComponent } from '../../support/components/Notification';
-import { AUTH_CREDENTIALS } from '../../support/auth/credentials';
+import { SignInPage } from '@pages/SignInPage';
+import { NavigationDrawer } from '@pages/NavigationDrawer';
+import { NotificationComponent } from '@components/Notification';
+import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { interceptRoutes, waitFor } from '@support/routes';
+import { MESSAGES } from '@support/constants';
+import { MembersPage } from '@pages/MembersPage';
 
 describe('Members page', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
+  const members = new MembersPage();
 
   it('shows at least 1 volunteer, 1 hall admin and 1 superadmin', () => {
     // Sign in
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.getText().should('equal', 'Signed in successfully');
+    notification.assertEquals(MESSAGES.signInSuccess);
 
     // Navigate to Members
     drawer.goToMembers();
 
     // Intercept the designations API and wait
-    cy.intercept('GET', '**/donors/designation').as('getDesignations');
-    cy.wait('@getDesignations').its('response.statusCode').should('eq', 200);
+    interceptRoutes.designations();
+    waitFor.designationsOk();
 
-    // Assert volunteers table has at least 1 row
-    cy.get('[id^="volunteerId_"]').its('length').should('be.gte', 1);
-
-    // Assert hall admins table has at least 1 row
-    cy.get('[id^="hallAdminId_"]').its('length').should('be.gte', 1);
-
-    // Assert super admins table has at least 1 row
-    cy.get('[id^="superAdminId_"]').its('length').should('be.gte', 1);
+    members.assertAnyVolunteerExists();
+    members.assertAnyHallAdminExists();
+    members.assertAnySuperAdminExists();
   });
 });
 

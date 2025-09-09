@@ -1,56 +1,55 @@
-import { SignInPage } from '../../support/pages/SignInPage';
-import { NavigationDrawer } from '../../support/pages/NavigationDrawer';
-import { NotificationComponent } from '../../support/components/Notification';
-import { AUTH_CREDENTIALS } from '../../support/auth/credentials';
+import { SignInPage } from '@pages/SignInPage';
+import { NavigationDrawer } from '@pages/NavigationDrawer';
+import { NotificationComponent } from '@components/Notification';
+import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { NewDonorPage } from '@pages/NewDonorPage';
+import { NewlyCreatedDonorsPage } from '@pages/NewlyCreatedDonorsPage';
+import { interceptRoutes, waitFor } from '@support/routes';
+import { BLOOD_GROUP, HALL, MESSAGES } from '@support/constants';
 
 describe('Newly Created Donors', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
+  const newDonor = new NewDonorPage();
+  const newlyCreated = new NewlyCreatedDonorsPage();
 
   it('shows at least one donor after fetching newly created donors', () => {
     // Sign in
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.getText().should('equal', 'Signed in successfully');
+    notification.assertEquals(MESSAGES.signInSuccess);
 
     // Ensure we have at least one fresh donor by creating one quickly
     drawer.goToSingleDonorCreation();
 
-    cy.intercept('POST', '**/donors').as('createDonor');
+    interceptRoutes.createDonor();
 
     const uniqueSuffix = String(Date.now()).slice(-7);
     const donorName = `E2E New Donor ${uniqueSuffix}`;
     const donorPhone = `016${uniqueSuffix.slice(-8, -1)}`.slice(0, 11).padEnd(11, '0');
     const studentId = '1605012';
 
-    cy.get('#newDonorNameTextBoxId').type(donorName).blur();
-    cy.get('#newDonorPhoneTextBoxId').type(donorPhone).blur();
-    cy.get('#newDonorStudentIdTextBoxId').type(studentId).blur();
+    newDonor.fillBasic({ name: donorName, phone: donorPhone, studentId });
 
-    cy.get('[data-cy="newDonorBloodGroupDropDownId"]').click();
-    cy.contains('.v-list-item__title', 'A+').click();
-    cy.get('[data-cy="newDonorBloodGroupDropDownId"]').blur();
+    newDonor.selectBloodGroup(BLOOD_GROUP.A_POS);
 
-    cy.get('[data-cy="hall-select"]').click();
-    cy.contains('.v-list-item__title', '(Unknown)').click();
-    cy.get('[data-cy="hall-select"]').blur();
+    newDonor.selectHall(HALL.UNKNOWN);
 
-    cy.get('#newDonorDonationCountTextFieldId').clear().type('0');
-    cy.get('#newDonorPlateletDonationCountTextFieldId').clear().type('0');
-    cy.get('#newDonorCreateButtonId').click();
+    newDonor.setDonationCounts({ wholeBloodCount: 0, plateletCount: 0 });
+    newDonor.submit();
 
-    cy.wait('@createDonor').its('response.statusCode').should('eq', 201);
+    waitFor.createDonorOk();
 
     // Navigate to Newly Created Donors page
     drawer.goToNewlyCreatedDonors();
 
     // Fetch and wait for API
-    cy.intercept('GET', '**/donors/new*').as('getNewDonors');
-    cy.contains('button', 'Fetch Newly Created Donors').click();
-    cy.wait('@getNewDonors').its('response.statusCode').should('eq', 200);
+    interceptRoutes.newDonors();
+    newlyCreated.fetch();
+    waitFor.newDonorsOk();
 
     // Assert at least one donor card rendered
-    cy.get('[id^="personCardId_"]').its('length').should('be.gte', 1);
+    newlyCreated.assertAnyDonorCardExists();
   });
 });
 

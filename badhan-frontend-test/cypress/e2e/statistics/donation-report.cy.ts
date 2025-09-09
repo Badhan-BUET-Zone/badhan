@@ -1,38 +1,42 @@
-import { SignInPage } from '../../support/pages/SignInPage';
-import { NavigationDrawer } from '../../support/pages/NavigationDrawer';
-import { NotificationComponent } from '../../support/components/Notification';
-import { AUTH_CREDENTIALS } from '../../support/auth/credentials';
+import { SignInPage } from '@pages/SignInPage';
+import { NavigationDrawer } from '@pages/NavigationDrawer';
+import { NotificationComponent } from '@components/Notification';
+import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { StatisticsPage } from '@pages/StatisticsPage';
+import { interceptRoutes, waitFor } from '@support/routes';
+import { MESSAGES } from '@support/constants';
 
 describe('Statistics - Donation Report tab', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
+  const stats = new StatisticsPage();
 
   it('shows both blood and platelet donation tables', () => {
     // Sign in as superadmin
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.getText().should('equal', 'Signed in successfully');
+    notification.getText().should('equal', MESSAGES.signInSuccess);
 
     // Intercept report APIs before navigation
-    cy.intercept('GET', '**/donations/report*').as('getBloodReport');
-    cy.intercept('GET', '**/platelet-donations/report*').as('getPlateletReport');
+    interceptRoutes.donationReport();
+    interceptRoutes.plateletReport();
 
     // Navigate to Statistics
     drawer.goToStatistics();
 
     // Click Donation Report tab
-    cy.get('#statisticsDonationReportTabId').click();
+    stats.openDonationReportTab();
 
     // Wait for both APIs to resolve
-    cy.wait('@getBloodReport').its('response.statusCode').should('eq', 200);
-    cy.wait('@getPlateletReport').its('response.statusCode').should('eq', 200);
+    waitFor.donationReportOk();
+    waitFor.plateletReportOk();
 
     // Assert both section titles exist (after data rendered)
-    cy.contains('div', 'Whole Blood Donations', { matchCase: false }).should('exist');
-    cy.contains('div', 'Platelet Donations', { matchCase: false }).should('exist');
+    stats.assertWholeBloodSectionExists();
+    stats.assertPlateletSectionExists();
 
     // Optional: at least one row across both tables
-    cy.get('table tbody tr').its('length').should('be.gte', 1);
+    stats.assertAnyTableRowExists();
   });
 });
 

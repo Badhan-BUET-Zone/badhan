@@ -1,7 +1,15 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress"]
+    "types": ["cypress"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"],
+      "@support/*": ["support/*"],
+      "@pages/*": ["support/pages/*"],
+      "@components/*": ["support/components/*"],
+      "@auth/*": ["support/auth/*"]
+    }
   },
   "include": [
     "**/*.ts"

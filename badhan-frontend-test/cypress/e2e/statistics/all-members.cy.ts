@@ -1,31 +1,35 @@
-import { SignInPage } from '../../support/pages/SignInPage';
-import { NavigationDrawer } from '../../support/pages/NavigationDrawer';
-import { NotificationComponent } from '../../support/components/Notification';
-import { AUTH_CREDENTIALS } from '../../support/auth/credentials';
+import { SignInPage } from '@pages/SignInPage';
+import { NavigationDrawer } from '@pages/NavigationDrawer';
+import { NotificationComponent } from '@components/Notification';
+import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { StatisticsPage } from '@pages/StatisticsPage';
+import { interceptRoutes, waitFor } from '@support/routes';
+import { MESSAGES } from '@support/constants';
 
 describe('Statistics - All Members tab', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
+  const stats = new StatisticsPage();
 
   it('shows at least one member in the All Members table', () => {
     // Sign in as superadmin
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.getText().should('equal', 'Signed in successfully');
+    notification.assertEquals(MESSAGES.signInSuccess);
 
     // Intercept All Members API before navigation
-    cy.intercept('GET', '**/donors/designation/all').as('getAllMembers');
+    interceptRoutes.allMembers();
 
     // Navigate to Statistics
     drawer.goToStatistics();
 
     // Switch to All Members tab
-    cy.get('#statisticsAllVolunteersTabId').click();
+    stats.openAllMembersTab();
 
     // Wait for data and assert at least one row
-    cy.wait('@getAllMembers').its('response.statusCode').should('eq', 200);
-    cy.get('#statisticsAllVolunteersTableId').should('be.visible');
-    cy.get('#statisticsAllVolunteersTableId .v-data-table__wrapper tbody tr').its('length').should('be.gte', 1);
+    waitFor.allMembersOk();
+    stats.assertAllMembersTableVisible();
+    stats.assertAllMembersHasRows();
   });
 });
 
