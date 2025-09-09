@@ -24,11 +24,14 @@ export const clearDatabase = async (): Promise<{ ok: boolean, error?: unknown }>
         await db.dropDatabase()
         myConsole.log('Database dropped successfully.')
         // Re-create essential seed data (Super Admin)
+        const currentBatchString: string = String(new Date().getFullYear() % 100).padStart(2, '0')
+        const randomStudentIdTail: string = faker.getStudentId().slice(2)
+        const superAdminStudentId: string = currentBatchString + randomStudentIdTail
         const superAdmin: IDonor = new DonorModel({
             name: "Mir Mahathir Mohammad",
             bloodGroup: 2,
             hall: HALLS_INDEX.SUHRAWARDY,
-            studentId: faker.getStudentId(),
+            studentId: superAdminStudentId,
             email: faker.getEmail(),
             phone: SUPERADMIN_PHONE_NUMBER,
             address: faker.getAddress(),

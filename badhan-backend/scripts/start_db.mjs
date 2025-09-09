@@ -142,7 +142,7 @@ const startMongo = ({ EXE }) => {
     '--logappend'
   ], {
     stdio:'inherit',
-    detached: platform() !== 'win32'
+    detached: false
   });
 };
 
@@ -153,7 +153,7 @@ const stopMongo = () => {
     if (platform() === 'win32') {
       spawn('taskkill', ['/PID', mongodProc.pid, '/T', '/F']);
     } else {
-      process.kill(-mongodProc.pid, 'SIGTERM');
+      process.kill(mongodProc.pid, 'SIGTERM');
     }
   } catch {/* ignore */}
 };
