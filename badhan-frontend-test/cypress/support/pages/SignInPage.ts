@@ -4,15 +4,15 @@ export class SignInPage {
   }
 
   typePhone(phone: string): void {
-    cy.get('#signInPhoneTextBox').type(phone)
+    cy.get('[data-cy="signInPhoneTextBox"]').type(phone)
   }
 
   typePassword(password: string): void {
-    cy.get('#signInPasswordTextBox').type(password)
+    cy.get('[data-cy="signInPasswordTextBox"]').type(password)
   }
 
   submit(): void {
-    cy.get('#signInButton').click();
+    cy.get('[data-cy="signInButton"]').click();
   }
 
   signIn(phone: string, password: string): void {

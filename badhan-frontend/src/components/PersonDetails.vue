@@ -18,7 +18,7 @@
             offset-x
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-btn id="personDetailsActiveDonorButtonId"
+              <v-btn id="personDetailsActiveDonorButtonId" data-cy="personDetailsActiveDonorButtonId"
                 color="primary"
                 icon
                 v-bind="attrs"
@@ -38,6 +38,7 @@
                 <span v-if="markedBy">Marked by: {{ markedBy }}</span>
                 <v-switch
                   id="personDetailsActiveDonorSwitchId"
+                  data-cy="personDetailsActiveDonorSwitchId"
                   :disabled="activeDonorLoader"
                   v-model="markedAsActiveDonor"
                   @change="markAsActiveDonorHandler"
@@ -108,10 +109,10 @@
                 <transition name="slide-fade-down-snapout" mode="out-in">
                   <v-card-text v-if="personDetailCollapseFlag">
                     <div>
-                      <TextField id="donorDetailsNameTextBoxId" label="Name" v-model="name" :hint="''"
+                      <TextField id="donorDetailsNameTextBoxId" data-cy="donorDetailsNameTextBoxId" label="Name" v-model="name" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.name.$touch()"
                                     :error-messages="nameErrors"></TextField>
-                      <TextField id="donorDetailsPhoneTextBoxId" label="Phone" v-model="phone" :hint="''"
+                      <TextField id="donorDetailsPhoneTextBoxId" data-cy="donorDetailsPhoneTextBoxId" label="Phone" v-model="phone" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.phone.$touch()"
                                     :error-messages="phoneErrors"></TextField>
                       <TextField
@@ -127,23 +128,23 @@
                       <Selector id="donorDetailsBloodGroupDropDownId" data-cy="donorDetailsBloodGroupDropDownId" v-model="bloodGroup" :items="bloodGroups" label="Blood Group"
                                 :disabled="!isDetailsEditable" />
                       </span>
-                      <TextField id="donorDetailsStudentIdTextBoxId" label="Student ID: " v-model="studentId" :hint="''"
+                      <TextField id="donorDetailsStudentIdTextBoxId" data-cy="donorDetailsStudentIdTextBoxId" label="Student ID: " v-model="studentId" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.studentId.$touch()"
                                     :error-messages="studentIdErrors"></TextField>
-                      <TextField id="donorDetailsRoomTextBoxId" label="Room" v-model="room" :hint="''"
+                      <TextField id="donorDetailsRoomTextBoxId" data-cy="donorDetailsRoomTextBoxId" label="Room" v-model="room" :hint="''"
                                     :disabled="!isDetailsEditable"></TextField>
-                      <TextField id="donorDetailsAddressTextBoxId" label="Address" v-model="address" :hint="''"
+                      <TextField id="donorDetailsAddressTextBoxId" data-cy="donorDetailsAddressTextBoxId" label="Address" v-model="address" :hint="''"
                                     :disabled="!isDetailsEditable"></TextField>
                       <span id="donorDetailsHallDropDownSpan">
                       <Selector id="donorDetailsHallDropDownId" data-cy="donorDetailsHallDropDownId" v-model="hall" :items="availableHalls" label="Hall"
                                 :disabled="!isDetailsEditable || designation === 2 || designation === 1" />
                       </span>
-                      <v-checkbox id="donorDetailsPublicDataCheckboxId" :disabled="!isDetailsEditable || halls.indexOf(hall)===8" v-model="availableToAll"
+                      <v-checkbox id="donorDetailsPublicDataCheckboxId" data-cy="donorDetailsPublicDataCheckboxId" :disabled="!isDetailsEditable || halls.indexOf(hall)===8" v-model="availableToAll"
                                   dense
                                   label="Public Data"></v-checkbox>
 
                       <div v-if="$store.getters['getDesignation'] > designation || $isMe(id)">
-                        <v-btn id="donorDetailsSaveButtonId" color="primary" rounded class="white--text ml-2" small
+                        <v-btn id="donorDetailsSaveButtonId" data-cy="donorDetailsSaveButtonId" color="primary" rounded class="white--text ml-2" small
                                :disabled="detailsLoaderFlag || !isDetailsEditable || $v.name.$error || $v.phone.$error || $v.studentId.$error || $v.email.$error"
                                @click="saveDetailsClicked()">
                           <v-icon left>
@@ -153,13 +154,13 @@
                         </v-btn>
                       </div>
                     </div>
-                    <v-textarea id="donorDetailsCommentTextBoxId" rounded dense class="mt-5" name="comment" outlined v-model="comment"
+                    <v-textarea id="donorDetailsCommentTextBoxId" data-cy="donorDetailsCommentTextBoxId" rounded dense class="mt-5" name="comment" outlined v-model="comment"
                                 label="Comment" auto-grow
                                 :disabled="commentLoaderFlag" :rows="1"
                                 :messages="'Last Updated: '+ (commentTime==0?'Unknown':new Date(commentTime).toDateString()+' on '+new Date(commentTime).toLocaleTimeString())">
                     </v-textarea>
 
-                    <v-btn id="donorDetailsCommentSaveButtonId" color="primary" rounded small
+                    <v-btn id="donorDetailsCommentSaveButtonId" data-cy="donorDetailsCommentSaveButtonId" color="primary" rounded small
                            :disabled="commentLoaderFlag"
                            @click="saveCommentClicked()">
                       <v-icon left>
@@ -177,6 +178,7 @@
                 <v-card-title>
                   <v-btn rounded
                          id="profileSettingsId"
+                         data-cy="profileSettingsButton"
                          @click="settingsCollapseFlag = !settingsCollapseFlag">
                     Settings
                   </v-btn>
@@ -184,7 +186,7 @@
                 <transition name="slide-fade-down-snapout" mode="out-in">
                   <v-card-text v-if="settingsCollapseFlag">
                     <transition-group name="slide-fade-down" mode="out-in">
-                      <v-btn id="promoteToVolunteerButtonId" key="promoteToVolunteer"
+                      <v-btn id="promoteToVolunteerButtonId" data-cy="promoteToVolunteerButtonId" key="promoteToVolunteer"
                              small
                              class="ma-1"
                              color="primary"
@@ -227,7 +229,7 @@
                         </v-row>
                       </div>
 
-                      <v-btn id="demoteToDonorButtonId" key="demoteToDonor" small class="ma-1" color="warning" rounded
+                      <v-btn id="demoteToDonorButtonId" data-cy="demoteToDonorButtonId" key="demoteToDonor" small class="ma-1" color="warning" rounded
                              :disabled="promoteFlag"
                              v-if="isAllowedToDemoteToDonor" @click="demoteClicked">
                         <v-icon left>mdi-arrow-down</v-icon>
@@ -235,7 +237,7 @@
                       </v-btn>
 
                       <div key="passwordChange" v-if="$isMe(id)">
-                        <TextField id="newPasswordFieldId" :append-icon="newPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
+                        <TextField id="newPasswordFieldId" data-cy="newPasswordFieldId" :append-icon="newPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
                                       :type="newPasswordFlag ? 'text' : 'password'"
                                       label="New Password" v-model="newPassword" :hint="''"
                                       class="input-group--focused"
@@ -243,7 +245,7 @@
                                       :disabled="!isDetailsEditable"
                                       @blur="$v.newPassword.$touch()"
                                       :error-messages="newPasswordErrors"></TextField>
-                        <TextField id="confirmPasswordFieldId" :append-icon="confirmPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
+                        <TextField id="confirmPasswordFieldId" data-cy="confirmPasswordFieldId" :append-icon="confirmPasswordFlag ? 'mdi-eye' : 'mdi-eye-off'"
                                       :type="confirmPasswordFlag ? 'text' : 'password'"
                                       label="Confirm Password" v-model="confirmPassword" class="input-group--focused" :hint="''"
                                       @click:append="confirmPasswordFlag = !confirmPasswordFlag"
@@ -254,7 +256,7 @@
                           <v-icon left>mdi-window-close</v-icon>
                           Cancel
                         </v-btn>
-                        <v-btn id="passwordChangeConfirmedId" class="ma-1" color="primary" rounded small
+                        <v-btn id="passwordChangeConfirmedId" data-cy="passwordChangeConfirmedId" class="ma-1" color="primary" rounded small
                                :disabled="$v.newPassword.$error || $v.confirmPassword.$error || passwordChangeFlag"
                                @click="savePasswordClicked"
                         >
@@ -262,14 +264,14 @@
                           Save
                         </v-btn>
                       </div>
-                      <v-btn id="personDetailsDeleteButtonId" key="deletePerson" small class="ma-1" v-if="isDeletable" @click="deleteDonorPrompt"
+                      <v-btn id="personDetailsDeleteButtonId" data-cy="personDetailsDeleteButtonId" key="deletePerson" small class="ma-1" v-if="isDeletable" @click="deleteDonorPrompt"
                              rounded
                              color="warning"
                              :disabled="deleteDonorFlag">
                         <v-icon left dark>mdi-delete</v-icon>
                         Delete this person
                       </v-btn>
-                      <v-btn id="promoteToHallAdminButtonId" key="promoteToHallAdmin" small class="ma-1" rounded color="primary"
+                      <v-btn id="promoteToHallAdminButtonId" data-cy="promoteToHallAdminButtonId" key="promoteToHallAdmin" small class="ma-1" rounded color="primary"
                              v-if="$store.getters['getDesignation']===3 && designation===1"
                              :disabled="changeAdminLoaderFlag || !isDetailsEditable"
                              @click="changeHallAdminClicked()">
@@ -359,7 +361,7 @@
 
               <ContainerOutlined>
                 <v-card-title>
-                  Platelet Donations
+                  <span data-cy="personDetailsPlateletDonationsTitle">Platelet Donations</span>
                 </v-card-title>
                 <v-card-text>
                   <p class="mt-2 h6 font-weight-bold">Last Platelet Donation:</p>
@@ -446,6 +448,7 @@
 
                   <Button
                     id="profileDetailsPublicContactButtonId"
+                    data-cy="profileDetailsPublicContactButtonId"
                     :click="publishToPublicContactClicked"
                     :disabled="newPublicContactLoader || !selectedNewPublicContact"
                     :color="'primary'" :text="'Publish'" :icon="'mdi-content-save'">

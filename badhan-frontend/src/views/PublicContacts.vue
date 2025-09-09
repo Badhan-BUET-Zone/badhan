@@ -25,6 +25,7 @@
               Phone: +{{ contact.phone }}
             </v-card-subtitle>
             <Button
+                data-cy="directCallButton"
                 :icon="'mdi-phone'"
                 :text="'Direct Call'"
                 :disabled="false"

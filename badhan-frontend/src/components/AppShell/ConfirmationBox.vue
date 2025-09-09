@@ -22,7 +22,7 @@
           >
             Cancel
           </v-btn>
-          <v-btn rounded color="primary" @click="confirmClicked" id="confirmationBoxButtonId">
+          <v-btn rounded color="primary" @click="confirmClicked" id="confirmationBoxButtonId" data-cy="confirmationBoxButtonId">
             Confirm
           </v-btn>
         </v-card-actions>

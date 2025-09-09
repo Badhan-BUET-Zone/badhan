@@ -27,6 +27,7 @@
                   v-for="(volunteer,index) in volunteers"
                   :key="index"
                   :id="`volunteerId_${volunteer._id}`"
+                  data-cy="volunteerRow"
                 >
                   <td><span :id="`volunteerNameId_${volunteer._id}`">{{ volunteer.name }}</span><span v-if="index<3"><v-icon style="color: gold">mdi-star</v-icon></span></td>
                   <td :id="`volunteerBatchId_${volunteer._id}`">{{ volunteer.studentId.substr(0, 2) }}</td>
@@ -57,6 +58,7 @@
                   v-for="(hallAdmin,index) in hallAdmins"
                   :key="index"
                   :id="`hallAdminId_${hallAdmin._id}`"
+                  data-cy="hallAdminRow"
                 >
                   <td>{{ hallAdmin.hall | getHallName }}</td>
                   <td>{{ hallAdmin.name }}</td>
@@ -86,6 +88,7 @@
                   v-for="(superAdmin,index) in superAdmins"
                   :key="index"
                   :id="`superAdminId_${superAdmin._id}`"
+                  data-cy="superAdminRow"
                 >
                   <td>{{ superAdmin.name }}</td>
                   <td>+{{ superAdmin.phone }}</td>

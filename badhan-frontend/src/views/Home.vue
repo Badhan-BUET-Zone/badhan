@@ -20,7 +20,7 @@
         <v-col cols="12" lg="4">
           <Filters :reset-clicked="clearFields" :search-clicked="searchClickedFromFilterComponent"></Filters>
         </v-col>
-        <v-col cols="12" lg="8" id="results">
+        <v-col cols="12" lg="8" id="results" data-cy="homeResults">
           <div v-if="searchLoaderFlag" :key="'searchLoading'">
             <LoadingMessage/>
           </div>
@@ -70,6 +70,7 @@
 
         <person-card
                     :id="'personCardId_'+person._id"
+                    :data-cy="'person-card'"
                     v-for="(person) in obj.people"
                     :key="person._id"
           :person="person"

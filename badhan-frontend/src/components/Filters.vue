@@ -34,6 +34,7 @@
           <!--        Input field for name-->
           <TextField
             id="filterNameTextboxId"
+            data-cy="filterNameTextboxId"
             v-model="name"
             :hint="'Search any donor by name'"
             label="Name of Donor"
@@ -51,6 +52,7 @@
           <!--        Input field for batch-->
           <TextField
               id="filterBatchTextboxId"
+              data-cy="filterBatchTextboxId"
               v-model="batch"
               label="Batch"
               :hint="'Batch number (two digits)'"
@@ -62,6 +64,7 @@
           <!--        Input field for hall-->
           <TextField
               id="filterAddressTextboxId"
+              data-cy="filterAddressTextboxId"
               label="Address/ Comment"
               :hint="'Search in address/comment'"
               clearable
@@ -69,12 +72,12 @@
           />
 
           <v-radio-group row v-model="radios" dense>
-            <v-radio value="AvailableToAll" id="filterPublicDataRadioId">
+            <v-radio value="AvailableToAll" id="filterPublicDataRadioId" data-cy="filterPublicDataRadioId">
               <template v-slot:label>
                 Public Data
               </template>
             </v-radio>
-            <v-radio value="SpecifyHall" id="filterSpecifyHallRadioId">
+            <v-radio value="SpecifyHall" id="filterSpecifyHallRadioId" data-cy="filterSpecifyHallRadioId">
               <template v-slot:label>
                 Specify hall
               </template>
@@ -128,6 +131,7 @@
           <!--        The button for executing search-->
           <v-btn
               id="filterSearchButtonId"
+              data-cy="filterSearchButtonId"
               rounded
               color="primary"
               :disabled="isSearchLoading || $v.$anyError"

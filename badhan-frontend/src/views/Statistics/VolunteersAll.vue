@@ -4,7 +4,7 @@
     <transition name="slide-fade-down-snapout" mode="out-in">
       <v-data-table :key="'volunteerLoading'" v-if="volunteersLoaderFlag">
       </v-data-table>
-      <v-data-table id="statisticsAllVolunteersTableId" :key="'volunteerLoaded'"
+      <v-data-table id="statisticsAllVolunteersTableId" data-cy="statisticsAllVolunteersTableId" :key="'volunteerLoaded'"
                     v-if="volunteersShown"
                     dense
                     :headers="volunteerListHeaders"
@@ -14,8 +14,13 @@
                     sort-by="logCount"
                     sort-desc
       >
-        <template v-slot:[`item.hall`]="{ item }">
-          {{item.hall | getHallName}}
+        <template v-slot:item="{ item }">
+          <tr :data-cy="'volunteerRow'">
+            <td>{{ item.name }}</td>
+            <td>{{ item.hall | getHallName }}</td>
+            <td>{{ item.studentId }}</td>
+            <td>{{ item.logCount }}</td>
+          </tr>
         </template>
       </v-data-table>
     </transition>

@@ -15,6 +15,7 @@
       </v-card-text>
       <v-card-actions>
         <Button
+          data-cy="fetchNewlyCreatedDonorsButton"
           :disabled="disableFetchButton"
           :icon="'mdi-account-search'"
           :click="fetchNewDonors"

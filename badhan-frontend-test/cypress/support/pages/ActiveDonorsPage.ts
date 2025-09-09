@@ -4,7 +4,7 @@ export class ActiveDonorsPage {
   }
 
   assertAnyCardExists(): void {
-    cy.get('[id^="personCardId_"]').should('exist');
+    cy.get('[data-cy="person-card"]').should('exist');
   }
 }
 

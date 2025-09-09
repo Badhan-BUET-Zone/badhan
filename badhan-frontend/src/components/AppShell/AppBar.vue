@@ -1,19 +1,19 @@
 <template>
   <fragment>
     <v-app-bar color="primary" dark app clipped-left collapse-on-scroll class="rounded-b-xl">
-      <v-app-bar-nav-icon id="hamburgerButtonId" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon id="hamburgerButtonId" data-cy="hamburgerButtonId" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <img src="../../assets/images/badhanlogo.png" alt="Badhan" style="height: 40px; width: 40px" class="mr-4">
       <v-toolbar-title>Badhan BUET Zone</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-menu right content-class="rounded-xl overflow-hidden">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on" id="topBarVerticalDotsId">
+          <v-btn icon v-bind="attrs" v-on="on" id="topBarVerticalDotsId" data-cy="topBarVerticalDotsId">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
 
         <v-list content-class="rounded-xl">
-          <v-list-item content-class="rounded-xl" @click="signOutModalPrompted" id="signOutButtonId">
+          <v-list-item content-class="rounded-xl" @click="signOutModalPrompted" id="signOutButtonId" data-cy="signOutButtonId">
             <v-list-item-icon>
               <v-icon>
                 mdi-logout
@@ -46,7 +46,7 @@
         <fragment v-for="(menu) in menusForAll" :key="menu.icon">
           <fragment v-if="!menu.subLinks && $store.getters['getDesignation'] >= menu.designation">
             <v-list-item-group active-class="primary--text text--accent-4">
-              <v-list-item link :to="menu.to" :id="menu.id" style="text-decoration: none">
+              <v-list-item link :to="menu.to" :id="menu.id" :data-cy="menu.id" style="text-decoration: none">
                 <v-list-item-icon>
                   <v-icon>{{ menu.icon }}</v-icon>
                 </v-list-item-icon>
@@ -57,13 +57,13 @@
             </v-list-item-group>
           </fragment>
           <fragment v-else-if="$store.getters['getDesignation'] >= menu.designation">
-            <v-list-group prepend-icon="mdi-star" no-action :id="menu.id">
+            <v-list-group prepend-icon="mdi-star" no-action :id="menu.id" :data-cy="menu.id">
               <template v-slot:activator>
                 <v-list-item-title>{{ menu.text }}</v-list-item-title>
               </template>
               <fragment v-for="(subLink) in menu.subLinks" :key="subLink.to">
                 <span v-if="$store.getters['getDesignation'] >= subLink.designation">
-                  <v-list-item link :to="subLink.to" style="text-decoration: none" :id="subLink.id">
+                  <v-list-item link :to="subLink.to" style="text-decoration: none" :id="subLink.id" :data-cy="subLink.id">
                     <v-list-item-icon><v-icon>{{ subLink.icon }}</v-icon></v-list-item-icon>
                     <v-list-item-content><v-list-item-title>{{ subLink.text }}</v-list-item-title></v-list-item-content>
                   </v-list-item>

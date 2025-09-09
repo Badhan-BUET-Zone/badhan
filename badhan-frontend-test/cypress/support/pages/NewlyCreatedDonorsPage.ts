@@ -1,10 +1,10 @@
 export class NewlyCreatedDonorsPage {
   fetch(): void {
-    cy.contains('button', 'Fetch Newly Created Donors').click();
+    cy.get('[data-cy="fetchNewlyCreatedDonorsButton"]').click();
   }
 
   assertAnyDonorCardExists(): void {
-    cy.get('[id^="personCardId_"]').its('length').should('be.gte', 1);
+    cy.get('[data-cy="person-card"]').its('length').should('be.gte', 1);
   }
 }
 

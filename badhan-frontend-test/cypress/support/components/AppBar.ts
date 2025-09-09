@@ -1,14 +1,14 @@
 export class AppBarComponent {
   openMenu(): void {
-    cy.get('#topBarVerticalDotsId').click();
+    cy.get('[data-cy="topBarVerticalDotsId"]').click();
   }
 
   clickSignOut(): void {
-    cy.get('#signOutButtonId').click();
+    cy.get('[data-cy="signOutButtonId"]').click();
   }
 
   confirmSignOut(): void {
-    cy.get('#confirmationBoxButtonId').click();
+    cy.get('[data-cy="confirmationBoxButtonId"]').click();
   }
 
   signOut(): void {

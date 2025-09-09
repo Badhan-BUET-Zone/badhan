@@ -1,5 +1,5 @@
 <template>
-    <div id="notificationSnackbarDivId">
+    <div id="notificationSnackbarDivId" data-cy="notificationSnackbarDivId">
         <v-snackbar
             v-model="notification"
             :color="$store.getters['notification/getNotificationColor']"
@@ -7,7 +7,7 @@
             bottom
             :timeout="-1"
         >
-            <span id="notificationTextId">{{ $store.getters['notification/getNotification'] }}</span>
+            <span id="notificationTextId" data-cy="notificationTextId">{{ $store.getters['notification/getNotification'] }}</span>
             <template v-slot:action="{ attrs }">
                 <v-btn
                     text

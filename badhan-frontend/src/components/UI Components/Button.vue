@@ -1,5 +1,5 @@
 <template>
-  <v-btn small rounded class="ma-1" :color="color" @click="click" :disabled="disabled">
+  <v-btn small rounded class="ma-1" :color="color" @click="click" :disabled="disabled" :data-cy="dataCy">
     <v-icon left>{{ icon }}</v-icon>
     {{ text }}
   </v-btn>
@@ -8,6 +8,10 @@
 export default {
   name: 'ButtonComponent',
   props: {
+    dataCy: {
+      type: String,
+      default: undefined
+    },
     color: {
       type: String,
       required: true

@@ -1,11 +1,11 @@
 <template>
   <Container>
     <v-card-text>
-      <TextField id="newDonorNameTextBoxId" class="required" label="Name of Donor" v-model="name"
+      <TextField id="newDonorNameTextBoxId" data-cy="newDonorNameTextBoxId" class="required" label="Name of Donor" v-model="name"
                     :hint="''"
                     @blur="$v.name.$touch()"
                     :error-messages="nameErrors"></TextField>
-      <TextField id="newDonorPhoneTextBoxId" :loading="phoneDuplicateCheckLoader" :disabled="phoneDuplicateCheckLoader" class="required" label="Phone" v-model="computedPhone" :hint="''" @blur="$v.phone.$touch()"
+      <TextField id="newDonorPhoneTextBoxId" data-cy="newDonorPhoneTextBoxId" :loading="phoneDuplicateCheckLoader" :disabled="phoneDuplicateCheckLoader" class="required" label="Phone" v-model="computedPhone" :hint="''" @blur="$v.phone.$touch()"
                     :error-messages="phoneErrors"></TextField>
       <transition name="slide-fade-down">
         <v-btn id="donorCreationSeeDuplicateButtonId" v-if="duplicateDonorId!==null" small class="mb-2" color="primary" rounded @click="goToDuplicateProfile">
@@ -16,7 +16,7 @@
         </v-btn>
       </transition>
 
-      <TextField id="newDonorStudentIdTextBoxId" class="required" label="Student ID" v-model="studentId" :hint="'If the department is unknown, give 00 as dept. code'"
+      <TextField id="newDonorStudentIdTextBoxId" data-cy="newDonorStudentIdTextBoxId" class="required" label="Student ID" v-model="studentId" :hint="'If the department is unknown, give 00 as dept. code'"
                     @blur="$v.studentId.$touch()"
                     :error-messages="studentIdErrors"
       >
@@ -53,14 +53,14 @@
                 @blur="$v.bloodGroup.$touch()"
                 :error-messages="bloodGroupErrors" />
 
-      <TextField id="newDonorRoomNumberTextFieldId" label="Room" v-model="roomNumber" :hint="''"></TextField>
-      <TextField id="newDonorAddressTextFieldId" label="Address" v-model="address" :hint="''"></TextField>
-      <TextField id="newDonorCommentTextFieldId" label="Comment" v-model="comment" :hint="''"></TextField>
-      <TextField id="newDonorDonationCountTextFieldId" class="required" label="Donation count" v-model="donationCount"
+      <TextField id="newDonorRoomNumberTextFieldId" data-cy="newDonorRoomNumberTextFieldId" label="Room" v-model="roomNumber" :hint="''"></TextField>
+      <TextField id="newDonorAddressTextFieldId" data-cy="newDonorAddressTextFieldId" label="Address" v-model="address" :hint="''"></TextField>
+      <TextField id="newDonorCommentTextFieldId" data-cy="newDonorCommentTextFieldId" label="Comment" v-model="comment" :hint="''"></TextField>
+      <TextField id="newDonorDonationCountTextFieldId" data-cy="newDonorDonationCountTextFieldId" class="required" label="Donation count" v-model="donationCount"
                     :hint="''"
                     @blur="$v.donationCount.$touch()"
                     :error-messages="donationCountErrors"></TextField>
-  <TextField id="newDonorPlateletDonationCountTextFieldId" label="Platelet donation count" v-model="plateletDonationCount"
+  <TextField id="newDonorPlateletDonationCountTextFieldId" data-cy="newDonorPlateletDonationCountTextFieldId" label="Platelet donation count" v-model="plateletDonationCount"
         :hint="''"
         @blur="$v.plateletDonationCount.$touch()"
         :error-messages="plateletDonationCountErrors"></TextField>
@@ -104,7 +104,7 @@
         </v-icon>
         Discard
       </v-btn>
-      <v-btn id="newDonorCreateButtonId" small color="primary" rounded @click="createDonorClicked"
+      <v-btn id="newDonorCreateButtonId" data-cy="newDonorCreateButtonId" small color="primary" rounded @click="createDonorClicked"
              :disabled="donorCreationLoader|| $v.$anyError || warnings.length!==0 ">
         <v-icon left>
           mdi-account-plus

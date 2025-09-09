@@ -64,6 +64,7 @@
                   <div>
                     <TextField
                         id="signInPhoneTextBox"
+                        data-cy="signInPhoneTextBox"
                         label="Phone"
                         :hint="'Enter your 11 digit phone number'"
                         class="input-group--focused"
@@ -73,6 +74,7 @@
                     />
                     <TextField
                         id="signInPasswordTextBox"
+                        data-cy="signInPasswordTextBox"
                         label="Password"
                         class="input-group--focused"
                         :append-icon="passwordFlag ? 'mdi-eye' : 'mdi-eye-off'"
@@ -90,6 +92,7 @@
                         @click="signInClicked()"
                         :disabled="$store.getters['getSignInLoaderFlag'] || $v.$anyError"
                         id="signInButton"
+                        data-cy="signInButton"
                     >
                       <v-icon left>
                         mdi-login

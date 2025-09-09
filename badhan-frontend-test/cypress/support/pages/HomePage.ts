@@ -1,10 +1,10 @@
 export class HomePage {
   triggerSearch(): void {
-    cy.get('#filterSearchButtonId').click();
+    cy.get('[data-cy="filterSearchButtonId"]').click();
   }
 
   donorCards(): Cypress.Chainable<JQuery<HTMLElement>> {
-    return cy.get('[id^="personCardId_"]');
+    return cy.get('[data-cy="person-card"]');
   }
 
   assertAnyDonorCardExists(): void {

@@ -20,7 +20,7 @@
         <transition name="slide-fade-down-snapout" mode="out-in">
             <LoadingMessage v-if="reportLoader" :key="'reportLoader'"/>
             <v-card-text v-else-if="report.length!==0 || plateletReport.length!==0" :key="'donationReportLoaded'">
-                <v-card-title class="px-0">Whole Blood Donations</v-card-title>
+                <v-card-title class="px-0" data-cy="wholeBloodDonationsTitle">Whole Blood Donations</v-card-title>
                 <v-simple-table>
                     <template v-slot:default>
                         <thead>
@@ -29,7 +29,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="singleMonth in report" :key="singleMonth.nameOfMonth">
+                            <tr v-for="singleMonth in report" :key="singleMonth.nameOfMonth" data-cy="wholeBloodRow">
                                 <td v-for="(key,index) in Object.keys(singleMonth)" :key="index">{{ singleMonth[key] }}</td>
                             </tr>
                         </tbody>
@@ -41,7 +41,7 @@
 
                 <v-divider class="my-4"></v-divider>
 
-                <v-card-title class="px-0">Platelet Donations</v-card-title>
+                <v-card-title class="px-0" data-cy="plateletDonationsTitle">Platelet Donations</v-card-title>
                 <v-simple-table>
                     <template v-slot:default>
                         <thead>
@@ -50,7 +50,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="singleMonth in plateletReport" :key="'p_'+singleMonth.nameOfMonth">
+                            <tr v-for="singleMonth in plateletReport" :key="'p_'+singleMonth.nameOfMonth" data-cy="plateletRow">
                                 <td v-for="(key,index) in Object.keys(singleMonth)" :key="'p_'+index">{{ singleMonth[key] }}</td>
                             </tr>
                         </tbody>

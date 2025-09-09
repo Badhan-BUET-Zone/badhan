@@ -8,7 +8,7 @@
       Active user count: {{ logsGroupedPerPerson.length }}
     </v-card-subtitle>
     <v-card-text>
-      <v-btn v-if="!dateLogsLoaded" :id="`dateLogDetailsButtonId_${groupedLog.dateString}`" rounded color="primary" x-small @click="detailsClick">
+      <v-btn v-if="!dateLogsLoaded" :id="`dateLogDetailsButtonId_${groupedLog.dateString}`" data-cy="dateLogDetailsButton" rounded color="primary" x-small @click="detailsClick">
         Details
       </v-btn>
       <div v-else>
