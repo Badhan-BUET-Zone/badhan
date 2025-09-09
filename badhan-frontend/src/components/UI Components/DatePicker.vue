@@ -10,6 +10,7 @@
     <template v-slot:activator="{ on, attrs }">
       <TextField
         :id="textFieldId"
+        :data-cy="textFieldId"
         :label="label"
         :prepend-icon="prependIcon"
         readonly
@@ -29,7 +30,7 @@
     >
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-      <v-btn v-if="showOk" :id="okButtonId" text color="primary" @click="$refs.menu.save(proxyValue)">OK</v-btn>
+      <v-btn v-if="showOk" :id="okButtonId" :data-cy="okButtonId" text color="primary" @click="$refs.menu.save(proxyValue)">OK</v-btn>
     </v-date-picker>
   </v-menu>
 </template>
