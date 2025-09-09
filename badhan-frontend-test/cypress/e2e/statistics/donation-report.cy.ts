@@ -15,7 +15,7 @@ describe('Statistics - Donation Report tab', () => {
   it('shows both blood and platelet donation tables', () => {
     // Sign in as superadmin
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.getText().should('equal', MESSAGES.signInSuccess);
+    notification.assertEquals(MESSAGES.signInSuccess);
 
     // Intercept report APIs before navigation
     interceptRoutes.donationReport();
