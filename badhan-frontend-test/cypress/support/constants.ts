@@ -1,5 +1,6 @@
 export const MESSAGES = {
   signInSuccess: 'Signed in successfully',
+  signOutSuccess: 'Logged out successfully',
   donorCreateSuccess: 'Donor added successfully',
   markActiveSuccess: 'Donor marked as active donor',
   publicContactsUpdated: 'Public Contacts Updated',
