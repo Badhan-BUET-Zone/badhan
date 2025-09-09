@@ -31,6 +31,20 @@ export class NewDonorPage {
     cy.get('[data-cy="newDonorPlateletDonationCountTextFieldId"]').clear().type(String(plateletCount));
   }
 
+  setLastDonationDate(isoDate: string): void {
+    cy.get('[data-cy="newDonorLastDonationTextFieldId"]').click();
+    cy.get('[data-cy="newDonorLastDonationOkButtonId"]').should('be.visible');
+    cy.get('[data-cy="newDonorLastDonationTextFieldId"]').invoke('val', isoDate).trigger('input');
+    cy.get('[data-cy="newDonorLastDonationOkButtonId"]').click();
+  }
+
+  setLastPlateletDonationDate(isoDate: string): void {
+    cy.get('[data-cy="newDonorLastPlateletDonationTextFieldId"]').click();
+    cy.get('[data-cy="newDonorLastPlateletDonationOkButtonId"]').should('be.visible');
+    cy.get('[data-cy="newDonorLastPlateletDonationTextFieldId"]').invoke('val', isoDate).trigger('input');
+    cy.get('[data-cy="newDonorLastPlateletDonationOkButtonId"]').click();
+  }
+
   submit(): void {
     cy.get('[data-cy="newDonorCreateButtonId"]').click();
   }

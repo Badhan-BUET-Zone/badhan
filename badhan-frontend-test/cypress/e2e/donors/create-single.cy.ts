@@ -44,8 +44,16 @@ describe('Single Donor Creation', () => {
     // Optional fields
     newDonor.fillOptional({ room: '1001', address: 'Test Address', comment: 'Test Comment' });
 
-    // Donation counts and dates (keep zero to avoid date requirement)
-    newDonor.setDonationCounts({ wholeBloodCount: 0, plateletCount: 0 });
+    // Donation counts and dates
+    const lastWholeDonationIso = new Date(Date.now() - 1000 * 60 * 60 * 24 * 120).toISOString().slice(0, 10);
+    const lastPlateletDonationIso = new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString().slice(0, 10);
+
+    // Set non-zero counts so dates are required
+    newDonor.setDonationCounts({ wholeBloodCount: 2, plateletCount: 1 });
+
+    // Pick corresponding dates via date pickers
+    newDonor.setLastDonationDate(lastWholeDonationIso);
+    newDonor.setLastPlateletDonationDate(lastPlateletDonationIso);
 
     // Create
     newDonor.submit();

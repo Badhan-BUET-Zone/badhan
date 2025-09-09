@@ -4,7 +4,7 @@ import axios from 'axios';
 export default defineConfig({
   viewportHeight: 851,
   viewportWidth: 393,
-  retries: { runMode: 2, openMode: 0 },
+  retries: 0,
   defaultCommandTimeout: 8000,
   pageLoadTimeout: 60000,
   e2e: {
