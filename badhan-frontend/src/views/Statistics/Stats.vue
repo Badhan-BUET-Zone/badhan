@@ -7,7 +7,7 @@
         <LoadingMessage :key="'loadingStats'" v-if="statisticsLoaderFlag"/>
         <v-card-text :key="'loadedStats'" v-if="statistics!==null">
           <p id="statsNumberOfDonors" data-cy="statsNumberOfDonors"><b>Number of donors: </b><br>{{ statistics.donorCount }}</p>
-          <p><b>Number of donations: </b><br>{{ statistics.donationCount }}</p>
+          <p><b>Number of whole blood donations: </b><br>{{ statistics.donationCount }}</p>
           <p v-if="statistics.plateletDonationCount !== undefined"><b>Number of platelet donations: </b><br>{{ statistics.plateletDonationCount }}</p>
           <p data-cy="statsNumberOfVolunteers"><b>Number of volunteers: </b><br>{{ statistics.volunteerCount }}</p>
         </v-card-text>
