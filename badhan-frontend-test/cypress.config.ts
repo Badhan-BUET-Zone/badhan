@@ -1,5 +1,7 @@
 import { defineConfig } from 'cypress';
 import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
 
 export default defineConfig({
   viewportHeight: 851,
@@ -13,6 +15,81 @@ export default defineConfig({
     supportFile: 'cypress/support/e2e.ts',
     video: false,
     setupNodeEvents(on, config) {
+      // Simple sanitizer for filenames
+      const sanitize = (str: string) =>
+        str
+          .replace(/[\n\r]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .replace(/[^a-zA-Z0-9._-]+/g, '_')
+          .slice(0, 120);
+
+      const logsRoot = path.join(process.cwd(), 'logs');
+      const successDir = path.join(logsRoot, 'success');
+      const errorDir = path.join(logsRoot, 'error');
+
+      let testCounter = 0;
+
+      on('before:run', () => {
+        // Reset logs directory at the start of every execution
+        try {
+          if (fs.existsSync(logsRoot)) {
+            fs.rmSync(logsRoot, { recursive: true, force: true });
+          }
+          fs.mkdirSync(successDir, { recursive: true });
+          fs.mkdirSync(errorDir, { recursive: true });
+        } catch (err) {
+          console.error('Failed to reset logs directory:', err);
+          throw err;
+        }
+      });
+
+      on('after:spec', (spec, results) => {
+        try {
+          if (!results || !results.tests) return;
+          // Ensure directories exist (in case running in open mode or external deletion)
+          [logsRoot, successDir, errorDir].forEach((d) => {
+            if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
+          });
+
+          const relativeSpecPath = spec.relative || spec.name || 'unknown-spec';
+
+          results.tests.forEach((t) => {
+            const idx = String(++testCounter).padStart(3, '0');
+            const title = Array.isArray(t.title) ? t.title.join(' ') : String(t.title);
+            const baseName = `${idx}-${sanitize(relativeSpecPath)}_${sanitize(title)}`;
+
+            if (t.state === 'passed') {
+              const filePath = path.join(successDir, `${baseName}_success.txt`);
+              const content = [
+                `TEST: ${title}`,
+                `FILE: ${relativeSpecPath}`,
+                `STATUS: SUCCESS`,
+                `DURATION_MS: ${t.displayDuration ?? t.duration ?? ''}`,
+                ''
+              ].join('\n');
+              fs.writeFileSync(filePath, content, 'utf8');
+            } else if (t.state === 'failed') {
+              const firstAttempt = (t.attempts && t.attempts[0]) ? t.attempts[0] : undefined;
+              const errorMessage = firstAttempt?.error?.message || t.displayError || '';
+              const failureTag = sanitize((errorMessage.split(/\n/)[0] || 'failure')).slice(0, 60) || 'failure';
+              const filePath = path.join(errorDir, `${baseName}_${failureTag}.txt`);
+              const content = [
+                `TEST: ${title}`,
+                `FILE: ${relativeSpecPath}`,
+                `STATUS: FAILURE`,
+                `DURATION_MS: ${t.displayDuration ?? t.duration ?? ''}`,
+                '--- FAILURE MESSAGE ---',
+                String(errorMessage),
+                ''
+              ].join('\n');
+              fs.writeFileSync(filePath, content, 'utf8');
+            }
+          });
+        } catch (err) {
+          console.error('Failed writing spec results to logs:', err);
+        }
+      });
+
       on('before:spec', async () => {
         const apiBase = 'http://localhost:4000';
         try {

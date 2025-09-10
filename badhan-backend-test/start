@@ -1,15 +1,246 @@
-#!/bin/bash
-set -euo pipefail  # safer script
+#!/usr/bin/env node
 
-LOG_ROOT="$(cd "$(dirname "$0")" && pwd)/logs"
-SUCCESS_DIR="$LOG_ROOT/success"
-ERROR_DIR="$LOG_ROOT/error"
+const jest = require('jest');
+const path = require('path');
+const fs = require('fs');
 
-echo "[start] Clearing logs directory: $LOG_ROOT" >&2
-mkdir -p "$SUCCESS_DIR" "$ERROR_DIR"
-rm -f "$SUCCESS_DIR"/*.txt || true
-rm -f "$ERROR_DIR"/*.txt || true
+// Configuration
+const CONFIG = {
+  testTimeout: 30000,
+  logRoot: path.join(__dirname, 'logs'),
+  successDir: path.join(__dirname, 'logs', 'success'),
+  errorDir: path.join(__dirname, 'logs', 'error'),
+  jestConfig: path.join(__dirname, 'jest.config.js')
+};
 
-# Forward all passed arguments to the npm script. Using `--` tells npm to forward
-# the remaining args to the script (so flags like --no-reset reach Jest/process.argv).
-npm run test -- "$@"
+/**
+ * Ensures directories exist and clears old logs
+ */
+function setupLogDirectories() {
+  console.log(`[start] Setting up log directories: ${CONFIG.logRoot}`);
+  
+  // Create directories if they don't exist
+  if (!fs.existsSync(CONFIG.logRoot)) {
+    fs.mkdirSync(CONFIG.logRoot, { recursive: true });
+  }
+  if (!fs.existsSync(CONFIG.successDir)) {
+    fs.mkdirSync(CONFIG.successDir, { recursive: true });
+  }
+  if (!fs.existsSync(CONFIG.errorDir)) {
+    fs.mkdirSync(CONFIG.errorDir, { recursive: true });
+  }
+
+  // Clear old log files
+  try {
+    const successFiles = fs.readdirSync(CONFIG.successDir);
+    successFiles.forEach(file => {
+      if (file.endsWith('.txt')) {
+        fs.unlinkSync(path.join(CONFIG.successDir, file));
+      }
+    });
+  } catch (err) {
+    // Directory might be empty, ignore error
+  }
+
+  try {
+    const errorFiles = fs.readdirSync(CONFIG.errorDir);
+    errorFiles.forEach(file => {
+      if (file.endsWith('.txt')) {
+        fs.unlinkSync(path.join(CONFIG.errorDir, file));
+      }
+    });
+  } catch (err) {
+    // Directory might be empty, ignore error
+  }
+}
+
+/**
+ * Runs Jest tests directly using Jest API
+ * @param {Array} args - Command line arguments to pass to Jest
+ * @returns {Promise<number>} - Exit code
+ */
+async function runTests(args = []) {
+  console.log('[start] Starting test execution...');
+  
+  // Check if a specific test file was provided
+  const specificTest = args.find(arg => 
+    fs.existsSync(arg) && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))
+  );
+  
+  if (specificTest) {
+    console.log(`[start] Running specific test: ${specificTest}`);
+  } else {
+    console.log('[start] Running all tests');
+  }
+  
+  // Prepare Jest configuration
+  const jestConfig = {
+    config: CONFIG.jestConfig,
+    testTimeout: CONFIG.testTimeout,
+    noColor: true,
+    runInBand: true,
+    silent: true, // Ensure Jest output is suppressed
+    // Parse command line arguments
+    ...parseJestArgs(args)
+  };
+
+  try {
+    // Run Jest directly
+    const { results } = await jest.runCLI(jestConfig, [__dirname]);
+    
+    if (results.success) {
+      console.log('[start] All tests completed successfully');
+      return 0;
+    } else {
+      console.error('[start] Tests failed');
+      return 1;
+    }
+  } catch (error) {
+    console.error('[start] Jest execution failed:', error.message);
+    return 1;
+  }
+}
+
+/**
+ * Parse command line arguments for Jest
+ * @param {Array} args - Raw command line arguments
+ * @returns {Object} - Jest configuration object
+ */
+function parseJestArgs(args) {
+  const config = {};
+  
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    
+    // Check if it's an absolute path to a test file
+    if (fs.existsSync(arg) && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))) {
+      config.testPathPattern = arg;
+      continue;
+    }
+    
+    // Check if it's a relative path to a test file
+    if (arg.includes('/') && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))) {
+      const fullPath = path.resolve(__dirname, arg);
+      if (fs.existsSync(fullPath)) {
+        config.testPathPattern = fullPath;
+        continue;
+      }
+    }
+    
+    switch (arg) {
+      case '--watch':
+        config.watch = true;
+        break;
+      case '--watchAll':
+        config.watchAll = true;
+        break;
+      case '--no-reset':
+        config.resetMocks = false;
+        break;
+      case '--verbose':
+        config.verbose = true;
+        break;
+      case '--silent':
+        config.silent = true;
+        break;
+      case '--testNamePattern':
+        if (i + 1 < args.length) {
+          config.testNamePattern = args[i + 1];
+          i++; // Skip next argument as it's the pattern
+        }
+        break;
+      case '--testPathPattern':
+        if (i + 1 < args.length) {
+          config.testPathPattern = args[i + 1];
+          i++; // Skip next argument as it's the pattern
+        }
+        break;
+      case '--maxWorkers':
+        if (i + 1 < args.length) {
+          config.maxWorkers = parseInt(args[i + 1]);
+          i++; // Skip next argument as it's the value
+        }
+        break;
+      default:
+        // Handle unknown arguments
+        if (arg.startsWith('--')) {
+          console.warn(`[start] Unknown Jest argument: ${arg}`);
+        }
+        break;
+    }
+  }
+  
+  return config;
+}
+
+/**
+ * Validates Jest configuration
+ */
+function validateJestConfig() {
+  if (!fs.existsSync(CONFIG.jestConfig)) {
+    throw new Error(`Jest config file not found: ${CONFIG.jestConfig}`);
+  }
+
+  try {
+    const jestConfig = require(CONFIG.jestConfig);
+    console.log('[start] Jest configuration validated');
+    return jestConfig;
+  } catch (err) {
+    throw new Error(`Invalid Jest configuration: ${err.message}`);
+  }
+}
+
+/**
+ * Main execution function that can be called programmatically
+ * @param {Array} args - Optional command line arguments
+ * @returns {Promise<boolean>} - Returns true if all tests pass, false otherwise
+ */
+async function runTestSuite(args = []) {
+  try {
+    console.log('[start] Badhan Backend Test Runner');
+    console.log('[start] ===========================');
+
+    // Validate Jest configuration
+    validateJestConfig();
+    
+    // Setup log directories
+    setupLogDirectories();
+    
+    // Run tests
+    const exitCode = await runTests(args);
+    
+    const success = exitCode === 0;
+    console.log(`[start] Test execution completed with exit code: ${exitCode}`);
+    
+    return success;
+    
+  } catch (error) {
+    console.error('[start] Error:', error.message);
+    return false;
+  }
+}
+
+/**
+ * Main execution function for standalone execution
+ */
+async function main() {
+  // Parse command line arguments
+  const args = process.argv.slice(2);
+  
+  const success = await runTestSuite(args);
+  process.exit(success ? 0 : 1);
+}
+
+// Export functions for potential use as module
+module.exports = {
+  runTestSuite,
+  runTests,
+  setupLogDirectories,
+  validateJestConfig,
+  CONFIG
+};
+
+// Run main function if this file is executed directly
+if (require.main === module) {
+  main();
+}

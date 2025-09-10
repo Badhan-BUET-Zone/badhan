@@ -1,5 +1,0 @@
-# bash
-
-node ../badhan-backup/scripts/wait_for_port.mjs 3000
-
-npm run serve:local

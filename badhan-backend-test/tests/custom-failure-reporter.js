@@ -31,6 +31,13 @@ class PerTestLogReporter {
 			if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 		});
 		this._counter = 0;
+		this._testRunStarted = false;
+	}
+
+	onRunStart(aggregatedResult, options) {
+		// Override Jest's default "Determining test suites to run" message
+		process.stdout.write('Tests are running...\n');
+		this._testRunStarted = true;
 	}
 
 	onTestResult(test, testResult, aggregatedResult) {

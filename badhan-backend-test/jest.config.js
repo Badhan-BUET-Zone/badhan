@@ -13,5 +13,8 @@ module.exports = {
   // The custom reporter writes per-test logs and a concise summary (no individual failure details).
   reporters: [
     '<rootDir>/tests/custom-failure-reporter.js'
-  ]
+  ],
+  // Suppress Jest's default output messages
+  silent: true,
+  verbose: false
 };

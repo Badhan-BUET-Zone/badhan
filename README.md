@@ -4,14 +4,13 @@
 * Ensure that you have [node.js](https://nodejs.org/en/download) version >= 22.
 * Install [Visual Studio Code](https://code.visualstudio.com/download).
 * Install [git](https://git-scm.com/downloads).
-* Ensure your visual studio code has access to a bash terminal.
 
 ## Run the Code
 
 * Clone this repository.
 * Open VSCode
-* Open a bash terminal in VSCode.
-* Run `bash start`
+* Open a terminal in VSCode.
+* Run `node start`
 
 The following output will make sure that the database, backend and frontend is running without any error
 
@@ -29,8 +28,8 @@ The following output will make sure that the database, backend and frontend is r
 * Visit http://localhost:8080 to start navigating the UI
 
 # Run Backend and Frontend Tests
-* Open a second bash terminal with `badhan-backend-test` as the working directory.
-* Run `bash start`. 
+* Open a second terminal with `badhan-backend-test` as the working directory.
+* Run `node start`. 
 ```
 Test Suites: 46 passed, 46 total
 Tests:       73 passed, 73 total
@@ -39,8 +38,8 @@ Time:        3.818 s, estimated 4 s
 Ran all test suites.
 ```
 
-* Make `badhan-frontend` the working directory.
-* Run `bash start`. The following output should occur:
+* Make `badhan-frontend-test` the working directory.
+* Run `node start`. The following output should occur:
 ```
 ====================================================================================================
 
