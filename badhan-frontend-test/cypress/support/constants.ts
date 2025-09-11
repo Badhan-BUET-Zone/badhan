@@ -4,6 +4,7 @@ export const MESSAGES = {
   donorCreateSuccess: 'Donor added successfully',
   markActiveSuccess: 'Donor marked as active donor',
   publicContactsUpdated: 'Public Contacts Updated',
+  profileSaveSuccess: 'Saved details successfully',
 } as const;
 
 export const ALIASES = {
@@ -23,6 +24,15 @@ export const BLOOD_GROUP = {
 
 export const HALL = {
   UNKNOWN: '(Unknown)',
+} as const;
+
+export const TEST_DATA = {
+  updatedName: 'Test User Updated',
+  updatedPhone: '01512345678',
+  updatedStudentId: '1705048',
+  updatedEmail: 'test.updated@example.com',
+  updatedRoom: 'C-123',
+  updatedAddress: 'Test Address Updated',
 } as const;
 
 

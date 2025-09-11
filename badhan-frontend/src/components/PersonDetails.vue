@@ -117,6 +117,7 @@
                                     :error-messages="phoneErrors"></TextField>
                       <TextField
                         id="donorDetailsEmailTextBoxId"
+                        data-cy="donorDetailsEmailTextBoxId"
                         :hint="(designation!==0 && !$isMe(id))?'You cannot edit this email':'Password Recovery Email'"
                         :persistent-hint="(designation!==0 && !$isMe(id))" :label="'Email'"
                         v-model="email"

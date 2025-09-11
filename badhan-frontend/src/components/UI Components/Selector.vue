@@ -7,6 +7,7 @@
     :label="label"
     :id="id"
     :data-cy="dataCy"
+    :data-selected-text="value"
     outlined
     dense
     rounded

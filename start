@@ -3,6 +3,13 @@ import { killPorts } from './badhan-backup/scripts/port_cleanup.mjs';
 import { cleanUp } from './badhan-backup/scripts/clean_all_dependencies.mjs';
 import { ensureNpmInstall } from './badhan-backup/scripts/ensure_npm_install.mjs';
 
+// Ensure Node.js version is >= 22
+const [nodeMajor] = process.versions.node.split('.').map(v => parseInt(v, 10));
+if (!Number.isFinite(nodeMajor) || nodeMajor < 22) {
+  console.error(`Node.js v22 or higher is required to run this script. Detected v${process.versions.node}. Please upgrade Node.js (e.g., "nvm use 22").`);
+  process.exit(1);
+}
+
 const args = process.argv.slice(2);
 
 await killPorts([27017, 3000, 8080, 4000]);
