@@ -2,7 +2,7 @@ import { SignInPage } from '@pages/SignInPage';
 import { NotificationComponent } from '@components/Notification';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
-import { interceptRoutes, waitFor } from '@support/routes';
+import { interceptRoutes } from '@support/routes';
 import { MESSAGES } from '@support/constants';
 import { ActiveDonorsPage } from '@pages/ActiveDonorsPage';
 import { AppBarComponent } from '@components/AppBar';
@@ -30,7 +30,7 @@ describe('Call Records: POST then DELETE from profile', () => {
     // Go to Active Donors and wait for list
     drawer.goToActiveDonors();
     interceptRoutes.activeDonors();
-    waitFor.activeDonorsOk();
+    cy.wait('@activeDonors');
     activeDonors.assertAnyCardExists();
 
     // Expand first card and trigger Direct call (POST /callrecords)

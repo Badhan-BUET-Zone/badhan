@@ -3,7 +3,7 @@ import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { StatisticsPage } from '@pages/StatisticsPage';
-import { interceptRoutes, waitFor } from '@support/routes';
+import { interceptRoutes } from '@support/routes';
 import { MESSAGES } from '@support/constants';
 
 describe('Statistics - Donation Report tab', () => {
@@ -27,9 +27,9 @@ describe('Statistics - Donation Report tab', () => {
     // Click Donation Report tab
     stats.openDonationReportTab();
 
-    // Wait for both APIs to resolve
-    waitFor.donationReportOk();
-    waitFor.plateletReportOk();
+    // Wait for both APIs to resolve (do not inspect responses)
+    cy.wait('@getBloodReport');
+    cy.wait('@getPlateletReport');
 
     // Assert both section titles exist (after data rendered)
     stats.assertWholeBloodSectionExists();

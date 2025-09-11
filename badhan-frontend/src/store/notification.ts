@@ -36,7 +36,7 @@ const mutations = {
   dismissNotification (state: NotificationStateInterface) {
     setTimeout(() => {
       state.notificationFlag = false
-    }, 3000)
+    }, 5000)
   },
   clearNotification (state: NotificationStateInterface) {
     state.notificationFlag = false

@@ -8,6 +8,8 @@ export const MESSAGES = {
   callRecordDeleted: 'Successfully deleted call record',
   publicContactsUpdated: 'Public Contacts Updated',
   profileSaveSuccess: 'Saved details successfully',
+  donationInserted: 'Donation inserted successfully',
+  donationDeleted: 'Successfully deleted donation',
 } as const;
 
 export const ALIASES = {

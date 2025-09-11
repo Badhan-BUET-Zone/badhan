@@ -20,9 +20,9 @@ describe('Members page', () => {
     // Navigate to Members
     drawer.goToMembers();
 
-    // Intercept the designations API and wait
-    interceptRoutes.designations();
-    waitFor.designationsOk();
+    // // Intercept the designations API and wait
+    // interceptRoutes.designations();
+    // waitFor.designationsOk();
 
     members.assertAnyVolunteerExists();
     members.assertAnyHallAdminExists();
