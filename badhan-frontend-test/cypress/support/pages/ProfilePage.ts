@@ -1,4 +1,34 @@
 export class ProfilePage {
+  // Donations UI helpers
+  openDonationDatePicker(): void {
+    cy.get('[data-cy="personDetailsNewDonationTextboxId"]').click();
+  }
+
+  pickDonationDay(day: string | number): void {
+    const dayStr = String(day);
+    cy.get('[data-cy="personDetailsNewDonationDatePickerId"]').contains('button', dayStr).not('[disabled]').first().click();
+  }
+
+  confirmDonationDate(): void {
+    cy.get('[data-cy="personDetailsNewDonationDatePickerOkButtonId"]').click();
+  }
+
+  submitNewDonation(): void {
+    cy.get('[data-cy="personDetailsNewDonationOkButtonId"]').click();
+  }
+
+  expandDonationHistory(): void {
+    cy.get('[data-cy="personDetailsDonationHistoryButtonId"]').click();
+  }
+
+  deleteFirstDonationCard(): void {
+    cy.get('[data-cy^="donationCardDeleteButtonId_"]').first().click();
+  }
+
+  confirmDeletion(): void {
+    cy.get('[data-cy="confirmationBoxButtonId"]:visible').first().click();
+  }
+
   openActiveDonorMenu(): void {
     cy.get('[data-cy="personDetailsActiveDonorButtonId"]').click();
   }

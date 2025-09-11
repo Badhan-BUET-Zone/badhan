@@ -308,6 +308,7 @@
                   </div>
                   <v-btn
                     id="personDetailsNewDonationOkButtonId"
+                    data-cy="personDetailsNewDonationOkButtonId"
                     color="primary"
                     rounded
                     small
@@ -335,6 +336,7 @@
                     <p class="h6 font-weight-bold">Blood Donation History:</p>
                     <Button
                       :id="`personDetailsDonationHistoryButtonId`"
+                      :data-cy="'personDetailsDonationHistoryButtonId'"
                       :icon="donationsCollapseFlag?'mdi-arrow-down':'mdi-arrow-up'"
                       :text="donationsCollapseFlag?'Show '+donationList.length+' donations':'Hide donations'"
                       :click="()=>{this.donationsCollapseFlag=!this.donationsCollapseFlag}"

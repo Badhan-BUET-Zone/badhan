@@ -2,7 +2,6 @@ import { SignInPage } from '@pages/SignInPage';
 import { NotificationComponent } from '@components/Notification';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
-import { interceptRoutes } from '@support/routes';
 import { MESSAGES } from '@support/constants';
 import { ProfilePage } from '@pages/ProfilePage';
 
@@ -26,20 +25,20 @@ describe('Donations: POST then DELETE from profile (blood)', () => {
     // Open date picker and select today's date, then confirm
     const today = new Date();
     const dd = String(today.getDate());
-    cy.get('#personDetailsNewDonationTextboxId').click();
-    cy.get('#personDetailsNewDonationDatePickerId').contains('button', dd).not('[disabled]').first().click();
-    cy.get('#personDetailsNewDonationDatePickerOkButtonId').click();
+    profile.openDonationDatePicker();
+    profile.pickDonationDay(dd);
+    profile.confirmDonationDate();
 
     // Click Done to add new blood donation
-    cy.get('#personDetailsNewDonationOkButtonId').click();
+    profile.submitNewDonation();
 
     // Assert success notification
     notification.assertEquals(MESSAGES.donationInserted);
 
     // Expand blood donation history and delete the first donation card
-    cy.get('[id="personDetailsDonationHistoryButtonId"]').click();
-    cy.get('[id^="donationCardDeleteButtonId_"]').first().click();
-    cy.get('[data-cy="confirmationBoxButtonId"]:visible').first().click();
+    profile.expandDonationHistory();
+    profile.deleteFirstDonationCard();
+    profile.confirmDeletion();
 
     // Assert deletion success notification
     notification.assertEquals(MESSAGES.donationDeleted);

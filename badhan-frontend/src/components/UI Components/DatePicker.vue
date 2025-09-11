@@ -23,6 +23,7 @@
     </template>
     <v-date-picker
       :id="pickerId"
+      :data-cy="pickerId"
       v-model="proxyValue"
       no-title
       scrollable
