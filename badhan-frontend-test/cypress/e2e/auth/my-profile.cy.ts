@@ -52,6 +52,11 @@ describe('My Profile - Edit and Save Details', () => {
       address: TEST_DATA.updatedAddress,
       publicData: true,
     });
+
+    // Revert phone to original and save
+    profile.typePhone(AUTH_CREDENTIALS.phone);
+    profile.saveDetails();
+    notification.assertEquals(MESSAGES.profileSaveSuccess);
   });
 });
 
