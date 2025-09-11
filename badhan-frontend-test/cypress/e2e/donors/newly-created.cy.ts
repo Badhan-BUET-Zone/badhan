@@ -4,7 +4,7 @@ import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { NewDonorPage } from '@pages/NewDonorPage';
 import { NewlyCreatedDonorsPage } from '@pages/NewlyCreatedDonorsPage';
-import { interceptRoutes, waitFor } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { BLOOD_GROUP, HALL, MESSAGES } from '@support/constants';
 
 describe('Newly Created Donors', () => {
@@ -22,7 +22,7 @@ describe('Newly Created Donors', () => {
     // Ensure we have at least one fresh donor by creating one quickly
     drawer.goToSingleDonorCreation();
 
-    interceptRoutes.createDonor();
+    // No network intercept; rely on notification
 
     const uniqueSuffix = String(Date.now()).slice(-7);
     const donorName = `E2E New Donor ${uniqueSuffix}`;
@@ -38,15 +38,14 @@ describe('Newly Created Donors', () => {
     newDonor.setDonationCounts({ wholeBloodCount: 0, plateletCount: 0 });
     newDonor.submit();
 
-    waitFor.createDonorOk();
+    // Expect success notification for donor creation
+    notification.assertEquals(MESSAGES.donorCreateSuccess);
 
     // Navigate to Newly Created Donors page
     drawer.goToNewlyCreatedDonors();
 
-    // Fetch and wait for API
-    interceptRoutes.newDonors();
+    // Fetch newly created donors (UI rendering awaited)
     newlyCreated.fetch();
-    waitFor.newDonorsOk();
 
     // Assert at least one donor card rendered
     newlyCreated.assertAnyDonorCardExists();

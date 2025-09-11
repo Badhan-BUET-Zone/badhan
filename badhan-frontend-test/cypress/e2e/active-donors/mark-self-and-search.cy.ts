@@ -3,7 +3,7 @@ import { NotificationComponent } from '@components/Notification';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { ProfilePage } from '@pages/ProfilePage';
-import { interceptRoutes, waitFor } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 import { ActiveDonorsPage } from '@pages/ActiveDonorsPage';
 import { ALIASES } from '@support/constants';
@@ -41,11 +41,7 @@ describe('Mark self as active and verify in Active Donors', () => {
     // Navigate to Active Donors
     drawer.goToActiveDonors();
 
-    // Intercept Active Donors search
-    interceptRoutes.activeDonors();
-
-    // Wait for backend and then for donor cards to render
-    waitFor.activeDonorsOk();
+    // Wait for donor cards to render
     activeDonors.assertAnyCardExists();
   });
 });

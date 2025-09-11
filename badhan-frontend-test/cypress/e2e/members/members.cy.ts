@@ -2,7 +2,7 @@ import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
-import { interceptRoutes, waitFor } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 import { MembersPage } from '@pages/MembersPage';
 
@@ -20,9 +20,7 @@ describe('Members page', () => {
     // Navigate to Members
     drawer.goToMembers();
 
-    // // Intercept the designations API and wait
-    // interceptRoutes.designations();
-    // waitFor.designationsOk();
+    // Wait on rendered UI elements instead of network
 
     members.assertAnyVolunteerExists();
     members.assertAnyHallAdminExists();

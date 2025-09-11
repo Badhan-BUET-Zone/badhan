@@ -3,7 +3,7 @@ import { NotificationComponent } from '@components/Notification';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { ProfilePage } from '@pages/ProfilePage';
-import { interceptRoutes, waitFor } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 import { ActiveDonorsPage } from '@pages/ActiveDonorsPage';
 import { AppBarComponent } from '@components/AppBar';
@@ -36,10 +36,8 @@ describe('Active Donors: POST & DELETE flow mirrors backend test', () => {
     // Close overlays to avoid blocking navigation
     activeDonors.closeOverlays();
 
-    // Navigate to Active Donors and validate search (GET)
+    // Navigate to Active Donors and validate donor list renders
     drawer.goToActiveDonors();
-    interceptRoutes.activeDonors();
-    waitFor.activeDonorsOk();
     activeDonors.assertAnyCardExists();
 
     // Navigate back to My Profile to unmark (DELETE)

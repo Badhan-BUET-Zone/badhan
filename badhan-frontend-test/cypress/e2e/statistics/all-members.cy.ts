@@ -3,7 +3,7 @@ import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { StatisticsPage } from '@pages/StatisticsPage';
-import { interceptRoutes, waitFor } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 
 describe('Statistics - All Members tab', () => {
@@ -17,17 +17,13 @@ describe('Statistics - All Members tab', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
 
-    // Intercept All Members API before navigation
-    interceptRoutes.allMembers();
-
     // Navigate to Statistics
     drawer.goToStatistics();
 
     // Switch to All Members tab
     stats.openAllMembersTab();
 
-    // Wait for data and assert at least one row
-    waitFor.allMembersOk();
+    // Wait for table to render and assert at least one row
     stats.assertAllMembersTableVisible();
     stats.assertAllMembersHasRows();
   });

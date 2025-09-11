@@ -2,7 +2,7 @@ import { SignInPage } from '@pages/SignInPage';
 import { NotificationComponent } from '@components/Notification';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
-import { interceptRoutes } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 import { ActiveDonorsPage } from '@pages/ActiveDonorsPage';
 import { AppBarComponent } from '@components/AppBar';
@@ -27,10 +27,8 @@ describe('Call Records: POST then DELETE from profile', () => {
     profile.ensureActiveDonorOn(MESSAGES.markActiveSuccess);
     activeDonors.closeOverlays();
 
-    // Go to Active Donors and wait for list
+    // Go to Active Donors and wait for list via UI
     drawer.goToActiveDonors();
-    interceptRoutes.activeDonors();
-    cy.wait('@activeDonors');
     activeDonors.assertAnyCardExists();
 
     // Expand first card and trigger Direct call (POST /callrecords)

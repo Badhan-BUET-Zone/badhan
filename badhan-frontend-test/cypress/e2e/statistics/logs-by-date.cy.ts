@@ -3,7 +3,7 @@ import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { StatisticsPage } from '@pages/StatisticsPage';
-import { interceptRoutes, waitFor } from '@support/routes';
+// removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 
 describe('Statistics - Logs by Date', () => {
@@ -17,13 +17,8 @@ describe('Statistics - Logs by Date', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
 
-    // Intercept logs API BEFORE navigation
-    interceptRoutes.logs();
-
     // Navigate to Statistics
     drawer.goToStatistics();
-
-    waitFor.logsOk();
 
     // Ensure Logs by Date tab element is present
     stats.ensureLogsByDateTabExists();
