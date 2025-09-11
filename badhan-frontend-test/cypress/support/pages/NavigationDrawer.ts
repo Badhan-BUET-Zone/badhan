@@ -48,6 +48,18 @@ export class NavigationDrawer {
     cy.get('[data-cy="superAdminId"]').click();
     cy.get('[data-cy="statisticsNavigationId"]').click();
   }
+
+  goToHome(): void {
+    // Open the drawer, then click visible Home link; fallback to direct visit
+    this.open();
+    cy.get('[data-cy="homeNavigationId"], #homeNavigationId').then(($el) => {
+      if ($el.length && $el.is(':visible')) {
+        cy.wrap($el).click();
+      } else {
+        cy.visit('/#/home');
+      }
+    });
+  }
 }
 
 

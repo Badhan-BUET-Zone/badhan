@@ -3,11 +3,7 @@ import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { NewDonorPage } from '@pages/NewDonorPage';
-// removed network intercepts; rely on UI rendering instead
 import { BLOOD_GROUP, HALL, MESSAGES } from '@support/constants';
-
-// Frontend shows this on successful donor create
-const CREATE_SUCCESS_MESSAGE = 'Donor added successfully';
 
 describe('Single Donor Creation', () => {
   const signInPage = new SignInPage();
