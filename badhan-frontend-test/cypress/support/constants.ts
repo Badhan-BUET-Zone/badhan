@@ -3,6 +3,9 @@ export const MESSAGES = {
   signOutSuccess: 'Logged out successfully',
   donorCreateSuccess: 'Donor added successfully',
   markActiveSuccess: 'Donor marked as active donor',
+  unmarkActiveSuccess: 'Donor unmarked',
+  callRecordAdded: 'Added call record',
+  callRecordDeleted: 'Successfully deleted call record',
   publicContactsUpdated: 'Public Contacts Updated',
   profileSaveSuccess: 'Saved details successfully',
 } as const;

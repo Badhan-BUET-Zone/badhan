@@ -402,6 +402,7 @@
                   <p class="h6 font-weight-bold">List of calls made to this donor:</p>
                   <Button
                     id="personDetailsCallRecordButtonId"
+                    data-cy="personDetailsCallRecordButtonId"
                     :icon="callRecordsCollapseFlag?'mdi-arrow-down':'mdi-arrow-up'"
                     :text="callRecordsCollapseFlag?'Show '+callRecords.length+' calls':'Hide calls'"
                     :click="()=>{this.callRecordsCollapseFlag=!this.callRecordsCollapseFlag}"

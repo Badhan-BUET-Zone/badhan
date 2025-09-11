@@ -1,4 +1,8 @@
 export class AppBarComponent {
+  clickBack(): void {
+    cy.get('[data-cy="pageTitleBackButtonId"]:visible').last().click({ force: true });
+  }
+
   openMenu(): void {
     cy.get('[data-cy="topBarVerticalDotsId"]').click();
   }
@@ -8,7 +12,7 @@ export class AppBarComponent {
   }
 
   confirmSignOut(): void {
-    cy.get('[data-cy="confirmationBoxButtonId"]').click();
+    cy.get('[data-cy="confirmationBoxButtonId"]:visible').first().click();
   }
 
   signOut(): void {

@@ -13,6 +13,26 @@ export class ProfilePage {
     });
   }
 
+  ensureActiveDonorOff(successMessage: string): void {
+    cy.get('[data-cy="personDetailsActiveDonorSwitchId"]').then(($el) => {
+      const isChecked = ($el[0] as HTMLInputElement).checked;
+      if (isChecked) {
+        cy.wrap($el).click({ force: true });
+        cy.get('[data-cy="notificationTextId"]').should('be.visible').and('have.text', successMessage);
+      }
+    });
+  }
+
+  expandCallHistory(): void {
+    cy.get('[data-cy="personDetailsCallRecordButtonId"]').click();
+  }
+
+  deleteFirstCallRecord(successMessage: string): void {
+    cy.get('[data-cy^="callRecordDeleteButtonId_"]').first().click();
+    cy.get('[data-cy="confirmationBoxButtonId"]:visible').first().click();
+    cy.get('[data-cy="notificationTextId"]').should('be.visible').and('have.text', successMessage);
+  }
+
   captureName(alias: string): void {
     cy.get('[data-cy="donorDetailsNameTextBoxId"]').should('be.visible').invoke('val').as(alias);
   }
