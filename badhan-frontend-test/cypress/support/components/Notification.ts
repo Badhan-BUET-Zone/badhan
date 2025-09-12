@@ -8,9 +8,10 @@ export class NotificationComponent {
   }
 
   assertEquals(expectedText: string): void {
-    cy.get('[data-cy="notificationTextId"]')
-      .should('be.visible')
-      .and('have.text', expectedText);
+    cy.get('[data-cy="notificationTextId"]').should(($el) => {
+      expect($el).to.be.visible;
+      expect($el.text()).to.eq(expectedText);
+    });
   }
 }
 

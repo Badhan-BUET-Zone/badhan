@@ -167,6 +167,18 @@ export class ProfilePage {
     cy.get('[data-cy="donorDetailsAddressTextBoxId"]').should('have.value', expected);
   }
 
+  typeComment(comment: string): void {
+    cy.get('[data-cy="donorDetailsCommentTextBoxId"]').clear().type(comment).blur();
+  }
+
+  saveComment(): void {
+    cy.get('[data-cy="donorDetailsCommentSaveButtonId"]').click();
+  }
+
+  assertComment(expected: string): void {
+    cy.get('[data-cy="donorDetailsCommentTextBoxId"]').should('have.value', expected);
+  }
+
   assertBloodGroup(expectedLabel: string): void {
     cy.get('[data-cy="donorDetailsBloodGroupDropDownId"]').should('have.attr', 'data-selected-text', expectedLabel);
   }
@@ -228,6 +240,15 @@ export class ProfilePage {
 
   savePassword(): void {
     cy.get('[data-cy="passwordChangeConfirmedId"]').click();
+  }
+
+  clickDemoteToDonor(): void {
+    cy.get('[data-cy="demoteToDonorButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
+  }
+
+  clickDeleteDonor(): void {
+    cy.get('[data-cy="personDetailsDeleteButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
+    cy.get('[data-cy="confirmationBoxButtonId"]:visible').first().click();
   }
 }
 

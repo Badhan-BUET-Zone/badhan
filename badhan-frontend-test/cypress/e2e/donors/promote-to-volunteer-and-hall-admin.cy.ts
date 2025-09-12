@@ -15,7 +15,7 @@ describe('Promote donor to Volunteer then Hall Admin', () => {
   const home = new HomePage();
   const profile = new ProfilePage();
 
-  it('creates a donor, opens profile, promotes to volunteer and hall admin', () => {
+  it('creates a donor, opens profile, promotes to volunteer, demotes, promotes again, then hall admin', () => {
     // Sign in
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
@@ -55,7 +55,15 @@ describe('Promote donor to Volunteer then Hall Admin', () => {
     profile.clickPromoteToVolunteer();
     notification.assertEquals(MESSAGES.promoteVolunteerSuccess);
 
-    // Promote to Hall Admin and assert notification
+    // Demote back to Donor and assert notification
+    profile.clickDemoteToDonor();
+    notification.assertEquals(MESSAGES.promoteVolunteerSuccess);
+
+    // Promote to Volunteer again and assert notification
+    profile.clickPromoteToVolunteer();
+    notification.assertEquals(MESSAGES.promoteVolunteerSuccess);
+
+    // Finally promote to Hall Admin and assert notification
     profile.clickPromoteToHallAdmin();
     notification.assertEquals(MESSAGES.changeHallAdminSuccess);
   });

@@ -8,6 +8,7 @@ export const MESSAGES = {
   callRecordDeleted: 'Successfully deleted call record',
   publicContactsUpdated: 'Public Contacts Updated',
   profileSaveSuccess: 'Saved details successfully',
+  commentChangedSuccess: 'Successfully changed comment',
   donationInserted: 'Donation inserted successfully',
   donationDeleted: 'Successfully deleted donation',
   plateletDonationInserted: 'Platelet donation inserted successfully',
@@ -15,6 +16,7 @@ export const MESSAGES = {
   promoteVolunteerSuccess: 'Target user promoted/demoted successfully',
   changeHallAdminSuccess: 'Successfully changed hall admin',
   changePasswordSuccess: 'Password changed successfully',
+  donorDeletedSuccess: 'Deleted donor successfully',
 } as const;
 
 export const ALIASES = {
@@ -60,6 +62,7 @@ export const TEST_DATA = {
   updatedEmail: 'test.updated@example.com',
   updatedRoom: 'C-123',
   updatedAddress: 'Test Address Updated',
+  updatedComment: 'Test comment updated',
 } as const;
 
 export const TEST_PASSWORDS = {

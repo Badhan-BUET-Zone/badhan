@@ -33,6 +33,11 @@ describe('My Profile - Edit and Save Details', () => {
     profile.typeAddress(TEST_DATA.updatedAddress);
     profile.togglePublicData(true);
 
+    // Edit comment and save using the separate comment save button
+    profile.typeComment(TEST_DATA.updatedComment);
+    profile.saveComment();
+    notification.assertEquals(MESSAGES.commentChangedSuccess);
+
     // Save
     profile.saveDetails();
 
@@ -52,6 +57,7 @@ describe('My Profile - Edit and Save Details', () => {
       address: TEST_DATA.updatedAddress,
       publicData: true,
     });
+    profile.assertComment(TEST_DATA.updatedComment);
 
     // Revert phone to original and save
     profile.typePhone(AUTH_CREDENTIALS.phone);

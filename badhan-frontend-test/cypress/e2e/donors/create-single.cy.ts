@@ -4,12 +4,16 @@ import { NotificationComponent } from '@components/Notification';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { NewDonorPage } from '@pages/NewDonorPage';
 import { BLOOD_GROUP, HALL, MESSAGES } from '@support/constants';
+import { HomePage } from '@pages/HomePage';
+import { ProfilePage } from '@pages/ProfilePage';
 
 describe('Single Donor Creation', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
   const newDonor = new NewDonorPage();
+  const home = new HomePage();
+  const profile = new ProfilePage();
 
   it('creates a donor and shows success notification (validated by backend response)', () => {
     // Sign in
@@ -55,6 +59,19 @@ describe('Single Donor Creation', () => {
 
     // Expect success notification after create completes
     notification.assertEquals(MESSAGES.donorCreateSuccess);
+
+    // Go back to Home and search the created donor
+    drawer.goToHome();
+    home.setNameFilter(donorName);
+    home.triggerSearch();
+    home.assertDonorCardWithNameExists(donorName);
+
+    // Open donor profile and delete the donor
+    home.clickSeeProfileOnFirstCard();
+    profile.assertSettingsVisible();
+    profile.openSettings();
+    profile.clickDeleteDonor();
+    notification.assertEquals(MESSAGES.donorDeletedSuccess);
   });
 });
 
