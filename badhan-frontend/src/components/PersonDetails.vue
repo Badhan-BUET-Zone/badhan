@@ -373,6 +373,7 @@
                     <p class="h6 font-weight-bold">Platelet Donation History:</p>
                     <Button
                       :id="`personDetailsPlateletDonationHistoryButtonId`"
+                      :data-cy="'personDetailsPlateletDonationHistoryButtonId'"
                       :icon="plateletDonationsCollapseFlag?'mdi-arrow-down':'mdi-arrow-up'"
                       :text="plateletDonationsCollapseFlag?'Show '+plateletDonationList.length+' donations':'Hide donations'"
                       :click="()=>{this.plateletDonationsCollapseFlag=!this.plateletDonationsCollapseFlag}"

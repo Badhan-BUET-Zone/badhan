@@ -1,6 +1,6 @@
 export class AppBarComponent {
   clickBack(): void {
-    cy.get('[data-cy="pageTitleBackButtonId"]:visible').last().click({ force: true });
+    cy.get('[data-cy="pageTitleBackButtonId"]').last().scrollIntoView().should('be.visible').click({ force: true });
   }
 
   openMenu(): void {

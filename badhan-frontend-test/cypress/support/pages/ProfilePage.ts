@@ -21,6 +21,14 @@ export class ProfilePage {
     cy.get('[data-cy="personDetailsDonationHistoryButtonId"]').click();
   }
 
+  collapseDonationHistory(): void {
+    cy.get('[data-cy="personDetailsDonationHistoryButtonId"]').click();
+  }
+
+  expandPlateletDonationHistory(): void {
+    cy.get('[data-cy="personDetailsPlateletDonationHistoryButtonId"]').click();
+  }
+
   deleteFirstDonationCard(): void {
     cy.get('[data-cy^="donationCardDeleteButtonId_"]').first().click();
   }

@@ -10,6 +10,8 @@ export const MESSAGES = {
   profileSaveSuccess: 'Saved details successfully',
   donationInserted: 'Donation inserted successfully',
   donationDeleted: 'Successfully deleted donation',
+  plateletDonationInserted: 'Platelet donation inserted successfully',
+  plateletDonationDeleted: 'Successfully deleted platelet donation',
 } as const;
 
 export const ALIASES = {

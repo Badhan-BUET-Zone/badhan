@@ -81,6 +81,7 @@
         <div class="mt-1">
           <v-btn
               :id="'personCardSeeProfileButtonId_'+id"
+              :data-cy="'personCardSeeProfileButtonId_'+id"
               small
               rounded
               color="primary"
@@ -93,7 +94,7 @@
             </v-icon>
             See profile
           </v-btn>
-          <v-btn :id="'personCardCallButtonId_'+id" :disabled="newCallRecordLoader" small rounded color="secondary"
+          <v-btn :id="'personCardCallButtonId_'+id" :data-cy="'personCardCallButtonId_'+id" :disabled="newCallRecordLoader" small rounded color="secondary"
                  class="ml-2" @click="callFromDialer"
           >
             <v-icon left>
@@ -114,12 +115,13 @@
         </div>
         <div class="mt-2">
           <v-radio-group v-model="newDonationType" row dense>
-            <v-radio label="Blood" value="Blood"></v-radio>
-            <v-radio label="Platelet" value="Platelet"></v-radio>
+            <v-radio label="Blood" value="Blood" :data-cy="'personCardDonationRadioBloodId_'+id"></v-radio>
+            <v-radio label="Platelet" value="Platelet" :data-cy="'personCardDonationRadioPlateletId_'+id"></v-radio>
           </v-radio-group>
         </div>
         <v-btn
             :id="`personCardDonationButtonId_${id}`"
+            :data-cy="`personCardDonationButtonId_${id}`"
             color="primary"
             rounded
             small

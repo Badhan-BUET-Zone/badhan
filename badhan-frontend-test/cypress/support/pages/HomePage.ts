@@ -19,6 +19,40 @@ export class HomePage {
     cy.get('[data-cy="person-card"]').should('contain.text', name);
   }
 
+  // First card interactions (use data-cy only)
+  expandFirstCard(): void {
+    this.donorCards().first().click();
+  }
+
+  clickDirectCallOnFirstCard(): void {
+    cy.get('[data-cy^="personCardCallButtonId_"]').first().click();
+  }
+
+  openDatePickerOnFirstCard(): void {
+    cy.get('[data-cy^="personCardDatePickerId_"]').first().click();
+  }
+
+  pickDonationDayOnFirstCard(day: string | number): void {
+    const dayStr = String(day);
+    cy.get('[data-cy^="personCardDatePickerCalenderId_"]').first().contains('button', dayStr).not('[disabled]').first().click();
+  }
+
+  confirmDateOnFirstCard(): void {
+    cy.get('[data-cy^="personCardDatePickerOkButtonId_"]').first().click();
+  }
+
+  clickDonationDoneOnFirstCard(): void {
+    cy.get('[data-cy^="personCardDonationButtonId_"]').first().click();
+  }
+
+  selectPlateletOnFirstCard(): void {
+    cy.get('[data-cy^="personCardDonationRadioPlateletId_"]').first().scrollIntoView().click({ force: true });
+  }
+
+  clickSeeProfileOnFirstCard(): void {
+    cy.get('[data-cy^="personCardSeeProfileButtonId_"]').first().click();
+  }
+
   // Filter input methods
   setNameFilter(name: string): void {
     cy.get('[data-cy="filterNameTextboxId"]').clear().type(name);
