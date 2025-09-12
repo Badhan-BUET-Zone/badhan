@@ -52,7 +52,7 @@
               </v-col>
             </v-row>
             <Button
-                id="logoutFromAllDevices"
+                :data-cy="'logoutFromAllDevices'"
                 :color="'primary'"
                 :disabled="logoutAllLoader"
                 :icon="'mdi-delete'"
@@ -63,7 +63,7 @@
         </div>
         <v-card-actions v-if="!loginsFetched" :key="'loginFetchAction'">
           <Button
-            id="getListOfLoginButtonId"
+            :data-cy="'getListOfLoginButtonId'"
               :color="'primary'"
               :disabled="getLoginsLoader"
               :icon="'mdi-refresh'"

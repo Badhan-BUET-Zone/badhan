@@ -13,6 +13,7 @@ export const MESSAGES = {
   donationDeleted: 'Successfully deleted donation',
   plateletDonationInserted: 'Platelet donation inserted successfully',
   plateletDonationDeleted: 'Successfully deleted platelet donation',
+  logoutFromDeviceSuccess: 'Logged out from specified device',
   promoteVolunteerSuccess: 'Target user promoted/demoted successfully',
   changeHallAdminSuccess: 'Successfully changed hall admin',
   changePasswordSuccess: 'Password changed successfully',

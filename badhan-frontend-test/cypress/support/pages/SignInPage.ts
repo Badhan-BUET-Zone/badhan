@@ -21,6 +21,16 @@ export class SignInPage {
     this.typePassword(password);
     this.submit();
   }
+
+  clearAuthToken(): void {
+    cy.window().then((win) => {
+      win.localStorage.removeItem('x-auth');
+    });
+  }
+
+  reload(): void {
+    cy.reload();
+  }
 }
 
 

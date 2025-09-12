@@ -1,4 +1,17 @@
 export class ProfilePage {
+  // Logins UI helpers
+  clickGetRecentLogins(): void {
+    cy.get('[data-cy="getListOfLoginButtonId"]').click();
+  }
+
+  assertHasDeletableLogins(): void {
+    cy.get('[data-cy^="loginDeleteButtonId_"]').its('length').should('be.gte', 1);
+  }
+
+  deleteFirstOtherDeviceLogin(): void {
+    cy.get('[data-cy^="loginDeleteButtonId_"]').first().click();
+  }
+
   // Donations UI helpers
   openDonationDatePicker(): void {
     cy.get('[data-cy="personDetailsNewDonationTextboxId"]').click();
