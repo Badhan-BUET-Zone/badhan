@@ -76,7 +76,7 @@ export class ProfilePage {
   }
 
   assertSettingsVisible(): void {
-    cy.get('[data-cy="profileSettingsButton"]').should('be.visible');
+    cy.get('[data-cy="profileSettingsButton"]').scrollIntoView().should('be.visible');
   }
 
   typeName(name: string): void {
@@ -202,6 +202,19 @@ export class ProfilePage {
     this.assertBloodGroup(bloodGroupLabel);
     this.assertHall(hallLabel);
     this.assertPublicData(publicData);
+  }
+
+  // Promotion actions
+  openSettings(): void {
+    cy.get('[data-cy="profileSettingsButton"]').scrollIntoView().click();
+  }
+
+  clickPromoteToVolunteer(): void {
+    cy.get('[data-cy="promoteToVolunteerButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
+  }
+
+  clickPromoteToHallAdmin(): void {
+    cy.get('[data-cy="promoteToHallAdminButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
   }
 }
 

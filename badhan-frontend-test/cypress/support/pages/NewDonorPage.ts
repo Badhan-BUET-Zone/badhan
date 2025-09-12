@@ -25,6 +25,15 @@ export class NewDonorPage {
     if (comment) cy.get('[data-cy="newDonorCommentTextFieldId"]').type(comment);
   }
 
+  setPublicData(checked: boolean = true): void {
+    cy.get('[data-cy="newDonorPublicDataCheckboxId"]').then(($el) => {
+      const isChecked = ($el[0] as HTMLInputElement).checked;
+      if (isChecked !== checked) {
+        cy.wrap($el).click({ force: true });
+      }
+    });
+  }
+
   setDonationCounts(params: { wholeBloodCount?: number; plateletCount?: number } = {}): void {
     const { wholeBloodCount = 0, plateletCount = 0 } = params;
     cy.get('[data-cy="newDonorDonationCountTextFieldId"]').clear().type(String(wholeBloodCount));

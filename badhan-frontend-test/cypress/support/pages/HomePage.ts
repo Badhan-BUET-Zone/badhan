@@ -50,7 +50,11 @@ export class HomePage {
   }
 
   clickSeeProfileOnFirstCard(): void {
-    cy.get('[data-cy^="personCardSeeProfileButtonId_"]').first().click();
+    // Ensure the first card is expanded, then click See profile within that card
+    this.expandFirstCard();
+    cy.get('[data-cy="person-card"]').first().within(() => {
+      cy.get('[data-cy^="personCardSeeProfileButtonId_"]').should('exist').click();
+    });
   }
 
   // Filter input methods

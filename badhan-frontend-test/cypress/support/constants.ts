@@ -12,6 +12,8 @@ export const MESSAGES = {
   donationDeleted: 'Successfully deleted donation',
   plateletDonationInserted: 'Platelet donation inserted successfully',
   plateletDonationDeleted: 'Successfully deleted platelet donation',
+  promoteVolunteerSuccess: 'Target user promoted/demoted successfully',
+  changeHallAdminSuccess: 'Successfully changed hall admin',
 } as const;
 
 export const ALIASES = {

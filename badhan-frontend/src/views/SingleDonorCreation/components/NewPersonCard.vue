@@ -78,7 +78,7 @@
         />
 
 
-          <v-checkbox id="newDonorPublicDataCheckboxId" :disabled="halls.indexOf(hall)===8" dense v-model="availableToAll"
+          <v-checkbox id="newDonorPublicDataCheckboxId" data-cy="newDonorPublicDataCheckboxId" :disabled="halls.indexOf(hall)===8" dense v-model="availableToAll"
                       @blur="$v.availableToAll.$touch()" :error-messages="availableToAllErrors"
                       label="Public Data"></v-checkbox>
         </v-card-text>
