@@ -216,6 +216,19 @@ export class ProfilePage {
   clickPromoteToHallAdmin(): void {
     cy.get('[data-cy="promoteToHallAdminButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
   }
+
+  // Password helpers
+  typeNewPassword(password: string): void {
+    cy.get('[data-cy="newPasswordFieldId"]').clear().type(password).blur();
+  }
+
+  typeConfirmPassword(password: string): void {
+    cy.get('[data-cy="confirmPasswordFieldId"]').clear().type(password).blur();
+  }
+
+  savePassword(): void {
+    cy.get('[data-cy="passwordChangeConfirmedId"]').click();
+  }
 }
 
 

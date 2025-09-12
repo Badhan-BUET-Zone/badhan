@@ -14,6 +14,7 @@ export const MESSAGES = {
   plateletDonationDeleted: 'Successfully deleted platelet donation',
   promoteVolunteerSuccess: 'Target user promoted/demoted successfully',
   changeHallAdminSuccess: 'Successfully changed hall admin',
+  changePasswordSuccess: 'Password changed successfully',
 } as const;
 
 export const ALIASES = {
@@ -59,6 +60,10 @@ export const TEST_DATA = {
   updatedEmail: 'test.updated@example.com',
   updatedRoom: 'C-123',
   updatedAddress: 'Test Address Updated',
+} as const;
+
+export const TEST_PASSWORDS = {
+  newPassword: 'newpass1',
 } as const;
 
 
