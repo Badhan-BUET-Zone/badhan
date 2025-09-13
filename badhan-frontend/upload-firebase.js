@@ -4,8 +4,8 @@
 const { execSync } = require("child_process");
 const { existsSync } = require("fs");
 
-function run(command, options = {}) {
-  return execSync(command, { stdio: "inherit", ...options });
+function run(command, cwd) {
+  return execSync(command, { stdio: "inherit", cwd });
 }
 
 function getCurrentBranch() {
@@ -16,16 +16,17 @@ function getCurrentBranch() {
   }
 }
 
-function ensureFirebaseToolsInstalled() {
+function ensureFirebaseToolsInstalled(baseDir) {
   try {
     execSync("npx --no-install firebase --version", { stdio: "ignore" });
   } catch (_) {
     console.log("ℹ️  firebase-tools not found in node_modules. Installing as dev dependency…");
-    run("npm install --save-dev firebase-tools");
+    run("npm install --save-dev firebase-tools", baseDir);
   }
 }
 
-function main() {
+function deployToFirebase() {
+  const baseDir = __dirname; // ensure all commands run in badhan-frontend directory
   const currentBranch = getCurrentBranch();
   if (!currentBranch) {
     console.error("❌  Unable to determine the current Git branch. Aborting.");
@@ -46,29 +47,37 @@ function main() {
       firebaseProject = "badhan-buet-test";
   }
 
-  ensureFirebaseToolsInstalled();
+  ensureFirebaseToolsInstalled(baseDir);
 
   console.log(`🔨  Running build command: ${buildCmd}`);
-  run(buildCmd);
+  run(buildCmd, baseDir);
 
   console.log(`🚀  Deploying to Firebase project '${firebaseProject}'…`);
   const configFile = `firebase.${firebaseProject}.json`;
 
   run(
-    `npx --no-install firebase deploy --only hosting --project "${firebaseProject}" --config "${configFile}"`
+    `npx --no-install firebase deploy --only hosting --project "${firebaseProject}" --config "${configFile}"`,
+    baseDir
   );
 
   console.log("✅  Deployment complete.");
+  return true;
 }
 
-try {
-  main();
-} catch (err) {
-  if (err && typeof err.status === "number") {
-    process.exit(err.status || 1);
+// Export the function for use in other files
+module.exports = { deployToFirebase };
+
+// Run the function if this script is executed directly
+if (require.main === module) {
+  try {
+    deployToFirebase();
+  } catch (err) {
+    if (err && typeof err.status === "number") {
+      process.exit(err.status || 1);
+    }
+    console.error(err);
+    process.exit(1);
   }
-  console.error(err);
-  process.exit(1);
 }
 
 

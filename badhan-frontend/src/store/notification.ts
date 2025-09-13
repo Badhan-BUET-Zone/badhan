@@ -4,12 +4,14 @@ interface NotificationStateInterface {
   notificationFlag: boolean
   notification: string | null
   notificationColor: string
+  dismissTimerId: ReturnType<typeof setTimeout> | null
 }
 
 const state: NotificationStateInterface = {
   notificationFlag: false,
   notification: null,
-  notificationColor: 'success'
+  notificationColor: 'success',
+  dismissTimerId: null
 }
 
 const getters = {
@@ -34,12 +36,21 @@ const mutations = {
     state.notificationColor = payload
   },
   dismissNotification (state: NotificationStateInterface) {
-    setTimeout(() => {
+    if (state.dismissTimerId) {
+      clearTimeout(state.dismissTimerId)
+      state.dismissTimerId = null
+    }
+    state.dismissTimerId = setTimeout(() => {
       state.notificationFlag = false
+      state.dismissTimerId = null
     }, 5000)
   },
   clearNotification (state: NotificationStateInterface) {
     state.notificationFlag = false
+    if (state.dismissTimerId) {
+      clearTimeout(state.dismissTimerId)
+      state.dismissTimerId = null
+    }
   }
 }
 const actions = {

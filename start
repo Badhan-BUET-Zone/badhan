@@ -2,6 +2,10 @@ import { runProcessesInParallel } from './badhan-backup/scripts/parallel.mjs';
 import { killPorts } from './badhan-backup/scripts/port_cleanup.mjs';
 import { cleanUp } from './badhan-backup/scripts/clean_all_dependencies.mjs';
 import { ensureNpmInstall } from './badhan-backup/scripts/ensure_npm_install.mjs';
+import { deployToGoogleCloud } from './badhan-backend/upload-gcloud.js';
+import { deployToFirebase } from './badhan-frontend/upload-firebase.js';
+import { runTestSuite as runBackendTestSuite } from './badhan-backend-test/start';
+import { runTestSuite as runFrontendTestSuite } from './badhan-frontend-test/start';
 
 // Ensure Node.js version is >= 22
 const [nodeMajor] = process.versions.node.split('.').map(v => parseInt(v, 10));
@@ -12,9 +16,51 @@ if (!Number.isFinite(nodeMajor) || nodeMajor < 22) {
 
 const args = process.argv.slice(2);
 
+const cleanUpRequired = args.includes('--clean')
+
+const deployRequired = args.includes('--deploy')
+
+const testRequired = args.includes('--test')
+
+if(testRequired){
+  console.log('🧪 Running all tests...');
+  console.log('========================');
+  
+  try {
+    // Run backend tests (no arguments to run all tests)
+    console.log('🔧 Starting backend tests...');
+    const backendTestResult = await runBackendTestSuite();
+    
+    // Run frontend tests (no arguments to run all tests)
+    console.log('🌐 Starting frontend tests...');
+    const frontendTestResult = await runFrontendTestSuite();
+    
+    // Report results
+    console.log('\n📊 Test Results Summary:');
+    console.log('========================');
+    console.log(`Backend Tests: ${backendTestResult ? '✅ PASSED' : '❌ FAILED'}`);
+    console.log(`Frontend Tests: ${frontendTestResult ? '✅ PASSED' : '❌ FAILED'}`);
+    
+    const allTestsPassed = backendTestResult && frontendTestResult;
+    console.log(`\nOverall Result: ${allTestsPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
+    
+    if(!allTestsPassed){
+      process.exit(1);
+    }
+
+    if(deployRequired){
+      deployToGoogleCloud();
+      deployToFirebase();
+    }
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error running tests:', error.message);
+    process.exit(1);
+  }
+}
 await killPorts([27017, 3000, 8080, 4000]);
 
-const cleanUpRequired = args.includes('--clean')
+
 
 if(cleanUpRequired) {
   await cleanUp([

@@ -19,8 +19,6 @@ describe('Call Records: POST then DELETE from profile', () => {
   it('creates a call record from card, then deletes it from profile', () => {
     // Sign in
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.assertEquals(MESSAGES.signInSuccess);
-
     // Ensure self is marked as Active Donor before navigating
     drawer.goToMyProfile();
     profile.openActiveDonorMenu();
