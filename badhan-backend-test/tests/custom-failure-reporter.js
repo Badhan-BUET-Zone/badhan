@@ -23,7 +23,8 @@ class PerTestLogReporter {
 	constructor(globalConfig, options) {
 		this._globalConfig = globalConfig;
 		this._options = options || {};
-		this._root = path.join(process.cwd(), 'logs');
+		this._projectRoot = (globalConfig && globalConfig.rootDir) ? globalConfig.rootDir : path.join(__dirname, '..');
+		this._root = path.join(this._projectRoot, 'logs');
 		this._successDir = path.join(this._root, 'success');
 		this._errorDir = path.join(this._root, 'error');
 		// Directories are cleared in start script; ensure they exist now.
@@ -41,7 +42,7 @@ class PerTestLogReporter {
 	}
 
 	onTestResult(test, testResult, aggregatedResult) {
-		const relativePath = path.relative(process.cwd(), test.path);
+		const relativePath = path.relative(this._projectRoot, test.path);
 		testResult.testResults.forEach((tr) => {
 			const idx = String(++this._counter).padStart(3, '0');
 			const baseName = `${idx}-${sanitize(relativePath)}_${sanitize(tr.title)}`;
