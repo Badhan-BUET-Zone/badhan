@@ -8,9 +8,6 @@ import { MESSAGES } from '@support/constants';
 import { ActiveDonorsPage } from '@pages/ActiveDonorsPage';
 import { ALIASES } from '@support/constants';
 
-const SUCCESS_SIGNIN = 'Signed in successfully';
-const SUCCESS_MARK_ACTIVE = 'Donor marked as active donor';
-
 describe('Mark self as active and verify in Active Donors', () => {
   const signInPage = new SignInPage();
   const notification = new NotificationComponent();

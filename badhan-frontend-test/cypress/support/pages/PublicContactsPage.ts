@@ -1,5 +1,6 @@
 export class PublicContactsPage {
   selectBloodGroup(label: string): void {
+    cy.wait(1000);
     cy.get('[data-cy="personDetailsPublicContactSelectId"]').click();
     cy.get(`[data-cy="personDetailsPublicContactSelectId${label}"]`).click();
     cy.get('[data-cy="personDetailsPublicContactSelectId"]').blur();

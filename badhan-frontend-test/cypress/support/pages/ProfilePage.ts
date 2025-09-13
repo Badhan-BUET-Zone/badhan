@@ -31,6 +31,7 @@ export class ProfilePage {
   }
 
   expandDonationHistory(): void {
+    cy.wait(1000);
     cy.get('[data-cy="personDetailsDonationHistoryButtonId"]').click();
   }
 
@@ -39,6 +40,7 @@ export class ProfilePage {
   }
 
   expandPlateletDonationHistory(): void {
+    cy.wait(1000);
     cy.get('[data-cy="personDetailsPlateletDonationHistoryButtonId"]').click();
   }
 
@@ -51,7 +53,11 @@ export class ProfilePage {
   }
 
   openActiveDonorMenu(): void {
+    cy.wait(1000);
+    // First check if the button exists and is visible
+    cy.get('[data-cy="personDetailsActiveDonorButtonId"]').should('exist').and('be.visible');
     cy.get('[data-cy="personDetailsActiveDonorButtonId"]').click();
+
   }
 
   ensureActiveDonorOn(successMessage: string): void {
@@ -75,6 +81,7 @@ export class ProfilePage {
   }
 
   expandCallHistory(): void {
+    cy.wait(1000);
     cy.get('[data-cy="personDetailsCallRecordButtonId"]').click();
   }
 
@@ -231,6 +238,7 @@ export class ProfilePage {
 
   // Promotion actions
   openSettings(): void {
+    cy.wait(1000);
     cy.get('[data-cy="profileSettingsButton"]').scrollIntoView().click();
   }
 
