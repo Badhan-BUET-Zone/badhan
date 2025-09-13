@@ -18,7 +18,9 @@
           <v-row>
             <!-- Render logs in reverse (most recent date groups first) -->
             <v-col cols="12" sm="4" v-for="(log,i) in reversedLogs" :key="i">
-              <DateLog :groupedLog="log" :key="i"/>
+              <transition name="slide-fade-up" appear>
+                <DateLog :groupedLog="log" :key="i"/>
+              </transition>
             </v-col>
           </v-row>
         </v-card-text>
@@ -108,5 +110,26 @@ export default {
 </script>
 
 <style scoped>
+.slide-fade-up-enter-active {
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 
+.slide-fade-up-leave-active {
+  transition: all 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+.slide-fade-up-enter {
+  transform: translateY(60px) scale(0.9);
+  opacity: 0;
+}
+
+.slide-fade-up-leave-to {
+  transform: translateY(-40px) scale(1.1);
+  opacity: 0;
+}
+
+.slide-fade-up-enter-to {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
 </style>

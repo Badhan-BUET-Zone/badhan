@@ -8,14 +8,18 @@
       Active user count: {{ logsGroupedPerPerson.length }}
     </v-card-subtitle>
     <v-card-text>
-      <v-btn v-if="!dateLogsLoaded" :id="`dateLogDetailsButtonId_${groupedLog.dateString}`" data-cy="dateLogDetailsButton" rounded color="primary" x-small @click="detailsClick">
-        Details
-      </v-btn>
-      <div v-else>
-        <div v-for="(log,index) in logsGroupedPerPerson" :key="index">
-          <PersonLog :date-log="log"></PersonLog>
+      <transition name="fade" mode="out-in">
+        <v-btn v-if="!dateLogsLoaded" :id="`dateLogDetailsButtonId_${groupedLog.dateString}`" data-cy="dateLogDetailsButton" rounded color="primary" x-small @click="detailsClick" key="button">
+          Details
+        </v-btn>
+        <div v-else key="details">
+          <transition-group name="slide-fade-left" tag="div">
+            <div v-for="(log,index) in logsGroupedPerPerson" :key="index">
+              <PersonLog :date-log="log"></PersonLog>
+            </div>
+          </transition-group>
         </div>
-      </div>
+      </transition>
     </v-card-text>
   </v-card>
 </template>
@@ -56,5 +60,26 @@ export default {
 </script>
 
 <style lang="sass">
+.fade-enter-active, .fade-leave-active
+  transition: opacity 0.3s ease
 
+.fade-enter, .fade-leave-to
+  opacity: 0
+
+.slide-fade-left-enter-active
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+.slide-fade-left-leave-active
+  transition: all 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19)
+
+.slide-fade-left-enter
+  transform: translateX(-50px) scale(0.95)
+  opacity: 0
+
+.slide-fade-left-leave-to
+  transform: translateX(30px) scale(1.05)
+  opacity: 0
+
+.slide-fade-left-move
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)
 </style>

@@ -3,10 +3,10 @@
         <v-card-title>Donations Report</v-card-title>
         <v-card-text>
             <div class="mt-2">
-                <DatePicker v-model="startDate" label="Start Date" />
+                <DatePicker v-model="startDate" label="Start Date" textFieldId="startDatePicker" />
             </div>
             <div class="mt-2">
-                <DatePicker v-model="endDate" label="End Date" />
+                <DatePicker v-model="endDate" label="End Date" textFieldId="endDatePicker" />
             </div>
         </v-card-text>
         <v-card-actions>
