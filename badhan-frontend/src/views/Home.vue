@@ -21,69 +21,84 @@
           <Filters :reset-clicked="clearFields" :search-clicked="searchClickedFromFilterComponent"></Filters>
         </v-col>
         <v-col cols="12" lg="8" id="results" data-cy="homeResults">
-          <div v-if="searchLoaderFlag" :key="'searchLoading'">
-            <LoadingMessage/>
-          </div>
-          <div style="height: fit-content" v-if="searchResultShown">
-            <div >
-              <v-alert dense class="rounded-xl" color="tertiary">
-                <div>
-                  Found {{ numOfDonor }} donors
+          <transition name="loader-fade" appear>
+            <div v-if="searchLoaderFlag" :key="'searchLoading'">
+              <LoadingMessage/>
+            </div>
+          </transition>
+          <transition name="search-results" appear>
+            <div v-if="searchResultShown" :key="searchResultKey" class="search-results-container">
+              <transition name="fade-in" appear>
+                <div :key="`count-${searchResultKey}`">
+                  <v-alert dense class="rounded-xl" color="tertiary">
+                    <div>
+                      Found {{ numOfDonor }} donors
+                    </div>
+                  </v-alert>
                 </div>
-              </v-alert>
-            </div>
-            <div>
-              <div>
-                <v-row no-gutters>
-                  <v-col class="ma-2">
-                    <v-btn @click="downloadInWeb" small
-                           color="secondary" rounded style="width: 100%">
-                      <v-icon left>
-                        mdi-download
-                      </v-icon>
-                      Download Report
-                    </v-btn>
-                  </v-col>
-                  <v-col class="ma-2">
-                    <v-tooltip
-                        v-model="showTooltip"
-                        top
-                    >
-                      <template v-slot:activator="{ attrs }">
-                        <v-btn small color="secondary" rounded style="width: 100%" v-bind="attrs"
-                               @click="shareClicked">
+              </transition>
+              <transition name="slide-up" appear>
+                <div :key="`actions-${searchResultKey}`">
+                  <div>
+                    <v-row no-gutters>
+                      <v-col class="ma-2">
+                        <v-btn @click="downloadInWeb" small
+                               color="secondary" rounded style="width: 100%">
                           <v-icon left>
-                            mdi-share
+                            mdi-download
                           </v-icon>
-                          Share Search Results
+                          Download Report
                         </v-btn>
-                      </template>
-                      <span>Copied to clipboard</span>
-                    </v-tooltip>
-                  </v-col>
-                </v-row>
-              </div>
-              <div v-for="(obj, index) in personGroups" :key="index">
-                <v-alert dense class="rounded-xl" color="tertiary">
-                    Batch {{ obj.batch }}:
-                </v-alert>
+                      </v-col>
+                      <v-col class="ma-2">
+                        <v-tooltip
+                            v-model="showTooltip"
+                            top
+                        >
+                          <template v-slot:activator="{ attrs }">
+                            <v-btn small color="secondary" rounded style="width: 100%" v-bind="attrs"
+                                   @click="shareClicked">
+                              <v-icon left>
+                                mdi-share
+                              </v-icon>
+                              Share Search Results
+                            </v-btn>
+                          </template>
+                          <span>Copied to clipboard</span>
+                        </v-tooltip>
+                      </v-col>
+                    </v-row>
+                  </div>
+                  <transition-group name="staggered-fade" appear>
+                    <div v-for="(obj, index) in personGroups" :key="`batch-${searchResultKey}-${index}`" class="batch-group">
+                      <v-alert dense class="rounded-xl" color="tertiary">
+                          Batch {{ obj.batch }}:
+                      </v-alert>
 
-        <person-card
-                    :id="'personCardId_'+person._id"
-                    :data-cy="'person-card'"
-                    v-for="(person) in obj.people"
-                    :key="person._id"
-          :person="person"
-                ></person-card>
-              </div>
-              <v-btn id="olderBatchResultsButton" v-if="isMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
-                <v-icon left>
-                  mdi-more
-                </v-icon>
-                Show results from older batches
-              </v-btn>
+                      <transition-group name="person-card-stagger" appear>
+                        <person-card
+                            :id="'personCardId_'+person._id"
+                            :data-cy="'person-card'"
+                            v-for="(person, personIndex) in obj.people"
+                            :key="person._id"
+                            :style="{ '--stagger-delay': `${personIndex * 0.1}s` }"
+                            :person="person"
+                        ></person-card>
+                      </transition-group>
+                    </div>
+                  </transition-group>
+                  <transition name="fade-in" appear>
+                    <v-btn id="olderBatchResultsButton" v-if="isMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
+                      <v-icon left>
+                        mdi-more
+                      </v-icon>
+                      Show results from older batches
+                    </v-btn>
+                  </transition>
+                </div>
+              </transition>
             </div>
-          </div>
+          </transition>
         </v-col>
       </v-row>
       <transition name="slide-fade" mode="out-in">
@@ -178,7 +193,8 @@ export default {
       searchedHall: 0,
 
       persons: [],
-      numOfDonor: 0
+      numOfDonor: 0,
+      searchResultKey: 0
     }
   },
   validations: () => {
@@ -233,8 +249,17 @@ export default {
       }
     },
     async search (payload) {
-      // clear previous search results
-      this.searchResultShown = false
+      // Increment search result key to trigger exit animation
+      this.searchResultKey++
+      
+      // If there are existing results, hide them gracefully first
+      if (this.searchResultShown) {
+        this.searchResultShown = false
+        // Wait for exit animation to complete (300ms)
+        await new Promise(resolve => setTimeout(resolve, 300))
+      }
+      
+      // Now show loader
       this.searchLoaderFlag = true
 
       const sendData = {
@@ -249,13 +274,19 @@ export default {
         
       }
 
-      this.searchLoaderFlag = true
-
       const response = await handleGETSearchV3(sendData)
+      
+      // Hide loader gracefully
       this.searchLoaderFlag = false
+      
+      // Wait a moment for loader to disappear
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
       if (response.status !== 200) {
         return
       }
+      
+      // Clear previous data
       this.personGroups = []
       this.numOfDonor = response.data.filteredDonors.length
 
@@ -288,6 +319,7 @@ export default {
       this.morePersonGroups = sortedBatches.slice(countOfBatchesToShow)
       this.isMorePersonGroupsAvailable = this.morePersonGroups.length !== 0
 
+      // Show new results with animation
       this.searchResultShown = true
       
       this.searchedHall = payload.hall
@@ -458,5 +490,188 @@ export default {
 </script>
 
 <style scoped>
+/* Loader fade animation */
+.loader-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
 
+.loader-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.loader-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.loader-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.loader-fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Search results container animation */
+.search-results-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.search-results-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.search-results-enter-from {
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.search-results-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
+.search-results-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade in animation */
+.fade-in-enter-active {
+  transition: opacity 0.4s ease-out;
+}
+
+.fade-in-leave-active {
+  transition: opacity 0.2s ease-in;
+}
+
+.fade-in-enter-from {
+  opacity: 0;
+}
+
+.fade-in-leave-to {
+  opacity: 0;
+}
+
+.fade-in-enter-to {
+  opacity: 1;
+}
+
+/* Slide up animation */
+.slide-up-enter-active {
+  transition: all 0.4s ease-out;
+}
+
+.slide-up-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.slide-up-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered fade animation for batches */
+.staggered-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.staggered-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.staggered-fade-enter-from {
+  opacity: 0;
+  transform: translateX(-15px);
+}
+
+.staggered-fade-leave-to {
+  opacity: 0;
+  transform: translateX(15px);
+}
+
+.staggered-fade-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.staggered-fade-move {
+  transition: transform 0.3s ease;
+}
+
+/* Person card stagger animation */
+.person-card-stagger-enter-active {
+  transition: all 0.25s ease-out;
+  transition-delay: var(--stagger-delay, 0s);
+}
+
+.person-card-stagger-leave-active {
+  transition: all 0.15s ease-in;
+}
+
+.person-card-stagger-enter-from {
+  opacity: 0;
+  transform: translateY(15px) scale(0.98);
+}
+
+.person-card-stagger-leave-to {
+  opacity: 0;
+  transform: translateY(-15px) scale(0.98);
+}
+
+.person-card-stagger-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.person-card-stagger-move {
+  transition: transform 0.3s ease;
+}
+
+/* Batch group styling */
+.batch-group {
+  margin-bottom: 16px;
+}
+
+/* Smooth transitions for all interactive elements */
+.v-btn {
+  transition: all 0.2s ease;
+}
+
+.v-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.v-alert {
+  transition: all 0.3s ease;
+}
+
+/* Loading state animation */
+.search-results-container {
+  animation: slideInFromBottom 0.6s ease-out;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>

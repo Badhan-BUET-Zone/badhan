@@ -53,8 +53,9 @@
       </v-row>
     </v-card>
     <!--    Person card extension-->
-    <v-card class="mt-2 rounded-xl" v-if="showExtensionFlag">
-      <v-card-text>
+    <transition name="expand">
+      <v-card class="mt-2 rounded-xl" v-show="showExtensionFlag">
+        <v-card-text>
         <v-row no-gutters>
           <v-col cols="12" sm="6">
             <span><b>Department: </b>{{ studentId | idToDept }} <br></span>
@@ -132,6 +133,7 @@
         </v-btn>
       </v-card-text>
     </v-card>
+    </transition>
   </div>
 </template>
 
@@ -287,5 +289,24 @@ export default {
 </script>
 
 <style scoped>
+/* Expansion animation */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
 
+.expand-enter,
+.expand-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+}
+
+.expand-enter-to,
+.expand-leave {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 1000px;
+}
 </style>

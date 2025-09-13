@@ -11,6 +11,7 @@ const getBloodGroupString = (bloodGroupCode: number): string => {
   return bloodGroups[bloodGroupCode]
 }
 const idToDept = (studentID: string): string => {
+  if (!studentID) return 'Unknown'
   return departments[Number(studentID.toString().substr(2, 2))]
 }
 
