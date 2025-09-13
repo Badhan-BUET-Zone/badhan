@@ -105,7 +105,7 @@
           </v-btn
           >
         </div>
-        <div class="mt-2">
+        <div class="mt-4">
           <DatePicker
             v-model="newDonationDate"
             label="Add a donation date"
@@ -114,7 +114,7 @@
             :ok-button-id="`personCardDatePickerOkButtonId_${id}`"
           />
         </div>
-        <div class="mt-2">
+        <div style="margin-top: -30px;">
           <v-radio-group v-model="newDonationType" row dense>
             <v-radio label="Blood" value="Blood" :data-cy="'personCardDonationRadioBloodId_'+id"></v-radio>
             <v-radio label="Platelet" value="Platelet" :data-cy="'personCardDonationRadioPlateletId_'+id"></v-radio>

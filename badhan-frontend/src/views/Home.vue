@@ -31,44 +31,48 @@
               <transition name="fade-in" appear>
                 <div :key="`count-${searchResultKey}`">
                   <v-alert dense class="rounded-xl" color="tertiary">
-                    <div>
-                      Found {{ numOfDonor }} donors
+                    <div class="d-flex align-center justify-space-between">
+                      <span>Found {{ numOfDonor }} donors</span>
+                      <div class="d-flex align-center">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ attrs }">
+                            <v-btn
+                              @click="downloadInWeb"
+                              small
+                              color="secondary"
+                              icon
+                              v-bind="attrs"
+                              class="mr-2"
+                            >
+                              <v-icon>mdi-download</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Download Report</span>
+                        </v-tooltip>
+                        <v-tooltip
+                          v-model="showTooltip"
+                          top
+                        >
+                          <template v-slot:activator="{ attrs }">
+                            <v-btn
+                              small
+                              color="secondary"
+                              icon
+                              v-bind="attrs"
+                              @click="shareClicked"
+                            >
+                              <v-icon>mdi-share</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Copied to clipboard</span>
+                        </v-tooltip>
+                      </div>
                     </div>
                   </v-alert>
                 </div>
               </transition>
               <transition name="slide-up" appear>
                 <div :key="`actions-${searchResultKey}`">
-                  <div>
-                    <v-row no-gutters>
-                      <v-col class="ma-2">
-                        <v-btn @click="downloadInWeb" small
-                               color="secondary" rounded style="width: 100%">
-                          <v-icon left>
-                            mdi-download
-                          </v-icon>
-                          Download Report
-                        </v-btn>
-                      </v-col>
-                      <v-col class="ma-2">
-                        <v-tooltip
-                            v-model="showTooltip"
-                            top
-                        >
-                          <template v-slot:activator="{ attrs }">
-                            <v-btn small color="secondary" rounded style="width: 100%" v-bind="attrs"
-                                   @click="shareClicked">
-                              <v-icon left>
-                                mdi-share
-                              </v-icon>
-                              Share Search Results
-                            </v-btn>
-                          </template>
-                          <span>Copied to clipboard</span>
-                        </v-tooltip>
-                      </v-col>
-                    </v-row>
-                  </div>
                   <transition-group name="staggered-fade" appear>
                     <div v-for="(obj, index) in personGroups" :key="`batch-${searchResultKey}-${index}`" class="batch-group">
                       <v-alert dense class="rounded-xl" color="tertiary">

@@ -60,12 +60,11 @@
                     :hint="''"
                     @blur="$v.donationCount.$touch()"
                     :error-messages="donationCountErrors"></TextField>
-  <TextField id="newDonorPlateletDonationCountTextFieldId" data-cy="newDonorPlateletDonationCountTextFieldId" label="Platelet donation count" v-model="plateletDonationCount"
-        :hint="''"
-        @blur="$v.plateletDonationCount.$touch()"
-        :error-messages="plateletDonationCountErrors"></TextField>
-      <v-card outlined class="rounded-xl">
-        <v-card-text>
+      <TextField id="newDonorPlateletDonationCountTextFieldId" data-cy="newDonorPlateletDonationCountTextFieldId" label="Platelet donation count" v-model="plateletDonationCount"
+            :hint="''"
+            @blur="$v.plateletDonationCount.$touch()"
+            :error-messages="plateletDonationCountErrors">
+      </TextField>
         <Selector
           id="newDonorHallDropdownId"
           data-cy="hall-select"
@@ -81,8 +80,6 @@
           <v-checkbox id="newDonorPublicDataCheckboxId" data-cy="newDonorPublicDataCheckboxId" :disabled="halls.indexOf(hall)===8" dense v-model="availableToAll"
                       @blur="$v.availableToAll.$touch()" :error-messages="availableToAllErrors"
                       label="Public Data"></v-checkbox>
-        </v-card-text>
-      </v-card>
 
       <DatePicker
         v-model="lastDonation"
