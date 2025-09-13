@@ -341,21 +341,21 @@
                       :text="donationsCollapseFlag?'Show '+donationList.length+' donations':'Hide donations'"
                       :click="()=>{this.donationsCollapseFlag=!this.donationsCollapseFlag}"
                       :color="'info'"></Button>
-                    <transition name="slide-fade-down">
-                    <span v-if="!donationsCollapseFlag">
-                      <transition-group name="slide-fade-down" tag="p">
-                          <DonationCard
-                            v-for="date in donationList"
-                            :key="date._id"
-                            :date-object="date"
-                            :delete-donation="deleteDonationClicked">
-                          </DonationCard>
-                      </transition-group>
-                      <br/>
-                    <p v-if="donationList.length===0">
-                      No donations found
-                    </p>
-                    </span>
+                    <transition name="donation-list-slide">
+                      <div v-if="!donationsCollapseFlag" key="donations-visible">
+                        <transition-group name="slide-fade" tag="p">
+                            <DonationCard
+                              v-for="date in donationList"
+                              :key="date._id"
+                              :date-object="date"
+                              :delete-donation="deleteDonationClicked">
+                            </DonationCard>
+                        </transition-group>
+                        <br/>
+                        <p v-if="donationList.length===0">
+                          No donations found
+                        </p>
+                      </div>
                     </transition>
                   </template>
                   <span v-else>(Unknown)</span>
@@ -378,21 +378,21 @@
                       :text="plateletDonationsCollapseFlag?'Show '+plateletDonationList.length+' donations':'Hide donations'"
                       :click="()=>{this.plateletDonationsCollapseFlag=!this.plateletDonationsCollapseFlag}"
                       :color="'info'"></Button>
-                    <transition name="slide-fade-down">
-                    <span v-if="!plateletDonationsCollapseFlag">
-                      <transition-group name="slide-fade-down" tag="p">
-                          <DonationCard
-                            v-for="date in plateletDonationList"
-                            :key="date._id"
-                            :date-object="date"
-                            :delete-donation="deletePlateletDonationClicked">
-                          </DonationCard>
-                      </transition-group>
-                      <br/>
-                    <p v-if="plateletDonationList.length===0">
-                      No donations found
-                    </p>
-                    </span>
+                    <transition name="donation-list-slide">
+                      <div v-if="!plateletDonationsCollapseFlag" key="platelet-donations-visible">
+                        <transition-group name="slide-fade" tag="p">
+                            <DonationCard
+                              v-for="date in plateletDonationList"
+                              :key="date._id"
+                              :date-object="date"
+                              :delete-donation="deletePlateletDonationClicked">
+                            </DonationCard>
+                        </transition-group>
+                        <br/>
+                        <p v-if="plateletDonationList.length===0">
+                          No donations found
+                        </p>
+                      </div>
                     </transition>
                   </template>
                   <span v-else>(Unknown)</span>
@@ -412,16 +412,16 @@
                     :color="'info'">
                   </Button>
                 </v-card-text>
-                <transition name="slide-fade-down">
-                  <v-card-text v-if="!callRecordsCollapseFlag">
-                    <p v-if="callRecords.length===0">No call history</p>
-                    <transition-group name="slide-fade-down" tag="p">
-                      <CallRecordCard v-for="callRecord in callRecords" :key="callRecord._id" :call-record="callRecord"
-                                      :deleted="callRecordDeleted">
-                      </CallRecordCard>
-                    </transition-group>
-                  </v-card-text>
-                </transition>
+                  <transition name="donation-list-slide">
+                    <v-card-text v-if="!callRecordsCollapseFlag" key="call-records-visible">
+                      <p v-if="callRecords.length===0">No call history</p>
+                      <transition-group name="slide-fade" tag="p">
+                        <CallRecordCard v-for="callRecord in callRecords" :key="callRecord._id" :call-record="callRecord"
+                                        :deleted="callRecordDeleted">
+                        </CallRecordCard>
+                      </transition-group>
+                    </v-card-text>
+                  </transition>
               </ContainerOutlined>
 
               <ContainerOutlined v-if="$store.getters['getDesignation'] === 3">
@@ -1190,7 +1190,30 @@ export default {
 }
 </script>
 <style>
+/* Animation for donation list appearance - slide from top to bottom */
+.donation-list-slide-enter-active {
+  transition: all 0.5s ease-out;
+}
 
+.donation-list-slide-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.donation-list-slide-enter {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.donation-list-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.donation-list-slide-enter-to,
+.donation-list-slide-leave {
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>
 
 

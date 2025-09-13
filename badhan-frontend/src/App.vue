@@ -72,7 +72,7 @@ export default {
 .slide-fade-enter, .slide-fade-leave-to
   /* .slide-fade-leave-active below version 2.1.8 */
 {
-  transform: translateX(-20px);
+  transform: translateX(-100px);
   opacity: 0;
 }
 
@@ -113,7 +113,11 @@ export default {
   transition: all .3s ease;
 }
 
-.slide-fade-down-snapout-enter {
+.slide-fade-down-snapout-leave-active {
+  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-down-snapout-enter, .slide-fade-down-snapout-leave-to {
   transform: translateY(-40px);
   opacity: 0;
 }
