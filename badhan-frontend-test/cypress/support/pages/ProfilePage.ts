@@ -19,7 +19,13 @@ export class ProfilePage {
 
   pickDonationDay(day: string | number): void {
     const dayStr = String(day);
-    cy.get('[data-cy="personDetailsNewDonationDatePickerId"]').contains('button', dayStr).not('[disabled]').first().click();
+    // Target only day buttons in the calendar grid, not year/month buttons
+    cy.get('[data-cy="personDetailsNewDonationDatePickerId"]')
+      .find('.v-date-picker-table button')
+      .contains(dayStr)
+      .not('[disabled]')
+      .first()
+      .click();
   }
 
   confirmDonationDate(): void {

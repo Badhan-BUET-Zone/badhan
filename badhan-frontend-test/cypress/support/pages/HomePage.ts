@@ -34,7 +34,14 @@ export class HomePage {
 
   pickDonationDayOnFirstCard(day: string | number): void {
     const dayStr = String(day);
-    cy.get('[data-cy^="personCardDatePickerCalenderId_"]').first().contains('button', dayStr).not('[disabled]').first().click();
+    // Target only day buttons in the calendar grid, not year/month buttons
+    cy.get('[data-cy^="personCardDatePickerCalenderId_"]')
+      .first()
+      .find('.v-date-picker-table button')
+      .contains(dayStr)
+      .not('[disabled]')
+      .first()
+      .click();
   }
 
   confirmDateOnFirstCard(): void {
