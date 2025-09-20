@@ -14,7 +14,7 @@
         </v-btn>
         <div v-else key="details">
           <transition-group name="slide-fade-left" tag="div">
-            <div v-for="(log,index) in logsGroupedPerPerson" :key="index">
+            <div v-for="log in logsGroupedPerPerson" :key="log.name">
               <PersonLog :date-log="log"></PersonLog>
             </div>
           </transition-group>
