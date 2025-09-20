@@ -10,7 +10,7 @@
       </v-btn>
       <div v-else key="activities">
         <transition-group name="slide-fade-down" tag="div">
-          <div v-for="(log, i) in dateLog.group" :key="i">
+          <div v-for="(log, i) in dateLog.group" :key="log.date">
             {{ i + 1 }}) Time:
             {{ new Date(log.date).toDateString({ timeZone: 'Asia/Dhaka'}) + ' ' + new Date(log.date).toLocaleTimeString({ timeZone: 'Asia/Dhaka'}) }} <br>
             Operation: {{ log.operation }} <br>
