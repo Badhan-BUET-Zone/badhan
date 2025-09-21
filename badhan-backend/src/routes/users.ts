@@ -1,5 +1,4 @@
 import {AsyncRouter, AsyncRouterInstance} from 'express-async-router'
-import { underMaintenanceController } from '../controllers/otherControllers'
 import authenticator from '../middlewares/authenticate'
 import userController from '../controllers/userController'
 import rateLimiter from '../middlewares/rateLimiter'
@@ -83,11 +82,11 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: Incorrect phone / password
  */
-router.post('/signin',
-  userValidator.validateLogin,
-  rateLimiter.signInLimiter,
-  userController.handlePOSTSignIn
-)
+// router.post('/signin',
+//   userValidator.validateLogin,
+//   rateLimiter.signInLimiter,
+//   userController.handlePOSTSignIn
+// )
 
 /**
  * @openapi
@@ -117,11 +116,11 @@ router.post('/signin',
  *                   type: string
  *                   example: Logged out successfully
  */
-router.delete('/signout',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  userController.handleDELETESignOut
-)
+// router.delete('/signout',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   userController.handleDELETESignOut
+// )
 
 /**
  * @openapi

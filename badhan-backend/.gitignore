@@ -15,3 +15,7 @@ mongodb_local
 backup
 config
 mongotools
+
+# TSOA generated files
+src/tsoaRoutes/
+dist/tsoa/

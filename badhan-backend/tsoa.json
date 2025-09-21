@@ -1,0 +1,127 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": [
+    "src/tsoaControllers/*.ts"
+  ],
+  "spec": {
+    "outputDirectory": "dist/tsoa",
+    "specVersion": 3,
+    "specMerging": "recursive",
+    "spec": {
+      "info": {
+        "title": "Badhan API",
+        "version": "1.0.0",
+        "description": "Automatically generated documentation of Badhan API. Documentation is generated using TSOA and initially created by Sumaiya Azad."
+      },
+      "servers": [
+        { "url": "https://badhan-buet-test.uc.r.appspot.com", "description": "Development server" },
+        { "url": "http://localhost:3000", "description": "Local development server" }
+      ],
+      "components": {
+        "securitySchemes": {
+          "ApiKeyAuth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "x-auth"
+          }
+        },
+        "schemas": {
+          "Donors": {
+            "type": "object",
+            "properties": {
+              "phone": { "type": "number" },
+              "password": { "type": "string" },
+              "studentId": { "type": "string" },
+              "bloodGroup": { "type": "number" },
+              "hall": { "type": "number" },
+              "address": { "type": "string" },
+              "roomNumber": { "type": "string" },
+              "designation": { "type": "number" },
+              "name": { "type": "string" },
+              "comment": { "type": "string" },
+              "commentTime": { "type": "number" },
+              "availableToAll": { "type": "boolean" },
+              "email": { "type": "string" },
+              "lastDonation": { "type": "number" },
+              "lastPlateletDonation": { "type": "number" }
+            },
+            "required": ["phone","studentId","bloodGroup","hall","address","roomNumber","name","comment","availableToAll"]
+          },
+          "Tokens": {
+            "type": "object",
+            "properties": {
+              "donorId": { "type": "string" },
+              "token": { "type": "string" },
+              "os": { "type": "string" },
+              "browserFamily": { "type": "string" },
+              "device": { "type": "string" },
+              "ipAddress": { "type": "string" },
+              "expireAt": { "type": "number" }
+            },
+            "required": ["donorId","token","os","browserFamily","device","ipAddress"]
+          },
+          "Donations": {
+            "type": "object",
+            "properties": {
+              "donorId": { "type": "string" },
+              "date": { "type": "number" }
+            },
+            "required": ["donorId","date"]
+          },
+          "PlateletDonations": {
+            "type": "object",
+            "properties": {
+              "donorId": { "type": "string" },
+              "date": { "type": "number" }
+            },
+            "required": ["donorId","date"]
+          },
+          "CallRecords": {
+            "type": "object",
+            "properties": {
+              "callerId": { "type": "string" },
+              "calleeId": { "type": "string" },
+              "date": { "type": "number" }
+            },
+            "required": ["callerId","calleeId","date"]
+          },
+          "Logs": {
+            "type": "object",
+            "properties": {
+              "donorId": { "type": "string" },
+              "date": { "type": "number" },
+              "operation": { "type": "string" },
+              "details": { "type": "object" }
+            },
+            "required": ["donorId","date","operation","details"]
+          },
+          "PublicContacts": {
+            "type": "object",
+            "properties": {
+              "donorId": { "type": "string" },
+              "bloodGroup": { "type": "integer" }
+            },
+            "required": ["donorId","bloodGroup"]
+          },
+          "ActiveDonors": {
+            "type": "object",
+            "properties": {
+              "donorId": { "type": "string" },
+              "markerId": { "type": "string" },
+              "time": { "type": "number" }
+            },
+            "required": ["donorId","markerId","time"]
+          }
+        }
+      }
+    }
+  },
+  "routes": {
+    "routesDir": "src/tsoaRoutes",
+    "middleware": "express",
+    "authenticationModule": "src/tsoaAuth.ts"
+  }
+}
+
+

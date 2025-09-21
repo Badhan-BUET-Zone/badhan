@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { userAgentHandler } from './middlewares/userAgent'
 import express, {Express} from 'express'
 import dotenv from './dotenv'
@@ -23,6 +24,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import redoc from 'redoc-express';
 import swaggerDef from './doc/swaggerDef';
+import { RegisterRoutes } from './tsoaRoutes/routes'
 import { OpenAPIV3 } from 'openapi-types';
 import { Request, Response } from 'express';
 import path from 'node:path';
@@ -51,11 +53,28 @@ app.get(
   (_req: Request, res: Response): Response => res.json(swaggerSpec)
 );
 
+// Serve legacy swagger-jsdoc UI with isolated assets
 app.use(
   '/docs',
-  swaggerUi.serve,
+  swaggerUi.serveFiles(swaggerSpec, { explorer: true }),
   swaggerUi.setup(swaggerSpec, { explorer: true })
 );
+// TSOA generated routes registration (placed before existing routers to override /users/signin)
+RegisterRoutes(app)
+
+// Serve TSOA OpenAPI spec JSON and UI at separate URLs
+app.get('/tsoa-openapi.json', (_req: Request, res: Response): void => {
+  // Serve TSOA-generated spec directly
+  res.sendFile(path.join(__dirname, 'tsoa', 'swagger.json'))
+})
+
+// Serve TSOA UI from merged JSON endpoint
+app.use(
+  '/tsoa-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/tsoa-openapi.json' })
+)
+
 
 // 4) Redoc (clean reference view)
 app.get(
