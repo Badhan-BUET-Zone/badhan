@@ -476,39 +476,39 @@ router.patch('/password',
  *                   items:
  *                     type: object
  *                     properties:
- *                       ipAddress:
- *                         type: string
- *                         example: 1.2.3.4
- *                       browserFamily:
- *                         type: string
- *                         example: Firefox
- *                       device:
- *                         type: string
- *                         example: Asus K550VX
- *                       os:
- *                         type: string
- *                         example: Ubuntu 20.04.1
  *                       _id:
  *                         type: string
  *                         example: 584abcde6744144441
+ *                       os:
+ *                         type: string
+ *                         example: Ubuntu 20.04.1
+ *                       device:
+ *                         type: string
+ *                         example: Asus K550VX
+ *                       browserFamily:
+ *                         type: string
+ *                         example: Firefox
+ *                       ipAddress:
+ *                         type: string
+ *                         example: 1.2.3.4
  *                 currentLogin:
  *                   type: object
  *                   properties:
- *                     ipAddress:
- *                       type: string
- *                       example: 1.2.3.4
- *                     browserFamily:
- *                       type: string
- *                       example: Firefox
- *                     device:
- *                       type: string
- *                       example: Asus K550VX
- *                     os:
- *                       type: string
- *                       example: Ubuntu 20.04.1
  *                     _id:
  *                       type: string
  *                       example: 584abcde6744144441
+ *                     os:
+ *                       type: string
+ *                       example: Ubuntu 20.04.1
+ *                     device:
+ *                       type: string
+ *                       example: Asus K550VX
+ *                     browserFamily:
+ *                       type: string
+ *                       example: Firefox
+ *                     ipAddress:
+ *                       type: string
+ *                       example: 1.2.3.4
  */
 router.get('/logins',
   rateLimiter.commonLimiter,

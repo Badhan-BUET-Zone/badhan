@@ -19,6 +19,14 @@ export default {
       description: 'Routes to handle donors'
     },
     {
+      name: 'Donations',
+      description: 'Routes to handle blood donations'
+    },
+    {
+      name: 'PlateletDonations',
+      description: 'Routes to handle platelet donations'
+    },
+    {
       name: 'Logs',
       description: 'Fetch statistics about backend'
     },
@@ -33,6 +41,14 @@ export default {
     {
       name: 'Active Donors',
       description: 'Management of all active donors'
+    },
+    {
+      name: 'Guest',
+      description: 'Guest endpoints for external access'
+    },
+    {
+      name: 'Test',
+      description: 'Test endpoints for development and debugging'
     }
   ],
   servers: [

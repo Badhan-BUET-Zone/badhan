@@ -282,9 +282,6 @@ router.delete('/:donorId',
  *                       commentTime:
  *                         type: number
  *                         example: 154782512254
- *                       lastDonation:
- *                         type: number
- *                         example: 1235478524412
  *                       availableToAll:
  *                         type: boolean
  *                         example: true
@@ -300,33 +297,30 @@ router.delete('/:donorId',
  *                       markedTime:
  *                         type: number
  *                         example: 135496813489
- *                       markedName:
+ *                       markerName:
  *                         type: string
  *                         example: Ifty
  *                       donationCount:
  *                         type: number
  *                         example: 8
+ *                       plateletDonationCount:
+ *                         type: number
+ *                         example: 2
+ *                       lastDonation:
+ *                         type: number
+ *                         example: 1235478524412
+ *                       lastPlateletDonation:
+ *                         type: number
+ *                         example: 1235478524412
  *                       callRecordCount:
+ *                         type: number
+ *                         example: 3
+ *                       callCountLast3Days:
  *                         type: number
  *                         example: 3
  *                       lastCallRecord:
  *                         type: number
  *                         example: 135496813489
- *                       callCountLast3Days:
- *                         type: number
- *                         example: 3
- *                       lastCalled:
- *                         type: number
- *                         example: 135496813489
- *                       marker:
- *                         type: object
- *                         properties:
- *                           name:
- *                             type: string
- *                             example: Mir Mahathir Mohammad
- *                           time:
- *                             type: number
- *                             example: 154875221458
  *       403:
  *         description: This error will occur if the user tries to search other halls
  *         content:

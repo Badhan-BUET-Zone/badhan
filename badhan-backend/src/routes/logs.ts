@@ -61,6 +61,65 @@ router.get('/log/donations',
 
 /**
  * @openapi
+ * /log/donations:
+ *   get:
+ *     tags:
+ *       - Logs
+ *     summary: Get donation logs
+ *     description: Fetch logs related to donation activities
+ *     responses:
+ *       200:
+ *         description: Donation logs fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donation logs fetched successfully
+ *                 logs:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 614ec811e29ab430ddfb119a
+ *                       donorId:
+ *                         type: string
+ *                         example: 5e901d56effc590017712345
+ *                       donorName:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       action:
+ *                         type: string
+ *                         example: donation_inserted
+ *                       timestamp:
+ *                         type: number
+ *                         example: 1640995200000
+ *                       details:
+ *                         type: object
+ *                         properties:
+ *                           donationDate:
+ *                             type: number
+ *                             example: 1640995200000
+ *                           bloodGroup:
+ *                             type: number
+ *                             example: 2
+ *                           hall:
+ *                             type: number
+ *                             example: 5
+ */
+
+/**
+ * @openapi
  * /log:
  *   get:
  *     tags:

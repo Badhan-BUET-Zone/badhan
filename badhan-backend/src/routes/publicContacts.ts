@@ -102,22 +102,22 @@ router.post('/',
  *                         type: number
  *                         example: 2
  *                       contacts:
- *                          type: array
- *                          items:
- *                            type: object
- *                            properties:
- *                              donorId:
- *                                type: string
- *                                example: 584abcde6744144441
- *                              contactId:
- *                                type: string
- *                                example: 584abcde6744144441
- *                              name:
- *                                type: string
- *                                example: Mir Mahathir Mohammad
- *                              phone:
- *                                type: number
- *                                example: 8801500000000
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             donorId:
+ *                               type: string
+ *                               example: 584abcde6744144441
+ *                             phone:
+ *                               type: number
+ *                               example: 8801500000000
+ *                             name:
+ *                               type: string
+ *                               example: Mir Mahathir Mohammad
+ *                             contactId:
+ *                               type: string
+ *                               example: 584abcde6744144441
  */
 router.get('/',
   rateLimiter.commonLimiter,

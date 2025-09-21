@@ -147,5 +147,88 @@ router.get('/report',
   plateletDonationController.handleGETPlateletDonationsReport
 )
 
+/**
+ * @openapi
+ * /platelet-donations/report:
+ *   get:
+ *     tags:
+ *       - PlateletDonations
+ *     summary: Get platelet donations report
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Generate a comprehensive report of all platelet donations (Super Admin only)
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         description: Start date for the report (UNIX timestamp)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 1609459200000
+ *       - in: query
+ *         name: endDate
+ *         description: End date for the report (UNIX timestamp)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 1640995200000
+ *       - in: query
+ *         name: hall
+ *         description: Filter by specific hall (0-6 or 8)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 5
+ *       - in: query
+ *         name: bloodGroup
+ *         description: Filter by blood group (0-7)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 2
+ *     responses:
+ *       200:
+ *         description: Platelet donations report generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Platelet donations report generated successfully
+ *                 report:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       counts:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             month:
+ *                               type: number
+ *                               example: 1
+ *                             year:
+ *                               type: number
+ *                               example: 2024
+ *                             count:
+ *                               type: number
+ *                               example: 15
+ *                       bloodGroup:
+ *                         type: number
+ *                         example: 2
+ *                 firstPlateletDonationCount:
+ *                   type: number
+ *                   example: 75
+ */
+
 
 export default router

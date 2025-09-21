@@ -426,6 +426,80 @@ router.get('/donors/me',
 
 /**
  * @openapi
+ * /donors/me:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get own donor profile
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Get the profile information of the currently authenticated donor
+ *     responses:
+ *       200:
+ *         description: Successfully fetched own donor details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Successfully fetched donor details
+ *                 donor:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: jhdwiurh837921
+ *                     phone:
+ *                       type: number
+ *                       example: 881521438557
+ *                     name:
+ *                       type: string
+ *                       example: Mir Mahathir
+ *                     studentId:
+ *                       type: string
+ *                       example: 1605011
+ *                     email:
+ *                       type: string
+ *                       example: mirmahathir1@gmail.com
+ *                     lastDonation:
+ *                       type: number
+ *                       example: 786534785
+ *                     bloodGroup:
+ *                       type: number
+ *                       example: 2
+ *                     hall:
+ *                       type: number
+ *                       example: 5
+ *                     roomNumber:
+ *                       type: string
+ *                       example: 3009
+ *                     address:
+ *                       type: string
+ *                       example: Azimpur
+ *                     comment:
+ *                       type: string
+ *                       example: Developer of badhan
+ *                     commentTime:
+ *                       type: number
+ *                       example: 0
+ *                     designation:
+ *                       type: number
+ *                       example: 3
+ *                     availableToAll:
+ *                       type: boolean
+ *                       example: true
+ */
+
+/**
+ * @openapi
  * /search/v3:
  *   get:
  *     tags:
@@ -1046,62 +1120,68 @@ router.patch('/donors/designation',
  *                   type: string
  *                   example: All designated members fetched
  *                 volunteerList:
- *                   type: object
- *                   properties:
- *                     roomNumber:
- *                       type: string
- *                       example: 3009
- *                     _id:
- *                       type: string
- *                       example: jhdwiurh837921
- *                     studentId:
- *                       type: string
- *                       example: 1605011
- *                     name:
- *                       type: string
- *                       example: Mir Mahathir
- *                     bloodGroup:
- *                       type: number
- *                       example: 2
- *                     phone:
- *                       type: number
- *                       example: 881521438557
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       roomNumber:
+ *                         type: string
+ *                         example: 3009
+ *                       _id:
+ *                         type: string
+ *                         example: jhdwiurh837921
+ *                       studentId:
+ *                         type: string
+ *                         example: 1605011
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       bloodGroup:
+ *                         type: number
+ *                         example: 2
+ *                       phone:
+ *                         type: number
+ *                         example: 881521438557
  *                 adminList:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: jhdwiurh837921
- *                     studentId:
- *                       type: string
- *                       example: 1605011
- *                     name:
- *                       type: string
- *                       example: Mir Mahathir
- *                     phone:
- *                       type: number
- *                       example: 881521438557
- *                     hall:
- *                       type: number
- *                       example: 5
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: jhdwiurh837921
+ *                       studentId:
+ *                         type: string
+ *                         example: 1605011
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       phone:
+ *                         type: number
+ *                         example: 881521438557
+ *                       hall:
+ *                         type: number
+ *                         example: 5
  *                 superAdminList:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: jhdwiurh837921
- *                     studentId:
- *                       type: string
- *                       example: 1605011
- *                     name:
- *                       type: string
- *                       example: Mir Mahathir
- *                     phone:
- *                       type: number
- *                       example: 881521438557
- *                     hall:
- *                       type: number
- *                       example: 5
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: jhdwiurh837921
+ *                       studentId:
+ *                         type: string
+ *                         example: 1605011
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       phone:
+ *                         type: number
+ *                         example: 881521438557
+ *                       hall:
+ *                         type: number
+ *                         example: 5
  */
 router.get('/donors/designation',
   rateLimiter.commonLimiter,
@@ -1322,6 +1402,55 @@ router.get('/donors/designation/all',
   authenticator.handleSuperAdminCheck,
   donorController.handleGETDesignatedDonorsAll
 )
+
+/**
+ * @openapi
+ * /donors/designation/all:
+ *   get:
+ *     tags:
+ *       - Donors
+ *     summary: Get all designated donors
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Get list of all volunteers, hall admins and super admins across all halls (Super Admin only)
+ *     responses:
+ *       200:
+ *         description: All designated members fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Successfully fetched donor details
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: jhdwiurh837921
+ *                       studentId:
+ *                         type: string
+ *                         example: 1605011
+ *                       name:
+ *                         type: string
+ *                         example: Mir Mahathir
+ *                       logCount:
+ *                         type: number
+ *                         example: 3
+ *                       hall:
+ *                         type: number
+ *                         example: 5
+ */
 
 /**
  * @openapi

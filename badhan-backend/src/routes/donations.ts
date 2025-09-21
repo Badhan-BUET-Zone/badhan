@@ -113,6 +113,21 @@ router.post('/',
  *                 message:
  *                   type: string
  *                   example: Successfully deleted donation
+ *                 deletedDonation:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 614ec811e29ab430ddfb119a
+ *                     date:
+ *                       type: number
+ *                       example: 1611100800000
+ *                     donorId:
+ *                       type: string
+ *                       example: 5e901d56effc590017712345
+ *                     phone:
+ *                       type: number
+ *                       example: 8801500000000
  *       404:
  *         description: Error case
  *         content:
@@ -146,6 +161,89 @@ router.get('/report',
   authenticator.handleSuperAdminCheck,
   donationController.handleGETDonationsReport
 )
+
+/**
+ * @openapi
+ * /donations/report:
+ *   get:
+ *     tags:
+ *       - Donations
+ *     summary: Get donations report
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Generate a comprehensive report of all blood donations (Super Admin only)
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         description: Start date for the report (UNIX timestamp)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 1609459200000
+ *       - in: query
+ *         name: endDate
+ *         description: End date for the report (UNIX timestamp)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 1640995200000
+ *       - in: query
+ *         name: hall
+ *         description: Filter by specific hall (0-6 or 8)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 5
+ *       - in: query
+ *         name: bloodGroup
+ *         description: Filter by blood group (0-7)
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 2
+ *     responses:
+ *       200:
+ *         description: Donations report generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Donations report generated successfully
+ *                 report:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       counts:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             month:
+ *                               type: number
+ *                               example: 1
+ *                             year:
+ *                               type: number
+ *                               example: 2024
+ *                             count:
+ *                               type: number
+ *                               example: 25
+ *                       bloodGroup:
+ *                         type: number
+ *                         example: 2
+ *                 firstDonationCount:
+ *                   type: number
+ *                   example: 150
+ */
 
 
 export default router
