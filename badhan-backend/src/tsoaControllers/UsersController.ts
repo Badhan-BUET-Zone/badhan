@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Body, Controller, Delete, Example, Middlewares, Post, Response, Route, Security, SuccessResponse, Tags, Request } from 'tsoa'
+import { Body, Controller, Delete, Example, Middlewares, Post, Response, Route, SuccessResponse, Tags, Request } from 'tsoa'
 import type { Response as ExResponse } from 'express'
 import bcrypt from 'bcryptjs'
 import * as donorInterface from '../db/interfaces/donorInterface'
@@ -88,7 +88,6 @@ export class UsersController extends Controller {
 
   /** Sign out user from Badhan Platform */
   @Delete('signout')
-  @Security('ApiKeyAuth')
   @SuccessResponse(200, 'Logged out successfully')
   @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
   public async signOut(@Request() req: any): Promise<void> {
