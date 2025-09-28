@@ -52,6 +52,16 @@ async function signInSuperAdmin() {
 	return response;
 }
 
+async function signIn(phone, password){
+  const response = await badhanAxios.post("/users/signin", {
+    phone,
+    password,
+  });
+  const validationResult = validate(response.data, signInSchema);
+  expect(validationResult.errors).toEqual([]);
+  return response;
+}
+
 // Helper function to get current user
 async function getMe(signInResponse) {
 	const response = await badhanAxios.get("/users/me", {
@@ -623,4 +633,5 @@ module.exports = {
   ,getDuplicateDonorsByPhones
   ,guestSearchDonors
   , expectErrorWithToken
+  , signIn
 };

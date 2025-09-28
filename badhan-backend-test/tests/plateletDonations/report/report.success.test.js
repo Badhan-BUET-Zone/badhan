@@ -1,5 +1,5 @@
-const env = require("../../config");
-const operations = require("../operations");
+const env = require("../../../config");
+const operations = require("../../operations");
 
 // success
 test("GET/platelet-donations/report: success", async () => {
@@ -18,3 +18,5 @@ test("GET/platelet-donations/report: success", async () => {
   await operations.deletePlateletDonation(donorId, plateletDonationDate, signInResponse);
   await operations.signOut(signInResponse);
 });
+
+

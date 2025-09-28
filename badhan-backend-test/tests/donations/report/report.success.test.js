@@ -1,5 +1,5 @@
-const { getReportsSchema } = require("./schemas");
-const operations = require("../operations");
+const { getReportsSchema } = require("../schemas");
+const operations = require("../../operations");
 
 test("GET/donations/report: success", async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -14,3 +14,5 @@ test("GET/donations/report: success", async () => {
   await operations.deleteDonation(donorId, donationDate, signInResponse);
   await operations.signOut(signInResponse);
 });
+
+

@@ -75,7 +75,8 @@ async function runTests(args = []) {
   
   // Prepare Jest configuration
   const jestConfig = {
-    config: CONFIG.jestConfig,
+    // Pass explicit Jest config to avoid implicit resolution of multiple configs
+    config: JSON.stringify(require(CONFIG.jestConfig)),
     testTimeout: CONFIG.testTimeout,
     noColor: true,
     runInBand: true,
@@ -115,6 +116,10 @@ function parseJestArgs(args) {
     // Check if it's an absolute path to a test file
     if (fs.existsSync(arg) && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))) {
       config.testPathPattern = arg;
+      // Pass the file path as a positional arg so Jest selects only this test
+      config._ = [arg];
+      config.runTestsByPath = true;
+      config.$0 = 'start';
       continue;
     }
     
@@ -123,6 +128,10 @@ function parseJestArgs(args) {
       const fullPath = path.resolve(__dirname, arg);
       if (fs.existsSync(fullPath)) {
         config.testPathPattern = fullPath;
+        // Pass the resolved file path as a positional arg
+        config._ = [fullPath];
+        config.runTestsByPath = true;
+        config.$0 = 'start';
         continue;
       }
     }

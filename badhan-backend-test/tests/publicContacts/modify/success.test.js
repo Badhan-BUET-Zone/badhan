@@ -1,6 +1,6 @@
-const env = require("../../config");
-const operations = require("../operations");
-const { postPublicContactsSchema, deletePublicContactsSchema, getPublicContactsSchema } = require("./schemas");
+const env = require("../../../config");
+const operations = require("../../operations");
+const { postPublicContactsSchema, deletePublicContactsSchema, getPublicContactsSchema } = require("../schemas");
 
 test("POST&DELETE/publicContacts: success", async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -10,3 +10,5 @@ test("POST&DELETE/publicContacts: success", async () => {
   await operations.deletePublicContact({ donorId: donorResponse.data.donor._id, contactId: contactCreationResponse.data.publicContact._id, signInResponse });
   await operations.signOut(signInResponse);
 });
+
+
