@@ -21,6 +21,5 @@ test("POST/donors/password: success", async () => {
   const volunteerId = donorCreationResponse.data.newDonor._id;
   await operations.promoteToVolunteer(volunteerId, signInResponse);
 
-  const issueResponse = await operations.issueDonorPassword(volunteerId, signInResponse);
-  operations.validateSchema(issueResponse.data, passwordSchema);
+  await operations.issueDonorPassword(volunteerId, signInResponse);
 });

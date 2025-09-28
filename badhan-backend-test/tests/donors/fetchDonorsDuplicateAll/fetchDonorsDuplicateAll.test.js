@@ -11,5 +11,4 @@ test("GET/donors/phone: fetch donars duplicate all", async () => {
   const volunteerToken = volunteerTokenResponse.data.token;
   const listOfPhones = [newDonor_1_info.phone, newDonor_2_info.phone];
   const existingDonors = await operations.getDuplicateDonorsByPhones({ phoneList: listOfPhones, token: volunteerToken, schema: duplicateDonorsManySchema });
-  operations.validateSchema(existingDonors.data, duplicateDonorsManySchema);
 });
