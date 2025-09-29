@@ -1,6 +1,7 @@
 import {AsyncRouter, AsyncRouterInstance} from 'express-async-router'
 import plateletDonationController from '../controllers/plateletDonationController'
 import authenticator from '../middlewares/authenticate'
+import { loadTargetDonor } from '../middlewares/donor'
 import rateLimiter from '../middlewares/rateLimiter'
 import plateletDonationValidator from '../validations/plateletDonations'
 const router: AsyncRouterInstance = AsyncRouter()
@@ -66,7 +67,7 @@ router.post('/',
   plateletDonationValidator.validatePOSTPlateletDonations,
   rateLimiter.donationInsertionLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   plateletDonationController.handlePOSTPlateletDonations
 )
@@ -134,7 +135,7 @@ router.delete('/',
   plateletDonationValidator.validateDELETEPlateletDonations,
   rateLimiter.deleteDonationLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   plateletDonationController.handleDELETEPlateletDonations
 )

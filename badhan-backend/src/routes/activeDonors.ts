@@ -1,6 +1,7 @@
 import { AsyncRouter, AsyncRouterInstance } from 'express-async-router'
 import activeDonorController from '../controllers/activeDonorController'
 import authenticator from '../middlewares/authenticate'
+import { loadTargetDonor } from '../middlewares/donor'
 import rateLimiter from '../middlewares/rateLimiter'
 import activeDonorsValidator from '../validations/activeDonors'
 
@@ -80,7 +81,7 @@ router.post('/',
   activeDonorsValidator.validatePOSTActiveDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   activeDonorController.handlePOSTActiveDonors
 )
@@ -156,7 +157,7 @@ router.delete('/:donorId',
   activeDonorsValidator.validateDELETEActiveDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   activeDonorController.handleDELETEActiveDonors
 )

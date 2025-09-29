@@ -1,6 +1,7 @@
 import {AsyncRouter, AsyncRouterInstance} from 'express-async-router'
 import callRecordController from '../controllers/callRecordController'
 import authenticator from '../middlewares/authenticate'
+import { loadTargetDonor } from '../middlewares/donor'
 import rateLimiter from '../middlewares/rateLimiter'
 import callRecordValidator from '../validations/callRecords'
 
@@ -67,7 +68,7 @@ router.post('/',
   callRecordValidator.validatePOSTCallRecords,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   callRecordController.handlePOSTCallRecord
 )
@@ -151,7 +152,7 @@ router.delete('/',
   callRecordValidator.validateDELETECallRecords,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   callRecordController.handleDELETECallRecord
 )

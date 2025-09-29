@@ -5,6 +5,7 @@ import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
 import donorValidator from '../validations/donors'
 import queue from '../middlewares/queue'
+import { loadTargetDonor } from '../middlewares/donor'
 
 const router: AsyncRouterInstance = AsyncRouter()
 
@@ -413,7 +414,7 @@ router.get('/donors',
   donorValidator.validateGETDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   donorController.handleGETDonors
 )
@@ -733,7 +734,7 @@ router.patch('/donors/comment',
   donorValidator.validatePATCHDonorsComment,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermissionOrCheckAvailableToAll,
   donorController.handlePATCHDonorsComment
 )
@@ -800,7 +801,7 @@ router.post('/donors/password',
   donorValidator.validatePOSTDonorsPasswordRequest,
   rateLimiter.passwordRequestLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermission,
   authenticator.handleHigherDesignationCheck,
   donorController.handlePOSTDonorsPasswordRequest
@@ -908,7 +909,7 @@ router.patch('/donors/v2',
   donorValidator.validatePATCHDonors,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermission,
   authenticator.handleHigherDesignationCheck,
   donorController.handlePATCHDonors
@@ -986,7 +987,7 @@ router.delete('/donors',
   donorValidator.validateDELETEDonors,
   rateLimiter.donorDeletionLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermission,
   authenticator.handleHigherDesignationCheck,
   donorController.handleDELETEDonors
@@ -1086,7 +1087,7 @@ router.patch('/donors/designation',
   donorValidator.validatePATCHDonorsDesignation,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleHallPermission,
   authenticator.handleHallAdminCheck,
   donorController.handlePATCHDonorsDesignation
@@ -1527,7 +1528,7 @@ router.patch('/admins',
   donorValidator.validatePATCHAdmins,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleSuperAdminCheck,
   donorController.handlePATCHAdmins
 )
@@ -1655,7 +1656,7 @@ router.patch('/admins/superadmin',
   donorValidator.validatePATCHAdminsSuperAdmin,
   rateLimiter.commonLimiter,
   authenticator.handleAuthentication,
-  authenticator.handleFetchTargetDonor,
+  loadTargetDonor,
   authenticator.handleSuperAdminCheck,
   donorController.handlePATCHAdminsSuperAdmin
 )
