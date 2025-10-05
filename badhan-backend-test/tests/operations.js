@@ -1,8 +1,6 @@
 const { badhanAxios } = require("../api");
 const validate = require("jsonschema").validate;
 const env = require("../config");
-
-
 const {
 	searchSchema,
 	postDonorSchema,
@@ -582,22 +580,22 @@ async function expectErrorWithToken(method, path, token, errorSchema, body) {
 }
 
 module.exports = {
-	createDonor,
-	signInSuperAdmin,
+  createDonor,
+  signInSuperAdmin,
   signOut,
-	getMe,
-	createDonation,
-	deleteDonor,
-	searchDonors,
+  getMe,
+  createDonation,
+  deleteDonor,
+  searchDonors,
   deleteDonation,
   createPlateletDonation,
   deletePlateletDonation,
-	createCallRecord,
-	markDonorAsActive,
-	promoteToVolunteer,
-	promoteToHallAdmin,
-	demoteToDonor,
-	promoteToSuperAdmin,
+  createCallRecord,
+  markDonorAsActive,
+  promoteToVolunteer,
+  promoteToHallAdmin,
+  demoteToDonor,
+  promoteToSuperAdmin,
   getLogins,
   deleteLogin,
   changePassword,
@@ -624,14 +622,14 @@ module.exports = {
   patchDonorComment,
   getDonor,
   guestPatchDonorComment,
-  guestGetDonor
-  ,validateSchema
-  ,issueDonorPassword
-  ,guestIssueDonorPassword
-  ,getNewDonors
-  ,guestGetNewDonors
-  ,getDuplicateDonorsByPhones
-  ,guestSearchDonors
-  , expectErrorWithToken
-  , signIn
+  guestGetDonor,
+  validateSchema,
+  issueDonorPassword,
+  guestIssueDonorPassword,
+  getNewDonors,
+  guestGetNewDonors,
+  getDuplicateDonorsByPhones,
+  guestSearchDonors,
+  expectErrorWithToken,
+  signIn,
 };
