@@ -1,0 +1,21 @@
+node_modules/
+playground/
+dotenv/config.json
+.idea/
+app.yml
+.env.production
+.env.development
+dist
+.vscode
+.DS_Store
+src/.DS_Store
+last_deployed.txt
+logs
+mongodb_local
+backup
+config
+mongotools
+
+# TSOA generated files
+src/tsoaRoutes/
+dist/tsoa/
