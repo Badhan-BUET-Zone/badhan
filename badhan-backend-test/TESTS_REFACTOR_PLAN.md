@@ -84,3 +84,26 @@ This plan proposes actionable steps to improve maintainability, consistency, and
 7. Add ESLint/Prettier; run autofix; resolve remaining issues.
 8. Remove unused helpers; consolidate duplicated schema imports with domain barrels.
 9. Update `README.md` with new structure and usage examples.
+
+### Check whether refactor is working
+- Run the backend test script as follows and make sure that **all 115 tests pass**
+- Run `cd /Users/mirmahathirmohammad/Documents/badhan/badhan-backend-test && node start`
+- The result should be:
+
+```
+(base) Mirs-MacBook-Pro:badhan-backend-test mirmahathirmohammad$ node start
+[start] Badhan Backend Test Runner
+[start] ===========================
+[start] Jest configuration validated
+[start] Setting up log directories: /Users/mirmahathirmohammad/Documents/badhan/badhan-backend-test/logs
+[start] Starting test execution...
+[start] Running all tests
+Determining test suites to run...Tests are running...
+Test Summary =>
+Total: 115
+Passed: 115
+Failed: 0
+Duration(ms): 34703
+[start] All tests completed successfully
+[start] Test execution completed with success: true
+```
