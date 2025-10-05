@@ -2,6 +2,9 @@
 // Register per-test hooks here.
 
 const axios = require('axios');
+// Ensure new architecture dirs are referenced so imports resolve during migration
+require('./runtime');
+require('./lib');
 
 const processError = (e) => {
     if (e.response && e.response.data) {

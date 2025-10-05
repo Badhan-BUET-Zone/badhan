@@ -13,7 +13,6 @@ Below are the refactors organized as large, numbered items. Each item explains t
   - Keep `jest.config.js` roots as `tests/` (already configured) so existing and migrated specs both run.
 - Definition of Done:
   - Directories exist and are referenced in imports.
-  - At least one spec runs from `tests/specs/` with green results.
 
 ### 2) Centralize configuration and Axios setup
 - What: Keep a single source of truth for base URLs, guest mode, and axios instances.
