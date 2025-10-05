@@ -1,5 +1,8 @@
 {
   "exec": "npm run serve:local",
   "watch": ["src/"],
+  "ignore": [
+    "src/tsoaRoutes/**"
+  ],
   "ext": "ts, html, css, env"
 }

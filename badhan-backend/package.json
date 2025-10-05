@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "npx tsc",
-    "postinstall": "tsc",
-    "gcp-build": "tsc",
+    "build": "npm run tsoa:routes && tsc",
+    "postinstall": "npm run build",
+    "gcp-build": "npm run build",
     "lint": "tslint --project tsconfig.json",
     "__comment_of_start_scripts": "these are scripts that are only runnable in a GCP enviornment for both development and production environment",
     "start:dev": "NODE_ENV=development node ./dist/bin/www.js",

@@ -4,8 +4,6 @@ import { cleanUp } from './badhan-backup/scripts/clean_all_dependencies.mjs';
 import { ensureNpmInstall } from './badhan-backup/scripts/ensure_npm_install.mjs';
 import { deployToGoogleCloud } from './badhan-backend/upload-gcloud.js';
 import { deployToFirebase } from './badhan-frontend/upload-firebase.js';
-import { runTestSuite as runBackendTestSuite } from './badhan-backend-test/start';
-import { runTestSuite as runFrontendTestSuite } from './badhan-frontend-test/start';
 
 // Ensure Node.js version is >= 22
 const [nodeMajor] = process.versions.node.split('.').map(v => parseInt(v, 10));
@@ -27,6 +25,16 @@ if(testRequired){
   console.log('========================');
   
   try {
+    // Ensure test project dependencies are installed before importing their runners
+    await ensureNpmInstall("./badhan-backend-test");
+    await ensureNpmInstall("./badhan-frontend-test");
+
+    // Dynamically import test runners to avoid evaluating them before deps are installed
+    const backendTestModule = await import('./badhan-backend-test/start');
+    const frontendTestModule = await import('./badhan-frontend-test/start');
+    const runBackendTestSuite = (backendTestModule.runTestSuite || (backendTestModule.default && backendTestModule.default.runTestSuite));
+    const runFrontendTestSuite = (frontendTestModule.runTestSuite || (frontendTestModule.default && frontendTestModule.default.runTestSuite));
+
     // Run backend tests (no arguments to run all tests)
     console.log('🔧 Starting backend tests...');
     const backendTestResult = await runBackendTestSuite();
