@@ -1,4 +1,6 @@
-// Shared test libraries and helpers (placeholder)
-module.exports = {};
+// Shared test libraries and helpers
+module.exports = {
+  ...require('./http'),
+};
 
 
