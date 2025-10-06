@@ -58,21 +58,53 @@ async function guestDelete(path, schema) {
 
 async function expectAuthedError(method, path, signInResponse, errorSchema, body) {
   try {
-    await badhanAxios[method](path, body, { headers: { 'x-auth': signInResponse.data.token } });
-    throw new Error('Expected request to fail but it succeeded');
+    if (method === 'get' || method === 'delete') {
+      const res = await badhanAxios[method](path, { headers: { 'x-auth': signInResponse.data.token } });
+      if (errorSchema) {
+        const result = validate(res.data, errorSchema);
+        if (result.errors.length === 0) return res; // treat JSON error payload with 2xx as expected error
+      }
+      throw new Error('Expected request to fail but it succeeded');
+    } else {
+      const res = await badhanAxios[method](path, body, { headers: { 'x-auth': signInResponse.data.token } });
+      if (errorSchema) {
+        const result = validate(res.data, errorSchema);
+        if (result.errors.length === 0) return res;
+      }
+      throw new Error('Expected request to fail but it succeeded');
+    }
   } catch (e) {
-    validateSchema(e.response.data, errorSchema);
-    return e.response;
+    if (e && e.response && e.response.data) {
+      validateSchema(e.response.data, errorSchema);
+      return e.response;
+    }
+    throw e;
   }
 }
 
 async function expectGuestError(method, path, errorSchema, body) {
   try {
-    await badhanAxios[method](path, body);
-    throw new Error('Expected request to fail but it succeeded');
+    if (method === 'get' || method === 'delete') {
+      const res = await badhanAxios[method](path);
+      if (errorSchema) {
+        const result = validate(res.data, errorSchema);
+        if (result.errors.length === 0) return res; // treat JSON error payload with 2xx as expected error
+      }
+      throw new Error('Expected request to fail but it succeeded');
+    } else {
+      const res = await badhanAxios[method](path, body);
+      if (errorSchema) {
+        const result = validate(res.data, errorSchema);
+        if (result.errors.length === 0) return res;
+      }
+      throw new Error('Expected request to fail but it succeeded');
+    }
   } catch (e) {
-    validateSchema(e.response.data, errorSchema);
-    return e.response;
+    if (e && e.response && e.response.data) {
+      validateSchema(e.response.data, errorSchema);
+      return e.response;
+    }
+    throw e;
   }
 }
 

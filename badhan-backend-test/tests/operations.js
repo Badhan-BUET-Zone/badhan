@@ -1,5 +1,17 @@
 const { badhanAxios } = require("../api");
 const validate = require("jsonschema").validate;
+const {
+  authedGet,
+  authedPost,
+  authedPatch,
+  authedDelete,
+  guestGet,
+  guestPost,
+  guestPatch,
+  guestDelete,
+  expectAuthedError,
+  expectGuestError,
+} = require('./lib/http');
 const env = require("../config");
 const {
 	searchSchema,
@@ -414,95 +426,9 @@ async function deleteLogs(signInResponse) {
   return response;
 }
 
-// === Generic helpers ===
-async function authedGet(path, signInResponse, schema) {
-  const response = await badhanAxios.get(path, { headers: { 'x-auth': signInResponse.data.token } });
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-async function authedPost(path, body, signInResponse, schema) {
-  const response = await badhanAxios.post(path, body, { headers: { 'x-auth': signInResponse.data.token } });
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-async function authedPatch(path, body, signInResponse, schema) {
-  const response = await badhanAxios.patch(path, body, { headers: { 'x-auth': signInResponse.data.token } });
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-async function authedDelete(path, signInResponse, schema) {
-  const response = await badhanAxios.delete(path, { headers: { 'x-auth': signInResponse.data.token } });
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
+// === Generic helpers are now centralized in tests/lib/http.js ===
 
-// Guest (unauthenticated) variants
-async function guestGet(path, schema) {
-  const response = await badhanAxios.get(path);
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-async function guestPost(path, body, schema) {
-  const response = await badhanAxios.post(path, body);
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-async function guestPatch(path, body, schema) {
-  const response = await badhanAxios.patch(path, body);
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-async function guestDelete(path, schema) {
-  const response = await badhanAxios.delete(path);
-  if (schema) {
-    const validationResult = validate(response.data, schema);
-    expect(validationResult.errors).toEqual([]);
-  }
-  return response;
-}
-
-// Error expectation helpers
-async function expectAuthedError(method, path, signInResponse, errorSchema, body) {
-  try {
-    await badhanAxios[method](path, body, { headers: { 'x-auth': signInResponse.data.token } });
-    throw new Error('Expected request to fail but it succeeded');
-  } catch (e) {
-    const validationResult = validate(e.response.data, errorSchema);
-    expect(validationResult.errors).toEqual([]);
-    return e.response;
-  }
-}
-async function expectGuestError(method, path, errorSchema, body) {
-  try {
-    await badhanAxios[method](path, body);
-    throw new Error('Expected request to fail but it succeeded');
-  } catch (e) {
-    const validationResult = validate(e.response.data, errorSchema);
-    expect(validationResult.errors).toEqual([]);
-    return e.response;
-  }
-}
+// Error expectation helpers are centralized in tests/lib/http.js
 
 // Donor specific utilities
 async function patchDonorComment(donorId, comment, signInResponse, schema) {

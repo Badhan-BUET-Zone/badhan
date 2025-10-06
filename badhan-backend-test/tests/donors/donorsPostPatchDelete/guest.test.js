@@ -1,5 +1,4 @@
-const { badhanAxios } = require("../../../api");
-const validate = require("jsonschema").validate;
+const { guestPost, guestPatch, guestDelete } = require("../../lib");
 const {
   postDonorSchema,
   patchDonorSchema,
@@ -8,36 +7,13 @@ const {
 
 test("POST&PATCH&DELETE/guest/donors: guest", async () => {
     //post/donors part
-
-    let donorCreationResponse = await badhanAxios.post("/guest/donors");
-
-    let validationCreationResult = validate(
-      donorCreationResponse.data,
-      postDonorSchema
-    );
-
-    expect(validationCreationResult.errors).toEqual([]);
+    await guestPost('/guest/donors', undefined, postDonorSchema);
 
     //patch/donors
 
-    let donorUpdateResponse = await badhanAxios.patch("/guest/donors/v2");
-
-    let validationUpdateResult = validate(
-      donorUpdateResponse.data,
-      patchDonorSchema
-    );
-
-    expect(validationUpdateResult.errors).toEqual([]);
+    await guestPatch('/guest/donors/v2', undefined, patchDonorSchema);
 
     // delete/donations part
 
-    let donationDeletionResponse = await badhanAxios.delete(
-      "/guest/donors?donorId="
-    );
-
-    let validationResult = validate(
-      donationDeletionResponse.data,
-      deleteDonorSchema
-    );
-    expect(validationResult.errors).toEqual([]);
+    await guestDelete('/guest/donors?donorId=', deleteDonorSchema);
 });

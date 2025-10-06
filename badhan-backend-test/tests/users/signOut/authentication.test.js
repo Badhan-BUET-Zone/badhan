@@ -1,12 +1,6 @@
-const { badhanAxios } = require("../../../api");
-const { validate } = require("jsonschema");
 const { jwtInvalidSchema } = require("../../common/schemas");
+const { expectGuestError } = require("../../lib");
 
 test("DELETE/users/signOut: authentication", async () => {
-  try {
-    await badhanAxios.delete("/users/signout");
-  } catch (e) {
-    let validationResult = validate(e.response.data, jwtInvalidSchema);
-    expect(validationResult.errors).toEqual([]);
-  }
+  await expectGuestError('delete', '/users/signout', jwtInvalidSchema);
 });
