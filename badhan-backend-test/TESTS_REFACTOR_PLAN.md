@@ -2,17 +2,6 @@
 
 Below are the refactors organized as large, numbered items. Each item explains the change and the exact actions to take.
 
-### 3) Unify HTTP helpers and schema validation
-- What: Avoid repeating request boilerplate and validation logic in specs.
-- Why: Eliminates duplicated axios calls and error handling; centralizes JSON schema validation.
-- Do:
-  - Create `tests/lib/http.js` with `authedGet/Post/Patch/Delete`, `guestGet/Post/Patch/Delete`, and `expect*Error` helpers.
-  - Keep `validateSchema(data, schema)` as a single internal helper used by operations.
-  - Ensure all network calls inside operations validate against the correct schema.
-- Definition of Done:
-  - Specs no longer call axios directly; they go through operations/flows (which use `lib/http`).
-  - Error-path assertions consistently use `expect*Error` helpers.
-
 ### 4) Split `operations.js` by domain (thin helpers)
 - What: Make operations discoverable and maintainable by grouping per API area.
 - Why: Smaller, focused modules simplify navigation, code ownership, and reviewing changes.
