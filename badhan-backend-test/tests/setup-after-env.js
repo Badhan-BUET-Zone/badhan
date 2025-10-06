@@ -5,6 +5,7 @@ const axios = require('axios');
 // Ensure new architecture dirs are referenced so imports resolve during migration
 require('./runtime');
 require('./lib');
+const { resetBaseURL } = require('./runtime/axios');
 
 const processError = (e) => {
     if (e.response && e.response.data) {
@@ -82,6 +83,8 @@ beforeEach(async () => {
     jest.clearAllMocks();
     jest.resetModules();
   }
+  // Reset axios baseURL to avoid leaking '/guest' across tests
+  try { resetBaseURL(); } catch (_) {}
   if (NO_RESET) {
     // Skipping reset per request
     process.stdout.write('🔕  Skipping test DB reset (before each) due to --no-reset / NO_RESET\n');
