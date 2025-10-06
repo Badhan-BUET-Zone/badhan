@@ -1,5 +1,5 @@
 const env = require("../../../config");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { postPublicContactsSchema, deletePublicContactsSchema, getPublicContactsSchema } = require("../schemas");
 
 test("POST&DELETE/publicContacts: success", async () => {
