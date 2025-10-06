@@ -1,4 +1,4 @@
-const { promoteToVolunteer, promoteToHallAdmin, createDonor, signInSuperAdmin } = require("../../operations");
+const { promoteToVolunteer, promoteToHallAdmin, createDonor, signInSuperAdmin } = require("../../lib/operations");
 
 test("PATCH/admins: success", async () => {
     //sign in for authorization
