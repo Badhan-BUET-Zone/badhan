@@ -1,7 +1,4 @@
-// Barrel for future domain-split operations (placeholder for now)
-module.exports = {
-  // donors: require('./donors'),
-  // users: require('./users'),
-};
+// Temporary barrel re-exporting the legacy operations surface
+module.exports = require('../../operations');
 
 

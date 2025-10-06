@@ -1,5 +1,5 @@
 const env = require("../../config");
-const operations = require("../operations");
+const operations = require("../lib/operations");
 const { postActiveDonorSchema, deleteActiveDonorSchema, activeDonorSearchResultSchema } = require("./schemas");
 
 test("POST & DELETE /activeDonors: success", async () => {

@@ -1,4 +1,4 @@
-const operations = require('../../operations');
+const operations = require('../operations');
 
 async function createVolunteerWithToken(newDonorInfo, signInResponse, options = {}) {
   const { alsoPromoteHallAdmin = false } = options;

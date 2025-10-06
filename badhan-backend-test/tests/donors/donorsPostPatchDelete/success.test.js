@@ -1,7 +1,7 @@
 const { patchDonorSchema, deleteDonorSchema } = require("../schemas");
 const { newDonorInfo } = require("../infos");
 const { buildDonor } = require("../../lib/utils/builders");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("POST&PATCH&DELETE/donors: success", async () => {
   const signInResponse = await operations.signInSuperAdmin();
