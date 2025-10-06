@@ -316,7 +316,7 @@ const duplicateDonorsManySchema = {
       type: "array",
       minItems: 1,
 
-      /* every item must still satisfy the per‑element rules … */
+      /* every item must still satisfy the per-element rules ... */
       items: {
         type: "object",
         additionalProperties: false,
@@ -332,9 +332,9 @@ const duplicateDonorsManySchema = {
         required: ["donorId", "phone"],
       },
 
-      /* …and the array, as a whole, must contain BOTH kinds */
+      /* and the array, as a whole, must contain BOTH kinds */
       allOf: [
-        /* ➊ at least one 24‑character donorId */
+        /* at least one 24-character donorId */
         {
           contains: {
             type: "object",
@@ -343,10 +343,10 @@ const duplicateDonorsManySchema = {
               donorId: { type: "string", minLength: 24, maxLength: 24 },
             },
           },
-          /* 1 is the default, so minContains isn’t needed */
+          /* 1 is the default, so minContains isn't needed */
         },
 
-        /* ➋ at least one "FORBIDDEN" donorId */
+        /* at least one "FORBIDDEN" donorId */
         {
           contains: {
             type: "object",

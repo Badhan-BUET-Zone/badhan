@@ -32,9 +32,7 @@ const processError = (e) => {
         return await fn(...args);
       } catch (e) {
         // processError throws a formatted Error; rethrow that
-        try { processError(e); } catch (formatted) { throw formatted; }
-        // Fallback, though we shouldn't get here
-        throw e;
+        return processError(e);
       }
     };
   };

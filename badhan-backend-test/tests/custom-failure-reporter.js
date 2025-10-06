@@ -9,7 +9,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Remove ANSI color codes so log files remain plain text without escape sequences.
-const stripAnsi = (s) => (typeof s === 'string' ? s.replace(/\u001b\[[0-9;]*m/g, '') : s);
+// eslint-disable-next-line no-control-regex
+const ANSI_PATTERN = new RegExp('\\u001B\\[[0-9;]*m', 'g');
+const stripAnsi = (s) => (typeof s === 'string' ? s.replace(ANSI_PATTERN, '') : s);
 
 function sanitize(str) {
 	return str
@@ -35,13 +37,13 @@ class PerTestLogReporter {
 		this._testRunStarted = false;
 	}
 
-	onRunStart(aggregatedResult, options) {
+  onRunStart(_aggregatedResult, _options) {
 		// Override Jest's default "Determining test suites to run" message
 		process.stdout.write('Tests are running...\n');
 		this._testRunStarted = true;
 	}
 
-	onTestResult(test, testResult, aggregatedResult) {
+  onTestResult(test, testResult, _aggregatedResult) {
 		const relativePath = path.relative(this._projectRoot, test.path);
 		testResult.testResults.forEach((tr) => {
 			const idx = String(++this._counter).padStart(3, '0');

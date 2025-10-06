@@ -8,7 +8,7 @@ for (const dir of dirs) {
     if (!fs.existsSync(dir)) continue;
     for (const file of fs.readdirSync(dir)) {
       if (file.endsWith('.txt')) {
-        try { fs.unlinkSync(path.join(dir, file)); } catch (_) {}
+        try { fs.unlinkSync(path.join(dir, file)); } catch (e) { void e; }
       }
     }
   } catch (e) {
