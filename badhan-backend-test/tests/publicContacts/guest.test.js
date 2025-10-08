@@ -1,4 +1,4 @@
-const operations = require("../operations");
+const operations = require("../lib/operations");
 const { postPublicContactsSchema, deletePublicContactsSchema, getPublicContactsSchema } = require("./schemas");
 
 test("POST&DELETE/guest/publicContacts: guest", async () => {

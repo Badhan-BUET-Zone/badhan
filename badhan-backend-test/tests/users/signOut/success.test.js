@@ -1,4 +1,4 @@
-const operations = require('../../operations');
+const operations = require('../../lib/operations');
 
 test('DELETE/users/signOut: success', async () => {
     const signInResponse = await operations.signInSuperAdmin();

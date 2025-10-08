@@ -1,5 +1,5 @@
 const { superAdminPermissionErrorSchema } = require('../schemas');
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test('super admin permission test', async () => {
     const signInResponse = await operations.signInSuperAdmin();

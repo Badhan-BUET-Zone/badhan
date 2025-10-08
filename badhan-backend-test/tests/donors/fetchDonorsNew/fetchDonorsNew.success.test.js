@@ -1,6 +1,6 @@
 const { donorsNewSchema } = require('../schemas');
 const { newDonorInfo } = require('../infos');
-const operations = require('../../operations');
+const operations = require('../../lib/operations');
 
 test('GET /donors/new', async () => {
     const signInResponse = await operations.signInSuperAdmin();

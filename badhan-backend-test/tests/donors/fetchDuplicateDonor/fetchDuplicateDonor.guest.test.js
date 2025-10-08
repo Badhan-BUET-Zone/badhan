@@ -1,4 +1,4 @@
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { duplicateDonorSchema } = require("../schemas");
 
 test("GET/guest/donors/checkDuplicate: guest", async () => {

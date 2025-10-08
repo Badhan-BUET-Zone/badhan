@@ -1,5 +1,5 @@
 const env = require("../../../config");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("GET/donors/checkDuplicate: success", async () => {
   const signInResponse = await operations.signInSuperAdmin();

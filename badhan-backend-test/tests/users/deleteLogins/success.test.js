@@ -2,7 +2,7 @@ const { badhanAxios } = require("../../../api");
 const validate = require("jsonschema").validate;
 const env = require("../../../config");
 const { deleteLogInsSchema } = require("./schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { sleep } = require("../../helpers");
 
 test("DELETE /users/logins/{tokenId}: success", async () => {

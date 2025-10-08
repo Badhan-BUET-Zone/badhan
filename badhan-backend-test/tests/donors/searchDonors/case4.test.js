@@ -8,7 +8,7 @@ const {
   searchDonors,
   createPlateletDonation,
   deletePlateletDonation
-} = require("../../operations");
+} = require("../../lib/operations");
 
 // --- Platelet donation 14 days ago ---
 test("searchDonors: platelet donation 14 days ago", async () => {

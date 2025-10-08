@@ -108,6 +108,20 @@ async function expectGuestError(method, path, errorSchema, body) {
   }
 }
 
+async function expectErrorWithToken(method, path, token, errorSchema, body) {
+  try {
+    if (method === 'get' || method === 'delete') {
+      await badhanAxios[method](path, { headers: { 'x-auth': token } });
+    } else {
+      await badhanAxios[method](path, body, { headers: { 'x-auth': token } });
+    }
+    throw new Error('Expected request to fail but it succeeded');
+  } catch (e) {
+    validateSchema(e.response.data, errorSchema);
+    return e.response;
+  }
+}
+
 module.exports = {
   validateSchema,
   authedGet,
@@ -120,6 +134,7 @@ module.exports = {
   guestDelete,
   expectAuthedError,
   expectGuestError,
+  expectErrorWithToken,
 };
 
 

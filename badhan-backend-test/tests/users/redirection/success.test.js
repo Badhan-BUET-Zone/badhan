@@ -3,7 +3,7 @@ const {
   postUsersRedirectionSchema,
   patchUsersRedirectionSchema,
 } = require("./schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("POST&PATCH/users/redirection: success", async () => {
     const signInResponse = await operations.signIn(env.SUPERADMIN_PHONE, env.SUPERADMIN_PASSWORD);

@@ -1,5 +1,5 @@
 const { sameHallPermissionErrorSchema } = require('../schemas');
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test('same hall permission test', async () => {
     const signInResponse = await operations.signInSuperAdmin();

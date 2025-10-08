@@ -1,5 +1,5 @@
 const { postActiveDonorSchema, deleteActiveDonorSchema } = require("./schemas");
-const operations = require("../operations");
+const operations = require("../lib/operations");
 
 test("POST & DELETE /guest/activeDonors: guest", async () => {
   await operations.guestPost('/guest/activeDonors', {}, postActiveDonorSchema);

@@ -1,5 +1,5 @@
 const { passwordSchema } = require("../schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { uniquePhone } = require("../../helpers");
 
 test("POST/donors/password: success", async () => {

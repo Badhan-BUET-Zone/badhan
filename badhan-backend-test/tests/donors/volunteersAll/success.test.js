@@ -1,5 +1,5 @@
 const env = require("../../../config");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { allDesignatedDonorSchema } = require("../schemas");
 
 test("GET/volunteers/all: success", async () => {

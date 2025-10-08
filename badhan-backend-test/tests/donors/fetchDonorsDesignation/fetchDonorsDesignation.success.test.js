@@ -1,5 +1,5 @@
 const env = require("../../../config");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("GET/donors/designation: success", async () => {
   let signInResponse = await operations.signInSuperAdmin();

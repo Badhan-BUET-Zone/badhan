@@ -1,4 +1,4 @@
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { patchAdminsSchema } = require("../schemas");
 
 test("PATCH/guest/admins: guest", async () => {

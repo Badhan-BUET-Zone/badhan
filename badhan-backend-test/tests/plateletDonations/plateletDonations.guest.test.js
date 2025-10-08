@@ -1,5 +1,5 @@
 const { postPlateletDonationSchema, deletePlateletDonationSchema } = require("./schemas");
-const operations = require("../operations");
+const operations = require("../lib/operations");
 
 test("POST&DELETE/guest/platelet-donations: guest", async () => {
   await operations.guestPost('/guest/platelet-donations', null, postPlateletDonationSchema);

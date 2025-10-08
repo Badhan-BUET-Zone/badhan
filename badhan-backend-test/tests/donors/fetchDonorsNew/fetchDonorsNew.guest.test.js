@@ -1,5 +1,5 @@
 const { donorsNewSchema } = require('../schemas');
-const operations = require('../../operations');
+const operations = require('../../lib/operations');
 
 test('GET /guest/donors/new: guest', async () => {
   const startTime = Date.now() - 10000;

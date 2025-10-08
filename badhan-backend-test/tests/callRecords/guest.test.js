@@ -1,4 +1,4 @@
-const operations = require("../operations");
+const operations = require("../lib/operations");
 const { postCallRecordsSchema, deleteCallRecordsSchema } = require("./schemas");
 
 test("POST&DELETE/guest/callrecords: guest", async () => {

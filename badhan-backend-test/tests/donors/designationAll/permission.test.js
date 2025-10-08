@@ -1,4 +1,4 @@
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const flows = require("../../flows");
 const { uniquePhone } = require("../../helpers");
 const { superAdminPermissionErrorSchema } = require("../../common/schemas");

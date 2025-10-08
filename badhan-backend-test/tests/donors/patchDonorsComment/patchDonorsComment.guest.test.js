@@ -1,5 +1,5 @@
 const { patchCommentSchema } = require("../schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("PATCH/guest/donors/comment: guest", async () => {
     const response = await operations.guestPatchDonorComment();

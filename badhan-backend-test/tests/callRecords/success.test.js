@@ -1,5 +1,5 @@
 const env = require("../../config");
-const operations = require("../operations");
+const operations = require("../lib/operations");
 const { postCallRecordsSchema, deleteCallRecordsSchema } = require("./schemas");
 
 test("POST&DELETE/callrecords: success", async () => {

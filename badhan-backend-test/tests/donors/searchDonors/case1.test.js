@@ -8,7 +8,7 @@ const {
   searchDonors,
   createPlateletDonation,
   deletePlateletDonation
-} = require("../../operations");
+} = require("../../lib/operations");
 
 
 test("GET/search/v3: success", async () => {

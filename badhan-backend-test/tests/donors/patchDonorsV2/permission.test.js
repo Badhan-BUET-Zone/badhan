@@ -1,5 +1,5 @@
 const { sameHallPermissionErrorSchema } = require("../../common/schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("PATCH /donors/v2: forbidden when target donor is in different hall", async () => {
 	const signInResponse = await operations.signInSuperAdmin();

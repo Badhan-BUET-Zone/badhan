@@ -1,5 +1,5 @@
 const { getReportsSchema } = require("../schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("GET/donations/report: success", async () => {
   const signInResponse = await operations.signInSuperAdmin();

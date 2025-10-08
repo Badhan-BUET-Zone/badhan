@@ -2,7 +2,7 @@ const { badhanAxios } = require("../../../api");
 const validate = require("jsonschema").validate;
 const env = require("../../../config");
 const { patchPasswordSchema } = require("./schemas");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("PATCH/users/password: success", async () => {
     let signInResponse = await operations.signInSuperAdmin()

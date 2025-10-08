@@ -1,5 +1,5 @@
 const env = require("../../../config");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 // success
 test("GET/platelet-donations/report: success", async () => {

@@ -1,4 +1,4 @@
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { allDesignatedDonorSchema } = require("../schemas");
 
 test("GET/guest/donors/designation/all: guest", async () => {

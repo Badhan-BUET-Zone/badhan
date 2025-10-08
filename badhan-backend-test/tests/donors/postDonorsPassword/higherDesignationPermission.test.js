@@ -1,4 +1,4 @@
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { uniquePhone } = require("../../helpers");
 const { higherDesignationPermissionErrorSchema } = require("../../common/schemas");
 

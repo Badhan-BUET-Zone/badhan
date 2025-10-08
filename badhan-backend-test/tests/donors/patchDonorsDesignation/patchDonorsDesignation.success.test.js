@@ -1,5 +1,5 @@
 const { newDonorInfo } = require("../infos");
-const { createDonor, signInSuperAdmin, promoteToVolunteer, demoteToDonor } = require("../../operations");
+const { createDonor, signInSuperAdmin, promoteToVolunteer, demoteToDonor } = require("../../lib/operations");
 
 
 test("PATCH/donors/designation: success", async () => {

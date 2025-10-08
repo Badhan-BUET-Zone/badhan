@@ -3,7 +3,7 @@ const validate = require("jsonschema").validate;
 const env = require("../../../config");
 const { logInsSchema } = require("./schemas");
 const { sleep } = require("../../helpers");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("GET/users/logins: success", async () => {
     let signInResponse = await operations.signInSuperAdmin()

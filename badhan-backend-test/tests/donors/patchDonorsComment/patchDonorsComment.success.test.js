@@ -1,5 +1,5 @@
 const env = require("../../../config");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 const { patchCommentSchema, getCommentSchema } = require("../schemas");
 const randomComment = `Developer of Badhan ${Date.now()}`;
 

@@ -1,6 +1,6 @@
 const { duplicateDonorsManySchema } = require("../schemas");
 const { newDonor_1_info, newDonor_2_info } = require("../infos");
-const operations = require("../../operations");
+const operations = require("../../lib/operations");
 
 test("GET/donors/phone: fetch donars duplicate all", async () => {
   const superAdminSignInResponse = await operations.signInSuperAdmin();
