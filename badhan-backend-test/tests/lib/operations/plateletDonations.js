@@ -9,7 +9,12 @@ const {
  * Create a platelet donation record
  */
 async function createPlateletDonation(donorId, date, signInResponse) {
-  return authedPost('/platelet-donations', { donorId, date }, signInResponse, postPlateletDonationSchema);
+  return authedPost(
+    '/platelet-donations',
+    { donorId, date },
+    signInResponse,
+    postPlateletDonationSchema
+  );
 }
 
 /**
@@ -39,4 +44,3 @@ module.exports = {
   deletePlateletDonation,
   getPlateletDonationReport,
 };
-

@@ -1,45 +1,45 @@
 const postCallRecordsSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 201 },
-    message: { type: "string" },
+    message: { type: 'string' },
     callRecord: {
-      type: "object",
+      type: 'object',
       additionalProperties: false,
       properties: {
-        date: { type: "integer" },
-        _id: { type: "string" },
-        callerId: { type: "string" },
-        calleeId: { type: "string" },
+        date: { type: 'integer' },
+        _id: { type: 'string' },
+        callerId: { type: 'string' },
+        calleeId: { type: 'string' },
       },
-      required: ["date", "_id", "callerId", "calleeId"],
+      required: ['date', '_id', 'callerId', 'calleeId'],
     },
   },
-  required: ["status", "statusCode", "message", "callRecord"],
+  required: ['status', 'statusCode', 'message', 'callRecord'],
 };
 
 const deleteCallRecordsSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 200 },
-    message: { type: "string" },
+    message: { type: 'string' },
     deletedCallRecord: {
-      type: "object",
+      type: 'object',
       additionalProperties: false,
       properties: {
-        date: { type: "integer" },
-        _id: { type: "string" },
-        callerId: { type: "string" },
-        calleeId: { type: "string" },
+        date: { type: 'integer' },
+        _id: { type: 'string' },
+        callerId: { type: 'string' },
+        calleeId: { type: 'string' },
       },
-      required: ["date", "_id", "callerId", "calleeId"],
+      required: ['date', '_id', 'callerId', 'calleeId'],
     },
   },
-  required: ["status", "statusCode", "message", "deletedCallRecord"],
+  required: ['status', 'statusCode', 'message', 'deletedCallRecord'],
 };
 
 module.exports = {

@@ -1,7 +1,7 @@
-const { postPlateletDonationSchema, deletePlateletDonationSchema } = require("./schemas");
-const operations = require("../lib/operations");
+const { postPlateletDonationSchema, deletePlateletDonationSchema } = require('./schemas');
+const operations = require('../lib/operations');
 
-test("POST&DELETE/platelet-donations: success", async () => {
+test('POST&DELETE/platelet-donations: success', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const donorResponse = await operations.getMe(signInResponse);
   const date = Date.now();

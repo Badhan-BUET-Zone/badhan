@@ -60,7 +60,12 @@ async function deleteLogin(loginId, signInResponse) {
  * Change password for current user
  */
 async function changePassword(newPassword, signInResponse) {
-  return authedPatch('/users/password', { password: newPassword }, signInResponse, patchPasswordSchema);
+  return authedPatch(
+    '/users/password',
+    { password: newPassword },
+    signInResponse,
+    patchPasswordSchema
+  );
 }
 
 module.exports = {

@@ -1,8 +1,8 @@
-const env = require("../../../config");
-const operations = require("../../lib/operations");
+const env = require('../../../config');
+const operations = require('../../lib/operations');
 
 // success
-test("GET/platelet-donations/report: success", async () => {
+test('GET/platelet-donations/report: success', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const donorId = (await operations.getMe(signInResponse)).data.donor._id;
 
@@ -18,5 +18,3 @@ test("GET/platelet-donations/report: success", async () => {
   await operations.deletePlateletDonation(donorId, plateletDonationDate, signInResponse);
   await operations.signOut(signInResponse);
 });
-
-

@@ -1,12 +1,12 @@
 const deleteLogInsSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 200 },
-    message: { type: "string" },
+    message: { type: 'string' },
   },
-  required: ["status", "statusCode", "message"],
+  required: ['status', 'statusCode', 'message'],
 };
 
 module.exports = {

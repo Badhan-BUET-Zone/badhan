@@ -1,6 +1,6 @@
-const operations = require("../../lib/operations");
+const operations = require('../../lib/operations');
 
-test("POST/users/signIn: success", async () => {
+test('POST/users/signIn: success', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   await operations.signOut(signInResponse);
 });

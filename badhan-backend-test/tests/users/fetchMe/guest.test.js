@@ -1,6 +1,6 @@
-const { guestGet } = require("../../lib");
-const { donorSchema } = require("./schemas");
+const { guestGet } = require('../../lib');
+const { donorSchema } = require('./schemas');
 
-test("GET/guest/users/me: guest", async () => {
-    await guestGet('/guest/users/me', donorSchema);
+test('GET/guest/users/me: guest', async () => {
+  await guestGet('/guest/users/me', donorSchema);
 });

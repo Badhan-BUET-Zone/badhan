@@ -17,7 +17,14 @@ async function createVolunteerWithToken(newDonorInfo, signInResponse, options = 
   };
 }
 
-async function assertForbiddenForVolunteerAndHallAdmin({ method, path, errorSchema, signInResponse, newDonorInfo, body }) {
+async function assertForbiddenForVolunteerAndHallAdmin({
+  method,
+  path,
+  errorSchema,
+  signInResponse,
+  newDonorInfo,
+  body,
+}) {
   const { donorId, volunteerToken } = await createVolunteerWithToken(newDonorInfo, signInResponse);
   await operations.expectErrorWithToken(method, path, volunteerToken, errorSchema, body);
   await operations.promoteToHallAdmin(donorId, signInResponse);
@@ -29,5 +36,3 @@ module.exports = {
   createVolunteerWithToken,
   assertForbiddenForVolunteerAndHallAdmin,
 };
-
-

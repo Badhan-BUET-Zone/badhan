@@ -1,19 +1,19 @@
-const { passwordSchema } = require("../schemas");
-const operations = require("../../lib/operations");
-const { uniquePhone } = require("../../helpers");
+const { passwordSchema } = require('../schemas');
+const operations = require('../../lib/operations');
+const { uniquePhone } = require('../../helpers');
 
-test("POST/donors/password: success", async () => {
+test('POST/donors/password: success', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   // Create a separate volunteer so we don't invalidate the current admin token
   const newDonorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer User",
+    name: 'Volunteer User',
     studentId: 1900401,
-    address: "Test Address",
-    roomNumber: "4001",
-    comment: "temporary volunteer",
+    address: 'Test Address',
+    roomNumber: '4001',
+    comment: 'temporary volunteer',
     extraDonationCount: 0,
     availableToAll: true,
   };

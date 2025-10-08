@@ -8,19 +8,19 @@ require('./lib');
 const { resetBaseURL } = require('./runtime/axios');
 
 const processError = (e) => {
-    if (e.response && e.response.data) {
-        const consoleErrorPrint = {
-            url: "",
-            data: e.response.data,
-            stack: e.stack
-        }
-        if (e.response.config) {
-            consoleErrorPrint.url = e.response.config.url
-        }
-        throw new Error(JSON.stringify(consoleErrorPrint, null, 2));
+  if (e.response && e.response.data) {
+    const consoleErrorPrint = {
+      url: '',
+      data: e.response.data,
+      stack: e.stack,
+    };
+    if (e.response.config) {
+      consoleErrorPrint.url = e.response.config.url;
     }
-    throw e;
-}
+    throw new Error(JSON.stringify(consoleErrorPrint, null, 2));
+  }
+  throw e;
+};
 
 // Global test wrapper: ensures any error thrown inside a test gets formatted
 // via processError so failures print useful API response details without
@@ -58,8 +58,12 @@ const processError = (e) => {
     }
     if (original.concurrent) {
       patched.concurrent = (title, fn, timeout) => original.concurrent(title, wrap(fn), timeout);
-      if (original.concurrent.only) patched.concurrent.only = (title, fn, timeout) => original.concurrent.only(title, wrap(fn), timeout);
-      if (original.concurrent.skip) patched.concurrent.skip = (title, fn, timeout) => original.concurrent.skip(title, fn, timeout);
+      if (original.concurrent.only)
+        patched.concurrent.only = (title, fn, timeout) =>
+          original.concurrent.only(title, wrap(fn), timeout);
+      if (original.concurrent.skip)
+        patched.concurrent.skip = (title, fn, timeout) =>
+          original.concurrent.skip(title, fn, timeout);
     }
 
     global[name] = patched;
@@ -74,7 +78,10 @@ const processError = (e) => {
 const RESET_URL = process.env.BACKUP_RESET_URL || 'http://localhost:4000/reset-local-db';
 
 // Skip reset when --no-reset CLI flag or NO_RESET env var is set.
-const NO_RESET = process.argv.includes('--no-reset') || process.env.NO_RESET === '1' || process.env.NO_RESET === 'true';
+const NO_RESET =
+  process.argv.includes('--no-reset') ||
+  process.env.NO_RESET === '1' ||
+  process.env.NO_RESET === 'true';
 
 // Example: clear all mocks before each test, reset modules, and call reset endpoint.
 beforeEach(async () => {
@@ -84,7 +91,11 @@ beforeEach(async () => {
     jest.resetModules();
   }
   // Reset axios baseURL to avoid leaking '/guest' across tests
-  try { resetBaseURL(); } catch (_) {}
+  try {
+    resetBaseURL();
+  } catch (_) {
+    // Silently ignore - resetBaseURL failure is not critical
+  }
   if (NO_RESET) {
     // Skipping reset per request
     process.stdout.write('🔕  Skipping test DB reset (before each) due to --no-reset / NO_RESET\n');
@@ -94,13 +105,16 @@ beforeEach(async () => {
 
   // Call the backup service to reset the local test database before each individual test.
   try {
-  // POST without payload; configure a reasonable timeout.
-  // process.stdout.write('🔄 test before each resetting test DB …\n');
+    // POST without payload; configure a reasonable timeout.
+    // process.stdout.write('🔄 test before each resetting test DB …\n');
     await axios.post(RESET_URL, {}, { timeout: 60000 });
     // Optionally set a global marker for debugging
     // global.__TEST_DB_RESET_AT__ = Date.now();
   } catch (err) {
-    console.error(`Failed to reset test DB via ${RESET_URL}:`, err && err.message ? err.message : err);
+    console.error(
+      `Failed to reset test DB via ${RESET_URL}:`,
+      err && err.message ? err.message : err
+    );
     // Throw so the test run fails fast and it's obvious why.
     throw err;
   }

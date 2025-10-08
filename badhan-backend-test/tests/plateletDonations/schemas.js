@@ -1,93 +1,93 @@
 const getPlateletDonationReportsSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 200 },
-    message: { type: "string" },
+    message: { type: 'string' },
     report: {
-      type: "array",
+      type: 'array',
       minItems: 1,
       items: {
-        type: "object",
+        type: 'object',
         additionalProperties: false,
         properties: {
           counts: {
-            type: "array",
+            type: 'array',
             minItems: 1,
             items: {
-              type: "object",
+              type: 'object',
               additionalProperties: false,
               properties: {
-                month: { type: "integer" },
-                year: { type: "integer" },
-                count: { type: "integer" },
+                month: { type: 'integer' },
+                year: { type: 'integer' },
+                count: { type: 'integer' },
               },
-              required: ["month", "year", "count"],
+              required: ['month', 'year', 'count'],
             },
           },
-          bloodGroup: { type: "integer" },
+          bloodGroup: { type: 'integer' },
         },
       },
     },
-  firstPlateletDonationCount: { type: "integer" },
+    firstPlateletDonationCount: { type: 'integer' },
   },
-  required: ["status", "statusCode", "message", "report", "firstPlateletDonationCount"],
+  required: ['status', 'statusCode', 'message', 'report', 'firstPlateletDonationCount'],
 };
 
 const invalidRequestSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 400 },
-    message: { type: "string" },
+    message: { type: 'string' },
   },
-  required: ["status", "statusCode", "message"],
+  required: ['status', 'statusCode', 'message'],
 };
 
 const postPlateletDonationSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 201 },
-    message: { type: "string" },
+    message: { type: 'string' },
     newPlateletDonation: {
-      type: "object",
+      type: 'object',
       additionalProperties: false,
       properties: {
-        date: { type: "integer" },
-        _id: { type: "string" },
-        phone: { type: "integer" },
-        donorId: { type: "string" },
+        date: { type: 'integer' },
+        _id: { type: 'string' },
+        phone: { type: 'integer' },
+        donorId: { type: 'string' },
       },
-      required: ["date", "_id", "phone", "donorId"],
+      required: ['date', '_id', 'phone', 'donorId'],
     },
   },
-  required: ["status", "statusCode", "message", "newPlateletDonation"],
+  required: ['status', 'statusCode', 'message', 'newPlateletDonation'],
 };
 
 const deletePlateletDonationSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 200 },
-    message: { type: "string" },
-  deletedPlateletDonation: {
-      type: "object",
+    message: { type: 'string' },
+    deletedPlateletDonation: {
+      type: 'object',
       additionalProperties: false,
       properties: {
-        _id: { type: "string" },
-        date: { type: "number" },
-        donorId: { type: "string" },
-        phone: { type: "number" },
+        _id: { type: 'string' },
+        date: { type: 'number' },
+        donorId: { type: 'string' },
+        phone: { type: 'number' },
       },
-      required: ["_id", "date", "donorId", "phone"],
+      required: ['_id', 'date', 'donorId', 'phone'],
     },
   },
-  required: ["status", "statusCode", "message", "deletedPlateletDonation"],
+  required: ['status', 'statusCode', 'message', 'deletedPlateletDonation'],
 };
 
 module.exports = {

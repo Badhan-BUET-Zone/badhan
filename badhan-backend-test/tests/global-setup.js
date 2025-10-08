@@ -5,10 +5,13 @@ const axios = require('axios');
 const RESET_URL = process.env.BACKUP_RESET_URL || 'http://localhost:4000/reset-local-db';
 
 // Skip reset if the flag is passed on the CLI or environment variable is set.
-const NO_RESET = process.argv.includes('--no-reset') || process.env.NO_RESET === '1' || process.env.NO_RESET === 'true';
+const NO_RESET =
+  process.argv.includes('--no-reset') ||
+  process.env.NO_RESET === '1' ||
+  process.env.NO_RESET === 'true';
 
 async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 module.exports = async () => {

@@ -3,6 +3,8 @@
 const jest = require('jest');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
+const axios = require('axios');
 
 // Configuration
 const CONFIG = {
@@ -10,7 +12,7 @@ const CONFIG = {
   logRoot: path.join(__dirname, 'logs'),
   successDir: path.join(__dirname, 'logs', 'success'),
   errorDir: path.join(__dirname, 'logs', 'error'),
-  jestConfig: path.join(__dirname, 'jest.config.js')
+  jestConfig: path.join(__dirname, 'jest.config.js'),
 };
 
 /**
@@ -18,7 +20,7 @@ const CONFIG = {
  */
 function setupLogDirectories() {
   console.log(`[start] Setting up log directories: ${CONFIG.logRoot}`);
-  
+
   // Create directories if they don't exist
   if (!fs.existsSync(CONFIG.logRoot)) {
     fs.mkdirSync(CONFIG.logRoot, { recursive: true });
@@ -33,7 +35,7 @@ function setupLogDirectories() {
   // Clear old log files
   try {
     const successFiles = fs.readdirSync(CONFIG.successDir);
-    successFiles.forEach(file => {
+    successFiles.forEach((file) => {
       if (file.endsWith('.txt')) {
         fs.unlinkSync(path.join(CONFIG.successDir, file));
       }
@@ -44,7 +46,7 @@ function setupLogDirectories() {
 
   try {
     const errorFiles = fs.readdirSync(CONFIG.errorDir);
-    errorFiles.forEach(file => {
+    errorFiles.forEach((file) => {
       if (file.endsWith('.txt')) {
         fs.unlinkSync(path.join(CONFIG.errorDir, file));
       }
@@ -61,18 +63,18 @@ function setupLogDirectories() {
  */
 async function runTests(args = []) {
   console.log('[start] Starting test execution...');
-  
+
   // Check if a specific test file was provided
-  const specificTest = args.find(arg => 
-    fs.existsSync(arg) && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))
+  const specificTest = args.find(
+    (arg) => fs.existsSync(arg) && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))
   );
-  
+
   if (specificTest) {
     console.log(`[start] Running specific test: ${specificTest}`);
   } else {
     console.log('[start] Running all tests');
   }
-  
+
   // Prepare Jest configuration
   const jestConfig = {
     // Pass explicit Jest config to avoid implicit resolution of multiple configs
@@ -82,13 +84,13 @@ async function runTests(args = []) {
     runInBand: true,
     silent: true, // Ensure Jest output is suppressed
     // Parse command line arguments
-    ...parseJestArgs(args)
+    ...parseJestArgs(args),
   };
 
   try {
     // Run Jest directly
     const { results } = await jest.runCLI(jestConfig, [__dirname]);
-    
+
     if (results.success) {
       console.log('[start] All tests completed successfully');
       return true;
@@ -109,10 +111,10 @@ async function runTests(args = []) {
  */
 function parseJestArgs(args) {
   const config = {};
-  
+
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     // Check if it's an absolute path to a test file
     if (fs.existsSync(arg) && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))) {
       config.testPathPattern = arg;
@@ -122,7 +124,7 @@ function parseJestArgs(args) {
       config.$0 = 'start';
       continue;
     }
-    
+
     // Check if it's a relative path to a test file
     if (arg.includes('/') && (arg.endsWith('.test.js') || arg.endsWith('.spec.js'))) {
       const fullPath = path.resolve(__dirname, arg);
@@ -135,7 +137,7 @@ function parseJestArgs(args) {
         continue;
       }
     }
-    
+
     switch (arg) {
       case '--watch':
         config.watch = true;
@@ -178,8 +180,68 @@ function parseJestArgs(args) {
         break;
     }
   }
-  
+
   return config;
+}
+
+/**
+ * Runs ESLint to check code quality
+ * @returns {boolean} - Returns true if linting passes, false otherwise
+ */
+function runLinter() {
+  console.log('[start] Running ESLint...');
+
+  try {
+    execSync('npm run lint', {
+      cwd: __dirname,
+      stdio: 'inherit', // Show lint output in real-time
+    });
+    console.log('[start] ✓ Linting passed');
+    return true;
+  } catch (error) {
+    console.error('[start] ✗ Linting failed - please fix the errors above');
+    return false;
+  }
+}
+
+/**
+ * Resolves the backend base URL from environment or defaults
+ * @returns {string} - The backend base URL
+ */
+function resolveBackendURL() {
+  const envBase = process.env.API_BASE_URL && process.env.API_BASE_URL.trim();
+  if (envBase) return envBase;
+
+  // Docker environment check
+  if (fs.existsSync('/.dockerenv')) {
+    return 'http://host.docker.internal:3000';
+  }
+
+  return 'http://localhost:3000';
+}
+
+/**
+ * Checks if the backend server is running
+ * @returns {Promise<boolean>} - Returns true if backend is running, false otherwise
+ */
+async function checkBackendHealth() {
+  const backendURL = resolveBackendURL();
+  console.log(`[start] Checking backend health at ${backendURL}...`);
+
+  try {
+    await axios.get(`${backendURL}/`, { timeout: 5000 });
+    console.log('[start] ✓ Backend is running');
+    return true;
+  } catch (error) {
+    console.error('[start] ✗ Backend is not responding');
+    console.error(`[start] Please start the backend server at ${backendURL}`);
+    if (error.code === 'ECONNREFUSED') {
+      console.error('[start] Connection refused - make sure the server is running');
+    } else if (error.code === 'ETIMEDOUT') {
+      console.error('[start] Connection timed out - server might be slow to respond');
+    }
+    return false;
+  }
 }
 
 /**
@@ -209,19 +271,32 @@ async function runTestSuite(args = []) {
     console.log('[start] Badhan Backend Test Runner');
     console.log('[start] ===========================');
 
+    // Run linter first
+    const lintPassed = runLinter();
+    if (!lintPassed) {
+      console.error('[start] Aborting tests due to linting errors');
+      return false;
+    }
+
+    // Check if backend is running
+    const backendHealthy = await checkBackendHealth();
+    if (!backendHealthy) {
+      console.error('[start] Aborting tests - backend server is not running');
+      return false;
+    }
+
     // Validate Jest configuration
     validateJestConfig();
-    
+
     // Setup log directories
     setupLogDirectories();
-    
+
     // Run tests
     const success = await runTests(args);
-    
+
     console.log(`[start] Test execution completed with success: ${success}`);
-    
+
     return success;
-    
   } catch (error) {
     console.error('[start] Error:', error.message);
     return false;
@@ -235,7 +310,7 @@ async function runTestSuite(args = []) {
 async function runBackendTests() {
   // Parse command line arguments
   const args = process.argv.slice(2);
-  
+
   const success = await runTestSuite(args);
   return success;
 }
@@ -244,17 +319,22 @@ async function runBackendTests() {
 module.exports = {
   runTestSuite,
   runTests,
+  runLinter,
+  checkBackendHealth,
+  resolveBackendURL,
   setupLogDirectories,
   validateJestConfig,
-  CONFIG
+  CONFIG,
 };
 
 // Run main function if this file is executed directly
 if (require.main === module) {
-  runBackendTests().then(success => {
-    process.exit(success ? 0 : 1);
-  }).catch(error => {
-    console.error('[start] Unexpected error:', error);
-    process.exit(1);
-  });
+  runBackendTests()
+    .then((success) => {
+      process.exit(success ? 0 : 1);
+    })
+    .catch((error) => {
+      console.error('[start] Unexpected error:', error);
+      process.exit(1);
+    });
 }

@@ -1,6 +1,6 @@
-const operations = require("../../lib/operations");
-const { designationSchema } = require("../schemas");
+const operations = require('../../lib/operations');
+const { designationSchema } = require('../schemas');
 
-test("GET/guest/donors/designation: guest", async () => {
+test('GET/guest/donors/designation: guest', async () => {
   await operations.guestGet('/guest/donors/designation', designationSchema);
 });

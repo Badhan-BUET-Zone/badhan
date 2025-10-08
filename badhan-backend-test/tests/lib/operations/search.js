@@ -18,8 +18,12 @@ async function searchDonors({
   expectedDonorIds,
 }) {
   const url = `/search/v3?bloodGroup=${bloodGroup}&hall=${hall}&batch=${batch}&name=${name}&address=${address}&isAvailable=${isAvailable}&isNotAvailable=${isNotAvailable}&availableToAll=${availableToAll}`;
-  const response = await authedGet(url, signInResponse, searchSchema({ totalItems: expectedTotalItems }));
-  const foundIds = response.data.filteredDonors.map(d => d._id);
+  const response = await authedGet(
+    url,
+    signInResponse,
+    searchSchema({ totalItems: expectedTotalItems })
+  );
+  const foundIds = response.data.filteredDonors.map((d) => d._id);
   expect(foundIds.sort()).toEqual(expectedDonorIds.sort());
   return response;
 }
@@ -35,4 +39,3 @@ module.exports = {
   searchDonors,
   guestSearchDonors,
 };
-

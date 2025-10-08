@@ -1,9 +1,9 @@
-const operations = require("../../lib/operations");
-const flows = require("../../flows");
-const { superAdminPermissionErrorSchema } = require("../../common/schemas");
-const { uniquePhone } = require("../../helpers");
+const operations = require('../../lib/operations');
+const flows = require('../../flows');
+const { superAdminPermissionErrorSchema } = require('../../common/schemas');
+const { uniquePhone } = require('../../helpers');
 
-test("POST/ publicContacts: requires super admin (volunteer and hall admin forbidden)", async () => {
+test('POST/ publicContacts: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const phoneA = uniquePhone();
@@ -13,11 +13,11 @@ test("POST/ publicContacts: requires super admin (volunteer and hall admin forbi
     phone: phoneA,
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer User",
+    name: 'Volunteer User',
     studentId: 1900125,
-    address: "Test Address",
-    roomNumber: "1003",
-    comment: "temporary volunteer",
+    address: 'Test Address',
+    roomNumber: '1003',
+    comment: 'temporary volunteer',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -38,7 +38,7 @@ test("POST/ publicContacts: requires super admin (volunteer and hall admin forbi
   });
 });
 
-test("DELETE/ publicContacts: requires super admin (volunteer and hall admin forbidden)", async () => {
+test('DELETE/ publicContacts: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const phoneC = uniquePhone();
@@ -48,11 +48,11 @@ test("DELETE/ publicContacts: requires super admin (volunteer and hall admin for
     phone: phoneC,
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer User",
+    name: 'Volunteer User',
     studentId: 1900126,
-    address: "Test Address",
-    roomNumber: "1004",
-    comment: "temporary volunteer",
+    address: 'Test Address',
+    roomNumber: '1004',
+    comment: 'temporary volunteer',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -71,5 +71,3 @@ test("DELETE/ publicContacts: requires super admin (volunteer and hall admin for
     newDonorInfo: newDonorInfoD,
   });
 });
-
-

@@ -9,7 +9,12 @@ const {
  * Create a public contact
  */
 async function createPublicContact({ donorId, bloodGroup, signInResponse }) {
-  return authedPost('/publicContacts', { donorId, bloodGroup }, signInResponse, postPublicContactsSchema);
+  return authedPost(
+    '/publicContacts',
+    { donorId, bloodGroup },
+    signInResponse,
+    postPublicContactsSchema
+  );
 }
 
 /**
@@ -35,4 +40,3 @@ module.exports = {
   deletePublicContact,
   getPublicContacts,
 };
-

@@ -1,21 +1,21 @@
-const operations = require("../../lib/operations");
-const { uniquePhone } = require("../../helpers");
-const { higherDesignationPermissionErrorSchema } = require("../../common/schemas");
+const operations = require('../../lib/operations');
+const { uniquePhone } = require('../../helpers');
+const { higherDesignationPermissionErrorSchema } = require('../../common/schemas');
 
 // Ensure lower designation cannot modify higher designation on PATCH /donors/v2
 
-test("PATCH/donors/v2: volunteer cannot modify hall admin (higher designation)", async () => {
+test('PATCH/donors/v2: volunteer cannot modify hall admin (higher designation)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Target Hall Admin",
+    name: 'Target Hall Admin',
     studentId: 1900701,
-    address: "Test Address",
-    roomNumber: "7001",
-    comment: "target hall admin",
+    address: 'Test Address',
+    roomNumber: '7001',
+    comment: 'target hall admin',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -23,11 +23,11 @@ test("PATCH/donors/v2: volunteer cannot modify hall admin (higher designation)",
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer Actor",
+    name: 'Volunteer Actor',
     studentId: 1900702,
-    address: "Test Address",
-    roomNumber: "7002",
-    comment: "volunteer actor",
+    address: 'Test Address',
+    roomNumber: '7002',
+    comment: 'volunteer actor',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -45,7 +45,7 @@ test("PATCH/donors/v2: volunteer cannot modify hall admin (higher designation)",
   const actorTokenResponse = await operations.issueDonorPassword(actorId, signInResponse);
   const body = {
     donorId: targetId,
-    name: "Updated Name",
+    name: 'Updated Name',
     phone: targetInfo.phone,
     studentId: targetInfo.studentId,
     bloodGroup: targetInfo.bloodGroup,
@@ -53,30 +53,30 @@ test("PATCH/donors/v2: volunteer cannot modify hall admin (higher designation)",
     roomNumber: targetInfo.roomNumber,
     address: targetInfo.address,
     availableToAll: targetInfo.availableToAll,
-    email: "",
+    email: '',
   };
 
   await operations.expectErrorWithToken(
-    "patch",
-    "/donors/v2",
+    'patch',
+    '/donors/v2',
     actorTokenResponse.data.token,
     higherDesignationPermissionErrorSchema,
     body
   );
 });
 
-test("PATCH/donors/v2: volunteer cannot modify super admin (higher designation)", async () => {
+test('PATCH/donors/v2: volunteer cannot modify super admin (higher designation)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Target Super Admin",
+    name: 'Target Super Admin',
     studentId: 1900703,
-    address: "Test Address",
-    roomNumber: "7003",
-    comment: "target super admin",
+    address: 'Test Address',
+    roomNumber: '7003',
+    comment: 'target super admin',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -84,11 +84,11 @@ test("PATCH/donors/v2: volunteer cannot modify super admin (higher designation)"
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer Actor",
+    name: 'Volunteer Actor',
     studentId: 1900704,
-    address: "Test Address",
-    roomNumber: "7004",
-    comment: "volunteer actor",
+    address: 'Test Address',
+    roomNumber: '7004',
+    comment: 'volunteer actor',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -106,7 +106,7 @@ test("PATCH/donors/v2: volunteer cannot modify super admin (higher designation)"
   const actorTokenResponse = await operations.issueDonorPassword(actorId, signInResponse);
   const body = {
     donorId: targetId,
-    name: "Updated Name",
+    name: 'Updated Name',
     phone: targetInfo.phone,
     studentId: targetInfo.studentId,
     bloodGroup: targetInfo.bloodGroup,
@@ -114,30 +114,30 @@ test("PATCH/donors/v2: volunteer cannot modify super admin (higher designation)"
     roomNumber: targetInfo.roomNumber,
     address: targetInfo.address,
     availableToAll: targetInfo.availableToAll,
-    email: "",
+    email: '',
   };
 
   await operations.expectErrorWithToken(
-    "patch",
-    "/donors/v2",
+    'patch',
+    '/donors/v2',
     actorTokenResponse.data.token,
     higherDesignationPermissionErrorSchema,
     body
   );
 });
 
-test("PATCH/donors/v2: hall admin cannot modify super admin (higher designation)", async () => {
+test('PATCH/donors/v2: hall admin cannot modify super admin (higher designation)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Hall Admin Actor",
+    name: 'Hall Admin Actor',
     studentId: 1900705,
-    address: "Test Address",
-    roomNumber: "7005",
-    comment: "hall admin actor",
+    address: 'Test Address',
+    roomNumber: '7005',
+    comment: 'hall admin actor',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -145,11 +145,11 @@ test("PATCH/donors/v2: hall admin cannot modify super admin (higher designation)
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Target Super Admin",
+    name: 'Target Super Admin',
     studentId: 1900706,
-    address: "Test Address",
-    roomNumber: "7006",
-    comment: "target super admin",
+    address: 'Test Address',
+    roomNumber: '7006',
+    comment: 'target super admin',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -170,7 +170,7 @@ test("PATCH/donors/v2: hall admin cannot modify super admin (higher designation)
 
   const body = {
     donorId: targetId,
-    name: "Updated Name",
+    name: 'Updated Name',
     phone: targetInfo.phone,
     studentId: targetInfo.studentId,
     bloodGroup: targetInfo.bloodGroup,
@@ -178,16 +178,14 @@ test("PATCH/donors/v2: hall admin cannot modify super admin (higher designation)
     roomNumber: targetInfo.roomNumber,
     address: targetInfo.address,
     availableToAll: targetInfo.availableToAll,
-    email: "",
+    email: '',
   };
 
   await operations.expectErrorWithToken(
-    "patch",
-    "/donors/v2",
+    'patch',
+    '/donors/v2',
     actorTokenResponse.data.token,
     higherDesignationPermissionErrorSchema,
     body
   );
 });
-
-

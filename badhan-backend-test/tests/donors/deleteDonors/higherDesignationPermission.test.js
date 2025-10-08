@@ -1,21 +1,21 @@
-const operations = require("../../lib/operations");
-const { uniquePhone } = require("../../helpers");
-const { higherDesignationPermissionErrorSchema } = require("../../common/schemas");
+const operations = require('../../lib/operations');
+const { uniquePhone } = require('../../helpers');
+const { higherDesignationPermissionErrorSchema } = require('../../common/schemas');
 
 // Ensure lower designation cannot delete higher designation on DELETE /donors
 
-test("DELETE/donors: volunteer cannot delete hall admin (higher designation)", async () => {
+test('DELETE/donors: volunteer cannot delete hall admin (higher designation)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Target Hall Admin",
+    name: 'Target Hall Admin',
     studentId: 1900801,
-    address: "Test Address",
-    roomNumber: "8001",
-    comment: "target hall admin",
+    address: 'Test Address',
+    roomNumber: '8001',
+    comment: 'target hall admin',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -23,11 +23,11 @@ test("DELETE/donors: volunteer cannot delete hall admin (higher designation)", a
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer Actor",
+    name: 'Volunteer Actor',
     studentId: 1900802,
-    address: "Test Address",
-    roomNumber: "8002",
-    comment: "volunteer actor",
+    address: 'Test Address',
+    roomNumber: '8002',
+    comment: 'volunteer actor',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -45,25 +45,25 @@ test("DELETE/donors: volunteer cannot delete hall admin (higher designation)", a
   const actorTokenResponse = await operations.issueDonorPassword(actorId, signInResponse);
   const path = `/donors?donorId=${targetId}`;
   await operations.expectErrorWithToken(
-    "delete",
+    'delete',
     path,
     actorTokenResponse.data.token,
     higherDesignationPermissionErrorSchema
   );
 });
 
-test("DELETE/donors: volunteer cannot delete super admin (higher designation)", async () => {
+test('DELETE/donors: volunteer cannot delete super admin (higher designation)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Target Super Admin",
+    name: 'Target Super Admin',
     studentId: 1900803,
-    address: "Test Address",
-    roomNumber: "8003",
-    comment: "target super admin",
+    address: 'Test Address',
+    roomNumber: '8003',
+    comment: 'target super admin',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -71,11 +71,11 @@ test("DELETE/donors: volunteer cannot delete super admin (higher designation)", 
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer Actor",
+    name: 'Volunteer Actor',
     studentId: 1900804,
-    address: "Test Address",
-    roomNumber: "8004",
-    comment: "volunteer actor",
+    address: 'Test Address',
+    roomNumber: '8004',
+    comment: 'volunteer actor',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -93,25 +93,25 @@ test("DELETE/donors: volunteer cannot delete super admin (higher designation)", 
   const actorTokenResponse = await operations.issueDonorPassword(actorId, signInResponse);
   const path = `/donors?donorId=${targetId}`;
   await operations.expectErrorWithToken(
-    "delete",
+    'delete',
     path,
     actorTokenResponse.data.token,
     higherDesignationPermissionErrorSchema
   );
 });
 
-test("DELETE/donors: hall admin cannot delete super admin (higher designation)", async () => {
+test('DELETE/donors: hall admin cannot delete super admin (higher designation)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Hall Admin Actor",
+    name: 'Hall Admin Actor',
     studentId: 1900805,
-    address: "Test Address",
-    roomNumber: "8005",
-    comment: "hall admin actor",
+    address: 'Test Address',
+    roomNumber: '8005',
+    comment: 'hall admin actor',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -119,11 +119,11 @@ test("DELETE/donors: hall admin cannot delete super admin (higher designation)",
     phone: uniquePhone(),
     bloodGroup: 2,
     hall: 1,
-    name: "Target Super Admin",
+    name: 'Target Super Admin',
     studentId: 1900806,
-    address: "Test Address",
-    roomNumber: "8006",
-    comment: "target super admin",
+    address: 'Test Address',
+    roomNumber: '8006',
+    comment: 'target super admin',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -144,11 +144,9 @@ test("DELETE/donors: hall admin cannot delete super admin (higher designation)",
 
   const path = `/donors?donorId=${targetId}`;
   await operations.expectErrorWithToken(
-    "delete",
+    'delete',
     path,
     actorTokenResponse.data.token,
     higherDesignationPermissionErrorSchema
   );
 });
-
-

@@ -1,38 +1,38 @@
 const logInsSchema = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
   properties: {
-    status: { type: "string" },
+    status: { type: 'string' },
     statusCode: { const: 200 },
-    message: { type: "string" },
+    message: { type: 'string' },
     logins: {
-      type: "array",
+      type: 'array',
       minItems: 1,
       items: {
-        types: "object",
+        types: 'object',
         additionalProperties: false,
         properties: {
-          _id: { type: "string" },
-          os: { type: "string" },
-          device: { type: "string" },
-          browserFamily: { type: "string" },
-          ipAddress: { type: "string" },
+          _id: { type: 'string' },
+          os: { type: 'string' },
+          device: { type: 'string' },
+          browserFamily: { type: 'string' },
+          ipAddress: { type: 'string' },
         },
       },
     },
     currentLogin: {
-      type: "object",
+      type: 'object',
       additionalProperties: false,
       properties: {
-        _id: { type: "string" },
-        os: { type: "string" },
-        device: { type: "string" },
-        browserFamily: { type: "string" },
-        ipAddress: { type: "string" },
+        _id: { type: 'string' },
+        os: { type: 'string' },
+        device: { type: 'string' },
+        browserFamily: { type: 'string' },
+        ipAddress: { type: 'string' },
       },
     },
   },
-  required: ["status", "statusCode", "message", "logins", "currentLogin"],
+  required: ['status', 'statusCode', 'message', 'logins', 'currentLogin'],
 };
 
 module.exports = {

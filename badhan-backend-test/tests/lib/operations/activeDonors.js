@@ -11,4 +11,3 @@ async function markDonorAsActive(donorId, signInResponse) {
 module.exports = {
   markDonorAsActive,
 };
-

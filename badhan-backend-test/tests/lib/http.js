@@ -9,25 +9,33 @@ function validateSchema(data, schema) {
 }
 
 async function authedGet(path, signInResponse, schema) {
-  const response = await badhanAxios.get(path, { headers: { 'x-auth': signInResponse.data.token } });
+  const response = await badhanAxios.get(path, {
+    headers: { 'x-auth': signInResponse.data.token },
+  });
   if (schema) validateSchema(response.data, schema);
   return response;
 }
 
 async function authedPost(path, body, signInResponse, schema) {
-  const response = await badhanAxios.post(path, body, { headers: { 'x-auth': signInResponse.data.token } });
+  const response = await badhanAxios.post(path, body, {
+    headers: { 'x-auth': signInResponse.data.token },
+  });
   if (schema) validateSchema(response.data, schema);
   return response;
 }
 
 async function authedPatch(path, body, signInResponse, schema) {
-  const response = await badhanAxios.patch(path, body, { headers: { 'x-auth': signInResponse.data.token } });
+  const response = await badhanAxios.patch(path, body, {
+    headers: { 'x-auth': signInResponse.data.token },
+  });
   if (schema) validateSchema(response.data, schema);
   return response;
 }
 
 async function authedDelete(path, signInResponse, schema) {
-  const response = await badhanAxios.delete(path, { headers: { 'x-auth': signInResponse.data.token } });
+  const response = await badhanAxios.delete(path, {
+    headers: { 'x-auth': signInResponse.data.token },
+  });
   if (schema) validateSchema(response.data, schema);
   return response;
 }
@@ -59,14 +67,18 @@ async function guestDelete(path, schema) {
 async function expectAuthedError(method, path, signInResponse, errorSchema, body) {
   try {
     if (method === 'get' || method === 'delete') {
-      const res = await badhanAxios[method](path, { headers: { 'x-auth': signInResponse.data.token } });
+      const res = await badhanAxios[method](path, {
+        headers: { 'x-auth': signInResponse.data.token },
+      });
       if (errorSchema) {
         const result = validate(res.data, errorSchema);
         if (result.errors.length === 0) return res; // treat JSON error payload with 2xx as expected error
       }
       throw new Error('Expected request to fail but it succeeded');
     } else {
-      const res = await badhanAxios[method](path, body, { headers: { 'x-auth': signInResponse.data.token } });
+      const res = await badhanAxios[method](path, body, {
+        headers: { 'x-auth': signInResponse.data.token },
+      });
       if (errorSchema) {
         const result = validate(res.data, errorSchema);
         if (result.errors.length === 0) return res;
@@ -136,5 +148,3 @@ module.exports = {
   expectGuestError,
   expectErrorWithToken,
 };
-
-

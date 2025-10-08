@@ -1,4 +1,4 @@
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Monotonic unique phone generator for tests (13-digit numbers starting with 88019)
 const uniquePhone = () => {
@@ -13,5 +13,3 @@ module.exports = {
   sleep,
   uniquePhone,
 };
-
-

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "test": "FORCE_COLOR=0 jest --no-color --config jest.config.js --runInBand",
-  "lint": "eslint . --ext .js",
-  "format": "prettier -w ."
+    "test": "FORCE_COLOR=0 jest --no-color --config jest.config.js --runInBand",
+    "lint": "eslint . --ext .js",
+    "format": "prettier -w ."
   },
   "jest": {
     "testTimeout": 30000

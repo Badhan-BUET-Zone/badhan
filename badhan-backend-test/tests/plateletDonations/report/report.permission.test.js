@@ -1,19 +1,19 @@
-const operations = require("../../lib/operations");
-const flows = require("../../flows");
-const { superAdminPermissionErrorSchema } = require("../../common/schemas");
+const operations = require('../../lib/operations');
+const flows = require('../../flows');
+const { superAdminPermissionErrorSchema } = require('../../common/schemas');
 
-test("GET/platelet-donations/report: requires super admin (volunteer and hall admin forbidden)", async () => {
+test('GET/platelet-donations/report: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
   const newDonorInfo = {
     phone: 8801777000012,
     bloodGroup: 2,
     hall: 1,
-    name: "Volunteer User",
+    name: 'Volunteer User',
     studentId: 1900124,
-    address: "Test Address",
-    roomNumber: "1002",
-    comment: "temporary volunteer",
+    address: 'Test Address',
+    roomNumber: '1002',
+    comment: 'temporary volunteer',
     extraDonationCount: 0,
     availableToAll: true,
   };
@@ -32,5 +32,3 @@ test("GET/platelet-donations/report: requires super admin (volunteer and hall ad
     newDonorInfo,
   });
 });
-
-

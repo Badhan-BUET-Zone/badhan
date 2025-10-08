@@ -16,4 +16,3 @@
   ],
   "ignorePatterns": ["logs/**", "node_modules/**"]
 }
-

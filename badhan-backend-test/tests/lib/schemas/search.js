@@ -4,4 +4,3 @@ const { searchSchema } = require('../../donors/schemas');
 module.exports = {
   searchSchema,
 };
-

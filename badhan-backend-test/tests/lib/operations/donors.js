@@ -95,9 +95,15 @@ async function guestGetNewDonors({ startTime, endTime, schema = donorsNewSchema 
 /**
  * Fetch duplicate donors by phone list
  */
-async function getDuplicateDonorsByPhones({ phoneList, token, schema = duplicateDonorsManySchema }) {
-  const query = phoneList.map(p => `phoneList=${p}`).join('&');
-  const response = await badhanAxios.get(`/donors/phone?${query}`, { headers: { 'x-auth': token } });
+async function getDuplicateDonorsByPhones({
+  phoneList,
+  token,
+  schema = duplicateDonorsManySchema,
+}) {
+  const query = phoneList.map((p) => `phoneList=${p}`).join('&');
+  const response = await badhanAxios.get(`/donors/phone?${query}`, {
+    headers: { 'x-auth': token },
+  });
   validateSchema(response.data, schema);
   return response;
 }

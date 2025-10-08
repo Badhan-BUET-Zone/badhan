@@ -23,7 +23,10 @@ const firebaseAxios = axios.create({ baseURL: 'https://badhan-buet-default-rtdb.
 // Track guest state without leaking across specs
 function enableGuestAPI() {
   // Avoid double-appending
-  if (!badhanAxios.defaults.baseURL.endsWith('/guest') && !badhanAxios.defaults.baseURL.includes('/guest/')) {
+  if (
+    !badhanAxios.defaults.baseURL.endsWith('/guest') &&
+    !badhanAxios.defaults.baseURL.includes('/guest/')
+  ) {
     badhanAxios.defaults.baseURL = `${badhanAxios.defaults.baseURL}/guest`;
   }
 }
@@ -39,11 +42,23 @@ function isGuestEnabled() {
 }
 
 // Keep lightweight interceptors similar to the original file
-badhanAxios.interceptors.request.use((config) => config, (error) => Promise.reject(error));
-badhanAxios.interceptors.response.use((response) => response, (error) => Promise.reject(error));
+badhanAxios.interceptors.request.use(
+  (config) => config,
+  (error) => Promise.reject(error)
+);
+badhanAxios.interceptors.response.use(
+  (response) => response,
+  (error) => Promise.reject(error)
+);
 
-firebaseAxios.interceptors.request.use((config) => config, (error) => Promise.reject(error));
-firebaseAxios.interceptors.response.use((response) => response, (error) => Promise.reject(error));
+firebaseAxios.interceptors.request.use(
+  (config) => config,
+  (error) => Promise.reject(error)
+);
+firebaseAxios.interceptors.response.use(
+  (response) => response,
+  (error) => Promise.reject(error)
+);
 
 module.exports = {
   badhanAxios,
@@ -52,5 +67,3 @@ module.exports = {
   resetBaseURL,
   isGuestEnabled,
 };
-
-

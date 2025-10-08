@@ -2,18 +2,8 @@
 
 Below are the refactors organized as large, numbered items. Each item explains the change and the exact actions to take.
 
-### 4) Split `operations.js` by domain (thin helpers)
-- What: Make operations discoverable and maintainable by grouping per API area.
-- Why: Smaller, focused modules simplify navigation, code ownership, and reviewing changes.
-- Do:
-  - Create domain files in `tests/lib/operations/`: `donors`, `donations`, `plateletDonations`, `users`, `logs`, `publicContacts`, `activeDonors`, `search`.
-  - Each domain uses `lib/http` and imports schemas from `lib/schemas/<domain>`.
-  - Add an index barrel to re-export domain operations with a stable public surface.
-- Definition of Done:
-  - `tests/operations.js` is retired or reduced to a thin compatibility layer.
-  - All specs import domain operations via `tests/lib/operations`.
+### 8) Enforce consistency (lint + naming) ✅ COMPLETED
 
-### 8) Enforce consistency (lint + naming)
 - What: Make the test codebase consistent and easy to navigate.
 - Why: Consistent formatting and naming reduce review friction and onboarding time.
 - Do:
@@ -22,8 +12,20 @@ Below are the refactors organized as large, numbered items. Each item explains t
 - Definition of Done:
   - `npm run lint` passes; Prettier formats apply without large diffs.
   - New files follow naming conventions.
+- Completion Notes:
+  - ✅ Created `.eslintrc.json` with Node + Jest environment settings and Prettier integration
+  - ✅ Created `.prettierrc.json` with standard formatting rules (single quotes, 100 print width, etc.)
+  - ✅ Created `.eslintignore` and `.prettierignore` to exclude logs and dependencies
+  - ✅ Fixed ESLint error (empty catch block) in `tests/setup-after-env.js`
+  - ✅ Ran Prettier to format all files consistently
+  - ✅ Verified naming conventions: operations use verbs, schemas use nouns, specs end with `.test.js`
+  - ✅ **Integrated linting into test runner**: `start` script now runs ESLint before tests
+  - ✅ **Added backend health check**: Tests verify backend is running via GET request to `/` before execution
+  - ✅ Test suite aborts if linting fails or backend is unreachable, ensuring proper environment
+  - ✅ All 115 tests pass after linting and formatting changes
 
 ### 11) Step-by-step migration
+
 - What: Incrementally move to the new structure without breaking green runs.
 - Why: Minimizes risk by shipping small, verifiable changes while keeping CI green.
 - Do:
@@ -41,6 +43,7 @@ Below are the refactors organized as large, numbered items. Each item explains t
   - `tests/` contains the new layout with minimal legacy artifacts.
 
 ### Verify the refactor works end-to-end
+
 - What: Ensure behavior and results remain unchanged.
 - Do:
   - Run the backend test script and confirm that all 115 tests pass.
