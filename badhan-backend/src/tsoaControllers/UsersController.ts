@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Body, Controller, Delete, Example, Get, Middlewares, Patch, Post, Response, Route, SuccessResponse, Tags, Request } from 'tsoa'
+import { Body, Controller, Delete, Example, Get, Middlewares, Patch, Path, Post, Response, Route, SuccessResponse, Tags, Request } from 'tsoa'
 import type { Response as ExResponse } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
@@ -293,6 +293,147 @@ export class UsersController extends Controller {
       message: 'Redirected login successful',
       token: tokenInsertResult.data!.token,
       donor
+    }
+  }
+
+  /** Change user password */
+  @Patch('password')
+  @SuccessResponse(201, 'Password changed successfully')
+  @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
+    status: 'ERROR',
+    statusCode: 500,
+    message: 'Token insertion failed'
+  })
+  @Example<{ status: string; statusCode: number; message: string; token: string }>({
+    status: 'OK',
+    statusCode: 201,
+    message: 'Password changed successfully',
+    token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
+  })
+  @Middlewares([rateLimiter.commonLimiter, userValidator.validatePATCHPassword, authenticator.handleAuthentication])
+  public async changePassword(
+    @Body() body: { password: string },
+    @Request() req: any
+  ): Promise<{ status: string; statusCode: number; message: string; token?: string }> {
+    const res: ExResponse = (req as any).res
+    const donor: IDonor = res.locals.middlewareResponse.donor
+
+    donor.password = body.password
+    await donor.save()
+
+    await tokenInterface.deleteAllTokensByDonorId(donor._id)
+    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
+
+    if (tokenInsertResult.status !== 'OK') {
+      this.setStatus(500)
+      return { status: 'ERROR', statusCode: 500, message: 'Token insertion failed' }
+    }
+
+    await logInterface.addLog(donor._id, 'PATCH USERS PASSWORD', {})
+
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Password changed successfully',
+      token: tokenInsertResult.data!.token
+    }
+  }
+
+  /** Get list of recent logins for the authenticated user */
+  @Get('logins')
+  @SuccessResponse(200, 'Recent logins fetched successfully')
+  @Response<{ status: string; statusCode: number; message: string }>(500, 'Failed to fetch logins', {
+    status: 'ERROR',
+    statusCode: 500,
+    message: 'Failed to fetch logins'
+  })
+  @Example<{ status: string; statusCode: number; message: string; logins: any[]; currentLogin: any }>({
+    status: 'OK',
+    statusCode: 200,
+    message: 'Recent logins fetched successfully',
+    logins: [{
+      _id: '584abcde6744144441',
+      os: 'Ubuntu 20.04.1',
+      device: 'Asus K550VX',
+      browserFamily: 'Firefox',
+      ipAddress: '1.2.3.4'
+    }],
+    currentLogin: {
+      _id: '584abcde6744144441',
+      os: 'Ubuntu 20.04.1',
+      device: 'Asus K550VX',
+      browserFamily: 'Firefox',
+      ipAddress: '1.2.3.4'
+    }
+  })
+  @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
+  public async getLogins(@Request() req: any): Promise<{ status: string; statusCode: number; message: string; logins?: any[]; currentLogin?: any }> {
+    const res: ExResponse = (req as any).res
+    const user: IDonor = res.locals.middlewareResponse.donor
+    const token: string = res.locals.middlewareResponse.token
+
+    const recentLoginsResult: {status: string, message: string, data: any[]} = await tokenInterface.findTokenDataExceptSpecifiedToken(user._id, token)
+
+    const currentTokenDataResult: {data?: any, message: string, status: string} = await tokenInterface.findTokenDataByToken(token)
+    if (currentTokenDataResult.status !== 'OK') {
+      this.setStatus(500)
+      return { status: 'ERROR', statusCode: 500, message: 'Failed to fetch logins' }
+    }
+
+    const currentTokenData: { __v?: string, donorId?: string, token?: string, expireAt?: number, os: string, browserFamily: string, device: string, ipAddress: string} = JSON.parse(JSON.stringify(currentTokenDataResult.data))
+    delete currentTokenData.token
+    delete currentTokenData.expireAt
+    delete currentTokenData.donorId
+    delete currentTokenData.__v
+
+    await logInterface.addLog(user._id, 'GET USERS LOGINS', {})
+
+    this.setStatus(200)
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Recent logins fetched successfully',
+      logins: recentLoginsResult.data,
+      currentLogin: currentTokenData
+    }
+  }
+
+  /** Delete a specific login session by token ID */
+  @Delete('logins/{tokenId}')
+  @SuccessResponse(200, 'Logged out from specified device')
+  @Response<{ status: string; statusCode: number; message: string }>(404, 'Login information not found', {
+    status: 'ERROR',
+    statusCode: 404,
+    message: 'Login information not found'
+  })
+  @Example<{ status: string; statusCode: number; message: string }>({
+    status: 'OK',
+    statusCode: 200,
+    message: 'Logged out from specified device'
+  })
+  @Middlewares([rateLimiter.commonLimiter, userValidator.validateDELETELogins, authenticator.handleAuthentication])
+  public async deleteLogin(
+    @Path() tokenId: string,
+    @Request() req: any
+  ): Promise<{ status: string; statusCode: number; message: string }> {
+    const res: ExResponse = (req as any).res
+    const donor: IDonor = res.locals.middlewareResponse.donor
+
+    const deletedTokenResult: {message: string, status: string, data?: any} = await tokenInterface.deleteByTokenId(tokenId)
+
+    if (deletedTokenResult.status !== 'OK') {
+      this.setStatus(404)
+      return { status: 'ERROR', statusCode: 404, message: 'Login information not found' }
+    }
+
+    await logInterface.addLog(donor._id, 'DELETE USERS LOGINS', {})
+
+    this.setStatus(200)
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Logged out from specified device'
     }
   }
 }

@@ -442,12 +442,13 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
  */
-router.patch('/password',
-  rateLimiter.commonLimiter,
-  userValidator.validatePATCHPassword,
-  authenticator.handleAuthentication,
-  userController.handlePATCHPassword
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/password',
+//   rateLimiter.commonLimiter,
+//   userValidator.validatePATCHPassword,
+//   authenticator.handleAuthentication,
+//   userController.handlePATCHPassword
+// )
 
 /**
  * @openapi
@@ -515,11 +516,12 @@ router.patch('/password',
  *                       type: string
  *                       example: 1.2.3.4
  */
-router.get('/logins',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  userController.handleGETLogins
-)
+// DISABLED: Migrated to TSOA
+// router.get('/logins',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   userController.handleGETLogins
+// )
 
 /**
  * @openapi
@@ -573,11 +575,12 @@ router.get('/logins',
  *                   type: string
  *                   example: Login information not found
  */
-router.delete('/logins/:tokenId',
-  rateLimiter.commonLimiter,
-  userValidator.validateDELETELogins,
-  authenticator.handleAuthentication,
-  userController.handleDELETELogins
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/logins/:tokenId',
+//   rateLimiter.commonLimiter,
+//   userValidator.validateDELETELogins,
+//   authenticator.handleAuthentication,
+//   userController.handleDELETELogins
+// )
 
 export default router

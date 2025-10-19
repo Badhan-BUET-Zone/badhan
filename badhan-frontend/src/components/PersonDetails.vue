@@ -966,7 +966,6 @@ export default {
       }
       this.passwordChangeFlag = true
       const response = await handlePATCHUsersPassword({
-        donorId: this.id,
         password: this.newPassword
       })
       if(response.status === 200){
