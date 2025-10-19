@@ -82,6 +82,7 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: Incorrect phone / password
  */
+// DISABLED: Migrated to TSOA
 // router.post('/signin',
 //   userValidator.validateLogin,
 //   rateLimiter.signInLimiter,
@@ -116,6 +117,7 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: Logged out successfully
  */
+// DISABLED: Migrated to TSOA
 // router.delete('/signout',
 //   rateLimiter.commonLimiter,
 //   authenticator.handleAuthentication,
@@ -150,11 +152,12 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: Logged out from all devices successfully
  */
-router.delete('/signout/all',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  userController.handleDELETESignOutAll
-)
+// DISABLED: Migrated to TSOA in UsersController.ts
+// router.delete('/signout/all',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   userController.handleDELETESignOutAll
+// )
 
 /**
  * @openapi
@@ -229,11 +232,12 @@ router.delete('/signout/all',
  *                       type: boolean
  *                       example: true
  */
-router.get('/me',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  userController.handleGETMe
-)
+// DISABLED: Migrated to TSOA
+// router.get('/me',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   userController.handleGETMe
+// )
 
 /**
  * @openapi
@@ -266,11 +270,12 @@ router.get('/me',
  *                   type: string
  *                   example: dvsoigneoihegoiwsngoisngoiswgnbon
  */
-router.post('/redirection',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  userController.handlePOSTRedirection
-)
+// DISABLED: Migrated to TSOA
+// router.post('/redirection',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   userController.handlePOSTRedirection
+// )
 
 /**
  * @openapi
@@ -389,10 +394,11 @@ router.post('/redirection',
  *                   type: string
  *                   example: Session Expired
  */
-router.patch('/redirection',
-  rateLimiter.redirectionSignInLimiter,
-  userController.handlePATCHRedirectedAuthentication
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/redirection',
+//   rateLimiter.redirectionSignInLimiter,
+//   userController.handlePATCHRedirectedAuthentication
+// )
 
 /**
  * @openapi

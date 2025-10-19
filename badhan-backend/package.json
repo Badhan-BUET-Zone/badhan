@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "npm run tsoa:routes && tsc",
+    "build": "npm run tsoa:routes && npm run tsoa:spec && tsc",
     "postinstall": "npm run build",
     "gcp-build": "npm run build",
     "lint": "tslint --project tsconfig.json",
