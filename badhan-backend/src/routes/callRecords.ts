@@ -64,14 +64,15 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                       type: number
  *                       example: 4
  */
-router.post('/',
-  callRecordValidator.validatePOSTCallRecords,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  callRecordController.handlePOSTCallRecord
-)
+// DISABLED: Migrated to TSOA
+// router.post('/',
+//   callRecordValidator.validatePOSTCallRecords,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   callRecordController.handlePOSTCallRecord
+// )
 
 /**
  * @openapi
@@ -148,13 +149,14 @@ router.post('/',
  *                   type: string
  *                   example: Target donor does not have the callee of call record
  */
-router.delete('/',
-  callRecordValidator.validateDELETECallRecords,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  callRecordController.handleDELETECallRecord
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/',
+//   callRecordValidator.validateDELETECallRecords,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   callRecordController.handleDELETECallRecord
+// )
 
 export default router

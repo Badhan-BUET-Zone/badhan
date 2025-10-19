@@ -63,14 +63,15 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                       type: string
  *                       example: 5e901d56effc590017712345
  */
-router.post('/',
-  donationValidator.validatePOSTDonations,
-  rateLimiter.donationInsertionLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  donationController.handlePOSTDonations
-)
+// DISABLED: Migrated to TSOA
+// router.post('/',
+//   donationValidator.validatePOSTDonations,
+//   rateLimiter.donationInsertionLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   donationController.handlePOSTDonations
+// )
 
 /**
  * @openapi
@@ -146,22 +147,24 @@ router.post('/',
  *                   type: string
  *                   example: Matching donation not found
  */
-router.delete('/',
-  donationValidator.validateDELETEDonations,
-  rateLimiter.deleteDonationLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  donationController.handleDELETEDonations
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/',
+//   donationValidator.validateDELETEDonations,
+//   rateLimiter.deleteDonationLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   donationController.handleDELETEDonations
+// )
 
-router.get('/report',
-  donationValidator.validateGETDonationsReport,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  donationController.handleGETDonationsReport
-)
+// DISABLED: Migrated to TSOA
+// router.get('/report',
+//   donationValidator.validateGETDonationsReport,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   donationController.handleGETDonationsReport
+// )
 
 /**
  * @openapi
