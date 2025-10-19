@@ -77,14 +77,15 @@ const router:AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: Active donor already created
  */
-router.post('/',
-  activeDonorsValidator.validatePOSTActiveDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  activeDonorController.handlePOSTActiveDonors
-)
+// DISABLED: Migrated to TSOA
+// router.post('/',
+//   activeDonorsValidator.validatePOSTActiveDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   activeDonorController.handlePOSTActiveDonors
+// )
 
 /**
  * @openapi
@@ -153,14 +154,15 @@ router.post('/',
  *                   type: string
  *                   example: Active donor not found
  */
-router.delete('/:donorId',
-  activeDonorsValidator.validateDELETEActiveDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  activeDonorController.handleDELETEActiveDonors
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/:donorId',
+//   activeDonorsValidator.validateDELETEActiveDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   activeDonorController.handleDELETEActiveDonors
+// )
 
 /**
  * @openapi
@@ -339,11 +341,12 @@ router.delete('/:donorId',
  *                   type: string
  *                   example: You are not allowed to search donors of other halls
  */
-router.get('/',
-  activeDonorsValidator.validateGETActiveDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  activeDonorController.handleGETActiveDonors
-)
+// DISABLED: Migrated to TSOA
+// router.get('/',
+//   activeDonorsValidator.validateGETActiveDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   activeDonorController.handleGETActiveDonors
+// )
 
 export default router
