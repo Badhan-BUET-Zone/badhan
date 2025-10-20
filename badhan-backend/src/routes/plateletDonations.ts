@@ -63,14 +63,15 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                       type: string
  *                       example: 5e901d56effc590017712345
  */
-router.post('/',
-  plateletDonationValidator.validatePOSTPlateletDonations,
-  rateLimiter.donationInsertionLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  plateletDonationController.handlePOSTPlateletDonations
-)
+// DISABLED: Migrated to TSOA
+// router.post('/',
+//   plateletDonationValidator.validatePOSTPlateletDonations,
+//   rateLimiter.donationInsertionLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   plateletDonationController.handlePOSTPlateletDonations
+// )
 
 /**
  * @openapi
@@ -131,22 +132,24 @@ router.post('/',
  *                   type: string
  *                   example: Matching platelet donation not found
  */
-router.delete('/',
-  plateletDonationValidator.validateDELETEPlateletDonations,
-  rateLimiter.deleteDonationLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  plateletDonationController.handleDELETEPlateletDonations
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/',
+//   plateletDonationValidator.validateDELETEPlateletDonations,
+//   rateLimiter.deleteDonationLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   plateletDonationController.handleDELETEPlateletDonations
+// )
 
-router.get('/report',
-  plateletDonationValidator.validateGETPlateletDonationsReport,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  plateletDonationController.handleGETPlateletDonationsReport
-)
+// DISABLED: Migrated to TSOA
+// router.get('/report',
+//   plateletDonationValidator.validateGETPlateletDonationsReport,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   plateletDonationController.handleGETPlateletDonationsReport
+// )
 
 /**
  * @openapi

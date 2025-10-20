@@ -48,16 +48,18 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                       type: number
  *                       example: 130
  */
-router.get('/log/statistics',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  logController.handleGETStatistics
-)
-router.get('/log/donations',
-  rateLimiter.commonLimiter,
-  logController.handleGETLogsDonations
-)
+// DISABLED: Migrated to TSOA
+// router.get('/log/statistics',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   logController.handleGETStatistics
+// )
+// DISABLED: Migrated to TSOA
+// router.get('/log/donations',
+//   rateLimiter.commonLimiter,
+//   logController.handleGETLogsDonations
+// )
 
 /**
  * @openapi
@@ -160,12 +162,13 @@ router.get('/log/donations',
  *                         type: number
  *                         example: 256
  */
-router.get('/log',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  logController.handleGETLogs
-)
+// DISABLED: Migrated to TSOA
+// router.get('/log',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   logController.handleGETLogs
+// )
 
 /**
  * @openapi
@@ -195,12 +198,13 @@ router.get('/log',
  *                   type: string
  *                   example: All logs deleted successfully
  */
-router.delete('/log',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  logController.handleDELETELogs
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/log',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   logController.handleDELETELogs
+// )
 
 
 

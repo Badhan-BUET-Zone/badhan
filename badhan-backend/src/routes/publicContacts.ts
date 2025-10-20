@@ -60,14 +60,15 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                       type: number
  *                       example: 2
  */
-router.post('/',
-  rateLimiter.publicContactInsertionLimiter,
-  publicContactValidator.validatePOSTPublicContact,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleSuperAdminCheck,
-  publicContactController.handlePOSTPublicContact
-)
+// DISABLED: Migrated to TSOA
+// router.post('/',
+//   rateLimiter.publicContactInsertionLimiter,
+//   publicContactValidator.validatePOSTPublicContact,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleSuperAdminCheck,
+//   publicContactController.handlePOSTPublicContact
+// )
 
 /**
  * @openapi
@@ -120,10 +121,11 @@ router.post('/',
  *                               type: string
  *                               example: 584abcde6744144441
  */
-router.get('/',
-  rateLimiter.commonLimiter,
-  publicContactController.handleGETPublicContacts
-)
+// DISABLED: Migrated to TSOA
+// router.get('/',
+//   rateLimiter.commonLimiter,
+//   publicContactController.handleGETPublicContacts
+// )
 
 /**
  * @openapi
@@ -200,13 +202,14 @@ router.get('/',
  *                   type: string
  *                   example: Public contact not consistent with donorId
  */
-router.delete('/',
-  rateLimiter.publicContactDeletionLimiter,
-  publicContactValidator.validateDELETEPublicContact,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleSuperAdminCheck,
-  publicContactController.handleDELETEPublicContact
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/',
+//   rateLimiter.publicContactDeletionLimiter,
+//   publicContactValidator.validateDELETEPublicContact,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleSuperAdminCheck,
+//   publicContactController.handleDELETEPublicContact
+// )
 
 export default router
