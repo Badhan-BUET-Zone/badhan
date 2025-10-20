@@ -414,6 +414,22 @@ export class UsersController extends Controller {
     }
   }
 
+  /** Handle missing tokenId - validation error */
+  @Delete('logins')
+  @Response<{ status: string; statusCode: number; message: string }>(400, 'tokenId is required', {
+    status: 'ERROR',
+    statusCode: 400,
+    message: 'tokenId is required'
+  })
+  public async deleteLoginMissingToken(): Promise<{ status: string; statusCode: number; message: string }> {
+    this.setStatus(400)
+    return {
+      status: 'ERROR',
+      statusCode: 400,
+      message: 'tokenId is required'
+    }
+  }
+
   /** Delete a specific login session by token ID */
   @Delete('logins/{tokenId}')
   @SuccessResponse(200, 'Logged out from specified device')

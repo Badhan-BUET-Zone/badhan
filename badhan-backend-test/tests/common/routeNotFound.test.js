@@ -1,4 +1,6 @@
-const { guestDelete } = require('../lib');
+const { expectGuestError } = require('../lib');
+const { routeNotFoundErrorSchema } = require('./schemas');
+
 test('route not found testing', async () => {
-  await guestDelete('/blahblahblahblah');
+  await expectGuestError('delete', '/blahblahblahblah', routeNotFoundErrorSchema);
 });

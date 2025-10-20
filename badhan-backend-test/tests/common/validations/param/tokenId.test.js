@@ -5,7 +5,7 @@ const {
 } = require('./tokenIdValidationSchemas');
 
 test('validation: PARAM/tokenId/tokenId is required', async () => {
-  await require('../../../lib').guestDelete('/users/logins/');
+  await expectGuestError('delete', '/users/logins/', PARAM_tokenId_RequiredError_Schema);
 });
 
 test('validation: PARAM/tokenId/Enter a valid tokenId', async () => {
