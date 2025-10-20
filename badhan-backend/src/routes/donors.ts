@@ -79,13 +79,14 @@ const router: AsyncRouterInstance = AsyncRouter()
  *                   type: string
  *                   example: startTime and endTime query params are required
  */
-router.get('/donors/new',
-  donorValidator.validateGETDonorsNew,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleHallAdminCheck,
-  donorController.handleGETDonorsNew
-)
+// DISABLED: Migrated to TSOA
+// router.get('/donors/new',
+//   donorValidator.validateGETDonorsNew,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleHallAdminCheck,
+//   donorController.handleGETDonorsNew
+// )
 
 /**
  * @openapi
@@ -226,13 +227,14 @@ router.get('/donors/new',
  *                   type: string
  *                   example: 65dabcdef68796116465
  */
-router.post('/donors',
-  donorValidator.validatePOSTDonors,
-  rateLimiter.donorInsertionLimiter,
-  queue.donorInsertionQueue,
-  authenticator.handleAuthentication,
-  donorController.handlePOSTDonors
-)
+// DISABLED: Migrated to TSOA
+// router.post('/donors',
+//   donorValidator.validatePOSTDonors,
+//   rateLimiter.donorInsertionLimiter,
+//   queue.donorInsertionQueue,
+//   authenticator.handleAuthentication,
+//   donorController.handlePOSTDonors
+// )
 
 /**
  * @openapi
@@ -410,20 +412,23 @@ router.post('/donors',
  *                           type: number
  *                           example: 1782934242842
  */
-router.get('/donors',
-  donorValidator.validateGETDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  donorController.handleGETDonors
-)
+// DISABLED: Migrated to TSOA
+// router.get('/donors',
+//   donorValidator.validateGETDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   donorController.handleGETDonors
+// )
 
-router.get('/donors/me',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  userController.handleGETMe
-)
+// NOTE: /donors/me is handled by UsersController as /users/me
+// DISABLED: Migrated to TSOA
+// router.get('/donors/me',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   userController.handleGETMe
+// )
 
 /**
  * @openapi
@@ -662,12 +667,13 @@ router.get('/donors/me',
  *                   type: string
  *                   example: You are not allowed to search donors of other halls
  */
-router.get('/search/v3',
-  donorValidator.validateGETSearchDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  donorController.handleGETSearchV3
-)
+// DISABLED: Migrated to TSOA
+// router.get('/search/v3',
+//   donorValidator.validateGETSearchDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   donorController.handleGETSearchV3
+// )
 
 /**
  * @openapi
@@ -730,14 +736,15 @@ router.get('/search/v3',
  *                   type: string
  *                   example: Donor not found
  */
-router.patch('/donors/comment',
-  donorValidator.validatePATCHDonorsComment,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermissionOrCheckAvailableToAll,
-  donorController.handlePATCHDonorsComment
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/donors/comment',
+//   donorValidator.validatePATCHDonorsComment,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermissionOrCheckAvailableToAll,
+//   donorController.handlePATCHDonorsComment
+// )
 
 /**
  * @openapi
@@ -797,15 +804,16 @@ router.patch('/donors/comment',
  *                   type: string
  *                   example: Donor is not a volunteer/ admin
  */
-router.post('/donors/password',
-  donorValidator.validatePOSTDonorsPasswordRequest,
-  rateLimiter.passwordRequestLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermission,
-  authenticator.handleHigherDesignationCheck,
-  donorController.handlePOSTDonorsPasswordRequest
-)
+// DISABLED: Migrated to TSOA
+// router.post('/donors/password',
+//   donorValidator.validatePOSTDonorsPasswordRequest,
+//   rateLimiter.passwordRequestLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermission,
+//   authenticator.handleHigherDesignationCheck,
+//   donorController.handlePOSTDonorsPasswordRequest
+// )
 
 /**
  * @openapi
@@ -905,15 +913,16 @@ router.post('/donors/password',
  *                   type: string
  *                   example: You do not have permission to edit email address of another user
  */
-router.patch('/donors/v2',
-  donorValidator.validatePATCHDonors,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermission,
-  authenticator.handleHigherDesignationCheck,
-  donorController.handlePATCHDonors
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/donors/v2',
+//   donorValidator.validatePATCHDonors,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermission,
+//   authenticator.handleHigherDesignationCheck,
+//   donorController.handlePATCHDonors
+// )
 
 /**
  * @openapi
@@ -983,15 +992,16 @@ router.patch('/donors/v2',
  *                   type: string
  *                   example: Donor must be demoted for deletion
  */
-router.delete('/donors',
-  donorValidator.validateDELETEDonors,
-  rateLimiter.donorDeletionLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermission,
-  authenticator.handleHigherDesignationCheck,
-  donorController.handleDELETEDonors
-)
+// DISABLED: Migrated to TSOA
+// router.delete('/donors',
+//   donorValidator.validateDELETEDonors,
+//   rateLimiter.donorDeletionLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermission,
+//   authenticator.handleHigherDesignationCheck,
+//   donorController.handleDELETEDonors
+// )
 
 /**
  * @openapi
@@ -1083,15 +1093,16 @@ router.delete('/donors',
  *                   type: string
  *                   example: error message
  */
-router.patch('/donors/designation',
-  donorValidator.validatePATCHDonorsDesignation,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleHallPermission,
-  authenticator.handleHallAdminCheck,
-  donorController.handlePATCHDonorsDesignation
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/donors/designation',
+//   donorValidator.validatePATCHDonorsDesignation,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleHallPermission,
+//   authenticator.handleHallAdminCheck,
+//   donorController.handlePATCHDonorsDesignation
+// )
 
 /**
  * @openapi
@@ -1184,11 +1195,12 @@ router.patch('/donors/designation',
  *                         type: number
  *                         example: 5
  */
-router.get('/donors/designation',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  donorController.handleGETDonorsDesignation
-)
+// DISABLED: Migrated to TSOA
+// router.get('/donors/designation',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   donorController.handleGETDonorsDesignation
+// )
 
 /**
  * @openapi
@@ -1271,12 +1283,13 @@ router.get('/donors/designation',
  *                       type: boolean
  *                       example: true
  */
-router.get('/donors/checkDuplicate',
-  donorValidator.validateGETDonorsDuplicate,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  donorController.handleGETDonorsDuplicate
-)
+// DISABLED: Migrated to TSOA
+// router.get('/donors/checkDuplicate',
+//   donorValidator.validateGETDonorsDuplicate,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   donorController.handleGETDonorsDuplicate
+// )
 
 /**
  * @openapi
@@ -1334,12 +1347,13 @@ router.get('/donors/checkDuplicate',
  *
  *
  */
-router.get('/donors/phone',
-  rateLimiter.commonLimiter,
-  donorValidator.validateGETDonorsDuplicateMany,
-  authenticator.handleAuthentication,
-  donorController.handleGETDonorsDuplicateMany
-)
+// DISABLED: Migrated to TSOA
+// router.get('/donors/phone',
+//   rateLimiter.commonLimiter,
+//   donorValidator.validateGETDonorsDuplicateMany,
+//   authenticator.handleAuthentication,
+//   donorController.handleGETDonorsDuplicateMany
+// )
 
 /**
  * @openapi
@@ -1390,19 +1404,21 @@ router.get('/donors/phone',
  *                         example: 3
  */
 // ROUTE TO BE DEPRECATED
-router.get('/volunteers/all',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  donorController.handleGETDesignatedDonorsAll
-)
+// DISABLED: Migrated to TSOA
+// router.get('/volunteers/all',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   donorController.handleGETDesignatedDonorsAll
+// )
 
-router.get('/donors/designation/all',
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  authenticator.handleSuperAdminCheck,
-  donorController.handleGETDesignatedDonorsAll
-)
+// DISABLED: Migrated to TSOA
+// router.get('/donors/designation/all',
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   authenticator.handleSuperAdminCheck,
+//   donorController.handleGETDesignatedDonorsAll
+// )
 
 /**
  * @openapi
@@ -1524,14 +1540,15 @@ router.get('/donors/designation/all',
  *                   type: string
  *                   example: User is not a volunteer/ User does not have a valid hall
  */
-router.patch('/admins',
-  donorValidator.validatePATCHAdmins,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleSuperAdminCheck,
-  donorController.handlePATCHAdmins
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/admins',
+//   donorValidator.validatePATCHAdmins,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleSuperAdminCheck,
+//   donorController.handlePATCHAdmins
+// )
 
 /**
  * @openapi
@@ -1652,13 +1669,14 @@ router.patch('/admins',
  *                   type: string
  *                   example: Target donor must be a volunteer or super admin
  */
-router.patch('/admins/superadmin',
-  donorValidator.validatePATCHAdminsSuperAdmin,
-  rateLimiter.commonLimiter,
-  authenticator.handleAuthentication,
-  loadTargetDonor,
-  authenticator.handleSuperAdminCheck,
-  donorController.handlePATCHAdminsSuperAdmin
-)
+// DISABLED: Migrated to TSOA
+// router.patch('/admins/superadmin',
+//   donorValidator.validatePATCHAdminsSuperAdmin,
+//   rateLimiter.commonLimiter,
+//   authenticator.handleAuthentication,
+//   loadTargetDonor,
+//   authenticator.handleSuperAdminCheck,
+//   donorController.handlePATCHAdminsSuperAdmin
+// )
 
 export default router
