@@ -1,0 +1,1044 @@
+import 'reflect-metadata'
+import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Route, Tags } from 'tsoa'
+import * as faker from '../doc/faker'
+
+@Route('guest')
+@Tags('Guest')
+export class GuestController extends Controller {
+  /** Guest sign in - returns fake data for demo purposes */
+  @Post('users/signin')
+  @Hidden()
+  public async signIn(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    token: string
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Guest sign in will not show actual nor accurate data',
+      token: faker.getToken()
+    }
+  }
+
+  /** Guest sign out */
+  @Delete('users/signout')
+  @Hidden()
+  public async signOut(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Logged out successfully'
+    }
+  }
+
+  /** Guest sign out from all devices */
+  @Delete('users/signout/all')
+  @Hidden()
+  public async signOutAll(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Logged out from all devices successfully'
+    }
+  }
+
+  /** Guest view own donor details */
+  @Get('users/me')
+  @Hidden()
+  public async viewDonorDetailsSelf(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    donor: any
+  }> {
+    const obj: any = {
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      name: faker.getName(),
+      studentId: faker.getStudentId(),
+      bloodGroup: faker.getBloodGroup(),
+      hall: faker.getHall(),
+      roomNumber: faker.getRoom(),
+      address: faker.getAddress(),
+      comment: faker.getComment(),
+      commentTime: faker.getTimestamp(240),
+      designation: 3,
+      availableToAll: faker.getBoolean(),
+      email: faker.getEmail()
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Fetched donor details successfully',
+      donor: obj
+    }
+  }
+
+  /** Guest insert donor */
+  @Post('donors')
+  @Hidden()
+  public async insertDonor(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    newDonor: any
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'New donor inserted successfully',
+      newDonor: {
+        address: faker.getAddress(),
+        roomNumber: faker.getRoom(),
+        designation: faker.getDesignation(),
+        comment: faker.getComment(),
+        commentTime: faker.getTimestamp(240),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        bloodGroup: faker.getBloodGroup(),
+        hall: faker.getHall(),
+        name: faker.getName(),
+        studentId: faker.getStudentId(),
+        availableToAll: faker.getBoolean(),
+        email: faker.getEmail()
+      }
+    }
+  }
+
+  /** Guest search donors */
+  @Get('search/v3')
+  @Hidden()
+  public async searchDonors(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    filteredDonors: any[]
+  }> {
+    const filteredDonors: any[] = []
+
+    for (let i: number = 0; i < faker.getRandInt(1, 50); i++) {
+      const randomMarker: any = faker.getBoolean()
+        ? {
+            name: faker.getName(),
+            time: faker.getTimestamp(20)
+          }
+        : {}
+
+      filteredDonors.push({
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        name: faker.getName(),
+        studentId: faker.getStudentId(),
+        hall: faker.getHall(),
+        lastDonation: faker.getTimestamp(240),
+        lastPlateletDonation: faker.getTimestamp(240),
+        bloodGroup: faker.getBloodGroup(),
+        address: faker.getAddress(),
+        roomNumber: faker.getRoom(),
+        comment: faker.getComment(),
+        donationCount: faker.getDonationCount(),
+        plateletDonationCount: faker.getDonationCount(),
+        commentTime: faker.getTimestamp(240),
+        availableToAll: faker.getBoolean(),
+        callRecordCount: faker.getRandomIndex(3),
+        lastCalled: faker.getTimestamp(10),
+        marker: randomMarker
+      })
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Donors queried successfully',
+      filteredDonors
+    }
+  }
+
+  /** Guest delete donor */
+  @Delete('donors')
+  @Hidden()
+  public async deleteDonor(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Donor deleted successfully'
+    }
+  }
+
+  /** Guest post comment */
+  @Patch('donors/comment')
+  @Hidden()
+  public async comment(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Comment posted successfully'
+    }
+  }
+
+  /** Guest change password */
+  @Post('donors/password')
+  @Hidden()
+  public async changePassword(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    token: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Created recovery link for user successfully',
+      token: faker.getToken()
+    }
+  }
+
+  /** Guest edit donor */
+  @Patch('donors/v2')
+  @Hidden()
+  public async editDonor(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Donor updated successfully'
+    }
+  }
+
+  /** Guest promote/demote user */
+  @Patch('donors/designation')
+  @Hidden()
+  public async promote(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Target user promoted/demoted successfully'
+    }
+  }
+
+  /** Guest change admin */
+  @Patch('admins')
+  @Hidden()
+  public async changeAdmin(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Changed hall admin successfully'
+    }
+  }
+
+  /** Guest view donor details */
+  @Get('donors')
+  @Hidden()
+  public async viewDonorDetails(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    donor: any
+  }> {
+    const callRecords: any[] = []
+    for (let i: number = 0; i < 2; i++) {
+      callRecords.push({
+        date: faker.getTimestamp(240),
+        _id: faker.getId(),
+        callerId: {
+          designation: faker.getDesignation(),
+          _id: faker.getId(),
+          hall: faker.getHall(),
+          name: faker.getName()
+        },
+        calleeId: faker.getId()
+      })
+    }
+    const donations: any[] = []
+    const plateletDonations: any[] = []
+    for (let i: number = 0; i < 2; i++) {
+      donations.push({
+        date: faker.getTimestamp(240),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId()
+      })
+      plateletDonations.push({
+        date: faker.getTimestamp(240),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId()
+      })
+    }
+    const publicContacts: any[] = [
+      {
+        bloodGroup: 2,
+        _id: faker.getId(),
+        donorId: faker.getId()
+      },
+      {
+        bloodGroup: -1,
+        _id: faker.getId(),
+        donorId: faker.getId()
+      }
+    ]
+
+    const randomMarker: any = faker.getBoolean()
+      ? {
+          _id: faker.getId(),
+          name: faker.getName()
+        }
+      : null
+
+    const obj: any = {
+      _id: faker.getId(),
+      phone: faker.getPhone(),
+      name: faker.getName(),
+      studentId: faker.getStudentId(),
+      lastDonation: faker.getTimestamp(240),
+      lastPlateletDonation: faker.getTimestamp(240),
+      bloodGroup: faker.getBloodGroup(),
+      hall: faker.getHall(),
+      roomNumber: faker.getRoom(),
+      address: faker.getAddress(),
+      comment: faker.getComment(),
+      designation: faker.getDesignation(),
+      commentTime: faker.getTimestamp(240),
+      callRecords,
+      donations,
+      plateletDonations,
+      publicContacts,
+      availableToAll: faker.getBoolean(),
+      email: faker.getEmail(),
+      markedBy: randomMarker
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Fetched donor details successfully',
+      donor: obj
+    }
+  }
+
+  /** Guest view volunteers of own hall */
+  @Get('volunteers')
+  @Hidden()
+  public async viewVolunteersOfOwnHall(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    volunteerList: any[]
+  }> {
+    const volunteerList: any[] = []
+    for (let i: number = 0; i < faker.getRandomIndex(50); i++) {
+      volunteerList.push({
+        _id: faker.getId(),
+        bloodGroup: faker.getBloodGroup(),
+        name: faker.getName(),
+        phone: faker.getPhone(),
+        roomNumber: faker.getRoom(),
+        studentId: faker.getStudentId()
+      })
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Volunteer list fetched successfully',
+      volunteerList
+    }
+  }
+
+  /** Guest show hall admins */
+  @Get('admins')
+  @Hidden()
+  public async showHallAdmins(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    admins: any[]
+  }> {
+    const admins: any[] = []
+    for (let i: number = 0; i <= 6; i++) {
+      admins.push({
+        _id: faker.getId(),
+        hall: i,
+        name: faker.getName(),
+        phone: faker.getPhone()
+      })
+    }
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Hall admin list fetched successfully',
+      admins
+    }
+  }
+
+  /** Guest insert donation */
+  @Post('donations')
+  @Hidden()
+  public async insertDonation(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    newDonation: any
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Donation inserted successfully',
+      newDonation: {
+        date: faker.getTimestamp(10),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId()
+      }
+    }
+  }
+
+  /** Guest insert platelet donation */
+  @Post('platelet-donations')
+  @Hidden()
+  public async insertPlateletDonation(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    newPlateletDonation: any
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Platelet donation inserted successfully',
+      newPlateletDonation: {
+        date: faker.getTimestamp(10),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId()
+      }
+    }
+  }
+
+  /** Guest delete donation */
+  @Delete('donations')
+  @Hidden()
+  public async deleteDonation(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    deletedDonation: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Deleted donation successfully',
+      deletedDonation: {
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId(),
+        date: faker.getTimestamp(5)
+      }
+    }
+  }
+
+  /** Guest delete platelet donation */
+  @Delete('platelet-donations')
+  @Hidden()
+  public async deletePlateletDonation(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    deletedPlateletDonation: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Deleted platelet donation successfully',
+      deletedPlateletDonation: {
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        donorId: faker.getId(),
+        date: faker.getTimestamp(5)
+      }
+    }
+  }
+
+  /** Guest get statistics */
+  @Get('log/statistics')
+  @Hidden()
+  public async getStatistics(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    statistics: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Statistics fetched successfully',
+      statistics: {
+        donorCount: faker.getRandomIndex(2600),
+        donationCount: faker.getRandomIndex(1200),
+        plateletDonationCount: faker.getRandomIndex(300),
+        volunteerCount: faker.getRandomIndex(130)
+      }
+    }
+  }
+
+  /** Guest delete logs */
+  @Delete('log')
+  @Hidden()
+  public async deleteLogs(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'All logs deleted successfully'
+    }
+  }
+
+  /** Guest view all volunteers */
+  @Get('donors/designation/all')
+  @Hidden()
+  public async viewAllVolunteers(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    data: any[]
+  }> {
+    const object: any[] = []
+    for (let i: number = 0; i < faker.getRandomIndex(200); i++) {
+      object.push({
+        name: faker.getName(),
+        hall: faker.getHall(),
+        studentId: faker.getStudentId(),
+        logCount: faker.getRandomIndex(20),
+        _id: faker.getId()
+      })
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Fetched donor details successfully',
+      data: object
+    }
+  }
+
+  /** Guest create call record */
+  @Post('callrecords')
+  @Hidden()
+  public async createCallRecord(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    callRecord: any
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Call record insertion successful',
+      callRecord: {
+        date: faker.getTimestamp(5),
+        _id: faker.getId(),
+        callerId: faker.getId(),
+        calleeId: faker.getId()
+      }
+    }
+  }
+
+  /** Guest delete call record */
+  @Delete('callrecords')
+  @Hidden()
+  public async deleteCallRecord(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    deletedCallRecord: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Call record deletion successful',
+      deletedCallRecord: {
+        date: faker.getTimestamp(10),
+        _id: faker.getId(),
+        callerId: faker.getId(),
+        calleeId: faker.getId()
+      }
+    }
+  }
+
+  /** Guest check duplicate donor */
+  @Get('donors/checkDuplicate')
+  @Hidden()
+  public async checkDuplicateDonor(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    found: boolean
+    donor: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Duplicate donor found',
+      found: true,
+      donor: {
+        address: faker.getAddress(),
+        roomNumber: faker.getRoom(),
+        designation: faker.getDesignation(),
+        comment: faker.getComment(),
+        commentTime: faker.getTimestamp(30),
+        email: faker.getEmail(),
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        bloodGroup: faker.getBloodGroup(),
+        hall: faker.getHall(),
+        name: faker.getName(),
+        studentId: faker.getStudentId(),
+        availableToAll: faker.getBoolean()
+      }
+    }
+  }
+
+  /** Guest get logs */
+  @Get('log')
+  @Hidden()
+  public async getLogs(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    logs: any[]
+  }> {
+    const logs: any[] = []
+    for (let i: number = 0; i < 15; i++) {
+      logs.push({
+        date: faker.getTimestamp(10),
+        _id: faker.getId(),
+        name: faker.getName(),
+        hall: faker.getHall(),
+        operation: faker.getOperation()
+      })
+    }
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'All logs fetched successfully',
+      logs
+    }
+  }
+
+  /** Guest patch password */
+  @Patch('users/password')
+  @Hidden()
+  public async patchPassword(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    token: string
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Password changed successfully',
+      token: faker.getToken()
+    }
+  }
+
+  /** Guest create public contact */
+  @Post('publicContacts')
+  @Hidden()
+  public async createPublicContact(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    publicContact: any
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Public contact added successfully',
+      publicContact: {
+        bloodGroup: 2,
+        _id: faker.getId(),
+        donorId: faker.getId()
+      }
+    }
+  }
+
+  /** Guest delete public contact */
+  @Delete('publicContacts')
+  @Hidden()
+  public async deletePublicContact(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Public contact deleted successfully'
+    }
+  }
+
+  /** Guest get public contacts */
+  @Get('publicContacts')
+  @Hidden()
+  public async getPublicContacts(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    publicContacts: any[]
+  }> {
+    type contactType = { donorId: string; phone: number; name: string; contactId: string }
+    const publicContacts: { bloodGroup: number; contacts: contactType[] }[] = []
+    let contacts: contactType[] = []
+
+    for (let i: number = 0; i < 2; i++) {
+      contacts.push({
+        donorId: faker.getId(),
+        phone: faker.getPhone(),
+        name: faker.getName(),
+        contactId: faker.getId()
+      })
+    }
+    publicContacts.push({
+      bloodGroup: -1,
+      contacts
+    })
+
+    for (let i: number = 0; i < 4; i++) {
+      contacts = []
+      for (let j: number = 0; j < 2; j++) {
+        contacts.push({
+          donorId: faker.getId(),
+          phone: faker.getPhone(),
+          name: faker.getName(),
+          contactId: faker.getId()
+        })
+      }
+      publicContacts.push({
+        bloodGroup: i * 2,
+        contacts
+      })
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'All public contacts fetched successfully',
+      publicContacts
+    }
+  }
+
+  /** Guest get donors by designation */
+  @Get('donors/designation')
+  @Hidden()
+  public async getDonorsByDesignation(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    volunteerList: any[]
+    adminList: any[]
+    superAdminList: any[]
+  }> {
+    const volunteerList: any[] = []
+    const adminList: any[] = []
+    const superAdminList: any[] = []
+
+    for (let i: number = 0; i < 7; i++) {
+      adminList.push({
+        _id: faker.getId(),
+        studentId: faker.getStudentId(),
+        name: faker.getName(),
+        phone: faker.getPhone(),
+        hall: i
+      })
+    }
+    for (let i: number = 0; i < 15; i++) {
+      volunteerList.push({
+        roomNumber: faker.getRoom(),
+        _id: faker.getId(),
+        studentId: faker.getStudentId(),
+        name: faker.getName(),
+        bloodGroup: faker.getBloodGroup(),
+        phone: faker.getPhone()
+      })
+    }
+    for (let i: number = 0; i < 5; i++) {
+      superAdminList.push({
+        _id: faker.getId(),
+        studentId: faker.getStudentId(),
+        name: faker.getName(),
+        phone: faker.getPhone(),
+        hall: faker.getHall()
+      })
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'All designated members fetched',
+      volunteerList,
+      adminList,
+      superAdminList
+    }
+  }
+
+  /** Guest get logins */
+  @Get('users/logins')
+  @Hidden()
+  public async getLogins(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    logins: any[]
+    currentLogin: any
+  }> {
+    const logins: any[] = [
+      {
+        _id: faker.getId(),
+        os: 'Ubuntu 20.04.1',
+        device: 'Asus K550VX',
+        browserFamily: 'Firefox',
+        ipAddress: '1.2.3.4'
+      },
+      {
+        _id: faker.getId(),
+        os: 'Windows 10',
+        device: 'Lenovo IP320S',
+        browserFamily: 'Chrome 98.2.5',
+        ipAddress: '5.6.7.8'
+      },
+      {
+        _id: faker.getId(),
+        os: 'MacOS McMojave',
+        device: 'MacBook Pro',
+        browserFamily: 'Safari 100.2.3',
+        ipAddress: '9.10.11.12'
+      }
+    ]
+
+    const currentLogin: any = {
+      _id: faker.getId(),
+      os: 'MacOS McMojave',
+      device: 'MacBook Pro',
+      browserFamily: 'Safari 100.2.3',
+      ipAddress: '9.10.11.12'
+    }
+
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Recent logins fetched successfully',
+      logins,
+      currentLogin
+    }
+  }
+
+  /** Guest delete login */
+  @Delete('users/logins/{tokenId}')
+  @Hidden()
+  public async deleteLogin(@Path() tokenId: string): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Logged out from specified device'
+    }
+  }
+
+  /** Guest delete active donor */
+  @Delete('activeDonors/{donorId}')
+  @Hidden()
+  public async deleteActiveDonor(@Path() donorId: string): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    removedActiveDonor: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Active donor deleted successfully',
+      removedActiveDonor: {
+        _id: faker.getId(),
+        donorId: faker.getId(),
+        markerId: faker.getId(),
+        time: faker.getTimestamp(2)
+      }
+    }
+  }
+
+  /** Guest create active donor */
+  @Post('activeDonors')
+  @Hidden()
+  public async createActiveDonor(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    newActiveDonor: any
+  }> {
+    this.setStatus(201)
+    return {
+      status: 'OK',
+      statusCode: 201,
+      message: 'Active donor created',
+      newActiveDonor: {
+        _id: faker.getId(),
+        donorId: faker.getId(),
+        markerId: faker.getId(),
+        time: faker.getTimestamp(2)
+      }
+    }
+  }
+
+  /** Guest get active donors */
+  @Get('activeDonors')
+  @Hidden()
+  public async getActiveDonors(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    activeDonors: any[]
+  }> {
+    const filteredActiveDonors: any[] = []
+
+    for (let i: number = 0; i < faker.getRandInt(1, 50); i++) {
+      filteredActiveDonors.push({
+        _id: faker.getId(),
+        hall: faker.getHall(),
+        name: faker.getName(),
+        address: faker.getAddress(),
+        comment: faker.getComment(),
+        commentTime: faker.getTimestamp(2),
+        lastDonation: faker.getTimestamp(240),
+        availableToAll: faker.getBoolean(),
+        bloodGroup: faker.getBloodGroup(),
+        studentId: faker.getStudentId(),
+        phone: faker.getPhone(),
+        markedTime: faker.getTimestamp(2),
+        markerName: faker.getName(),
+        donationCount: faker.getDonationCount(),
+        callRecordCount: faker.getDonationCount(),
+        lastCallRecord: faker.getTimestamp(2)
+      })
+    }
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Active donor fetched successfully',
+      activeDonors: filteredActiveDonors
+    }
+  }
+
+  /** Guest promote to super admin */
+  @Patch('admins/superadmin')
+  @Hidden()
+  public async promoteToSuperAdmin(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    donor: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Donor has been promoted to Super Admin',
+      donor: {
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        name: faker.getName(),
+        studentId: faker.getStudentId(),
+        bloodGroup: faker.getBloodGroup(),
+        hall: faker.getHall(),
+        roomNumber: faker.getRoom(),
+        address: faker.getAddress(),
+        comment: faker.getComment(),
+        commentTime: faker.getTimestamp(240),
+        designation: 3,
+        availableToAll: faker.getBoolean(),
+        email: faker.getEmail()
+      }
+    }
+  }
+
+  /** Guest get new donors */
+  @Get('donors/new')
+  @Hidden()
+  public async getNewDonors(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    donors: any[]
+  }> {
+    const donors: any[] = []
+    const count: number = faker.getRandInt(1, 20)
+    for (let i: number = 0; i < count; i++) {
+      donors.push({
+        _id: faker.getId(),
+        phone: faker.getPhone(),
+        name: faker.getName(),
+        studentId: faker.getStudentId(),
+        bloodGroup: faker.getBloodGroup(),
+        hall: faker.getHall(),
+        address: faker.getAddress(),
+        roomNumber: faker.getRoom(),
+        designation: faker.getDesignation(),
+        comment: faker.getComment(),
+        commentTime: faker.getTimestamp(240),
+        availableToAll: faker.getBoolean(),
+        email: faker.getEmail(),
+        created: faker.getTimestamp(240)
+      })
+    }
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Donors created in time range fetched successfully',
+      donors
+    }
+  }
+}
+
