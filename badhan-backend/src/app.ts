@@ -6,19 +6,8 @@ import { handleJsonBodyParseFailures } from './response/bodyParser'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import cors from 'cors'
-import apiRouter from './routes/donors'
-import usersRouter from './routes/users'
-import donationsRouter from './routes/donations'
-import plateletDonationsRouter from './routes/plateletDonations'
-import guestRouter from './routes/guest'
-import callRecordRouter from './routes/callRecords'
-import publicContactsRouter from './routes/publicContacts'
-import logRouter from './routes/logs'
-import testRouter from './routes/test'
-import activeDonorsRouter from './routes/activeDonors'
 import './db/mongoose'
 import { routeNotFoundHandler, uncaughtExceptionHandler, unhandledRejectionHandler, internalServerErrorHandler } from './response/errorHandlers'
-import { onlineCheckController } from './controllers/otherControllers'
 import myConsole from "./utils/myConsole";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -31,7 +20,7 @@ import path from 'node:path';
 
 const swaggerSpec: OpenAPIV3.Document = swaggerJsdoc({
   definition: swaggerDef,
-  apis: ['./src/routes/*.ts', './src/middlewares/*.ts',  './src/db/models/*.ts'],
+  apis: ['./src/middlewares/*.ts',  './src/db/models/*.ts'],
 }) as unknown as OpenAPIV3.Document;
 
 const app:Express = express()
@@ -59,7 +48,7 @@ app.use(
   swaggerUi.serveFiles(swaggerSpec, { explorer: true }),
   swaggerUi.setup(swaggerSpec, { explorer: true })
 );
-// TSOA generated routes registration (placed before existing routers to override /users/signin)
+// TSOA generated routes registration
 RegisterRoutes(app)
 
 // Serve TSOA OpenAPI spec JSON and UI at separate URLs
@@ -85,17 +74,6 @@ app.get(
   })
 );
 
-app.use('/users', usersRouter)
-app.use('/donations', donationsRouter)
-app.use('/platelet-donations', plateletDonationsRouter)
-app.use('/guest', guestRouter)
-app.use('/callrecords', callRecordRouter)
-app.use('/publicContacts', publicContactsRouter)
-app.use('/activeDonors', activeDonorsRouter)
-app.use('/test', testRouter)
-app.use('/', apiRouter)
-app.use('/', logRouter)
-app.use('/', onlineCheckController)
 app.use('*', routeNotFoundHandler)
 app.use(internalServerErrorHandler)
 process.on('unhandledRejection', unhandledRejectionHandler)

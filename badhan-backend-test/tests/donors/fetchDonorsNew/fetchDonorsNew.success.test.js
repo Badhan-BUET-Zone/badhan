@@ -20,6 +20,6 @@ test('GET /donors/new', async () => {
   expect(typeof matchingDonors[0].created).toBe('number');
   expect(matchingDonors[0].created).toBeGreaterThanOrEqual(startTime - 1000);
   expect(matchingDonors[0].created).toBeLessThanOrEqual(endTime + 1000);
-  await operations.authedDelete(`/donors/${donorId}`, signInResponse); // if this endpoint exists else ignore
+  await operations.deleteDonor(donorId, signInResponse);
   await operations.signOut(signInResponse);
 });
