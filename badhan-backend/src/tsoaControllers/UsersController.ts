@@ -13,7 +13,6 @@ import { JwtPayload } from '../db/models/Token'
 import userValidator from '../validations/users'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
-import userController from '../controllers/userController'
 
 @Route('users')
 @Tags('Users')
@@ -93,10 +92,26 @@ export class UsersController extends Controller {
   /** Sign out user from Badhan Platform */
   @Delete('signout')
   @SuccessResponse(200, 'Logged out successfully')
+  @Example<{ status: string; statusCode: number; message: string }>({
+    status: 'OK',
+    statusCode: 200,
+    message: 'Logged out successfully'
+  })
   @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
-  public async signOut(@Request() req: any): Promise<void> {
+  public async signOut(@Request() req: any): Promise<{ status: string; statusCode: number; message: string }> {
     const res: ExResponse = (req as any).res
-    await userController.handleDELETESignOut(req, res)
+    const token: string = res.locals.middlewareResponse.token
+    const donor: IDonor = res.locals.middlewareResponse.donor
+
+    await tokenInterface.deleteTokenDataByToken(token)
+    await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT', {})
+
+    this.setStatus(200)
+    return {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Logged out successfully'
+    }
   }
 
   /** Sign out user from all devices on Badhan Platform */
