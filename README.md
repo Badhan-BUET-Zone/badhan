@@ -85,4 +85,19 @@ We provide the documentation of all endpoints of our `badhan-backend` API. Visit
 
 <img width="1799" height="928" alt="image" src="https://github.com/user-attachments/assets/33501a52-c932-4202-af77-82fd179a632e" />
 
+# Video Trailer of App
+Click to see video
+
 [![Video Title](https://img.youtube.com/vi/cB0ci0pjCY8/0.jpg)](https://www.youtube.com/watch?v=cB0ci0pjCY8)
+
+# Screenshots
+
+<img width="1491" height="875" alt="image" src="https://github.com/user-attachments/assets/255c0120-4c0f-41ee-8f03-8147aef023b3" />
+<img width="1579" height="875" alt="image" src="https://github.com/user-attachments/assets/e86235b5-4ad6-4984-9645-120c57c614b2" />
+
+
+# Website
+https://badhan-buet.web.app/#/
+
+# App
+https://play.google.com/store/apps/details?id=com.mmmbadhan
