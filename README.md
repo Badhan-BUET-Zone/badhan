@@ -85,4 +85,4 @@ We provide the documentation of all endpoints of our `badhan-backend` API. Visit
 
 <img width="1799" height="928" alt="image" src="https://github.com/user-attachments/assets/33501a52-c932-4202-af77-82fd179a632e" />
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/cB0ci0pjCY8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Video Title](https://img.youtube.com/vi/cB0ci0pjCY8/0.jpg)](https://www.youtube.com/watch?v=cB0ci0pjCY8)
