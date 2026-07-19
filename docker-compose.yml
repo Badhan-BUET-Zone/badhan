@@ -1,0 +1,102 @@
+services:
+  mongo:
+    image: mongo:7.0.14
+    # --quiet suppresses the per-connection NETWORK log spam that the healthcheck
+    # would otherwise generate every few seconds (each mongosh ping opens several
+    # short-lived connections). Data operations are still logged.
+    command: ["mongod", "--quiet"]
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      start_interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./badhan-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./badhan-backend:/app
+      - /app/node_modules
+      - backend-dist:/app/dist
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', r => process.exit(0)).on('error', () => process.exit(1))"]
+      interval: 30s
+      start_interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  internal:
+    build:
+      context: ./badhan-backend
+    command: npx nodemon --watch dist --ext js,map --delay 200ms --legacyWatch --exec "npm run internal-server"
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./badhan-backend:/app
+      - /app/node_modules
+      - backend-dist:/app/dist
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000', r => process.exit(0)).on('error', () => process.exit(1))"]
+      interval: 30s
+      start_interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./badhan-frontend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./badhan-frontend:/app
+      - /app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080', r => process.exit(0)).on('error', () => process.exit(1))"]
+      interval: 30s
+      start_interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+  backend-test:
+    profiles: ["test"]
+    build:
+      context: ./badhan-backend-test
+    depends_on:
+      backend:
+        condition: service_healthy
+      internal:
+        condition: service_healthy
+
+  frontend-test:
+    profiles: ["test"]
+    build:
+      context: ./badhan-frontend-test
+    depends_on:
+      frontend:
+        condition: service_healthy
+      internal:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
+  backend-dist:

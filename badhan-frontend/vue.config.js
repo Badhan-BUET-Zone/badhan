@@ -9,6 +9,8 @@ module.exports = defineConfig({
     },
   },
   devServer: {
+    host: '0.0.0.0',
+    allowedHosts: 'all',
     client: {
       progress: false,
     },
@@ -17,6 +19,10 @@ module.exports = defineConfig({
     'vuetify'
   ],
   configureWebpack: {
+    watchOptions: {
+      poll: 1000,
+      ignored: /node_modules/,
+    },
     module: {
       rules: [{
         test: /\.md$/,

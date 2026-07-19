@@ -4,5 +4,6 @@
   "ignore": [
     "src/tsoaRoutes/**"
   ],
-  "ext": "ts, html, css, env"
+  "ext": "ts, html, css, env",
+  "legacyWatch": true
 }

@@ -1,4 +1,5 @@
 // tests/global-setup.js
+require('dotenv').config();
 const axios = require('axios');
 
 // The backup service reset endpoint. Override with BACKUP_RESET_URL if needed.

@@ -71,35 +71,54 @@ Go to [history of Badhan, BUET Zone](https://github.com/Badhan-BUET-Zone/badhan-
 # How to Start Development of Badhan
 
 ## Software Prerequisites
-* Ensure that you have [node.js](https://nodejs.org/en/download) version >= 22.
+* Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose).
 * Install [Visual Studio Code](https://code.visualstudio.com/download).
 * Install [git](https://git-scm.com/downloads).
+
+> Docker is the only supported local development environment. Node, MongoDB, and all
+> dependencies run inside containers — you do not need Node or MongoDB installed on your host.
 
 ## Run the Code
 
 * Clone this repository.
-* Open VSCode
-* Open a terminal in VSCode.
-* Run `node start`
+* Open VSCode and open a terminal in the repository root.
+* Run `docker compose up`
 
-The following output will make sure that the database, backend and frontend is running without any error
+This starts the whole dev stack — MongoDB, the backend (port 3000), the internal server
+(port 4000), and the frontend (port 8080) — with hot reload on source changes. The
+following output confirms the frontend compiled and everything is running:
 
 ```
-[03]  DONE  Compiled successfully in 214ms16:58:10
-[03] 
-[03]
-[03]   App running at:
-[03]   - Local:   http://localhost:8080/
-[03]   - Network: unavailable
-[03]
-[03] No issues found.
+frontend-1  |  DONE  Compiled successfully
+frontend-1  |
+frontend-1  |   App running at:
+frontend-1  |   - Local:   http://localhost:8080/
 ```
 
-* Visit http://localhost:8080 to start navigating the UI
+* Visit http://localhost:8080 to start navigating the UI.
+* Stop the stack with `docker compose down` (add `-v` to also drop the database volume).
+
+The first run seeds no data. To populate the database, see
+[Reset and Seed the Database](#reset-and-seed-the-database) below.
+
+### Migrating from the old `node start` setup
+
+If you previously ran the app with `node start`, that flow (and its bundled MongoDB
+download) has been removed. You can safely delete the stale cached mongod binary and its
+on-disk data — the database now lives in the `mongo-data` Docker volume:
+
+```
+rm -rf badhan-backend/mongodb_local
+```
 
 # Run Backend and Frontend Tests
-* Open a second terminal with `badhan-backend-test` as the working directory.
-* Run `node start`. 
+
+Both test suites run as one-off containers under the `test` compose profile. With the
+dev stack already running (`docker compose up`), run the backend (Jest) suite with:
+
+```
+docker compose --profile test run --rm backend-test
+```
 ```
 Test Suites: 46 passed, 46 total
 Tests:       73 passed, 73 total
@@ -108,8 +127,13 @@ Time:        3.818 s, estimated 4 s
 Ran all test suites.
 ```
 
-* Make `badhan-frontend-test` the working directory.
-* Run `node start`. The following output should occur:
+Run the frontend (Cypress) suite with:
+
+```
+docker compose --profile test run --rm frontend-test
+```
+
+The following output should occur:
 ```
 ====================================================================================================
 
@@ -148,6 +172,41 @@ Ran all test suites.
 ```
 
 That's it. You have done the local setup for developing the app.
+
+# Deploy
+
+Deployment is a manual, run-by-hand step. From the repo root:
+
+```
+./deploy
+```
+
+This runs both test suites first (backend Jest, then frontend Cypress) and only
+deploys if **both** pass — the test gate cannot be skipped. On success it deploys the
+backend to Google Cloud (`upload-gcloud.js`) and the frontend to Firebase
+(`upload-firebase.js`). Deployment runs on the host, not in a container, so your local
+`gcloud` and `firebase` CLI authentication is used.
+
+# Reset and Seed the Database
+
+The internal server (port 4000) exposes endpoints for resetting and seeding the local
+database. With the stack running, seed the database from the host with:
+
+```
+curl -X POST http://localhost:4000/reset-local-db
+curl -X POST http://localhost:4000/populate-local-db
+```
+
+To perform a full clean — dropping the MongoDB data volume and rebuilding images from
+scratch (use `--no-cache` when dependencies must be reinstalled):
+
+```
+docker compose down -v
+docker compose build --no-cache
+docker compose up
+```
+
+Once the stack is back up, re-run the two `curl` commands above to reseed the database.
 
 # Backend Server API Documentation
 

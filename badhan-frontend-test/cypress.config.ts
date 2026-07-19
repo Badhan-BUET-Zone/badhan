@@ -2,6 +2,9 @@ import { defineConfig } from 'cypress';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
   viewportHeight: 851,
@@ -9,8 +12,15 @@ export default defineConfig({
   retries: 0,
   defaultCommandTimeout: 8000,
   pageLoadTimeout: 60000,
+  // Exposed to the app under test via window.Cypress.env('apiBaseURL').
+  // The app's environment mixin prefers this over its build-time API base so
+  // the in-container browser targets a resolvable backend host (backend:3000)
+  // instead of the baked-in localhost:3000.
+  env: {
+    apiBaseURL: process.env.APP_API_BASE_URL || '',
+  },
   e2e: {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:8080',
     specPattern: 'cypress/e2e/**/*.cy.ts',
     supportFile: 'cypress/support/e2e.ts',
     video: false,
@@ -91,7 +101,7 @@ export default defineConfig({
       });
 
       on('before:spec', async () => {
-        const apiBase = 'http://localhost:4000';
+        const apiBase = process.env.API_BASE_URL || 'http://localhost:4000';
         try {
           await axios.post(`${apiBase}/reset-local-db`);
           await axios.post(`${apiBase}/populate-local-db`);

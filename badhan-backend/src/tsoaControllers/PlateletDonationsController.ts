@@ -33,7 +33,7 @@ export class PlateletDonationsController extends Controller {
       donorId: '5e901d56effc590017712345'
     }
   })
-  @Middlewares([plateletDonationValidator.validatePOSTPlateletDonations, rateLimiter.donationInsertionLimiter, authenticator.handleAuthentication, loadTargetDonor, authenticator.handleHallPermissionOrCheckAvailableToAll])
+  @Middlewares([plateletDonationValidator.validatePOSTPlateletDonations, authenticator.handleAuthentication, loadTargetDonor, authenticator.handleHallPermissionOrCheckAvailableToAll])
   public async postPlateletDonation(
     @Body() body: { donorId: string; date: number },
     @Request() req: any

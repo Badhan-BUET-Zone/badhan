@@ -42,7 +42,7 @@ export class DonationsController extends Controller {
       date: 1611100800000
     }
   })
-  @Middlewares([donationValidator.validatePOSTDonations, rateLimiter.donationInsertionLimiter, authenticator.handleAuthentication])
+  @Middlewares([donationValidator.validatePOSTDonations, authenticator.handleAuthentication])
   public async postDonation(
     @Body() body: { donorId: string; date: number; phone?: number },
     @Request() req: any

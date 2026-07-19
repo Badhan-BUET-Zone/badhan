@@ -19,16 +19,6 @@ const redirectionSignInLimiter: RequestHandler = rateLimit({
   message: commonRateLimiterError
 })
 
-const donationInsertionLimiter: RequestHandler = rateLimit({
-  windowMs: minute,
-  max: 12 * rateLimiterEnabled,
-  message: commonRateLimiterError
-})
-const donorInsertionLimiter: RequestHandler = rateLimit({
-  windowMs: minute,
-  max: 12 * rateLimiterEnabled,
-  message: commonRateLimiterError
-})
 const donorDeletionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
@@ -65,8 +55,6 @@ const publicContactDeletionLimiter: RequestHandler = rateLimit({
 
 export default {
   signInLimiter,
-  donationInsertionLimiter,
-  donorInsertionLimiter,
   deleteDonationLimiter,
   donorDeletionLimiter,
   redirectionSignInLimiter,

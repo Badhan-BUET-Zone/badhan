@@ -48,7 +48,13 @@ export const environmentService: EnvironmentServiceInterface = {
         return environmentObject.VUE_APP_ENVIRONMENT
     },
     getAPIBaseURL: (): string => {
-        return environmentObject.VUE_APP_BADHAN_API_BASE_URL
+        // Under Cypress the app runs inside the test container, where the
+        // build-time `localhost:3000` points at the container itself, not the
+        // backend. Cypress injects a container-resolvable base (e.g.
+        // http://backend:3000) via its env; prefer it when present. Host dev
+        // has no window.Cypress, so it keeps the baked-in value unchanged.
+        const cypressBaseURL = (window as { Cypress?: { env: (key: string) => string } }).Cypress?.env('apiBaseURL')
+        return cypressBaseURL || environmentObject.VUE_APP_BADHAN_API_BASE_URL
     },
     getDataInputAPIBaseURL: (): string => {
         return environmentObject.VUE_APP_DATAINPUT_URL

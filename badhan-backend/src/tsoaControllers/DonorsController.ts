@@ -116,7 +116,7 @@ export class DonorsController extends Controller {
       studentId: '1605011'
     }
   })
-  @Middlewares([donorValidator.validatePOSTDonors, rateLimiter.donorInsertionLimiter, queue.donorInsertionQueue, authenticator.handleAuthentication])
+  @Middlewares([donorValidator.validatePOSTDonors, queue.donorInsertionQueue, authenticator.handleAuthentication])
   public async postDonor(
     @Body() body: {
       phone: number;

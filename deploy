@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Manual deploy script — run by hand only.
+#
+# Replaces `./start --test --deploy`. Runs both test suites as one-off
+# containers under the `test` compose profile (compose starts their
+# dependencies automatically), and only deploys if BOTH suites pass. Unlike
+# the old flow, the test gate cannot be skipped.
+#
+# Deployment itself stays on the host (not containerized) so the existing
+# gcloud / firebase CLI auth on your machine keeps working.
+#
+# Usage: ./deploy
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+echo "🧪  Running backend test suite (Jest)…"
+docker compose --profile test run --rm backend-test
+
+echo "🧪  Running frontend test suite (Cypress)…"
+docker compose --profile test run --rm frontend-test
+
+echo "✅  All tests passed. Deploying…"
+
+echo "☁️   Deploying backend to Google Cloud…"
+node badhan-backend/upload-gcloud.js
+
+echo "🔥  Deploying frontend to Firebase…"
+node badhan-frontend/upload-firebase.js
+
+echo "🚀  Deploy complete."

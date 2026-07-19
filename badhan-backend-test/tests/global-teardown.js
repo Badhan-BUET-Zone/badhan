@@ -1,6 +1,7 @@
 // tests/global-teardown.js
 // Global teardown: invoke populate route of badhan-backup service.
 // This assumes the backup service is running on localhost:4000 as per app.js.
+require('dotenv').config();
 module.exports = async () => {
   const axios = require('axios');
   const url = process.env.BACKUP_POPULATE_URL || 'http://localhost:4000/populate-local-db';
