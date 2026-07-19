@@ -26,7 +26,7 @@ profile, and keeps deployment as a fully manual local script. No CI/CD automatio
 | Backend (port 3000) | `npx nodemon` → `serve:local` (lint + tsoa + tsc build + run), waits for port 27017 |
 | Internal server (port 4000) | nodemon watching `dist/`, runs `internal-server`, waits for port 3000 |
 | Frontend (port 8080) | `npm run serve:local` (vue-cli dev server), waits for port 3000 |
-| `--clean` | Deletes node_modules/dist/mongo data, then runs `reset_db:local` + `populate_db:local` |
+| `--clean` | Deletes node_modules/dist/mongo data, then runs `purge_db:local` + `populate_db:local` |
 | `--test` | Runs `badhan-backend-test` (Jest/API) and `badhan-frontend-test` (Cypress) suites |
 | `--deploy` | After tests pass: `upload-gcloud.js` (backend) + `upload-firebase.js` (frontend) |
 
@@ -37,7 +37,7 @@ profile, and keeps deployment as a fully manual local script. No CI/CD automatio
 - Backend port comes from `PORT` (default 3000), internal server from `INTERNAL_PORT` (default 4000) — code defaults, no env needed.
 - `badhan-backend-test/tests/runtime/axios.js` supports an `API_BASE_URL` value from `process.env` and falls back to `host.docker.internal:3000` when it detects Docker. Under the no-injection rule it needs a `dotenv.config()` call at startup so `API_BASE_URL` can come from a file.
 - `badhan-frontend-test/cypress.config.ts` **hardcodes** `baseUrl: 'http://localhost:8080'` and `apiBase = 'http://localhost:4000'` — both must become file-driven (dotenv loaded inside `cypress.config.ts`).
-- The internal server (port 4000) already exposes `POST /reset-local-db` and `POST /populate-local-db` (used by Cypress before each spec) — this replaces the `reset_db:local` / `populate_db:local` npm scripts that `start` references but that **no longer exist** in `badhan-backend/package.json`.
+- The internal server (port 4000) already exposes `POST /purge-local-db` and `POST /populate-local-db` (used by Cypress before each spec) — this replaces the `purge_db:local` / `populate_db:local` npm scripts that `start` references but that **no longer exist** in `badhan-backend/package.json`.
 - `badhan-backend` has `postinstall: npm run build`, so `npm ci` in the image also builds.
 - `badhan-frontend` runs vue-cli `--mode local`, which loads the frontend's own `.env.local`-style files natively; browser-side API URLs stay `localhost` since the browser runs on the host.
 
@@ -76,7 +76,7 @@ badhan/
 ### 1.3 `internal` service (port 4000)
 - Same image as `backend`, command: nodemon watching `dist` → `npm run internal-server`, with `--legacyWatch` on this invocation too (or a second `nodemon.json` variant) — same polling rationale, since this watch also crosses a Docker-managed volume boundary rather than the host's native filesystem.
 - **Decision: shared named volume for `dist`**, mounted into both `backend` and `internal`. The backend is the sole builder; the internal server's nodemon restarts when the build output changes — same contract as the current `start` script. (Independent builds were rejected: concurrent tsoa codegen races on the bind-mounted `src/tsoaRoutes`, version skew between the two servers against the same DB, and doubled build cost per save.)
-- Publish `4000:4000` to the host — matches current behavior (`localhost:4000` for the reset/populate/backup endpoints) and lets you `curl` the seed endpoints from the host without going through another container.
+- Publish `4000:4000` to the host — matches current behavior (`localhost:4000` for the purge/populate/backup endpoints) and lets you `curl` the seed endpoints from the host without going through another container.
 - `depends_on: backend: condition: service_healthy`.
 
 ### 1.4 `frontend` service (port 8080)
@@ -99,7 +99,7 @@ badhan/
 
 - Full clean: `docker compose down -v` (drops mongo data volume) + `docker compose build --no-cache` when deps must be reinstalled.
 - DB seed: no npm scripts needed — the internal server already exposes the endpoints.
-  With the stack up: `curl -X POST http://localhost:4000/reset-local-db && curl -X POST http://localhost:4000/populate-local-db`.
+  With the stack up: `curl -X POST http://localhost:4000/purge-local-db && curl -X POST http://localhost:4000/populate-local-db`.
   **Decision: document these two commands in the README, no `./seed` script.**
 
 ## Phase 3 — Test profile (manual, no automation)
@@ -108,10 +108,10 @@ badhan/
 - `badhan-backend-test/Dockerfile`: `node:22.23.1-bookworm-slim`, same pinned tag as the backend, `npm ci`, cmd runs the Jest suite.
 - Config via file, not injection: add a `.env` file in `badhan-backend-test` with:
   - `API_BASE_URL=http://backend:3000` (read by `tests/runtime/axios.js`)
-  - `BACKUP_RESET_URL=http://internal:4000/reset-local-db`
+  - `BACKUP_PURGE_URL=http://internal:4000/purge-local-db`
   - `BACKUP_POPULATE_URL=http://internal:4000/populate-local-db`
   and a `dotenv.config()` call at the top of `tests/runtime/axios.js` (it already reads `process.env.API_BASE_URL`; dotenv just sources it from the file). Add `dotenv` as a dev dependency.
-- `depends_on`: backend **and** internal healthy — DB reset/seed hooks below call `internal` directly, so both must be up before the suite starts.
+- `depends_on`: backend **and** internal healthy — DB purge/seed hooks below call `internal` directly, so both must be up before the suite starts.
 - Run manually: `docker compose --profile test run --rm backend-test` — exit code is the suite result.
 
 ### 3.2 `frontend-test` service — `profiles: ["test"]`
@@ -123,9 +123,9 @@ badhan/
 
 ### 3.3 Test data
 - Both suites already auto-seed via existing hooks — no new automation needed, just pointing the existing URLs at the `internal` service instead of `localhost:4000`:
-  - Cypress: `before:spec` hook in `cypress.config.ts` calls `/reset-local-db` + `/populate-local-db` on `internal` before every spec.
-  - Jest (`backend-test`): `tests/global-setup.js` resets before the suite, `tests/setup-after-env.js` resets before **every individual test** (`beforeEach`), and `tests/global-teardown.js` resets + populates after the suite — all three already read `BACKUP_RESET_URL` / `BACKUP_POPULATE_URL` env vars with a `localhost:4000` default, so no code change, only the `.env` file in 3.1.
-- Because Jest resets the DB before every test, run order/isolation is already handled; no additional seeding step is needed around `docker compose --profile test run --rm backend-test`.
+  - Cypress: `before:spec` hook in `cypress.config.ts` calls `/purge-local-db` + `/populate-local-db` on `internal` before every spec.
+  - Jest (`backend-test`): `tests/global-setup.js` purges before the suite, `tests/setup-after-env.js` purges before **every individual test** (`beforeEach`), and `tests/global-teardown.js` purges + populates after the suite — all three already read `BACKUP_PURGE_URL` / `BACKUP_POPULATE_URL` env vars with a `localhost:4000` default, so no code change, only the `.env` file in 3.1.
+- Because Jest purges the DB before every test, run order/isolation is already handled; no additional seeding step is needed around `docker compose --profile test run --rm backend-test`.
 
 ## Phase 4 — Manual `./deploy` script
 

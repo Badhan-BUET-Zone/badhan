@@ -99,7 +99,7 @@ frontend-1  |   - Local:   http://localhost:8080/
 * Stop the stack with `docker compose down` (add `-v` to also drop the database volume).
 
 The first run seeds no data. To populate the database, see
-[Reset and Seed the Database](#reset-and-seed-the-database) below.
+[Purge and Seed the Database](#purge-and-seed-the-database) below.
 
 ### Migrating from the old `node start` setup
 
@@ -187,13 +187,13 @@ backend to Google Cloud (`upload-gcloud.js`) and the frontend to Firebase
 (`upload-firebase.js`). Deployment runs on the host, not in a container, so your local
 `gcloud` and `firebase` CLI authentication is used.
 
-# Reset and Seed the Database
+# Purge and Seed the Database
 
-The internal server (port 4000) exposes endpoints for resetting and seeding the local
+The internal server (port 4000) exposes endpoints for purging and seeding the local
 database. With the stack running, seed the database from the host with:
 
 ```
-curl -X POST http://localhost:4000/reset-local-db
+curl -X POST http://localhost:4000/purge-local-db
 curl -X POST http://localhost:4000/populate-local-db
 ```
 

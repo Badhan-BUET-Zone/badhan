@@ -103,7 +103,7 @@ export default defineConfig({
       on('before:spec', async () => {
         const apiBase = process.env.API_BASE_URL || 'http://localhost:4000';
         try {
-          await axios.post(`${apiBase}/reset-local-db`);
+          await axios.post(`${apiBase}/purge-local-db`);
           await axios.post(`${apiBase}/populate-local-db`);
         } catch (error) {
           // Surface the error to fail fast if local DB prep fails

@@ -148,6 +148,11 @@ function parseJestArgs(args) {
       case '--no-reset':
         config.resetMocks = false;
         break;
+      case '--no-purge':
+        // Skip the DB purge hooks; the setup files read this via the environment
+        // because CLI args are not forwarded to Jest workers.
+        process.env.NO_PURGE = '1';
+        break;
       case '--verbose':
         config.verbose = true;
         break;

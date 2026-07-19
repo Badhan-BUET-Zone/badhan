@@ -19,11 +19,11 @@ Usage
 Environment flags
 
 - API_BASE_URL: override backend base URL
-- BACKUP_RESET_URL: override reset URL (default http://localhost:4000/reset-local-db)
-- NO_RESET=1: skip DB reset hooks
+- BACKUP_PURGE_URL: override purge URL (default http://localhost:4000/purge-local-db)
+- NO_PURGE=1: skip DB purge hooks
 - JEST_MAX_WORKERS: forward to Jest via start script args
 
 Isolation policy
 
-- Each test runs with a clean DB (global/setup-after-env reset). Avoid cross-spec state.
+- Each test runs with a clean DB (global/setup-after-env purge). Avoid cross-spec state.
 - Use uniquePhone() to avoid collisions.

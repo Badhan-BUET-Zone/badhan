@@ -47,6 +47,7 @@ import BadRequestError400 from '../response/models/errorTypes/BadRequestError400
 import NotFoundError404 from '../response/models/errorTypes/NotFoundError404'
 import ForbiddenError403 from '../response/models/errorTypes/ForbiddenError403'
 import InternalServerError500 from '../response/models/errorTypes/InternalServerError500'
+import ServiceUnavailableError503 from '../response/models/errorTypes/ServiceUnavailableError503'
 import { generateSchemaInconsistencies } from '../services/schemaInconsistencies'
 
 // Router containing only internal endpoints (backup utilities etc). NOT mounted publicly.
@@ -79,19 +80,60 @@ const validatePOSTRestore = runValidations([validatePARAMDate])
 
 // --- Firebase storage setup (lightweight replication) ---
 // Expect service account JSON file path via env BADHAN_FIREBASE_SERVICE_ACCOUNT (fallback to local relative path like backup project)
+
+// Machine readable reason so the frontend can render setup instructions instead of a generic error
+export const FIREBASE_CREDENTIALS_MISSING = 'FIREBASE_CREDENTIALS_MISSING'
+
+const firebaseServiceAccountPath = () =>
+  process.env.BADHAN_FIREBASE_SERVICE_ACCOUNT || path.resolve('config', 'badhan-buet-1d20b088a755.json')
+
+class FirebaseCredentialsError extends Error {
+  public readonly reason = FIREBASE_CREDENTIALS_MISSING
+  public readonly expectedPath: string
+  constructor (message: string, expectedPath: string) {
+    super(message)
+    this.expectedPath = expectedPath
+  }
+}
+
+// Builds the 503 response describing exactly where the credential file is expected
+const firebaseUnavailableResponse = (e: FirebaseCredentialsError) =>
+  new ServiceUnavailableError503(e.message, {
+    reason: e.reason,
+    expectedPath: e.expectedPath,
+    expectedFileName: path.basename(e.expectedPath),
+    instructions: [
+      `Obtain the Firebase service account JSON for the Badhan project from a maintainer.`,
+      `Save it as badhan-backend/config/${path.basename(e.expectedPath)} (the config folder is gitignored, create it if missing).`,
+      `Alternatively set BADHAN_FIREBASE_SERVICE_ACCOUNT to the absolute path of the file.`,
+      `Restart the internal server (docker compose restart internal) and reload this page.`
+    ]
+  })
+
 let firebaseInitialized = false
 const ensureFirebase = () => {
   if (firebaseInitialized) return
-  const svcPath = process.env.BADHAN_FIREBASE_SERVICE_ACCOUNT || path.resolve('config', 'badhan-buet-1d20b088a755.json')
+  const svcPath = firebaseServiceAccountPath()
   if (!fs.existsSync(svcPath)) {
-    console.log(`[backup] Firebase service account not found at ${svcPath}; backup routes will fail until provided.`)
-    return
+    console.log(`[backup] Firebase service account not found at ${svcPath}; backup routes are disabled until provided.`)
+    throw new FirebaseCredentialsError(`Firebase service account file not found at ${svcPath}`, svcPath)
   }
-  const serviceAccount = JSON.parse(fs.readFileSync(svcPath, 'utf8'))
-  firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert(serviceAccount),
-    storageBucket: process.env.BADHAN_FIREBASE_STORAGE_BUCKET || 'badhan-buet.appspot.com'
-  })
+  let serviceAccount
+  try {
+    serviceAccount = JSON.parse(fs.readFileSync(svcPath, 'utf8'))
+  } catch (e: any) {
+    console.log(`[backup] Firebase service account at ${svcPath} is not valid JSON:`, e?.message)
+    throw new FirebaseCredentialsError(`Firebase service account file at ${svcPath} is not valid JSON`, svcPath)
+  }
+  try {
+    firebaseAdmin.initializeApp({
+      credential: firebaseAdmin.credential.cert(serviceAccount),
+      storageBucket: process.env.BADHAN_FIREBASE_STORAGE_BUCKET || 'badhan-buet.appspot.com'
+    })
+  } catch (e: any) {
+    console.log(`[backup] Firebase initialization failed:`, e?.message)
+    throw new FirebaseCredentialsError(`Firebase initialization failed: ${e?.message}`, svcPath)
+  }
   firebaseInitialized = true
 }
 
@@ -171,6 +213,7 @@ const backupController = async () => {
   try {
     await storage.uploadFile(`backup/${folderName}.zip`, `backup/${folderName}.zip`)
   } catch (e: any) {
+    if (e instanceof FirebaseCredentialsError) throw e
     return new InternalServerError500('Upload failed', { error: e?.message }, {})
   }
   return new CreatedResponse201('Successfully created backup', {
@@ -212,6 +255,7 @@ const restoreController = async ({ time, production, development }: { time: numb
   try {
     await storage.downloadFile(`backup/${time}.zip`, `./backup/${time}.zip`)
   } catch (e: any) {
+    if (e instanceof FirebaseCredentialsError) throw e
     return new InternalServerError500('Download failed', { error: e?.message }, {})
   }
   const targetPath = `./backup/${time}.zip`
@@ -261,84 +305,84 @@ const populateController = async () => {
   }
 }
 
-const resetController = async () => {
-  console.log('[reset] resetting local database...')
+const purgeController = async () => {
+  console.log('[purge] purging local database...')
   try {
     const result = await clearDatabase()
     if (!result.ok) {
-      return new InternalServerError500('Reset script failed', { error: (result as any).error }, {})
+      return new InternalServerError500('Purge script failed', { error: (result as any).error }, {})
     }
-    console.log('[reset] local database reset successfully')
-    return new OKResponse200('Successfully reset local database', {})
+    console.log('[purge] local database purged successfully')
+    return new OKResponse200('Successfully purged local database', {})
   } catch (e: any) {
-    return new InternalServerError500('Reset script threw exception', { error: e?.message }, {})
+    return new InternalServerError500('Purge script threw exception', { error: e?.message }, {})
   }
 }
 
 // small helper to simulate original wait for prune route
 const wait = () => new Promise(resolve => setTimeout(() => resolve(0), 3000))
 
+// Runs a controller and always replies. Without this a throw inside an async handler
+// (e.g. missing firebase credentials) leaves the request hanging until the socket is
+// closed, which the browser reports as ERR_EMPTY_RESPONSE.
+const handle = (controller: (req: Request) => Promise<any>) =>
+  async (req: Request, res: Response) => {
+    let response: any
+    try {
+      response = await controller(req)
+    } catch (e: any) {
+      if (e instanceof FirebaseCredentialsError) {
+        response = firebaseUnavailableResponse(e)
+      } else {
+        console.log('[backup] unhandled error:', e)
+        response = new InternalServerError500('Unexpected error', { error: e?.message }, {})
+      }
+    }
+    return res.status(response.statusCode).send(response)
+  }
+
 // --- Routes (mirroring badhan-backup/routes/index.js) ---
 router.delete('/backup/old',
   rateLimiter.commonLimiter,
   commonQueue,
-  async (_req: Request, res: Response) => {
+  handle(async () => {
     await wait()
-    const response: any = await pruneController()
-    return res.status(response.statusCode).send(response)
-  })
+    return pruneController()
+  }))
 
 router.delete('/backup/date/:date',
   validateDELETEBackup,
   rateLimiter.commonLimiter,
   commonQueue,
-  async (req: Request, res: Response) => {
-  const response: any = await deleteController({ time: parseInt(req.params.date, 10) })
-    return res.status(response.statusCode).send(response)
-  })
+  handle(async (req: Request) => deleteController({ time: parseInt(req.params.date, 10) })))
 
 router.get('/backup',
   rateLimiter.commonLimiter,
   commonQueue,
-  async (_req: Request, res: Response) => {
-    const response: any = await listController()
-    return res.status(response.statusCode).send(response)
-  })
+  handle(async () => listController()))
 
 router.post('/backup',
   rateLimiter.commonLimiter,
   commonQueue,
-  async (_req: Request, res: Response) => {
-    const response: any = await backupController()
-    return res.status(response.statusCode).send(response)
-  })
+  handle(async () => backupController()))
 
 router.post('/restore/:date',
   validatePOSTRestore,
   rateLimiter.commonLimiter,
   commonQueue,
-  async (req: Request, res: Response) => {
-    const response: any = await restoreController({
-      production: req.query.production === 'true',
-      development: req.query.development === 'true',
-  time: parseInt(req.params.date, 10)
-    })
-    return res.status(response.statusCode).send(response)
-  })
+  handle(async (req: Request) => restoreController({
+    production: req.query.production === 'true',
+    development: req.query.development === 'true',
+    time: parseInt(req.params.date, 10)
+  })))
 
-router.post('/reset-local-db',
+router.post('/purge-local-db',
   commonQueue,
-  async (_req: Request, res: Response) => {
-    const response: any = await resetController()
-    return res.status(response.statusCode).send(response)
-  })
+  handle(async () => purgeController()))
 
 router.post('/populate-local-db',
   commonQueue,
-  async (_req: Request, res: Response) => {
-    const response: any = await populateController()
-    return res.status(response.statusCode).send(response)
-  })
+  handle(async () => populateController()))
 
 // Generate in-memory schema inconsistencies report (no filesystem writes)
 router.get('/schema-inconsistencies',

@@ -11,6 +11,19 @@
           <v-skeleton-loader type="card"/>
         </div>
 
+        <div v-else-if="firebaseCredentialsMissing">
+          <v-alert type="warning" outlined>
+            <p class="font-weight-medium mb-2">Firebase credentials not found</p>
+            <p class="mb-2">
+              The backup server needs a Firebase service account file to reach cloud storage.
+              Expected at: <code>{{ firebaseError.expectedPath }}</code>
+            </p>
+            <ol class="mb-0">
+              <li v-for="(step, i) in firebaseError.instructions" :key="i">{{ step }}</li>
+            </ol>
+          </v-alert>
+        </div>
+
         <div v-else-if="backupTimestampsErrorFlag">
           <p>
             Error loading backups. Ensure the backup server is running on localhost:4000 and reload this page.
@@ -36,11 +49,11 @@
               text="Trim Backups"
             />
             <Button
-              :disabled="resetLocalLoaderFlag"
-              :click="handleResetLocalDB"
+              :disabled="purgeLocalLoaderFlag"
+              :click="handlePurgeLocalDB"
               color="error"
               icon="mdi-database-refresh"
-              text="Reset Local DB"
+              text="Purge Local DB"
             />
             <Button
               :disabled="copyToLocalLoaderFlag"
@@ -50,7 +63,7 @@
               text="Copy to Local DB"
             />
             <v-progress-circular
-              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || resetLocalLoaderFlag || copyToLocalLoaderFlag"
+              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || purgeLocalLoaderFlag || copyToLocalLoaderFlag"
               indeterminate
               color="primary"
               size="20"
@@ -157,6 +170,7 @@ export default {
     backupTimestamps: [],
     backupTimestampsLoaderFlag: true,
     backupTimestampsErrorFlag: false,
+    firebaseError: null,
 
     restoreToTestFlagsArray: [],
     restoreToProductionFlagsArray: [],
@@ -166,11 +180,26 @@ export default {
     createNewBackupLoaderFlag: false,
     trimBackupsLoaderFlag: false,
   copyToLocalLoaderFlag: false,
-  resetLocalLoaderFlag: false,
+  purgeLocalLoaderFlag: false,
   }),
   computed: {
+    firebaseCredentialsMissing () {
+      return !!this.firebaseError
+    }
   },
   methods: {
+    // The backend replies 503 with reason FIREBASE_CREDENTIALS_MISSING when the
+    // service account file is absent. Returns the payload if that is the case.
+    extractFirebaseError (e) {
+      const data = e && e.response && e.response.data
+      if (data && data.reason === 'FIREBASE_CREDENTIALS_MISSING') {
+        return {
+          expectedPath: data.expectedPath,
+          instructions: data.instructions || []
+        }
+      }
+      return null
+    },
     formatDateTime (ts) {
       if (!ts) return ''
       try {
@@ -196,6 +225,7 @@ export default {
     async loadBackups () {
       this.backupTimestampsLoaderFlag = true
       this.backupTimestampsErrorFlag = false
+      this.firebaseError = null
       try {
         const response = await this.backupAPIAxios.get('/backup')
         this.backupTimestampsLoaderFlag = false
@@ -211,6 +241,7 @@ export default {
       } catch (e) {
         this.backupTimestampsLoaderFlag = false
         this.backupTimestampsErrorFlag = true
+        this.firebaseError = this.extractFirebaseError(e)
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
         this.$store.dispatch('notification/notifyError', msg)
       }
@@ -319,12 +350,12 @@ export default {
       }
     }
     ,
-    async handleResetLocalDB () {
-      this.resetLocalLoaderFlag = true
+    async handlePurgeLocalDB () {
+      this.purgeLocalLoaderFlag = true
       try {
-        const response = await this.backupAPIAxios.post('/reset-local-db')
+        const response = await this.backupAPIAxios.post('/purge-local-db')
         const response2 = await this.backupAPIAxios.post('/populate-local-db')
-        this.resetLocalLoaderFlag = false
+        this.purgeLocalLoaderFlag = false
         if (response.status !== 200) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
@@ -333,9 +364,9 @@ export default {
           this.$store.dispatch('notification/notifyError', response2.data.message)
           return
         }
-        this.$store.dispatch('notification/notifySuccess', 'Successfully reset local database')
+        this.$store.dispatch('notification/notifySuccess', 'Successfully purged local database')
       } catch (e) {
-        this.resetLocalLoaderFlag = false
+        this.purgeLocalLoaderFlag = false
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
         this.$store.dispatch('notification/notifyError', msg)
       }
