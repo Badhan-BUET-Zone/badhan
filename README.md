@@ -82,7 +82,11 @@ Go to [history of Badhan, BUET Zone](https://github.com/Badhan-BUET-Zone/badhan-
 
 * Clone this repository.
 * Open VSCode and open a terminal in the repository root.
-* Run `docker compose up`
+* Run `docker compose up --attach backend --attach internal --attach frontend`
+
+The `--attach` flags stream only the logs you care about; MongoDB still runs and its logs
+are still collected (`docker compose logs mongo`), they just stay out of your terminal.
+Plain `docker compose up` works too if you want everything.
 
 This starts the whole dev stack — MongoDB, the backend (port 3000), the internal server
 (port 4000), and the frontend (port 8080) — with hot reload on source changes. The
@@ -114,11 +118,15 @@ rm -rf badhan-backend/mongodb_local
 # Run Backend and Frontend Tests
 
 Both test suites run as one-off containers under the `test` compose profile. With the
-dev stack already running (`docker compose up`), run the backend (Jest) suite with:
+dev stack already running, run the backend (Jest) suite with:
 
 ```
-docker compose --profile test run --rm backend-test
+docker compose --profile test run --build --rm backend-test
 ```
+
+Always pass `--build`. The test images bake the test code in at build time, so without it
+Compose reuses a stale image and you end up debugging failures that came from old code
+rather than from your changes.
 ```
 Test Suites: 46 passed, 46 total
 Tests:       73 passed, 73 total
@@ -130,7 +138,7 @@ Ran all test suites.
 Run the frontend (Cypress) suite with:
 
 ```
-docker compose --profile test run --rm frontend-test
+docker compose --profile test run --build --rm frontend-test
 ```
 
 The following output should occur:
@@ -203,7 +211,7 @@ scratch (use `--no-cache` when dependencies must be reinstalled):
 ```
 docker compose down -v
 docker compose build --no-cache
-docker compose up
+docker compose up --attach backend --attach internal --attach frontend
 ```
 
 Once the stack is back up, re-run the two `curl` commands above to reseed the database.
