@@ -15,6 +15,11 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+echo "🔎  Checking deployment requirements before running tests…"
+node badhan-backend/upload-gcloud.js --check
+node badhan-frontend/upload-firebase.js --check
+echo "✅  Requirements satisfied."
+
 echo "🧪  Running backend test suite (Jest)…"
 docker compose --profile test run --rm backend-test
 
