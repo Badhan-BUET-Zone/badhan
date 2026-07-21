@@ -3,3 +3,5 @@ look at plans/plan.md that contains the plan to do a bulk donor upload feature. 
 Now refactor the plan of plans/plan.md to a plans/phases.md which contains every single specification of the plan.md file but it will be divided into multiple phases. After each stage, write what I as a developer can do to check whether it is implemented or not.
 
 Check whether every specification in the plans/plan.md is present in the plans/phases.md.
+
+implement phase 0 of plans/phases.md

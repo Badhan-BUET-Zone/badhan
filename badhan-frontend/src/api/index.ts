@@ -199,6 +199,39 @@ const handleGETDonorsDuplicate = async (payload: GETDonorsDuplicatePayloadInterf
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
+// Bulk existence check for the CSV uploader (plans/phases.md Phase 3). Batches the
+// already-normalized 13-digit `8801…` phones 100 per call, fires the chunks sequentially,
+// and merges the `donors` arrays. Each returned element is { phone, donorId }, where
+// donorId is the real id when the caller may view the donor, else the 'FORBIDDEN' sentinel.
+// Returns an axios-response-shaped object on success ({ status: 200, data: { donors } });
+// on any chunk failure it returns that chunk's error response so a single failed chunk
+// fails the whole pre-flight, with no retry (Phase 5).
+const GET_DONORS_PHONE_CHUNK_SIZE = 100
+const handleGETDonorsPhoneList = async (phoneList: string[]) => {
+  const donors: Array<{ phone: number, donorId: string }> = []
+  for (let i = 0; i < phoneList.length; i += GET_DONORS_PHONE_CHUNK_SIZE) {
+    const chunk = phoneList.slice(i, i + GET_DONORS_PHONE_CHUNK_SIZE)
+    let response
+    try {
+      response = await badhanAxios.get('/donors/phone', { params: { phoneList: chunk } })
+    } catch (e) {
+      return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+    }
+    if (!response || response.status !== 200) {
+      return response
+    }
+    donors.push(...response.data.donors)
+  }
+  return {
+    status: 200,
+    data: {
+      status: 'OK',
+      statusCode: 200,
+      message: 'Existing donors fetched successfully',
+      donors
+    }
+  }
+}
 
 const handleGETLogs = async () => {
   try {
@@ -620,6 +653,7 @@ export {
   handleDELETEDonors,
   handlePOSTDonorsPasswordRequest,
   handleGETDonorsDuplicate,
+  handleGETDonorsPhoneList,
   handleGETLogs,
   handleGETLogsDonations,
   handleDELETESignOut,

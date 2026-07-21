@@ -207,6 +207,17 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    name: 'CsvDonorCreation',
+    path: '/csvDonorCreation',
+    component: () => import('../views/CsvDonorCreation.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Upload CSV of Donors',
+      designation: 1,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'SingleDonorCreation',
     path: '/singleDonorCreation',
     component: () => import('../views/SingleDonorCreation.vue'),
