@@ -148,7 +148,7 @@ Two kinds of rule apply per column, and they are enforced differently:
 
 - **Format / representation rules** (how a value must be *spelled* in the CSV so it can
   be parsed and mapped) are **always enforced client-side** — the 13-digit `8801…`
-  phone, hall names, blood-group labels, `yes`/`no`, `YYYY-MM-DD` dates. These are what
+  phone, hall names, blood-group labels, `yes`/`no`, `23 September 2010` dates. These are what
   make the strict-input section above meaningful and have no single-donor analogue
   because the single-donor form uses dropdowns/pickers instead of free text.
 - **Value-range validations** are enforced client-side **only where single-donor
@@ -174,9 +174,9 @@ Two kinds of rule apply per column, and they are enforced differently:
 | `address` | no | text | `address` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
 | `comment` | no | text | `comment` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
 | `donationCount` | **yes** | integer `0`–`99` | `extraDonationCount` = `donationCount - 1` (or `0`) | the CSV value is the donor's **total** blood-donation count. Range `0`–`99` matches single-donor creation's 2-digit cap ([NewPersonCard.vue:184-194](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L184-L194)). Send `donationCount - 1` when it is `> 0` and `0` when it is `0`, exactly matching single-donor creation (see the "Count → `extraDonationCount`" rule below). Blank rejected — write `0` |
-| `lastDonation` | conditional | `YYYY-MM-DD` | `lastDonation` (epoch ms) | must be blank when `donationCount` is `0`, and present when it is `> 0`. No other date format accepted. Future dates are **allowed** (matching single-donor creation, which does not reject them) |
+| `lastDonation` | conditional | `23 September 2010` (`<day> <Month> <year>`) | `lastDonation` (epoch ms) | must be blank when `donationCount` is `0`, and present when it is `> 0`. **The only accepted date form** is day-of-month, a single space, the full month name with an initial capital (`January`…`December`), a single space, then the 4-digit year — e.g. `23 September 2010`. No other format, and no impossible date, is accepted (see the date rules below). Future dates are **allowed** (matching single-donor creation, which does not reject them) |
 | `plateletDonationCount` | **yes** | integer `0`–`99` | `extraPlateletDonationCount` = `plateletDonationCount - 1` (or `0`) | total platelet-donation count; range `0`–`99` (single-donor 2-digit cap); same `- 1` mapping as `donationCount`. Blank rejected — write `0` |
-| `lastPlateletDonation` | conditional | `YYYY-MM-DD` | `lastPlateletDonation` (epoch ms) | same rule as `lastDonation`, against `plateletDonationCount` |
+| `lastPlateletDonation` | conditional | `23 September 2010` (`<day> <Month> <year>`) | `lastPlateletDonation` (epoch ms) | same rule and same accepted date form as `lastDonation`, against `plateletDonationCount` |
 | `availableToAll` | **yes** | `yes` or `no` | `availableToAll` (bool) | `true`/`false`/`1`/`0`/blank **rejected**. **A row with `hall=Unknown` and `availableToAll=no` is a row error** (→ Table 3), *not* silently overridden — single-donor creation makes that combination impossible by force-setting and disabling the checkbox for the Unknown hall ([NewPersonCard.vue:80](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L80), [296-300](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L296-L300)), so with `hall=Unknown` the value must be `yes` |
 
 The `lastDonation`/`donationCount` rule is **bidirectional**, matching single-donor
@@ -213,15 +213,40 @@ rejects it for permission reasons, that row routes to Table 3 (broken rows, §2c
 the normal non-`201` failure path, with the server's message shown inline. The server is
 the sole authority on who may create donors in which hall.
 
-**Date → epoch conversion.** A `YYYY-MM-DD` value is converted with
-`new Date(value).getTime()` — exactly what single-donor creation does on save
+**Date format — strict `<day> <Month> <year>`, real dates only.** A date cell is
+accepted **only** when it matches `^\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$`
+— day-of-month digits (1–2, no other padding rules imposed), exactly one space, the
+full English month name with its **initial letter capitalised and the rest lowercase**
+(`September`, never `september`, `SEPTEMBER` or `Sept`), exactly one space, and a
+4-digit year, e.g. `23 September 2010`. This is a **format rule, always enforced
+client-side.** Everything else is a row error, including: any other separator or
+format (`2010-09-23`, `23/09/2010`, `23-Sep-2010`, `Sep 23 2010`), extra or missing
+spaces, a lower-cased or abbreviated month, and — critically — a **well-formed but
+impossible date** (`31 February 2024`, `31 September 2010`). After the regex passes,
+the day is range-checked against the actual length of that month in that year
+(leap years included), so `29 February 2024` is accepted but `29 February 2023` is a
+row error. There is no silent roll-over.
+
+**Date → epoch conversion.** Once validated, the `<day> <Month> <year>` value is
+**reformatted to `YYYY-MM-DD`** (zero-padded) and converted with
+`new Date('YYYY-MM-DD').getTime()` — deliberately the *same* call single-donor creation
+makes on save
 ([NewPersonCard.vue:400-411](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L400-L411)),
-where the `DatePicker` also emits a `YYYY-MM-DD` string. That parses to **UTC midnight**,
-so stored donation timestamps match the single-donor path byte-for-byte. A blank date
+where the `DatePicker` emits a `YYYY-MM-DD` string. Because that ISO form parses to
+**UTC midnight**, stored donation timestamps match the single-donor path byte-for-byte.
+Note: the human-readable string is *not* passed to `new Date()` directly (`new
+Date('23 September 2010')` would parse to **local** midnight and drift the epoch by the
+timezone offset); it is normalised to `YYYY-MM-DD` first, then parsed. A blank date
 sends `0`, again matching single-donor creation. No timezone adjustment is applied.
 
+**The delimiter is forced to comma.** papaparse is configured with `delimiter: ','`
+rather than left to auto-detect, so a semicolon- or tab-exported file is **not**
+silently re-interpreted. Such a file collapses to a single column, fails the structural
+header check below, and produces a clear whole-file alert ("Unknown column …") instead
+of a confusing pile of per-row errors. Comma is the only accepted delimiter.
+
 **File-level failures come before rows or columns.** If the file cannot be parsed
-at all — papaparse errors (bad quoting, wrong delimiter), an empty file, a file with no
+at all — papaparse errors (bad quoting), an empty file, a file with no
 header row, or a non-CSV file — the view renders **only one Vuetify `v-alert` at the top
 of the page and nothing else** (no tables, no "Upload All"). The alert message must be
 **informative**: it states exactly what failed and, when papaparse provides it, where —
@@ -242,6 +267,26 @@ completely empty row (all cells blank) — a common artefact of spreadsheet expo
 stray trailing newlines — is **not** silently dropped. It fails the required-field
 checks like any other invalid row and lands in Table 3 (§2c) as a broken row, so the
 user sees exactly how many rows the file really contained.
+
+**Ragged rows are a per-row error, not a file failure.** A data row with **more cells
+than there are headers** — almost always an unescaped comma inside an unquoted
+`address` or `comment` — is distinct from the header-level structural failures above:
+it does not abort the whole file. papaparse surfaces the extra cells (via
+`__parsed_extra` / a `FieldMismatch` error on that row), and the uploader routes that
+single row to Table 3 (§2c) with an inline error such as *"row has more values than
+columns — check for an unescaped comma; wrap the field in double quotes."* The rest of
+the file parses and validates normally. (A row with **fewer** cells than headers is
+already handled — its missing trailing values simply fail the normal required-field
+checks.)
+
+**Free-text values are trimmed; newlines in `comment` are stripped.** Before any blank
+check or API call, all four free-text fields (`name`, `roomNumber`, `address`,
+`comment`) are `trim()`-ed of surrounding whitespace, so a whitespace-only cell counts
+as **blank** — `name` then fails its required check, and `roomNumber`/`address`/`comment`
+auto-fill to `(Unknown)` (below). Additionally, any embedded newlines inside a `comment`
+value (a quoted multi-line cell that papaparse preserves as a single field) are
+**stripped** — every `\r`/`\n` collapsed to a single space and re-trimmed — so a
+comment never carries line breaks into the donor record.
 
 The three "required but usually blank" fields — `roomNumber`, `address`, `comment` —
 carry a 2-character minimum in the current API, but the uploader **auto-fills a blank
@@ -269,16 +314,17 @@ and one with all optional fields blank:
 
 ```csv
 name,phone,studentId,bloodGroup,hall,roomNumber,address,comment,donationCount,lastDonation,plateletDonationCount,lastPlateletDonation,availableToAll
-Demo Donor One,8801712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,2024-11-20,1,2025-02-14,no
+Demo Donor One,8801712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20 November 2024,1,14 February 2025,no
 Demo Donor Two,8801898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes
 Demo Donor Three,8801911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no
 ```
 
 Every value in the demo file is in the single accepted form, in its canonical case —
 13-digit phones, exactly-cased hall names (`Sher-e-Bangla`, not `sher-e-bangla`),
-lowercase `yes`/`no`, explicit `0` counts rather than blanks — so it doubles as the
-worked example of the strict rules, and copying from it can never produce a
-case-rejection.
+lowercase `yes`/`no`, `<day> <Month> <year>` dates (`20 November 2024`, with the
+capitalised full month name), explicit `0` counts rather than blanks — so it doubles as
+the worked example of the strict rules, and copying from it can never produce a
+case- or format-rejection.
 
 The demo file is deliberately tiny and its `comment` fields say it is sample data, so
 that a user who uploads it unedited creates obvious throwaway records rather than
@@ -298,7 +344,11 @@ very large files. There is **no upper bound on rows per file**; the sequential u
 loop and the backend's `donorInsertionQueue` throttle the request rate naturally.
 
 1. **Select** — file input. The CSV is parsed entirely in the browser; **nothing is
-   sent to the server at this stage.**
+   sent to the server at this stage.** Selecting a file (including re-selecting after a
+   completed run) **fully resets the view first** — all three tables, the pre-flight
+   existence-check state and any file-level alert are cleared — and parsing plus the
+   §2b pre-flight then run from scratch on the new file. The input stays usable for
+   another upload without a page reload; there is no leftover state from a previous file.
 2. **Review** — every parsed donor is placed into one of the three tables, one row per
    donor, with a column per CSV field (name, phone, student ID, blood group, hall,
    room, address, comment, donation counts, dates, availableToAll). A row count and a
@@ -456,7 +506,10 @@ directly, with no columns to strip first. The table is hidden while empty.
 
 Use `papaparse` (small, battle-tested; handles quoted fields, embedded commas, and the
 BOM Excel exports carry) rather than a hand-rolled `split(',')`, which breaks on any
-address containing a comma.
+address containing a comma. It is configured with `header: true`,
+`skipEmptyLines: false` (blank rows are surfaced, not dropped — see §1) and
+**`delimiter: ','`** (comma forced, never auto-detected — see §1), so a non-comma
+export fails the structural header check rather than being silently re-parsed.
 
 ### 5. Removal of Advanced Donor Creation
 
