@@ -8,13 +8,16 @@ interface EnvironmentInterface {
     readonly VUE_APP_ENVIRONMENT: string,
 }
 
+// These VUE_APP_* vars are required at runtime; the check below still warns if any is
+// missing. process.env values are typed string|undefined, so the assertion is purely
+// type-level (erased at build) — it satisfies strict mode without changing runtime behaviour.
 export const environmentObject: EnvironmentInterface = {
     VUE_APP_BADHAN_API_BASE_URL: process.env.VUE_APP_BADHAN_API_BASE_URL,
     VUE_APP_FRONTEND_BASE: process.env.VUE_APP_FRONTEND_BASE,
     NODE_ENV: process.env.NODE_ENV,
     VUE_APP_ADMIN_CONSOLE_URL: process.env.VUE_APP_ADMIN_CONSOLE_URL,
     VUE_APP_ENVIRONMENT: process.env.VUE_APP_ENVIRONMENT,
-}
+} as EnvironmentInterface
 
 Object.entries(environmentObject).forEach(([key, value]:[string,string], _index:number):void => {
     if (value === undefined) {
