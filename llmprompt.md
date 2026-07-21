@@ -1,2 +1,0 @@
-look at plan.md that contains the plan to do a bulk donor upload feature. read the specification and see if you have any open questions before I ask you to implement it. Put your open questions at the last of the file so that I can answer. Make sure to not include any open questions that can be answered just by following the already implemented single donor creation page. in this thread, I will also answer the questions, which you will merge with the specifications. And then you will delete the open questions.
-

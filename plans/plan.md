@@ -344,17 +344,26 @@ very large files. There is **no upper bound on rows per file**; the sequential u
 loop and the backend's `donorInsertionQueue` throttle the request rate naturally.
 
 1. **Select** — file input. The CSV is parsed entirely in the browser; **nothing is
-   sent to the server at this stage.** Selecting a file (including re-selecting after a
-   completed run) **fully resets the view first** — all three tables, the pre-flight
-   existence-check state and any file-level alert are cleared — and parsing plus the
-   §2b pre-flight then run from scratch on the new file. The input stays usable for
-   another upload without a page reload; there is no leftover state from a previous file.
+   sent to the server at this stage** (the §2b pre-flight existence check is a read, not a
+   write). Selecting a file (including re-selecting after a completed run) **fully resets
+   the view first** — all three tables, the pre-flight existence-check state and any
+   file-level alert are cleared — and parsing plus the §2b pre-flight then run from scratch
+   on the new file. The input stays usable for another upload without a page reload; there
+   is no leftover state from a previous file. While parsing and the pre-flight run, the
+   view shows only the app's default GIF loader and none of the review UI (§2b).
 2. **Review** — every parsed donor is placed into one of the three tables, one row per
    donor, with a column per CSV field (name, phone, student ID, blood group, hall,
-   room, address, comment, donation counts, dates, availableToAll). A row count and a
-   per-table summary sit above the tables. Valid, new donors land in Table 1; donors
-   whose phone already exists land in Table 2; **rows that fail client-side validation
-   land in Table 3 (§2c), never in Table 1**, so "Upload All" only ever sees clean rows.
+   room, address, comment, donation counts, dates, availableToAll). The tables render only
+   after the pre-flight completes (§2b). Each table row is **numbered with its original CSV
+   line number** — the row's displayed number *is* that line number (using the Vuetify
+   row-number/item slot, not an extra data column), so a user can find any row back in
+   their file; the numbers are not renumbered per table. A **per-table heading with a
+   count** sits above each table (e.g. Table 1 "N donors to be created", Table 2 "…already
+   exist", Table 3 "…have errors"). **These three headings are the only summary** — there
+   is no separate overall results screen, banner, or completion toast (answer 5). Valid,
+   new donors land in Table 1; donors whose phone already exists land in Table 2; **rows
+   that fail client-side validation land in Table 3 (§2c), never in Table 1**, so "Upload
+   All" only ever sees clean rows.
 3. **Upload All** — a single **"Upload All"** button starts the upload. It calls
    `POST /donors` for each Table 1 row **once at a time**, walking top to bottom. As
    each call returns, that row's status cell updates live (*pending* → *uploading* →
@@ -388,10 +397,22 @@ client-side and server-side problems render identically in Table 3.
 Immediately after the CSV is parsed, the view fires `GET /donors/phone` **in chunks of
 100 phones**, sequentially, and merges the returned `donors` arrays. Batching keeps each
 request's URL well under Express/proxy length limits on large files; because the route's
-`commonLimiter` is removed, the successive chunks are never rate-limited. If **any**
-chunk fails, the whole pre-flight is treated as failed: **"Upload All" is blocked** — a
-Vuetify `v-alert` shows the error with a **retry**, and the button stays disabled until
-the check succeeds. There is no fall-back to discovering duplicates via `409`.
+`commonLimiter` is removed, the successive chunks are never rate-limited.
+
+**The entire review stays hidden until the pre-flight finishes.** While parsing and the
+chunked existence check run, the view shows **only the app's default loader** — the
+[`LoadingMessage.vue`](badhan-frontend/src/components/LoadingMessage.vue) component that
+renders `assets/loading.gif` (the same GIF loader used elsewhere) — and none of the three
+tables, the "Upload All" button, or any summary. All three tables appear together only
+once the pre-flight has completed successfully. There is no partial/streaming render and
+no per-chunk progress bar.
+
+**Any chunk failure fails the whole pre-flight, with no retry.** If **any** chunk request
+fails, the pre-flight is treated as failed outright: the loader is replaced by a single
+Vuetify `v-alert` describing the error, and **nothing else renders** — no tables, no
+"Upload All", and **no retry button**. The only way forward is to select the file again
+(which resets and re-runs from scratch, §1). There is no fall-back to discovering
+duplicates via `409`.
 
 **Broken wins, and only valid rows are pre-flighted.** Client-side validation runs first:
 a row that fails any §1 rule goes straight to Table 3 and is **never** included in the
@@ -500,7 +521,11 @@ directly, with no columns to strip first. The table is hidden while empty.
   regardless of how many rows fail; each failure simply lands in Table 3. Retrying is
   done by fixing the CSV and re-uploading.
 - Cancel button that stops before the next request (the in-flight one still completes);
-  rows not yet reached stay *pending*.
+  rows not yet reached stay *pending*. **There is no resume**: after a Cancel, "Upload
+  All" stays **disabled** — the run cannot be restarted or continued in place. To upload
+  the remaining rows the user selects a file again (a fresh selection fully resets and
+  re-runs from scratch, §1). Rows already routed by the point of cancellation keep their
+  outcome in their tables until that reset.
 
 ### 4. Parsing library
 
