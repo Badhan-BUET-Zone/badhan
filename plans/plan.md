@@ -275,9 +275,16 @@ it does not abort the whole file. papaparse surfaces the extra cells (via
 `__parsed_extra` / a `FieldMismatch` error on that row), and the uploader routes that
 single row to Table 3 (§2c) with an inline error such as *"row has more values than
 columns — check for an unescaped comma; wrap the field in double quotes."* The rest of
-the file parses and validates normally. (A row with **fewer** cells than headers is
-already handled — its missing trailing values simply fail the normal required-field
-checks.)
+the file parses and validates normally.
+
+A row with **fewer** cells than there are headers is **likewise a per-row error**,
+symmetrically with the extra-cell case — it is routed to Table 3 with an inline error
+such as *"row has fewer values than columns — a value is missing or a field was left
+off."* This is enforced on the cell count directly, **not** left to the downstream
+required-field checks: an under-width row whose only missing columns happen to be
+optional (`roomNumber`/`address`/`comment`) would otherwise pad to blank and pass
+validation, silently uploading a truncated line — almost always a mistake. Counting
+cells catches it regardless of which columns are short.
 
 **Free-text values are trimmed; newlines in `comment` are stripped.** Before any blank
 check or API call, all four free-text fields (`name`, `roomNumber`, `address`,
