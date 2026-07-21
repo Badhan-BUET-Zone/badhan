@@ -12,6 +12,13 @@ export class NavigationDrawer {
     cy.get('[data-cy="singleDonorCreationId"]').click();
   }
 
+  goToCsvDonorCreation(): void {
+    // Open main drawer, expand the Donor Creation group, click the CSV upload sublink
+    this.open();
+    cy.get('[data-cy="donorCreationNavigationId"]').click();
+    cy.get('[data-cy="csvDonorCreationId"]').click();
+  }
+
   goToMyProfile(): void {
     // Open main drawer and click My Profile
     this.open();

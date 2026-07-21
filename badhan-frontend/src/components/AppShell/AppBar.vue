@@ -132,10 +132,10 @@ export default {
             designation: 1
           },
           {
-            icon: 'mdi-shape-rectangle-plus',
-            text: 'Advanced Donor Creation',
-            to: '/donorCreation',
-            id: 'donorCreationId',
+            icon: 'mdi-file-delimited',
+            text: 'Upload CSV of Donors',
+            to: '/csvDonorCreation',
+            id: 'csvDonorCreationId',
             designation: 1
           },
           {

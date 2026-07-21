@@ -196,17 +196,6 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    name: 'Donor Creation',
-    path: '/donorCreation',
-    component: () => import('../views/DonorCreation.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Donor Creation',
-      designation: 1,
-      reRouteIfAuthorized: false
-    }
-  },
-  {
     name: 'CsvDonorCreation',
     path: '/csvDonorCreation',
     component: () => import('../views/CsvDonorCreation.vue'),

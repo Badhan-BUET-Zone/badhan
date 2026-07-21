@@ -4,7 +4,6 @@ interface EnvironmentInterface {
     readonly VUE_APP_BADHAN_API_BASE_URL: string,
     readonly VUE_APP_FRONTEND_BASE: string,
     readonly NODE_ENV: string,
-    readonly VUE_APP_DATAINPUT_URL: string,
     readonly VUE_APP_ADMIN_CONSOLE_URL: string,
     readonly VUE_APP_ENVIRONMENT: string,
 }
@@ -13,7 +12,6 @@ export const environmentObject: EnvironmentInterface = {
     VUE_APP_BADHAN_API_BASE_URL: process.env.VUE_APP_BADHAN_API_BASE_URL,
     VUE_APP_FRONTEND_BASE: process.env.VUE_APP_FRONTEND_BASE,
     NODE_ENV: process.env.NODE_ENV,
-    VUE_APP_DATAINPUT_URL: process.env.VUE_APP_DATAINPUT_URL,
     VUE_APP_ADMIN_CONSOLE_URL: process.env.VUE_APP_ADMIN_CONSOLE_URL,
     VUE_APP_ENVIRONMENT: process.env.VUE_APP_ENVIRONMENT,
 }
@@ -31,7 +29,6 @@ interface EnvironmentServiceInterface {
     getEnvironmentName: () => string
     getAPIBaseURL: () => string
     getFrontendBaseURL: () => string
-    getDataInputAPIBaseURL: () => string
     getAdminFrontendBaseURL: () => string
 }
 export const environmentService: EnvironmentServiceInterface = {
@@ -55,9 +52,6 @@ export const environmentService: EnvironmentServiceInterface = {
         // has no window.Cypress, so it keeps the baked-in value unchanged.
         const cypressBaseURL = (window as { Cypress?: { env: (key: string) => string } }).Cypress?.env('apiBaseURL')
         return cypressBaseURL || environmentObject.VUE_APP_BADHAN_API_BASE_URL
-    },
-    getDataInputAPIBaseURL: (): string => {
-        return environmentObject.VUE_APP_DATAINPUT_URL
     },
     getFrontendBaseURL: (): string => {
         return environmentObject.VUE_APP_FRONTEND_BASE

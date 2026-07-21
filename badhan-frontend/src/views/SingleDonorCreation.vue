@@ -33,8 +33,8 @@
     <NewPersonCard v-if="donor!==null" :donor="donor" :discard-donor="null"></NewPersonCard>
 
     <ContainerFlat>
-      <v-btn rounded to="/donorCreation" color="secondary" style="text-decoration: none" text>
-        Advanced donor creation
+      <v-btn rounded to="/csvDonorCreation" color="secondary" style="text-decoration: none" text>
+        Upload CSV of Donors
       </v-btn>
     </ContainerFlat>
     <transition name="slide-fade" mode="out-in">

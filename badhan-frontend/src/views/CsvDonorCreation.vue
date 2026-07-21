@@ -5,18 +5,20 @@
     <ContainerFlat>
       <v-card-text>
         <div class="d-flex align-center flex-wrap">
-          <v-file-input
-            id="csvFileInputId"
-            data-cy="csvFileInputId"
-            v-model="selectedFile"
-            accept=".csv"
-            label="Select a CSV file of donors"
-            prepend-icon="mdi-file-delimited"
-            show-size
-            class="flex-grow-1"
-            :disabled="uploading"
-            @change="onFileSelected"
-          />
+          <!-- data-cy on the wrapper: Vuetify binds fallthrough attrs onto the inner
+               <input>, so the hook must sit here for [data-cy] input[type=file] to resolve. -->
+          <div data-cy="csvFileInputId" class="flex-grow-1">
+            <v-file-input
+              id="csvFileInputId"
+              v-model="selectedFile"
+              accept=".csv"
+              label="Select a CSV file of donors"
+              prepend-icon="mdi-file-delimited"
+              show-size
+              :disabled="uploading"
+              @change="onFileSelected"
+            />
+          </div>
           <v-btn
             text
             rounded
