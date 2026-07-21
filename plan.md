@@ -1,181 +1,583 @@
-# Plan: Replace `start` script with Docker Compose
+# Plan: CSV bulk donor upload (frontend-driven, one-by-one via existing API)
 
 ## Goal
 
-Replace the Node-based `start` orchestrator with a `docker-compose.yml` that runs the
-dev stack (MongoDB, backend, internal server, frontend), provides an on-demand `test`
-profile, and keeps deployment as a fully manual local script. No CI/CD automation.
+Let a logged-in member upload a CSV file in the Badhan frontend and have every row
+created as a donor by calling the **existing** `POST /donors` endpoint once per row.
+No new backend endpoint — the frontend drives the loop, so authentication,
+validation, duplicate detection and the donor-insertion queue all stay exactly as
+they are today. The single backend change is unrelated to the loop: the
+`GET /donors/phone` pre-flight route loses its rate limiter so the chunked existence
+check can run freely (see §2b).
 
-**Constraints:**
-- Compose must not pass environment variables (`environment:` / `env_file:`
-  injection). All configuration is loaded from env files that live inside each
-  project and are read by the app itself (dotenv or framework equivalent).
-- Docker is the **only** supported local dev environment after the migration.
-  Env files are therefore edited in place to use compose service hostnames
-  (e.g. `mongo`, `backend`) — no separate `.env.docker` variants, and bare-metal
-  `npm run serve:local` is no longer expected to work.
+## Current state (investigated)
 
-## Current state (what `start` does today)
+### Backend — `POST /donors`
 
-| Concern | Current mechanism |
-|---|---|
-| Node version check | Manual check for Node >= 22 |
-| Port cleanup | `killPorts([27017, 3000, 8080, 4000])` |
-| Dependency install | `ensureNpmInstall` in 5 sub-projects |
-| MongoDB | `badhan-backend/scripts/start_db.mjs` downloads/caches mongod 7.0.14 into `badhan-backend/mongodb_local`, runs on 27017 |
-| Backend (port 3000) | `npx nodemon` → `serve:local` (lint + tsoa + tsc build + run), waits for port 27017 |
-| Internal server (port 4000) | nodemon watching `dist/`, runs `internal-server`, waits for port 3000 |
-| Frontend (port 8080) | `npm run serve:local` (vue-cli dev server), waits for port 3000 |
-| `--clean` | Deletes node_modules/dist/mongo data, then runs `purge_db:local` + `populate_db:local` |
-| `--test` | Runs `badhan-backend-test` (Jest/API) and `badhan-frontend-test` (Cypress) suites |
-| `--deploy` | After tests pass: `upload-gcloud.js` (backend) + `upload-firebase.js` (frontend) |
+[DonorsController.ts:90-262](badhan-backend/src/tsoaControllers/DonorsController.ts#L90-L262)
 
-### Facts discovered during investigation
+- Middleware chain: `donorValidator.validatePOSTDonors` → `queue.donorInsertionQueue`
+  → `authenticator.handleAuthentication`. Note there is **no rate limiter** on this
+  route (unlike most others, which use `rateLimiter.commonLimiter`), and requests are
+  serialized by `queue.donorInsertionQueue`.
+- Body fields: `phone`, `studentId`, `bloodGroup`, `hall`, `address`, `roomNumber`,
+  `name`, `comment`, `availableToAll`, `extraDonationCount`, plus optional
+  `lastDonation`, `lastPlateletDonation`, `extraPlateletDonationCount`.
+- Validation rules of note ([validateBody.ts](badhan-backend/src/validations/validateRequest/validateBody.ts)):
+  - `phone` — 13 digits, integer in `[8801000000000, 8801999999999]`
+  - `bloodGroup` — integer `0..7`
+  - `hall` — integer; `8` = unknown, and the controller forces `availableToAll = true` for hall 8
+- Responses: `201` success (`newDonor`), `409` duplicate phone (message names the
+  hall; includes `donorId` only when the caller is permitted to see that donor),
+  `500` on insertion failure, `400` from the validator on bad fields.
+- Duplicates are detected by phone only.
 
-- `badhan-backend/.env.local` has `MONGODB_URI="mongodb://127.0.0.1:27017/Badhan-Test"` — will be edited in place to `mongodb://mongo:27017/Badhan-Test` since Docker becomes the only local dev environment.
-- The backend loads `.env.${NODE_ENV}` via `src/dotenv/index.ts` and **exits if the file is missing** — so `.env.local` must be present in the container (COPY or bind mount). Under the no-injection constraint the file is the single source of truth.
-- Backend port comes from `PORT` (default 3000), internal server from `INTERNAL_PORT` (default 4000) — code defaults, no env needed.
-- `badhan-backend-test/tests/runtime/axios.js` supports an `API_BASE_URL` value from `process.env` and falls back to `host.docker.internal:3000` when it detects Docker. Under the no-injection rule it needs a `dotenv.config()` call at startup so `API_BASE_URL` can come from a file.
-- `badhan-frontend-test/cypress.config.ts` **hardcodes** `baseUrl: 'http://localhost:8080'` and `apiBase = 'http://localhost:4000'` — both must become file-driven (dotenv loaded inside `cypress.config.ts`).
-- The internal server (port 4000) already exposes `POST /purge-local-db` and `POST /populate-local-db` (used by Cypress before each spec) — this replaces the `purge_db:local` / `populate_db:local` npm scripts that `start` references but that **no longer exist** in `badhan-backend/package.json`.
-- `badhan-backend` has `postinstall: npm run build`, so `npm ci` in the image also builds.
-- `badhan-frontend` runs vue-cli `--mode local`, which loads the frontend's own `.env.local`-style files natively; browser-side API URLs stay `localhost` since the browser runs on the host.
+### Backend — existence-check routes (searched; two exist)
 
-## Target layout
+Both are authenticated and return `200` whether or not the donor exists — existence is
+in the payload, not the status code.
+
+**1. `GET /donors/checkDuplicate?phone=<13-digit>` — single phone**
+[DonorsController.ts:876-931](badhan-backend/src/tsoaControllers/DonorsController.ts#L876-L931)
+
+- Returns `{ found: boolean, donor: IDonor | null, message }`.
+- Visibility rule: the full donor object comes back only if the caller is a super
+  admin (`designation === 3`), or the donor is in the caller's hall, or the donor's
+  hall is `> 6`, or the donor is `availableToAll`. Otherwise `found: true` but
+  `donor: null` and the message ends "You are not permitted to access this donor."
+- The frontend already wraps it as `handleGETDonorsDuplicate`
+  ([api/index.ts:195](badhan-frontend/src/api/index.ts#L195)).
+
+**2. `GET /donors/phone?phoneList[]=<13-digit>&…` — many phones at once** ← the useful one
+[DonorsController.ts:933-966](badhan-backend/src/tsoaControllers/DonorsController.ts#L933-L966)
+
+- Returns `{ donors: [{ phone, donorId }] }` containing **only the phones that already
+  exist**; anything absent from the response is a new donor.
+- Same visibility rule, applied per element: for a donor the caller may not access,
+  `donorId` comes back as the literal string `'FORBIDDEN'` rather than an id
+  ([donorInterface.ts:657-709](badhan-backend/src/db/interfaces/donorInterface.ts#L657-L709)).
+- Validation: every element must be a 13-digit string starting `880`
+  ([validateQuery.ts:92](badhan-backend/src/validations/validateRequest/validateQuery.ts#L92)) — i.e. phones must
+  already be normalized before the call. No documented cap on list length; the uploader
+  batches into groups of 100 anyway (§2b).
+- **No frontend wrapper exists yet** — one must be added to `api/index.ts`.
+- **Its `rateLimiter.commonLimiter` middleware is removed** as part of this plan so the
+  chunked pre-flight calls are never rate-limited (§2b, and the backend note under the
+  work breakdown).
+
+Note: an earlier draft of this plan called the bulk route `checkDuplicateMany`. That
+endpoint does not exist; the correct path is `GET /donors/phone`.
+
+### Frontend
+
+- API wrapper `handlePOSTDonors` + `POSTDonorsPayloadInterface`
+  ([api/index.ts:277-299](badhan-frontend/src/api/index.ts#L277-L299)) — already
+  returns the error response object instead of throwing, which is exactly what a
+  per-row loop needs.
+- [SingleDonorCreation.vue](badhan-frontend/src/views/SingleDonorCreation.vue) — the
+  one-donor form (route `/singleDonorCreation`, `designation: 1`).
+- [DonorCreation.vue](badhan-frontend/src/views/DonorCreation.vue) — "Advanced Donor
+  Creation" (route `/donorCreation`, `designation: 1`). Today it uploads nothing
+  itself: it calls `handlePOSTRedirection()` and opens the external
+  `badhan-datainput` Netlify site with a token. **This page is being deleted
+  outright** — see "Removal of Advanced Donor Creation" below.
+- No CSV parsing dependency is currently installed in `badhan-frontend`.
+
+## Proposed design
+
+### 0. UI conventions (applies to every new view/component)
+
+Build the UI out of **Vuetify components and their built-in props** — layout, spacing,
+colours, elevation, tables (`v-data-table`), file input (`v-file-input`), buttons,
+progress bars, alerts and the expansion panel for the help section all come from
+Vuetify. Use Vuetify's **animations/transitions** (e.g. `v-expand-transition`,
+`v-fade-transition`, the `v-progress-linear` indeterminate/animated states, row and
+status-change transitions) so state changes — parsing, per-row status updates, showing
+the "already exists" table — are animated rather than snapping into place.
+
+Write **minimal to no custom CSS.** Prefer Vuetify utility classes (`ma-*`, `pa-*`,
+`d-flex`, `text-*`, colour classes) and component props over hand-written styles. A
+`<style>` block should be the last resort, only for something Vuetify genuinely cannot
+express, and kept as small as possible.
+
+### 1. CSV format
+
+A UTF-8 CSV with a **header row**. Column order does not matter — columns are matched
+by header name (case-insensitive, trimmed).
 
 ```
-badhan/
-├── docker-compose.yml          # new — dev stack + test profile
-├── deploy                      # new — manual deploy script (tests gate deployment)
-├── badhan-backend/Dockerfile   # new
-├── badhan-frontend/Dockerfile  # new
-├── badhan-backend-test/Dockerfile   # new
-├── badhan-frontend-test/Dockerfile  # new (Cypress base image)
-└── start                       # deleted at the end (Phase 5)
+name,phone,studentId,bloodGroup,hall,roomNumber,address,comment,donationCount,lastDonation,plateletDonationCount,lastPlateletDonation,availableToAll
 ```
 
-## Phase 1 — Dev stack in Compose
+#### Validation is strict — exactly one accepted form per field
 
-### 1.1 `mongo` service
-- Image `mongo:7.0.14` — **Decision: pin exact versions on every Docker image** (mongo, node, cypress/included) across this plan, matching the exact version `start_db.mjs` downloads today. Guarantees every developer builds against the identical Mongo release; bump deliberately when needed rather than drifting silently.
-- Named volume `mongo-data:/data/db` (replaces `badhan-backend/mongodb_local`).
-- Publish `27017:27017` so host tools (Compass, mongosh) still work.
-- Healthcheck: `mongosh --eval "db.adminCommand('ping')"` — replaces `wait_for_port 27017`.
-- All of `start_db.mjs` (download, cache, lockfile, port checks) becomes obsolete.
+**The parser accepts one spelling of each value and rejects everything else.** No
+alternative formats, no coercion, no "helpful" guessing. A value that is not exactly
+what the table below specifies produces an inline error on that row rather than being
+silently converted. Rationale: a bulk uploader that guesses is a bulk uploader that
+creates hundreds of subtly wrong donor records, and the person who wrote the CSV is
+the only one who can say what a malformed value was meant to be.
 
-### 1.2 `backend` service (port 3000)
-- `badhan-backend/Dockerfile`: `node:22.23.1-bookworm-slim` base (verified against nodejs.org's release archive as the latest Node 22 LTS patch as of 2026-07-11), `npm ci` (postinstall builds), default cmd `npx nodemon`.
-- Bind-mount the whole `./badhan-backend` directory to `/app` for hot reload (any file changed on the host — src, nodemon.json, tsconfig.json, tsoa.json, package.json, etc. — is reflected immediately, no need to enumerate individual files); **anonymous volume** for `/app/node_modules` so the host dir doesn't shadow the image's (a more specific volume mount at a subpath takes precedence over the parent bind mount); **named volume `backend-dist`** for `/app/dist`, shared with the `internal` service (see 1.3), for the same reason.
-- Config: edit `badhan-backend/.env.local` in place — `MONGODB_URI=mongodb://mongo:27017/Badhan-Test`. The file reaches the container via the whole-directory bind mount above (also baked into the image at build time via `COPY . .`, so it's present even before the bind mount attaches); no compose `environment:` block anywhere.
-- `depends_on: mongo: condition: service_healthy`.
-- Publish `3000:3000` to the host — matches current behavior (backend reachable at `localhost:3000`) and lets host tools (curl, Postman, the frontend dev server if ever run outside Compose) hit it directly.
-- Healthcheck on `http://localhost:3000` — replaces `wait_for_port 3000` for the two dependents.
-- `nodemon.json` sets `"legacyWatch": true` unconditionally, so it polls the filesystem instead of relying on inotify events. This is host-OS-independent by construction: whether a bind mount forwards native file-change events depends on the Docker Desktop backend in use (varies by OS and version — e.g. VirtioFS vs. osxfs/gRPC-FUSE on macOS, differs again on Windows/WSL2 and native Linux), so a fix that assumes a particular backend would silently break hot reload for developers on a different one. Polling avoids depending on that behavior at all, at the cost of a small constant CPU overhead and slightly slower reload — an acceptable, predictable trade for correctness on every OS.
-- **Bug found and fixed during implementation:** the Dockerfile installs `procps` (`apt-get install -y procps`). Without it, nodemon's restart mechanism is silently broken in this image — it enumerates the process tree it needs to kill via the `pstree.remy` package, which normally shells out to `ps`; the `node:*-bookworm-slim` base doesn't include `ps`, so `pstree.remy` falls back to a hand-rolled `/proc` walker that has its own bug (it sorts `ls /proc` output lexicographically as strings, not numerically, so a grandchild process — `npm run serve:local` → `cross-env` → `node ./dist/bin/www` is 3 levels deep — can sort before its parent and get silently skipped in the single-pass tree walk). The practical effect: every hot-reload restart left the old `node ./dist/bin/www` orphaned and still holding port 3000, so the new instance crashed with `EADDRINUSE` while the stale process kept serving old code forever, undetectable from the outside since the port still answered. Verified via `docker compose exec` + manual `/proc` inspection and by testing `pstree.remy` directly inside the container before/after installing `procps`. This would have silently defeated hot reload for every developer using this setup.
+Concretely, this rejects rather than accepts:
 
-### 1.3 `internal` service (port 4000)
-- Same image as `backend`, command: nodemon watching `dist` → `npm run internal-server`, with `--legacyWatch` on this invocation too (or a second `nodemon.json` variant) — same polling rationale, since this watch also crosses a Docker-managed volume boundary rather than the host's native filesystem.
-- **Decision: shared named volume for `dist`**, mounted into both `backend` and `internal`. The backend is the sole builder; the internal server's nodemon restarts when the build output changes — same contract as the current `start` script. (Independent builds were rejected: concurrent tsoa codegen races on the bind-mounted `src/tsoaRoutes`, version skew between the two servers against the same DB, and doubled build cost per save.)
-- Publish `4000:4000` to the host — matches current behavior (`localhost:4000` for the purge/populate/backup endpoints) and lets you `curl` the seed endpoints from the host without going through another container.
-- `depends_on: backend: condition: service_healthy`.
+- `hall` — **hall names only.** Numeric codes (`0`–`8`) are rejected, even though that
+  is what the API takes. `4` is not a hall; `Sher-e-Bangla` is.
+- `phone` — **13 digits, `8801XXXXXXXXX`, only.** The local `01XXXXXXXXX` form is
+  rejected, as are spaces, dashes, `+` prefixes and a leading `+880`.
+- `bloodGroup` — **labels only** (`A+`, `O-`, …). The raw codes `0`–`7` are rejected.
+- `availableToAll` — **`yes` or `no` only.** `true`/`false`, `1`/`0`, `Y`/`N`, and
+  blank are all rejected.
+- Blank is never a substitute for a value in a required column.
 
-### 1.4 `frontend` service (port 8080)
-- `badhan-frontend/Dockerfile`: `node:22.23.1-bookworm-slim`, same pinned tag as the backend, `npm ci`, cmd `npm run serve:local`.
-- Vue dev server must listen on `0.0.0.0` (add `--host 0.0.0.0` or `devServer.host` in `vue.config.js`).
-- Bind-mount the whole `./badhan-frontend` directory to `/app` + anonymous `node_modules` volume, same pattern as backend.
-- Set `devServer.watchOptions.poll` (e.g. `1000`) in `vue.config.js`, for the same host-OS-independence reason as the backend's `legacyWatch`. **Correction (verified against webpack's own docs during implementation):** `CHOKIDAR_USEPOLLING` is not webpack's documented mechanism — webpack explicitly recommends `watchOptions.poll` for exactly this Docker/VirtualBox/WSL/NFS scenario, so that's what's implemented, not the env var from the original draft of this plan.
-- The frontend calls the backend at a URL from its `--mode local` env — since the browser runs on the host, `localhost:3000` still works; no service-name change needed for browser-side calls.
-- Publish `8080:8080` to the host — matches current behavior (`localhost:8080` in the browser); this one is required, not just convenient, since the browser itself runs on the host.
-- `depends_on: backend: condition: service_healthy`.
+**Case is enforced too.** For every field with a fixed set of accepted values —
+`hall`, `bloodGroup`, `availableToAll` — the value must match the canonical spelling
+**exactly, including case**. `Sher-e-Bangla` is accepted; `sher-e-bangla`,
+`SHER-E-BANGLA` and `Sher-E-Bangla` are each rejected with an inline error. Likewise
+`A+` but not `a+`, and `yes`/`no` but not `Yes`, `YES` or `NO`. The canonical forms are
+exactly those printed in the column table below and in the demo CSV, so a user who
+starts from the demo file or the help panel is always correct.
 
-### 1.5 What Compose replaces for free
-- Port cleanup → `docker compose down`.
-- Node 22 check → pinned base image.
-- `ensureNpmInstall` → image build layer caching.
-- `wait_for_port` → healthchecks + `depends_on` conditions.
-- Parallel process runner (`runProcessesInParallel`) → Compose itself.
+The only normalization applied before matching is `trim()` of surrounding whitespace
+(so a trailing space from a spreadsheet export is not a hard error); the value is not
+lower-cased, upper-cased, or otherwise altered. Free-text fields (`name`, `roomNumber`,
+`address`, `comment`) have no canonical form and so no case rule.
 
-## Phase 2 — `--clean` equivalent
+#### Column specification
 
-- Full clean: `docker compose down -v` (drops mongo data volume) + `docker compose build --no-cache` when deps must be reinstalled.
-- DB seed: no npm scripts needed — the internal server already exposes the endpoints.
-  With the stack up: `curl -X POST http://localhost:4000/purge-local-db && curl -X POST http://localhost:4000/populate-local-db`.
-  **Decision: document these two commands in the README, no `./seed` script.**
+Constraints are the **backend's own** rules, from
+[validateBody.ts](badhan-backend/src/validations/validateRequest/validateBody.ts) and
+[constants/index.ts](badhan-backend/src/constants/index.ts), so the parser rejects
+exactly what the server would — plus the stricter input forms above.
 
-## Phase 3 — Test profile (manual, no automation)
+| Column | Required | Accepted in CSV — nothing else | Sent to API | Rules |
+|---|---|---|---|---|
+| `name` | **yes** | text | `name` | 3–100 characters |
+| `phone` | **yes** | exactly 13 digits, `8801XXXXXXXXX` | `phone` (number) | must fall in `8801000000000`–`8801999999999`. `01XXXXXXXXX`, `+8801…`, and any value containing spaces, dashes or punctuation are **rejected** |
+| `studentId` | **yes** | exactly 7 digits, e.g. `1605011` | `studentId` | digits 1–2 = batch year `01`–(current year); digits 3–4 = department, one of `00,01,02,04,05,06,08,10,11,12,15,16,17,18`; use `00` if the department is unknown |
+| `bloodGroup` | **yes** | one of `A+ A- B+ B- O+ O- AB+ AB-` | `bloodGroup` (int) | mapped via `bloodGroups` = `['A+','A-','B+','B-','O+','O-','AB+','AB-']`. Numeric codes **rejected** |
+| `hall` | **yes** | one of `Ahsanullah`, `Chatri`, `Nazrul`, `Rashid`, `Sher-e-Bangla`, `Suhrawardy`, `Titumir`, `Unknown` | `hall` (int) | mapped to `0,1,2,3,4,5,6,8` respectively. Numeric codes **rejected**. **`Attached` is rejected** — the API's donor-creation validator allows only `[0,1,2,3,4,5,6,8]`, and the create/edit dropdowns already omit it; `Attached` is a clear row error, never silently mapped to `Unknown`. `Unknown` forces `availableToAll = true` server-side |
+| `roomNumber` | no | text | `roomNumber` | 2–500 characters; **blank is auto-filled with `(Unknown)`**, matching single-donor creation |
+| `address` | no | text | `address` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
+| `comment` | no | text | `comment` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
+| `donationCount` | **yes** | integer `0`–`98` | `extraDonationCount` = `donationCount - 1` (or `0`) | the CSV value is the donor's **total** blood-donation count. Send `donationCount - 1` when it is `> 0` and `0` when it is `0`, exactly matching single-donor creation (see the "Count → `extraDonationCount`" rule below). Blank rejected — write `0` |
+| `lastDonation` | conditional | `YYYY-MM-DD` | `lastDonation` (epoch ms) | must be blank when `donationCount` is `0`, and present when it is `> 0`. No other date format accepted. Future dates are **allowed** (matching single-donor creation, which does not reject them) |
+| `plateletDonationCount` | **yes** | integer `0`–`98` | `extraPlateletDonationCount` = `plateletDonationCount - 1` (or `0`) | total platelet-donation count; same `- 1` mapping as `donationCount`. Blank rejected — write `0` |
+| `lastPlateletDonation` | conditional | `YYYY-MM-DD` | `lastPlateletDonation` (epoch ms) | same rule as `lastDonation`, against `plateletDonationCount` |
+| `availableToAll` | **yes** | `yes` or `no` | `availableToAll` (bool) | `true`/`false`/`1`/`0`/blank **rejected**. Forced to `true` server-side when hall is `Unknown` |
 
-### 3.1 `backend-test` service — `profiles: ["test"]`
-- `badhan-backend-test/Dockerfile`: `node:22.23.1-bookworm-slim`, same pinned tag as the backend, `npm ci`, cmd runs the Jest suite.
-- Config via file, not injection: add a `.env` file in `badhan-backend-test` with:
-  - `API_BASE_URL=http://backend:3000` (read by `tests/runtime/axios.js`)
-  - `BACKUP_PURGE_URL=http://internal:4000/purge-local-db`
-  - `BACKUP_POPULATE_URL=http://internal:4000/populate-local-db`
-  and a `dotenv.config()` call at the top of `tests/runtime/axios.js` (it already reads `process.env.API_BASE_URL`; dotenv just sources it from the file). Add `dotenv` as a dev dependency.
-- `depends_on`: backend **and** internal healthy — DB purge/seed hooks below call `internal` directly, so both must be up before the suite starts.
-- Run manually: `docker compose --profile test run --rm backend-test` — exit code is the suite result.
+The `lastDonation`/`donationCount` rule is **bidirectional**, matching single-donor
+creation ([NewPersonCard.vue:274-284](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L274-L284)):
+the date must be present when the count is `> 0`, **and** the count must be non-zero
+when a date is present — otherwise a row error. The same pair of checks applies to
+`lastPlateletDonation` / `plateletDonationCount`.
 
-### 3.2 `frontend-test` service — `profiles: ["test"]`
-- Base image `cypress/included:15.1.0` (matches the project's pinned `cypress@^15.1.0`) so browsers are preinstalled.
-- **Decision: containerize Cypress, no platform pin.** `cypress/included` has published multi-arch manifests (linux/amd64 and linux/arm64) for a long time, well before Cypress 15 — so `docker compose` pulls the image matching whatever host architecture it runs on automatically. Do **not** set `platform: linux/amd64` on this service: doing so would force emulation on Apple Silicon hosts even though a native arm64 image exists, which is strictly worse than leaving it unpinned. This mirrors the nodemon/chokidar polling decision — solve for correctness across every host OS/arch by not depending on which one is running, rather than hardcoding an assumption.
-- **Code change required** in `cypress.config.ts`: call `dotenv.config()` at the top, then use `process.env.CYPRESS_BASE_URL || 'http://localhost:8080'` for `baseUrl` and `process.env.API_BASE_URL || 'http://localhost:4000'` for `apiBase`. Values come from a `.env` file in `badhan-frontend-test` (`CYPRESS_BASE_URL=http://frontend:8080`, `API_BASE_URL=http://internal:4000`) — no compose env injection.
-- `depends_on`: frontend + internal healthy.
-- Run manually: `docker compose --profile test run --rm frontend-test`.
+**Count → `extraDonationCount` (must be decremented by one).** The CSV `donationCount`
+is the donor's **total** number of donations, matching the single-donor UI field, but the
+API's `extraDonationCount` is the number of donations *in addition to* the one implied by
+`lastDonation`. So the uploader must send
 
-### 3.3 Test data
-- Both suites already auto-seed via existing hooks — no new automation needed, just pointing the existing URLs at the `internal` service instead of `localhost:4000`:
-  - Cypress: `before:spec` hook in `cypress.config.ts` calls `/purge-local-db` + `/populate-local-db` on `internal` before every spec.
-  - Jest (`backend-test`): `tests/global-setup.js` purges before the suite, `tests/setup-after-env.js` purges before **every individual test** (`beforeEach`), and `tests/global-teardown.js` purges + populates after the suite — all three already read `BACKUP_PURGE_URL` / `BACKUP_POPULATE_URL` env vars with a `localhost:4000` default, so no code change, only the `.env` file in 3.1.
-- Because Jest purges the DB before every test, run order/isolation is already handled; no additional seeding step is needed around `docker compose --profile test run --rm backend-test`.
+```
+extraDonationCount = donationCount === 0 ? 0 : donationCount - 1
+```
 
-## Phase 4 — Manual `./deploy` script
+exactly as single-donor creation does on save
+([NewPersonCard.vue:427](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L427):
+`extraDonationCount: lastDonation === 0 ? 0 : this.donationCount - 1`). Passing
+`donationCount` straight through would create one donation too many on every row. The
+bidirectional rule above guarantees `donationCount > 0` iff a `lastDonation` date is
+present, so the two forms are equivalent. The identical `- 1` mapping applies to
+`plateletDonationCount` → `extraPlateletDonationCount`
+([NewPersonCard.vue:430](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L430)).
 
-A small shell (or Node) script at the repo root, run by hand only:
+**Hall creation permission is left to the server — not checked client-side.** Unlike
+single-donor creation, which blocks a non–super-admin from creating a donor in a hall
+other than their own
+([NewPersonCard.vue:179-182](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L179-L182)),
+the uploader performs **no** per-hall permission check. Any row whose hall is one of the
+accepted names passes client-side validation and is sent to `POST /donors`; if the server
+rejects it for permission reasons, that row routes to Table 3 (broken rows, §2c) through
+the normal non-`201` failure path, with the server's message shown inline. The server is
+the sole authority on who may create donors in which hall.
 
-1. `docker compose --profile test run --rm backend-test` — abort on non-zero exit.
-2. `docker compose --profile test run --rm frontend-test` — abort on non-zero exit.
-3. `node badhan-backend/upload-gcloud.js` — unchanged, uses local gcloud auth.
-4. `node badhan-frontend/upload-firebase.js` — unchanged, uses local firebase auth.
+**Date → epoch conversion.** A `YYYY-MM-DD` value is converted with
+`new Date(value).getTime()` — exactly what single-donor creation does on save
+([NewPersonCard.vue:400-411](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L400-L411)),
+where the `DatePicker` also emits a `YYYY-MM-DD` string. That parses to **UTC midnight**,
+so stored donation timestamps match the single-donor path byte-for-byte. A blank date
+sends `0`, again matching single-donor creation. No timezone adjustment is applied.
 
-Deployment stays on the host (not containerized) so existing `gcloud`/`firebase` CLI
-auth keeps working. The only behavioral change from `./start --test --deploy`: the
-test gate can no longer be skipped.
+**File-level failures come before rows or columns.** If the file cannot be parsed
+at all — papaparse errors (bad quoting, wrong delimiter), an empty file, a file with no
+header row, or a non-CSV file — the view renders **only one Vuetify `v-alert` at the top
+of the page and nothing else** (no tables, no "Upload All"). The alert message must be
+**informative**: it states exactly what failed and, when papaparse provides it, where —
+e.g. *"Could not parse CSV: unclosed quote on line 42"*, *"The file is empty"*, *"No
+header row found — the first row must be the column headers"* — so the user can fix the
+file from the message alone. Empty and header-only files are hard errors.
 
-## Phase 5 — Cleanup
+Structural checks run next, before any row is validated: a **missing required column**
+or an **unrecognised column header** fails the whole file with the same single-alert
+treatment and a clear message ("Unknown column `bloodgroup_`; expected one of …"),
+rather than being ignored — an unexpected header usually means a mis-saved or wrong
+file, and silently dropping it would upload donors with fields quietly missing.
 
-- Delete `start`, `badhan-backup/scripts/parallel.mjs`, `port_cleanup.mjs`,
-  `wait_for_port.mjs`, `ensure_npm_install.mjs`, `clean_all_dependencies.mjs`,
-  and `badhan-backend/scripts/start_db.mjs` once the compose flow is verified.
-- Add `mongodb_local/` removal note (stale cached mongod + data on disk).
-- Update `README.md` with the new commands.
+The three "required but usually blank" fields — `roomNumber`, `address`, `comment` —
+carry a 2-character minimum in the current API, but the uploader **auto-fills a blank
+value with `(Unknown)`** before sending, exactly as single-donor creation does
+([NewPersonCard.vue:413-415](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L413-L415)).
+So a blank in these three columns is accepted, not a row error. Their column
+*headers* must still be present — a missing column is still a structural whole-file
+failure; only the per-row value may be blank.
 
-## Command cheat sheet (end state)
+#### On-screen documentation
 
-| Old | New |
+The view carries a collapsible **"CSV format"** help panel rendering the table above,
+alongside the existing `HelpTooltip` idiom used by
+[SingleDonorCreation.vue](badhan-frontend/src/views/SingleDonorCreation.vue). It is
+expanded by default until a file has been selected.
+
+#### Demo CSV download button
+
+A **"Download demo CSV"** button sits next to the file input and, with no network
+call, saves a small ready-to-edit sample built from a constant in
+`src/utils/donorCsv.ts` and written out with the `file-saver` dependency the frontend
+already has. It contains the header row plus **three example donors** that between
+them exercise every column — a fully-populated donor, one with a hall of `Unknown`,
+and one with all optional fields blank:
+
+```csv
+name,phone,studentId,bloodGroup,hall,roomNumber,address,comment,donationCount,lastDonation,plateletDonationCount,lastPlateletDonation,availableToAll
+Demo Donor One,8801712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,2024-11-20,1,2025-02-14,no
+Demo Donor Two,8801898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes
+Demo Donor Three,8801911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no
+```
+
+Every value in the demo file is in the single accepted form, in its canonical case —
+13-digit phones, exactly-cased hall names (`Sher-e-Bangla`, not `sher-e-bangla`),
+lowercase `yes`/`no`, explicit `0` counts rather than blanks — so it doubles as the
+worked example of the strict rules, and copying from it can never produce a
+case-rejection.
+
+The demo file is deliberately tiny and its `comment` fields say it is sample data, so
+that a user who uploads it unedited creates obvious throwaway records rather than
+plausible-looking fake donors. It ships as three valid rows only — no broken row and no
+header-only template.
+
+### 2. New view: `CsvDonorCreation.vue`
+
+Route `/csvDonorCreation`, `requiresAuth: true`, `designation: 1` — bulk upload
+requires only `designation: 1`, matching single-donor creation and the other creation
+routes. Three phases in one view, driven by **three stacked tables** —
+Table 1 (to be created, §2), Table 2 (exists in the database, §2b), Table 3 (broken
+rows, §2c) — all present on screen at once, each hidden while empty. The tables are
+**read-only** (to fix a broken row the user edits the CSV and re-uploads), and they
+**render every row with no pagination or virtualization**, accepting the slowdown on
+very large files. There is **no upper bound on rows per file**; the sequential upload
+loop and the backend's `donorInsertionQueue` throttle the request rate naturally.
+
+1. **Select** — file input. The CSV is parsed entirely in the browser; **nothing is
+   sent to the server at this stage.**
+2. **Review** — every parsed donor is placed into one of the three tables, one row per
+   donor, with a column per CSV field (name, phone, student ID, blood group, hall,
+   room, address, comment, donation counts, dates, availableToAll). A row count and a
+   per-table summary sit above the tables. Valid, new donors land in Table 1; donors
+   whose phone already exists land in Table 2; **rows that fail client-side validation
+   land in Table 3 (§2c), never in Table 1**, so "Upload All" only ever sees clean rows.
+3. **Upload All** — a single **"Upload All"** button starts the upload. It calls
+   `POST /donors` for each Table 1 row **once at a time**, walking top to bottom. As
+   each call returns, that row's status cell updates live (*pending* → *uploading* →
+   *created* / *duplicate* / *rejected* / *failed*), so the tables double as the
+   progress report — no separate results screen. A progress bar shows `n / total`, and
+   the button is disabled while a run is in flight. When Table 1 is empty (every row was
+   a duplicate or broken), the button is **disabled, not hidden**, with a hint such as
+   *"No new donors to upload"* so its disabled state explains itself.
+
+   As each call returns the row **moves out of Table 1** into the table matching its
+   outcome, with an animated Vuetify row transition:
+   - `201 created` → **Table 2** (§2b), joining pre-existing donors.
+   - `409 duplicate` → **Table 2** (the donor exists).
+   - `400 rejected` / other failure → **Table 3** (§2c), where the server's field
+     messages (or *"duplicate phone number in <hall> hall"*) are shown inline exactly
+     like a client-side error.
+
+   So when the run finishes Table 1 is empty (every row was routed somewhere),
+   Table 2 is the "these exist now" report, and Table 3 is the "still needs fixing"
+   report. "Download failed rows as CSV" exports Table 3 so the user can fix and
+   re-upload just those.
+
+Implementation note: the parse/validate module returns each row as
+`{ raw, normalized, errors: [{ field, message }], status }`, and the view routes the row
+to a table by its `status`, rendering the `errors` array inline within Table 3. The
+upload loop appends server-reported errors to that same array, which is what lets
+client-side and server-side problems render identically in Table 3.
+
+### 2b. Second table: donors that exist in the database
+
+Immediately after the CSV is parsed, the view fires `GET /donors/phone` **in chunks of
+100 phones**, sequentially, and merges the returned `donors` arrays. Batching keeps each
+request's URL well under Express/proxy length limits on large files; because the route's
+`commonLimiter` is removed, the successive chunks are never rate-limited. If **any**
+chunk fails, the whole pre-flight is treated as failed: **"Upload All" is blocked** — a
+Vuetify `v-alert` shows the error with a **retry**, and the button stays disabled until
+the check succeeds. There is no fall-back to discovering duplicates via `409`.
+
+**Broken wins, and only valid rows are pre-flighted.** Client-side validation runs first:
+a row that fails any §1 rule goes straight to Table 3 and is **never** included in the
+pre-flight. Only rows that pass validation contribute their phone to `GET /donors/phone`.
+So a row that has *both* a validation error *and* a phone that already exists in the
+database lands in Table 3 (broken), not Table 2 (exists) — the broken classification takes
+precedence, and such a row's phone is never sent to the existence check.
+
+Together with client-side validation this splits the CSV across three stacked tables
+(Table 3 covered in §2c):
+
+**Table 1 (top) — donors to be created.** As described in §2. Rows whose phone came
+back as already existing are **removed** from this table (not greyed out), so "Upload
+All" only ever attempts genuinely new donors. Likewise, once a row inserts successfully
+it is removed from this table and moved to Table 2 — nothing stays here greyed out.
+
+**Table 2 (below) — donors that exist in the database.** This table starts as the
+pre-flight result (one row per CSV entry whose phone was already found) and **grows
+during the run: every row that inserts successfully moves here from the top table**
+(§2 phase 3), as does any row that comes back `409 duplicate`. Each row shows the CSV's
+values plus a status column distinguishing *already existed* from *just created*.
+Nothing in this table is uploaded — it is the record of donors that now exist. A
+heading states the count (e.g. *"7 of 120 donors already exist and will be skipped"*
+before the run, updating to include the newly created ones after). The table is hidden
+only while it is empty — i.e. before the run when no donor pre-existed.
+
+A phone listed twice in the **same CSV** is not special-cased at parse time: both rows
+pass pre-flight (neither is in the database yet), the first copy inserts `201` and moves
+to Table 2, and any later copy comes back `409` mid-run and lands in Table 2 as a
+duplicate. The server is the authority on intra-file collisions.
+
+#### Permission-dependent "See Donor" button
+
+`GET /donors/phone` returns `{ phone, donorId }` per existing donor, and the backend
+already encodes the caller's permission in that field
+([donorInterface.ts:685-701](badhan-backend/src/db/interfaces/donorInterface.ts#L685-L701)):
+
+- **A real `donorId`** — the caller may view this donor (super admin, or same hall, or
+  the donor's hall is `> 6`, or `availableToAll`). Render a **"See Donor"** button in
+  that row.
+- **The literal string `'FORBIDDEN'`** — the donor exists but belongs to another hall
+  that the caller cannot access. Render **no button**, and show a short explanation in
+  the row instead: *"Exists in another hall — you do not have permission to view this
+  donor."*
+
+For **just-created rows** that move into this table during the run, the `donorId` comes
+from the `POST /donors` `201` response (`newDonor`) rather than the pre-flight call, and
+the caller can always view a donor they just created, so these rows always get a working
+"See Donor" button. Duplicate (`409`) rows get the button only when the `409` response
+carries a real `donorId`; otherwise no button and no other follow-up action (there is no
+"add donation to existing donor").
+
+The button reuses the mechanism already built for single-donor creation, so behaviour
+matches what users know from that screen:
+[NewPersonCard.vue:439-441](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L439-L441)
+calls `createNewPopUpWindow` ([mixins/helpers.ts:58](badhan-frontend/src/mixins/helpers.ts#L58)) with
+`getFrontendBaseURL() + '#/home/details?id=' + donorId`, opening the donor's profile in
+a 600×600 popup. The CSV table's button does the same, per row.
+
+That existing implementation is the single-donor analogue of this whole feature: it
+calls `GET /donors/checkDuplicate` on phone blur, stores `duplicateDonorId`, and
+renders a "See Duplicate" button (`donorCreationSeeDuplicateButtonId`) only when the
+id is non-null. The batch version generalizes it — the one difference is that the
+single-donor path reads `response.data.donor._id` from the *singular* endpoint, whereas
+the batch endpoint returns a flat `donorId` per phone and uses the `'FORBIDDEN'`
+sentinel instead of a `null` donor object.
+
+### 2c. Third table: broken rows
+
+**Table 3 (bottom) — rows that could not be uploaded.** Every row with at least one
+error lives here, and nowhere else. It is populated in two moments:
+
+- **At parse time** — rows that fail client-side validation (§1's strict rules: bad
+  phone, unknown blood group, non-canonical hall case, blank required field, a
+  date/count mismatch, etc.) go straight here instead of Table 1, so they are never
+  uploaded.
+- **During the run** — a row that comes back `400 rejected` (or any non-`201`/`409`
+  failure) moves here from Table 1 with an animated transition.
+
+Each row shows the CSV's values plus a **full-width inline error area** listing every
+problem for that donor — one line per bad field, e.g. *"phone: `0171234` is not a valid
+Bangladeshi number (expected 13 digits starting `8801`)"*, *"bloodGroup: `AB` is not a
+recognised blood group"* — so a row with three problems shows all three at once, not
+just the first. The offending cell is highlighted so the error line and the value it
+refers to are visually connected. Client-side and server-side errors render identically
+because both come from the same `errors: [{ field, message }]` array on the row.
+
+A heading states the count (*"5 of 120 rows have errors and were not uploaded"*), and
+**"Download failed rows as CSV"** exports exactly this table so the user can fix and
+re-upload just the broken rows. The table is hidden while empty.
+
+### 3. Upload loop
+
+- Triggered only by the explicit **"Upload All"** click — parsing and previewing never
+  writes anything.
+- Strictly **sequential**: a `for` loop that `await`s each `handlePOSTDonors` call
+  before issuing the next. Not `Promise.all` — the backend `donorInsertionQueue`
+  serializes insertions anyway, and sequential keeps the per-row status honest and the
+  server unstressed.
+- Every row's outcome recorded by HTTP status (`201` created, `409` duplicate, `400`
+  rejected with the validator's field messages, anything else failed) and written back
+  onto that row in the table.
+- **No automatic abort and no automatic retry.** The loop pushes through the whole file
+  regardless of how many rows fail; each failure simply lands in Table 3. Retrying is
+  done by fixing the CSV and re-uploading.
+- Cancel button that stops before the next request (the in-flight one still completes);
+  rows not yet reached stay *pending*.
+
+### 4. Parsing library
+
+Use `papaparse` (small, battle-tested; handles quoted fields, embedded commas, and the
+BOM Excel exports carry) rather than a hand-rolled `split(',')`, which breaks on any
+address containing a comma.
+
+### 5. Removal of Advanced Donor Creation
+
+The existing "Advanced Donor Creation" page is deleted completely; the CSV uploader
+takes its place. Concretely:
+
+| Change | Location |
 |---|---|
-| `node start` | `docker compose up` |
-| `node start --clean` | `docker compose down -v && docker compose up --build` (+ seed one-off) |
-| `node start --test` | `docker compose --profile test run --rm backend-test && docker compose --profile test run --rm frontend-test` |
-| `node start --test --deploy` | `./deploy` |
+| Delete the view | [badhan-frontend/src/views/DonorCreation.vue](badhan-frontend/src/views/DonorCreation.vue) |
+| Delete the `/donorCreation` route (`name: 'Donor Creation'`) | [router/index.ts:197-207](badhan-frontend/src/router/index.ts#L197-L207) |
+| Delete the `donorCreationId` "Advanced Donor Creation" sub-link | [AppBar.vue:134-140](badhan-frontend/src/components/AppShell/AppBar.vue#L134-L140) |
+| Delete the "Advanced donor creation" button that links to `/donorCreation` | [SingleDonorCreation.vue](badhan-frontend/src/views/SingleDonorCreation.vue) |
+| Drop `getDataInputAPIBaseURL` and its interface member | [mixins/environment.ts:34,59](badhan-frontend/src/mixins/environment.ts#L59) |
+| Drop `VUE_APP_DATAINPUT_URL` | `badhan-frontend/.env.local`, `.env.development`, `.env.production` |
 
-## Source code changes (complete list)
+In place of each deleted link, add the equivalent link to the new
+`/csvDonorCreation` route (nav sub-link `csvDonorCreationId`, and the button on the
+single-donor page). Both use the display text **"Upload CSV of Donors"**.
 
-1. `badhan-backend/.env.local` — `MONGODB_URI` host changes from `127.0.0.1` to `mongo`.
-2. `badhan-frontend/vue.config.js` — add `host: '0.0.0.0'` and `allowedHosts: 'all'` to `devServer`.
-3. `badhan-frontend-test/cypress.config.ts` — dotenv + env-file-driven `baseUrl` and `apiBase` (see 3.2).
-4. `badhan-frontend-test` — new `.env` file; add `dotenv` dependency.
-5. `badhan-backend-test/tests/runtime/axios.js` — add `dotenv.config()` at top (see 3.1).
-6. `badhan-backend-test` — new `.env` file; add `dotenv` dependency.
+**Things that must NOT be removed** (verified — they are separate features that share
+the redirection-token machinery):
 
-No changes needed to backend source: ports default correctly in code, `.env.local` is
-already the config mechanism, and watch-mode polling is nodemon/chokidar configuration
-(`nodemon.json`, `.env.local`) rather than application code.
+- `POST /users/redirection` and `PATCH /users/redirection` in
+  [UsersController.ts:186-308](badhan-backend/src/tsoaControllers/UsersController.ts#L186-L308) — still used by
+  "Go to web" ([AppBar.vue:267](badhan-frontend/src/components/AppShell/AppBar.vue#L267)) and
+  "Download in mobile" ([Home.vue:432](badhan-frontend/src/views/Home.vue#L432)).
+- `handlePOSTRedirection` in [api/index.ts:235](badhan-frontend/src/api/index.ts#L235) and the
+  `requestRedirectionToken` store action — same reason. Only `DonorCreation.vue`'s
+  direct import of it goes away.
+- [views/Redirection.vue](badhan-frontend/src/views/Redirection.vue) and the `RedirectionPage` route.
+- The `donorCreationNavigationId` **parent** nav item — it points at
+  `/singleDonorCreation`, not at the page being deleted, and the Cypress page object
+  [NavigationDrawer.ts:10](badhan-frontend-test/cypress/support/pages/NavigationDrawer.ts#L10) clicks it.
 
-## Open questions / risks
+The external data-input site itself is **left untouched**: the Netlify site and
+`badhan-automated-form/` stay in the repo, to be taken down separately by the user. Only
+the in-app link and `getDataInputAPIBaseURL` / `VUE_APP_DATAINPUT_URL` are removed;
+`PATCH /users/redirection` stays (still used by "Go to web" / "Download in mobile").
 
-None currently — all images are pinned to exact, verified versions: `mongo:7.0.14`,
-`node:22.23.1-bookworm-slim` (latest Node 22 LTS patch, confirmed against
-nodejs.org's release archive on 2026-07-11) across `backend`/`internal`/`frontend`/
-`backend-test`, and `cypress/included:15.1.0` for `frontend-test`. All other prior
-unknowns (dist watch across the named volume, file-watch polling overhead, Cypress
-image resolution, `backend-test` seeding, host port publishing, `./seed` vs. README)
-are resolved by decisions above.
+### 6. Cypress end-to-end test
+
+New spec `badhan-frontend-test/cypress/e2e/donors/csv-upload.cy.ts`, following the
+existing Page Object convention (`@pages`/`@components`/`@support` aliases, as in
+[create-single.cy.ts](badhan-frontend-test/cypress/e2e/donors/create-single.cy.ts)).
+This is the **only** test coverage for the feature — no unit tests for the
+parse/normalize module and no `badhan-backend-test` changes.
+
+**File upload is natively supported** — `cy.selectFile()` is built into Cypress since
+9.3 and this project is on Cypress `^15.1.0`
+([package.json](badhan-frontend-test/package.json)), so **no `cypress-file-upload`
+plugin is needed**.
+
+#### Test flow
+
+1. Sign in with `AUTH_CREDENTIALS` and assert the sign-in notification, matching the
+   existing specs.
+2. Navigate to the CSV page through the drawer (new
+   `NavigationDrawer.goToCsvDonorCreation()`, clicking
+   `donorCreationNavigationId` → `csvDonorCreationId`).
+3. **Generate random donors in the test** — a helper builds N (default 5) donors with
+   randomized name, phone, studentId, blood group and hall, then serializes them to a
+   CSV string. Every generated donor must satisfy the §1 rules, so the helper reuses
+   the same constraints: phone `016`/`017`/`018` + 8 random digits, a studentId whose
+   department code is drawn from the allowed list and whose batch year is ≤ the current
+   year, and non-empty `roomNumber`/`address`/`comment`. **Hall is pinned to the
+   authenticated tester's own hall** (not drawn at random), so that every generated
+   donor is one the tester is permitted to view — this is what makes the "See Donor"
+   assertion below deterministic. `Attached` is never used.
+   Phones are suffixed from `Date.now()` (as `create-single.cy.ts` already does) so
+   reruns never collide with donors left behind by a previous run.
+4. **Attach the file without touching disk** — pass the generated string straight to
+   `cy.selectFile()` via `Cypress.Buffer.from(...)`, so no fixture file has to be
+   written or cleaned up:
+   ```ts
+   cy.get('[data-cy=csvFileInputId] input[type=file]')
+     .selectFile({
+       contents: Cypress.Buffer.from(csvString),
+       fileName: 'donors.csv',
+       mimeType: 'text/csv'
+     }, { force: true });
+   ```
+   `force: true` is required because Vuetify's `v-file-input` keeps the real
+   `<input type=file>` visually hidden.
+5. Assert the review table rendered N rows and that none of them carries an inline
+   error row.
+6. **Click "Upload All"** (`[data-cy=csvUploadAllButtonId]`).
+7. Wait for the run to finish and assert every row reached the *created* state, and
+   that the summary reports N created / 0 failed.
+8. Verify the donors really exist — search for one of the generated phones on the home
+   page (reusing `HomePage`), or assert against the `POST /donors` responses via
+   `cy.intercept`.
+
+No explicit cleanup is needed: the `before:spec` hook already purges and repopulates the
+local DB before every spec
+([cypress.config.ts:103-113](badhan-frontend-test/cypress.config.ts#L103-L113) —
+`POST /purge-local-db` then `POST /populate-local-db`), so generated donors never
+accumulate, and the `Date.now()` phone suffix guarantees no collision within a run.
+
+#### Additional cases in the same spec
+
+- **Malformed rows** — a CSV with a bad phone and an unknown blood group; assert each
+  offending row lands in Table 3 (broken rows, §2c) with its inline errors and that
+  "Upload All" never uploads them.
+- **Already-existing donors** — upload a CSV containing a donor created earlier in the
+  same spec; assert it lands in the second ("exists in the database") table rather than
+  the upload table, and that a "See Donor" button is present. Because the generator pins
+  every donor to the tester's own hall (§6 step 3), the caller is always permitted to
+  view it, so the button is guaranteed to render.
+
+The **demo-CSV download** case is deliberately excluded — it is the flakiest part of the
+suite and is not worth the maintenance.
+
+#### Required test-side additions
+
+| Addition | File |
+|---|---|
+| `goToCsvDonorCreation()` | `cypress/support/pages/NavigationDrawer.ts` |
+| `CsvDonorCreationPage` page object (file input, Upload All, row/status selectors, error rows, existing-donors table) | `cypress/support/pages/CsvDonorCreationPage.ts` (new) |
+| Random-donor + CSV-string generator | `cypress/support/helpers/donorCsvGenerator.ts` (new) |
+| `data-cy` attributes on the new view's file input, Upload All button, table rows, status cells, error rows and See Donor buttons | `CsvDonorCreation.vue` |
+
+Note there is no `cypress/fixtures/` directory in the project today; the inline-buffer
+approach above means one is not needed.
+
+## Work breakdown
+
+| # | Change | File |
+|---|---|---|
+| 1 | Add `papaparse` + `@types/papaparse` | `badhan-frontend/package.json` |
+| 2 | CSV parse + normalize + client-side validate module, returning per-row `errors: [{field, message}]` | `badhan-frontend/src/utils/donorCsv.ts` (new) |
+| 2b | New API wrapper `handleGETDonorsPhoneList` for `GET /donors/phone`, batching phones 100 per call | `badhan-frontend/src/api/index.ts` |
+| 2c | Remove `rateLimiter.commonLimiter` from the `GET /donors/phone` route and regenerate the tsoa routes/spec | `badhan-backend/src/tsoaControllers/DonorsController.ts` |
+| 3 | CSV upload view: file input → three stacked tables (to-create / exists-in-db / broken rows) → "Upload All" → live per-row status with animated row routing | `badhan-frontend/src/views/CsvDonorCreation.vue` (new) |
+| 3b | "Exists in the database" table (§2b) with permission-aware "See Donor" popup button, and "broken rows" table (§2c) with inline per-field errors + failed-rows CSV export | same view |
+| 4 | Route registration | `badhan-frontend/src/router/index.ts` |
+| 5 | Entry points: nav sub-link + button on single-donor page, pointing at `/csvDonorCreation` | `AppBar.vue`, `SingleDonorCreation.vue` |
+| 6 | **Delete Advanced Donor Creation** (view, route, nav sub-link, button, `getDataInputAPIBaseURL`, `VUE_APP_DATAINPUT_URL`) | see §5 table |
+| 7 | "Download demo CSV" button + demo constant, and failed-rows CSV export (reuse existing `file-saver`) | `donorCsv.ts`, view |
+| 7b | Collapsible "CSV format" help panel documenting every column | view |
+| 8 | Cypress spec `csv-upload.cy.ts`: generate random donors → `cy.selectFile()` → "Upload All" → assert all created (see §6) | `badhan-frontend-test` |
+| 8b | Page object, drawer method, random-donor CSV generator, and `data-cy` hooks on the new view | `badhan-frontend-test`, `CsvDonorCreation.vue` |
+| 9 | Cypress: remove any assertion on the deleted nav sub-link | `badhan-frontend-test` |
+
+**Backend: one change only** — remove `rateLimiter.commonLimiter` from the
+`GET /donors/phone` route (item 2c) so the chunked pre-flight calls are never
+rate-limited, then regenerate the tsoa routes/spec. The upload loop stays entirely
+frontend-driven against the unchanged `POST /donors`; no new endpoint, and no extra
+batch-level server logging — the per-row `POST DONORS` log entries already suffice.

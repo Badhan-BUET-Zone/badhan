@@ -941,7 +941,7 @@ export class DonorsController extends Controller {
     message: 'Existing donors fetched successfully',
     donors: []
   })
-  @Middlewares([rateLimiter.commonLimiter, donorValidator.validateGETDonorsDuplicateMany, authenticator.handleAuthentication])
+  @Middlewares([donorValidator.validateGETDonorsDuplicateMany, authenticator.handleAuthentication])
   public async checkPhoneList(
     @Query() phoneList: number[],
     @Request() req: any
