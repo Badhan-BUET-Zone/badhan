@@ -29,6 +29,30 @@ Write **minimal to no custom CSS.** Prefer Vuetify utility classes (`ma-*`, `pa-
 `<style>` block is the last resort, only for something Vuetify genuinely cannot express,
 and kept as small as possible.
 
+### Running commands — Docker only
+
+**Docker Compose is the only supported environment; Node, npm, and MongoDB are never
+assumed to exist on the host.** Every `npm`/`npx`/build/test command in this document runs
+**inside a container**, never from the host machine. The relevant invocations:
+
+- **Dev stack** (frontend on :8080, backend on :3000, internal on :4000, mongo):
+  `docker compose up --attach backend --attach internal --attach frontend`. Source is
+  bind-mounted with hot reload, so a code change recompiles inside the `frontend` container
+  with no host-side `npm run serve`.
+- **Adding a frontend dependency**: edit `badhan-frontend/package.json` (and lockfile), then
+  rebuild the image so the install runs in-container —
+  `docker compose up --build frontend` (node_modules lives in the container, not on the host).
+- **A one-off npm/npx command in a service**: `docker compose run --rm frontend npm <…>`
+  (or `docker compose exec frontend npm <…>` against the already-running stack).
+- **Cypress suite** (one-off container under the `test` profile, always `--build`):
+  `docker compose --profile test run --build --rm frontend-test`. To scope to a single
+  spec, override the command:
+  `docker compose --profile test run --build --rm frontend-test npx cypress run --spec <path>`.
+- **Backend (Jest) suite**: `docker compose --profile test run --build --rm backend-test`.
+
+Wherever a "How to verify" step below says to run a command, run it through one of these
+container entry points — do not run it on the host.
+
 ---
 
 ## Phase 0 — Dependencies & scaffolding
@@ -41,10 +65,12 @@ and kept as small as possible.
   demo CSV and failed-rows export); no new dependency needed for it. No CSV parsing
   dependency exists in `badhan-frontend` today.
 
-**How to verify (developer):**
-- `npm ls papaparse @types/papaparse` inside `badhan-frontend` resolves both.
+**How to verify (developer):** (all commands run in-container — see "Running commands — Docker only")
+- `docker compose run --rm frontend npm ls papaparse @types/papaparse` resolves both.
 - `import Papa from 'papaparse'` in a scratch file type-checks with no missing-types error.
-- `npm run serve` (or the project's dev command) still boots with no build error.
+- `docker compose up --build frontend` rebuilds the image and the container logs
+  `Compiled successfully` with no build error (this is the in-container equivalent of the
+  old host-side `npm run serve`).
 
 ---
 
@@ -78,7 +104,9 @@ and kept as small as possible.
 - With the backend running, fire `GET /donors/phone?phoneList[]=8801...` (authenticated)
   ~150 times in a tight loop — none return `429`. Compare against another `commonLimiter`
   route that still throttles.
-- Backend test suite still passes (`badhan-backend-test` unchanged by design).
+- Backend test suite still passes, run in-container:
+  `docker compose --profile test run --build --rm backend-test` (`badhan-backend-test`
+  unchanged by design).
 
 ---
 
@@ -677,11 +705,13 @@ worth the maintenance.
 
 - Remove any assertion on the deleted nav sub-link.
 
-**How to verify (developer):**
-- `npx cypress run --spec cypress/e2e/donors/csv-upload.cy.ts` passes locally: the main
-  flow, the malformed-rows case, and the already-existing case all green.
+**How to verify (developer):** (in-container — see "Running commands — Docker only")
+- `docker compose --profile test run --build --rm frontend-test npx cypress run --spec
+  cypress/e2e/donors/csv-upload.cy.ts` passes: the main flow, the malformed-rows case, and
+  the already-existing case all green.
 - Removing a `data-cy` hook makes the spec fail (confirms selectors are real).
-- The full suite passes — no other spec references the removed nav sub-link.
+- The full suite passes — `docker compose --profile test run --build --rm frontend-test` —
+  no other spec references the removed nav sub-link.
 
 ---
 
