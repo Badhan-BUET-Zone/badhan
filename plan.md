@@ -144,26 +144,40 @@ lower-cased, upper-cased, or otherwise altered. Free-text fields (`name`, `roomN
 
 #### Column specification
 
-Constraints are the **backend's own** rules, from
-[validateBody.ts](badhan-backend/src/validations/validateRequest/validateBody.ts) and
-[constants/index.ts](badhan-backend/src/constants/index.ts), so the parser rejects
-exactly what the server would — plus the stricter input forms above.
+Two kinds of rule apply per column, and they are enforced differently:
+
+- **Format / representation rules** (how a value must be *spelled* in the CSV so it can
+  be parsed and mapped) are **always enforced client-side** — the 13-digit `8801…`
+  phone, hall names, blood-group labels, `yes`/`no`, `YYYY-MM-DD` dates. These are what
+  make the strict-input section above meaningful and have no single-donor analogue
+  because the single-donor form uses dropdowns/pickers instead of free text.
+- **Value-range validations** are enforced client-side **only where single-donor
+  creation already validates them in the browser** (`NewPersonCard.vue`'s `validations`
+  block). Anything the single-donor form leaves to the server, the uploader also leaves
+  to the server: such a row still passes client validation, is sent to `POST /donors`,
+  and routes to Table 3 on a non-`201` response with the server's message inline. So,
+  concretely, the parser does **not** enforce `name` 3–100 length, the exact backend
+  department list, or a `studentId` batch-year range, because single-donor creation does
+  not — it enforces `name` `required`, `studentId` = 7 numeric digits + `substr(2,2) ≤
+  departments.length`, the bidirectional count/date checks, etc., exactly as that form
+  does. The column table below reflects this split; where a cell documents a backend
+  rule the client does not check, it says so.
 
 | Column | Required | Accepted in CSV — nothing else | Sent to API | Rules |
 |---|---|---|---|---|
-| `name` | **yes** | text | `name` | 3–100 characters |
+| `name` | **yes** | text | `name` | client checks **non-blank only** (single-donor validates `name` as `required` and nothing more); the backend's 3–100-character rule is left to the server, and an out-of-range name routes to Table 3 on rejection |
 | `phone` | **yes** | exactly 13 digits, `8801XXXXXXXXX` | `phone` (number) | must fall in `8801000000000`–`8801999999999`. `01XXXXXXXXX`, `+8801…`, and any value containing spaces, dashes or punctuation are **rejected** |
-| `studentId` | **yes** | exactly 7 digits, e.g. `1605011` | `studentId` | digits 1–2 = batch year `01`–(current year); digits 3–4 = department, one of `00,01,02,04,05,06,08,10,11,12,15,16,17,18`; use `00` if the department is unknown |
+| `studentId` | **yes** | exactly 7 digits, e.g. `1605011` | `studentId` | **only the checks single-donor creation runs client-side**: 7 numeric digits and department code `substr(2,2)` ≤ `departments.length` ([NewPersonCard.vue:171-175](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L171-L175)). **No batch-year check**, and no validation against the exact backend department list `[0,1,2,4,5,6,8,10,11,12,15,16,17,18]` — the server is the authority on those, and any row the server rejects routes to Table 3. Use `00` for an unknown department |
 | `bloodGroup` | **yes** | one of `A+ A- B+ B- O+ O- AB+ AB-` | `bloodGroup` (int) | mapped via `bloodGroups` = `['A+','A-','B+','B-','O+','O-','AB+','AB-']`. Numeric codes **rejected** |
 | `hall` | **yes** | one of `Ahsanullah`, `Chatri`, `Nazrul`, `Rashid`, `Sher-e-Bangla`, `Suhrawardy`, `Titumir`, `Unknown` | `hall` (int) | mapped to `0,1,2,3,4,5,6,8` respectively. Numeric codes **rejected**. **`Attached` is rejected** — the API's donor-creation validator allows only `[0,1,2,3,4,5,6,8]`, and the create/edit dropdowns already omit it; `Attached` is a clear row error, never silently mapped to `Unknown`. `Unknown` forces `availableToAll = true` server-side |
 | `roomNumber` | no | text | `roomNumber` | 2–500 characters; **blank is auto-filled with `(Unknown)`**, matching single-donor creation |
 | `address` | no | text | `address` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
 | `comment` | no | text | `comment` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
-| `donationCount` | **yes** | integer `0`–`98` | `extraDonationCount` = `donationCount - 1` (or `0`) | the CSV value is the donor's **total** blood-donation count. Send `donationCount - 1` when it is `> 0` and `0` when it is `0`, exactly matching single-donor creation (see the "Count → `extraDonationCount`" rule below). Blank rejected — write `0` |
+| `donationCount` | **yes** | integer `0`–`99` | `extraDonationCount` = `donationCount - 1` (or `0`) | the CSV value is the donor's **total** blood-donation count. Range `0`–`99` matches single-donor creation's 2-digit cap ([NewPersonCard.vue:184-194](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L184-L194)). Send `donationCount - 1` when it is `> 0` and `0` when it is `0`, exactly matching single-donor creation (see the "Count → `extraDonationCount`" rule below). Blank rejected — write `0` |
 | `lastDonation` | conditional | `YYYY-MM-DD` | `lastDonation` (epoch ms) | must be blank when `donationCount` is `0`, and present when it is `> 0`. No other date format accepted. Future dates are **allowed** (matching single-donor creation, which does not reject them) |
-| `plateletDonationCount` | **yes** | integer `0`–`98` | `extraPlateletDonationCount` = `plateletDonationCount - 1` (or `0`) | total platelet-donation count; same `- 1` mapping as `donationCount`. Blank rejected — write `0` |
+| `plateletDonationCount` | **yes** | integer `0`–`99` | `extraPlateletDonationCount` = `plateletDonationCount - 1` (or `0`) | total platelet-donation count; range `0`–`99` (single-donor 2-digit cap); same `- 1` mapping as `donationCount`. Blank rejected — write `0` |
 | `lastPlateletDonation` | conditional | `YYYY-MM-DD` | `lastPlateletDonation` (epoch ms) | same rule as `lastDonation`, against `plateletDonationCount` |
-| `availableToAll` | **yes** | `yes` or `no` | `availableToAll` (bool) | `true`/`false`/`1`/`0`/blank **rejected**. Forced to `true` server-side when hall is `Unknown` |
+| `availableToAll` | **yes** | `yes` or `no` | `availableToAll` (bool) | `true`/`false`/`1`/`0`/blank **rejected**. **A row with `hall=Unknown` and `availableToAll=no` is a row error** (→ Table 3), *not* silently overridden — single-donor creation makes that combination impossible by force-setting and disabling the checkbox for the Unknown hall ([NewPersonCard.vue:80](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L80), [296-300](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L296-L300)), so with `hall=Unknown` the value must be `yes` |
 
 The `lastDonation`/`donationCount` rule is **bidirectional**, matching single-donor
 creation ([NewPersonCard.vue:274-284](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L274-L284)):
@@ -215,11 +229,19 @@ e.g. *"Could not parse CSV: unclosed quote on line 42"*, *"The file is empty"*, 
 header row found — the first row must be the column headers"* — so the user can fix the
 file from the message alone. Empty and header-only files are hard errors.
 
-Structural checks run next, before any row is validated: a **missing required column**
-or an **unrecognised column header** fails the whole file with the same single-alert
-treatment and a clear message ("Unknown column `bloodgroup_`; expected one of …"),
-rather than being ignored — an unexpected header usually means a mis-saved or wrong
-file, and silently dropping it would upload donors with fields quietly missing.
+Structural checks run next, before any row is validated: a **missing required column**,
+an **unrecognised column header**, or a **duplicate column header** (the same header
+appearing twice) fails the whole file with the same single-alert treatment and a clear
+message ("Unknown column `bloodgroup_`; expected one of …", or "Duplicate column
+`phone`"), rather than being ignored — an unexpected or repeated header usually means a
+mis-saved or wrong file, and silently dropping (or arbitrarily picking) it would upload
+donors with fields quietly missing or ambiguous.
+
+**Blank rows are not skipped.** papaparse runs with `skipEmptyLines: false`, so a
+completely empty row (all cells blank) — a common artefact of spreadsheet exports and
+stray trailing newlines — is **not** silently dropped. It fails the required-field
+checks like any other invalid row and lands in Table 3 (§2c) as a broken row, so the
+user sees exactly how many rows the file really contained.
 
 The three "required but usually blank" fields — `roomNumber`, `address`, `comment` —
 carry a 2-character minimum in the current API, but the uploader **auto-fills a blank
@@ -408,8 +430,10 @@ refers to are visually connected. Client-side and server-side errors render iden
 because both come from the same `errors: [{ field, message }]` array on the row.
 
 A heading states the count (*"5 of 120 rows have errors and were not uploaded"*), and
-**"Download failed rows as CSV"** exports exactly this table so the user can fix and
-re-upload just the broken rows. The table is hidden while empty.
+**"Download failed rows as CSV"** exports the broken rows' **original raw cell values
+under the identical header row — no error column and no other added fields** — so the
+downloaded file is byte-compatible with the uploader and can be edited and re-uploaded
+directly, with no columns to strip first. The table is hidden while empty.
 
 ### 3. Upload loop
 
