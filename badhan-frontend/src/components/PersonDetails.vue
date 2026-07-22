@@ -604,7 +604,7 @@ export default {
 
       detailsLoaderFlag: false,
 
-      donorLoaderFlag: false,
+      donorLoaderFlag: true,
 
       profile: null,
 

@@ -28,6 +28,8 @@
                   :key="index"
                   :id="`volunteerId_${volunteer._id}`"
                   data-cy="volunteerRow"
+                  style="cursor: pointer"
+                  @click="goToDonorProfile(volunteer._id)"
                 >
                   <td><span :id="`volunteerNameId_${volunteer._id}`">{{ volunteer.name }}</span><span v-if="index<3"><v-icon style="color: gold">mdi-star</v-icon></span></td>
                   <td :id="`volunteerBatchId_${volunteer._id}`">{{ volunteer.studentId.substr(0, 2) }}</td>
@@ -59,6 +61,8 @@
                   :key="index"
                   :id="`hallAdminId_${hallAdmin._id}`"
                   data-cy="hallAdminRow"
+                  style="cursor: pointer"
+                  @click="goToDonorProfile(hallAdmin._id)"
                 >
                   <td>{{ hallAdmin.hall | getHallName }}</td>
                   <td>{{ hallAdmin.name }}</td>
@@ -89,6 +93,8 @@
                   :key="index"
                   :id="`superAdminId_${superAdmin._id}`"
                   data-cy="superAdminRow"
+                  style="cursor: pointer"
+                  @click="goToDonorProfile(superAdmin._id)"
                 >
                   <td>{{ superAdmin.name }}</td>
                   <td>+{{ superAdmin.phone }}</td>
@@ -109,6 +115,8 @@ import PageTitle from '@/components/PageTitle'
 import Container from '@/components/Container/Container'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { handleGETDonorsDesignation } from '@/api'
+import { createNewPopUpWindow } from '@/mixins/helpers'
+import { environmentService } from '@/mixins/environment'
 
 export default {
   name: 'MembersPage',
@@ -116,6 +124,9 @@ export default {
   computed: {
   },
   methods: {
+    goToDonorProfile (donorId) {
+      createNewPopUpWindow(environmentService.getFrontendBaseURL() + '#/home/details?id=' + donorId)
+    }
   },
   data: function () {
     return {
