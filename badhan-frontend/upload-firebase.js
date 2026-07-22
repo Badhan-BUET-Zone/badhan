@@ -26,27 +26,27 @@ function getDeployTarget(currentBranch) {
   return { buildCmd: "npm run build:development", project: "badhan-buet-test" };
 }
 
+// firebase-tools is expected to be installed GLOBALLY (npm install -g
+// firebase-tools), not as a repo dependency: deploy runs on the host, and a
+// local install would be masked by the container's anonymous node_modules
+// volume and would bloat every `npm ci` image build. So we look for `firebase`
+// on PATH rather than in node_modules.
 function firebaseAvailable() {
   try {
-    execSync("npx --no-install firebase --version", { stdio: "ignore" });
+    execSync("firebase --version", { stdio: "ignore" });
     return true;
   } catch (_) {
     return false;
   }
 }
 
-function ensureFirebaseToolsInstalled(baseDir) {
-  if (!firebaseAvailable()) {
-    console.log("ℹ️  firebase-tools not found in node_modules. Installing as dev dependency…");
-    run("npm install --save-dev firebase-tools", baseDir);
-  }
-}
+const FIREBASE_INSTALL_HINT = "Install it globally with `npm install -g firebase-tools`.";
 
 // Side-effect-free preflight: validate everything the frontend deploy needs
 // WITHOUT building, installing, or deploying. Returns an array of
-// human-readable error strings (empty === ready to deploy). Note: firebase-tools
-// is auto-installed at deploy time, so its absence here is not fatal; a
-// missing/unauthenticated login is what actually blocks deploy.
+// human-readable error strings (empty === ready to deploy). Never installs
+// anything: if firebase-tools is missing it reports the install command for
+// the user to run rather than fetching it here.
 function checkRequirements(baseDir = __dirname) {
   const errors = [];
 
@@ -63,16 +63,19 @@ function checkRequirements(baseDir = __dirname) {
     errors.push(`frontend: required Firebase config "${configFile}" not found (needed for project ${project}).`);
   }
 
-  // Only assert auth if firebase-tools is already available; if it isn't, it
-  // will be installed at deploy time and the user can auth then.
-  if (firebaseAvailable()) {
+  if (!firebaseAvailable()) {
+    errors.push(`frontend: firebase-tools not found on PATH. ${FIREBASE_INSTALL_HINT}`);
+  } else {
+    // `firebase login:list` only reads the stored token; it can't tell whether
+    // that token still works. `projects:list` actually calls the Firebase API,
+    // so a revoked/expired credential fails here the same way a deploy would.
     try {
-      const out = execSync("npx --no-install firebase login:list", { encoding: "utf8" });
-      if (/No authorized accounts/i.test(out)) {
-        errors.push("frontend: firebase-tools has no logged-in account (run `firebase login`).");
-      }
+      execSync("firebase projects:list", { stdio: "ignore" });
     } catch (_) {
-      errors.push("frontend: unable to verify firebase login (run `firebase login`).");
+      errors.push(
+        "frontend: firebase credentials are missing or expired (API call failed). " +
+          "Run `firebase login --reauth` (plain `firebase login` reports 'Already logged in' and won't refresh an expired token)."
+      );
     }
   }
 
@@ -95,8 +98,6 @@ function deployToFirebase() {
 
   const { buildCmd, project: firebaseProject } = getDeployTarget(currentBranch);
 
-  ensureFirebaseToolsInstalled(baseDir);
-
   console.log(`🔨  Running build command: ${buildCmd}`);
   run(buildCmd, baseDir);
 
@@ -104,7 +105,7 @@ function deployToFirebase() {
   const configFile = `firebase.${firebaseProject}.json`;
 
   run(
-    `npx --no-install firebase deploy --only hosting --project "${firebaseProject}" --config "${configFile}"`,
+    `firebase deploy --only hosting --project "${firebaseProject}" --config "${configFile}"`,
     baseDir
   );
 

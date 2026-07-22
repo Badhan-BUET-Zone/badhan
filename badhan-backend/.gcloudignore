@@ -21,3 +21,8 @@ mongodb_local
 mongotools
 config
 backup
+
+# Runtime logs: actively written while the app runs, so uploading them causes a
+# manifest SHA mismatch mid-deploy ("Failed to download at least one file").
+# They also don't belong in the deployed artifact.
+logs/

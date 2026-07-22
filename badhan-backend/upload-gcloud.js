@@ -2,8 +2,19 @@
 "use strict";
 
 const { execSync } = require("child_process");
-const { existsSync, writeFileSync } = require("fs");
+const { existsSync, writeFileSync, mkdtempSync, copyFileSync, rmSync } = require("fs");
 const { resolve } = require("path");
+const os = require("os");
+
+// Env files are NOT committed to this repo. They live in a private secrets
+// repo and are cloned into place only for the duration of a deploy, then
+// removed. Override the URL/branch via env vars if your access is over SSH
+// (e.g. SECRETS_REPO_URL=git@github.com:mirmahathir1/secrets.git).
+const SECRETS_REPO_URL =
+  process.env.SECRETS_REPO_URL || "https://github.com/mirmahathir1/secrets.git";
+const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "master";
+// Path of the env files within the secrets repo.
+const SECRETS_SUBDIR = "badhan-backend";
 
 function run(command, cwd) {
   return execSync(command, { stdio: "inherit", cwd });
@@ -32,15 +43,56 @@ function commandExists(cmd) {
   }
 }
 
-function gcloudHasActiveAccount() {
+// Validate that gcloud has WORKING credentials, not merely a configured active
+// account. `gcloud auth list` reports an account as active even after its
+// refresh token has been revoked/expired, so it can't catch the `invalid_grant`
+// failure the deploy hits. `print-access-token` forces an actual token refresh
+// and fails the same way the deploy would, so we exercise it here.
+function gcloudHasValidCredentials() {
+  try {
+    const out = execSync("gcloud auth print-access-token", {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    return out.trim().length > 0;
+  } catch (_) {
+    return false;
+  }
+}
+
+// Confirm we can reach the secrets repo and that the target branch exists,
+// without downloading anything. Used by the preflight so we fail fast if the
+// env file couldn't be fetched at deploy time.
+function secretsBranchReachable() {
   try {
     const out = execSync(
-      'gcloud auth list --filter=status:ACTIVE --format="value(account)"',
-      { encoding: "utf8" }
+      `git ls-remote --heads ${SECRETS_REPO_URL} ${SECRETS_BRANCH}`,
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
     );
     return out.trim().length > 0;
   } catch (_) {
     return false;
+  }
+}
+
+// Clone the env file for `envFile` from the secrets repo into `baseDir`.
+// Returns the absolute path written. Uses a throwaway temp clone that is
+// always removed. Throws if the file isn't present in the secrets repo.
+function fetchSecretEnv(baseDir, envFile) {
+  const tmp = mkdtempSync(resolve(os.tmpdir(), "badhan-secrets-"));
+  try {
+    run(`git clone --depth 1 --branch ${SECRETS_BRANCH} ${SECRETS_REPO_URL} "${tmp}"`);
+    const src = resolve(tmp, SECRETS_SUBDIR, envFile);
+    if (!existsSync(src)) {
+      throw new Error(
+        `"${SECRETS_SUBDIR}/${envFile}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
+      );
+    }
+    const dest = resolve(baseDir, envFile);
+    copyFileSync(src, dest);
+    return dest;
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
   }
 }
 
@@ -61,16 +113,28 @@ function checkRequirements(baseDir = __dirname) {
 
   const { envFile, yaml, project } = getDeployTarget(currentBranch);
 
+  // The env file is fetched from the secrets repo at deploy time. Accept a
+  // local copy if one already exists; otherwise require the secrets repo to be
+  // reachable so the fetch will succeed.
   if (!existsSync(resolve(baseDir, envFile))) {
-    errors.push(`backend: required env file "${envFile}" not found (needed for project ${project}).`);
+    if (!secretsBranchReachable()) {
+      errors.push(
+        `backend: "${envFile}" not present locally and secrets repo not reachable ` +
+          `(${SECRETS_REPO_URL} branch ${SECRETS_BRANCH}). Check git access.`
+      );
+    }
   }
   if (!existsSync(resolve(baseDir, yaml))) {
     errors.push(`backend: required App Engine config "${yaml}" not found.`);
   }
   if (!commandExists("gcloud")) {
-    errors.push("backend: gcloud CLI not found on PATH.");
-  } else if (!gcloudHasActiveAccount()) {
-    errors.push("backend: gcloud has no active account (run `gcloud auth login`).");
+    errors.push(
+      "backend: gcloud CLI not found on PATH. Install it: https://cloud.google.com/sdk/docs/install"
+    );
+  } else if (!gcloudHasValidCredentials()) {
+    errors.push(
+      "backend: gcloud credentials are missing or expired (token refresh failed). Run `gcloud auth login`."
+    );
   }
 
   return errors;
@@ -106,9 +170,28 @@ function deployToGoogleCloud() {
     }
 
     const currentBranch = getCurrentBranch();
-    const { yaml, project } = getDeployTarget(currentBranch);
-    updateLastDeployed(baseDir);
-    run(`gcloud app deploy --project ${project} ./${yaml} --quiet`, baseDir);
+    const { envFile, yaml, project } = getDeployTarget(currentBranch);
+
+    // Fetch the env file from the secrets repo unless a local copy already
+    // exists. Only files WE fetched are cleaned up afterwards, so a
+    // pre-existing local env is never deleted.
+    const envPath = resolve(baseDir, envFile);
+    let fetchedEnv = false;
+    if (!existsSync(envPath)) {
+      console.log(`🔐  Fetching ${envFile} from secrets repo…`);
+      fetchSecretEnv(baseDir, envFile);
+      fetchedEnv = true;
+    }
+
+    try {
+      updateLastDeployed(baseDir);
+      run(`gcloud app deploy --project ${project} ./${yaml} --quiet`, baseDir);
+    } finally {
+      if (fetchedEnv) {
+        rmSync(envPath, { force: true });
+        console.log(`🧹  Removed fetched ${envFile}.`);
+      }
+    }
     return true;
   } catch (err) {
     // child_process throws with status code; ensure non-zero exit for CI visibility

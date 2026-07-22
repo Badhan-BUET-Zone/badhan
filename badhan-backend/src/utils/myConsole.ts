@@ -13,19 +13,29 @@ const commonFormat: Format = winston.format.combine(          // ← type added
   ),
 );
 
-/* ── logger and wrapper (unchanged) ────────────────────────── */
-const logger: winston.Logger = winston.createLogger({
-  level: 'debug',
-  format: commonFormat,
-  transports: [
-    new winston.transports.Console(),
+/* ── logger and wrapper ────────────────────────────────────── */
+// On App Engine the filesystem is read-only (only /tmp is writable), so the
+// File transport crashes on startup trying to mkdir 'logs'. App Engine sets
+// GAE_ENV, so there we log to stdout only (Console → Cloud Logging) and add the
+// file transport just for local / Docker development.
+const isAppEngine = Boolean(process.env.GAE_ENV);
+
+const transports: winston.transport[] = [new winston.transports.Console()];
+if (!isAppEngine) {
+  transports.push(
     new winston.transports.File({
       filename: 'logs/badhan.log',
       maxsize: 10 * 1024 * 1024,
       maxFiles: 5,
       tailable: true,
     }),
-  ],
+  );
+}
+
+const logger: winston.Logger = winston.createLogger({
+  level: 'debug',
+  format: commonFormat,
+  transports,
 });
 
 export default {
