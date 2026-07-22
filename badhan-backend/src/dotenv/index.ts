@@ -18,7 +18,7 @@ type EnvironmentLiteral = typeof ENVIRONMENT_TYPES[keyof typeof ENVIRONMENT_TYPE
 
 /* ── resolve and verify env file ──────────────────────────────── */
 const envPath: string =                                // 🆕 annotate
-  `.env.${process.env.NODE_ENV ?? ENVIRONMENT_TYPES.DEVELOPMENT}`;
+  `env.${process.env.NODE_ENV ?? ENVIRONMENT_TYPES.DEVELOPMENT}`;
 
 if (!fs.existsSync(envPath)) {
   myConsole.log(`🛑  Environment file "${envPath}" not found. Program will exit.`);

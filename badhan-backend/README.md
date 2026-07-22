@@ -55,7 +55,7 @@ gsutil 5.35
 
 * `gcloud auth login`
 * Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.
-* Get `.env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
+* Get `env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
 * `bash ./upload-gcloud.sh`
 
 Expected output:

@@ -3,8 +3,9 @@ playground/
 dotenv/config.json
 .idea/
 app.yml
-.env.production
-.env.development
+env.production
+env.development
+env.local
 dist
 .vscode
 .DS_Store

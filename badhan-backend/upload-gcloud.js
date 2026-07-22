@@ -29,9 +29,9 @@ function getCurrentBranch() {
 // the two can never drift.
 function getDeployTarget(currentBranch) {
   if (currentBranch === "main") {
-    return { envFile: ".env.production", yaml: "app_prod.yaml", project: "badhan-buet" };
+    return { envFile: "env.production", yaml: "app_prod.yaml", project: "badhan-buet" };
   }
-  return { envFile: ".env.development", yaml: "app_dev.yaml", project: "badhan-buet-test" };
+  return { envFile: "env.development", yaml: "app_dev.yaml", project: "badhan-buet-test" };
 }
 
 function commandExists(cmd) {

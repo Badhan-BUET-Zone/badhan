@@ -107,8 +107,8 @@ DRY_RUN=1 NODE_ENV=local npx ts-node --transpile-only scripts/migrations/index.t
 ## Environment Loading
 `_bootstrap.ts` sets `NODE_ENV` to `local` if you didn't provide one, then loads the first existing of:
 
-1. `.env.<NODE_ENV>`
-2. `.env`
+1. `env.<NODE_ENV>`
+2. `env`
 
 It then reuses the central Mongoose connection logic in `src/db/mongoose.ts`.
 

@@ -7,29 +7,33 @@ import { param, validationResult } from 'express-validator'
 import { spawnSync } from 'child_process'
 import path from 'path'
 import fs from 'fs'
+import dotenv from 'dotenv'
 import { clearDatabase } from '../db/test/clearDatabase'
 import { generateFakeData } from '../db/test/populate'
 
-// --- Load config/config.env into process.env (non‑destructive) -----------------
-// Provides MONGODB_URI_PROD, MONGODB_URI_TEST, MONGODB_URI_LOCAL for backup utilities
-// Only sets vars that are currently undefined to avoid clobbering runtime/env vars.
-(() => {
+// --- Load MongoDB URIs for backup/restore from per-environment dotenv files ------
+// Each environment's connection string lives in its own file (env.production /
+// env.development / env.local) under the MONGODB_URI key. Backup dumps from
+// production; restore targets development or local. Read the files directly instead
+// of mutating process.env so these never clobber the app's own MONGODB_URI.
+const readMongoUriFromEnvFile = (envFileName: string): string => {
   try {
-    const cfgPath = path.resolve('config', 'config.env')
-    if (!fs.existsSync(cfgPath)) return
-    const lines = fs.readFileSync(cfgPath, 'utf8').split(/\r?\n/)
-    for (const line of lines) {
-      if (!line || line.trim().startsWith('#')) continue
-      const idx = line.indexOf('=')
-      if (idx === -1) continue
-      const key = line.slice(0, idx).trim()
-      const value = line.slice(idx + 1).trim()
-      if (key && !(key in process.env)) process.env[key] = value
+    const envFilePath = path.resolve(envFileName)
+    if (!fs.existsSync(envFilePath)) {
+      console.log(`[backup] env file ${envFileName} not found; its MONGODB_URI is empty`)
+      return ''
     }
+    const parsed = dotenv.parse(fs.readFileSync(envFilePath))
+    return parsed.MONGODB_URI || ''
   } catch (e) {
-    console.log('[backup] failed to load config/config.env:', (e as Error).message)
+    console.log(`[backup] failed to read ${envFileName}:`, (e as Error).message)
+    return ''
   }
-})()
+}
+
+const MONGODB_URI_PRODUCTION = readMongoUriFromEnvFile('env.production')
+const MONGODB_URI_DEVELOPMENT = readMongoUriFromEnvFile('env.development')
+const MONGODB_URI_LOCAL = readMongoUriFromEnvFile('env.local')
 // dynamic requires for libs without type defs
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const AdmZip = require('adm-zip')
@@ -197,7 +201,7 @@ const backupController = async () => {
   }
 
   console.log('[backup] fetching database...')
-  const child = spawnSync(mongodumpPath, ['--out=backup/' + folderName, process.env.MONGODB_URI_PROD || ''], { encoding: 'utf8' })
+  const child = spawnSync(mongodumpPath, ['--out=backup/' + folderName, MONGODB_URI_PRODUCTION], { encoding: 'utf8' })
   // print child process output for debugging
   console.log('[backup] mongodump output:', child.stdout)
   console.log('[backup] mongodump error (if any):', child.stderr)
@@ -245,8 +249,8 @@ const restoreController = async ({ time, production, development }: { time: numb
   if (production) {
     return new ForbiddenError403('Production restore is not allowed', {})
   }
-  let mongoURI = process.env.MONGODB_URI_LOCAL || ''
-  if (development) mongoURI = process.env.MONGODB_URI_TEST || mongoURI
+  let mongoURI = MONGODB_URI_LOCAL
+  if (development) mongoURI = MONGODB_URI_DEVELOPMENT || mongoURI
   console.log('[backup] using mongoURI:', mongoURI)
   const backupList = await storage.getBackupList()
   if (!backupList.includes(time)) {

@@ -15,8 +15,8 @@ if (!process.env.NODE_ENV) {
 
 // Attempt to load a .env file matching NODE_ENV if present (optional; main mongoose.ts also imports custom dotenv wrapper)
 const envFileCandidates: string[] = [
-  `.env.${process.env.NODE_ENV}`,
-  '.env'
+  `env.${process.env.NODE_ENV}`,
+  'env'
 ];
 for (const candidate of envFileCandidates) {
   const full: string = path.resolve(process.cwd(), candidate);
