@@ -77,7 +77,7 @@
         />
 
 
-          <v-checkbox id="newDonorPublicDataCheckboxId" data-cy="newDonorPublicDataCheckboxId" :disabled="halls.indexOf(hall)===8" dense v-model="availableToAll"
+          <v-checkbox id="newDonorPublicDataCheckboxId" data-cy="newDonorPublicDataCheckboxId" :disabled="isHallUnknown(halls.indexOf(hall))" dense v-model="availableToAll"
                       @blur="$v.availableToAll.$touch()" :error-messages="availableToAllErrors"
                       label="Public Data"></v-checkbox>
 
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { halls, bloodGroups, departments, nullDepartment } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HALLS_INDEX, HTTP_STATUS, bloodGroups, departments, halls, isHallRestricted, isHallUnknown, nullDepartment, restrictedHallNames } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '@/components/Container/Container'
@@ -150,7 +150,7 @@ export default {
           const response = await handleGETDonorsDuplicate({ phone: '88' + phone })
           this.phoneDuplicateCheckLoader = false
 
-          if (response.status !== 200) return false
+          if (response.status !== HTTP_STATUS.OK) return false
 
           this.duplicateDonorId = response.data.donor ? response.data.donor._id : null
           this.duplicateDonorMessage = response.data.message
@@ -178,7 +178,7 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.$store.getters['getDesignation'] !== 3)
+          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && isHallRestricted(this.halls.indexOf(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
         }
       },
       donationCount: {
@@ -224,7 +224,7 @@ export default {
     },
 
     availableHalls () {
-      return [...halls.slice(0, 7), halls[8]]
+      return [...restrictedHallNames(), halls[HALLS_INDEX.UNKNOWN]]
     },
     phoneErrors () {
       const errors = []
@@ -390,6 +390,8 @@ export default {
     }
   },
   methods: {
+    // exposed for the template, which cannot see module imports
+    isHallUnknown,
     async createDonorClicked () {
       await this.$v.$touch()
       if (this.$v.$anyError) {
@@ -432,7 +434,7 @@ export default {
 
       this.donorCreationLoader = true
       const response = await handlePOSTDonors(newDonor)
-      if (response.status !== 201) return
+      if (response.status !== HTTP_STATUS.CREATED) return
       this.$store.dispatch('notification/notifySuccess', 'Donor added successfully')
       this.donorCreationLoader = false
     },

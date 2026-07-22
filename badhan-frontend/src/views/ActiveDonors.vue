@@ -59,7 +59,7 @@ import PageTitle from '@/components/PageTitle'
 import ContainerFlat from '@/components/Container/ContainerFlat'
 import PersonCardNew from '@/components/PersonCardNew'
 import Filters from '@/components/Filters'
-import { bloodGroups, halls } from '@/mixins/constants'
+import { BLOOD_GROUP_ANY, HALLS_INDEX, HTTP_STATUS, bloodGroups, halls } from '@/mixins/constants'
 import Button from '@/components/UI Components/Button'
 import NoticeCard from '@/components/UI Components/NoticeCard'
 import Vue from 'vue'
@@ -105,8 +105,8 @@ export default {
   async getAllActiveDonors () {
       this.markedByMe = false
       const payloadForGetActiveDonors = {
-        bloodGroup: -1,
-        hall: 5,
+        bloodGroup: BLOOD_GROUP_ANY,
+        hall: HALLS_INDEX.SUHRAWARDY,
         batch: '',
         name: '',
         address: '',
@@ -161,7 +161,7 @@ export default {
       this.activeDonorsLoader = true
       this.clearNoDonorComponent()
       const activeDonorsResult = await handleGETActiveDonors(payloadForGetActiveDonors)
-      if (activeDonorsResult.status !== 200) return
+      if (activeDonorsResult.status !== HTTP_STATUS.OK) return
       this.activeDonors = activeDonorsResult.data.activeDonors
       if (this.activeDonors.length === 0) {
         this.createNoDonorComponent()

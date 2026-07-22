@@ -19,6 +19,7 @@
 import Container from '@/components/Container/Container'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { handleGETStatistics } from '@/api'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'StatsPage',
@@ -40,7 +41,7 @@ export default {
   async mounted () {
     this.statisticsLoaderFlag = true
     const response = await handleGETStatistics()
-    if (response.status !== 200) return
+    if (response.status !== HTTP_STATUS.OK) return
     this.statistics = response.data.statistics
     this.statsShown = true
     this.statisticsLoaderFlag = false

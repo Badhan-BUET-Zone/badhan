@@ -162,6 +162,7 @@ import PageTitle from '@/components/PageTitle'
 import Container from '@/components/Container/Container'
 import Button from '@/components/UI Components/Button'
 import axios from 'axios'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'BackupRestore',
@@ -229,7 +230,7 @@ export default {
       try {
         const response = await this.backupAPIAxios.get('/backup')
         this.backupTimestampsLoaderFlag = false
-        if (response.status !== 200) {
+        if (response.status !== HTTP_STATUS.OK) {
           this.backupTimestampsErrorFlag = true
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
@@ -251,7 +252,7 @@ export default {
       try {
         const response = await this.backupAPIAxios.delete(`/backup/date/${timestamp}`)
         this.initRowFlags(this.backupTimestamps.length)
-        if (response.status !== 200) {
+        if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
@@ -269,7 +270,7 @@ export default {
       try {
         const response = await this.backupAPIAxios.post(`/restore/${timestamp}?development=true`)
         this.initRowFlags(this.backupTimestamps.length)
-        if (response.status !== 200) {
+        if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
@@ -285,7 +286,7 @@ export default {
       try {
         const response = await this.backupAPIAxios.post(`/restore/${timestamp}?production=true`)
         this.initRowFlags(this.backupTimestamps.length)
-        if (response.status !== 200) {
+        if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
@@ -301,7 +302,7 @@ export default {
         try {
           const response = await this.backupAPIAxios.post(`/restore/${timestamp}`)
           this.initRowFlags(this.backupTimestamps.length)
-          if (response.status !== 200) {
+          if (response.status !== HTTP_STATUS.OK) {
             this.$store.dispatch('notification/notifyError', response.data.message)
             return
           }
@@ -317,7 +318,7 @@ export default {
       try {
         const response = await this.backupAPIAxios.post('/backup')
         this.createNewBackupLoaderFlag = false
-        if (response.status !== 201) {
+        if (response.status !== HTTP_STATUS.CREATED) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
@@ -336,7 +337,7 @@ export default {
       try {
         const response = await this.backupAPIAxios.delete('/backup/old')
         this.trimBackupsLoaderFlag = false
-        if (response.status !== 200) {
+        if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
@@ -356,11 +357,11 @@ export default {
         const response = await this.backupAPIAxios.post('/purge-local-db')
         const response2 = await this.backupAPIAxios.post('/populate-local-db')
         this.purgeLocalLoaderFlag = false
-        if (response.status !== 200) {
+        if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
-        if(response2.status !== 200){
+        if(response2.status !== HTTP_STATUS.OK){
           this.$store.dispatch('notification/notifyError', response2.data.message)
           return
         }
@@ -376,7 +377,7 @@ export default {
       try {
         // Step 1: Create a new backup
         const backupResponse = await this.backupAPIAxios.post('/backup')
-        if (backupResponse.status !== 201) {
+        if (backupResponse.status !== HTTP_STATUS.CREATED) {
           this.copyToLocalLoaderFlag = false
           this.$store.dispatch('notification/notifyError', backupResponse.data.message || 'Failed to create backup')
           return
@@ -389,7 +390,7 @@ export default {
         // Step 2: Restore that backup to local
         const restoreResponse = await this.backupAPIAxios.post(`/restore/${createdAt}`)
         this.copyToLocalLoaderFlag = false
-        if (restoreResponse.status !== 200) {
+        if (restoreResponse.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', restoreResponse.data.message || 'Failed to restore newly created backup locally')
           return
         }

@@ -97,6 +97,7 @@ import Button from '@/components/UI Components/Button'
 import LoginCard from '@/views/MyProfile/components/LoginCard'
 import { handleGETLogins, handleDELETELogins } from '@/api'
 import { environmentService } from '@/mixins/environment'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'MyProfile',
@@ -132,14 +133,14 @@ export default {
       this.getLoginsLoader = true
       const response = await handleGETLogins()
       this.getLoginsLoader = false
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       this.logins = response.data.logins
       this.currentLogin = response.data.currentLogin
       this.loginsFetched = true
     },
     async deleteLogin (tokenId) {
       const response = await handleDELETELogins({ tokenId })
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       this.logins = this.logins.filter(login => login._id !== tokenId)
       this.$store.dispatch('notification/notifySuccess', response.data.message);
     },

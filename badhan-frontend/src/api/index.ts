@@ -12,6 +12,7 @@ import { store } from '@/store/store'
 import { processError } from '@/mixins/helpers'
 import { myConsole } from '@/mixins/myConsole'
 import { environmentService} from "@/mixins/environment";
+import { HTTP_STATUS } from '@/mixins/constants'
 
 const baseURL = environmentService.getAPIBaseURL()
 
@@ -217,7 +218,7 @@ const handleGETDonorsPhoneList = async (phoneList: string[]) => {
     } catch (e) {
       return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
     }
-    if (!response || response.status !== 200) {
+    if (!response || response.status !== HTTP_STATUS.OK) {
       return response
     }
     donors.push(...response.data.donors)

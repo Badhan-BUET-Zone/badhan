@@ -30,6 +30,7 @@ import PageTitle from '@/components/PageTitle'
 import Container from '@/components/Container/Container'
 import Button from '@/components/UI Components/Button'
 import JsonTree from '@/components/UI Components/JsonTree.vue'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'SchemaInconsistencies',
@@ -46,7 +47,7 @@ export default {
       this.error = null
       try {
         const resp = await this.internalAxios.get('/schema-inconsistencies')
-        if (resp.status !== 200) {
+        if (resp.status !== HTTP_STATUS.OK) {
           this.error = (resp.data && resp.data.message) || 'Failed to load data'
           this.$store.dispatch('notification/notifyError', this.error)
         } else {

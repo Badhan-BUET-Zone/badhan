@@ -114,7 +114,7 @@
 
 <script>
 import PersonCardNew from '@/components/PersonCardNew'
-import { bloodGroups, DESIGNATIONS_INDEX, halls } from '@/mixins/constants'
+import { BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HTTP_STATUS, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
 import { isGuestEnabled, handleGETSearchV3 } from '@/api'
 import { convertObjectToCSV, textFileDownloadInWeb, processPersonsForReport } from '@/mixins/helpers'
@@ -131,7 +131,7 @@ export default {
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
         if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
-          return halls.slice(0, 7)
+          return restrictedHallNames()
         } else {
           return [halls[this.$store.getters['getHall']]]
         }
@@ -163,7 +163,7 @@ export default {
   data: function () {
     return {
       name: '',
-      bloodGroup: -1,
+      bloodGroup: BLOOD_GROUP_ANY,
       batch: '',
       address: '',
       hall: halls[this.$store.getters['getHall']],
@@ -212,7 +212,7 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.$store.getters['getDesignation'] !== 3)
+          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && isHallRestricted(this.halls.indexOf(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
         }
       }
     }
@@ -286,7 +286,7 @@ export default {
       // Wait a moment for loader to disappear
       await new Promise(resolve => setTimeout(resolve, 200))
       
-      if (response.status !== 200) {
+      if (response.status !== HTTP_STATUS.OK) {
         return
       }
       
@@ -433,7 +433,7 @@ export default {
       this.downloadCSVLoader = true
       const redirectionTokenResponse = this.$store.dispatch('requestRedirectionToken')
       this.downloadCSVLoader = false
-      if (redirectionTokenResponse.status !== 201) return
+      if (redirectionTokenResponse.status !== HTTP_STATUS.CREATED) return
       const searchRouteData = this.$router.resolve({
         name: 'Home',
         query: {

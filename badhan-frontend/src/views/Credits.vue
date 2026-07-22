@@ -60,6 +60,7 @@ import Container from '@/components/Container/Container'
 import PersonCredit from '@/views/Credits/components/PersonCredit'
 import { handleGETContributors } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'CreditsPage',
@@ -82,7 +83,7 @@ export default {
     this.contributorsLoader = true
     const response = await handleGETContributors()
     this.contributorsLoader = false
-    if (response.status !== 200) return
+    if (response.status !== HTTP_STATUS.OK) return
     const rawContributors = response.data
     const groupedContributors = Object.entries(rawContributors).reduce(function (obj, singleElement) {
       const type = singleElement[1].type

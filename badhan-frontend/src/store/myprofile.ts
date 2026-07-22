@@ -1,4 +1,5 @@
 import ldb from '@/localDatabase'
+import { DESIGNATIONS_INDEX } from '@/mixins/constants'
 export interface MyProfileStateInterface {
   _id: string | null
   name: string | null
@@ -59,7 +60,7 @@ const mutations = {
     ldb.myProfile.save(state)
   },
   loadMyProfileFromLocalStorage(state: MyProfileStateInterface){
-    state.designation = 1
+    state.designation = DESIGNATIONS_INDEX.VOLUNTEER
     const myProfileFromLDB = ldb.myProfile.load().data
     if(!myProfileFromLDB)return
 

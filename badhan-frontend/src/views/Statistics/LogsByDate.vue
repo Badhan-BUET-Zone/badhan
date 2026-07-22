@@ -34,7 +34,7 @@ import { handleGETLogs } from '@/api'
 import DateLog from './components/DateLog'
 import Container from '@/components/Container/Container'
 import LoadingMessage from '@/components/LoadingMessage.vue'
-import { DESIGNATIONS_INDEX } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'LogsByDate',
@@ -56,7 +56,7 @@ export default {
     this.logCountLoader = true
     const response = await handleGETLogs()
     this.logCountLoader = false
-    if (response.status !== 200) return
+    if (response.status !== HTTP_STATUS.OK) return
     let options = { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' };
     let logs = response.data.logs.map(log=>{
       return {

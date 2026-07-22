@@ -188,12 +188,22 @@ named `BLOOD_GROUP_ANY`. The frontend's two sites are not that:
 | Site | Today | Constant |
 |---|---|---|
 | [mixins/filters.ts:10](badhan-frontend/src/mixins/filters.ts#L10) | `-1` renders as `'All Negative'` | `BLOOD_GROUP_ALL_NEGATIVE` |
-| [utils/donorCsv.ts:120](badhan-frontend/src/utils/donorCsv.ts#L120) | `-1` means "not a recognised blood group" | `BLOOD_GROUP_UNRECOGNISED` |
+| [views/PublicContacts.vue:17](badhan-frontend/src/views/PublicContacts.vue#L17) | `-1` selects the "any negative blood" heading | `BLOOD_GROUP_ALL_NEGATIVE` |
+| `Home.vue`, `ActiveDonors.vue`, `PersonCardNew.vue` | `-1` is a search-payload default | `BLOOD_GROUP_ANY` |
 
-Three names for one numeric value is intentional: each says what its call site actually
+Two names for one numeric value is intentional: each says what its call site actually
 means, and a single `BLOOD_GROUP_ANY` would make the `filters.ts` line read as a
 contradiction. If that divergence is itself a latent bug, it is now visible — flag it,
 don't fix it here.
+
+**Correction, made during implementation.** An earlier draft of this spec also named
+[utils/donorCsv.ts:120](badhan-frontend/src/utils/donorCsv.ts#L120) as a third case,
+`BLOOD_GROUP_UNRECOGNISED`. On reading the code that site is
+`bloodGroups.indexOf(bgRaw) === -1` — the `Array.prototype.indexOf` not-found contract,
+not a blood-group sentinel at all. The neighbouring `hall` check on the next line is the
+same. Naming it would assert a domain meaning the value does not have, so both are
+**excluded**, and `BLOOD_GROUP_UNRECOGNISED` is not defined (it would have had no call
+site, which S12 forbids anyway).
 
 ## The core finding
 

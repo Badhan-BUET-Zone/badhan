@@ -51,6 +51,7 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 import PersonCardNew from '@/components/PersonCardNew'
 import DatePicker from '@/components/UI Components/DatePicker.vue'
 import { handleGETDonorsNew } from '@/api'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'NewDonors',
@@ -103,7 +104,7 @@ export default {
         endTime: end.getTime()
       })
       this.fetchLoader = false
-      if (!response || response.status !== 200) return
+      if (!response || response.status !== HTTP_STATUS.OK) return
 
       // Expecting response.data.donors as an array
       this.donors = response.data.donors || []

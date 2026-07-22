@@ -11,6 +11,7 @@ import {
 
 import ldb from '@/localDatabase'
 import {Commit, Dispatch} from "vuex";
+import { HTTP_STATUS } from '@/mixins/constants'
 
 interface AuthStoreStateInterface {
   token: null | string
@@ -95,7 +96,7 @@ const actions = {
   async logout ({ commit, dispatch }: {commit: Commit, dispatch: Dispatch}) {
     commit('setLoadingTrue')
     const response = await handleDELETESignOut()
-    if (response.status === 200) {
+    if (response.status === HTTP_STATUS.OK) {
       dispatch('notification/notifySuccess', response.data.message)
     }
     commit('setLoadingFalse')
@@ -107,7 +108,7 @@ const actions = {
   },
   async logoutAll ({ commit, dispatch }: {commit: Commit, dispatch: Dispatch}) {
     const response = await handleDELETESignOutAll()
-    if (response.status === 200) {
+    if (response.status === HTTP_STATUS.OK) {
       dispatch('notification/notifySuccess', response.data.message)
     }
     commit('unsetLoginFlag')
@@ -127,7 +128,7 @@ const actions = {
     commit('signInLoaderFlagOn')
     const patchRedirectionResponse = await handlePATCHRedirectedAuthentication({ token: payload })
     commit('signInLoaderFlagOff')
-    if (patchRedirectionResponse.status !== 201) {
+    if (patchRedirectionResponse.status !== HTTP_STATUS.CREATED) {
       return false
     }
     commit('setToken', patchRedirectionResponse.data.token)
@@ -140,8 +141,8 @@ const actions = {
     if (state.token === null) return true
     const response = await handleGETDonorsMe()
 
-    if (response.status !== 200) {
-      if (response.status !== 401) return false
+    if (response.status !== HTTP_STATUS.OK) {
+      if (response.status !== HTTP_STATUS.UNAUTHORIZED) return false
       commit('removeToken')
       ldb.token.clear()
       ldb.reset()
@@ -160,8 +161,8 @@ const actions = {
     const response = await handleGETDonorsMe()
     commit('signInLoaderFlagOff')
 
-    if (response.status !== 200) {
-      if (response.status !== 401) return false
+    if (response.status !== HTTP_STATUS.OK) {
+      if (response.status !== HTTP_STATUS.UNAUTHORIZED) return false
       commit('removeToken')
       ldb.reset()
       return false
@@ -183,7 +184,7 @@ const actions = {
 
     const signInResponse = await handlePOSTSignIn(sendData)
 
-    if (signInResponse.status !== 201) {
+    if (signInResponse.status !== HTTP_STATUS.CREATED) {
       commit('signInLoaderFlagOff')
       return false
     }
@@ -192,7 +193,7 @@ const actions = {
     const response = await handleGETDonorsMe()
     commit('signInLoaderFlagOff')
 
-    if (response.status !== 200) {
+    if (response.status !== HTTP_STATUS.OK) {
       return false
     }
 

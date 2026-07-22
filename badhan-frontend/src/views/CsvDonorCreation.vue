@@ -255,6 +255,7 @@ import { parseDonorCsv, toDonorCsv, DEMO_CSV } from '@/utils/donorCsv'
 import { handlePOSTDonors, handleGETDonorsPhoneList } from '@/api'
 import { environmentService } from '@/mixins/environment'
 import { createNewPopUpWindow, textFileDownloadInWeb } from '@/mixins/helpers'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'CsvDonorCreation',
@@ -374,7 +375,7 @@ export default {
       // (single alert, no tables, no retry); re-selecting the file is the only way forward.
       const phones = validRows.map(row => String(row.normalized.phone))
       const preflight = await handleGETDonorsPhoneList(phones)
-      if (!preflight || preflight.status !== 200) {
+      if (!preflight || preflight.status !== HTTP_STATUS.OK) {
         this.loading = false
         this.fileError = preflight && preflight.data && preflight.data.message
           ? 'Could not check which donors already exist: ' + preflight.data.message
@@ -430,12 +431,12 @@ export default {
         const idx = this.table1.indexOf(row)
         if (idx !== -1) this.table1.splice(idx, 1)
 
-        if (response && response.status === 201) {
+        if (response && response.status === HTTP_STATUS.CREATED) {
           row.uploadStatus = 'created'
           row.existenceStatus = 'created'
           row.donorId = response.data && response.data.newDonor ? response.data.newDonor._id : null
           this.table2.push(row)
-        } else if (response && response.status === 409) {
+        } else if (response && response.status === HTTP_STATUS.CONFLICT) {
           row.uploadStatus = 'duplicate'
           row.existenceStatus = 'existed'
           row.donorId = response.data && response.data.donorId ? response.data.donorId : null

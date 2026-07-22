@@ -94,6 +94,7 @@
 import { isGuestEnabled } from '@/api'
 import ldb from '@/localDatabase'
 import { environmentService } from '@/mixins/environment'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
 
@@ -266,7 +267,7 @@ export default {
     },
     async goToWebClicked () {
       const redirectionTokenResponse = await this.$store.dispatch('requestRedirectionToken')
-      if (redirectionTokenResponse.status !== 201) return
+      if (redirectionTokenResponse.status !== HTTP_STATUS.CREATED) return
       const routeData = this.$router.resolve({
         name: 'RedirectionPage',
         query: {

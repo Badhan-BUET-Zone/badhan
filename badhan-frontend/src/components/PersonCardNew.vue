@@ -142,6 +142,7 @@ import VueMarkdown from 'vue-markdown'
 import DatePicker from '@/components/UI Components/DatePicker.vue'
 import { directCall, fixBackSlash } from '@/mixins/helpers'
 import { handlePOSTCallRecord, handlePOSTDonations, handlePOSTPlateletDonations } from '@/api'
+import { BLOOD_GROUP_ANY, HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   props: {
@@ -164,7 +165,7 @@ export default {
       this.newCallRecordLoader = true
       const response = await handlePOSTCallRecord({ donorId: this.id })
       this.newCallRecordLoader = false
-      if (response.status!== 201) return
+      if (response.status!== HTTP_STATUS.CREATED) return
       this.$store.dispatch('notification/notifySuccess', 'Added call record')
       this.lastCalled = new Date().getTime()
       this.callCountLast3Days++
@@ -184,7 +185,7 @@ export default {
         : await handlePOSTDonations({ phone: this.phone, donorId: this.id, date: timestamp })
       this.donationLoaderFlag = false;
 
-      if (response.status !== 201) return;
+      if (response.status !== HTTP_STATUS.CREATED) return;
 
       if (isPlatelet) {
         this.lastPlateletDonation = timestamp
@@ -263,7 +264,7 @@ export default {
       phone: '',
       address: '',
       comment: '',
-      bloodGroup: -1,
+      bloodGroup: BLOOD_GROUP_ANY,
       commentTime: 0,
       markedBy: null,
       lastCalled: null,

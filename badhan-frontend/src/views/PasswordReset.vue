@@ -30,6 +30,7 @@ import Container from '@/components/Container/Container'
 import PageTitle from '@/components/PageTitle'
 import { handlePATCHUsersPassword } from '@/api'
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'PasswordReset',
@@ -99,7 +100,7 @@ export default {
       this.passwordChangeFlag = true
       const response = await handlePATCHUsersPassword({ password: this.newPassword })
       this.passwordChangeFlag = false
-      if (response.status !== 201) {
+      if (response.status !== HTTP_STATUS.CREATED) {
         this.$store.commit('removeToken')
         return
       }

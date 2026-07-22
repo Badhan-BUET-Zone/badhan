@@ -30,6 +30,7 @@
 <script>
 import Container from '@/components/Container/Container'
 import { handleGETDonorDesignatedAll } from '@/api'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'VolunteersAll',
@@ -58,7 +59,7 @@ export default {
     this.volunteers = []
     const response = await handleGETDonorDesignatedAll()
     this.volunteersLoaderFlag = false
-    if (response.status !== 200) return
+    if (response.status !== HTTP_STATUS.OK) return
     this.volunteers = response.data.data
     this.volunteersShown = true
   }

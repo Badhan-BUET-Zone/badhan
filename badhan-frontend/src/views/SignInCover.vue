@@ -177,6 +177,7 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import localDatabase from '@/localDatabase'
 import TextField from '@/components/UI Components/TextField.vue'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Filler)
 export default {
@@ -315,7 +316,7 @@ export default {
       }
 
       handleGETLogsDonations().then((response)=>{
-        if(response.status!==200){
+        if(response.status!==HTTP_STATUS.OK){
           return
         }
         this.rawCountByYearMonth = response.data.countByYearMonth

@@ -152,7 +152,7 @@
 import TextField from '@/components/UI Components/TextField.vue'
 import HelpTooltip from '@/components/UI Components/HelpTooltip'
 import Selector from '@/components/UI Components/Selector.vue'
-import { bloodGroups, halls } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
 import { maxLength, minLength, numeric, required } from 'vuelidate/lib/validators'
 
 export default {
@@ -219,7 +219,7 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && this.halls.indexOf(hall) !== 7 && this.halls.indexOf(hall) !== 8 && this.$store.getters['getDesignation'] !== 3)
+          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && isHallRestricted(this.halls.indexOf(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
         }
       }
     }
@@ -228,8 +228,8 @@ export default {
     
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
-        if (this.$store.getters['getDesignation'] === 3) {
-          return halls.slice(0, 7)
+        if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
+          return restrictedHallNames()
         } else {
           return [halls[this.$store.getters['getHall']]]
         }

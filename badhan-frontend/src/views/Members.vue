@@ -117,6 +117,7 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 import { handleGETDonorsDesignation } from '@/api'
 import { createNewPopUpWindow } from '@/mixins/helpers'
 import { environmentService } from '@/mixins/environment'
+import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'MembersPage',
@@ -139,7 +140,7 @@ export default {
   async mounted () {
     this.memberLoaderFlag = true;
     const response = await handleGETDonorsDesignation();
-    if (response.status !== 200) return
+    if (response.status !== HTTP_STATUS.OK) return
     this.hallAdmins = response.data.adminList
     this.superAdmins = response.data.superAdminList
     this.volunteers = response.data.volunteerList

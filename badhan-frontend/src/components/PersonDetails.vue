@@ -70,9 +70,9 @@
         <v-card-subtitle>Donor Profile</v-card-subtitle>
         <v-card-text class="mb-5">
           <v-chip color="secondary" class="mr-1 mb-1">
-            <span v-if="designation === 0">Donor</span>
-            <span v-else-if="designation === 1">Volunteer</span>
-            <span v-else-if="designation === 2">Hall Admin</span>
+            <span v-if="designation === DESIGNATIONS_INDEX.DONOR">Donor</span>
+            <span v-else-if="designation === DESIGNATIONS_INDEX.VOLUNTEER">Volunteer</span>
+            <span v-else-if="designation === DESIGNATIONS_INDEX.HALL_ADMIN">Hall Admin</span>
             <span v-else>Super Admin</span>
           </v-chip>
           <v-chip class="mr-1 mb-1" color="secondary">{{ donationList.length }} Blood Donations</v-chip>
@@ -118,10 +118,10 @@
                       <TextField
                         id="donorDetailsEmailTextBoxId"
                         data-cy="donorDetailsEmailTextBoxId"
-                        :hint="(designation!==0 && !$isMe(id))?'You cannot edit this email':'Password Recovery Email'"
-                        :persistent-hint="(designation!==0 && !$isMe(id))" :label="'Email'"
+                        :hint="(designation!==DESIGNATIONS_INDEX.DONOR && !$isMe(id))?'You cannot edit this email':'Password Recovery Email'"
+                        :persistent-hint="(designation!==DESIGNATIONS_INDEX.DONOR && !$isMe(id))" :label="'Email'"
                         v-model="email"
-                        :disabled="!isDetailsEditable || (designation!==0 && !$isMe(id)) "
+                        :disabled="!isDetailsEditable || (designation!==DESIGNATIONS_INDEX.DONOR && !$isMe(id)) "
                         @blur="$v.email.$touch()"
                         :error-messages="emailErrors">
                       </TextField>
@@ -138,9 +138,9 @@
                                     :disabled="!isDetailsEditable"></TextField>
                       <span id="donorDetailsHallDropDownSpan">
                       <Selector id="donorDetailsHallDropDownId" data-cy="donorDetailsHallDropDownId" v-model="hall" :items="availableHalls" label="Hall"
-                                :disabled="!isDetailsEditable || designation === 2 || designation === 1" />
+                                :disabled="!isDetailsEditable || designation === DESIGNATIONS_INDEX.HALL_ADMIN || designation === DESIGNATIONS_INDEX.VOLUNTEER" />
                       </span>
-                      <v-checkbox id="donorDetailsPublicDataCheckboxId" data-cy="donorDetailsPublicDataCheckboxId" :disabled="!isDetailsEditable || halls.indexOf(hall)===8" v-model="availableToAll"
+                      <v-checkbox id="donorDetailsPublicDataCheckboxId" data-cy="donorDetailsPublicDataCheckboxId" :disabled="!isDetailsEditable || isHallUnknown(halls.indexOf(hall))" v-model="availableToAll"
                                   dense
                                   label="Public Data"></v-checkbox>
 
@@ -273,7 +273,7 @@
                         Delete this person
                       </v-btn>
                       <v-btn id="promoteToHallAdminButtonId" data-cy="promoteToHallAdminButtonId" key="promoteToHallAdmin" small class="ma-1" rounded color="primary"
-                             v-if="$store.getters['getDesignation']===3 && designation===1"
+                             v-if="$store.getters['getDesignation']===DESIGNATIONS_INDEX.SUPER_ADMIN && designation===DESIGNATIONS_INDEX.VOLUNTEER"
                              :disabled="changeAdminLoaderFlag || !isDetailsEditable"
                              @click="changeHallAdminClicked()">
                         <v-icon left dark>mdi-arrow-up</v-icon>
@@ -424,7 +424,7 @@
                   </transition>
               </ContainerOutlined>
 
-              <ContainerOutlined v-if="$store.getters['getDesignation'] === 3">
+              <ContainerOutlined v-if="$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN">
                 <v-card-title>
                   Public Contacts
                 </v-card-title>
@@ -469,7 +469,7 @@
 </template>
 
 <script>
-import { halls, bloodGroups } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HALLS_INDEX, HTTP_STATUS, bloodGroups, halls, isHallRestricted, isHallUnknown, restrictedHallNames } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric, sameAs } from 'vuelidate/lib/validators'
 import CallRecordCard from '@/views/Home/components/CallRecordCard'
 import HelpTooltip from '@/components/UI Components/HelpTooltip'
@@ -542,6 +542,8 @@ export default {
 
       halls,
       bloodGroups,
+      // exposed for the template, which cannot see module imports
+      DESIGNATIONS_INDEX,
       showDetails: false,
       oldPassword: '',
       newPassword: '',
@@ -655,20 +657,20 @@ export default {
   },
   computed: {
     isAllowedToPromoteToVolunteer () {
-      return this.designation === 0 && halls.indexOf(this.hall) <= 6 && (this.$store.getters['getDesignation'] === 3 || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === 2))
+      return this.designation === DESIGNATIONS_INDEX.DONOR && isHallRestricted(halls.indexOf(this.hall)) && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.HALL_ADMIN))
     },
     isAllowedToDemoteToDonor () {
-      return this.designation === 1 && halls.indexOf(this.hall) <= 6 && (this.$store.getters['getDesignation'] === 3 || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === 2))
+      return this.designation === DESIGNATIONS_INDEX.VOLUNTEER && isHallRestricted(halls.indexOf(this.hall)) && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.HALL_ADMIN))
     },
     isPasswordLinkResetable () {
-      return !isGuestEnabled() && !this.$isMe(this.id) && this.designation !== 0 && (this.$store.getters['getDesignation'] === 3 || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation))
+      return !isGuestEnabled() && !this.$isMe(this.id) && this.designation !== DESIGNATIONS_INDEX.DONOR && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation))
     },
     isDeletable () {
-      return !this.$isMe(this.id) && this.designation <= 1 && (this.$store.getters['getDesignation'] === 3 || halls.indexOf(this.hall) === 8 || (this.$store.getters['getDesignation'] > this.designation && this.$store.getters['getHall'] === halls.indexOf(this.hall)))
+      return !this.$isMe(this.id) && this.designation <= DESIGNATIONS_INDEX.VOLUNTEER && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || isHallUnknown(halls.indexOf(this.hall)) || (this.$store.getters['getDesignation'] > this.designation && this.$store.getters['getHall'] === halls.indexOf(this.hall)))
     },
 
     isDetailsEditable () {
-      return this.$store.getters['getDesignation'] === 3 || this.$isMe(this.id) || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation) || halls.indexOf(this.hall) === 8
+      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || this.$isMe(this.id) || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation) || isHallUnknown(halls.indexOf(this.hall))
     },
 
     phoneErrors () {
@@ -717,10 +719,10 @@ export default {
 
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
-        if (this.$store.getters['getDesignation'] === 3) {
-          return [...halls.slice(0, 7), halls[8]]
+        if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
+          return [...restrictedHallNames(), halls[HALLS_INDEX.UNKNOWN]]
         } else {
-          return [halls[this.$store.getters['getHall']], halls[8]]
+          return [halls[this.$store.getters['getHall']], halls[HALLS_INDEX.UNKNOWN]]
         }
       }
       return halls
@@ -739,12 +741,14 @@ export default {
     }
   },
   methods: {
+    // exposed for the template, which cannot see module imports
+    isHallUnknown,
     async markAsActiveDonorHandler (markFlag) {
       this.activeDonorLoader = true
       if (markFlag) {
         const result = await handlePOSTActiveDonors({ donorId: this.id })
         this.activeDonorLoader = false
-        if (result.status !== 201) return
+        if (result.status !== HTTP_STATUS.CREATED) return
         this.markedBy = this.$store.getters['getName']
         this.$store.dispatch('notification/notifySuccess', 'Donor marked as active donor')
         return
@@ -752,7 +756,7 @@ export default {
 
       const result = await handleDELETEActiveDonors({ donorId: this.id })
       this.activeDonorLoader = false
-      if (result.status !== 200) return
+      if (result.status !== HTTP_STATUS.OK) return
       this.markedBy = null
       this.$store.dispatch('notification/notifySuccess', 'Donor unmarked')
     },
@@ -768,7 +772,7 @@ export default {
         bloodGroup: groupNameToCode[this.selectedNewPublicContact]
       })
       this.newPublicContactLoader = false
-      if (response.status !== 201) return
+      if (response.status !== HTTP_STATUS.CREATED) return
       this.publicContacts.push({ _id: response.data.publicContact._id, bloodGroup: groupNameToCode[this.selectedNewPublicContact] })
       this.$store.dispatch('notification/notifySuccess', 'Public Contacts Updated')
     },
@@ -777,7 +781,7 @@ export default {
       this.deletePublicContactLoader = true
       const response = await handleDELETEPublicContacts({ donorId: this.id, contactId })
       this.deletePublicContactLoader = false
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
 
       this.publicContacts = this.publicContacts.filter((publicContact) => {
         return publicContact._id !== contactId
@@ -792,7 +796,7 @@ export default {
       this.passwordRecoveryFlag = false
 
       console.log(response.status)
-      if (response.status !== 200) {
+      if (response.status !== HTTP_STATUS.OK) {
         return
       }
       await this.$store.dispatch('notification/notifySuccess', response.data.message)
@@ -825,9 +829,9 @@ export default {
       this.changeAdminLoaderFlag = true
       const response = await handlePATCHAdmins( { donorId: this.id })
       this.changeAdminLoaderFlag = false
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       this.$store.dispatch('notification/notifySuccess', "Successfully changed hall admin")
-      this.designation = 2
+      this.designation = DESIGNATIONS_INDEX.HALL_ADMIN
     },
     deleteDonorPrompt () {
       this.$store.commit('confirmationBox/setConfirmationMessage', {
@@ -839,13 +843,13 @@ export default {
       this.deleteDonorFlag = true
       const response = await handleDELETEDonors({ donorId: this.id })
       this.deleteDonorFlag = false
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       this.$store.dispatch('notification/notifySuccess', 'Deleted donor successfully')
       await this.$router.push('/home')
     },
     async callFromDialer () {
       const response = await handlePOSTCallRecord({ donorId: this.id })
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       const callRecords = this.callRecords
       const name = this.$store.getters['getName']
       callRecords.unshift({
@@ -883,7 +887,7 @@ export default {
         comment: comment
       })
       this.commentLoaderFlag=false
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
 
       this.$store.dispatch('notification/notifySuccess', 'Successfully changed comment')
       this.commentTime = new Date().getTime()
@@ -895,7 +899,7 @@ export default {
         date: date
       })
 
-      if(response.status !== 200) return
+      if(response.status !== HTTP_STATUS.OK) return
       this.$store.dispatch('notification/notifySuccess', 'Successfully deleted donation')
 
       for (let i = 0; i < this.donationList.length; i++) {
@@ -938,11 +942,11 @@ export default {
         donorId: this.id,
         promoteFlag: true
       })
-      if(response.status !== 200){
+      if(response.status !== HTTP_STATUS.OK){
         return
       }
       await this.$store.dispatch('notification/notifySuccess', response.data.message)
-      this.designation = 1
+      this.designation = DESIGNATIONS_INDEX.VOLUNTEER
       this.promoteFlag = false
     },
     async demoteClicked () {
@@ -951,11 +955,11 @@ export default {
         donorId: this.id,
         promoteFlag: false
       })
-      if (response.status !== 200) {
+      if (response.status !== HTTP_STATUS.OK) {
         return
       }
       await this.$store.dispatch('notification/notifySuccess', response.data.message)
-      this.designation = 0
+      this.designation = DESIGNATIONS_INDEX.DONOR
       this.promoteFlag = false
     },
     async savePasswordClicked () {
@@ -968,7 +972,7 @@ export default {
       const response = await handlePATCHUsersPassword({
         password: this.newPassword
       })
-      if(response.status === 200){
+      if(response.status === HTTP_STATUS.OK){
         return
       }
       if(!isGuestEnabled()) {
@@ -1012,7 +1016,7 @@ export default {
       this.detailsLoaderFlag = true
       const response = await handlePATCHDonors(sendData)
       this.detailsLoaderFlag = false
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       this.$store.dispatch('notification/notifySuccess', 'Saved details successfully')
     },
     async donateClicked () {
@@ -1031,7 +1035,7 @@ export default {
         })
       }
       this.newDonationLoader = false
-      if (donationResponse.status !== 201) return
+      if (donationResponse.status !== HTTP_STATUS.CREATED) return
       this.$store.dispatch('notification/notifySuccess', donationResponse.data.message)
       if (this.newDonationType === 'Platelet') {
         this.plateletDonationList.push(donationResponse.data.newPlateletDonation)
@@ -1067,7 +1071,7 @@ export default {
         donorId: this.id,
         date
       })
-      if (response.status !== 200) return
+      if (response.status !== HTTP_STATUS.OK) return
       this.$store.dispatch('notification/notifySuccess', 'Successfully deleted platelet donation')
 
       for (let i = 0; i < this.plateletDonationList.length; i++) {
@@ -1109,7 +1113,7 @@ export default {
     const response = await handleGETDonors(params)
 
     this.donorLoaderFlag = false
-    if (response.status !== 200){
+    if (response.status !== HTTP_STATUS.OK){
       this.donorErrorHappened = true
       return
     }

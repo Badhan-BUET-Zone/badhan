@@ -14,7 +14,7 @@
       <v-card-text v-if="!publicContactsLoaderFlag" :key="'publicLoaded'">
         <ContainerOutlined v-for="(group,index) in publicContacts" :key="index">
           <v-card-title>
-            <span v-if="group.bloodGroup!==-1"> {{ group.bloodGroup | getBloodGroupString }} রক্তের জন্য </span>
+            <span v-if="group.bloodGroup!==BLOOD_GROUP_ALL_NEGATIVE"> {{ group.bloodGroup | getBloodGroupString }} রক্তের জন্য </span>
             <span v-else>যেকোনো নেগেটিভ (-) রক্তের জন্য</span>
           </v-card-title>
           <ContainerFlat v-for="contact in group.contacts" :key="contact.contactId">
@@ -76,7 +76,7 @@ import ContainerFlat from '@/components/Container/ContainerFlat'
 import Button from '@/components/UI Components/Button'
 import { directCall } from '@/mixins/helpers'
 import LoadingMessage from '@/components/LoadingMessage.vue'
-import {DESIGNATIONS_INDEX } from '@/mixins/constants'
+import { BLOOD_GROUP_ALL_NEGATIVE, DESIGNATIONS_INDEX } from '@/mixins/constants'
 import { 
   handleDELETEPublicContacts, 
   handleGETPublicContacts 
@@ -87,6 +87,9 @@ export default {
   components: { LoadingMessage, Button, ContainerFlat, ContainerOutlined, Container, PageTitle },
   data: () => {
     return {
+      // exposed for the template, which cannot see module imports
+      BLOOD_GROUP_ALL_NEGATIVE,
+
       deleteLoaderFlag: false,
       publicContacts: [],
       publicContactsLoaderFlag: false,

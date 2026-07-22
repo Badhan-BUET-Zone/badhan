@@ -71,7 +71,7 @@ import { handleGETDonationsReport, handleGETPlateletDonationsReport } from '@/ap
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button.vue'
 import DatePicker from '@/components/UI Components/DatePicker.vue'
-import { bloodGroups, DESIGNATIONS_INDEX } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, bloodGroups } from '@/mixins/constants'
   
 export default {
     name: 'DonationsReport',
@@ -107,7 +107,7 @@ export default {
 
             this.reportLoader = true
             const response = await handleGETDonationsReport({startDate: startTimeStamp, endDate: endTimeStamp})
-            if (response.status !== 200) return
+            if (response.status !== HTTP_STATUS.OK) return
 
             const reportObject = {}
 
@@ -164,7 +164,7 @@ export default {
 
             // Platelet report
             const pResponse = await handleGETPlateletDonationsReport({ startDate: startTimeStamp, endDate: endTimeStamp })
-            if (pResponse.status === 200) {
+            if (pResponse.status === HTTP_STATUS.OK) {
                 const pReportObject = {}
                 pResponse.data.report.forEach(bloodGroupData => {
                     const bloodGroup = bloodGroupData.bloodGroup
