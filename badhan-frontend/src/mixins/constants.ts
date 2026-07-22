@@ -8,7 +8,7 @@ export const departments: string[] = [
 
 export const halls: string[] = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 export const HALLS_INDEX: Record<string, number> = {
-  AHSANUALLAH: 0,
+  AHSANULLAH: 0,
   CHATRI: 1,
   NAZRUL: 2,
   RASHID: 3,

@@ -32,7 +32,7 @@ describe('Promote donor to Volunteer then Hall Admin', () => {
     // Fill and create donor (ensure valid hall so promotions are allowed)
     newDonor.fillBasic({ name: donorName, phone: donorPhone, studentId });
     newDonor.selectBloodGroup(BLOOD_GROUP.A_POS);
-    newDonor.selectHall(HALL.AHSANUALLAH);
+    newDonor.selectHall(HALL.AHSANULLAH);
     newDonor.fillOptional({ room: 'B-202', address: 'Promotion Street', comment: 'Promote this donor' });
     newDonor.setPublicData(true);
     newDonor.submit();

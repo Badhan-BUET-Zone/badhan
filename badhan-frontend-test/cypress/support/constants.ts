@@ -38,7 +38,7 @@ export const BLOOD_GROUP = {
 export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as const;
 
 export const HALL = {
-  AHSANUALLAH: 'Ahsanullah',
+  AHSANULLAH: 'Ahsanullah',
   CHATRI: 'Chatri',
   NAZRUL: 'Nazrul',
   RASHID: 'Rashid',
