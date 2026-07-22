@@ -1,6 +1,5 @@
 /* tslint:disable:typedef no-console no-var-requires */
 import express, { Router, Request, Response, NextFunction } from 'express'
-import { ensureMongoTools } from './download_tools'
 import '../db/mongoose' // ensure mongoose connection is initialized (cached if already connected)
 import rateLimiter from '../middlewares/rateLimiter'
 import { param, validationResult } from 'express-validator'
@@ -174,34 +173,16 @@ const storage = {
   }
 }
 
-// --- Mongotools replication ---
-const isWin = process.platform === 'win32'
-const mongotoolsBase = path.resolve('mongotools', 'bin')
-const mongodumpPath = path.join(mongotoolsBase, `mongodump${isWin ? '.exe' : ''}`)
-const mongorestorePath = path.join(mongotoolsBase, `mongorestore${isWin ? '.exe' : ''}`)
-
-const ensureMongoToolExists = (toolPath: string) => {
-  if (!fs.existsSync(toolPath)) {
-    console.log(`[backup] ${toolPath} not found; see backup setup instructions.`)
-    return false
-  }
-  return true
-}
+// mongodump/mongorestore are installed on PATH at image build time (see
+// Dockerfile), so they are invoked by name below.
 
 // --- Controllers (ported) ---
 const backupController = async () => {
   console.log('[backup] backup command initiated')
   const folderName = new Date().getTime().toString()
 
-  // Ensure tools only when needed (mongodump)
-  await ensureMongoTools()
-
-  if (!ensureMongoToolExists(mongodumpPath)) {
-    return new InternalServerError500('mongodump binary missing', {}, {})
-  }
-
   console.log('[backup] fetching database...')
-  const child = spawnSync(mongodumpPath, ['--out=backup/' + folderName, MONGODB_URI_PRODUCTION], { encoding: 'utf8' })
+  const child = spawnSync('mongodump', ['--out=backup/' + folderName, MONGODB_URI_PRODUCTION], { encoding: 'utf8' })
   // print child process output for debugging
   console.log('[backup] mongodump output:', child.stdout)
   console.log('[backup] mongodump error (if any):', child.stderr)
@@ -269,12 +250,7 @@ const restoreController = async ({ time, production, development }: { time: numb
   } catch (e: any) {
     return new InternalServerError500('Extraction failed', { error: e?.message }, {})
   }
-  // Ensure tools only when needed (mongorestore)
-  await ensureMongoTools()
-  if (!ensureMongoToolExists(mongorestorePath)) {
-    return new InternalServerError500('mongorestore binary missing', {}, {})
-  }
-  const child = spawnSync(mongorestorePath, ['--drop', `--dir=backup/${time}/Badhan`, mongoURI], { encoding: 'utf8' })
+  const child = spawnSync('mongorestore', ['--drop', `--dir=backup/${time}/Badhan`, mongoURI], { encoding: 'utf8' })
   if (child.error) {
     return new InternalServerError500('Child process spawnsync failed', { error: child.error }, {})
   }

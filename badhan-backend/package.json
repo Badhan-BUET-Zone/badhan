@@ -17,6 +17,7 @@
     "__comment_on_db_purge_scripts": "these are the scripts for purging the development environment database",
     "migrate_db:local": "npm run lint && npm run build && cross-env NODE_ENV=local node -r source-map-support/register ./dist/db/test/reportInconsistencies.js",
     "internal-server": "cross-env NODE_ENV=local node -r source-map-support/register ./dist/bin/internalServer",
+    "fetch:backup-secrets": "node scripts/fetch-backup-secrets.js",
     "migrate:list": "ts-node --transpile-only scripts/migrations/index.ts list",
     "migrate": "ts-node --transpile-only scripts/migrations/index.ts",
     "tsoa:spec": "tsoa spec -c tsoa.json",

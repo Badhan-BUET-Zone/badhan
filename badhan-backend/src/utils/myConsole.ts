@@ -18,7 +18,7 @@ const commonFormat: Format = winston.format.combine(          // ← type added
 // File transport crashes on startup trying to mkdir 'logs'. App Engine sets
 // GAE_ENV, so there we log to stdout only (Console → Cloud Logging) and add the
 // file transport just for local / Docker development.
-const isAppEngine = Boolean(process.env.GAE_ENV);
+const isAppEngine: boolean = Boolean(process.env.GAE_ENV);
 
 const transports: winston.transport[] = [new winston.transports.Console()];
 if (!isAppEngine) {
