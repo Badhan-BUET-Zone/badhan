@@ -4,7 +4,7 @@
 
     <ContainerFlat>
       <v-card-text>
-        <div class="d-flex align-center flex-wrap">
+        <div class="d-flex flex-column flex-sm-row align-sm-center flex-wrap">
           <!-- data-cy on the wrapper: Vuetify binds fallthrough attrs onto the inner
                <input>, so the hook must sit here for [data-cy] input[type=file] to resolve. -->
           <div data-cy="csvFileInputId" class="flex-grow-1">
@@ -23,7 +23,7 @@
             text
             rounded
             color="primary"
-            class="ml-2"
+            class="ml-sm-2 align-self-start"
             data-cy="csvDownloadDemoButton"
             @click="downloadDemo"
           >
@@ -120,7 +120,7 @@
 
       <!-- Table 1: donors to be created -->
       <v-expand-transition>
-        <Container v-if="table1.length">
+        <Container v-if="table1.length" class="csv-wide">
           <v-card-title data-cy="csvToCreateHeading">{{ table1.length }} of {{ totalRows }} donors to be created</v-card-title>
           <div class="csv-scroll">
             <v-simple-table dense>
@@ -150,7 +150,7 @@
 
       <!-- Table 2: donors that already exist -->
       <v-expand-transition>
-        <Container v-if="table2.length">
+        <Container v-if="table2.length" class="csv-wide">
           <v-card-title data-cy="csvExistingHeading">{{ table2.length }} of {{ totalRows }} donors already exist</v-card-title>
           <div class="csv-scroll">
             <v-simple-table dense>
@@ -195,7 +195,7 @@
 
       <!-- Table 3: broken rows -->
       <v-expand-transition>
-        <Container v-if="table3.length">
+        <Container v-if="table3.length" class="csv-wide">
           <v-card-title data-cy="csvErrorHeading">
             {{ table3.length }} of {{ totalRows }} rows have errors and were not uploaded
             <v-spacer />
@@ -491,5 +491,9 @@ export default {
 <style scoped>
 .csv-scroll {
   overflow-x: auto;
+}
+/* Widen the review tables beyond the shared Container's 800px cap. */
+.csv-wide {
+  max-width: 1400px !important;
 }
 </style>

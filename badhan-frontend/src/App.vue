@@ -10,6 +10,7 @@
     <Notification/>
     <MessageBox/>
     <ConfirmationBox/>
+    <EnvironmentWatermark/>
   </v-app>
 </template>
 
@@ -20,6 +21,7 @@ import Notification from './components/AppShell/Notification'
 import MessageBox from './components/AppShell/MessageBox'
 import ConfirmationBox from './components/AppShell/ConfirmationBox'
 import TopProgressBar from '@/components/AppShell/TopProgressBar.vue'
+import EnvironmentWatermark from '@/components/AppShell/EnvironmentWatermark.vue'
 
 export default {
   name: 'app',
@@ -28,6 +30,7 @@ export default {
     }
   },
   components: {
+    EnvironmentWatermark,
     TopProgressBar,
     ConfirmationBox,
     MessageBox,
