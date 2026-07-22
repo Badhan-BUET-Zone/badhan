@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Route, Tags } from 'tsoa'
 import * as faker from '../doc/faker'
+import { DESIGNATIONS_INDEX } from '../constants'
 
 @Route('guest')
 @Tags('Guest')
@@ -73,7 +74,7 @@ export class GuestController extends Controller {
       address: faker.getAddress(),
       comment: faker.getComment(),
       commentTime: faker.getTimestamp(240),
-      designation: 3,
+      designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
       availableToAll: faker.getBoolean(),
       email: faker.getEmail()
     }
@@ -997,7 +998,7 @@ export class GuestController extends Controller {
         address: faker.getAddress(),
         comment: faker.getComment(),
         commentTime: faker.getTimestamp(240),
-        designation: 3,
+        designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
         availableToAll: faker.getBoolean(),
         email: faker.getEmail()
       }

@@ -38,7 +38,7 @@ export const clearDatabase = async (): Promise<{ ok: boolean, error?: unknown }>
             roomNumber: faker.getRoom(),
             comment: faker.getComment(),
             availableToAll: true,
-            designation: 3,
+            designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
             password: SUPERADMIN_PASSWORD,
         })
         await superAdmin.save()

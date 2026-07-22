@@ -13,7 +13,7 @@ import donorValidator from '../validations/donors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import queue from '../middlewares/queue'
-import { halls, year2000TimeStamp } from '../constants'
+import { DESIGNATIONS_INDEX, halls, hasNoSpecificHall, isHallRestricted, isHallUnknown, year2000TimeStamp } from '../constants'
 
 @Route('donors')
 @Tags('Donors')
@@ -144,9 +144,9 @@ export class DonorsController extends Controller {
     if (duplicateDonorResult.status === 'OK') {
       const duplicateDonor: IDonor = duplicateDonorResult.data!
       if (
-        authenticatedUser.designation === 3 ||
+        authenticatedUser.designation === DESIGNATIONS_INDEX.SUPER_ADMIN ||
         duplicateDonor.hall === authenticatedUser.hall ||
-        duplicateDonor.hall > 6 ||
+        hasNoSpecificHall(duplicateDonor.hall) ||
         duplicateDonor.availableToAll
       ) {
         this.setStatus(409)
@@ -167,7 +167,7 @@ export class DonorsController extends Controller {
 
     // if the hall is unknown, then the donor must be available to all
     let availableToAll: boolean = body.availableToAll
-    if (body.hall === 8) {
+    if (isHallUnknown(body.hall)) {
       availableToAll = true
     }
 
@@ -308,7 +308,7 @@ export class DonorsController extends Controller {
 
     // Handle hall permission or check available to all
     if (!targetDonor.availableToAll) {
-      if (targetDonor.hall <= 6 && user.hall !== targetDonor.hall && user.designation !== 3) {
+      if (isHallRestricted(targetDonor.hall) && user.hall !== targetDonor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
         this.setStatus(403)
         return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
       }
@@ -477,7 +477,7 @@ export class DonorsController extends Controller {
 
     // Handle hall permission or check available to all
     if (!targetDonor.availableToAll) {
-      if (targetDonor.hall <= 6 && user.hall !== targetDonor.hall && user.designation !== 3) {
+      if (isHallRestricted(targetDonor.hall) && user.hall !== targetDonor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
         this.setStatus(403)
         return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
       }
@@ -538,7 +538,7 @@ export class DonorsController extends Controller {
     const targetDonor: IDonor = donorQueryResult.data!
 
     // Handle hall permission
-    if (targetDonor.hall <= 6 && user.hall !== targetDonor.hall && user.designation !== 3) {
+    if (isHallRestricted(targetDonor.hall) && user.hall !== targetDonor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(403)
       return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
     }
@@ -549,7 +549,7 @@ export class DonorsController extends Controller {
       return { status: 'ERROR', statusCode: 403, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
 
-    if (targetDonor.designation === 0) {
+    if (targetDonor.designation === DESIGNATIONS_INDEX.DONOR) {
       this.setStatus(409)
       return { status: 'ERROR', statusCode: 409, message: 'Donor is not a volunteer/ admin' }
     }
@@ -623,7 +623,7 @@ export class DonorsController extends Controller {
     const target: IDonor = donorQueryResult.data!
 
     // Handle hall permission
-    if (target.hall <= 6 && user.hall !== target.hall && user.designation !== 3) {
+    if (isHallRestricted(target.hall) && user.hall !== target.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(403)
       return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
     }
@@ -649,7 +649,7 @@ export class DonorsController extends Controller {
     target.availableToAll = body.availableToAll
     target.email = body.email
 
-    if (target.hall === 8) {
+    if (isHallUnknown(target.hall)) {
       target.availableToAll = true
     }
 
@@ -705,7 +705,7 @@ export class DonorsController extends Controller {
     const donor: IDonor = donorQueryResult.data!
 
     // Handle hall permission
-    if (donor.hall <= 6 && user.hall !== donor.hall && user.designation !== 3) {
+    if (isHallRestricted(donor.hall) && user.hall !== donor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(403)
       return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
     }
@@ -777,7 +777,7 @@ export class DonorsController extends Controller {
     const donor: IDonor = donorQueryResult.data!
 
     // Handle hall permission
-    if (donor.hall <= 6 && user.hall !== donor.hall && user.designation !== 3) {
+    if (isHallRestricted(donor.hall) && user.hall !== donor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(403)
       return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
     }
@@ -796,15 +796,15 @@ export class DonorsController extends Controller {
       return { status: 'ERROR', statusCode: 409, message: 'Can\'t promote volunteer or can\'t demote donor' }
     }
 
-    if (donor.hall > 6) {
+    if (hasNoSpecificHall(donor.hall)) {
       this.setStatus(409)
       return { status: 'ERROR', statusCode: 409, message: 'Donor does not have a valid hall' }
     }
 
     if (body.promoteFlag) {
-      donor.designation = 1
+      donor.designation = DESIGNATIONS_INDEX.VOLUNTEER
     } else {
-      donor.designation = 0
+      donor.designation = DESIGNATIONS_INDEX.DONOR
     }
 
     await donor.save()
@@ -895,9 +895,9 @@ export class DonorsController extends Controller {
 
     if (duplicateDonorResult.status === 'OK') {
       if (
-        authenticatedUser.designation === 3 ||
+        authenticatedUser.designation === DESIGNATIONS_INDEX.SUPER_ADMIN ||
         duplicateDonorResult.data!.hall === authenticatedUser.hall ||
-        duplicateDonorResult.data!.hall > 6 ||
+        hasNoSpecificHall(duplicateDonorResult.data!.hall) ||
         duplicateDonorResult.data!.availableToAll
       ) {
         this.setStatus(200)

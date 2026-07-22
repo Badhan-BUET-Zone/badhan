@@ -2,6 +2,7 @@ import { body, ValidationChain } from 'express-validator'
 import mongoose from 'mongoose'
 import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
+import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
 
 export const validateBODYPhone: ValidationChain = body('phone')
   .exists().withMessage('Phone number is required')
@@ -11,17 +12,17 @@ export const validateBODYPhone: ValidationChain = body('phone')
 export const validateBODYBloodGroup: ValidationChain = body('bloodGroup')
   .exists().withMessage('bloodGroup is required')
   .isInt().toInt().withMessage('bloodGroup must be integer')
-  .isIn([0, 1, 2, 3, 4, 5, 6, 7]).withMessage('Please input valid blood group from 0 to 7')
+  .isIn(BLOOD_GROUP_INDICES).withMessage('Please input valid blood group from 0 to 7')
 
 export const validateBODYPublicContactBloodGroup: ValidationChain = body('bloodGroup')
   .exists().withMessage('bloodGroup is required')
   .isInt().toInt().withMessage('bloodGroup must be integer')
-  .isIn([-1, 0, 2, 4, 6]).withMessage('Please input valid blood group (-1,0,2,4,6)')
+  .isIn([BLOOD_GROUP_ANY, ...BLOOD_GROUP_INDICES_POSITIVE]).withMessage('Please input valid blood group (-1,0,2,4,6)')
 
 export const validateBODYHall: ValidationChain = body('hall')
   .exists().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')
-  .isIn([0, 1, 2, 3, 4, 5, 6, 8]).withMessage('Please input an allowed hall number')
+  .isIn(HALL_INDICES_ALLOWED_FOR_DONOR).withMessage('Please input an allowed hall number')
 
 export const validateBODYName: ValidationChain = body('name')
   .exists().withMessage('name is required')
@@ -32,7 +33,7 @@ export const validateBODYStudentId: ValidationChain = body('studentId')
   .exists().withMessage('studentId is required')
   .customSanitizer((value:any):string => String(value)).escape().trim()
   .isLength({ min: 7, max: 7 }).withMessage('studentId must be of 7 digits')
-  .custom((value: string):boolean => [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 17, 18].includes(parseInt(value.substr(2, 2),10))).withMessage('Please input a valid department number')
+  .custom((value: string):boolean => DEPARTMENT_CODES_FOR_VALIDATION.includes(parseInt(value.substr(2, 2),10))).withMessage('Please input a valid department number')
   .custom((value:string):boolean => {
     const inputYear: number = parseInt('20' + value.substr(0, 2),10)
     return inputYear <= new Date().getFullYear() && inputYear >= 2001

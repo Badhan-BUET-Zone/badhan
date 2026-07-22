@@ -10,6 +10,7 @@ import InternalServerError500 from "../response/models/errorTypes/InternalServer
 import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import {IDonor} from "../db/models/Donor";
 import {IToken} from "../db/models/Token";
+import {DESIGNATIONS_INDEX, isHallRestricted} from "../constants";
 
 /**
  * @swagger
@@ -63,14 +64,14 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
 }
 
 const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
-  if (res.locals.middlewareResponse.donor.designation === 3) {
+  if (res.locals.middlewareResponse.donor.designation === DESIGNATIONS_INDEX.SUPER_ADMIN) {
     return next()
   }
   return res.status(403).send(new ForbiddenError403('You are not permitted to access this route',{}))
 }
 
 const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
-  if (res.locals.middlewareResponse.donor.designation < 2) {
+  if (res.locals.middlewareResponse.donor.designation < DESIGNATIONS_INDEX.HALL_ADMIN) {
     return res.status(403).send(new ForbiddenError403('Only hall admins or above can access this route',{}))
   }
   next()
@@ -100,9 +101,9 @@ const handleHallPermission = async (req: Request, res: Response, next:  NextFunc
     attached students and covid donors.
      */
   const targetDonor: IDonor = res.locals.middlewareResponse.targetDonor
-  if (targetDonor.hall <= 6 &&
+  if (isHallRestricted(targetDonor.hall) &&
         res.locals.middlewareResponse.donor.hall !== targetDonor.hall &&
-        res.locals.middlewareResponse.donor.designation !== 3) {
+        res.locals.middlewareResponse.donor.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
     return res.status(403).send(new ForbiddenError403('You are not authorized to access a donor of different hall',{}))
   }
   return next()

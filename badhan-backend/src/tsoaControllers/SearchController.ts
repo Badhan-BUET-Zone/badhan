@@ -7,6 +7,7 @@ import { IDonor } from '../db/models/Donor'
 import donorValidator from '../validations/donors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
 
 @Route('search')
 @Tags('Search')
@@ -65,7 +66,7 @@ export class SearchController extends Controller {
       availableToAll
     }
 
-    if (reqQuery.hall !== user.hall && reqQuery.hall <= 6 && user.designation !== 3) {
+    if (reqQuery.hall !== user.hall && isHallRestricted(reqQuery.hall) && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(403)
       return { status: 'ERROR', statusCode: 403, message: 'You are not allowed to search donors of other halls' }
     }

@@ -10,7 +10,7 @@ import { PlateletDonationModel } from "./PlateletDonation";
 import { IDonation } from './Donation'
 import { IPlateletDonation } from './PlateletDonation'
 import { checkEmail } from '../../validations/validateRequest/others'
-import { year2000TimeStamp } from '../../constants';
+import { DEPARTMENT_CODES_FOR_VALIDATION, year2000TimeStamp } from '../../constants';
 import { checkNumber, checkTimeStamp } from './validators';
 
 export interface IDonor extends Document {
@@ -118,7 +118,7 @@ const donorSchema: Schema = new Schema<IDonor>({
     maxlength: 7,
     validate: [{
       validator: (value: string): boolean => {
-        return [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 17, 18].includes(parseInt(value.substr(2, 2), 10))
+        return DEPARTMENT_CODES_FOR_VALIDATION.includes(parseInt(value.substr(2, 2), 10))
       },
       msg: 'DB: Please input a valid department number'
     }, {

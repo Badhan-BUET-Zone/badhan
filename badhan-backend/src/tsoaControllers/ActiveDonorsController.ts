@@ -9,6 +9,7 @@ import { IActiveDonor } from '../db/models/ActiveDonor'
 import activeDonorsValidator from '../validations/activeDonors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
 
 @Route('activeDonors')
 @Tags('Active Donors')
@@ -62,9 +63,9 @@ export class ActiveDonorsController extends Controller {
 
     // Handle hall permission or check available to all (handleHallPermissionOrCheckAvailableToAll middleware logic)
     if (!targetDonor.availableToAll) {
-      if (targetDonor.hall <= 6 &&
+      if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
-          user.designation !== 3) {
+          user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
         this.setStatus(403)
         return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
       }
@@ -138,9 +139,9 @@ export class ActiveDonorsController extends Controller {
 
     // Handle hall permission or check available to all (handleHallPermissionOrCheckAvailableToAll middleware logic)
     if (!targetDonor.availableToAll) {
-      if (targetDonor.hall <= 6 &&
+      if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
-          user.designation !== 3) {
+          user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
         this.setStatus(403)
         return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
       }
@@ -241,8 +242,8 @@ export class ActiveDonorsController extends Controller {
 
     // Hall permission check
     if (reqQuery.hall !== user.hall &&
-        reqQuery.hall <= 6 &&
-        user.designation !== 3) {
+        isHallRestricted(reqQuery.hall) &&
+        user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(403)
       return { status: 'ERROR', statusCode: 403, message: 'You are not allowed to search donors of other halls' }
     }

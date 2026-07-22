@@ -40,6 +40,7 @@ import { Types } from 'mongoose';
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
+import { BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HALLS_INDEX } from '../../constants'
 
 
 /**
@@ -381,7 +382,7 @@ export const getCount = async (): Promise<{message: string, status: string, data
 }
 
 export const getVolunteerCount = async (): Promise<{message: string, status: string, data: number}> => {
-    const volunteerCount: number = await DonorModel.find({designation: 1}).countDocuments()
+    const volunteerCount: number = await DonorModel.find({designation: DESIGNATIONS_INDEX.VOLUNTEER}).countDocuments()
     return {
         message: 'Fetched volunteer count',
         status: 'OK',
@@ -408,7 +409,7 @@ export const findVolunteersOfHall = async (hall: number): Promise<{data: IDonor[
     const data: IDonor[] = await DonorModel.aggregate([{
         $match: {
             hall,
-            designation: 1
+            designation: DESIGNATIONS_INDEX.VOLUNTEER
         }
     }, {
         $lookup: {
@@ -598,7 +599,7 @@ export const generateSearchQuery = (reqQuery: {
     const queryBuilder: IQueryBuilder = {}
 
     // process blood group
-    if (reqQuery.bloodGroup !== -1) {
+    if (reqQuery.bloodGroup !== BLOOD_GROUP_ANY) {
         queryBuilder.bloodGroup = reqQuery.bloodGroup
     }
 
@@ -690,7 +691,7 @@ export const findDonorIdsByPhone = async (userDesignation: number, userHall: num
                                         $eq: ['$hall', userHall]
                                     },
                                     {
-                                        $gt: ['$hall', 6]
+                                        $gt: ['$hall', HALLS_INDEX.TITUMIR]
                                     },
                                     {
                                         $eq: ['$availableToAll', true]

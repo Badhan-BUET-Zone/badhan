@@ -7,6 +7,7 @@ import { IDonor } from '../db/models/Donor'
 import donorValidator from '../validations/donors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { DESIGNATIONS_INDEX, hasNoSpecificHall } from '../constants'
 
 @Route('admins')
 @Tags('Admins')
@@ -45,12 +46,12 @@ export class AdminsController extends Controller {
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
-    if (targetDonor.designation !== 1) {
+    if (targetDonor.designation !== DESIGNATIONS_INDEX.VOLUNTEER) {
       this.setStatus(409)
       return { status: 'ERROR', statusCode: 409, message: 'User is not a volunteer' }
     }
 
-    if (targetDonor.hall > 6) {
+    if (hasNoSpecificHall(targetDonor.hall)) {
       this.setStatus(409)
       return { status: 'ERROR', statusCode: 409, message: 'User does not have a valid hall' }
     }
@@ -63,7 +64,7 @@ export class AdminsController extends Controller {
     })
 
     // Make new hall admin
-    targetDonor.designation = 2
+    targetDonor.designation = DESIGNATIONS_INDEX.HALL_ADMIN
     await targetDonor.save()
 
     await logInterface.addLog(user._id, 'PATCH DONORS DESIGNATION (VOLUNTEER)', { name: targetDonor.name })
@@ -115,17 +116,17 @@ export class AdminsController extends Controller {
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
-    if (targetDonor.designation !== 1 && targetDonor.designation !== 3) {
+    if (targetDonor.designation !== DESIGNATIONS_INDEX.VOLUNTEER && targetDonor.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(409)
       return { status: 'ERROR', statusCode: 409, message: 'Target donor must be a volunteer or super admin' }
     }
 
     let message: string
     if (body.promoteFlag) {
-      targetDonor.designation = 3
+      targetDonor.designation = DESIGNATIONS_INDEX.SUPER_ADMIN
       message = 'Donor has been promoted to Super Admin'
     } else {
-      targetDonor.designation = 1
+      targetDonor.designation = DESIGNATIONS_INDEX.VOLUNTEER
       message = 'Donor has been demoted to Volunteer'
     }
 

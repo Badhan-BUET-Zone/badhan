@@ -1,6 +1,7 @@
 import { query, ValidationChain } from 'express-validator'
 import { checkTimeStamp, checkTimeStampMessage } from './others'
 import mongoose from 'mongoose'
+import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
 
 export const validateQUERYStartTime: ValidationChain = query('startTime')
   .exists().withMessage('startTime is required')
@@ -20,12 +21,12 @@ export const validateQUERYDonorId: ValidationChain = query('donorId')
 export const validateQUERYBloodGroup: ValidationChain = query('bloodGroup')
   .exists().not().isEmpty().withMessage('bloodGroup is required')
   .isInt().toInt().withMessage('bloodGroup must be integer')
-  .isIn([-1, 0, 1, 2, 3, 4, 5, 6, 7]).withMessage('Please input valid blood group from 0 to 7 or -1')
+  .isIn([BLOOD_GROUP_ANY, ...BLOOD_GROUP_INDICES]).withMessage('Please input valid blood group from 0 to 7 or -1')
 
 export const validateQUERYHall: ValidationChain = query('hall')
   .exists().not().isEmpty().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')
-  .isIn([0, 1, 2, 3, 4, 5, 6, 8]).withMessage('Please input an allowed hall number')
+  .isIn(HALL_INDICES_ALLOWED_FOR_DONOR).withMessage('Please input an allowed hall number')
 
 export const validateQUERYBatch: ValidationChain = query('batch')
   .exists().withMessage('Batch is required')

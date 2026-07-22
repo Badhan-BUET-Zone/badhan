@@ -9,6 +9,7 @@ import { ICallRecord } from '../db/models/CallRecord'
 import callRecordValidator from '../validations/callRecords'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
 
 @Route('callrecords')
 @Tags('Call Records')
@@ -57,9 +58,9 @@ export class CallRecordsController extends Controller {
 
     // Handle hall permission or check available to all (handleHallPermissionOrCheckAvailableToAll middleware logic)
     if (!targetDonor.availableToAll) {
-      if (targetDonor.hall <= 6 &&
+      if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
-          user.designation !== 3) {
+          user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
         this.setStatus(403)
         return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
       }
@@ -129,9 +130,9 @@ export class CallRecordsController extends Controller {
 
     // Handle hall permission or check available to all (handleHallPermissionOrCheckAvailableToAll middleware logic)
     if (!targetDonor.availableToAll) {
-      if (targetDonor.hall <= 6 &&
+      if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
-          user.designation !== 3) {
+          user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
         this.setStatus(403)
         return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
       }
