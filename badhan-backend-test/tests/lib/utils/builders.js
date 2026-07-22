@@ -1,10 +1,11 @@
 const { uniquePhone } = require('./helpers');
+const { HALLS_INDEX } = require('./constants');
 
 function buildDonor(overrides = {}) {
   const base = {
     name: 'Test Donor',
     phone: String(uniquePhone()),
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     bloodGroup: 'A+',
     batch: 18,
     address: 'BUET',

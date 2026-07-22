@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../lib/utils/constants');
 const postActiveDonorSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     newActiveDonor: {
       type: 'object',
@@ -23,7 +24,7 @@ const deleteActiveDonorSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     removedActiveDonor: {
       type: 'object',
@@ -43,7 +44,7 @@ const activeDonorSearchResultSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     activeDonors: {
       type: 'array',

@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../lib/utils/constants');
 const postCallRecordsSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     callRecord: {
       type: 'object',
@@ -25,7 +26,7 @@ const deleteCallRecordsSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     deletedCallRecord: {
       type: 'object',

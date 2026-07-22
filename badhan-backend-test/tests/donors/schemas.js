@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../lib/utils/constants');
 const donorsNewSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     donors: {
       type: 'array',
@@ -141,7 +142,7 @@ const searchSchema = ({ totalItems } = {}) => {
     additionalProperties: false,
     properties: {
       status: { type: 'string' },
-      statusCode: { const: 200 },
+      statusCode: { const: HTTP_STATUS.OK },
       message: { type: 'string' },
       filteredDonors,
     },
@@ -154,7 +155,7 @@ const passwordSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     token: { type: 'string' },
   },
@@ -166,7 +167,7 @@ const patchDonorsDesignationSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -177,7 +178,7 @@ const patchCommentSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -202,7 +203,7 @@ const patchAdminsSuperAdminSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     donor: {
       type: 'object',
@@ -247,7 +248,7 @@ const patchAdminsSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -258,7 +259,7 @@ const duplicateDonorSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     found: { type: 'boolean' },
     donor: {
@@ -309,7 +310,7 @@ const duplicateDonorsManySchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
 
     donors: {
@@ -364,7 +365,7 @@ const designationSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     volunteerList: {
       type: 'array',
@@ -424,7 +425,7 @@ const donorsSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     donor: {
       type: 'object',
@@ -565,7 +566,7 @@ const allDesignatedDonorSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     data: {
       type: 'array',
@@ -592,7 +593,7 @@ const postDonorSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     newDonor: {
       type: 'object',
@@ -636,7 +637,7 @@ const patchDonorSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -646,7 +647,7 @@ const deleteDonorSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],

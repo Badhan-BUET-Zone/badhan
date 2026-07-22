@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../../lib/utils/constants');
 const postUsersRedirectionSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     token: { type: 'string' },
   },
@@ -15,7 +16,7 @@ const patchUsersRedirectionSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     token: { type: 'string' },
     donor: {

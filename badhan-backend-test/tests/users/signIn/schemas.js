@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../../lib/utils/constants');
 const signInSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     token: { type: 'string' },
     message: { type: 'string' },
   },
@@ -15,7 +16,7 @@ const phoneValidationErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 400 },
+    statusCode: { const: HTTP_STATUS.BAD_REQUEST },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -26,7 +27,7 @@ const passwordValidationErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 400 },
+    statusCode: { const: HTTP_STATUS.BAD_REQUEST },
     message: { const: '' },
   },
 };
@@ -36,7 +37,7 @@ const phoneNotFoundErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 404 },
+    statusCode: { const: HTTP_STATUS.NOT_FOUND },
     message: { const: 'Account not found' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -47,7 +48,7 @@ const passwordIncorrectErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 401 },
+    statusCode: { const: HTTP_STATUS.UNAUTHORIZED },
     message: { const: 'Incorrect phone / password' },
   },
   required: ['status', 'statusCode', 'message'],

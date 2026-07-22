@@ -1,3 +1,4 @@
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 const {
   createDonor,
   signInSuperAdmin,
@@ -17,7 +18,7 @@ test('searchDonors: blood donation 110 days ago', async () => {
   const newDonorInfo = {
     phone: 8801555444779,
     bloodGroup: 2,
-    hall: 5,
+    hall: HALLS_INDEX.SUHRAWARDY,
     name: 'Blood110',
     studentId: 1606062,
     address: 'Azimpur',

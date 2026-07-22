@@ -1,5 +1,6 @@
 const { sameHallPermissionErrorSchema } = require('../schemas');
 const operations = require('../../lib/operations');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('same hall permission test', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -7,7 +8,7 @@ test('same hall permission test', async () => {
     {
       phone: 8801555444777,
       bloodGroup: 2,
-      hall: 1,
+      hall: HALLS_INDEX.CHATRI,
       name: 'Blah Blah',
       studentId: 1606060,
       address: 'Azimpur',
@@ -22,7 +23,7 @@ test('same hall permission test', async () => {
     {
       phone: 8801555444778,
       bloodGroup: 2,
-      hall: 2,
+      hall: HALLS_INDEX.NAZRUL,
       name: 'Blah Blah',
       studentId: 1606060,
       address: 'Azimpur',

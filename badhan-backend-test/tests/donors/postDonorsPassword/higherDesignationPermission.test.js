@@ -1,6 +1,7 @@
 const operations = require('../../lib/operations');
 const { uniquePhone } = require('../../helpers');
 const { higherDesignationPermissionErrorSchema } = require('../../common/schemas');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 // Ensure lower designation cannot issue token/password for higher designation on POST /donors/password
 
@@ -10,7 +11,7 @@ test('POST/donors/password: volunteer cannot issue for hall admin (higher design
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Hall Admin',
     studentId: 1900901,
     address: 'Test Address',
@@ -22,7 +23,7 @@ test('POST/donors/password: volunteer cannot issue for hall admin (higher design
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer Actor',
     studentId: 1900902,
     address: 'Test Address',
@@ -58,7 +59,7 @@ test('POST/donors/password: volunteer cannot issue for super admin (higher desig
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Super Admin',
     studentId: 1900903,
     address: 'Test Address',
@@ -70,7 +71,7 @@ test('POST/donors/password: volunteer cannot issue for super admin (higher desig
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer Actor',
     studentId: 1900904,
     address: 'Test Address',
@@ -106,7 +107,7 @@ test('POST/donors/password: hall admin cannot issue for super admin (higher desi
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Hall Admin Actor',
     studentId: 1900905,
     address: 'Test Address',
@@ -118,7 +119,7 @@ test('POST/donors/password: hall admin cannot issue for super admin (higher desi
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Super Admin',
     studentId: 1900906,
     address: 'Test Address',

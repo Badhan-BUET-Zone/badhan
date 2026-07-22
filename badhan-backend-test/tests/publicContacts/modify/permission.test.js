@@ -2,6 +2,7 @@ const operations = require('../../lib/operations');
 const flows = require('../../flows');
 const { superAdminPermissionErrorSchema } = require('../../common/schemas');
 const { uniquePhone } = require('../../helpers');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('POST/ publicContacts: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -12,7 +13,7 @@ test('POST/ publicContacts: requires super admin (volunteer and hall admin forbi
   const newDonorInfoA = {
     phone: phoneA,
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
     studentId: 1900125,
     address: 'Test Address',
@@ -47,7 +48,7 @@ test('DELETE/ publicContacts: requires super admin (volunteer and hall admin for
   const newDonorInfoC = {
     phone: phoneC,
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
     studentId: 1900126,
     address: 'Test Address',

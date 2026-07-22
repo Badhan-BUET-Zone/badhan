@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../../lib/utils/constants');
 const signOutSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],

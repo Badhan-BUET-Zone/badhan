@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../lib/utils/constants');
 const jwtInvalidSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 401 },
+    statusCode: { const: HTTP_STATUS.UNAUTHORIZED },
     message: { const: 'Invalid Authentication' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -13,7 +14,7 @@ const expiredTokenSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 401 },
+    statusCode: { const: HTTP_STATUS.UNAUTHORIZED },
     message: { const: 'You have been logged out' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -24,7 +25,7 @@ const routeNotFoundErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 404 },
+    statusCode: { const: HTTP_STATUS.NOT_FOUND },
     message: { const: 'Route not found' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -35,7 +36,7 @@ const jsonBodyParseErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 400 },
+    statusCode: { const: HTTP_STATUS.BAD_REQUEST },
     message: { const: 'Malformed JSON' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -46,7 +47,7 @@ const internalServerErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'EXCEPTION' },
-    statusCode: { const: 500 },
+    statusCode: { const: HTTP_STATUS.INTERNAL_SERVER_ERROR },
     message: { const: 'UNCAUGHT ERROR: undefined' },
     details: {
       type: 'object',
@@ -65,7 +66,7 @@ const superAdminPermissionErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 403 },
+    statusCode: { const: HTTP_STATUS.FORBIDDEN },
     message: { const: 'You are not permitted to access this route' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -76,7 +77,7 @@ const hallAdminPermissionErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 403 },
+    statusCode: { const: HTTP_STATUS.FORBIDDEN },
     message: { const: 'Only hall admins or above can access this route' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -87,7 +88,7 @@ const higherDesignationPermissionErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 403 },
+    statusCode: { const: HTTP_STATUS.FORBIDDEN },
     message: { const: 'You cannot modify the details of a Badhan member with higher designation' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -98,7 +99,7 @@ const sameHallPermissionErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'ERROR' },
-    statusCode: { const: 403 },
+    statusCode: { const: HTTP_STATUS.FORBIDDEN },
     message: { const: 'You are not authorized to access a donor of different hall' },
   },
   required: ['status', 'statusCode', 'message'],

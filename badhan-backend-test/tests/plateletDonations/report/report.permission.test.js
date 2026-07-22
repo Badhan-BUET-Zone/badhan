@@ -1,6 +1,7 @@
 const operations = require('../../lib/operations');
 const flows = require('../../flows');
 const { superAdminPermissionErrorSchema } = require('../../common/schemas');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('GET/platelet-donations/report: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -8,7 +9,7 @@ test('GET/platelet-donations/report: requires super admin (volunteer and hall ad
   const newDonorInfo = {
     phone: 8801777000012,
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
     studentId: 1900124,
     address: 'Test Address',

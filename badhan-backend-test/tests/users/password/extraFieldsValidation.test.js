@@ -1,6 +1,7 @@
 const { expectAuthedError } = require('../../lib');
 const operations = require('../../lib/operations');
 const env = require('../../../config');
+const { HTTP_STATUS } = require('../../lib/utils/constants');
 
 // Schema for TSOA validation error when extra fields are provided
 // Currently TSOA validation errors are caught and wrapped as internal server errors (500)
@@ -9,13 +10,13 @@ const extraFieldsErrorSchema = {
   additionalProperties: false,
   properties: {
     status: { const: 'EXCEPTION' },
-    statusCode: { const: 500 },
+    statusCode: { const: HTTP_STATUS.INTERNAL_SERVER_ERROR },
     message: { type: 'string' },
     details: {
       type: 'object',
       properties: {
         name: { const: 'ValidateError' },
-        status: { const: 400 },
+        status: { const: HTTP_STATUS.BAD_REQUEST },
         fields: { type: 'object' },
       },
       required: ['name', 'status', 'fields'],

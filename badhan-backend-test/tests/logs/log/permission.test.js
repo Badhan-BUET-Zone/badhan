@@ -2,13 +2,14 @@ const operations = require('../../operations');
 const flows = require('../../flows');
 const { uniquePhone } = require('../../helpers');
 const { superAdminPermissionErrorSchema } = require('../../common/schemas');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('GET/log: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const newDonorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
     studentId: 1900202,
     address: 'Test Address',
@@ -31,7 +32,7 @@ test('DELETE/log: requires super admin (volunteer and hall admin forbidden)', as
   const newDonorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
     studentId: 1900203,
     address: 'Test Address',

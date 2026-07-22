@@ -1,3 +1,4 @@
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 const {
   promoteToVolunteer,
   promoteToHallAdmin,
@@ -12,7 +13,7 @@ test('PATCH/admins: success', async () => {
   const newDonor = {
     phone: 8801555444777,
     bloodGroup: 2,
-    hall: 5, // Assuming hall ID is 5
+    hall: HALLS_INDEX.SUHRAWARDY, // Assuming hall ID is 5
     name: 'Blah Blah',
     studentId: 1606060,
     address: 'Azimpur',

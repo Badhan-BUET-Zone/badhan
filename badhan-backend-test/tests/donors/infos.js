@@ -1,7 +1,8 @@
+const { HALLS_INDEX } = require('../lib/utils/constants');
 const newDonorInfo = {
   phone: 8801555444777,
   bloodGroup: 2,
-  hall: 5,
+  hall: HALLS_INDEX.SUHRAWARDY,
   name: 'Blah Blah',
   studentId: 1606060,
   address: 'Azimpur',
@@ -14,7 +15,7 @@ const newDonorInfo = {
 const newDonor_1_info = {
   phone: 8801500000001,
   bloodGroup: 2,
-  hall: 2,
+  hall: HALLS_INDEX.NAZRUL,
   name: 'Blah Blah',
   studentId: 1606060,
   address: 'Azimpur',
@@ -27,7 +28,7 @@ const newDonor_1_info = {
 const newDonor_2_info = {
   phone: 8801500000002,
   bloodGroup: 2,
-  hall: 3,
+  hall: HALLS_INDEX.RASHID,
   name: 'Blah Blah',
   studentId: 1606061,
   address: 'Azimpur',

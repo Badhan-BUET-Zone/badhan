@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../lib/utils/constants');
 const postPublicContactsSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     publicContact: {
       type: 'object',
@@ -24,7 +25,7 @@ const deletePublicContactsSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -35,7 +36,7 @@ const getPublicContactsSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     publicContacts: {
       type: 'array',

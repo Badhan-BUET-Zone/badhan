@@ -1,6 +1,7 @@
 const { passwordSchema } = require('../schemas');
 const operations = require('../../lib/operations');
 const { uniquePhone } = require('../../helpers');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('POST/donors/password: success', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -8,7 +9,7 @@ test('POST/donors/password: success', async () => {
   const newDonorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
     studentId: 1900401,
     address: 'Test Address',

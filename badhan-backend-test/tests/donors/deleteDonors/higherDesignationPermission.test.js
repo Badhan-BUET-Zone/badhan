@@ -1,6 +1,7 @@
 const operations = require('../../lib/operations');
 const { uniquePhone } = require('../../helpers');
 const { higherDesignationPermissionErrorSchema } = require('../../common/schemas');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 // Ensure lower designation cannot delete higher designation on DELETE /donors
 
@@ -10,7 +11,7 @@ test('DELETE/donors: volunteer cannot delete hall admin (higher designation)', a
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Hall Admin',
     studentId: 1900801,
     address: 'Test Address',
@@ -22,7 +23,7 @@ test('DELETE/donors: volunteer cannot delete hall admin (higher designation)', a
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer Actor',
     studentId: 1900802,
     address: 'Test Address',
@@ -58,7 +59,7 @@ test('DELETE/donors: volunteer cannot delete super admin (higher designation)', 
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Super Admin',
     studentId: 1900803,
     address: 'Test Address',
@@ -70,7 +71,7 @@ test('DELETE/donors: volunteer cannot delete super admin (higher designation)', 
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer Actor',
     studentId: 1900804,
     address: 'Test Address',
@@ -106,7 +107,7 @@ test('DELETE/donors: hall admin cannot delete super admin (higher designation)',
   const actorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Hall Admin Actor',
     studentId: 1900805,
     address: 'Test Address',
@@ -118,7 +119,7 @@ test('DELETE/donors: hall admin cannot delete super admin (higher designation)',
   const targetInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Super Admin',
     studentId: 1900806,
     address: 'Test Address',

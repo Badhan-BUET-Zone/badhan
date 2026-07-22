@@ -1,5 +1,6 @@
 const { sameHallPermissionErrorSchema } = require('../../common/schemas');
 const operations = require('../../lib/operations');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('PATCH /donors/v2: forbidden when target donor is in different hall', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -9,7 +10,7 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
     {
       phone: 8801555006262,
       bloodGroup: 2,
-      hall: 1,
+      hall: HALLS_INDEX.CHATRI,
       name: 'Requester Volunteer',
       studentId: 2001061,
       address: 'Hall 1 Address',
@@ -25,7 +26,7 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
   const targetInfo = {
     phone: 8801555006363,
     bloodGroup: 2,
-    hall: 2,
+    hall: HALLS_INDEX.NAZRUL,
     name: 'Target Donor',
     studentId: 2011062,
     address: 'Hall 2 Address',

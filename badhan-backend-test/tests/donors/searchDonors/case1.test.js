@@ -1,3 +1,4 @@
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 const {
   createDonor,
   signInSuperAdmin,
@@ -17,7 +18,7 @@ test('GET/search/v3: success', async () => {
   const newDonorInfo = {
     phone: 8801555444777,
     bloodGroup: 2,
-    hall: 5,
+    hall: HALLS_INDEX.SUHRAWARDY,
     name: 'Blah Blah',
     studentId: 1606060,
     address: 'Azimpur',

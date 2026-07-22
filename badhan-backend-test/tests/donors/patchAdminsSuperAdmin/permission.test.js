@@ -2,6 +2,7 @@ const operations = require('../../lib/operations');
 const flows = require('../../flows');
 const { uniquePhone } = require('../../helpers');
 const { superAdminPermissionErrorSchema } = require('../../common/schemas');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('PATCH/admins/superadmin: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -10,7 +11,7 @@ test('PATCH/admins/superadmin: requires super admin (volunteer and hall admin fo
   const targetDonorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Target Donor',
     studentId: 1900601,
     address: 'Test Address',
@@ -25,7 +26,7 @@ test('PATCH/admins/superadmin: requires super admin (volunteer and hall admin fo
   const actorDonorInfo = {
     phone: uniquePhone(),
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer Actor',
     studentId: 1900602,
     address: 'Test Address',

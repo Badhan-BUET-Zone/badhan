@@ -1,5 +1,6 @@
 const { sameHallPermissionErrorSchema } = require('../common/schemas');
 const operations = require('../lib/operations');
+const { HALLS_INDEX } = require('../lib/utils/constants');
 
 test('DELETE /donations: forbidden when target donor is in different hall and not availableToAll', async () => {
   const signInResponse = await operations.signInSuperAdmin();
@@ -9,7 +10,7 @@ test('DELETE /donations: forbidden when target donor is in different hall and no
     {
       phone: 8801555001111,
       bloodGroup: 2,
-      hall: 1,
+      hall: HALLS_INDEX.CHATRI,
       name: 'Requester Volunteer',
       studentId: 2006060,
       address: 'Hall 1 Address',
@@ -26,7 +27,7 @@ test('DELETE /donations: forbidden when target donor is in different hall and no
     {
       phone: 8801555001212,
       bloodGroup: 2,
-      hall: 2,
+      hall: HALLS_INDEX.NAZRUL,
       name: 'Target Donor',
       studentId: 2010060,
       address: 'Hall 2 Address',

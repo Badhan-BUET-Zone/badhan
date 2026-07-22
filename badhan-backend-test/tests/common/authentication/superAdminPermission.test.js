@@ -1,12 +1,13 @@
 const { superAdminPermissionErrorSchema } = require('../schemas');
 const operations = require('../../lib/operations');
+const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 test('super admin permission test', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const newDonorInfo = {
     phone: 8801555444777,
     bloodGroup: 2,
-    hall: 1,
+    hall: HALLS_INDEX.CHATRI,
     name: 'Blah Blah',
     studentId: 1606060,
     address: 'Azimpur',

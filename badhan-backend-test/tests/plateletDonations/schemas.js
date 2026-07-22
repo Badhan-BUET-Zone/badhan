@@ -1,9 +1,10 @@
+const { HTTP_STATUS } = require('../lib/utils/constants');
 const getPlateletDonationReportsSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     report: {
       type: 'array',
@@ -40,7 +41,7 @@ const invalidRequestSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 400 },
+    statusCode: { const: HTTP_STATUS.BAD_REQUEST },
     message: { type: 'string' },
   },
   required: ['status', 'statusCode', 'message'],
@@ -51,7 +52,7 @@ const postPlateletDonationSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 201 },
+    statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     newPlateletDonation: {
       type: 'object',
@@ -73,7 +74,7 @@ const deletePlateletDonationSchema = {
   additionalProperties: false,
   properties: {
     status: { type: 'string' },
-    statusCode: { const: 200 },
+    statusCode: { const: HTTP_STATUS.OK },
     message: { type: 'string' },
     deletedPlateletDonation: {
       type: 'object',
