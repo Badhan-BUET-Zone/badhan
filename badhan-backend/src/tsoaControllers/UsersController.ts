@@ -13,6 +13,7 @@ import { JwtPayload } from '../db/models/Token'
 import userValidator from '../validations/users'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { HTTP_STATUS } from '../constants'
 
 @Route('users')
 @Tags('Users')
@@ -22,22 +23,22 @@ export class UsersController extends Controller {
   @SuccessResponse(201, 'Signed in successfully')
   @Response<{ status: string; statusCode: number; message: string }>(401, 'Incorrect phone / password', {
     status: 'ERROR',
-    statusCode: 401,
+    statusCode: HTTP_STATUS.UNAUTHORIZED,
     message: 'Incorrect phone / password'
   })
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Account not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Account not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Token insertion failed'
   })
   @Example<{ status: string; statusCode: number; message: string; token: string }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Signed in successfully',
     token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
   })
@@ -51,8 +52,8 @@ export class UsersController extends Controller {
 
     const donorQueryResult: {data?: any, message: string, status: string} = await donorInterface.findDonorByQuery({ phone: donorPhone })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Account not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Account not found' }
     }
 
     const donor: any = donorQueryResult.data
@@ -61,29 +62,29 @@ export class UsersController extends Controller {
     try {
       matched = await bcrypt.compare(password, donor.password!)
     } catch (_e) {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Account not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Account not found' }
     }
 
     if (!matched) {
-      this.setStatus(401)
-      return { status: 'ERROR', statusCode: 401, message: 'Incorrect phone / password' }
+      this.setStatus(HTTP_STATUS.UNAUTHORIZED)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.UNAUTHORIZED, message: 'Incorrect phone / password' }
     }
 
     const res: ExResponse = (req as any).res
     const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
     if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Token insertion failed' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
     }
 
     tokenCache.add(tokenInsertResult.data!.token, donor)
     await logInterface.addLog(donor._id, 'POST USERS SIGNIN', {})
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Signed in successfully',
       token: tokenInsertResult.data!.token
     }
@@ -94,7 +95,7 @@ export class UsersController extends Controller {
   @SuccessResponse(200, 'Logged out successfully')
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Logged out successfully'
   })
   @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
@@ -106,10 +107,10 @@ export class UsersController extends Controller {
     await tokenInterface.deleteTokenDataByToken(token)
     await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logged out successfully'
     }
   }
@@ -119,12 +120,12 @@ export class UsersController extends Controller {
   @SuccessResponse(200, 'Logged out from all devices successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Failed to sign out from all devices', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Failed to sign out from all devices'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Logged out from all devices successfully'
   })
   @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
@@ -135,10 +136,10 @@ export class UsersController extends Controller {
     await tokenInterface.deleteAllTokensByDonorId(donor._id)
     await logInterface.addLog(donor._id, 'DELETE USERS SIGNOUT ALL', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logged out from all devices successfully'
     }
   }
@@ -148,7 +149,7 @@ export class UsersController extends Controller {
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; donor: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Fetched donor details successfully',
     donor: {
       _id: 'jhdwiurh837921',
@@ -174,10 +175,10 @@ export class UsersController extends Controller {
 
     await logInterface.addLog(donor._id, 'ENTERED APP', { name: donor.name })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       donor
     }
@@ -188,12 +189,12 @@ export class UsersController extends Controller {
   @SuccessResponse(201, 'Redirection token created')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Token insertion failed'
   })
   @Example<{ status: string; statusCode: number; message: string; token: string }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Redirection token created',
     token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
   })
@@ -205,16 +206,16 @@ export class UsersController extends Controller {
     const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, '30s')
 
     if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Token insertion failed' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
     }
 
     await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Redirection token created',
       token: tokenInsertResult.data!.token
     }
@@ -225,22 +226,22 @@ export class UsersController extends Controller {
   @SuccessResponse(201, 'Redirected login successful')
   @Response<{ status: string; statusCode: number; message: string }>(401, 'Session Expired', {
     status: 'ERROR',
-    statusCode: 401,
+    statusCode: HTTP_STATUS.UNAUTHORIZED,
     message: 'Session Expired'
   })
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found / Token not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Token insertion failed'
   })
   @Example<{ status: string; statusCode: number; message: string; token: string; donor: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Redirected login successful',
     token: 'dvsoigneoihegoiwsngoisngoiswgnbon',
     donor: {
@@ -272,15 +273,15 @@ export class UsersController extends Controller {
     try {
       decodedDonor = await jwt.verify(token, dotenv.JWT_SECRET) as JwtPayload
     } catch (_e) {
-      this.setStatus(401)
-      return { status: 'ERROR', statusCode: 401, message: 'Session Expired' }
+      this.setStatus(HTTP_STATUS.UNAUTHORIZED)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.UNAUTHORIZED, message: 'Session Expired' }
     }
 
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: decodedDonor._id })
 
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
 
     const donor: IDonor = donorQueryResult.data!
@@ -288,23 +289,23 @@ export class UsersController extends Controller {
     const tokenDeleteResponse: {message: string, status: string} = await tokenInterface.deleteTokenDataByToken(token)
 
     if (tokenDeleteResponse.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Token not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Token not found' }
     }
 
     const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
 
     if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Token insertion failed' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
     }
 
     await logInterface.addLog(donor._id, 'PATCH USERS REDIRECTION', {})
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Redirected login successful',
       token: tokenInsertResult.data!.token,
       donor
@@ -316,12 +317,12 @@ export class UsersController extends Controller {
   @SuccessResponse(201, 'Password changed successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Token insertion failed'
   })
   @Example<{ status: string; statusCode: number; message: string; token: string }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Password changed successfully',
     token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
   })
@@ -340,16 +341,16 @@ export class UsersController extends Controller {
     const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
 
     if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Token insertion failed' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
     }
 
     await logInterface.addLog(donor._id, 'PATCH USERS PASSWORD', {})
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Password changed successfully',
       token: tokenInsertResult.data!.token
     }
@@ -360,12 +361,12 @@ export class UsersController extends Controller {
   @SuccessResponse(200, 'Recent logins fetched successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Failed to fetch logins', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Failed to fetch logins'
   })
   @Example<{ status: string; statusCode: number; message: string; logins: any[]; currentLogin: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Recent logins fetched successfully',
     logins: [{
       _id: '584abcde6744144441',
@@ -392,8 +393,8 @@ export class UsersController extends Controller {
 
     const currentTokenDataResult: {data?: any, message: string, status: string} = await tokenInterface.findTokenDataByToken(token)
     if (currentTokenDataResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Failed to fetch logins' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Failed to fetch logins' }
     }
 
     const currentTokenData: { __v?: string, donorId?: string, token?: string, expireAt?: number, os: string, browserFamily: string, device: string, ipAddress: string} = JSON.parse(JSON.stringify(currentTokenDataResult.data))
@@ -404,10 +405,10 @@ export class UsersController extends Controller {
 
     await logInterface.addLog(user._id, 'GET USERS LOGINS', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Recent logins fetched successfully',
       logins: recentLoginsResult.data,
       currentLogin: currentTokenData
@@ -418,14 +419,14 @@ export class UsersController extends Controller {
   @Delete('logins')
   @Response<{ status: string; statusCode: number; message: string }>(400, 'tokenId is required', {
     status: 'ERROR',
-    statusCode: 400,
+    statusCode: HTTP_STATUS.BAD_REQUEST,
     message: 'tokenId is required'
   })
   public async deleteLoginMissingToken(): Promise<{ status: string; statusCode: number; message: string }> {
-    this.setStatus(400)
+    this.setStatus(HTTP_STATUS.BAD_REQUEST)
     return {
       status: 'ERROR',
-      statusCode: 400,
+      statusCode: HTTP_STATUS.BAD_REQUEST,
       message: 'tokenId is required'
     }
   }
@@ -435,12 +436,12 @@ export class UsersController extends Controller {
   @SuccessResponse(200, 'Logged out from specified device')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Login information not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Login information not found'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Logged out from specified device'
   })
   @Middlewares([rateLimiter.commonLimiter, userValidator.validateDELETELogins, authenticator.handleAuthentication])
@@ -454,16 +455,16 @@ export class UsersController extends Controller {
     const deletedTokenResult: {message: string, status: string, data?: any} = await tokenInterface.deleteByTokenId(tokenId)
 
     if (deletedTokenResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Login information not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Login information not found' }
     }
 
     await logInterface.addLog(donor._id, 'DELETE USERS LOGINS', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logged out from specified device'
     }
   }

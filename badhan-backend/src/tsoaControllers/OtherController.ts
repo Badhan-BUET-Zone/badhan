@@ -3,6 +3,7 @@ import { Controller, Get, Route, Tags, Hidden } from 'tsoa'
 import dotenv from '../dotenv'
 import fs from 'fs'
 import path from 'path'
+import { HTTP_STATUS } from '../constants'
 
 const DEPLOY_FILE: string = path.resolve(__dirname, '../../../last_deployed.txt')
 let lastDeployed: string = 'unknown'
@@ -27,7 +28,7 @@ export class OtherController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message:
         `Badhan backend API is online! environment: ${dotenv.NODE_ENV}. ` +
         `Last deployed: ${lastDeployed}`
@@ -44,10 +45,10 @@ export class OtherController extends Controller {
     statusCode: number
     message: string
   }> {
-    this.setStatus(404)
+    this.setStatus(HTTP_STATUS.NOT_FOUND)
     return {
       status: 'ERROR',
-      statusCode: 404,
+      statusCode: HTTP_STATUS.NOT_FOUND,
       message: 'Please update your app'
     }
   }
@@ -62,10 +63,10 @@ export class OtherController extends Controller {
     statusCode: number
     message: string
   }> {
-    this.setStatus(404)
+    this.setStatus(HTTP_STATUS.NOT_FOUND)
     return {
       status: 'ERROR',
-      statusCode: 404,
+      statusCode: HTTP_STATUS.NOT_FOUND,
       message: 'This feature is currently under maintenance'
     }
   }

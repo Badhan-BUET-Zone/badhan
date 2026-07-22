@@ -7,7 +7,7 @@ import { IDonor } from '../db/models/Donor'
 import donorValidator from '../validations/donors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
-import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 
 @Route('search')
 @Tags('Search')
@@ -17,12 +17,12 @@ export class SearchController extends Controller {
   @SuccessResponse(200, 'Donors queried successfully')
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not allowed to search other halls', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not allowed to search donors of other halls'
   })
   @Example<{ status: string; statusCode: number; message: string; filteredDonors: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donors queried successfully',
     filteredDonors: [{
       _id: '584abcde6744144441',
@@ -67,8 +67,8 @@ export class SearchController extends Controller {
     }
 
     if (reqQuery.hall !== user.hall && isHallRestricted(reqQuery.hall) && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You are not allowed to search donors of other halls' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not allowed to search donors of other halls' }
     }
 
     const result: { data: IDonor[]; message: string; status: string } = await donorInterface.findDonorsByAggregate(reqQuery)
@@ -78,10 +78,10 @@ export class SearchController extends Controller {
       resultCount: result.data.length
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donors queried successfully',
       filteredDonors: result.data
     }

@@ -9,6 +9,7 @@ import { IDonor } from '../db/models/Donor'
 import { ILog } from '../db/models/Log'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { HTTP_STATUS } from '../constants'
 
 @Route('log')
 @Tags('Logs')
@@ -18,7 +19,7 @@ export class LogsController extends Controller {
   @SuccessResponse(200, 'Statistics fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; statistics: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Statistics fetched successfully',
     statistics: {
       donorCount: 2600,
@@ -36,10 +37,10 @@ export class LogsController extends Controller {
     const plateletDonationCount: { message: string; status: string; data: number } = await plateletDonationInterface.getPlateletDonationCount()
     const volunteerCount: { message: string; status: string; data: number } = await donorInterface.getVolunteerCount()
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Statistics fetched successfully',
       statistics: {
         donorCount: donorCount.data,
@@ -55,7 +56,7 @@ export class LogsController extends Controller {
   @SuccessResponse(200, 'Donation logs fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; countByYearMonth?: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donation logs fetched successfully',
     countByYearMonth: {}
   })
@@ -65,10 +66,10 @@ export class LogsController extends Controller {
   ): Promise<{ status: string; statusCode: number; message: string; countByYearMonth?: any }> {
     const donationYearMonthCountResult: { message: string; status: string; data: donationInterface.YearMonthCount } = await donationInterface.getDonationCountGroupedByYear()
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: donationYearMonthCountResult.message,
       countByYearMonth: donationYearMonthCountResult.data
     }
@@ -79,7 +80,7 @@ export class LogsController extends Controller {
   @SuccessResponse(200, 'Logs fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; logs?: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Logs fetched successfully',
     logs: [{
       dateString: '2021-05-06',
@@ -93,10 +94,10 @@ export class LogsController extends Controller {
   ): Promise<{ status: string; statusCode: number; message: string; logs?: any[] }> {
     const logsResult: { data: ILog[]; status: string; message: string } = await logInterface.getLogs()
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logs fetched successfully',
       logs: logsResult.data
     }
@@ -107,7 +108,7 @@ export class LogsController extends Controller {
   @SuccessResponse(200, 'All logs deleted successfully')
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'All logs deleted successfully'
   })
   @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
@@ -120,10 +121,10 @@ export class LogsController extends Controller {
     await logInterface.deleteLogs()
     await logInterface.addLog(user._id, 'DELETE LOGS', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All logs deleted successfully'
     }
   }

@@ -6,6 +6,7 @@ import * as logInterface from '../db/interfaces/logInterface'
 import { IDonor } from '../db/models/Donor'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
+import { HTTP_STATUS } from '../constants'
 
 @Route('volunteers')
 @Tags('Volunteers')
@@ -15,7 +16,7 @@ export class VolunteersController extends Controller {
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; data: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Fetched donor details successfully',
     data: [{
       _id: '584abcde6744144441',
@@ -35,16 +36,16 @@ export class VolunteersController extends Controller {
     const allDesignatedDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDesignatedDonors()
 
     if (allDesignatedDonorResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: allDesignatedDonorResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: allDesignatedDonorResult.message }
     }
 
     await logInterface.addLog(user._id, 'GET DONORS DESIGNATION ALL', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       data: allDesignatedDonorResult.data
     }

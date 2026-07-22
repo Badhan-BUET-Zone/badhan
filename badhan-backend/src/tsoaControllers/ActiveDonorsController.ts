@@ -9,7 +9,7 @@ import { IActiveDonor } from '../db/models/ActiveDonor'
 import activeDonorsValidator from '../validations/activeDonors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
-import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 
 @Route('activeDonors')
 @Tags('Active Donors')
@@ -19,22 +19,22 @@ export class ActiveDonorsController extends Controller {
   @SuccessResponse(201, 'Active donor created')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized to access donor', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Active donor already created', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'Active donor already created'
   })
   @Example<{ status: string; statusCode: number; message: string; newActiveDonor: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Active donor created',
     newActiveDonor: {
       _id: '614ec811e29ab430ddfb119a',
@@ -56,8 +56,8 @@ export class ActiveDonorsController extends Controller {
       _id: body.donorId
     })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
@@ -66,16 +66,16 @@ export class ActiveDonorsController extends Controller {
       if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
           user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
     // Check if active donor already exists
     const activeDonorSearch: {data?: IActiveDonor[], message: string, status: string} = await activeDonorInterface.findByDonorId(targetDonor._id)
     if (activeDonorSearch.status === 'OK') {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'Active donor already created' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Active donor already created' }
     }
 
     // Add active donor
@@ -86,10 +86,10 @@ export class ActiveDonorsController extends Controller {
       donor: targetDonor.name
     })
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Active donor created',
       newActiveDonor: activeDonorInsertResult.data
     }
@@ -100,17 +100,17 @@ export class ActiveDonorsController extends Controller {
   @SuccessResponse(200, 'Active donor deleted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found / Active donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized to access donor', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Example<{ status: string; statusCode: number; message: string; removedActiveDonor: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Active donor deleted successfully',
     removedActiveDonor: {
       _id: '614ec811e29ab430ddfb119a',
@@ -132,8 +132,8 @@ export class ActiveDonorsController extends Controller {
       _id: donorId
     })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
@@ -142,16 +142,16 @@ export class ActiveDonorsController extends Controller {
       if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
           user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
     // Remove active donor
     const activeDonorRemoveResult: {data?: IActiveDonor, message: string, status: string} = await activeDonorInterface.remove(targetDonor._id)
     if (activeDonorRemoveResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Active donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Active donor not found' }
     }
 
     await logInterface.addLog(user._id, 'DELETE ACTIVEDONORS', {
@@ -159,10 +159,10 @@ export class ActiveDonorsController extends Controller {
       donor: targetDonor.name
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Active donor deleted successfully',
       removedActiveDonor: activeDonorRemoveResult.data
     }
@@ -173,12 +173,12 @@ export class ActiveDonorsController extends Controller {
   @SuccessResponse(200, 'Active donors queried successfully')
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not allowed to search donors of other halls', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not allowed to search donors of other halls'
   })
   @Example<{ status: string; statusCode: number; message: string; activeDonors: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Active donors queried successfully',
     activeDonors: [{
       _id: '584abcde6744144441',
@@ -244,8 +244,8 @@ export class ActiveDonorsController extends Controller {
     if (reqQuery.hall !== user.hall &&
         isHallRestricted(reqQuery.hall) &&
         user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You are not allowed to search donors of other halls' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not allowed to search donors of other halls' }
     }
 
     // Get active donors
@@ -255,10 +255,10 @@ export class ActiveDonorsController extends Controller {
       resultCount: activeDonors.data.length
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Active donors queried successfully',
       activeDonors: activeDonors.data
     }

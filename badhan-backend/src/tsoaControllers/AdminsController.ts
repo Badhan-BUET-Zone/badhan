@@ -7,7 +7,7 @@ import { IDonor } from '../db/models/Donor'
 import donorValidator from '../validations/donors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
-import { DESIGNATIONS_INDEX, hasNoSpecificHall } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, hasNoSpecificHall } from '../constants'
 
 @Route('admins')
 @Tags('Admins')
@@ -17,17 +17,17 @@ export class AdminsController extends Controller {
   @SuccessResponse(200, 'Changed hall admin successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Invalid operation', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'User is not a volunteer'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Changed hall admin successfully'
   })
   @Middlewares([donorValidator.validatePATCHAdmins, rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
@@ -41,19 +41,19 @@ export class AdminsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: body.donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
     if (targetDonor.designation !== DESIGNATIONS_INDEX.VOLUNTEER) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'User is not a volunteer' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'User is not a volunteer' }
     }
 
     if (hasNoSpecificHall(targetDonor.hall)) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'User does not have a valid hall' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'User does not have a valid hall' }
     }
 
     await donorInterface.findDonorAndUpdate({
@@ -69,10 +69,10 @@ export class AdminsController extends Controller {
 
     await logInterface.addLog(user._id, 'PATCH DONORS DESIGNATION (VOLUNTEER)', { name: targetDonor.name })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Changed hall admin successfully'
     }
   }
@@ -82,17 +82,17 @@ export class AdminsController extends Controller {
   @SuccessResponse(200, 'Donor promotion/demotion successful')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Invalid operation', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'Target donor must be a volunteer or super admin'
   })
   @Example<{ status: string; statusCode: number; message: string; donor: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donor has been promoted to Super Admin',
     donor: {
       _id: 'jhdwiurh837921',
@@ -111,14 +111,14 @@ export class AdminsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: body.donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
     if (targetDonor.designation !== DESIGNATIONS_INDEX.VOLUNTEER && targetDonor.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'Target donor must be a volunteer or super admin' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Target donor must be a volunteer or super admin' }
     }
 
     let message: string
@@ -133,10 +133,10 @@ export class AdminsController extends Controller {
     await targetDonor.save()
     await logInterface.addLog(targetDonor._id, 'PATCH DONORS DESIGNATION SUPERADMIN', { name: targetDonor.name })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message,
       donor: targetDonor
     }

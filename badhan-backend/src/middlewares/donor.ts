@@ -2,6 +2,7 @@ import {Request, Response, NextFunction} from 'express'
 import * as donorInterface from '../db/interfaces/donorInterface'
 import NotFoundError404 from '../response/models/errorTypes/NotFoundError404'
 import {IDonor} from '../db/models/Donor'
+import { HTTP_STATUS } from '../constants'
 
 export const loadTargetDonor = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   /*
@@ -21,7 +22,7 @@ export const loadTargetDonor = async (req: Request, res: Response, next: NextFun
     _id: donorId
   })
   if (donorQueryResult.status !== 'OK') {
-    return res.status(404).send(new NotFoundError404('Donor not found', {}))
+    return res.status(HTTP_STATUS.NOT_FOUND).send(new NotFoundError404('Donor not found', {}))
   }
   res.locals.middlewareResponse.targetDonor = donorQueryResult.data
   return next()

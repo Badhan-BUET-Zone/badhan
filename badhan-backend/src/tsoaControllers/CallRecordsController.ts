@@ -9,7 +9,7 @@ import { ICallRecord } from '../db/models/CallRecord'
 import callRecordValidator from '../validations/callRecords'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
-import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 
 @Route('callrecords')
 @Tags('Call Records')
@@ -19,17 +19,17 @@ export class CallRecordsController extends Controller {
   @SuccessResponse(201, 'Call record insertion successful')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized to access donor', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Example<{ status: string; statusCode: number; message: string; callRecord: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Call record insertion successful',
     callRecord: {
       _id: '614ec811e29ab430ddfb119a',
@@ -51,8 +51,8 @@ export class CallRecordsController extends Controller {
       _id: body.donorId
     })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
@@ -61,8 +61,8 @@ export class CallRecordsController extends Controller {
       if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
           user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
@@ -71,10 +71,10 @@ export class CallRecordsController extends Controller {
 
     await logInterface.addLog(user._id, 'POST CALLRECORDS', { callee: targetDonor.name })
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Call record insertion successful',
       callRecord: callRecordInsertionResult.data
     }
@@ -85,22 +85,22 @@ export class CallRecordsController extends Controller {
   @SuccessResponse(200, 'Call record deletion successful')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found / Call record not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized to access donor', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Internal server error', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Internal server error'
   })
   @Example<{ status: string; statusCode: number; message: string; deletedCallRecord: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Call record deletion successful',
     deletedCallRecord: {
       _id: '614ec811e29ab430ddfb119a',
@@ -123,8 +123,8 @@ export class CallRecordsController extends Controller {
       _id: donorId
     })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
@@ -133,23 +133,23 @@ export class CallRecordsController extends Controller {
       if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
           user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
     // Check if call record exists
     const callRecordSearchResult: {data?: ICallRecord, message: string, status: string} = await callRecordInterface.findById(callRecordId)
     if (callRecordSearchResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Call record not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Call record not found' }
     }
 
     // Delete call record
     const callRecordDeleteResult: {data?: ICallRecord, message: string, status: string} = await callRecordInterface.deleteById(callRecordId)
     if (callRecordDeleteResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: callRecordDeleteResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: callRecordDeleteResult.message }
     }
 
     await logInterface.addLog(user._id, 'DELETE CALLRECORDS', {
@@ -157,10 +157,10 @@ export class CallRecordsController extends Controller {
       ...callRecordDeleteResult.data
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Call record deletion successful',
       deletedCallRecord: callRecordDeleteResult.data
     }

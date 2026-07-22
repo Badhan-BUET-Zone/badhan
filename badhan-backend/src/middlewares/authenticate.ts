@@ -11,6 +11,7 @@ import ForbiddenError403 from "../response/models/errorTypes/ForbiddenError403";
 import {IDonor} from "../db/models/Donor";
 import {IToken} from "../db/models/Token";
 import {DESIGNATIONS_INDEX, isHallRestricted} from "../constants";
+import { HTTP_STATUS } from '../constants'
 
 /**
  * @swagger
@@ -28,7 +29,7 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
   try {
     await jwt.verify(token, dotenv.JWT_SECRET)
   } catch (e) {
-    return res.status(401).send(new UnauthorizedError401('Invalid Authentication',{}))
+    return res.status(HTTP_STATUS.UNAUTHORIZED).send(new UnauthorizedError401('Invalid Authentication',{}))
   }
 
   // check whether donor is already in cache
@@ -43,14 +44,14 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
 
   const tokenCheckResult: {data?: IToken, message: string, status: string} = await tokenInterface.findTokenDataByToken(token)
   if (tokenCheckResult.status !== 'OK' || !tokenCheckResult.data) {
-    return res.status(401).send(new UnauthorizedError401('You have been logged out',{}))
+    return res.status(HTTP_STATUS.UNAUTHORIZED).send(new UnauthorizedError401('You have been logged out',{}))
   }
 
   const tokenData: IToken = tokenCheckResult.data
 
   const findDonorResult: {message: string, status: string, data?: IDonor} = await donorInterface.findDonorById(tokenData.donorId)
   if (findDonorResult.status !== 'OK' || !findDonorResult.data) {
-    return res.status(500).send(new InternalServerError500('No user found associated with token', {file:'Found in handleAuthentication'},{}))
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send(new InternalServerError500('No user found associated with token', {file:'Found in handleAuthentication'},{}))
   }
 
   const donor: IDonor = findDonorResult.data
@@ -67,12 +68,12 @@ const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFun
   if (res.locals.middlewareResponse.donor.designation === DESIGNATIONS_INDEX.SUPER_ADMIN) {
     return next()
   }
-  return res.status(403).send(new ForbiddenError403('You are not permitted to access this route',{}))
+  return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403('You are not permitted to access this route',{}))
 }
 
 const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < DESIGNATIONS_INDEX.HALL_ADMIN) {
-    return res.status(403).send(new ForbiddenError403('Only hall admins or above can access this route',{}))
+    return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403('Only hall admins or above can access this route',{}))
   }
   next()
 }
@@ -80,7 +81,7 @@ const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunc
 const handleHigherDesignationCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation &&
         res.locals.middlewareResponse.donor._id !== res.locals.middlewareResponse.targetDonor._id) {
-    return res.status(403).send(new ForbiddenError403('You cannot modify the details of a Badhan member with higher designation',{}))
+    return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403('You cannot modify the details of a Badhan member with higher designation',{}))
   }
   next()
 }
@@ -104,7 +105,7 @@ const handleHallPermission = async (req: Request, res: Response, next:  NextFunc
   if (isHallRestricted(targetDonor.hall) &&
         res.locals.middlewareResponse.donor.hall !== targetDonor.hall &&
         res.locals.middlewareResponse.donor.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-    return res.status(403).send(new ForbiddenError403('You are not authorized to access a donor of different hall',{}))
+    return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403('You are not authorized to access a donor of different hall',{}))
   }
   return next()
 }

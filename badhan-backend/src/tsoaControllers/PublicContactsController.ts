@@ -10,6 +10,7 @@ import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import publicContactValidator from '../validations/publicContacts'
 import { loadTargetDonor } from '../middlewares/donor'
+import { HTTP_STATUS } from '../constants'
 
 @Route('publicContacts')
 @Tags('Public Contacts')
@@ -19,12 +20,12 @@ export class PublicContactsController extends Controller {
   @SuccessResponse(201, 'Public contact added successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Internal server error', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Internal server error'
   })
   @Example<{ status: string; statusCode: number; message: string; publicContact: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Public contact added successfully',
     publicContact: {
       _id: '614ec811e29ab430ddfb119a',
@@ -44,16 +45,16 @@ export class PublicContactsController extends Controller {
     const insertionResult: { data: IPublicContact; message: string; status: string } = await publicContactInterface.insertPublicContact(donorObjectId, body.bloodGroup)
 
     if (insertionResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: insertionResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: insertionResult.message }
     }
 
     await logInterface.addLog(user._id, 'POST PUBLICCONTACTS', { donorId: body.donorId })
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Public contact added successfully',
       publicContact: insertionResult.data
     }
@@ -64,7 +65,7 @@ export class PublicContactsController extends Controller {
   @SuccessResponse(200, 'All public contacts fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; publicContacts: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'All public contacts fetched successfully',
     publicContacts: [{
       bloodGroup: 2,
@@ -82,10 +83,10 @@ export class PublicContactsController extends Controller {
   ): Promise<{ status: string; statusCode: number; message: string; publicContacts?: any[] }> {
     const searchResult: { data: IPublicContact[]; message: string; status: string } = await publicContactInterface.findAllPublicContacts()
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All public contacts fetched successfully',
       publicContacts: searchResult.data
     }
@@ -96,17 +97,17 @@ export class PublicContactsController extends Controller {
   @SuccessResponse(200, 'Public contact deleted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Public contact not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Public contact not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Internal server error', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Internal server error'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Public contact deleted successfully'
   })
   @Middlewares([rateLimiter.publicContactDeletionLimiter, publicContactValidator.validateDELETEPublicContact, authenticator.handleAuthentication, loadTargetDonor, authenticator.handleSuperAdminCheck])
@@ -122,23 +123,23 @@ export class PublicContactsController extends Controller {
     const searchResult: { data?: IPublicContact; message: string; status: string } = await publicContactInterface.findPublicContactById(contactId)
 
     if (searchResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Public contact not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Public contact not found' }
     }
 
     const deletionResult: { data?: IPublicContact; status: string; message: string } = await publicContactInterface.deletePublicContactById(contactId)
 
     if (deletionResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: deletionResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: deletionResult.message }
     }
 
     await logInterface.addLog(user._id, 'DELETE PUBLICCONTACTS', { deletedContact: targetDonor.name })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Public contact deleted successfully'
     }
   }

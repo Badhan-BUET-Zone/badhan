@@ -10,6 +10,7 @@ import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import plateletDonationValidator from '../validations/plateletDonations'
 import { loadTargetDonor } from '../middlewares/donor'
+import { HTTP_STATUS } from '../constants'
 
 @Route('platelet-donations')
 @Tags('PlateletDonations')
@@ -19,12 +20,12 @@ export class PlateletDonationsController extends Controller {
   @SuccessResponse(201, 'Platelet donation inserted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Internal server error', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Internal server error'
   })
   @Example<{ status: string; statusCode: number; message: string; newPlateletDonation: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Platelet donation inserted successfully',
     newPlateletDonation: {
       date: 1611100800000,
@@ -49,8 +50,8 @@ export class PlateletDonationsController extends Controller {
     )
 
     if (plateletDonationInsertionResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: plateletDonationInsertionResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: plateletDonationInsertionResult.message }
     }
 
     await logInterface.addLog(user._id, 'POST PLATELET DONATIONS', {
@@ -58,10 +59,10 @@ export class PlateletDonationsController extends Controller {
       donor: targetDonor.name
     })
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Platelet donation inserted successfully',
       newPlateletDonation: plateletDonationInsertionResult.data
     }
@@ -72,12 +73,12 @@ export class PlateletDonationsController extends Controller {
   @SuccessResponse(200, 'Deleted platelet donation successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Platelet donation not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Matching platelet donation not found'
   })
   @Example<{ status: string; statusCode: number; message: string; deletedPlateletDonation: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Deleted platelet donation successfully',
     deletedPlateletDonation: {
       date: 1611100800000,
@@ -102,8 +103,8 @@ export class PlateletDonationsController extends Controller {
     })
 
     if (plateletDonationDeletionResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Matching platelet donation not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Matching platelet donation not found' }
     }
 
     await plateletDonationInterface.findLatestPlateletDonationByDonorId(targetDonor._id)
@@ -113,10 +114,10 @@ export class PlateletDonationsController extends Controller {
       name: targetDonor.name
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Deleted platelet donation successfully',
       deletedPlateletDonation: plateletDonationDeletionResult.data
     }
@@ -127,7 +128,7 @@ export class PlateletDonationsController extends Controller {
   @SuccessResponse(200, 'Platelet donations report generated successfully')
   @Example<{ status: string; statusCode: number; message: string; report: any[]; firstPlateletDonationCount: number }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Platelet donations report generated successfully',
     report: [{
       counts: [{
@@ -156,10 +157,10 @@ export class PlateletDonationsController extends Controller {
       name: user.name
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: reportResult.message,
       report: reportResult.data,
       firstPlateletDonationCount: countOfFirstTimePlateletDonationsOfDonors.data

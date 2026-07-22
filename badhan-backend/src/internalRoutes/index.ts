@@ -52,6 +52,7 @@ import ForbiddenError403 from '../response/models/errorTypes/ForbiddenError403'
 import InternalServerError500 from '../response/models/errorTypes/InternalServerError500'
 import ServiceUnavailableError503 from '../response/models/errorTypes/ServiceUnavailableError503'
 import { generateSchemaInconsistencies } from '../services/schemaInconsistencies'
+import { HTTP_STATUS } from '../constants'
 
 // Router containing only internal endpoints (backup utilities etc). NOT mounted publicly.
 const router: Router = express.Router()
@@ -75,7 +76,7 @@ const runValidations = (validations: any[]) => async (req: Request, res: Respons
   await Promise.all(validations.map(v => v.run(req)))
   const errors = validationResult(req)
   if (errors.isEmpty()) return next()
-  return res.status(400).send(new BadRequestError400(errors.array()[0].msg, {}))
+  return res.status(HTTP_STATUS.BAD_REQUEST).send(new BadRequestError400(errors.array()[0].msg, {}))
 }
 
 const validateDELETEBackup = runValidations([validatePARAMDate])
@@ -371,9 +372,9 @@ router.get('/schema-inconsistencies',
     try {
       const data = await generateSchemaInconsistencies()
       // Direct JSON (not wrapped in OKResponse200 to preserve nested key names as specified)
-      return res.status(200).json(data)
+      return res.status(HTTP_STATUS.OK).json(data)
     } catch (e: any) {
-      return res.status(500).json({ error: 'Failed to generate schema inconsistencies', message: e?.message })
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Failed to generate schema inconsistencies', message: e?.message })
     }
   })
 

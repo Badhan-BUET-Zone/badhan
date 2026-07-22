@@ -9,7 +9,7 @@ import { IDonation } from '../db/models/Donation'
 import donationValidator from '../validations/donations'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
-import { DESIGNATIONS_INDEX, isHallRestricted } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 
 @Route('donations')
 @Tags('Donations')
@@ -19,22 +19,22 @@ export class DonationsController extends Controller {
   @SuccessResponse(201, 'Donation inserted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized to access donor', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Donation insertion failed', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Donation insertion failed'
   })
   @Example<{ status: string; statusCode: number; message: string; newDonation: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'Donation inserted successfully',
     newDonation: {
       _id: '614ec811e29ab430ddfb119a',
@@ -56,8 +56,8 @@ export class DonationsController extends Controller {
       _id: body.donorId
     })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
@@ -66,8 +66,8 @@ export class DonationsController extends Controller {
       if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
           user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
@@ -79,8 +79,8 @@ export class DonationsController extends Controller {
     )
 
     if (donationInsertionResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: donationInsertionResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: donationInsertionResult.message }
     }
 
     await logInterface.addLog(user._id, 'POST DONATIONS', {
@@ -88,10 +88,10 @@ export class DonationsController extends Controller {
       donor: targetDonor.name
     })
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Donation inserted successfully',
       newDonation: donationInsertionResult.data
     }
@@ -102,17 +102,17 @@ export class DonationsController extends Controller {
   @SuccessResponse(200, 'Deleted donation successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found / Matching donation not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized to access donor', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Example<{ status: string; statusCode: number; message: string; deletedDonation: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Deleted donation successfully',
     deletedDonation: {
       _id: '614ec811e29ab430ddfb119a',
@@ -135,8 +135,8 @@ export class DonationsController extends Controller {
       _id: donorId
     })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
@@ -145,8 +145,8 @@ export class DonationsController extends Controller {
       if (isHallRestricted(targetDonor.hall) &&
           user.hall !== targetDonor.hall &&
           user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
@@ -157,8 +157,8 @@ export class DonationsController extends Controller {
     })
 
     if (donationDeletionResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Matching donation not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Matching donation not found' }
     }
 
     await donationInterface.findLatestDonationByDonorId(targetDonor._id)
@@ -168,10 +168,10 @@ export class DonationsController extends Controller {
       name: targetDonor.name
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Deleted donation successfully',
       deletedDonation: donationDeletionResult.data
     }
@@ -182,7 +182,7 @@ export class DonationsController extends Controller {
   @SuccessResponse(200, 'Donations report generated successfully')
   @Example<{ status: string; statusCode: number; message: string; report: any[]; firstDonationCount: number }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donations report generated successfully',
     report: [{
       bloodGroup: 2,
@@ -211,10 +211,10 @@ export class DonationsController extends Controller {
       name: user.name
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: reportResult.message,
       report: reportResult.data,
       firstDonationCount: countOfFirstTimeDonationsOfDonors.data

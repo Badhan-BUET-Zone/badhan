@@ -2,8 +2,9 @@ import {Request, Response, NextFunction} from 'express';
 import NotFoundError404 from "./models/errorTypes/NotFoundError404";
 import InternalServerError500 from "./models/errorTypes/InternalServerError500";
 import myConsole from "../utils/myConsole";
+import { HTTP_STATUS } from '../constants'
 export const routeNotFoundHandler: (req: Request, res: Response)=>Response = (req: Request, res: Response):Response => {
-  return res.status(404).send(new NotFoundError404('Route not found',{}))
+  return res.status(HTTP_STATUS.NOT_FOUND).send(new NotFoundError404('Route not found',{}))
 }
 
 // https://stackoverflow.com/questions/27567119/typescript-express-middleware
@@ -13,7 +14,7 @@ export const routeNotFoundHandler: (req: Request, res: Response)=>Response = (re
 export const internalServerErrorHandler: (error: Error, req: Request, res: Response, _next: NextFunction)=>Response = (error: Error, req: Request, res: Response, _next: NextFunction):Response => {
   myConsole.log('INTERNAL SERVER ERROR')
   myConsole.log(error)
-  return res.status(500).send(new InternalServerError500('UNCAUGHT ERROR: ' + error.message, error,{}))
+  return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send(new InternalServerError500('UNCAUGHT ERROR: ' + error.message, error,{}))
 }
 
 // https://stackoverflow.com/questions/57132198/unhandledrejection-is-not-assignable-to-parameter-of-type-signals

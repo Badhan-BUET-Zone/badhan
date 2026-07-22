@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Route, Tags } from 'tsoa'
 import * as faker from '../doc/faker'
-import { DESIGNATIONS_INDEX } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS } from '../constants'
 
 @Route('guest')
 @Tags('Guest')
@@ -15,10 +15,10 @@ export class GuestController extends Controller {
     message: string
     token: string
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Guest sign in will not show actual nor accurate data',
       token: faker.getToken()
     }
@@ -34,7 +34,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logged out successfully'
     }
   }
@@ -49,7 +49,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logged out from all devices successfully'
     }
   }
@@ -81,7 +81,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       donor: obj
     }
@@ -96,10 +96,10 @@ export class GuestController extends Controller {
     message: string
     newDonor: any
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'New donor inserted successfully',
       newDonor: {
         address: faker.getAddress(),
@@ -162,7 +162,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donors queried successfully',
       filteredDonors
     }
@@ -178,7 +178,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donor deleted successfully'
     }
   }
@@ -193,7 +193,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Comment posted successfully'
     }
   }
@@ -209,7 +209,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Created recovery link for user successfully',
       token: faker.getToken()
     }
@@ -225,7 +225,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donor updated successfully'
     }
   }
@@ -240,7 +240,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Target user promoted/demoted successfully'
     }
   }
@@ -255,7 +255,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Changed hall admin successfully'
     }
   }
@@ -344,7 +344,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       donor: obj
     }
@@ -373,7 +373,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Volunteer list fetched successfully',
       volunteerList
     }
@@ -399,7 +399,7 @@ export class GuestController extends Controller {
     }
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Hall admin list fetched successfully',
       admins
     }
@@ -414,10 +414,10 @@ export class GuestController extends Controller {
     message: string
     newDonation: any
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Donation inserted successfully',
       newDonation: {
         date: faker.getTimestamp(10),
@@ -437,10 +437,10 @@ export class GuestController extends Controller {
     message: string
     newPlateletDonation: any
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Platelet donation inserted successfully',
       newPlateletDonation: {
         date: faker.getTimestamp(10),
@@ -462,7 +462,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Deleted donation successfully',
       deletedDonation: {
         _id: faker.getId(),
@@ -484,7 +484,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Deleted platelet donation successfully',
       deletedPlateletDonation: {
         _id: faker.getId(),
@@ -506,7 +506,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Statistics fetched successfully',
       statistics: {
         donorCount: faker.getRandomIndex(2600),
@@ -527,7 +527,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All logs deleted successfully'
     }
   }
@@ -554,7 +554,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       data: object
     }
@@ -569,10 +569,10 @@ export class GuestController extends Controller {
     message: string
     callRecord: any
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Call record insertion successful',
       callRecord: {
         date: faker.getTimestamp(5),
@@ -594,7 +594,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Call record deletion successful',
       deletedCallRecord: {
         date: faker.getTimestamp(10),
@@ -617,7 +617,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Duplicate donor found',
       found: true,
       donor: {
@@ -659,7 +659,7 @@ export class GuestController extends Controller {
     }
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All logs fetched successfully',
       logs
     }
@@ -674,10 +674,10 @@ export class GuestController extends Controller {
     message: string
     token: string
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Password changed successfully',
       token: faker.getToken()
     }
@@ -692,10 +692,10 @@ export class GuestController extends Controller {
     message: string
     publicContact: any
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Public contact added successfully',
       publicContact: {
         bloodGroup: 2,
@@ -715,7 +715,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Public contact deleted successfully'
     }
   }
@@ -764,7 +764,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All public contacts fetched successfully',
       publicContacts
     }
@@ -816,7 +816,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All designated members fetched',
       volunteerList,
       adminList,
@@ -868,7 +868,7 @@ export class GuestController extends Controller {
 
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Recent logins fetched successfully',
       logins,
       currentLogin
@@ -885,7 +885,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Logged out from specified device'
     }
   }
@@ -901,7 +901,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Active donor deleted successfully',
       removedActiveDonor: {
         _id: faker.getId(),
@@ -921,10 +921,10 @@ export class GuestController extends Controller {
     message: string
     newActiveDonor: any
   }> {
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'Active donor created',
       newActiveDonor: {
         _id: faker.getId(),
@@ -968,7 +968,7 @@ export class GuestController extends Controller {
     }
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Active donor fetched successfully',
       activeDonors: filteredActiveDonors
     }
@@ -985,7 +985,7 @@ export class GuestController extends Controller {
   }> {
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donor has been promoted to Super Admin',
       donor: {
         _id: faker.getId(),
@@ -1036,7 +1036,7 @@ export class GuestController extends Controller {
     }
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donors created in time range fetched successfully',
       donors
     }

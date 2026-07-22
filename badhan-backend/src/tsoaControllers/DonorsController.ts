@@ -13,7 +13,7 @@ import donorValidator from '../validations/donors'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import queue from '../middlewares/queue'
-import { DESIGNATIONS_INDEX, halls, hasNoSpecificHall, isHallRestricted, isHallUnknown, year2000TimeStamp } from '../constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, halls, hasNoSpecificHall, isHallRestricted, isHallUnknown, year2000TimeStamp } from '../constants'
 
 @Route('donors')
 @Tags('Donors')
@@ -23,7 +23,7 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; donor: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Fetched donor details successfully',
     donor: {
       _id: '584abcde6744144441',
@@ -41,10 +41,10 @@ export class DonorsController extends Controller {
 
     await logInterface.addLog(donor._id, 'GET ME', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       donor
     }
@@ -55,7 +55,7 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Donors created in time range fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; donors: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donors created in time range fetched successfully',
     donors: [{
       _id: 'jhdwiurh837921',
@@ -81,10 +81,10 @@ export class DonorsController extends Controller {
       resultCount: result.data.length
     })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donors created in time range fetched successfully',
       donors: result.data
     }
@@ -95,17 +95,17 @@ export class DonorsController extends Controller {
   @SuccessResponse(201, 'New donor inserted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Duplicate donor found', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'Donor found with duplicate phone number'
   })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Donor insertion failed', {
     status: 'ERROR',
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'New donor insertion unsuccessful'
   })
   @Example<{ status: string; statusCode: number; message: string; newDonor: any }>({
     status: 'OK',
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     message: 'New donor inserted successfully',
     newDonor: {
       _id: '616ab751fc274715cc504ac7',
@@ -149,18 +149,18 @@ export class DonorsController extends Controller {
         hasNoSpecificHall(duplicateDonor.hall) ||
         duplicateDonor.availableToAll
       ) {
-        this.setStatus(409)
+        this.setStatus(HTTP_STATUS.CONFLICT)
         return {
           status: 'ERROR',
-          statusCode: 409,
+          statusCode: HTTP_STATUS.CONFLICT,
           message: `Donor found with duplicate phone number in ${halls[duplicateDonor.hall]} hall`,
           donorId: duplicateDonor._id.toString()
         }
       }
-      this.setStatus(409)
+      this.setStatus(HTTP_STATUS.CONFLICT)
       return {
         status: 'ERROR',
-        statusCode: 409,
+        statusCode: HTTP_STATUS.CONFLICT,
         message: `Donor found with duplicate phone number in ${halls[duplicateDonor.hall]} hall. You are not permitted to access this donor.`
       }
     }
@@ -184,8 +184,8 @@ export class DonorsController extends Controller {
     )
 
     if (donorInsertionResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'New donor insertion unsuccessful' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'New donor insertion unsuccessful' }
     }
 
     // Blood donations: create dummy donations based on extraDonationCount
@@ -201,8 +201,8 @@ export class DonorsController extends Controller {
       if (dummyDonations.length > 0) {
         const dummyInsertionResult: { data: IDonation[]; message: string; status: string } = await donationInterface.insertManyDonations(dummyDonations)
         if (dummyInsertionResult.status !== 'OK') {
-          this.setStatus(500)
-          return { status: 'ERROR', statusCode: 500, message: 'Dummy donations insertion unsuccessful' }
+          this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Dummy donations insertion unsuccessful' }
         }
       }
       // Insert a real lastDonation if provided (>0)
@@ -213,13 +213,13 @@ export class DonorsController extends Controller {
           body.lastDonation
         )
         if (lastDonationInsertResult.status !== 'OK') {
-          this.setStatus(500)
-          return { status: 'ERROR', statusCode: 500, message: 'Last donation insertion unsuccessful' }
+          this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Last donation insertion unsuccessful' }
         }
       }
     } catch (e) {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Donation insertion workflow failed' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Donation insertion workflow failed' }
     }
 
     // Platelet donations
@@ -234,8 +234,8 @@ export class DonorsController extends Controller {
           year2000TimeStamp
         )
         if (plateletDummyResult.status !== 'OK') {
-          this.setStatus(500)
-          return { status: 'ERROR', statusCode: 500, message: 'Dummy platelet donations insertion unsuccessful' }
+          this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Dummy platelet donations insertion unsuccessful' }
         }
       }
 
@@ -246,21 +246,21 @@ export class DonorsController extends Controller {
           lastPlateletDonation
         )
         if (plateletLastResult.status !== 'OK') {
-          this.setStatus(500)
-          return { status: 'ERROR', statusCode: 500, message: 'Last platelet donation insertion unsuccessful' }
+          this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Last platelet donation insertion unsuccessful' }
         }
       }
     } catch (e) {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Platelet donation insertion workflow failed' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Platelet donation insertion workflow failed' }
     }
 
     await logInterface.addLog(authenticatedUser._id, 'POST DONORS', donorInsertionResult.data)
 
-    this.setStatus(201)
+    this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
-      statusCode: 201,
+      statusCode: HTTP_STATUS.CREATED,
       message: 'New donor inserted successfully',
       newDonor: donorInsertionResult.data
     }
@@ -271,17 +271,17 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Example<{ status: string; statusCode: number; message: string; donor: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Fetched donor details successfully',
     donor: {
       _id: 'jhdwiurh837921',
@@ -301,16 +301,16 @@ export class DonorsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
     // Handle hall permission or check available to all
     if (!targetDonor.availableToAll) {
       if (isHallRestricted(targetDonor.hall) && user.hall !== targetDonor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
@@ -432,10 +432,10 @@ export class DonorsController extends Controller {
     const donor: any = donorAggResult[0]
     await logInterface.addLog(user._id, 'GET DONORS', { name: donor.name })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       donor
     }
@@ -446,17 +446,17 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Comment updated successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Comment updated successfully'
   })
   @Middlewares([donorValidator.validatePATCHDonorsComment, rateLimiter.commonLimiter, authenticator.handleAuthentication])
@@ -470,16 +470,16 @@ export class DonorsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: body.donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
     // Handle hall permission or check available to all
     if (!targetDonor.availableToAll) {
       if (isHallRestricted(targetDonor.hall) && user.hall !== targetDonor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-        this.setStatus(403)
-        return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
     }
 
@@ -489,10 +489,10 @@ export class DonorsController extends Controller {
 
     await logInterface.addLog(user._id, 'PATCH DONORS COMMENT', targetDonor)
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Comment updated successfully'
     }
   }
@@ -502,22 +502,22 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Created recovery link for user successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Donor not volunteer/admin', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'Donor is not a volunteer/ admin'
   })
   @Example<{ status: string; statusCode: number; message: string; token: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Created recovery link for user successfully',
     token: '5894jkrth89490'
   })
@@ -532,46 +532,46 @@ export class DonorsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: body.donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const targetDonor: IDonor = donorQueryResult.data!
 
     // Handle hall permission
     if (isHallRestricted(targetDonor.hall) && user.hall !== targetDonor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
     }
 
     // Check higher designation
     if (user.designation! < targetDonor.designation! && !user._id.equals(targetDonor._id)) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You cannot modify the details of a Badhan member with higher designation' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
 
     if (targetDonor.designation === DESIGNATIONS_INDEX.DONOR) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'Donor is not a volunteer/ admin' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Donor is not a volunteer/ admin' }
     }
 
     const tokenDeleteResult: { message: string; status: string } = await tokenInterface.deleteAllTokensByDonorId(targetDonor._id)
     if (tokenDeleteResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: tokenDeleteResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: tokenDeleteResult.message }
     }
 
     const tokenInsertResult: { data: any; message: string; status: string } = await tokenInterface.insertAndSaveTokenWithExpiry(targetDonor._id, res.locals.userAgent, null)
     if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: tokenInsertResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: tokenInsertResult.message }
     }
 
     await logInterface.addLog(user._id, 'POST DONORS PASSWORD (REQUEST)', { name: targetDonor.name })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Created recovery link for user successfully',
       token: tokenInsertResult.data.token
     }
@@ -582,17 +582,17 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Donor updated successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donor updated successfully'
   })
   @Middlewares([donorValidator.validatePATCHDonors, rateLimiter.commonLimiter, authenticator.handleAuthentication])
@@ -617,26 +617,26 @@ export class DonorsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: body.donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const target: IDonor = donorQueryResult.data!
 
     // Handle hall permission
     if (isHallRestricted(target.hall) && user.hall !== target.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
     }
 
     // Check higher designation
     if (user.designation! < target.designation! && !user._id.equals(target._id)) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You cannot modify the details of a Badhan member with higher designation' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
 
     if (target.email !== body.email && !target._id.equals(user._id)) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You do not have permission to edit email address of another user' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You do not have permission to edit email address of another user' }
     }
 
     target.name = body.name
@@ -657,10 +657,10 @@ export class DonorsController extends Controller {
 
     await logInterface.addLog(user._id, 'PATCH DONORS', target)
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donor updated successfully'
     }
   }
@@ -670,22 +670,22 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Donor deleted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Donor must be demoted', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'Donor must be demoted for deletion'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Donor deleted successfully'
   })
   @Middlewares([donorValidator.validateDELETEDonors, rateLimiter.donorDeletionLimiter, authenticator.handleAuthentication])
@@ -699,40 +699,40 @@ export class DonorsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const donor: IDonor = donorQueryResult.data!
 
     // Handle hall permission
     if (isHallRestricted(donor.hall) && user.hall !== donor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
     }
 
     // Check higher designation
     if (user.designation! < donor.designation! && !user._id.equals(donor._id)) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You cannot modify the details of a Badhan member with higher designation' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
 
     if (donor.designation! > 1) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'Donor must be demoted for deletion' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Donor must be demoted for deletion' }
     }
 
     const deleteDonorResult: { data?: IDonor; message: string; status: string } = await donorInterface.deleteDonorById(donor._id)
     if (deleteDonorResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: 'Error occurred in deleting target donor' }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Error occurred in deleting target donor' }
     }
 
     await logInterface.addLog(user._id, 'DELETE DONORS', deleteDonorResult.data!)
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Donor deleted successfully'
     }
   }
@@ -742,22 +742,22 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Target user promoted/demoted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
     status: 'ERROR',
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     message: 'Donor not found'
   })
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not authorized', {
     status: 'ERROR',
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'Only hall admins or above can access this route'
   })
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Invalid operation', {
     status: 'ERROR',
-    statusCode: 409,
+    statusCode: HTTP_STATUS.CONFLICT,
     message: 'Can\'t promote volunteer or can\'t demote donor'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Target user promoted/demoted successfully'
   })
   @Middlewares([donorValidator.validatePATCHDonorsDesignation, rateLimiter.commonLimiter, authenticator.handleAuthentication])
@@ -771,34 +771,34 @@ export class DonorsController extends Controller {
     // Load target donor
     const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: body.donorId })
     if (donorQueryResult.status !== 'OK') {
-      this.setStatus(404)
-      return { status: 'ERROR', statusCode: 404, message: 'Donor not found' }
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
     }
     const donor: IDonor = donorQueryResult.data!
 
     // Handle hall permission
     if (isHallRestricted(donor.hall) && user.hall !== donor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'You are not authorized to access a donor of different hall' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
     }
 
     // Check if user is hall admin or above
     if (user.designation! < 2) {
-      this.setStatus(403)
-      return { status: 'ERROR', statusCode: 403, message: 'Only hall admins or above can access this route' }
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'Only hall admins or above can access this route' }
     }
 
     const donorDesignation: number | undefined = donor.designation
 
     if ((donorDesignation === 1 && body.promoteFlag) ||
       (donorDesignation === 0 && !body.promoteFlag) || donorDesignation === 3) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'Can\'t promote volunteer or can\'t demote donor' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Can\'t promote volunteer or can\'t demote donor' }
     }
 
     if (hasNoSpecificHall(donor.hall)) {
-      this.setStatus(409)
-      return { status: 'ERROR', statusCode: 409, message: 'Donor does not have a valid hall' }
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Donor does not have a valid hall' }
     }
 
     if (body.promoteFlag) {
@@ -813,10 +813,10 @@ export class DonorsController extends Controller {
 
     await logInterface.addLog(user._id, `PATCH DONORS DESIGNATION (${logOperation})`, donor)
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Target user promoted/demoted successfully'
     }
   }
@@ -826,7 +826,7 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'All designated members fetched')
   @Example<{ status: string; statusCode: number; message: string; volunteerList: any[]; adminList: any[]; superAdminList: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'All designated members fetched',
     volunteerList: [],
     adminList: [],
@@ -841,31 +841,31 @@ export class DonorsController extends Controller {
 
     const adminsQueryResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAdmins(2)
     if (adminsQueryResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: adminsQueryResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: adminsQueryResult.message }
     }
     const adminList: IDonor[] = adminsQueryResult.data
 
     const donorsQueryResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findVolunteersOfHall(authenticatedUser.hall)
     if (donorsQueryResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: donorsQueryResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: donorsQueryResult.message }
     }
     const volunteerList: IDonor[] = donorsQueryResult.data
 
     const superAdminQuery: { data: IDonor[]; message: string; status: string } = await donorInterface.findAdmins(3)
     if (superAdminQuery.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: superAdminQuery.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: superAdminQuery.message }
     }
     const superAdminList: IDonor[] = superAdminQuery.data
 
     await logInterface.addLog(authenticatedUser._id, 'GET DONORS DESIGNATION', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'All designated members fetched',
       volunteerList,
       adminList,
@@ -878,7 +878,7 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Duplicate check completed')
   @Example<{ status: string; statusCode: number; message: string; found: boolean; donor: any }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'No duplicate donors found',
     found: false,
     donor: null
@@ -900,20 +900,20 @@ export class DonorsController extends Controller {
         hasNoSpecificHall(duplicateDonorResult.data!.hall) ||
         duplicateDonorResult.data!.availableToAll
       ) {
-        this.setStatus(200)
+        this.setStatus(HTTP_STATUS.OK)
         return {
           status: 'OK',
-          statusCode: 200,
+          statusCode: HTTP_STATUS.OK,
           message: `Donor found with duplicate phone number in ${halls[duplicateDonorResult.data!.hall]} hall`,
           found: true,
           donor: duplicateDonorResult.data
         }
       }
 
-      this.setStatus(200)
+      this.setStatus(HTTP_STATUS.OK)
       return {
         status: 'OK',
-        statusCode: 200,
+        statusCode: HTTP_STATUS.OK,
         message: `Donor found with duplicate phone number in ${halls[duplicateDonorResult.data!.hall]} hall. You are not permitted to access this donor.`,
         found: true,
         donor: null
@@ -922,10 +922,10 @@ export class DonorsController extends Controller {
 
     await logInterface.addLog(authenticatedUser._id, 'GET DONORS CHECKDUPLICATE', { phone })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'No duplicate donors found',
       found: false,
       donor: null
@@ -937,7 +937,7 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Existing donors fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; donors: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Existing donors fetched successfully',
     donors: []
   })
@@ -957,10 +957,10 @@ export class DonorsController extends Controller {
 
     await logInterface.addLog(authenticatedUser._id, 'GET DONORS PHONE', { phones: phoneList })
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: existingDonorsResult.message,
       donors: existingDonorsResult.donors
     }
@@ -971,7 +971,7 @@ export class DonorsController extends Controller {
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; data: any[] }>({
     status: 'OK',
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     message: 'Fetched donor details successfully',
     data: [{
       _id: '584abcde6744144441',
@@ -993,16 +993,16 @@ export class DonorsController extends Controller {
     const allDesignatedDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDesignatedDonors()
 
     if (allDesignatedDonorResult.status !== 'OK') {
-      this.setStatus(500)
-      return { status: 'ERROR', statusCode: 500, message: allDesignatedDonorResult.message }
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: allDesignatedDonorResult.message }
     }
 
     await logInterface.addLog(user._id, 'GET DONORS DESIGNATION ALL', {})
 
-    this.setStatus(200)
+    this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
-      statusCode: 200,
+      statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       data: allDesignatedDonorResult.data
     }
