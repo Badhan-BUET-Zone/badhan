@@ -248,6 +248,18 @@ Click to see video
 
 <img width="900" alt="Bulk donor CSV upload screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-donor-upload.png" />
 
+**CSV validation** — Every row is validated before upload, with the offending cells highlighted and the failed rows downloadable as a CSV to fix and retry.
+
+<img width="900" alt="CSV upload showing per-row validation errors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-upload-errors.png" />
+
+**Duplicate detection** — Donors already in the database are flagged instead of re-created, with a direct link to the existing record.
+
+<img width="900" alt="CSV upload showing already existing donors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-upload-duplicates.png" />
+
+**Backup and restore** — Super admins can snapshot the database and restore any backup to the local, test or production environment.
+
+<img width="900" alt="Backup and restore screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/backup-and-restore.png" />
+
 # Website
 https://badhan-buet.web.app/#/
 
