@@ -130,6 +130,85 @@ export const getDonationCountByTimePeriod = async (startTime: number, endTime: n
     }
 }
 
+// Same monthly/blood-group breakdown as getDonationCountByTimePeriod, but grouped per hall.
+// Returns a map of hall index -> report array; halls with no donations are simply absent.
+export const getDonationCountByTimePeriodGroupedByHall = async (startTime: number, endTime: number): Promise<{message: string, status: string, data: Record<number, IDonationCountByBloodGroup[]>}> =>{
+    const grouped: {hall: number, report: IDonationCountByBloodGroup[]}[] = await DonationModel.aggregate([
+        {
+            $match: {
+                date: {
+                    $gte: startTime,
+                    $lt: endTime
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "donors",
+                localField: "donorId",
+                foreignField: "_id",
+                as: "donor"
+            }
+        },
+        {
+            $unwind: "$donor"
+        },
+        {
+            $group: {
+                _id: {
+                    hall: "$donor.hall",
+                    bloodGroup: "$donor.bloodGroup",
+                    month: { $month: { $toDate: "$date" } },
+                    year: { $year: { $toDate: "$date" } }
+                },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    hall: "$_id.hall",
+                    bloodGroup: "$_id.bloodGroup"
+                },
+                counts: {
+                    $push: {
+                        month: "$_id.month",
+                        year: "$_id.year",
+                        count: "$count"
+                    }
+                }
+            }
+        },
+        {
+            $group: {
+                _id: "$_id.hall",
+                report: {
+                    $push: {
+                        bloodGroup: "$_id.bloodGroup",
+                        counts: "$counts"
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                hall: "$_id",
+                report: 1
+            }
+        }
+    ])
+    const data: Record<number, IDonationCountByBloodGroup[]> = {}
+    grouped.forEach((entry: {hall: number, report: IDonationCountByBloodGroup[]}): void => {
+        data[entry.hall] = entry.report
+    })
+    return {
+        message: 'Fetched hallwise donation count by month and blood group',
+        status: 'OK',
+        data
+    }
+}
+
 export type YearMonthCount = {
     [year: string]: {
         [month: string]: number;

@@ -36,6 +36,55 @@ export const getCountOfDonorsWhoDonatedPlateletForTheFirstTime = async (startTim
         status: 'OK'
     }
 }
+
+// Same first-time platelet-donor count as getCountOfDonorsWhoDonatedPlateletForTheFirstTime, grouped per hall.
+// Returns a map of hall index -> count; halls with no first-time platelet donors are simply absent.
+export const getCountOfDonorsWhoDonatedPlateletForTheFirstTimeGroupedByHall = async (startTime: number, endTime: number): Promise<{data: Record<number, number>, message: string, status: string}> => {
+    const result:{_id: number, count: number}[] = await DonorModel.aggregate([
+    {
+        $lookup: {
+            from: "plateletdonations",
+            localField: "_id",
+            foreignField: "donorId",
+            as: "donor_platelet_donations"
+        }
+    },
+    {
+        $unwind: "$donor_platelet_donations"
+    },
+    {
+        $group: {
+            _id: "$_id",
+            firstPlateletDonationTime: { $min: "$donor_platelet_donations.date" },
+            hall: { $first: "$hall" }
+        }
+    },
+    {
+        $match: {
+            firstPlateletDonationTime: {
+                $gte: startTime,
+                $lte: endTime
+            }
+        }
+    },
+    {
+        $group: {
+            _id: "$hall",
+            count: { $sum: 1 }
+        }
+    }
+    ])
+
+    const data: Record<number, number> = {}
+    result.forEach((entry: {_id: number, count: number}): void => {
+        data[entry._id] = entry.count
+    })
+    return {
+        data,
+        message: 'Successfully fetched hallwise count of donors who donated platelet for the first time between timestamps',
+        status: 'OK'
+    }
+}
 import { Types } from 'mongoose';
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
@@ -745,6 +794,55 @@ export const getCountOfDonorsWhoDonatedForTheFirstTime = async (startTime: numbe
     return {
         data: result[0] ? result[0].numberOfFirstDonations : 0,
         message: 'Successfully fected count of donors who donated for the first time between timestamps',
+        status: 'OK'
+    }
+}
+
+// Same first-time-donor count as getCountOfDonorsWhoDonatedForTheFirstTime, grouped per hall.
+// Returns a map of hall index -> count; halls with no first-time donors are simply absent.
+export const getCountOfDonorsWhoDonatedForTheFirstTimeGroupedByHall = async (startTime: number, endTime: number): Promise<{data: Record<number, number>, message: string, status: string}> => {
+    const result:{_id: number, count: number}[] = await DonorModel.aggregate([
+    {
+        $lookup: {
+            from: "donations",
+            localField: "_id",
+            foreignField: "donorId",
+            as: "donor_donations"
+        }
+    },
+    {
+        $unwind: "$donor_donations"
+    },
+    {
+        $group: {
+            _id: "$_id",
+            firstDonationTime: { $min: "$donor_donations.date" },
+            hall: { $first: "$hall" }
+        }
+    },
+    {
+        $match: {
+            firstDonationTime: {
+                $gte: startTime,
+                $lte: endTime
+            }
+        }
+    },
+    {
+        $group: {
+            _id: "$hall",
+            count: { $sum: 1 }
+        }
+    }
+    ])
+
+    const data: Record<number, number> = {}
+    result.forEach((entry: {_id: number, count: number}): void => {
+        data[entry._id] = entry.count
+    })
+    return {
+        data,
+        message: 'Successfully fetched hallwise count of donors who donated for the first time between timestamps',
         status: 'OK'
     }
 }

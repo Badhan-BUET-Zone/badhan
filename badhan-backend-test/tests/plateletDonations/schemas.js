@@ -32,8 +32,43 @@ const getPlateletDonationReportsSchema = {
       },
     },
     firstPlateletDonationCount: { type: 'integer' },
+    hallwiseReport: {
+      type: 'object',
+      // keyed by hall index; each hall present carries its own report + first-time count
+      additionalProperties: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          report: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                counts: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                      month: { type: 'integer' },
+                      year: { type: 'integer' },
+                      count: { type: 'integer' },
+                    },
+                    required: ['month', 'year', 'count'],
+                  },
+                },
+                bloodGroup: { type: 'integer' },
+              },
+            },
+          },
+          firstPlateletDonationCount: { type: 'integer' },
+        },
+        required: ['report', 'firstPlateletDonationCount'],
+      },
+    },
   },
-  required: ['status', 'statusCode', 'message', 'report', 'firstPlateletDonationCount'],
+  required: ['status', 'statusCode', 'message', 'report', 'firstPlateletDonationCount', 'hallwiseReport'],
 };
 
 const invalidRequestSchema = {

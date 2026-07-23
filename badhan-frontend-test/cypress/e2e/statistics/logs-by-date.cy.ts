@@ -17,11 +17,12 @@ describe('Statistics - Logs by Date', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
 
-    // Navigate to Statistics
+    // Navigate to Statistics (defaults to the Donation Report tab)
     drawer.goToStatistics();
 
-    // Ensure Logs by Date tab element is present
+    // Open the App Activity (Logs by Date) tab
     stats.ensureLogsByDateTabExists();
+    stats.openLogsByDateTab();
 
     // There should be at least one DateLog group rendered: look for Details buttons with id prefix
     stats.assertAnyDateLogDetailExists();

@@ -199,12 +199,25 @@ export class DonationsController extends Controller {
     @Query() startDate: number,
     @Query() endDate: number,
     @Request() req: any
-  ): Promise<{ status: string; statusCode: number; message: string; report?: any[]; firstDonationCount?: number }> {
+  ): Promise<{ status: string; statusCode: number; message: string; report?: any[]; firstDonationCount?: number; hallwiseReport?: Record<number, { report: any[]; firstDonationCount: number }> }> {
     const res: ExResponse = (req as any).res
     const user: IDonor = res.locals.middlewareResponse.donor
 
     const reportResult: {data: donationInterface.IDonationCountByBloodGroup[], message: string, status: string} = await donationInterface.getDonationCountByTimePeriod(startDate, endDate)
     const countOfFirstTimeDonationsOfDonors: {data: number, message: string, status: string} = await donorInterface.getCountOfDonorsWhoDonatedForTheFirstTime(startDate, endDate)
+    const hallwiseReportResult: {data: Record<number, donationInterface.IDonationCountByBloodGroup[]>, message: string, status: string} = await donationInterface.getDonationCountByTimePeriodGroupedByHall(startDate, endDate)
+    const hallwiseFirstDonationResult: {data: Record<number, number>, message: string, status: string} = await donorInterface.getCountOfDonorsWhoDonatedForTheFirstTimeGroupedByHall(startDate, endDate)
+
+    // Combine the per-hall report and per-hall first-time counts into a single hall-keyed map
+    const hallwiseReport: Record<number, { report: donationInterface.IDonationCountByBloodGroup[]; firstDonationCount: number }> = {}
+    const hallKeys: Set<string> = new Set<string>([...Object.keys(hallwiseReportResult.data), ...Object.keys(hallwiseFirstDonationResult.data)])
+    hallKeys.forEach((key: string): void => {
+      const hall: number = Number(key)
+      hallwiseReport[hall] = {
+        report: hallwiseReportResult.data[hall] ?? [],
+        firstDonationCount: hallwiseFirstDonationResult.data[hall] ?? 0
+      }
+    })
 
     await logInterface.addLog(user._id, 'GET DONATIONS REPORT', {
       ...reportResult.data,
@@ -217,7 +230,8 @@ export class DonationsController extends Controller {
       statusCode: HTTP_STATUS.OK,
       message: reportResult.message,
       report: reportResult.data,
-      firstDonationCount: countOfFirstTimeDonationsOfDonors.data
+      firstDonationCount: countOfFirstTimeDonationsOfDonors.data,
+      hallwiseReport
     }
   }
 }

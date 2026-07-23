@@ -7,17 +7,14 @@
             show-arrows
     >
       <v-tabs-slider></v-tabs-slider>
-      <v-tab id="statisticsLogsByDateTabId" data-cy="statisticsLogsByDateTabId" to="/statistics/logsByDate" style="text-decoration: none">
-        Logs by Date
+      <v-tab id="statisticsDonationReportTabId" data-cy="statisticsDonationReportTabId" to="/statistics/report" style="text-decoration: none">
+        Donation Report
       </v-tab>
       <v-tab id="statisticsAllVolunteersTabId" data-cy="statisticsAllVolunteersTabId" to="/statistics/membersAll" style="text-decoration: none">
         All Members
       </v-tab>
-      <v-tab id="statisticsStatsTabId" data-cy="statisticsStatsTabId" to="/statistics/stats" style="text-decoration: none">
-        Stats
-      </v-tab>
-      <v-tab id="statisticsDonationReportTabId" data-cy="statisticsDonationReportTabId" to="/statistics/report" style="text-decoration: none">
-        Donation Report
+      <v-tab id="statisticsLogsByDateTabId" data-cy="statisticsLogsByDateTabId" to="/statistics/logsByDate" style="text-decoration: none">
+        App Activity
       </v-tab>
     </v-tabs>
     <transition name="slide-fade" mode="out-in">

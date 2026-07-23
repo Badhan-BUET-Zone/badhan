@@ -145,12 +145,25 @@ export class PlateletDonationsController extends Controller {
     @Query() startDate: number,
     @Query() endDate: number,
     @Request() req: any
-  ): Promise<{ status: string; statusCode: number; message: string; report?: any[]; firstPlateletDonationCount?: number }> {
+  ): Promise<{ status: string; statusCode: number; message: string; report?: any[]; firstPlateletDonationCount?: number; hallwiseReport?: Record<number, { report: any[]; firstPlateletDonationCount: number }> }> {
     const res: ExResponse = (req as any).res
     const user: IDonor = res.locals.middlewareResponse.donor
 
     const reportResult: { data: plateletDonationInterface.IPlateletDonationCountByBloodGroup[]; message: string; status: string } = await plateletDonationInterface.getPlateletDonationCountByTimePeriod(startDate, endDate)
     const countOfFirstTimePlateletDonationsOfDonors: { data: number; message: string; status: string } = await donorInterface.getCountOfDonorsWhoDonatedPlateletForTheFirstTime(startDate, endDate)
+    const hallwiseReportResult: { data: Record<number, plateletDonationInterface.IPlateletDonationCountByBloodGroup[]>; message: string; status: string } = await plateletDonationInterface.getPlateletDonationCountByTimePeriodGroupedByHall(startDate, endDate)
+    const hallwiseFirstDonationResult: { data: Record<number, number>; message: string; status: string } = await donorInterface.getCountOfDonorsWhoDonatedPlateletForTheFirstTimeGroupedByHall(startDate, endDate)
+
+    // Combine the per-hall report and per-hall first-time counts into a single hall-keyed map
+    const hallwiseReport: Record<number, { report: plateletDonationInterface.IPlateletDonationCountByBloodGroup[]; firstPlateletDonationCount: number }> = {}
+    const hallKeys: Set<string> = new Set<string>([...Object.keys(hallwiseReportResult.data), ...Object.keys(hallwiseFirstDonationResult.data)])
+    hallKeys.forEach((key: string): void => {
+      const hall: number = Number(key)
+      hallwiseReport[hall] = {
+        report: hallwiseReportResult.data[hall] ?? [],
+        firstPlateletDonationCount: hallwiseFirstDonationResult.data[hall] ?? 0
+      }
+    })
 
     await logInterface.addLog(user._id, 'GET PLATELET DONATIONS REPORT', {
       ...reportResult.data,
@@ -163,7 +176,8 @@ export class PlateletDonationsController extends Controller {
       statusCode: HTTP_STATUS.OK,
       message: reportResult.message,
       report: reportResult.data,
-      firstPlateletDonationCount: countOfFirstTimePlateletDonationsOfDonors.data
+      firstPlateletDonationCount: countOfFirstTimePlateletDonationsOfDonors.data,
+      hallwiseReport
     }
   }
 }

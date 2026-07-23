@@ -192,7 +192,7 @@ export default {
             {
               icon: 'mdi-chart-bar',
               text: 'Statistics',
-              to: '/statistics/logsByDate',
+              to: '/statistics/report',
               id: 'statisticsNavigationId',
               designation: 3
             },

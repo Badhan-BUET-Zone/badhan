@@ -120,6 +120,7 @@ const routes: CustomRouteConfig[] = [
     name: 'StatisticsPage',
     path: '/statistics',
     component: () => import('../views/Statistics.vue'),
+    redirect: '/statistics/report',
     meta: {
       requiresAuth: true,
       title: 'Statistics',
@@ -133,17 +134,6 @@ const routes: CustomRouteConfig[] = [
         component: () => import('../views/Statistics/LogsByDate.vue'),
         meta: {
           title: 'Logs by Date',
-          requiresAuth: true,
-          designation: 3,
-          reRouteIfAuthorized: false
-        }
-      },
-      {
-        name: 'StatsPage',
-        path: 'stats',
-        component: () => import('../views/Statistics/Stats.vue'),
-        meta: {
-          title: 'Account Stats',
           requiresAuth: true,
           designation: 3,
           reRouteIfAuthorized: false
