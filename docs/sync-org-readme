@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#
+# Copies this repo's README.md to the organization profile repo, which is what
+# GitHub renders at https://github.com/Badhan-BUET-Zone.
+#
+# GitHub has no way to point the org profile at another repo's README, so the
+# content has to be duplicated. This script is the manual sync step.
+#
+# Requires the `gh` CLI, authenticated with write access to the .github repo.
+#
+# Usage: ./docs/sync-org-readme          # push README.md to the org profile
+#        ./docs/sync-org-readme --check  # report drift, change nothing
+set -euo pipefail
+
+# Runs from the repo root regardless of where it is invoked from — the script
+# lives in docs/ but the README it syncs is one level up.
+cd "$(dirname "$0")/.."
+
+ORG_REPO="Badhan-BUET-Zone/.github"
+# Lowercase on purpose — that is the existing path in the org repo, and a
+# differently-cased second file would leave GitHub picking between two READMEs.
+TARGET="profile/readme.md"
+SOURCE="README.md"
+
+check_only=false
+if [[ "${1:-}" == "--check" ]]; then
+  check_only=true
+elif [[ $# -gt 0 ]]; then
+  echo "Unknown argument: $1" >&2
+  echo "Usage: $0 [--check]" >&2
+  exit 1
+fi
+
+command -v gh >/dev/null || { echo "❌  gh CLI not found." >&2; exit 1; }
+gh auth status >/dev/null 2>&1 || { echo "❌  gh is not authenticated. Run: gh auth login" >&2; exit 1; }
+[[ -f "$SOURCE" ]] || { echo "❌  $SOURCE not found." >&2; exit 1; }
+
+echo "🔎  Fetching ${ORG_REPO}/${TARGET}…"
+remote_json=$(gh api "repos/$ORG_REPO/contents/$TARGET" 2>/dev/null || true)
+
+if [[ -n "$remote_json" ]]; then
+  sha=$(jq -r .sha <<<"$remote_json")
+  remote_body=$(jq -r .content <<<"$remote_json" | base64 -d)
+  if [[ "$remote_body" == "$(cat "$SOURCE")" ]]; then
+    echo "✅  Already up to date — nothing to push."
+    exit 0
+  fi
+  echo "📝  Org profile differs from $SOURCE."
+else
+  sha=""
+  echo "📝  $TARGET does not exist yet; it will be created."
+fi
+
+if $check_only; then
+  echo "ℹ️   --check given, not pushing. Run without --check to sync."
+  exit 1
+fi
+
+content=$(base64 < "$SOURCE" | tr -d '\n')
+args=(-X PUT "repos/$ORG_REPO/contents/$TARGET"
+      -f "message=chore: sync org profile README from badhan"
+      -f "content=$content")
+[[ -n "$sha" ]] && args+=(-f "sha=$sha")
+
+echo "☁️   Pushing to ${ORG_REPO}…"
+gh api "${args[@]}" --jq '.commit.html_url'
+
+echo "🚀  Org profile README synced."

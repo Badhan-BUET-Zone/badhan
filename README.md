@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="150" height="150" src="https://avatars.githubusercontent.com/u/97539569?s=400&u=f1ac0cacd5472ad3c020c7bff11c13727c3861d6&v=4"/>
+  <img width="150" height="150" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/logo.png"/>
   <h1>Badhan, BUET Zone</h1>
 </div>
 <a name="tableofcontent"/>
@@ -13,8 +13,6 @@
 [Contributors](#contributors)    
 
 [History](#history)
-
-[Repositories](#repositories)
 <hr>
 
 <a name="introduction"/>
@@ -104,16 +102,6 @@ frontend-1  |   - Local:   http://localhost:8080/
 
 The first run seeds no data. To populate the database, see
 [Purge and Seed the Database](#purge-and-seed-the-database) below.
-
-### Migrating from the old `node start` setup
-
-If you previously ran the app with `node start`, that flow (and its bundled MongoDB
-download) has been removed. You can safely delete the stale cached mongod binary and its
-on-disk data — the database now lives in the `mongo-data` Docker volume:
-
-```
-rm -rf badhan-backend/mongodb_local
-```
 
 # Run Backend and Frontend Tests
 
@@ -220,17 +208,17 @@ Once the stack is back up, re-run the two `curl` commands above to reseed the da
 
 We provide the documentation of all endpoints of our `badhan-backend` API. Visit https://badhan-buet-test.uc.r.appspot.com/docs/ to see and use the API endpoints directly. Visit this [video](https://youtu.be/vHnDgW04c1w) for instructions on using the API.
 
-<img width="1799" height="928" alt="image" src="https://github.com/user-attachments/assets/33501a52-c932-4202-af77-82fd179a632e" />
+<img width="1799" height="928" alt="Backend API documentation" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/api-docs.png" />
 
 # Video Trailer of App
 Click to see video
 
-[![Video Title](https://img.youtube.com/vi/cB0ci0pjCY8/0.jpg)](https://www.youtube.com/watch?v=cB0ci0pjCY8)
+[![Video Title](https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/video-thumbnail.jpg)](https://www.youtube.com/watch?v=cB0ci0pjCY8)
 
 # Screenshots
 
-<img width="1491" height="875" alt="image" src="https://github.com/user-attachments/assets/255c0120-4c0f-41ee-8f03-8147aef023b3" />
-<img width="1579" height="875" alt="image" src="https://github.com/user-attachments/assets/e86235b5-4ad6-4984-9645-120c57c614b2" />
+<img width="1491" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/screenshot-1.png" />
+<img width="1579" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/screenshot-2.png" />
 
 
 # Website
