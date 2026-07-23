@@ -15,7 +15,7 @@
                     sort-desc
       >
         <template v-slot:item="{ item }">
-          <tr :data-cy="'volunteerRow'">
+          <tr :data-cy="'volunteerRow'" style="cursor: pointer" @click="goToDonorProfile(item._id)">
             <td>{{ item.name }}</td>
             <td>{{ item.hall | getHallName }}</td>
             <td>{{ item.studentId }}</td>
@@ -30,6 +30,8 @@
 <script>
 import Container from '@/components/Container/Container'
 import { handleGETDonorDesignatedAll } from '@/api'
+import { createNewPopUpWindow } from '@/mixins/helpers'
+import { environmentService } from '@/mixins/environment'
 import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
@@ -53,6 +55,9 @@ export default {
   computed: {
   },
   methods: {
+    goToDonorProfile (donorId) {
+      createNewPopUpWindow(environmentService.getFrontendBaseURL() + '#/home/details?id=' + donorId)
+    }
   },
   async mounted () {
     this.volunteersLoaderFlag = true
