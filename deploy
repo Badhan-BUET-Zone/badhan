@@ -31,6 +31,9 @@ echo "✅  All tests passed. Deploying…"
 echo "☁️   Deploying backend to Google Cloud…"
 node badhan-backend/upload-gcloud.js
 
+echo "🩺  Verifying the deployed backend is live…"
+node badhan-backend/upload-gcloud.js --live-check
+
 echo "🔥  Deploying frontend to Firebase…"
 node badhan-frontend/upload-firebase.js
 

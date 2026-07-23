@@ -496,6 +496,7 @@ export class GuestController extends Controller {
       statistics: {
         donorCount: faker.getRandomIndex(2600),
         donationCount: faker.getRandomIndex(1200),
+        donationCountMadeByApp: faker.getRandomIndex(900),
         plateletDonationCount: faker.getRandomIndex(300),
         volunteerCount: faker.getRandomIndex(130)
       }

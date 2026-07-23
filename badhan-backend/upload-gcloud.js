@@ -5,6 +5,7 @@ const { execSync } = require("child_process");
 const { existsSync, writeFileSync, mkdtempSync, copyFileSync, rmSync } = require("fs");
 const { resolve } = require("path");
 const os = require("os");
+const https = require("https");
 
 // Env files are NOT committed to this repo. They live in a private secrets
 // repo and are cloned into place only for the duration of a deploy, then
@@ -29,9 +30,19 @@ function getCurrentBranch() {
 // the two can never drift.
 function getDeployTarget(currentBranch) {
   if (currentBranch === "main") {
-    return { envFile: "env.production", yaml: "app_prod.yaml", project: "badhan-buet" };
+    return {
+      envFile: "env.production",
+      yaml: "app_prod.yaml",
+      project: "badhan-buet",
+      baseUrl: "https://badhan-buet.uc.r.appspot.com",
+    };
   }
-  return { envFile: "env.development", yaml: "app_dev.yaml", project: "badhan-buet-test" };
+  return {
+    envFile: "env.development",
+    yaml: "app_dev.yaml",
+    project: "badhan-buet-test",
+    baseUrl: "https://badhan-buet-test.uc.r.appspot.com",
+  };
 }
 
 function commandExists(cmd) {
@@ -203,11 +214,68 @@ function deployToGoogleCloud() {
   }
 }
 
+// --- Post-deploy live check -------------------------------------------------
+//
+// `gcloud app deploy` returns once the new version is serving, so a fixed sleep
+// is either wasted time or still too short. We poll instead: the budget below
+// only has to cover cold start and traffic-routing propagation, and in practice
+// the first or second attempt succeeds.
+const LIVE_CHECK_PATH = "/guest/log/statistics"; // unauthenticated, exercises the tsoa routes
+const LIVE_CHECK_ATTEMPTS = 24;
+const LIVE_CHECK_INTERVAL_MS = 5000;
+const LIVE_CHECK_TIMEOUT_MS = 10000;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Resolve to { ok: true } on HTTP 200, otherwise { ok: false, reason } — never
+// rejects, so the polling loop below stays simple.
+function probe(url) {
+  return new Promise((resolvePromise) => {
+    const req = https.get(url, (res) => {
+      // Drain so the socket is released even when we ignore the body.
+      res.resume();
+      if (res.statusCode === 200) resolvePromise({ ok: true });
+      else resolvePromise({ ok: false, reason: `HTTP ${res.statusCode}` });
+    });
+    req.setTimeout(LIVE_CHECK_TIMEOUT_MS, () => {
+      req.destroy();
+      resolvePromise({ ok: false, reason: `no response within ${LIVE_CHECK_TIMEOUT_MS / 1000}s` });
+    });
+    req.on("error", (err) => resolvePromise({ ok: false, reason: err.message }));
+  });
+}
+
+// Poll the deployed backend until it answers 200. Returns true once live,
+// false if the whole budget is exhausted.
+async function liveCheck(currentBranch = getCurrentBranch()) {
+  const { project, baseUrl } = getDeployTarget(currentBranch);
+  const url = `${baseUrl}${LIVE_CHECK_PATH}`;
+  const budgetSeconds = (LIVE_CHECK_ATTEMPTS * LIVE_CHECK_INTERVAL_MS) / 1000;
+
+  console.log(`🩺  Live check against ${project}: ${url}`);
+  let lastReason = "unknown";
+  for (let attempt = 1; attempt <= LIVE_CHECK_ATTEMPTS; attempt++) {
+    const result = await probe(url);
+    if (result.ok) {
+      console.log(`✅  Backend is live (attempt ${attempt}/${LIVE_CHECK_ATTEMPTS}).`);
+      return true;
+    }
+    lastReason = result.reason;
+    console.log(`   … attempt ${attempt}/${LIVE_CHECK_ATTEMPTS} not ready (${lastReason}).`);
+    if (attempt < LIVE_CHECK_ATTEMPTS) await sleep(LIVE_CHECK_INTERVAL_MS);
+  }
+  console.error(
+    `❌  Backend did not come up within ${budgetSeconds}s. Last failure: ${lastReason}`
+  );
+  return false;
+}
+
 // Export the functions for use in other files (e.g. the deploy preflight).
-module.exports = { deployToGoogleCloud, checkRequirements, getDeployTarget };
+module.exports = { deployToGoogleCloud, checkRequirements, getDeployTarget, liveCheck };
 
 // Run when executed directly. `--check` runs only the preflight (no deploy)
-// and exits non-zero if any requirement is unmet.
+// and exits non-zero if any requirement is unmet. `--live-check` polls the
+// already-deployed backend (no deploy) and exits non-zero if it never answers.
 if (require.main === module) {
   if (process.argv.includes("--check")) {
     const errors = checkRequirements();
@@ -217,6 +285,8 @@ if (require.main === module) {
       process.exit(1);
     }
     console.log("✅  Backend deployment requirements OK.");
+  } else if (process.argv.includes("--live-check")) {
+    liveCheck().then((ok) => process.exit(ok ? 0 : 1));
   } else {
     deployToGoogleCloud();
   }

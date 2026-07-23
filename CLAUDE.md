@@ -21,3 +21,12 @@ Run commands with `docker compose exec <service> <cmd>` when the stack is up, or
 - Frontend/Cypress tests: `docker compose run --rm frontend-test <cmd>`
 
 Start the stack first if needed: `docker compose up -d`.
+
+### Exceptions
+
+These three scripts are host-only tooling — they run outside Docker and are the **only**
+places where `npm`/`node`/`npx` on the host is allowed:
+
+- [badhan-frontend/bubblewrap/upload-googleplay.js](badhan-frontend/bubblewrap/upload-googleplay.js)
+- [badhan-frontend/upload-firebase.js](badhan-frontend/upload-firebase.js)
+- [badhan-backend/upload-gcloud.js](badhan-backend/upload-gcloud.js)

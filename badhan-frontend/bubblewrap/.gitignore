@@ -6,3 +6,6 @@ signature.jks
 .gradle
 manifest-checksum.txt
 app/build
+badhan-buet-*.json
+key_password.txt
+build/

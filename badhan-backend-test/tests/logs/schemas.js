@@ -23,10 +23,17 @@ const statisticsSchema = {
       properties: {
         donorCount: { type: 'integer' },
         donationCount: { type: 'integer' },
+        donationCountMadeByApp: { type: 'integer' },
         plateletDonationCount: { type: 'integer' },
         volunteerCount: { type: 'integer' },
       },
-      required: ['donorCount', 'donationCount', 'plateletDonationCount', 'volunteerCount'],
+      required: [
+        'donorCount',
+        'donationCount',
+        'donationCountMadeByApp',
+        'plateletDonationCount',
+        'volunteerCount',
+      ],
     },
   },
   required: ['status', 'statusCode', 'message', 'statistics'],
