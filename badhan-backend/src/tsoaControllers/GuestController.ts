@@ -245,21 +245,6 @@ export class GuestController extends Controller {
     }
   }
 
-  /** Guest change admin */
-  @Patch('admins')
-  @Hidden()
-  public async changeAdmin(): Promise<{
-    status: string
-    statusCode: number
-    message: string
-  }> {
-    return {
-      status: 'OK',
-      statusCode: HTTP_STATUS.OK,
-      message: 'Changed hall admin successfully'
-    }
-  }
-
   /** Guest view donor details */
   @Get('donors')
   @Hidden()
@@ -971,37 +956,6 @@ export class GuestController extends Controller {
       statusCode: HTTP_STATUS.OK,
       message: 'Active donor fetched successfully',
       activeDonors: filteredActiveDonors
-    }
-  }
-
-  /** Guest promote to super admin */
-  @Patch('admins/superadmin')
-  @Hidden()
-  public async promoteToSuperAdmin(): Promise<{
-    status: string
-    statusCode: number
-    message: string
-    donor: any
-  }> {
-    return {
-      status: 'OK',
-      statusCode: HTTP_STATUS.OK,
-      message: 'Donor has been promoted to Super Admin',
-      donor: {
-        _id: faker.getId(),
-        phone: faker.getPhone(),
-        name: faker.getName(),
-        studentId: faker.getStudentId(),
-        bloodGroup: faker.getBloodGroup(),
-        hall: faker.getHall(),
-        roomNumber: faker.getRoom(),
-        address: faker.getAddress(),
-        comment: faker.getComment(),
-        commentTime: faker.getTimestamp(240),
-        designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
-        availableToAll: faker.getBoolean(),
-        email: faker.getEmail()
-      }
     }
   }
 
