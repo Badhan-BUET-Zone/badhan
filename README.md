@@ -220,6 +220,33 @@ Click to see video
 <img width="1491" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/screenshot-1.png" />
 <img width="1579" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/screenshot-2.png" />
 
+**Login** — Sign in by phone and password, with the last six months of donation counts shown on the landing screen.
+
+<img width="280" alt="Login screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/login.png" />
+
+**Donor search** — Filter donors by name, blood group, batch, address, hall and availability.
+
+<img width="280" alt="Donor search filters" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-search-filters.png" />
+
+**Search results** — Matching donors grouped by batch, colour-coded by whether they are eligible to donate yet.
+
+<img width="280" alt="Donor search results grouped by batch" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-search-results.png" />
+
+**Donor quick actions** — Expand any result to see contact details and call the donor or log a donation without leaving the list.
+
+<img width="280" alt="Expanded donor card with quick actions" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-quick-actions.png" />
+
+**Donor profile** — Full donor record with volunteer status, blood and platelet donation history, and per-donor settings.
+
+<img width="280" alt="Donor profile page" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-profile.png" />
+
+**Create donor** — Register a new donor with contact, hall, blood group and donation-count details.
+
+<img width="280" alt="Create donor form" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/create-donor.png" />
+
+**Bulk CSV upload** — Import many donors at once from a CSV, with the accepted column formats documented on the page.
+
+<img width="900" alt="Bulk donor CSV upload screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-donor-upload.png" />
 
 # Website
 https://badhan-buet.web.app/#/
