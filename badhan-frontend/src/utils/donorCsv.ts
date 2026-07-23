@@ -33,9 +33,9 @@ const CSV_HALL_TO_INDEX: Record<string, number> = {
   Unknown: 8
 }
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-  'August', 'September', 'October', 'November', 'December']
-const DATE_RE = /^(\d{1,2}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/
+// Dates are `DD/MM/YY` — day, month and 2-digit year separated by `/`, e.g. `23/7/26`.
+// The 2-digit year is interpreted as 20YY.
+const DATE_RE = /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/
 
 export interface DonorCsvFieldError {
   field: string
@@ -66,16 +66,19 @@ export interface DonorCsvParseSuccess {
 
 export type DonorCsvParseResult = DonorCsvFileFailure | DonorCsvParseSuccess
 
-// Strict `<day> <Month> <year>` -> UTC-midnight epoch ms. Same conversion single-donor
+// Strict `DD/MM/YY` -> UTC-midnight epoch ms. Same conversion single-donor
 // creation makes (new Date('YYYY-MM-DD').getTime()), so stored timestamps match exactly.
 function parseStrictDate (value: string): { epoch: number } | { error: string } {
   const m = DATE_RE.exec(value)
   if (!m) {
-    return { error: `\`${value}\` is not a valid date (expected \`<day> <Month> <year>\`, e.g. \`23 September 2010\`)` }
+    return { error: `\`${value}\` is not a valid date (expected \`DD/MM/YY\`, e.g. \`23/7/26\`)` }
   }
   const day = parseInt(m[1], 10)
-  const monthIndex = MONTHS.indexOf(m[2])
-  const year = parseInt(m[3], 10)
+  const monthIndex = parseInt(m[2], 10) - 1
+  const year = 2000 + parseInt(m[3], 10)
+  if (monthIndex < 0 || monthIndex > 11) {
+    return { error: `\`${value}\` is not a real date` }
+  }
   // Day 0 of the next month = last day of this month, leap years included.
   const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()
   if (day < 1 || day > daysInMonth) {
@@ -93,13 +96,14 @@ function validateRow (raw: Record<string, string>): { errors: DonorCsvFieldError
   const name = (raw.name ?? '').trim()
   if (name === '') push('name', 'name is required')
 
-  // phone — exactly 13 digits, 8801XXXXXXXXX, nothing else.
+  // phone — exactly 11 digits, 01XXXXXXXXX, nothing else. Sent to the API as the
+  // 13-digit 8801XXXXXXXXX form (leading `0` replaced with `880`).
   const phoneRaw = (raw.phone ?? '').trim()
   let phone = NaN
-  if (!/^8801\d{9}$/.test(phoneRaw)) {
-    push('phone', `\`${raw.phone ?? ''}\` is not a valid Bangladeshi number (expected 13 digits starting \`8801\`)`)
+  if (!/^01\d{9}$/.test(phoneRaw)) {
+    push('phone', `\`${raw.phone ?? ''}\` is not a valid Bangladeshi number (expected 11 digits starting \`0\`)`)
   } else {
-    phone = Number(phoneRaw)
+    phone = Number('880' + phoneRaw.slice(1))
   }
 
   // studentId — the single-donor client checks only: 7 numeric digits and dept code
@@ -311,9 +315,9 @@ export function parseDonorCsv (text: string): DonorCsvParseResult {
 // never produce a case/format rejection. The comments mark the rows as throwaway data.
 export const DEMO_CSV: string = [
   CANONICAL_HEADERS.join(','),
-  'Demo Donor One,8801712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20 November 2024,1,14 February 2025,no',
-  'Demo Donor Two,8801898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes',
-  'Demo Donor Three,8801911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no'
+  'Demo Donor One,01712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no',
+  'Demo Donor Two,01898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes',
+  'Demo Donor Three,01911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no'
 ].join('\n') + '\n'
 
 /**

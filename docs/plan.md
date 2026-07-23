@@ -122,8 +122,9 @@ Concretely, this rejects rather than accepts:
 
 - `hall` — **hall names only.** Numeric codes (`0`–`8`) are rejected, even though that
   is what the API takes. `4` is not a hall; `Sher-e-Bangla` is.
-- `phone` — **13 digits, `8801XXXXXXXXX`, only.** The local `01XXXXXXXXX` form is
-  rejected, as are spaces, dashes, `+` prefixes and a leading `+880`.
+- `phone` — **11 digits, `01XXXXXXXXX`, only.** The uploader converts it to the API's
+  `8801XXXXXXXXX` form before sending. Spaces, dashes, `+` prefixes, a leading `+880` and
+  the bare 13-digit `8801…` form are all rejected.
 - `bloodGroup` — **labels only** (`A+`, `O-`, …). The raw codes `0`–`7` are rejected.
 - `availableToAll` — **`yes` or `no` only.** `true`/`false`, `1`/`0`, `Y`/`N`, and
   blank are all rejected.
@@ -147,8 +148,8 @@ lower-cased, upper-cased, or otherwise altered. Free-text fields (`name`, `roomN
 Two kinds of rule apply per column, and they are enforced differently:
 
 - **Format / representation rules** (how a value must be *spelled* in the CSV so it can
-  be parsed and mapped) are **always enforced client-side** — the 13-digit `8801…`
-  phone, hall names, blood-group labels, `yes`/`no`, `23 September 2010` dates. These are what
+  be parsed and mapped) are **always enforced client-side** — the 11-digit `01…`
+  phone, hall names, blood-group labels, `yes`/`no`, `23/7/26` dates. These are what
   make the strict-input section above meaningful and have no single-donor analogue
   because the single-donor form uses dropdowns/pickers instead of free text.
 - **Value-range validations** are enforced client-side **only where single-donor
@@ -166,7 +167,7 @@ Two kinds of rule apply per column, and they are enforced differently:
 | Column | Required | Accepted in CSV — nothing else | Sent to API | Rules |
 |---|---|---|---|---|
 | `name` | **yes** | text | `name` | client checks **non-blank only** (single-donor validates `name` as `required` and nothing more); the backend's 3–100-character rule is left to the server, and an out-of-range name routes to Table 3 on rejection |
-| `phone` | **yes** | exactly 13 digits, `8801XXXXXXXXX` | `phone` (number) | must fall in `8801000000000`–`8801999999999`. `01XXXXXXXXX`, `+8801…`, and any value containing spaces, dashes or punctuation are **rejected** |
+| `phone` | **yes** | exactly 11 digits, `01XXXXXXXXX` | `phone` (number) | the leading `0` is replaced with `880` and sent as `8801XXXXXXXXX`, which must fall in `8801000000000`–`8801999999999`. The bare 13-digit `8801…` form, `+880…`, and any value containing spaces, dashes or punctuation are **rejected** |
 | `studentId` | **yes** | exactly 7 digits, e.g. `1605011` | `studentId` | **only the checks single-donor creation runs client-side**: 7 numeric digits and department code `substr(2,2)` ≤ `departments.length` ([NewPersonCard.vue:171-175](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L171-L175)). **No batch-year check**, and no validation against the exact backend department list `[0,1,2,4,5,6,8,10,11,12,15,16,17,18]` — the server is the authority on those, and any row the server rejects routes to Table 3. Use `00` for an unknown department |
 | `bloodGroup` | **yes** | one of `A+ A- B+ B- O+ O- AB+ AB-` | `bloodGroup` (int) | mapped via `bloodGroups` = `['A+','A-','B+','B-','O+','O-','AB+','AB-']`. Numeric codes **rejected** |
 | `hall` | **yes** | one of `Ahsanullah`, `Chatri`, `Nazrul`, `Rashid`, `Sher-e-Bangla`, `Suhrawardy`, `Titumir`, `Unknown` | `hall` (int) | mapped to `0,1,2,3,4,5,6,8` respectively. Numeric codes **rejected**. **`Attached` is rejected** — the API's donor-creation validator allows only `[0,1,2,3,4,5,6,8]`, and the create/edit dropdowns already omit it; `Attached` is a clear row error, never silently mapped to `Unknown`. `Unknown` forces `availableToAll = true` server-side |
@@ -174,9 +175,9 @@ Two kinds of rule apply per column, and they are enforced differently:
 | `address` | no | text | `address` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
 | `comment` | no | text | `comment` | 2–500 characters; **blank auto-filled with `(Unknown)`** |
 | `donationCount` | **yes** | integer `0`–`99` | `extraDonationCount` = `donationCount - 1` (or `0`) | the CSV value is the donor's **total** blood-donation count. Range `0`–`99` matches single-donor creation's 2-digit cap ([NewPersonCard.vue:184-194](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L184-L194)). Send `donationCount - 1` when it is `> 0` and `0` when it is `0`, exactly matching single-donor creation (see the "Count → `extraDonationCount`" rule below). Blank rejected — write `0` |
-| `lastDonation` | conditional | `23 September 2010` (`<day> <Month> <year>`) | `lastDonation` (epoch ms) | must be blank when `donationCount` is `0`, and present when it is `> 0`. **The only accepted date form** is day-of-month, a single space, the full month name with an initial capital (`January`…`December`), a single space, then the 4-digit year — e.g. `23 September 2010`. No other format, and no impossible date, is accepted (see the date rules below). Future dates are **allowed** (matching single-donor creation, which does not reject them) |
+| `lastDonation` | conditional | `23/7/26` (`DD/MM/YY`) | `lastDonation` (epoch ms) | must be blank when `donationCount` is `0`, and present when it is `> 0`. **The only accepted date form** is day, `/`, month, `/`, 2-digit year (interpreted as `20YY`) — e.g. `23/7/26`. No other format, and no impossible date, is accepted (see the date rules below). Future dates are **allowed** (matching single-donor creation, which does not reject them) |
 | `plateletDonationCount` | **yes** | integer `0`–`99` | `extraPlateletDonationCount` = `plateletDonationCount - 1` (or `0`) | total platelet-donation count; range `0`–`99` (single-donor 2-digit cap); same `- 1` mapping as `donationCount`. Blank rejected — write `0` |
-| `lastPlateletDonation` | conditional | `23 September 2010` (`<day> <Month> <year>`) | `lastPlateletDonation` (epoch ms) | same rule and same accepted date form as `lastDonation`, against `plateletDonationCount` |
+| `lastPlateletDonation` | conditional | `23/7/26` (`DD/MM/YY`) | `lastPlateletDonation` (epoch ms) | same rule and same accepted date form as `lastDonation`, against `plateletDonationCount` |
 | `availableToAll` | **yes** | `yes` or `no` | `availableToAll` (bool) | `true`/`false`/`1`/`0`/blank **rejected**. **A row with `hall=Unknown` and `availableToAll=no` is a row error** (→ Table 3), *not* silently overridden — single-donor creation makes that combination impossible by force-setting and disabling the checkbox for the Unknown hall ([NewPersonCard.vue:80](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L80), [296-300](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L296-L300)), so with `hall=Unknown` the value must be `yes` |
 
 The `lastDonation`/`donationCount` rule is **bidirectional**, matching single-donor
@@ -213,29 +214,27 @@ rejects it for permission reasons, that row routes to Table 3 (broken rows, §2c
 the normal non-`201` failure path, with the server's message shown inline. The server is
 the sole authority on who may create donors in which hall.
 
-**Date format — strict `<day> <Month> <year>`, real dates only.** A date cell is
-accepted **only** when it matches `^\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$`
-— day-of-month digits (1–2, no other padding rules imposed), exactly one space, the
-full English month name with its **initial letter capitalised and the rest lowercase**
-(`September`, never `september`, `SEPTEMBER` or `Sept`), exactly one space, and a
-4-digit year, e.g. `23 September 2010`. This is a **format rule, always enforced
+**Date format — strict `DD/MM/YY`, real dates only.** A date cell is
+accepted **only** when it matches `^(\d{1,2})\/(\d{1,2})\/(\d{2})$`
+— a 1–2 digit day, `/`, a 1–2 digit month, `/`, and a 2-digit year that is interpreted
+as `20YY`, e.g. `23/7/26`. This is a **format rule, always enforced
 client-side.** Everything else is a row error, including: any other separator or
-format (`2010-09-23`, `23/09/2010`, `23-Sep-2010`, `Sep 23 2010`), extra or missing
-spaces, a lower-cased or abbreviated month, and — critically — a **well-formed but
-impossible date** (`31 February 2024`, `31 September 2010`). After the regex passes,
+format (`2010-09-23`, `23/09/2010` with a 4-digit year, `23-9-26`, `Sep 23 2010`), extra
+spaces, a month outside `1–12`, and — critically — a **well-formed but
+impossible date** (`31/2/24`, `31/9/10`). After the regex passes,
 the day is range-checked against the actual length of that month in that year
-(leap years included), so `29 February 2024` is accepted but `29 February 2023` is a
+(leap years included), so `29/2/24` is accepted but `29/2/23` is a
 row error. There is no silent roll-over.
 
-**Date → epoch conversion.** Once validated, the `<day> <Month> <year>` value is
-**reformatted to `YYYY-MM-DD`** (zero-padded) and converted with
+**Date → epoch conversion.** Once validated, the `DD/MM/YY` value is
+**reformatted to `YYYY-MM-DD`** (zero-padded, year expanded to `20YY`) and converted with
 `new Date('YYYY-MM-DD').getTime()` — deliberately the *same* call single-donor creation
 makes on save
 ([NewPersonCard.vue:400-411](badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue#L400-L411)),
 where the `DatePicker` emits a `YYYY-MM-DD` string. Because that ISO form parses to
 **UTC midnight**, stored donation timestamps match the single-donor path byte-for-byte.
-Note: the human-readable string is *not* passed to `new Date()` directly (`new
-Date('23 September 2010')` would parse to **local** midnight and drift the epoch by the
+Note: the `DD/MM/YY` string is *not* passed to `new Date()` directly (a non-ISO string
+would parse to **local** midnight and drift the epoch by the
 timezone offset); it is normalised to `YYYY-MM-DD` first, then parsed. A blank date
 sends `0`, again matching single-donor creation. No timezone adjustment is applied.
 
@@ -321,15 +320,15 @@ and one with all optional fields blank:
 
 ```csv
 name,phone,studentId,bloodGroup,hall,roomNumber,address,comment,donationCount,lastDonation,plateletDonationCount,lastPlateletDonation,availableToAll
-Demo Donor One,8801712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20 November 2024,1,14 February 2025,no
-Demo Donor Two,8801898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes
-Demo Donor Three,8801911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no
+Demo Donor One,01712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no
+Demo Donor Two,01898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes
+Demo Donor Three,01911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no
 ```
 
 Every value in the demo file is in the single accepted form, in its canonical case —
-13-digit phones, exactly-cased hall names (`Sher-e-Bangla`, not `sher-e-bangla`),
-lowercase `yes`/`no`, `<day> <Month> <year>` dates (`20 November 2024`, with the
-capitalised full month name), explicit `0` counts rather than blanks — so it doubles as
+11-digit `01…` phones, exactly-cased hall names (`Sher-e-Bangla`, not `sher-e-bangla`),
+lowercase `yes`/`no`, `DD/MM/YY` dates (`20/11/24`), explicit `0` counts rather than
+blanks — so it doubles as
 the worked example of the strict rules, and copying from it can never produce a
 case- or format-rejection.
 
@@ -501,7 +500,7 @@ error lives here, and nowhere else. It is populated in two moments:
 
 Each row shows the CSV's values plus a **full-width inline error area** listing every
 problem for that donor — one line per bad field, e.g. *"phone: `0171234` is not a valid
-Bangladeshi number (expected 13 digits starting `8801`)"*, *"bloodGroup: `AB` is not a
+Bangladeshi number (expected 11 digits starting `0`)"*, *"bloodGroup: `AB` is not a
 recognised blood group"* — so a row with three problems shows all three at once, not
 just the first. The offending cell is highlighted so the error line and the value it
 refers to are visually connected. Client-side and server-side errors render identically

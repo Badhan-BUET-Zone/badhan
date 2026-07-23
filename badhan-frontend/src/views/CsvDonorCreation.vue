@@ -282,7 +282,7 @@ export default {
       helpPanel: 0, // 0 = expanded until a file is selected, then null (collapsed)
       formatHelp: [
         { column: 'name', required: 'yes', accepted: 'text (non-blank)' },
-        { column: 'phone', required: 'yes', accepted: '13 digits, 8801XXXXXXXXX' },
+        { column: 'phone', required: 'yes', accepted: '11 digits, 01XXXXXXXXX' },
         { column: 'studentId', required: 'yes', accepted: '7 digits, e.g. 1605011' },
         { column: 'bloodGroup', required: 'yes', accepted: 'A+ A- B+ B- O+ O- AB+ AB-' },
         { column: 'hall', required: 'yes', accepted: 'Ahsanullah, Chatri, Nazrul, Rashid, Sher-e-Bangla, Suhrawardy, Titumir, Unknown' },
@@ -290,9 +290,9 @@ export default {
         { column: 'address', required: 'no', accepted: 'text; blank → (Unknown)' },
         { column: 'comment', required: 'no', accepted: 'text; blank → (Unknown)' },
         { column: 'donationCount', required: 'yes', accepted: 'integer 0–99 (total donations)' },
-        { column: 'lastDonation', required: 'if count > 0', accepted: '23 September 2010 (<day> <Month> <year>)' },
+        { column: 'lastDonation', required: 'if count > 0', accepted: '23/7/26 (DD/MM/YY)' },
         { column: 'plateletDonationCount', required: 'yes', accepted: 'integer 0–99 (total platelets)' },
-        { column: 'lastPlateletDonation', required: 'if count > 0', accepted: '23 September 2010 (<day> <Month> <year>)' },
+        { column: 'lastPlateletDonation', required: 'if count > 0', accepted: '23/7/26 (DD/MM/YY)' },
         { column: 'availableToAll', required: 'yes', accepted: 'yes or no' }
       ],
       donorColumns: [

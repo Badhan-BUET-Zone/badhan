@@ -46,7 +46,7 @@ describe('CSV Donor Upload', () => {
     signIn();
 
     const donors = generateDonors(3);
-    donors[1].phone = '01712345678'; // local format, not the required 13-digit 8801XXXXXXXXX
+    donors[1].phone = '8801712345678'; // 13-digit form, not the required 11-digit 01XXXXXXXXX
     donors[2].bloodGroup = 'XY'; // not a recognised blood group
     csvPage.selectFile(donorsToCsv(donors));
 

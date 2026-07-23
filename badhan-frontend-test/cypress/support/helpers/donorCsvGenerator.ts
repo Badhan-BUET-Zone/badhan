@@ -24,7 +24,7 @@ const BATCH_YEARS = ['16', '17', '18', '19', '20', '21', '22'];
 
 export interface GeneratedDonor {
   name: string;
-  phone: string; // 13-digit 8801XXXXXXXXX
+  phone: string; // 11-digit 01XXXXXXXXX
   studentId: string; // 7 digits
   bloodGroup: string;
   hall: string;
@@ -54,7 +54,7 @@ export function generateDonors(count = 5): GeneratedDonor[] {
   for (let i = 0; i < count; i++) {
     const uniqueTail = String(base + i).slice(-8); // 8 digits, unique per donor and per run
     const operator = pick(['6', '7', '8']);
-    const phone = '8801' + operator + uniqueTail; // 4 + 1 + 8 = 13 digits, starts 8801
+    const phone = '01' + operator + uniqueTail; // 2 + 1 + 8 = 11 digits, starts 01
     const studentId = pick(BATCH_YEARS) + pick(ALLOWED_DEPT_CODES) + digits(3);
     donors.push({
       name: 'CSV Donor ' + uniqueTail,
