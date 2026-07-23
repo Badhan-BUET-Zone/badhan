@@ -56,6 +56,7 @@ const HALL_INDICES_ALL: number[] = Object.values(HALLS_INDEX)
 export const HALL_INDICES_ALLOWED_FOR_DONOR: number[] =
   HALL_INDICES_ALL.filter((hall: number): boolean => hall !== HALLS_INDEX.ATTACHED)
 export const BLOOD_GROUP_INDICES: number[] = Object.values(BLOOD_GROUPS_INDEX)
+export const DESIGNATION_INDICES: number[] = Object.values(DESIGNATIONS_INDEX)
 
 // The public-contact rule: Rh-positive groups only. Listed by name, NOT derived from
 // index parity — "even index means Rh-positive" is a coincidence of the ordering, and

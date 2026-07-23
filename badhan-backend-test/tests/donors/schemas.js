@@ -198,62 +198,6 @@ const getCommentSchema = {
   required: ['donor'],
 };
 
-const patchAdminsSuperAdminSchema = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    status: { type: 'string' },
-    statusCode: { const: HTTP_STATUS.OK },
-    message: { type: 'string' },
-    donor: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        _id: { type: 'string' },
-        phone: { type: 'integer' },
-        name: { type: 'string' },
-        studentId: { type: 'string' },
-        email: { type: 'string' },
-        bloodGroup: { type: 'integer' },
-        hall: { type: 'integer' },
-        roomNumber: { type: 'string' },
-        address: { type: 'string' },
-        comment: { type: 'string' },
-        commentTime: { type: 'integer' },
-        designation: { type: 'integer' },
-        availableToAll: { type: 'boolean' },
-      },
-      required: [
-        '_id',
-        'phone',
-        'name',
-        'studentId',
-        'email',
-        'bloodGroup',
-        'hall',
-        'roomNumber',
-        'address',
-        'comment',
-        'commentTime',
-        'designation',
-        'availableToAll',
-      ],
-    },
-  },
-  required: ['status', 'statusCode', 'message', 'donor'],
-};
-
-const patchAdminsSchema = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    status: { type: 'string' },
-    statusCode: { const: HTTP_STATUS.OK },
-    message: { type: 'string' },
-  },
-  required: ['status', 'statusCode', 'message'],
-};
-
 const duplicateDonorSchema = {
   type: 'object',
   additionalProperties: false,
@@ -659,8 +603,6 @@ module.exports = {
   patchDonorsDesignationSchema,
   patchCommentSchema,
   getCommentSchema,
-  patchAdminsSuperAdminSchema,
-  patchAdminsSchema,
   duplicateDonorSchema,
   duplicateDonorsManySchema,
   designationSchema,

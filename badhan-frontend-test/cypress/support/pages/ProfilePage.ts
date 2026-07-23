@@ -256,6 +256,26 @@ export class ProfilePage {
     cy.get('[data-cy="promoteToHallAdminButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
   }
 
+  promoteToSuperAdmin(): void {
+    cy.get('[data-cy="promoteToSuperAdminButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
+  }
+
+  demoteFromSuperAdmin(): void {
+    cy.get('[data-cy="demoteFromSuperAdminButtonId"]').scrollIntoView().should('exist').and('be.visible').and('not.be.disabled').click();
+  }
+
+  assertPromoteToSuperAdminAbsent(): void {
+    cy.get('[data-cy="promoteToSuperAdminButtonId"]').should('not.exist');
+  }
+
+  assertDemoteFromSuperAdminVisible(): void {
+    cy.get('[data-cy="demoteFromSuperAdminButtonId"]').scrollIntoView().should('exist').and('be.visible');
+  }
+
+  assertDesignation(expectedLabel: string): void {
+    cy.get('[data-cy="donorDesignationChipId"]').scrollIntoView().should('be.visible').and('contain.text', expectedLabel);
+  }
+
   // Password helpers
   typeNewPassword(password: string): void {
     cy.get('[data-cy="newPasswordFieldId"]').clear().type(password).blur();

@@ -2,7 +2,7 @@ import { body, ValidationChain } from 'express-validator'
 import mongoose from 'mongoose'
 import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
-import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
+import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
 
 export const validateBODYPhone: ValidationChain = body('phone')
   .exists().withMessage('Phone number is required')
@@ -90,6 +90,11 @@ export const validateBODYDonorId: ValidationChain = body('donorId')
 export const validateBODYPromoteFlag: ValidationChain = body('promoteFlag')
   .exists().withMessage('promoteFlag is required')
   .isBoolean().toBoolean().withMessage('promoteFlag must be boolean')
+
+export const validateBODYDesignation: ValidationChain = body('designation')
+  .exists().withMessage('designation is required')
+  .isInt().toInt().withMessage('designation must be integer')
+  .isIn(DESIGNATION_INDICES).withMessage('Please input a valid designation from 0 to 3')
 
 export const validateBODYDate: ValidationChain = body('date')
   .exists().not().isEmpty().withMessage('date is required')

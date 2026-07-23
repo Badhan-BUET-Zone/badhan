@@ -11,10 +11,9 @@ const {
 } = require('../http');
 const {
   postDonorSchema,
+  patchDonorSchema,
   deleteDonorSchema,
   patchDonorsDesignationSchema,
-  patchAdminsSchema,
-  patchAdminsSuperAdminSchema,
   designationSchema,
   duplicateDonorSchema,
   passwordSchema,
@@ -123,46 +122,52 @@ async function getDesignation(signInResponse) {
 }
 
 /**
- * Promote a donor to volunteer
+ * Change a donor's designation to an explicit target level (0..3) via the merged route
+ */
+async function changeDesignation(donorId, designation, signInResponse, schema = patchDonorsDesignationSchema) {
+  return authedPatch('/donors/designation', { donorId, designation }, signInResponse, schema);
+}
+
+/**
+ * Promote a donor to volunteer (0 -> 1)
  */
 async function promoteToVolunteer(donorId, signInResponse) {
-  return authedPatch(
-    '/donors/designation',
-    { donorId, promoteFlag: true },
-    signInResponse,
-    patchDonorsDesignationSchema
-  );
+  return changeDesignation(donorId, 1, signInResponse);
 }
 
 /**
- * Demote a volunteer to donor
+ * Demote a volunteer to donor (1 -> 0)
  */
 async function demoteToDonor(donorId, signInResponse) {
-  return authedPatch(
-    '/donors/designation',
-    { donorId, promoteFlag: false },
-    signInResponse,
-    patchDonorsDesignationSchema
-  );
+  return changeDesignation(donorId, 0, signInResponse);
 }
 
 /**
- * Promote a user to hall admin
+ * Promote a volunteer to hall admin (1 -> 2); demotes the hall's current admin
  */
 async function promoteToHallAdmin(donorId, signInResponse) {
-  return authedPatch('/admins', { donorId }, signInResponse, patchAdminsSchema);
+  return changeDesignation(donorId, 2, signInResponse);
 }
 
 /**
- * Promote a user to super admin
+ * Promote a volunteer to super admin (1 -> 3)
  */
 async function promoteToSuperAdmin(donorId, signInResponse) {
-  return authedPatch(
-    '/admins/superadmin',
-    { donorId, promoteFlag: true },
-    signInResponse,
-    patchAdminsSuperAdminSchema
-  );
+  return changeDesignation(donorId, 3, signInResponse);
+}
+
+/**
+ * Demote a super admin back to volunteer (3 -> 1)
+ */
+async function demoteFromSuperAdmin(donorId, signInResponse) {
+  return changeDesignation(donorId, 1, signInResponse);
+}
+
+/**
+ * Update a donor's full details (PATCH /donors/v2)
+ */
+async function updateDonor(donorInfo, signInResponse) {
+  return authedPatch('/donors/v2', donorInfo, signInResponse, patchDonorSchema);
 }
 
 module.exports = {
@@ -179,8 +184,11 @@ module.exports = {
   getDuplicateDonorsByPhones,
   checkDuplicate,
   getDesignation,
+  changeDesignation,
   promoteToVolunteer,
   demoteToDonor,
   promoteToHallAdmin,
   promoteToSuperAdmin,
+  demoteFromSuperAdmin,
+  updateDonor,
 };

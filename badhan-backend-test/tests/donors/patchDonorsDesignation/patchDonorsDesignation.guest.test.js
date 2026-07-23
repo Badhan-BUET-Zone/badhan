@@ -6,7 +6,7 @@ test('PATCH/donors/designation: guest', async () => {
     '/guest/donors/designation',
     {
       donorId: '123456789',
-      promoteFlag: false,
+      designation: 0,
     },
     patchDonorsDesignationSchema
   );

@@ -737,7 +737,15 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Promote or demote a donor designation */
+  /**
+   * Change a donor's designation to an explicit target level.
+   * Hall admins may toggle donors between donor (0) and volunteer (1) within their own
+   * hall; super admins may additionally promote a volunteer to hall admin (2) or super
+   * admin (3) and demote a super admin back to volunteer. Only a volunteer can be
+   * promoted to hall admin or super admin, so those roles must always be reached through
+   * volunteer first, and a hall admin is never demoted directly — it happens only as the
+   * side effect of promoting another donor to hall admin in the same hall.
+   */
   @Patch('designation')
   @SuccessResponse(200, 'Target user promoted/demoted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
@@ -753,7 +761,7 @@ export class DonorsController extends Controller {
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Invalid operation', {
     status: 'ERROR',
     statusCode: HTTP_STATUS.CONFLICT,
-    message: 'Can\'t promote volunteer or can\'t demote donor'
+    message: 'Invalid designation transition'
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
@@ -762,7 +770,7 @@ export class DonorsController extends Controller {
   })
   @Middlewares([donorValidator.validatePATCHDonorsDesignation, rateLimiter.commonLimiter, authenticator.handleAuthentication])
   public async updateDesignation(
-    @Body() body: { donorId: string; promoteFlag: boolean },
+    @Body() body: { donorId: string; designation: number },
     @Request() req: any
   ): Promise<{ status: string; statusCode: number; message: string }> {
     const res: ExResponse = (req as any).res
@@ -776,42 +784,73 @@ export class DonorsController extends Controller {
     }
     const donor: IDonor = donorQueryResult.data!
 
-    // Handle hall permission
+    // Handle hall permission — hall admins are confined to their own hall; super admins are not
     if (isHallRestricted(donor.hall) && user.hall !== donor.hall && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
       this.setStatus(HTTP_STATUS.FORBIDDEN)
       return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
     }
 
     // Check if user is hall admin or above
-    if (user.designation! < 2) {
+    if (user.designation! < DESIGNATIONS_INDEX.HALL_ADMIN) {
       this.setStatus(HTTP_STATUS.FORBIDDEN)
       return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'Only hall admins or above can access this route' }
     }
 
-    const donorDesignation: number | undefined = donor.designation
+    const from: number = donor.designation!
+    const to: number = body.designation
+    const isSuperAdmin: boolean = user.designation === DESIGNATIONS_INDEX.SUPER_ADMIN
 
-    if ((donorDesignation === 1 && body.promoteFlag) ||
-      (donorDesignation === 0 && !body.promoteFlag) || donorDesignation === 3) {
-      this.setStatus(HTTP_STATUS.CONFLICT)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Can\'t promote volunteer or can\'t demote donor' }
+    // Only a super admin may set or clear the hall-admin / super-admin roles
+    const touchesElevatedRole: boolean =
+      from === DESIGNATIONS_INDEX.HALL_ADMIN || from === DESIGNATIONS_INDEX.SUPER_ADMIN ||
+      to === DESIGNATIONS_INDEX.HALL_ADMIN || to === DESIGNATIONS_INDEX.SUPER_ADMIN
+    if (touchesElevatedRole && !isSuperAdmin) {
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'Only super admins can change hall admin or super admin designations' }
     }
 
-    if (hasNoSpecificHall(donor.hall)) {
+    // Hall admin and super admin can only be reached from volunteer
+    if (to === DESIGNATIONS_INDEX.SUPER_ADMIN && from !== DESIGNATIONS_INDEX.VOLUNTEER) {
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Only a volunteer can be promoted to super admin' }
+    }
+    if (to === DESIGNATIONS_INDEX.HALL_ADMIN && from !== DESIGNATIONS_INDEX.VOLUNTEER) {
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Only a volunteer can be promoted to hall admin' }
+    }
+
+    // Transition whitelist (§2). Everything not listed is a no-op or illegal jump → 409.
+    const isValidTransition: boolean =
+      (from === DESIGNATIONS_INDEX.DONOR && to === DESIGNATIONS_INDEX.VOLUNTEER) ||
+      (from === DESIGNATIONS_INDEX.VOLUNTEER && to === DESIGNATIONS_INDEX.DONOR) ||
+      (from === DESIGNATIONS_INDEX.VOLUNTEER && to === DESIGNATIONS_INDEX.HALL_ADMIN) ||
+      (from === DESIGNATIONS_INDEX.VOLUNTEER && to === DESIGNATIONS_INDEX.SUPER_ADMIN) ||
+      (from === DESIGNATIONS_INDEX.SUPER_ADMIN && to === DESIGNATIONS_INDEX.VOLUNTEER)
+    if (!isValidTransition) {
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Invalid designation transition' }
+    }
+
+    // Valid-hall requirement for the 0 ↔ 1 and → 2 paths; the → 3 / super-admin role is
+    // system-wide and carries no hall check (as the old super-admin route had none).
+    const requiresValidHall: boolean = to !== DESIGNATIONS_INDEX.SUPER_ADMIN && from !== DESIGNATIONS_INDEX.SUPER_ADMIN
+    if (requiresValidHall && hasNoSpecificHall(donor.hall)) {
       this.setStatus(HTTP_STATUS.CONFLICT)
       return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Donor does not have a valid hall' }
     }
 
-    if (body.promoteFlag) {
-      donor.designation = DESIGNATIONS_INDEX.VOLUNTEER
-    } else {
-      donor.designation = DESIGNATIONS_INDEX.DONOR
+    // One hall admin per hall: promoting to hall admin demotes the current incumbent
+    if (to === DESIGNATIONS_INDEX.HALL_ADMIN) {
+      await donorInterface.findDonorAndUpdate(
+        { hall: donor.hall, designation: DESIGNATIONS_INDEX.HALL_ADMIN },
+        { $set: { designation: DESIGNATIONS_INDEX.VOLUNTEER } }
+      )
     }
 
+    donor.designation = to
     await donor.save()
 
-    const logOperation: string = body.promoteFlag ? 'PROMOTE' : 'DEMOTE'
-
-    await logInterface.addLog(user._id, `PATCH DONORS DESIGNATION (${logOperation})`, donor)
+    await logInterface.addLog(user._id, `PATCH DONORS DESIGNATION (${from} → ${to})`, donor)
 
     this.setStatus(HTTP_STATUS.OK)
     return {

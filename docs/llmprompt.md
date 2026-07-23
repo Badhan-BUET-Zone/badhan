@@ -6,4 +6,4 @@ Check whether every specification in the plans/plan.md is present in the plans/p
 
 implement phase 0 of plans/phases.md
 
-look at docs/futurePlan2.md. read the specification and see if you have any open questions before I ask you to implement it. Put your open questions at the last of the file so that I can answer. in this thread, I will also answer the questions, which you will merge with the specifications. And then you will delete the open questions.
+look at docs/futurePlan1.md. read the specification and see if you have any open questions before I ask you to implement it. Put your open questions at the last of the file so that I can answer. in this thread, I will also answer the questions, which you will merge with the specifications. And then you will delete the open questions.

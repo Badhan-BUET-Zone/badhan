@@ -105,6 +105,30 @@ const sameHallPermissionErrorSchema = {
   required: ['status', 'statusCode', 'message'],
 };
 
+// Forbidden when a non-super-admin tries to set or clear a hall-admin/super-admin designation
+const superAdminDesignationPermissionErrorSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    status: { const: 'ERROR' },
+    statusCode: { const: HTTP_STATUS.FORBIDDEN },
+    message: { const: 'Only super admins can change hall admin or super admin designations' },
+  },
+  required: ['status', 'statusCode', 'message'],
+};
+
+// Factory for the merged designation route's 409 conflict responses (distinct messages)
+const conflictErrorSchema = (message) => ({
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    status: { const: 'ERROR' },
+    statusCode: { const: HTTP_STATUS.CONFLICT },
+    message: { const: message },
+  },
+  required: ['status', 'statusCode', 'message'],
+});
+
 module.exports = {
   jwtInvalidSchema,
   expiredTokenSchema,
@@ -115,4 +139,6 @@ module.exports = {
   hallAdminPermissionErrorSchema,
   higherDesignationPermissionErrorSchema,
   sameHallPermissionErrorSchema,
+  superAdminDesignationPermissionErrorSchema,
+  conflictErrorSchema,
 };

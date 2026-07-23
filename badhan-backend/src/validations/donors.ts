@@ -1,6 +1,6 @@
 import { validateQUERYStartTime, validateQUERYEndTime } from './validateRequest/validateQuery'
 import { validate } from './index'
-import { validateBODYEmail, validateBODYPromoteFlag, validateBODYPassword, validateBODYDonorId, validateBODYAddress, validateBODYRoomNumber, validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId, validateBODYExtraPlateletDonationCount, validateBODYLastPlateletDonation, validateBODYLastDonation } from './validateRequest/validateBody'
+import { validateBODYEmail, validateBODYDesignation, validateBODYPassword, validateBODYDonorId, validateBODYAddress, validateBODYRoomNumber, validateBODYAvailableToAll, validateBODYDonationCount, validateBODYComment, validateBODYName, validateBODYPhone, validateBODYBloodGroup, validateBODYHall, validateBODYStudentId, validateBODYExtraPlateletDonationCount, validateBODYLastPlateletDonation, validateBODYLastDonation } from './validateRequest/validateBody'
 import { validateQUERYPhoneList, validateQUERYDonorId, validateQUERYPhone, validateQEURYIsNotAvailable, validateQUERYAddress, validateQUERYAvailableToAll, validateQUERYBatch, validateQUERYBloodGroup, validateQUERYHall, validateQUERYIsAvailable, validateQUERYName } from './validateRequest/validateQuery'
 import {NextFunction, Request, Response} from "express";
 
@@ -46,11 +46,7 @@ const validatePATCHDonorsComment:(req: Request, res: Response, next: NextFunctio
 
 const validatePATCHDonorsDesignation:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYDonorId,
-  validateBODYPromoteFlag
-])
-
-const validatePATCHAdmins:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
-  validateBODYDonorId
+  validateBODYDesignation
 ])
 
 const validateGETDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
@@ -85,11 +81,6 @@ const validateGETDonorsDuplicateMany:(req: Request, res: Response, next: NextFun
   // validateQUERYPhoneListElement
 ])
 
-const validatePATCHAdminsSuperAdmin:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
-  validateBODYDonorId,
-  validateBODYPromoteFlag
-])
-
 const validateGETDonorsNew:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateQUERYStartTime,
   validateQUERYEndTime
@@ -101,13 +92,11 @@ export default {
   validatePATCHDonorsComment,
   validatePATCHDonorsPassword,
   validatePATCHDonorsDesignation,
-  validatePATCHAdmins,
   validateGETDonors,
   validateGETSearchDonors,
   validateDELETEDonors,
   validateGETDonorsDuplicate,
   validatePOSTDonorsPasswordRequest,
   validateGETDonorsDuplicateMany,
-  validatePATCHAdminsSuperAdmin,
   validateGETDonorsNew
 }

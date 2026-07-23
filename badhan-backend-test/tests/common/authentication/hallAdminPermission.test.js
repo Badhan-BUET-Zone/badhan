@@ -25,7 +25,7 @@ test('hall admin permission test', async () => {
     '/donors/designation',
     volunteerTokenResponse.data.token,
     hallAdminPermissionErrorSchema,
-    { donorId: me.data.donor._id, promoteFlag: true }
+    { donorId: me.data.donor._id, designation: 1 }
   );
   await operations.signOut(signInResponse);
 });

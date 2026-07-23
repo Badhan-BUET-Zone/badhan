@@ -69,7 +69,7 @@
         </v-card-title>
         <v-card-subtitle>Donor Profile</v-card-subtitle>
         <v-card-text class="mb-5">
-          <v-chip color="secondary" class="mr-1 mb-1">
+          <v-chip color="secondary" class="mr-1 mb-1" data-cy="donorDesignationChipId">
             <span v-if="designation === DESIGNATIONS_INDEX.DONOR">Donor</span>
             <span v-else-if="designation === DESIGNATIONS_INDEX.VOLUNTEER">Volunteer</span>
             <span v-else-if="designation === DESIGNATIONS_INDEX.HALL_ADMIN">Hall Admin</span>
@@ -279,6 +279,20 @@
                         <v-icon left dark>mdi-arrow-up</v-icon>
                         Promote to Hall admin
                       </v-btn>
+                      <v-btn id="promoteToSuperAdminButtonId" data-cy="promoteToSuperAdminButtonId" key="promoteToSuperAdmin" small class="ma-1" rounded color="primary"
+                             v-if="isAllowedToPromoteToSuperAdmin"
+                             :disabled="promoteFlag"
+                             @click="promoteToSuperAdminClicked">
+                        <v-icon left dark>mdi-arrow-up</v-icon>
+                        Promote to Super Admin
+                      </v-btn>
+                      <v-btn id="demoteFromSuperAdminButtonId" data-cy="demoteFromSuperAdminButtonId" key="demoteFromSuperAdmin" small class="ma-1" rounded color="warning"
+                             v-if="isAllowedToDemoteFromSuperAdmin"
+                             :disabled="promoteFlag"
+                             @click="demoteFromSuperAdminClicked">
+                        <v-icon left dark>mdi-arrow-down</v-icon>
+                        Demote to Volunteer
+                      </v-btn>
                     </transition-group>
                   </v-card-text>
                 </transition>
@@ -486,8 +500,7 @@ import {
   handlePOSTPublicContacts, handlePOSTDonations,
   handlePATCHDonorsComment,
   handlePATCHDonors, handlePOSTCallRecord, handleGETDonors,
-  handleDELETEDonations, handlePOSTPlateletDonations, handleDELETEPlateletDonations,
-  handlePATCHAdmins
+  handleDELETEDonations, handlePOSTPlateletDonations, handleDELETEPlateletDonations
 } from '@/api'
 import DonationCard from '@/views/Home/components/DonationCard'
 import Button from '@/components/UI Components/Button'
@@ -662,6 +675,12 @@ export default {
     isAllowedToDemoteToDonor () {
       return this.designation === DESIGNATIONS_INDEX.VOLUNTEER && isHallRestricted(halls.indexOf(this.hall)) && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.HALL_ADMIN))
     },
+    isAllowedToPromoteToSuperAdmin () {
+      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN && this.designation === DESIGNATIONS_INDEX.VOLUNTEER
+    },
+    isAllowedToDemoteFromSuperAdmin () {
+      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN && this.designation === DESIGNATIONS_INDEX.SUPER_ADMIN
+    },
     isPasswordLinkResetable () {
       return !isGuestEnabled() && !this.$isMe(this.id) && this.designation !== DESIGNATIONS_INDEX.DONOR && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation))
     },
@@ -827,7 +846,7 @@ export default {
     },
     async changeHallAdminClicked () {
       this.changeAdminLoaderFlag = true
-      const response = await handlePATCHAdmins( { donorId: this.id })
+      const response = await handlePATCHDonorsDesignation({ donorId: this.id, designation: DESIGNATIONS_INDEX.HALL_ADMIN })
       this.changeAdminLoaderFlag = false
       if (response.status !== HTTP_STATUS.OK) return
       this.$store.dispatch('notification/notifySuccess', "Successfully changed hall admin")
@@ -940,7 +959,7 @@ export default {
       this.promoteFlag = true
       const response = await handlePATCHDonorsDesignation({
         donorId: this.id,
-        promoteFlag: true
+        designation: DESIGNATIONS_INDEX.VOLUNTEER
       })
       if(response.status !== HTTP_STATUS.OK){
         return
@@ -953,13 +972,41 @@ export default {
       this.promoteFlag = true
       const response = await handlePATCHDonorsDesignation({
         donorId: this.id,
-        promoteFlag: false
+        designation: DESIGNATIONS_INDEX.DONOR
       })
       if (response.status !== HTTP_STATUS.OK) {
         return
       }
       await this.$store.dispatch('notification/notifySuccess', response.data.message)
       this.designation = DESIGNATIONS_INDEX.DONOR
+      this.promoteFlag = false
+    },
+    async promoteToSuperAdminClicked () {
+      this.promoteFlag = true
+      const response = await handlePATCHDonorsDesignation({
+        donorId: this.id,
+        designation: DESIGNATIONS_INDEX.SUPER_ADMIN
+      })
+      if (response.status !== HTTP_STATUS.OK) {
+        this.promoteFlag = false
+        return
+      }
+      await this.$store.dispatch('notification/notifySuccess', response.data.message)
+      this.designation = DESIGNATIONS_INDEX.SUPER_ADMIN
+      this.promoteFlag = false
+    },
+    async demoteFromSuperAdminClicked () {
+      this.promoteFlag = true
+      const response = await handlePATCHDonorsDesignation({
+        donorId: this.id,
+        designation: DESIGNATIONS_INDEX.VOLUNTEER
+      })
+      if (response.status !== HTTP_STATUS.OK) {
+        this.promoteFlag = false
+        return
+      }
+      await this.$store.dispatch('notification/notifySuccess', response.data.message)
+      this.designation = DESIGNATIONS_INDEX.VOLUNTEER
       this.promoteFlag = false
     },
     async savePasswordClicked () {

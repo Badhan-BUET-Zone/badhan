@@ -150,7 +150,7 @@ CONVENTIONS TO BE FOLLOWED
 
 export interface PATCHDonorsDesignationPayloadInterface {
   donorId: string
-  promoteFlag: boolean
+  designation: number
 }
 
 const handlePATCHDonorsDesignation = async (payload: PATCHDonorsDesignationPayloadInterface) => {
@@ -432,16 +432,6 @@ const handlePATCHDonors = async (payload: PATCHDonorsPayloadInterface) => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
-export interface PATCHAdminsPayloadInterface {
-  donorId: string
-}
-const handlePATCHAdmins = async (payload: PATCHAdminsPayloadInterface) => {
-  try {
-    return await badhanAxios.patch('/admins', payload)
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
 export interface DELETEDonationsPayloadInterface {
   date: number
 }
@@ -674,7 +664,6 @@ export {
   handleGETCredits,
   handlePATCHDonorsComment,
   handlePATCHDonors,
-  handlePATCHAdmins,
   handleDELETEDonations,
   handleDELETEPlateletDonations,
   handleGETDonationsReport,

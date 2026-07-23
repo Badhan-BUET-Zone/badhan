@@ -1,56 +1,122 @@
-const { sameHallPermissionErrorSchema } = require('../../common/schemas');
+const {
+  sameHallPermissionErrorSchema,
+  hallAdminPermissionErrorSchema,
+  superAdminDesignationPermissionErrorSchema,
+} = require('../../common/schemas');
 const operations = require('../../lib/operations');
+const { uniquePhone } = require('../../helpers');
 const { HALLS_INDEX } = require('../../lib/utils/constants');
 
-test('PATCH /donors/designation: forbidden when target donor is in different hall', async () => {
+const donorInfo = (overrides = {}) => ({
+  phone: uniquePhone(),
+  bloodGroup: 2,
+  hall: HALLS_INDEX.CHATRI,
+  name: 'Blah Blah',
+  studentId: 1606060,
+  address: 'Azimpur',
+  roomNumber: '3009',
+  comment: 'developer of badhan',
+  extraDonationCount: 0,
+  availableToAll: true,
+  ...overrides,
+});
+
+// Create a volunteer (optionally promoted to hall admin) and return a token for them
+const makeActorWithToken = async (info, signInResponse, { hallAdmin = false } = {}) => {
+  const creation = await operations.createDonor(info, signInResponse);
+  const donorId = creation.data.newDonor._id;
+  await operations.promoteToVolunteer(donorId, signInResponse);
+  if (hallAdmin) {
+    await operations.promoteToHallAdmin(donorId, signInResponse);
+  }
+  const token = await operations.issueDonorPassword(donorId, signInResponse);
+  return { donorId, token: token.data.token };
+};
+
+test('PATCH /donors/designation: forbidden when target donor is in a different hall', async () => {
   const signInResponse = await operations.signInSuperAdmin();
 
-  // Create requester (will be promoted to volunteer) in Hall 1
-  const donorHall1 = await operations.createDonor(
-    {
-      phone: 8801555006666,
-      bloodGroup: 2,
-      hall: HALLS_INDEX.CHATRI,
-      name: 'Requester Volunteer',
-      studentId: 2002063,
-      address: 'Hall 1 Address',
-      roomNumber: '16666',
-      comment: 'volunteer requester',
-      extraDonationCount: 0,
-      availableToAll: true,
-    },
+  const actor = await makeActorWithToken(
+    donorInfo({ studentId: 2002063, hall: HALLS_INDEX.CHATRI }),
     signInResponse
   );
 
-  // Create target donor in Hall 2
-  const donorHall2 = await operations.createDonor(
-    {
-      phone: 8801555006767,
-      bloodGroup: 2,
-      hall: HALLS_INDEX.NAZRUL,
-      name: 'Target Donor',
-      studentId: 2012064,
-      address: 'Hall 2 Address',
-      roomNumber: '26767',
-      comment: 'target different hall',
-      extraDonationCount: 0,
-      availableToAll: false,
-    },
+  const target = await operations.createDonor(
+    donorInfo({ studentId: 2012064, hall: HALLS_INDEX.NAZRUL }),
     signInResponse
   );
 
-  // Promote requester to volunteer and issue token for them
-  const volunteerId = donorHall1.data.newDonor._id;
-  await operations.promoteToVolunteer(volunteerId, signInResponse);
-  const volunteerTokenResponse = await operations.issueDonorPassword(volunteerId, signInResponse);
-
-  // Expect hall-permission error when attempting to change designation for donor from a different hall
   await operations.expectErrorWithToken(
     'patch',
     '/donors/designation',
-    volunteerTokenResponse.data.token,
+    actor.token,
     sameHallPermissionErrorSchema,
-    { donorId: donorHall2.data.newDonor._id, promoteFlag: true }
+    { donorId: target.data.newDonor._id, designation: 1 }
+  );
+
+  await operations.signOut(signInResponse);
+});
+
+test('PATCH /donors/designation: a volunteer cannot change any designation (403)', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+
+  const actor = await makeActorWithToken(
+    donorInfo({ studentId: 2002063 }),
+    signInResponse
+  );
+  const target = await operations.createDonor(donorInfo({ studentId: 2012064 }), signInResponse);
+  await operations.promoteToVolunteer(target.data.newDonor._id, signInResponse);
+
+  await operations.expectErrorWithToken(
+    'patch',
+    '/donors/designation',
+    actor.token,
+    hallAdminPermissionErrorSchema,
+    { donorId: target.data.newDonor._id, designation: 0 }
+  );
+
+  await operations.signOut(signInResponse);
+});
+
+test('PATCH /donors/designation: a hall admin cannot promote to super admin (403)', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+
+  const actor = await makeActorWithToken(
+    donorInfo({ studentId: 2002063 }),
+    signInResponse,
+    { hallAdmin: true }
+  );
+  const target = await operations.createDonor(donorInfo({ studentId: 2012064 }), signInResponse);
+  await operations.promoteToVolunteer(target.data.newDonor._id, signInResponse);
+
+  await operations.expectErrorWithToken(
+    'patch',
+    '/donors/designation',
+    actor.token,
+    superAdminDesignationPermissionErrorSchema,
+    { donorId: target.data.newDonor._id, designation: 3 }
+  );
+
+  await operations.signOut(signInResponse);
+});
+
+test('PATCH /donors/designation: a hall admin cannot promote to hall admin (403)', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+
+  const actor = await makeActorWithToken(
+    donorInfo({ studentId: 2002063 }),
+    signInResponse,
+    { hallAdmin: true }
+  );
+  const target = await operations.createDonor(donorInfo({ studentId: 2012064 }), signInResponse);
+  await operations.promoteToVolunteer(target.data.newDonor._id, signInResponse);
+
+  await operations.expectErrorWithToken(
+    'patch',
+    '/donors/designation',
+    actor.token,
+    superAdminDesignationPermissionErrorSchema,
+    { donorId: target.data.newDonor._id, designation: 2 }
   );
 
   await operations.signOut(signInResponse);
