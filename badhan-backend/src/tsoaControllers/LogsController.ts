@@ -24,6 +24,7 @@ export class LogsController extends Controller {
     statistics: {
       donorCount: 2600,
       donationCount: 1200,
+      donationCountMadeByApp: 900,
       plateletDonationCount: 300,
       volunteerCount: 130
     }
@@ -34,6 +35,7 @@ export class LogsController extends Controller {
   ): Promise<{ status: string; statusCode: number; message: string; statistics?: any }> {
     const donorCount: { message: string; status: string; data: number } = await donorInterface.getCount()
     const donationCount: { message: string; status: string; data: number } = await donationInterface.getCount()
+    const donationCountMadeByApp: { message: string; status: string; data: number } = await donationInterface.getCountMadeByApp()
     const plateletDonationCount: { message: string; status: string; data: number } = await plateletDonationInterface.getPlateletDonationCount()
     const volunteerCount: { message: string; status: string; data: number } = await donorInterface.getVolunteerCount()
 
@@ -45,6 +47,7 @@ export class LogsController extends Controller {
       statistics: {
         donorCount: donorCount.data,
         donationCount: donationCount.data,
+        donationCountMadeByApp: donationCountMadeByApp.data,
         plateletDonationCount: plateletDonationCount.data,
         volunteerCount: volunteerCount.data
       }

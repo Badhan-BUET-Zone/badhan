@@ -2,6 +2,7 @@ import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
 import { Condition } from 'mongoose'
 import {Schema} from 'mongoose'
+import { year2000TimeStamp } from '../../constants'
 
 export const insertDonation = async (phone: number, donorId: Schema.Types.ObjectId, date: number ): Promise<{data: IDonation, message: string, status: string}> => {
     const donation: IDonation = new DonationModel({phone, donorId, date})
@@ -58,6 +59,17 @@ export const getCount = async ():Promise<{message: string, status: string, data:
     const donationCount: number = await DonationModel.countDocuments()
     return {
         message: 'Fetched donation count',
+        status: 'OK',
+        data: donationCount
+    }
+}
+
+// Counts only donations actually recorded through the app, excluding the backdated
+// dummy donations inserted at donor creation time (all dated year2000TimeStamp).
+export const getCountMadeByApp = async ():Promise<{message: string, status: string, data: number}> => {
+    const donationCount: number = await DonationModel.countDocuments({ date: { $gt: year2000TimeStamp } })
+    return {
+        message: 'Fetched app donation count',
         status: 'OK',
         data: donationCount
     }
