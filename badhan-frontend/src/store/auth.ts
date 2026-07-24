@@ -48,6 +48,9 @@ const getters = {
   getAutoRedirectionPath: (state: AuthStoreStateInterface) => {
     return state.autoRedirectionPath
   },
+  getIsGuest: (state: AuthStoreStateInterface) => {
+    return state.isGuest
+  },
 }
 const mutations = {
   setAutoRedirectionPath (state: AuthStoreStateInterface, path: string) {
@@ -91,6 +94,12 @@ const mutations = {
   unsetLoginFlag (state: AuthStoreStateInterface) {
     state.isLoggedIn = false
   },
+  setGuestFlag (state: AuthStoreStateInterface) {
+    state.isGuest = true
+  },
+  unsetGuestFlag (state: AuthStoreStateInterface) {
+    state.isGuest = false
+  },
 }
 const actions = {
   async logout ({ commit, dispatch }: {commit: Commit, dispatch: Dispatch}) {
@@ -101,6 +110,7 @@ const actions = {
     }
     commit('setLoadingFalse')
     commit('unsetLoginFlag')
+    commit('unsetGuestFlag')
     commit('removeToken')
     ldb.token.clear()
     ldb.reset()
@@ -112,6 +122,7 @@ const actions = {
       dispatch('notification/notifySuccess', response.data.message)
     }
     commit('unsetLoginFlag')
+    commit('unsetGuestFlag')
     commit('removeToken')
     ldb.token.clear()
     ldb.reset()
@@ -169,8 +180,9 @@ const actions = {
     }
     return response.data.donor
   },
-  async guestLogin ({ dispatch }: {dispatch: Dispatch}) {
+  async guestLogin ({ commit, dispatch }: {commit: Commit, dispatch: Dispatch}) {
     enableGuestAPI()
+    commit('setGuestFlag')
     await dispatch('login', { phone: '123465', password: 'oseihgfweoisng', rememberFlag: false })
   },
 

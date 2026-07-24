@@ -1,6 +1,6 @@
 <template>
   <div v-if="showWatermark" class="env-watermark">
-    This is not the production database. Any operation that you do won't get updated on the main app
+    {{ watermarkMessage }}
   </div>
 </template>
 
@@ -8,8 +8,20 @@
 export default {
   name: 'EnvironmentWatermark',
   computed: {
-    showWatermark () {
+    isNonProduction () {
       return process.env.VUE_APP_ENVIRONMENT !== 'production'
+    },
+    isGuest () {
+      return this.$store.getters['getIsGuest']
+    },
+    showWatermark () {
+      return this.isNonProduction || this.isGuest
+    },
+    watermarkMessage () {
+      if (this.isGuest) {
+        return 'You are logged in as a guest. Any operation that you do won\'t get updated on the main app'
+      }
+      return 'This is not the production database. Any operation that you do won\'t get updated on the main app'
     }
   }
 }
@@ -23,8 +35,8 @@ export default {
   z-index: 9999;
   max-width: 280px;
   padding: 8px 12px;
-  background: rgba(238, 0, 0, 0.85);
-  color: #ffffff;
+  background: rgba(211, 211, 211, 0.85);
+  color: #333333;
   font-size: 12px;
   line-height: 1.4;
   border-radius: 6px;

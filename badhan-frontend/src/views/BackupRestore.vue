@@ -408,8 +408,12 @@ export default {
     PageTitle,
   },
   mounted () {
-    // local axios for backup API
-    this.backupAPIAxios = axios.create({ baseURL: 'http://localhost:4000' })
+    // local axios for backup API. In guest mode, hit the internal server's /guest
+    // routes so no real backup/restore/firebase/DB operation is performed.
+    const baseURL = this.$store.getters['getIsGuest']
+      ? 'http://localhost:4000/guest'
+      : 'http://localhost:4000'
+    this.backupAPIAxios = axios.create({ baseURL })
     this.loadBackups()
   }
 }

@@ -66,8 +66,28 @@ const logSchema = {
   required: ['status', 'statusCode', 'message', 'logs'],
 };
 
+const donationLogsSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    status: { type: 'string' },
+    statusCode: { const: HTTP_STATUS.OK },
+    message: { type: 'string' },
+    // { [year]: { [month]: count } } — nested integer counts keyed by year then month
+    countByYearMonth: {
+      type: 'object',
+      additionalProperties: {
+        type: 'object',
+        additionalProperties: { type: 'integer' },
+      },
+    },
+  },
+  required: ['status', 'statusCode', 'message', 'countByYearMonth'],
+};
+
 module.exports = {
   deleteLogsSchema,
   statisticsSchema,
   logSchema,
+  donationLogsSchema,
 };

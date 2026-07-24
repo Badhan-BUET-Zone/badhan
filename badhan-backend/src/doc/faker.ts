@@ -112,3 +112,89 @@ export const getExpireAt = ():string => {
   return '2021-11-15T11:23:54.231Z'
 }
 
+// --- Report fakers (guest donation/platelet reports + donation logs chart) ---
+interface FakeReportCount { month: number, year: number, count: number }
+interface FakeReportBloodGroup { bloodGroup: number, counts: FakeReportCount[] }
+
+// Every (month, year) pair spanned by [startDate, endDate], capped so a huge range
+// can't blow up the payload.
+const getMonthsInRange = (startDate: number, endDate: number): {month: number, year: number}[] => {
+  const months: {month: number, year: number}[] = []
+  const start: Date = new Date(startDate)
+  const end: Date = new Date(endDate)
+  let year: number = start.getFullYear()
+  let month: number = start.getMonth() + 1
+  const endYear: number = end.getFullYear()
+  const endMonth: number = end.getMonth() + 1
+  let guard: number = 0
+  while ((year < endYear || (year === endYear && month <= endMonth)) && guard < 120) {
+    months.push({ month, year })
+    month++
+    if (month > 12) { month = 1; year++ }
+    guard++
+  }
+  // Fall back to the current month so a bad/empty range still renders a table
+  if (months.length === 0) {
+    const now: Date = new Date()
+    months.push({ month: now.getMonth() + 1, year: now.getFullYear() })
+  }
+  return months
+}
+
+// [{ bloodGroup, counts: [{ month, year, count }] }] for the 8 blood groups (index 0..7)
+export const getDonationReport = (startDate: number, endDate: number): FakeReportBloodGroup[] => {
+  const months: {month: number, year: number}[] = getMonthsInRange(startDate, endDate)
+  const report: FakeReportBloodGroup[] = []
+  for (let bloodGroup: number = 0; bloodGroup < 8; bloodGroup++) {
+    report.push({
+      bloodGroup,
+      counts: months.map((m: {month: number, year: number}): FakeReportCount => ({ month: m.month, year: m.year, count: getRandomIndex(20) }))
+    })
+  }
+  return report
+}
+
+// Per-hall slice keyed by hall index (0..6), each { report, [firstCountKey]: number }
+export const getHallwiseDonationReport = (startDate: number, endDate: number, firstCountKey: string): Record<number, any> => {
+  const hallwiseReport: Record<number, any> = {}
+  halls.forEach((hall: number): void => {
+    hallwiseReport[hall] = {
+      report: getDonationReport(startDate, endDate),
+      [firstCountKey]: getRandomIndex(50)
+    }
+  })
+  return hallwiseReport
+}
+
+// Donations behind a single report cell: [{ donorId, name, bloodGroup, hall, date }].
+// bloodGroup/hall of -1 mean 'any' (the report's Total / All Halls column), so fake a
+// random value for those; otherwise echo the requested cell's value.
+export const getReportDonors = (startDate: number, endDate: number, bloodGroup: number, hall: number): {donorId: string, name: string, bloodGroup: number, hall: number, date: number}[] => {
+  const donors: {donorId: string, name: string, bloodGroup: number, hall: number, date: number}[] = []
+  for (let i: number = 0; i < getRandInt(1, 8); i++) {
+    donors.push({
+      donorId: getId(),
+      name: getName(),
+      bloodGroup: bloodGroup === -1 ? getBloodGroup() : bloodGroup,
+      hall: hall === -1 ? getHall() : hall,
+      date: getRandInt(startDate, endDate)
+    })
+  }
+  return donors
+}
+
+// { [year]: { [month]: count } } for the last 12 months (donation logs bar chart)
+export const getDonationCountByYearMonth = (): Record<string, Record<string, number>> => {
+  const result: Record<string, Record<string, number>> = {}
+  const now: Date = new Date()
+  const currentYear: number = now.getFullYear()
+  const currentMonth: number = now.getMonth() + 1
+  for (let i: number = 0; i < 12; i++) {
+    const month: number = (currentMonth - i - 1 + 12) % 12 + 1
+    const year: number = currentYear - (month > currentMonth ? 1 : 0)
+    if (!result[`${year}`]) result[`${year}`] = {}
+    result[`${year}`][`${month}`] = getRandomIndex(60)
+  }
+  return result
+}
+

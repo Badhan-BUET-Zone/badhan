@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Route, Tags } from 'tsoa'
+import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Query, Route, Tags } from 'tsoa'
 import * as faker from '../doc/faker'
 import { DESIGNATIONS_INDEX, HTTP_STATUS } from '../constants'
 
@@ -500,6 +500,115 @@ export class GuestController extends Controller {
         plateletDonationCount: faker.getRandomIndex(300),
         volunteerCount: faker.getRandomIndex(130)
       }
+    }
+  }
+
+  /** Guest donation logs grouped by year and month (bar chart) */
+  @Get('log/donations')
+  @Hidden()
+  public async getLogsDonations(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    countByYearMonth: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Donation logs fetched successfully',
+      countByYearMonth: faker.getDonationCountByYearMonth()
+    }
+  }
+
+  /** Guest whole blood donations report */
+  @Get('donations/report')
+  @Hidden()
+  public async getDonationsReport(
+    @Query() startDate: number,
+    @Query() endDate: number
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    report: any[]
+    firstDonationCount: number
+    hallwiseReport: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Donations report generated successfully',
+      report: faker.getDonationReport(startDate, endDate),
+      firstDonationCount: faker.getRandomIndex(150),
+      hallwiseReport: faker.getHallwiseDonationReport(startDate, endDate, 'firstDonationCount')
+    }
+  }
+
+  /** Guest donations behind a single whole blood report cell */
+  @Get('donations/report/donors')
+  @Hidden()
+  public async getDonationsReportDonors(
+    @Query() startDate: number,
+    @Query() endDate: number,
+    @Query() bloodGroup: number,
+    @Query() hall: number
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    donations: any[]
+  }> {
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Fetched donations with donors for the time period',
+      donations: faker.getReportDonors(startDate, endDate, bloodGroup, hall)
+    }
+  }
+
+  /** Guest platelet donations report */
+  @Get('platelet-donations/report')
+  @Hidden()
+  public async getPlateletDonationsReport(
+    @Query() startDate: number,
+    @Query() endDate: number
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    report: any[]
+    firstPlateletDonationCount: number
+    hallwiseReport: any
+  }> {
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Platelet donations report generated successfully',
+      report: faker.getDonationReport(startDate, endDate),
+      firstPlateletDonationCount: faker.getRandomIndex(75),
+      hallwiseReport: faker.getHallwiseDonationReport(startDate, endDate, 'firstPlateletDonationCount')
+    }
+  }
+
+  /** Guest donations behind a single platelet report cell */
+  @Get('platelet-donations/report/donors')
+  @Hidden()
+  public async getPlateletDonationsReportDonors(
+    @Query() startDate: number,
+    @Query() endDate: number,
+    @Query() bloodGroup: number,
+    @Query() hall: number
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    donations: any[]
+  }> {
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Fetched platelet donations with donors for the time period',
+      donations: faker.getReportDonors(startDate, endDate, bloodGroup, hall)
     }
   }
 

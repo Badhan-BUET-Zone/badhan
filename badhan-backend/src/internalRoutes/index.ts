@@ -365,6 +365,76 @@ router.post('/populate-local-db',
   commonQueue,
   handle(async () => populateController()))
 
+// --- Guest routes ---
+// Guest mode lets a visitor explore the Backup & Restore page without touching any real
+// infrastructure: no firebase storage, no mongodump/mongorestore, no local DB mutation.
+// Each guest endpoint mirrors its real counterpart's path and response shape but performs
+// no actual work, so a guest can click through every action safely.
+const guestBackupList = (): number[] => {
+  const now = new Date().getTime()
+  const day = 24 * 60 * 60 * 1000
+  return [now - day, now - 3 * day, now - 7 * day]
+}
+
+const guestListController = async () => {
+  const backups = guestBackupList().sort().reverse()
+  return new OKResponse200('Successfully fetched list of backups (guest)', { backups })
+}
+
+const guestBackupController = async () =>
+  new CreatedResponse201('Successfully created backup (guest)', { time: new Date().getTime() })
+
+const guestDeleteController = async ({ time }: { time: number }) =>
+  new OKResponse200('successfully deleted backup (guest)', { time })
+
+const guestRestoreController = async ({ production }: { production: boolean }) => {
+  if (production) {
+    return new ForbiddenError403('Production restore is not allowed', {})
+  }
+  return new OKResponse200('Backup successfully restored (guest)', {})
+}
+
+const guestPruneController = async () =>
+  new OKResponse200('Deleted all older databases (guest)', {})
+
+const guestPurgeController = async () =>
+  new OKResponse200('Successfully purged local database (guest)', {})
+
+const guestPopulateController = async () =>
+  new OKResponse200('Successfully populated local database (guest)', {})
+
+router.delete('/guest/backup/old',
+  rateLimiter.commonLimiter,
+  handle(async () => guestPruneController()))
+
+router.delete('/guest/backup/date/:date',
+  validateDELETEBackup,
+  rateLimiter.commonLimiter,
+  handle(async (req: Request) => guestDeleteController({ time: parseInt(req.params.date, 10) })))
+
+router.get('/guest/backup',
+  rateLimiter.commonLimiter,
+  handle(async () => guestListController()))
+
+router.post('/guest/backup',
+  rateLimiter.commonLimiter,
+  handle(async () => guestBackupController()))
+
+router.post('/guest/restore/:date',
+  validatePOSTRestore,
+  rateLimiter.commonLimiter,
+  handle(async (req: Request) => guestRestoreController({
+    production: req.query.production === 'true'
+  })))
+
+router.post('/guest/purge-local-db',
+  rateLimiter.commonLimiter,
+  handle(async () => guestPurgeController()))
+
+router.post('/guest/populate-local-db',
+  rateLimiter.commonLimiter,
+  handle(async () => guestPopulateController()))
+
 // Generate in-memory schema inconsistencies report (no filesystem writes)
 router.get('/schema-inconsistencies',
   commonQueue,
