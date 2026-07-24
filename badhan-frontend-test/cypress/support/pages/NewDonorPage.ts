@@ -43,14 +43,17 @@ export class NewDonorPage {
   setLastDonationDate(isoDate: string): void {
     cy.get('[data-cy="newDonorLastDonationTextFieldId"]').click();
     cy.get('[data-cy="newDonorLastDonationOkButtonId"]').should('be.visible');
-    cy.get('[data-cy="newDonorLastDonationTextFieldId"]').invoke('val', isoDate).trigger('input');
+    // force:true: the value is set programmatically, so the input event must fire even
+    // when the picker overlay's own buttons momentarily cover the readonly field
+    // (source of a flaky "element is being covered" error).
+    cy.get('[data-cy="newDonorLastDonationTextFieldId"]').invoke('val', isoDate).trigger('input', { force: true });
     cy.get('[data-cy="newDonorLastDonationOkButtonId"]').click();
   }
 
   setLastPlateletDonationDate(isoDate: string): void {
     cy.get('[data-cy="newDonorLastPlateletDonationTextFieldId"]').click();
     cy.get('[data-cy="newDonorLastPlateletDonationOkButtonId"]').should('be.visible');
-    cy.get('[data-cy="newDonorLastPlateletDonationTextFieldId"]').invoke('val', isoDate).trigger('input');
+    cy.get('[data-cy="newDonorLastPlateletDonationTextFieldId"]').invoke('val', isoDate).trigger('input', { force: true });
     cy.get('[data-cy="newDonorLastPlateletDonationOkButtonId"]').click();
   }
 
