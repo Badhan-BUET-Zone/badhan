@@ -3,6 +3,7 @@ const {
   postPlateletDonationSchema,
   deletePlateletDonationSchema,
   getPlateletDonationReportsSchema,
+  getPlateletReportDonorsSchema,
 } = require('../schemas/plateletDonations');
 
 /**
@@ -39,8 +40,28 @@ async function getPlateletDonationReport({ startDate, endDate, signInResponse })
   );
 }
 
+/**
+ * Get the platelet donations (with their donors) behind one cell of the platelet report.
+ * bloodGroup -1 means every blood group, hall -1 means every hall.
+ */
+async function getPlateletDonationReportDonors({
+  startDate,
+  endDate,
+  bloodGroup = -1,
+  hall = -1,
+  signInResponse,
+  schema = getPlateletReportDonorsSchema,
+}) {
+  return authedGet(
+    `/platelet-donations/report/donors?startDate=${startDate}&endDate=${endDate}&bloodGroup=${bloodGroup}&hall=${hall}`,
+    signInResponse,
+    schema
+  );
+}
+
 module.exports = {
   createPlateletDonation,
   deletePlateletDonation,
   getPlateletDonationReport,
+  getPlateletDonationReportDonors,
 };

@@ -9,7 +9,8 @@
                     dense
                     :headers="volunteerListHeaders"
                     :items="volunteers"
-                    :items-per-page="10"
+                    :items-per-page="-1"
+                    hide-default-footer
                     class="elevation-1 mt-2"
                     sort-by="logCount"
                     sort-desc
@@ -19,6 +20,7 @@
             <td>{{ item.name }}</td>
             <td>{{ item.hall | getHallName }}</td>
             <td>{{ item.studentId }}</td>
+            <td data-cy="volunteerRowDesignation">{{ item.designation | getDesignationString }}</td>
             <td>{{ item.logCount }}</td>
           </tr>
         </template>
@@ -45,6 +47,7 @@ export default {
         { text: 'Name', value: 'name' },
         { text: 'Hall', value: 'hall' },
         { text: 'Student ID', value: 'studentId' },
+        { text: 'Designation', value: 'designation' },
         { text: 'Activity Count', value: 'logCount' }
       ],
       volunteersShown: false,

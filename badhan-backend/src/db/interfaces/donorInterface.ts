@@ -221,7 +221,8 @@ export const findAllDesignatedDonors = async ():Promise<{data: IDonor[], message
     const data: IDonor[] = await DonorModel.find({}, {
         name: 1,
         hall: 1,
-        studentId: 1
+        studentId: 1,
+        designation: 1
     }).populate({path: 'logCount'})
     return {
         data,

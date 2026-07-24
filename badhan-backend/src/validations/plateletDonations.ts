@@ -1,6 +1,6 @@
 import { validate } from './index'
 import { validateBODYDate, validateBODYDonorId } from './validateRequest/validateBody'
-import { validateQUERYDonorId, validateQUERYDate, validateQUERYStartDate, validateQUERYEndDate } from './validateRequest/validateQuery'
+import { validateQUERYDonorId, validateQUERYDate, validateQUERYStartDate, validateQUERYEndDate, validateQUERYBloodGroup, validateQUERYHallOrAny } from './validateRequest/validateQuery'
 import {NextFunction, Request, Response} from "express";
 
 const validatePOSTPlateletDonations:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
@@ -18,8 +18,16 @@ const validateGETPlateletDonationsReport:(req: Request, res: Response, next: Nex
   validateQUERYEndDate
 ])
 
+const validateGETPlateletDonationsReportDonors:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
+  validateQUERYStartDate,
+  validateQUERYEndDate,
+  validateQUERYBloodGroup,
+  validateQUERYHallOrAny
+])
+
 export default {
   validatePOSTPlateletDonations,
   validateDELETEPlateletDonations,
-  validateGETPlateletDonationsReport
+  validateGETPlateletDonationsReport,
+  validateGETPlateletDonationsReportDonors
 }

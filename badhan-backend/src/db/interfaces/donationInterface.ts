@@ -2,7 +2,7 @@ import {IDonation} from "../models/Donation";
 import {DonationModel} from "../models/Donation";
 import { Condition } from 'mongoose'
 import {Schema} from 'mongoose'
-import { year2000TimeStamp } from '../../constants'
+import { year2000TimeStamp, BLOOD_GROUP_ANY, HALL_ANY } from '../../constants'
 
 export const insertDonation = async (phone: number, donorId: Schema.Types.ObjectId, date: number ): Promise<{data: IDonation, message: string, status: string}> => {
     const donation: IDonation = new DonationModel({phone, donorId, date})
@@ -216,6 +216,72 @@ export const getDonationCountByTimePeriodGroupedByHall = async (startTime: numbe
     })
     return {
         message: 'Fetched hallwise donation count by month and blood group',
+        status: 'OK',
+        data
+    }
+}
+
+export interface IDonationWithDonor {
+    donorId: string
+    name: string
+    bloodGroup: number
+    hall: number
+    date: number
+}
+
+// The drill-down behind a single cell of the donation report: every donation the cell
+// counted, with the donor behind it. The caller narrows to one cell by passing the same
+// time window the cell covers plus its blood group and hall (BLOOD_GROUP_ANY / HALL_ANY
+// stand for the report's 'Total' column and 'All Halls' view respectively).
+// One entry per donation, not per donor — a donor who donated twice appears twice, so
+// the list length always matches the count shown in the cell.
+export const getDonationsWithDonorByTimePeriod = async (startTime: number, endTime: number, bloodGroup: number, hall: number): Promise<{message: string, status: string, data: IDonationWithDonor[]}> =>{
+    const donorMatch: Record<string, number> = {}
+    if (bloodGroup !== BLOOD_GROUP_ANY) {
+        donorMatch['donor.bloodGroup'] = bloodGroup
+    }
+    if (hall !== HALL_ANY) {
+        donorMatch['donor.hall'] = hall
+    }
+
+    const data: IDonationWithDonor[] = await DonationModel.aggregate([
+        {
+            $match: {
+                date: {
+                    $gte: startTime,
+                    $lt: endTime
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "donors",
+                localField: "donorId",
+                foreignField: "_id",
+                as: "donor"
+            }
+        },
+        {
+            $unwind: "$donor"
+        },
+        ...(Object.keys(donorMatch).length === 0 ? [] : [{ $match: donorMatch }]),
+        {
+            $project: {
+                _id: 0,
+                donorId: "$donor._id",
+                name: "$donor.name",
+                bloodGroup: "$donor.bloodGroup",
+                hall: "$donor.hall",
+                date: "$date"
+            }
+        },
+        {
+            $sort: { name: 1, date: 1 }
+        }
+    ])
+
+    return {
+        message: 'Fetched donations with donors for the time period',
         status: 'OK',
         data
     }

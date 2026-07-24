@@ -55,7 +55,21 @@
                         </thead>
                         <tbody>
                             <tr v-for="singleMonth in report" :key="singleMonth.nameOfMonth" data-cy="wholeBloodRow">
-                                <td v-for="(key,index) in Object.keys(singleMonth)" :key="index">{{ singleMonth[key] }}</td>
+                                <td>{{ singleMonth.nameOfMonth }}</td>
+                                <td v-for="(bloodGroup, index) in bloodGroups" :key="index">
+                                    <DonationCountCell :count="singleMonth[bloodGroup]"
+                                        :startDate="singleMonth.startTimestamp" :endDate="singleMonth.endTimestamp"
+                                        :bloodGroup="index" :hall="selectedHallIndex" :donationType="'wholeBlood'"
+                                        :title="`${bloodGroup} whole blood donors, ${singleMonth.nameOfMonth}`"
+                                        :dataCy="'wholeBloodCell'" />
+                                </td>
+                                <td>
+                                    <DonationCountCell :count="singleMonth.total"
+                                        :startDate="singleMonth.startTimestamp" :endDate="singleMonth.endTimestamp"
+                                        :bloodGroup="BLOOD_GROUP_ANY" :hall="selectedHallIndex" :donationType="'wholeBlood'"
+                                        :title="`Whole blood donors, ${singleMonth.nameOfMonth}`"
+                                        :dataCy="'wholeBloodTotalCell'" />
+                                </td>
                             </tr>
                         </tbody>
                     </template>
@@ -76,7 +90,21 @@
                         </thead>
                         <tbody>
                             <tr v-for="singleMonth in plateletReport" :key="'p_'+singleMonth.nameOfMonth" data-cy="plateletRow">
-                                <td v-for="(key,index) in Object.keys(singleMonth)" :key="'p_'+index">{{ singleMonth[key] }}</td>
+                                <td>{{ singleMonth.nameOfMonth }}</td>
+                                <td v-for="(bloodGroup, index) in bloodGroups" :key="'p_'+index">
+                                    <DonationCountCell :count="singleMonth[bloodGroup]"
+                                        :startDate="singleMonth.startTimestamp" :endDate="singleMonth.endTimestamp"
+                                        :bloodGroup="index" :hall="selectedHallIndex" :donationType="'platelet'"
+                                        :title="`${bloodGroup} platelet donors, ${singleMonth.nameOfMonth}`"
+                                        :dataCy="'plateletCell'" />
+                                </td>
+                                <td>
+                                    <DonationCountCell :count="singleMonth.total"
+                                        :startDate="singleMonth.startTimestamp" :endDate="singleMonth.endTimestamp"
+                                        :bloodGroup="BLOOD_GROUP_ANY" :hall="selectedHallIndex" :donationType="'platelet'"
+                                        :title="`Platelet donors, ${singleMonth.nameOfMonth}`"
+                                        :dataCy="'plateletTotalCell'" />
+                                </td>
                             </tr>
                         </tbody>
                     </template>
@@ -99,9 +127,10 @@ import DatePicker from '@/components/UI Components/DatePicker.vue'
 import Selector from '@/components/UI Components/Selector.vue'
 import DonationsMonthlyBarChart from '@/components/DonationsMonthlyBarChart.vue'
 import ActivitySummary from '@/components/ActivitySummary.vue'
+import DonationCountCell from '@/views/Statistics/components/DonationCountCell.vue'
 import { Bar as BarChart } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
-import { DESIGNATIONS_INDEX, HTTP_STATUS, bloodGroups, halls, HALLS_INDEX } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, bloodGroups, halls, HALLS_INDEX, BLOOD_GROUP_ANY, HALL_ANY } from '@/mixins/constants'
 
 ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale)
 
@@ -119,7 +148,8 @@ export default {
       Selector,
       BarChart,
       DonationsMonthlyBarChart,
-      ActivitySummary
+      ActivitySummary,
+      DonationCountCell
     },
     data () {
       return {
@@ -132,10 +162,15 @@ export default {
         // The date range that produced the currently shown report (for the titles)
         reportStartDate: '',
         reportEndDate: '',
+        // The same range as timestamps — the bounds the cells drill down within
+        reportStartTimestamp: 0,
+        reportEndTimestamp: 0,
         // Full API responses cached so the hall dropdown can switch views without refetching
         wholeBloodData: null,
         plateletData: null,
         headers: ['Name of Month', ...bloodGroups, 'Total'],
+        bloodGroups,
+        BLOOD_GROUP_ANY,
     firstDonationOfDonorCount: 0,
     firstPlateletDonationOfDonorCount: 0,
       }
@@ -147,6 +182,10 @@ export default {
         hallOptions(){
             // 'All Halls' sentinel first, then every donor-assignable hall (excludes 'Attached')
             return [ALL_HALLS, ...halls.filter((_, index) => index !== HALLS_INDEX.ATTACHED)]
+        },
+        // The hall the cells drill down into: HALL_ANY when the whole report is shown
+        selectedHallIndex(){
+            return this.selectedHall === ALL_HALLS ? HALL_ANY : halls.indexOf(this.selectedHall)
         },
         // Range of the currently shown report, e.g. "(Jul 23, 2026 - Oct 23, 2026)"
         dateRangeText(){
@@ -257,6 +296,8 @@ export default {
             this.firstPlateletDonationOfDonorCount = 0
             this.reportStartDate = ''
             this.reportEndDate = ''
+            this.reportStartTimestamp = 0
+            this.reportEndTimestamp = 0
         },
     async generateReport(){
             const startDate = this.startDate
@@ -276,6 +317,8 @@ export default {
             // mount) fires clearReport during the fetch and would otherwise wipe these
             this.reportStartDate = startDate
             this.reportEndDate = endDate
+            this.reportStartTimestamp = startTimeStamp
+            this.reportEndTimestamp = endTimeStamp
 
             this.renderSelectedHall()
             this.reportLoader = false
@@ -307,6 +350,10 @@ export default {
                     totalForMonth += singleRow[bloodGroup]
                 })
                 singleRow['total'] = totalForMonth
+                // The window this row's cells drill down into. The backend groups months in
+                // UTC, so the month bounds are UTC too — and they are clipped to the report
+                // range, since a partial first/last month only counted donations inside it
+                Object.assign(singleRow, this.monthWindow(year, month))
                 tableEntries.push(singleRow)
                 cursor.setMonth(cursor.getMonth() + 1)
             }
@@ -322,9 +369,22 @@ export default {
                 lastTotalEntry[bloodGroup] = totalForOneBloodGroup
             })
             lastTotalEntry['total'] = sumTotalDonations
+            // The Total row spans the whole report range
+            lastTotalEntry['startTimestamp'] = this.reportStartTimestamp
+            lastTotalEntry['endTimestamp'] = this.reportEndTimestamp
             tableEntries.push(lastTotalEntry)
 
             return tableEntries
+        },
+        // UTC bounds of one month of the table, clipped to the report range so a cell's
+        // drill-down returns exactly the donations that cell counted
+        monthWindow(year, month){
+            const monthStart = Date.UTC(year, month - 1, 1)
+            const monthEnd = Date.UTC(year, month, 1)
+            return {
+                startTimestamp: Math.max(monthStart, this.reportStartTimestamp),
+                endTimestamp: Math.min(monthEnd, this.reportEndTimestamp)
+            }
         },
         // Renders both tables from cached data for the currently selected hall (no refetch)
         renderSelectedHall(){

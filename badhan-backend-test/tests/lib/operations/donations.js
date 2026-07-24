@@ -3,6 +3,7 @@ const {
   postDonationSchema,
   deleteDonationSchema,
   getReportsSchema,
+  getReportDonorsSchema,
 } = require('../schemas/donations');
 
 /**
@@ -39,8 +40,28 @@ async function getDonationReport({
   );
 }
 
+/**
+ * Get the donations (with their donors) behind one cell of the donation report.
+ * bloodGroup -1 means every blood group, hall -1 means every hall.
+ */
+async function getDonationReportDonors({
+  startDate,
+  endDate,
+  bloodGroup = -1,
+  hall = -1,
+  signInResponse,
+  schema = getReportDonorsSchema,
+}) {
+  return authedGet(
+    `/donations/report/donors?startDate=${startDate}&endDate=${endDate}&bloodGroup=${bloodGroup}&hall=${hall}`,
+    signInResponse,
+    schema
+  );
+}
+
 module.exports = {
   createDonation,
   deleteDonation,
   getDonationReport,
+  getDonationReportDonors,
 };

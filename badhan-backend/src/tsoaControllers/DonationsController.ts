@@ -234,5 +234,43 @@ export class DonationsController extends Controller {
       hallwiseReport
     }
   }
+
+  /**
+   * List the donations behind a single cell of the donation report (Super Admin only).
+   * The cell is identified by the time window it covers plus its blood group and hall;
+   * pass bloodGroup = -1 for the report's 'Total' column and hall = -1 for 'All Halls'.
+   */
+  @Get('report/donors')
+  @SuccessResponse(200, 'Fetched donations with donors for the time period')
+  @Example<{ status: string; statusCode: number; message: string; donations: any[] }>({
+    status: 'OK',
+    statusCode: HTTP_STATUS.OK,
+    message: 'Fetched donations with donors for the time period',
+    donations: [{
+      donorId: '5e901d56effc590017712345',
+      name: 'Mr. Donor',
+      bloodGroup: 2,
+      hall: 5,
+      date: 1611100800000
+    }]
+  })
+  @Middlewares([donationValidator.validateGETDonationsReportDonors, rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
+  public async getDonationsReportDonors(
+    @Query() startDate: number,
+    @Query() endDate: number,
+    @Query() bloodGroup: number,
+    @Query() hall: number
+  ): Promise<{ status: string; statusCode: number; message: string; donations?: any[] }> {
+    const donationsResult: {data: donationInterface.IDonationWithDonor[], message: string, status: string} =
+      await donationInterface.getDonationsWithDonorByTimePeriod(startDate, endDate, bloodGroup, hall)
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: donationsResult.message,
+      donations: donationsResult.data
+    }
+  }
 }
 

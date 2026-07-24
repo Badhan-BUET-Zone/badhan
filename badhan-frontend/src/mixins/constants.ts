@@ -36,12 +36,20 @@ export const DESIGNATIONS_INDEX = {
 
 export const bloodGroups: string[] = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
 
+// The placeholder timestamp (2000-01-01T00:00:00Z) a comment carries when it has never
+// been updated. Rendered as "Never Updated" rather than a date.
+export const COMMENT_NEVER_UPDATED_TIME = 946684800000
+
 // -1 is one value with two unrelated meanings in this project, so it gets two names.
 // Sent to the search endpoints to mean "match any blood group" — the backend's
 // BLOOD_GROUP_ANY, and the only one that crosses the API boundary.
 export const BLOOD_GROUP_ANY = -1
 // Rendered to the user as "All Negative" — a display bucket, not a wildcard.
 export const BLOOD_GROUP_ALL_NEGATIVE = -1
+
+// Sent to the donation report drill-down endpoints to mean "match any hall" — the
+// backend's HALL_ANY. Corresponds to the report's 'All Halls' view.
+export const HALL_ANY = -1
 
 // The three encoded rules that the raw hall comparisons express.
 // The boundary is "whichever hall sits last in the list before Attached"; keeping it in

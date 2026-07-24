@@ -2,6 +2,7 @@ import {IPlateletDonation} from "../models/PlateletDonation";
 import {PlateletDonationModel} from "../models/PlateletDonation";
 import { Condition } from 'mongoose'
 import {Schema} from 'mongoose'
+import { BLOOD_GROUP_ANY, HALL_ANY } from '../../constants'
 
 export const insertPlateletDonation = async (phone: number, donorId: Schema.Types.ObjectId, date: number ): Promise<{data: IPlateletDonation, message: string, status: string}> => {
     const plateletDonation: IPlateletDonation = new PlateletDonationModel({phone, donorId, date})
@@ -204,6 +205,69 @@ export const getPlateletDonationCountByTimePeriodGroupedByHall = async (startTim
     })
     return {
         message: 'Fetched hallwise platelet donation count by month and blood group',
+        status: 'OK',
+        data
+    }
+}
+
+export interface IPlateletDonationWithDonor {
+    donorId: string
+    name: string
+    bloodGroup: number
+    hall: number
+    date: number
+}
+
+// Platelet twin of donationInterface.getDonationsWithDonorByTimePeriod: the drill-down
+// behind a single cell of the platelet report. One entry per donation, so the list
+// length always matches the count shown in the cell.
+export const getPlateletDonationsWithDonorByTimePeriod = async (startTime: number, endTime: number, bloodGroup: number, hall: number): Promise<{message: string, status: string, data: IPlateletDonationWithDonor[]}> =>{
+    const donorMatch: Record<string, number> = {}
+    if (bloodGroup !== BLOOD_GROUP_ANY) {
+        donorMatch['donor.bloodGroup'] = bloodGroup
+    }
+    if (hall !== HALL_ANY) {
+        donorMatch['donor.hall'] = hall
+    }
+
+    const data: IPlateletDonationWithDonor[] = await PlateletDonationModel.aggregate([
+        {
+            $match: {
+                date: {
+                    $gte: startTime,
+                    $lt: endTime
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "donors",
+                localField: "donorId",
+                foreignField: "_id",
+                as: "donor"
+            }
+        },
+        {
+            $unwind: "$donor"
+        },
+        ...(Object.keys(donorMatch).length === 0 ? [] : [{ $match: donorMatch }]),
+        {
+            $project: {
+                _id: 0,
+                donorId: "$donor._id",
+                name: "$donor.name",
+                bloodGroup: "$donor.bloodGroup",
+                hall: "$donor.hall",
+                date: "$date"
+            }
+        },
+        {
+            $sort: { name: 1, date: 1 }
+        }
+    ])
+
+    return {
+        message: 'Fetched platelet donations with donors for the time period',
         status: 'OK',
         data
     }

@@ -71,6 +71,32 @@ const getPlateletDonationReportsSchema = {
   required: ['status', 'statusCode', 'message', 'report', 'firstPlateletDonationCount', 'hallwiseReport'],
 };
 
+const getPlateletReportDonorsSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    status: { type: 'string' },
+    statusCode: { const: HTTP_STATUS.OK },
+    message: { type: 'string' },
+    donations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          donorId: { type: 'string' },
+          name: { type: 'string' },
+          bloodGroup: { type: 'integer' },
+          hall: { type: 'integer' },
+          date: { type: 'integer' },
+        },
+        required: ['donorId', 'name', 'bloodGroup', 'hall', 'date'],
+      },
+    },
+  },
+  required: ['status', 'statusCode', 'message', 'donations'],
+};
+
 const invalidRequestSchema = {
   type: 'object',
   additionalProperties: false,
@@ -128,6 +154,7 @@ const deletePlateletDonationSchema = {
 
 module.exports = {
   getPlateletDonationReportsSchema,
+  getPlateletReportDonorsSchema,
   invalidRequestSchema,
   postPlateletDonationSchema,
   deletePlateletDonationSchema,

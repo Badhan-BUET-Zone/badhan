@@ -477,6 +477,30 @@ const handleGETPlateletDonationsReport = async (payload: GETPlateletDonationsRep
   }
 }
 
+// Drill-down behind one cell of a donation report table: the cell's time window plus
+// its blood group (-1 for the 'Total' column) and hall (-1 for 'All Halls').
+export interface GETDonationsReportDonorsPayloadInterface {
+  startDate: number,
+  endDate: number,
+  bloodGroup: number,
+  hall: number
+}
+const handleGETDonationsReportDonors = async (payload: GETDonationsReportDonorsPayloadInterface) => {
+  try {
+    return await badhanAxios.get('/donations/report/donors', { params: payload })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleGETPlateletDonationsReportDonors = async (payload: GETDonationsReportDonorsPayloadInterface) => {
+  try {
+    return await badhanAxios.get('/platelet-donations/report/donors', { params: payload })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 export interface GETDonorsNewPayloadInterface {
   startTime: number
   endTime: number
@@ -668,6 +692,8 @@ export {
   handleDELETEPlateletDonations,
   handleGETDonationsReport,
   handleGETPlateletDonationsReport,
+  handleGETDonationsReportDonors,
+  handleGETPlateletDonationsReportDonors,
   handleGETDonorsNew,
   handlePOSTCallRecord,
   handleDELETECallRecord,

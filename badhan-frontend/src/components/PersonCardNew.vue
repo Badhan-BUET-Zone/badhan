@@ -75,8 +75,7 @@
             <br>
             <span><b>Blood Donations:</b> {{ donationCount }}</span><br>
             <span><b>Platelet Donations:</b> {{ plateletDonationCount }}</span>
-            <span v-if="comment!==undefined && comment!==null && comment.length !==0"><VueMarkdown>**Comment:** {{comment }} (Last Updated:
-              {{commentTime == 0 ? 'Unknown' : new Date(commentTime).toLocaleString() }} )</VueMarkdown> </span>
+            <span v-if="comment!==undefined && comment!==null && comment.length !==0"><VueMarkdown>**Comment:** {{comment }} {{ commentUpdatedText }}</VueMarkdown> </span>
           </v-col>
         </v-row>
         <div class="mt-1">
@@ -142,7 +141,7 @@ import VueMarkdown from 'vue-markdown'
 import DatePicker from '@/components/UI Components/DatePicker.vue'
 import { directCall, fixBackSlash } from '@/mixins/helpers'
 import { handlePOSTCallRecord, handlePOSTDonations, handlePOSTPlateletDonations } from '@/api'
-import { BLOOD_GROUP_ANY, HTTP_STATUS } from '@/mixins/constants'
+import { BLOOD_GROUP_ANY, HTTP_STATUS, COMMENT_NEVER_UPDATED_TIME } from '@/mixins/constants'
 
 export default {
   props: {
@@ -254,6 +253,12 @@ export default {
   computed: {
     totalDonations () {
       return (this.donationCount || 0) + (this.plateletDonationCount || 0)
+    },
+    commentUpdatedText () {
+      if (this.commentTime === 0 || this.commentTime === COMMENT_NEVER_UPDATED_TIME) {
+        return '(Never Updated)'
+      }
+      return '(Last Updated: ' + new Date(this.commentTime).toLocaleString() + ' )'
     }
   },
   data: () => {

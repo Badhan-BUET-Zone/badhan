@@ -26,6 +26,8 @@ describe('Statistics - All Members tab', () => {
     // Wait for table to render and assert at least one row
     stats.assertAllMembersTableVisible();
     stats.assertAllMembersHasRows();
+    stats.assertAllMembersNotPaginated();
+    stats.assertAllMembersDesignationColumn();
   });
 });
 

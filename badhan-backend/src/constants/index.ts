@@ -49,6 +49,9 @@ export const BLOOD_GROUPS_INDEX = {
 // Sentinel accepted by the search endpoints to mean "match any blood group".
 export const BLOOD_GROUP_ANY: number = -1
 
+// Sentinel accepted by the report drill-down endpoints to mean "match any hall".
+export const HALL_ANY: number = -1
+
 // Derived sets — the single source of truth for the validators.
 // Module-local: it exists only to feed HALL_INDICES_ALLOWED_FOR_DONOR.
 const HALL_INDICES_ALL: number[] = Object.values(HALLS_INDEX)

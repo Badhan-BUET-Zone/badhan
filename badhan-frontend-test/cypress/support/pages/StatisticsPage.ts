@@ -45,6 +45,18 @@ export class StatisticsPage {
     cy.get('[data-cy="statisticsAllVolunteersTableId"] [data-cy="volunteerRow"]').its('length').should('be.gte', 1);
   }
 
+  assertAllMembersDesignationColumn(): void {
+    cy.get('[data-cy="statisticsAllVolunteersTableId"] [data-cy="volunteerRowDesignation"]')
+      .should('have.length.gte', 1)
+      .each(($cell) => {
+        expect(['Donor', 'Volunteer', 'Hall Admin', 'Super Admin']).to.include($cell.text().trim());
+      });
+  }
+
+  assertAllMembersNotPaginated(): void {
+    cy.get('[data-cy="statisticsAllVolunteersTableId"] .v-data-footer').should('not.exist');
+  }
+
   assertAnyDateLogDetailExists(): void {
     cy.get('[data-cy="dateLogDetailsButton"]').its('length').should('be.gte', 1);
   }
@@ -65,6 +77,21 @@ export class StatisticsPage {
 
   assertHallSelectorValue(hallLabel: string): void {
     cy.get('[data-cy="report-hall-select"]').should('have.attr', 'data-selected-text', hallLabel);
+  }
+
+  // The last row of the whole blood table is the 'Total' row; its 'Total' column cell
+  // is the one cell guaranteed to be non-zero whenever the report has any donation
+  openWholeBloodGrandTotalPopover(): void {
+    cy.get('[data-cy="wholeBloodRow"]').last().find('[data-cy="wholeBloodTotalCell"]').click();
+  }
+
+  assertPopoverDonorsListed(): void {
+    cy.get('[data-cy="donationCountCellList"]').should('be.visible');
+    cy.get('[data-cy="donationCountCellDonor"]').its('length').should('be.gte', 1);
+  }
+
+  clickFirstPopoverDonor(): void {
+    cy.get('[data-cy="donationCountCellDonor"]').first().click();
   }
 
   selectReportHall(hallLabel: string): void {

@@ -180,5 +180,43 @@ export class PlateletDonationsController extends Controller {
       hallwiseReport
     }
   }
+
+  /**
+   * List the platelet donations behind a single cell of the platelet report (Super Admin only).
+   * The cell is identified by the time window it covers plus its blood group and hall;
+   * pass bloodGroup = -1 for the report's 'Total' column and hall = -1 for 'All Halls'.
+   */
+  @Get('report/donors')
+  @SuccessResponse(200, 'Fetched platelet donations with donors for the time period')
+  @Example<{ status: string; statusCode: number; message: string; donations: any[] }>({
+    status: 'OK',
+    statusCode: HTTP_STATUS.OK,
+    message: 'Fetched platelet donations with donors for the time period',
+    donations: [{
+      donorId: '5e901d56effc590017712345',
+      name: 'Mr. Donor',
+      bloodGroup: 2,
+      hall: 5,
+      date: 1611100800000
+    }]
+  })
+  @Middlewares([plateletDonationValidator.validateGETPlateletDonationsReportDonors, rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
+  public async getPlateletDonationsReportDonors(
+    @Query() startDate: number,
+    @Query() endDate: number,
+    @Query() bloodGroup: number,
+    @Query() hall: number
+  ): Promise<{ status: string; statusCode: number; message: string; donations?: any[] }> {
+    const donationsResult: { data: plateletDonationInterface.IPlateletDonationWithDonor[]; message: string; status: string } =
+      await plateletDonationInterface.getPlateletDonationsWithDonorByTimePeriod(startDate, endDate, bloodGroup, hall)
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: donationsResult.message,
+      donations: donationsResult.data
+    }
+  }
 }
 

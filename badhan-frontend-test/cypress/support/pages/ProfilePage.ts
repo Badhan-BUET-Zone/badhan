@@ -28,6 +28,16 @@ export class ProfilePage {
       .click();
   }
 
+  // The picker opens on the month of the currently selected date; stepping back one
+  // month is needed when the wanted day falls in the previous one (e.g. 'yesterday'
+  // while today is the 1st)
+  goToPreviousMonthInDonationDatePicker(): void {
+    cy.get('[data-cy="personDetailsNewDonationDatePickerId"]')
+      .find('.v-date-picker-header button')
+      .first()
+      .click();
+  }
+
   confirmDonationDate(): void {
     cy.get('[data-cy="personDetailsNewDonationDatePickerOkButtonId"]').click();
   }

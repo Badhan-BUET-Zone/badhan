@@ -1,7 +1,7 @@
 import { query, ValidationChain } from 'express-validator'
 import { checkTimeStamp, checkTimeStampMessage } from './others'
 import mongoose from 'mongoose'
-import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
+import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
 
 export const validateQUERYStartTime: ValidationChain = query('startTime')
   .exists().withMessage('startTime is required')
@@ -27,6 +27,13 @@ export const validateQUERYHall: ValidationChain = query('hall')
   .exists().not().isEmpty().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')
   .isIn(HALL_INDICES_ALLOWED_FOR_DONOR).withMessage('Please input an allowed hall number')
+
+// Same as validateQUERYHall, but also accepts the HALL_ANY sentinel used by the
+// report drill-down when the report is being viewed for 'All Halls'.
+export const validateQUERYHallOrAny: ValidationChain = query('hall')
+  .exists().not().isEmpty().withMessage('hall is required')
+  .isInt().toInt().withMessage('hall must be integer')
+  .isIn([HALL_ANY, ...HALL_INDICES_ALLOWED_FOR_DONOR]).withMessage('Please input an allowed hall number or -1')
 
 export const validateQUERYBatch: ValidationChain = query('batch')
   .exists().withMessage('Batch is required')
