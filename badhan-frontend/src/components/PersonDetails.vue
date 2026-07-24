@@ -158,7 +158,7 @@
                     <v-textarea id="donorDetailsCommentTextBoxId" data-cy="donorDetailsCommentTextBoxId" rounded dense class="mt-5" name="comment" outlined v-model="comment"
                                 label="Comment" auto-grow
                                 :disabled="commentLoaderFlag" :rows="1"
-                                :messages="'Last Updated: '+ (commentTime==0?'Unknown':new Date(commentTime).toDateString()+' on '+new Date(commentTime).toLocaleTimeString())">
+                                :messages="'Last Updated: '+ (commentTime==0?'Unknown':new Date(commentTime).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })+' on '+new Date(commentTime).toLocaleTimeString())">
                     </v-textarea>
 
                     <v-btn id="donorDetailsCommentSaveButtonId" data-cy="donorDetailsCommentSaveButtonId" color="primary" rounded small

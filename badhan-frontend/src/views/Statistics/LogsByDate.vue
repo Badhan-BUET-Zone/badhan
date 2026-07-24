@@ -61,7 +61,7 @@ export default {
     let logs = response.data.logs.map(log=>{
       return {
         ...log,
-        dateString: new Date(log.date).toLocaleString('en-US', options)
+        dateString: new Date(log.date).toLocaleString('en-GB', options)
       }})
     this.logs = logs.reduce((acc, val) => {
       let o = acc.find((obj) => obj.dateString === val.dateString);

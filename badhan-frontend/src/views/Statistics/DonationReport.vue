@@ -187,10 +187,10 @@ export default {
         selectedHallIndex(){
             return this.selectedHall === ALL_HALLS ? HALL_ANY : halls.indexOf(this.selectedHall)
         },
-        // Range of the currently shown report, e.g. "(Jul 23, 2026 - Oct 23, 2026)"
+        // Range of the currently shown report, e.g. "(23 Jul 2026 - 23 Oct 2026)"
         dateRangeText(){
             if (!this.reportStartDate || !this.reportEndDate) return ''
-            const format = (dateStr) => new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+            const format = (dateStr) => new Date(dateStr).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
             return `(${format(this.reportStartDate)} - ${format(this.reportEndDate)})`
         },
         // Per-hall total = whole blood + platelet donations, computed from the cached hallwise data

@@ -64,7 +64,7 @@ export default {
   },
   mounted () {
     const dateObject = new Date(this.callRecord.date)
-    this.dateString = dateObject.toDateString()
+    this.dateString = dateObject.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
     this.time = dateObject.toLocaleTimeString()
   }
 }
