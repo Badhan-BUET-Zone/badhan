@@ -196,17 +196,19 @@ export default {
         // Per-hall total = whole blood + platelet donations, computed from the cached hallwise data
         hallChartData(){
             const hallNames = this.hallOptions.slice(1) // drop 'All Halls'
-            const totals = hallNames.map(name => {
-                const hallIndex = halls.indexOf(name)
-                return this.sumHallTotal(this.wholeBloodData, hallIndex) + this.sumHallTotal(this.plateletData, hallIndex)
-            })
+            const sorted = hallNames
+                .map(name => {
+                    const hallIndex = halls.indexOf(name)
+                    return { name, total: this.sumHallTotal(this.wholeBloodData, hallIndex) + this.sumHallTotal(this.plateletData, hallIndex) }
+                })
+                .sort((a, b) => b.total - a.total) // high to low
             return {
-                labels: hallNames,
+                labels: sorted.map(h => h.name),
                 datasets: [{
                     label: 'Total Donations',
                     backgroundColor: BAR_COLOR,
                     borderRadius: 4,
-                    data: totals
+                    data: sorted.map(h => h.total)
                 }]
             }
         },
@@ -215,15 +217,19 @@ export default {
         },
         // Per-blood-group total = whole blood + platelet across all halls, from the cached reports
         bloodGroupChartData(){
-            const totals = bloodGroups.map((_, bloodGroupIndex) =>
-                this.sumBloodGroupTotal(this.wholeBloodData, bloodGroupIndex) + this.sumBloodGroupTotal(this.plateletData, bloodGroupIndex))
+            const sorted = bloodGroups
+                .map((name, bloodGroupIndex) => ({
+                    name,
+                    total: this.sumBloodGroupTotal(this.wholeBloodData, bloodGroupIndex) + this.sumBloodGroupTotal(this.plateletData, bloodGroupIndex)
+                }))
+                .sort((a, b) => b.total - a.total) // high to low
             return {
-                labels: bloodGroups,
+                labels: sorted.map(g => g.name),
                 datasets: [{
                     label: 'Total Donations',
                     backgroundColor: BAR_COLOR,
                     borderRadius: 4,
-                    data: totals
+                    data: sorted.map(g => g.total)
                 }]
             }
         },
