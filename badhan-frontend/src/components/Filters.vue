@@ -24,6 +24,10 @@
           </li>
           <li><b>Available: </b>Available only if last blood donation was before 120 days AND last platelet donation was before 12 days.</li>
           <li><b>Not Available: </b>Not available if blood donated within 120 days OR platelet donated within 12 days.</li>
+          <li><b>Search archived donors: </b>Archived donors are kept out of every ordinary search. When this is on,
+            the search returns archived donors <i>only</i>. It is turned on from Super Admin settings and switches
+            itself off 24 hours later.
+          </li>
         </ul>
       </div>
       </HelpTooltip>
@@ -118,7 +122,17 @@
             </v-col>
           </v-row>
 
-          
+          <!--        A read-only mirror of the super admin setting, not an input-->
+          <v-checkbox
+            v-if="$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN"
+            id="filterArchiveSearchCheckboxId"
+            data-cy="filterArchiveSearchCheckboxId"
+            dense
+            disabled
+            :input-value="archiveSearchEnabled"
+            label="Search archived donors"
+            :messages="'Changeable only from Super Admin settings'"
+          />
 
           <!--        A button to reset the form fields-->
           <v-btn rounded color="secondary" @click="clearFields" class="ma-2">
@@ -153,6 +167,7 @@ import TextField from '@/components/UI Components/TextField.vue'
 import HelpTooltip from '@/components/UI Components/HelpTooltip'
 import Selector from '@/components/UI Components/Selector.vue'
 import { DESIGNATIONS_INDEX, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
+import ldb from '@/localDatabase'
 import { maxLength, minLength, numeric, required } from 'vuelidate/lib/validators'
 
 export default {
@@ -198,7 +213,8 @@ export default {
         availability: this.availability,
         notAvailability: this.notAvailability,
         address: this.address,
-  availableToAll: this.radios
+  availableToAll: this.radios,
+        archiveFlag: this.archiveSearchEnabled
       })
       this.isSearchLoading = false
     }
@@ -225,7 +241,21 @@ export default {
     }
   },
   computed: {
-    
+    // The whole enforcement mechanism: the backend takes archiveFlag at face value, so a
+    // non-super-admin's payload is hardcoded to false here rather than implied by the
+    // hidden control. Also where the TTL write-back happens — the store is seeded once at
+    // boot, so a window left open past the 24 h would otherwise keep reporting `true`
+    // after ldb has already expired the key. The commit can only fire on the true→false
+    // edge, after which the next evaluation does nothing, so it cannot loop.
+    archiveSearchEnabled () {
+      const stored = ldb.archiveSearch.load()
+      const inStore = this.$store.getters['archiveSearch/getArchiveSearchEnabled']
+      if (!stored && inStore) {
+        this.$store.commit('archiveSearch/setArchiveSearchEnabled', false)
+      }
+      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN &&
+             inStore && stored
+    },
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
         if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
@@ -274,6 +304,8 @@ export default {
       // imported constants
       halls,
       bloodGroups,
+      // exposed for the template, which cannot see module imports
+      DESIGNATIONS_INDEX,
 
       showTooltip: false,
       showFilterHelpTooltip: false,

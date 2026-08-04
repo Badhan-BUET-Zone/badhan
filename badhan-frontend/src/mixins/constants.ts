@@ -63,6 +63,19 @@ export const isHallUnknown = (hall: number): boolean => hall === HALLS_INDEX.UNK
 // exclusive index that names no hall and so no constant substitution alone can explain it.
 export const restrictedHallNames = (): string[] => halls.slice(0, HALLS_INDEX.ATTACHED)
 
+// The most donors the search-results footer will sweep in one go. The sweep is two
+// requests per donor, so 200 is already 400 sequential round trips — past that the failure
+// mode is not regret but a laptop closed mid-run, leaving the donors already patched
+// patched. Over the cap the button refuses rather than chunking.
+export const ARCHIVE_BATCH_LIMIT = 200
+
+// The query keys every generated search link carries with an always-non-empty value, so a
+// shared link can be told apart from an arbitrary query string. `name`, `batch` and
+// `address` are excluded because they serialize to `?name=` when empty, and `archiveFlag`
+// is excluded so links generated before it existed still auto-search. A presence check on
+// these beats counting keys, which would have to move every time a filter is added.
+export const SHARE_LINK_MARKER_KEYS = ['hall', 'radios', 'bloodGroup', 'availability', 'notAvailability']
+
 export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,

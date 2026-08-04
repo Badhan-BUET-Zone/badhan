@@ -55,6 +55,8 @@
                         >
                           <template v-slot:activator="{ attrs }">
                             <v-btn
+                              id="homeShareButtonId"
+                              data-cy="homeShareButtonId"
                               small
                               color="secondary"
                               icon
@@ -71,6 +73,12 @@
                   </v-alert>
                 </div>
               </transition>
+              <!-- keys off the flag that produced these results, not the current setting,
+                   so it can never claim the archive while live donors are on screen -->
+              <v-alert v-if="archiveFlag" data-cy="archivedResultsBanner"
+                       dense text type="info" class="rounded-xl">
+                Showing archived donors
+              </v-alert>
               <transition name="slide-up" appear>
                 <div :key="`actions-${searchResultKey}`">
                   <transition-group name="staggered-fade" appear>
@@ -91,14 +99,26 @@
                       </transition-group>
                     </div>
                   </transition-group>
-                  <transition name="fade-in" appear>
-                    <v-btn id="olderBatchResultsButton" v-if="isMorePersonGroupsAvailable" small color="secondary" rounded class="ma-2" @click="concatenateMorePersonGroups">
-                      <v-icon left>
-                        mdi-more
-                      </v-icon>
-                      Show results from older batches
+                  <!-- the hint is caption text rather than a :messages prop, which v-btn
+                       has no support for: an unexplained disabled button is exactly what
+                       the refusal must not be -->
+                  <div v-if="isArchiveBatchVisible" class="ma-2">
+                    <v-btn
+                      id="archiveTheseDonorsButtonId"
+                      data-cy="archiveTheseDonorsButtonId"
+                      small rounded color="warning"
+                      :loading="archiveBatchLoader"
+                      :disabled="archiveBatchLoader || isArchiveBatchOverLimit"
+                      @click="archiveTheseDonorsClicked"
+                    >
+                      <v-icon left>{{ archiveFlag ? 'mdi-archive-arrow-up' : 'mdi-archive-arrow-down' }}</v-icon>
+                      {{ archiveBatchProgressLabel }}
                     </v-btn>
-                  </transition>
+                    <div v-if="archiveBatchHint" data-cy="archiveBatchHintId"
+                         class="caption text--secondary mt-1">
+                      {{ archiveBatchHint }}
+                    </div>
+                  </div>
                 </div>
               </transition>
             </div>
@@ -114,9 +134,9 @@
 
 <script>
 import PersonCardNew from '@/components/PersonCardNew'
-import { BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HTTP_STATUS, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
+import { ARCHIVE_BATCH_LIMIT, BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HTTP_STATUS, SHARE_LINK_MARKER_KEYS, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
-import { isGuestEnabled, handleGETSearchV3 } from '@/api'
+import { isGuestEnabled, handleGETDonors, handleGETSearchV3, handlePATCHDonors } from '@/api'
 import { convertObjectToCSV, textFileDownloadInWeb, processPersonsForReport } from '@/mixins/helpers'
 import Filters from '@/components/Filters'
 import { environmentService } from '@/mixins/environment'
@@ -127,6 +147,28 @@ export default {
   computed: {
     isGuestEnabled () {
       return isGuestEnabled()
+    },
+    // Visibility and enablement are separate on purpose: over the cap the button is still
+    // rendered, so the refusal can explain itself instead of the control vanishing
+    isArchiveBatchVisible () {
+      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN &&
+             this.searchResultShown && this.persons.length > 0
+    },
+    isArchiveBatchOverLimit () {
+      return this.persons.length > ARCHIVE_BATCH_LIMIT
+    },
+    archiveBatchHint () {
+      return this.isArchiveBatchOverLimit
+        ? `Narrow your search to ${ARCHIVE_BATCH_LIMIT} donors or fewer to archive in bulk`
+        : ''
+    },
+    // 2N requests means even a capped sweep is long enough that a bare spinner would read
+    // as a hang
+    archiveBatchProgressLabel () {
+      if (this.archiveBatchLoader) {
+        return `${this.archiveFlag ? 'Unarchiving' : 'Archiving'} ${this.archiveBatchDone} / ${this.persons.length}…`
+      }
+      return this.archiveFlag ? 'Unarchive these donors?' : 'Archive these donors?'
     },
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
@@ -169,7 +211,9 @@ export default {
       hall: halls[this.$store.getters['getHall']],
       availability: true,
       notAvailability: false,
-  
+      // the flag that produced the results on screen — not the live setting
+      archiveFlag: false,
+
       download: false,
 
       // GUI flags
@@ -192,9 +236,10 @@ export default {
       searchLoaderFlag: false,
       searchResultShown: false,
       personGroups: [],
-      morePersonGroups: [],
-      isMorePersonGroupsAvailable: false,
       searchedHall: 0,
+
+      archiveBatchLoader: false,
+      archiveBatchDone: 0,
 
       persons: [],
       numOfDonor: 0,
@@ -229,9 +274,15 @@ export default {
     this.notAvailability = query.notAvailability === 'true'
     this.radios = query.radios === 'SpecifyHall' ? 'SpecifyHall' : 'AvailableToAll'
     this.download = query.download === 'true'
-  
+    // Honoured verbatim: no designation check and no setting check. `=== 'true'` makes
+    // both the absent key and the string 'false' resolve to false, so a link generated
+    // before this filter existed reopens on the live roster.
+    this.archiveFlag = query.archiveFlag === 'true'
 
-    if (Object.keys(this.$route.query).length === 9) {
+    // A statement about the link's shape rather than its size: counting keys would have
+    // to change with every future filter, silently breaking links already in circulation
+    const isSharedSearchLink = SHARE_LINK_MARKER_KEYS.every(key => query[key] !== undefined)
+    if (isSharedSearchLink) {
       await this.searchClicked()
       if (this.download) {
         this.downloadInWeb()
@@ -275,7 +326,7 @@ export default {
         isNotAvailable: payload.notAvailability,
         address: payload.inputAddress,
         availableToAll: payload.availableToAll,
-        
+        archiveFlag: payload.archiveFlag
       }
 
       const response = await handleGETSearchV3(sendData)
@@ -316,23 +367,15 @@ export default {
         })
       })
 
-      const countOfBatchesToShow = 5;
-
+      // every match is rendered: a sweep button next to a partially shown list would
+      // archive batches the user never scrolled to
       sortedBatches.sort(this.compareObject)
-      this.personGroups = sortedBatches.slice(0,countOfBatchesToShow)
-      this.morePersonGroups = sortedBatches.slice(countOfBatchesToShow)
-      this.isMorePersonGroupsAvailable = this.morePersonGroups.length !== 0
+      this.personGroups = sortedBatches
 
       // Show new results with animation
       this.searchResultShown = true
       
       this.searchedHall = payload.hall
-    },
-    concatenateMorePersonGroups () {
-      if(this.isMorePersonGroupsAvailable){
-        this.isMorePersonGroupsAvailable = false
-        this.personGroups.push(...this.morePersonGroups)
-      }
     },
     async searchClickedFromFilterComponent (filterValues) {
   this.name = filterValues.name
@@ -343,7 +386,9 @@ export default {
       this.radios = filterValues.availableToAll
       this.availability = filterValues.availability
       this.notAvailability = filterValues.notAvailability
-  
+      // a manual search wins over whatever the URL put here on mount
+      this.archiveFlag = filterValues.archiveFlag
+
       await this.searchClicked()
     },
     downloadInWeb () {
@@ -356,6 +401,80 @@ export default {
       const csv = convertObjectToCSV(processedPersons, keys, ',')
       textFileDownloadInWeb(csv, 'badhan_' + this.searchedHall + '.csv')
       this.$store.commit('messageBox/setMessage', 'CSV downloaded');
+    },
+
+    archiveTheseDonorsClicked () {
+      const verb = this.archiveFlag ? 'unarchive' : 'archive'
+      this.$store.commit('confirmationBox/setConfirmationMessage', {
+        confirmationMessage: `Are you sure you want to ${verb} these ${this.persons.length} donors?`,
+        confirmationAction: this.archiveConfirmed
+      })
+    },
+
+    // There is no batch route: this loops the one write primitive, once per donor. The
+    // GET is not optional — PATCH /donors/v2 takes a full body including email, which the
+    // search response projects away, and inventing one trips the email-permission 403.
+    async archiveConfirmed () {
+      // re-asserted here so the cap does not rest on the :disabled binding alone
+      if (this.isArchiveBatchOverLimit) return
+
+      const target = !this.archiveFlag
+      this.archiveBatchLoader = true
+      this.archiveBatchDone = 0
+      const succeeded = []
+      let stoppedEarly = false
+
+      // sequential: concurrent writes buy little and make the progress count and the
+      // audit-log ordering incoherent
+      for (const person of this.persons) {
+        const getResponse = await handleGETDonors({ donorId: person._id })
+        if (getResponse.status !== HTTP_STATUS.OK) {
+          stoppedEarly = true
+          break
+        }
+        const donor = getResponse.data.donor
+        // built field by field, not spread: the fetched donor carries donations, platelet
+        // donations and call records that have no business on a PATCH body
+        const patchResponse = await handlePATCHDonors({
+          donorId: donor._id,
+          name: donor.name,
+          phone: donor.phone,
+          studentId: donor.studentId,
+          email: donor.email,
+          bloodGroup: donor.bloodGroup,
+          hall: donor.hall,
+          roomNumber: donor.roomNumber,
+          address: donor.address,
+          availableToAll: donor.availableToAll,
+          archiveFlag: target
+        })
+        if (patchResponse.status !== HTTP_STATUS.OK) {
+          stoppedEarly = true
+          break
+        }
+        succeeded.push(person._id)
+        this.archiveBatchDone++
+      }
+      this.archiveBatchLoader = false
+
+      // the donors that moved have left the partition being viewed, so they are dropped
+      // locally rather than re-running the search
+      const sweptIds = new Set(succeeded)
+      this.persons = this.persons.filter(person => !sweptIds.has(person._id))
+      this.personGroups = this.personGroups
+        .map(group => ({ batch: group.batch, people: group.people.filter(person => !sweptIds.has(person._id)) }))
+        .filter(group => group.people.length > 0)
+      this.numOfDonor = this.persons.length
+
+      // a half-finished sweep must never read as a clean one; pressing the button again
+      // resumes from what is still on screen
+      if (stoppedEarly) {
+        this.$store.dispatch('notification/notifyError',
+          `Stopped after ${succeeded.length} of ${succeeded.length + this.persons.length} donors`)
+        return
+      }
+      this.$store.dispatch('notification/notifySuccess',
+        `${target ? 'Archived' : 'Unarchived'} ${succeeded.length} donors`)
     },
 
     onScroll (e) {
@@ -401,7 +520,8 @@ export default {
         availability: this.availability,
         notAvailability: this.notAvailability,
         inputAddress: inputAddress,
-        availableToAll: this.radios === 'AvailableToAll'
+        availableToAll: this.radios === 'AvailableToAll',
+        archiveFlag: this.archiveFlag
       })
     },
 
@@ -418,7 +538,7 @@ export default {
           notAvailability: this.notAvailability,
           radios: this.radios,
       download: false,
-      
+          archiveFlag: this.archiveFlag
         }
       })
       this.$copyText(environmentService.getFrontendBaseURL()+ '/' + routeData.href).then((_e) => {
@@ -445,7 +565,8 @@ export default {
           availability: this.availability,
           notAvailability: this.notAvailability,
           radios: this.radios,
-          download: true
+          download: true,
+          archiveFlag: this.archiveFlag
         }
       })
       const redirectionURL = searchRouteData.href.substr(1, searchRouteData.href.length - 1)

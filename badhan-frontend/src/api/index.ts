@@ -372,6 +372,7 @@ export interface GETSearchPayloadInterface {
   isNotAvailable: boolean
   address: string
   availableToAll: boolean
+  archiveFlag: boolean
 }
 const handleGETSearchV3 = async (payload: GETSearchPayloadInterface) => {
   try {
@@ -423,7 +424,8 @@ export interface PATCHDonorsPayloadInterface {
   hall: number,
   roomNumber: string,
   address: string,
-  availableToAll: boolean
+  availableToAll: boolean,
+  archiveFlag: boolean
 }
 const handlePATCHDonors = async (payload: PATCHDonorsPayloadInterface) => {
   try {

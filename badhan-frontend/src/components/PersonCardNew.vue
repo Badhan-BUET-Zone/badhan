@@ -42,6 +42,11 @@
         >
           <div style="font-size: small; width: 100%" class="text-wrap pa-2">
             <b style="width: 100%">{{ name }} <v-icon v-if="markedBy" small color="secondary">mdi-bookmark</v-icon></b>
+            <!-- unguarded by designation: this card is also the Active Donors card, which
+                 still lists archived donors for every member -->
+            <v-chip v-if="archiveFlag" :data-cy="'personCardArchivedChipId_'+id" x-small color="warning" class="ml-1">
+              Archived
+            </v-chip>
             <br/>
             <b>Phone: </b>
             <span v-if="phone">{{ phone.toString().substr(2) }}</span>
@@ -248,6 +253,7 @@ export default {
       this.plateletDonationCount = person.plateletDonationCount || 0
       this.markedBy = person.marker && person.marker.name ? person.marker.name : (person.markerName || null)
       this.lastCalled = person.lastCalled
+      this.archiveFlag = person.archiveFlag
     }
   },
   computed: {
@@ -272,6 +278,7 @@ export default {
       bloodGroup: BLOOD_GROUP_ANY,
       commentTime: 0,
       markedBy: null,
+      archiveFlag: false,
       lastCalled: null,
       lastDonation: 0,
       lastPlateletDonation: 0,

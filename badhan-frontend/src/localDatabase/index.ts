@@ -1,5 +1,6 @@
 import token from './token'
 import theme from './theme'
+import archiveSearch from './archiveSearch'
 import myProfile from "./myProfile";
 import donationCountYearMonth from './donationCountYearMonth'
 const reset = () => {
@@ -9,6 +10,7 @@ const reset = () => {
 export default {
   token,
   theme,
+  archiveSearch,
   myProfile,
   donationCountYearMonth,
   reset

@@ -75,6 +75,10 @@
             <span v-else-if="designation === DESIGNATIONS_INDEX.HALL_ADMIN">Hall Admin</span>
             <span v-else>Super Admin</span>
           </v-chip>
+          <!-- unguarded by designation on purpose: anyone reaching an archived donor
+               from Active Donors or a direct link should see why the record looks this way -->
+          <v-chip v-if="archiveFlag" class="mr-1 mb-1" color="warning" data-cy="donorDetailsArchivedChipId"
+                  id="donorDetailsArchivedChipId">Archived</v-chip>
           <v-chip class="mr-1 mb-1" color="secondary">{{ donationList.length }} Blood Donations</v-chip>
           <v-chip class="mr-1 mb-1" color="secondary">{{ plateletDonationList.length }} Platelet Donations</v-chip>
           <!-- Availability chips logic:
@@ -143,6 +147,17 @@
                       <v-checkbox id="donorDetailsPublicDataCheckboxId" data-cy="donorDetailsPublicDataCheckboxId" :disabled="!isDetailsEditable || isHallUnknown(halls.indexOf(hall))" v-model="availableToAll"
                                   dense
                                   label="Public Data"></v-checkbox>
+
+                      <v-switch
+                        v-if="$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN"
+                        id="donorDetailsArchiveSwitchId"
+                        data-cy="donorDetailsArchiveSwitchId"
+                        v-model="archiveFlag"
+                        :disabled="!isDetailsEditable"
+                        inset dense
+                        label="Archived"
+                        :messages="archiveHint"
+                      ></v-switch>
 
                       <div v-if="$store.getters['getDesignation'] > designation || $isMe(id)">
                         <v-btn id="donorDetailsSaveButtonId" data-cy="donorDetailsSaveButtonId" color="primary" rounded class="white--text ml-2" small
@@ -563,6 +578,7 @@ export default {
       confirmPassword: '',
       comment: '',
       availableToAll: false,
+      archiveFlag: false,
 
       // history flag
       showHistory: false,
@@ -669,6 +685,13 @@ export default {
     }
   },
   computed: {
+    // a hint, not a confirmation dialog: the batch sweep demotes without prompting too
+    archiveHint () {
+      if (this.archiveFlag && this.designation > DESIGNATIONS_INDEX.DONOR && this.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
+        return 'Will also demote this member to a regular donor on save'
+      }
+      return this.archiveFlag ? 'Hidden from normal search' : ''
+    },
     isAllowedToPromoteToVolunteer () {
       return this.designation === DESIGNATIONS_INDEX.DONOR && isHallRestricted(halls.indexOf(this.hall)) && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.HALL_ADMIN))
     },
@@ -1058,12 +1081,21 @@ export default {
         hall: halls.indexOf(this.hall),
         roomNumber: room,
         address: address,
-        availableToAll: this.availableToAll
+        availableToAll: this.availableToAll,
+        // unconditional: the validator makes archiveFlag a required body field, so users
+        // who never see the switch round-trip the donor's existing value
+        archiveFlag: this.archiveFlag
       }
+      // mirrors the server side demotion rule: a super admin keeps their designation
+      const isNewlyArchived = this.archiveFlag && !this.profile.archiveFlag
       this.detailsLoaderFlag = true
       const response = await handlePATCHDonors(sendData)
       this.detailsLoaderFlag = false
       if (response.status !== HTTP_STATUS.OK) return
+      this.profile.archiveFlag = this.archiveFlag
+      if (isNewlyArchived && this.designation > DESIGNATIONS_INDEX.DONOR && this.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
+        this.designation = DESIGNATIONS_INDEX.DONOR
+      }
       this.$store.dispatch('notification/notifySuccess', 'Saved details successfully')
     },
     async donateClicked () {
@@ -1186,6 +1218,7 @@ export default {
     this.designation = profile.designation
     this.commentTime = profile.commentTime
     this.availableToAll = profile.availableToAll
+    this.archiveFlag = profile.archiveFlag
     this.publicContacts = profile.publicContacts
     this.callRecords = profile.callRecords
     this.donationList = profile.donations

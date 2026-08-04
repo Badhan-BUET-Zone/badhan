@@ -13,6 +13,15 @@
               inset
               label="Switch to dark theme"
           ></v-switch>
+          <v-switch
+              v-if="$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN"
+              id="archiveSearchSwitchId"
+              data-cy="archiveSearchSwitchId"
+              v-model="archiveSearchEnabled"
+              inset
+              label="Enable archive search"
+              :messages="archiveSearchHint"
+          ></v-switch>
         </v-card-text>
         <v-card-title>List of Logins</v-card-title>
         <transition name="slide-fade-down" mode="out-in">
@@ -97,12 +106,14 @@ import Button from '@/components/UI Components/Button'
 import LoginCard from '@/views/MyProfile/components/LoginCard'
 import { handleGETLogins, handleDELETELogins } from '@/api'
 import { environmentService } from '@/mixins/environment'
-import { HTTP_STATUS } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'MyProfile',
   data: () => {
     return {
+      // exposed for the template, which cannot see module imports
+      DESIGNATIONS_INDEX,
       showTooltip: false,
       getLoginsLoader: false,
       logins: [],
@@ -123,6 +134,26 @@ export default {
         this.$vuetify.theme.dark = newValue
         ldb.theme.save(newValue)
       }
+    },
+    // Like darkTheme, but synchronous: the setting never leaves the browser, so there is
+    // no request to await and no failure path to revert
+    archiveSearchEnabled: {
+      get () {
+        return this.$store.getters['archiveSearch/getArchiveSearchEnabled']
+      },
+      set (newValue) {
+        this.$store.commit('archiveSearch/setArchiveSearchEnabled', newValue)
+      }
+    },
+    // Computed on render rather than on a timer, and deliberately coarse so a value a few
+    // minutes stale never reads as wrong
+    archiveSearchHint () {
+      if (!this.archiveSearchEnabled) return 'Turns itself off 24 hours after being enabled'
+      const expiry = ldb.archiveSearch.expiry()
+      if (!expiry) return 'Turns itself off 24 hours after being enabled'
+      const hoursLeft = Math.round((expiry - new Date().getTime()) / (3600 * 1000))
+      if (hoursLeft <= 1) return 'Automatically turns off within the hour'
+      return `Automatically turns off in about ${hoursLeft} hours`
     }
   },
   methods: {

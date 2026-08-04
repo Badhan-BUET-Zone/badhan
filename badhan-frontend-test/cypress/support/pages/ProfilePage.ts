@@ -160,6 +160,49 @@ export class ProfilePage {
     });
   }
 
+  // Archive switch: rendered for super admins only
+  assertArchiveSwitchAbsent(): void {
+    cy.get('[data-cy="donorDetailsArchiveSwitchId"]').should('not.exist');
+  }
+
+  assertArchiveSwitchExists(): void {
+    cy.get('[data-cy="donorDetailsArchiveSwitchId"]').should('exist');
+  }
+
+  toggleArchive(checked: boolean): void {
+    cy.get('[data-cy="donorDetailsArchiveSwitchId"]').then(($el) => {
+      const isChecked = ($el[0] as HTMLInputElement).checked;
+      if (isChecked !== checked) {
+        cy.wrap($el).click({ force: true });
+      }
+    });
+  }
+
+  assertArchive(expectedChecked: boolean): void {
+    cy.get('[data-cy="donorDetailsArchiveSwitchId"]').should(expectedChecked ? 'be.checked' : 'not.be.checked');
+  }
+
+  assertArchiveHint(expected: string): void {
+    cy.get('[data-cy="donorDetailsArchiveSwitchId"]')
+      .closest('.v-input')
+      .find('.v-messages__message')
+      .should('contain.text', expected);
+  }
+
+  // Archiving hints, it never prompts: pins the "no confirmation dialog" decision
+  assertNoConfirmationDialog(): void {
+    cy.get('[data-cy="confirmationBoxButtonId"]:visible').should('not.exist');
+  }
+
+  // "Archived" chip: unguarded by designation, unlike the switch
+  assertArchivedChipVisible(): void {
+    cy.get('[data-cy="donorDetailsArchivedChipId"]').scrollIntoView().should('be.visible');
+  }
+
+  assertArchivedChipAbsent(): void {
+    cy.get('[data-cy="donorDetailsArchivedChipId"]').should('not.exist');
+  }
+
   saveDetails(): void {
     cy.get('[data-cy="donorDetailsSaveButtonId"]').click();
   }

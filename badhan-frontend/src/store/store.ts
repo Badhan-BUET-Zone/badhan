@@ -7,6 +7,7 @@ import consoleStore from './consoleStore'
 import messageBox from './messageBox'
 import confirmationBox from './confirmationBox'
 import myprofile from './myprofile'
+import archiveSearch from './archiveSearch'
 
 Vue.use(Vuex)
 
@@ -50,7 +51,8 @@ export const store = new Vuex.Store({
     consoleStore,
     messageBox,
     confirmationBox,
-    myprofile
+    myprofile,
+    archiveSearch
   }
 })
 
