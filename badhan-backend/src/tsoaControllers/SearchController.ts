@@ -41,6 +41,7 @@ export class SearchController extends Controller {
     @Query() isAvailable: boolean,
     @Query() isNotAvailable: boolean,
     @Query() availableToAll: boolean,
+    @Query() archiveFlag: boolean,
     @Request() req: any
   ): Promise<{ status: string; statusCode: number; message: string; filteredDonors?: any[] }> {
     const res: ExResponse = (req as any).res
@@ -55,6 +56,7 @@ export class SearchController extends Controller {
       isAvailable: boolean;
       isNotAvailable: boolean;
       availableToAll: boolean;
+      archiveFlag: boolean;
     } = {
       bloodGroup,
       hall,
@@ -63,7 +65,12 @@ export class SearchController extends Controller {
       address,
       isAvailable,
       isNotAvailable,
-      availableToAll
+      availableToAll,
+      // taken at face value for every caller, whatever their designation: no coercion and no 403.
+      // The archive-search setting has no server side at all, so there is nothing to enforce here.
+      // The audit log below records the effective value, which is what keeps "who read the archive"
+      // answerable without enforcement.
+      archiveFlag
     }
 
     if (reqQuery.hall !== user.hall && isHallRestricted(reqQuery.hall) && user.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {

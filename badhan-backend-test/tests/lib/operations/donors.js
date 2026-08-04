@@ -167,7 +167,15 @@ async function demoteFromSuperAdmin(donorId, signInResponse) {
  * Update a donor's full details (PATCH /donors/v2)
  */
 async function updateDonor(donorInfo, signInResponse) {
-  return authedPatch('/donors/v2', donorInfo, signInResponse, patchDonorSchema);
+  // archiveFlag is a required body field with no server-side default, so a caller that only means
+  // to edit unrelated details still has to send it. Defaulted to false here — pass it explicitly to
+  // archive or unarchive.
+  return authedPatch(
+    '/donors/v2',
+    { archiveFlag: false, ...donorInfo },
+    signInResponse,
+    patchDonorSchema
+  );
 }
 
 module.exports = {

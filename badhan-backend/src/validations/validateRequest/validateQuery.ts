@@ -62,6 +62,14 @@ export const validateQUERYAvailableToAll: ValidationChain = query('availableToAl
   .exists().withMessage('availableToAll is required')
   .isBoolean().withMessage('availableToAll must be boolean')
 
+// `.toBoolean()` comes last, after `.withMessage()` binds to `.isBoolean()`: a query param arrives
+// as the string 'false', which is truthy, and generateSearchQuery only emits the predicate for a
+// real boolean — without the coercion an archiveFlag=false search would go unpartitioned.
+export const validateQUERYArchiveFlag: ValidationChain = query('archiveFlag')
+  .exists().withMessage('archiveFlag is required')
+  .isBoolean().withMessage('archiveFlag must be boolean')
+  .toBoolean()
+
 export const validateQUERYDate: ValidationChain = query('date')
   .exists().not().isEmpty().withMessage('date is required')
   .isInt().toInt().withMessage('date must be integer').custom(checkTimeStamp).withMessage(checkTimeStampMessage('date'))

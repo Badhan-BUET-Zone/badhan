@@ -54,6 +54,7 @@ test('PATCH/donors/v2: volunteer cannot modify hall admin (higher designation)',
     roomNumber: targetInfo.roomNumber,
     address: targetInfo.address,
     availableToAll: targetInfo.availableToAll,
+    archiveFlag: false,
     email: '',
   };
 
@@ -115,6 +116,7 @@ test('PATCH/donors/v2: volunteer cannot modify super admin (higher designation)'
     roomNumber: targetInfo.roomNumber,
     address: targetInfo.address,
     availableToAll: targetInfo.availableToAll,
+    archiveFlag: false,
     email: '',
   };
 
@@ -179,6 +181,7 @@ test('PATCH/donors/v2: hall admin cannot modify super admin (higher designation)
     roomNumber: targetInfo.roomNumber,
     address: targetInfo.address,
     availableToAll: targetInfo.availableToAll,
+    archiveFlag: false,
     email: '',
   };
 

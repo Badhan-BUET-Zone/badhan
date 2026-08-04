@@ -13,11 +13,15 @@ async function searchDonors({
   isAvailable,
   isNotAvailable,
   availableToAll,
+  // archiveFlag is a required query param with no server-side default: it always partitions the
+  // search, false meaning the live roster and true meaning the archive. Defaulted here so existing
+  // specs keep describing the live roster.
+  archiveFlag = false,
   signInResponse,
   expectedTotalItems,
   expectedDonorIds,
 }) {
-  const url = `/search/v3?bloodGroup=${bloodGroup}&hall=${hall}&batch=${batch}&name=${name}&address=${address}&isAvailable=${isAvailable}&isNotAvailable=${isNotAvailable}&availableToAll=${availableToAll}`;
+  const url = `/search/v3?bloodGroup=${bloodGroup}&hall=${hall}&batch=${batch}&name=${name}&address=${address}&isAvailable=${isAvailable}&isNotAvailable=${isNotAvailable}&availableToAll=${availableToAll}&archiveFlag=${archiveFlag}`;
   const response = await authedGet(
     url,
     signInResponse,

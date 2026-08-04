@@ -72,6 +72,14 @@ export const validateBODYAvailableToAll: ValidationChain = body('availableToAll'
   .exists().withMessage('availableToAll is required')
   .isBoolean().toBoolean().withMessage('availableToAll must be boolean')
 
+// `.withMessage()` binds to `.isBoolean()` and `.toBoolean()` comes last — attaching the message
+// after the sanitizer would label the wrong assertion. Required with no default: a body without
+// archiveFlag is a 400, never an implicit unarchive.
+export const validateBODYArchiveFlag: ValidationChain = body('archiveFlag')
+  .exists().withMessage('archiveFlag is required')
+  .isBoolean().withMessage('archiveFlag must be boolean')
+  .toBoolean()
+
 export const validateBODYAddress: ValidationChain = body('address')
   .exists().not().isEmpty().withMessage('address is required')
   .customSanitizer((value:any):string => String(value))

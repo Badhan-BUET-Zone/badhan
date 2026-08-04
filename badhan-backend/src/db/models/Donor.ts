@@ -26,6 +26,7 @@ export interface IDonor extends Document {
   comment: string;
   commentTime?: number;
   availableToAll: boolean;
+  archiveFlag: boolean;
   email?: string;
 }
 
@@ -92,6 +93,10 @@ export interface IDonor extends Document {
  *           type: boolean
  *           description: if this flag is true, then the donor will be made available for all the halls
  *           example: true
+ *         archiveFlag:
+ *           type: boolean
+ *           description: if this flag is true, then the donor is archived and is kept out of the default search space
+ *           example: false
  *         email:
  *           type: string
  *           description: email address of a donor
@@ -209,6 +214,11 @@ const donorSchema: Schema = new Schema<IDonor>({
     type: Boolean,
     required: true
   },
+  archiveFlag: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   email: {
     type: String,
     default: '',
@@ -225,6 +235,18 @@ const donorSchema: Schema = new Schema<IDonor>({
   }
 
 }, { versionKey: false, id: false })
+
+/*
+ * Donor search (GET /search/v3) always pins `archiveFlag` as the leading equality predicate, and
+ * then filters on either `hall` or `availableToAll`, optionally with `bloodGroup`. `studentId`,
+ * `name` and `address` are `$regex` with a leading `.*`, so they are not index-usable and stay off
+ * the prefix. The production indexes are built explicitly by the
+ * `20260802_add-archive-flag` migration (after the backfill, so they are built over materialized
+ * values); these declarations keep fresh/test databases in sync and stop `syncIndexes()` from
+ * dropping the migration's work on the next boot.
+ */
+donorSchema.index({ archiveFlag: 1, hall: 1, bloodGroup: 1 })
+donorSchema.index({ archiveFlag: 1, availableToAll: 1, bloodGroup: 1 })
 
 donorSchema.virtual('callRecords', {
   ref: 'CallRecords',

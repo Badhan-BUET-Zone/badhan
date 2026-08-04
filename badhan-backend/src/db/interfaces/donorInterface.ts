@@ -239,7 +239,8 @@ export const findDonorsByAggregate = async (reqQuery: {
         address: string,
         isAvailable: boolean,
         isNotAvailable: boolean,
-        availableToAll: boolean
+        availableToAll: boolean,
+        archiveFlag: boolean
     }): Promise<{data: IDonor[], message: string, status: string}> => {
         const queryBuilder: IQueryBuilder = generateSearchQuery(reqQuery)
         const now: number = Date.now()
@@ -533,6 +534,10 @@ export const generateAggregatePipeline = (reqQuery: {
             comment: '$donorDetails.comment',
             commentTime: '$donorDetails.commentTime',
             availableToAll: '$donorDetails.availableToAll',
+            // display only, for the PersonCardNew "Archived" chip: this is an inclusion projection,
+            // so an unnamed field never reaches the card. No $match is ever added here — the active
+            // donors list keeps returning archived donors exactly as before.
+            archiveFlag: '$donorDetails.archiveFlag',
             bloodGroup: '$donorDetails.bloodGroup',
             studentId: '$donorDetails.studentId',
             phone: '$donorDetails.phone',
@@ -627,6 +632,7 @@ export const generateAggregatePipeline = (reqQuery: {
 }
 
 interface IQueryBuilder {
+    archiveFlag?: boolean
     bloodGroup?: number
     hall?: number
     availableToAll?: boolean
@@ -644,9 +650,21 @@ export const generateSearchQuery = (reqQuery: {
     isAvailable: boolean,
     isNotAvailable: boolean,
     availableToAll: boolean,
-    availableToAllOrHall?: boolean
+    availableToAllOrHall?: boolean,
+    archiveFlag?: boolean
 }): IQueryBuilder => {
     const queryBuilder: IQueryBuilder = {}
+
+    // process archive flag, first so the indexed equality leads the emitted $match.
+    // The guard is load-bearing: generateAggregatePipeline (active donors) deliberately passes no
+    // archiveFlag, and an unguarded assignment would still emit the key. The driver serializes
+    // undefined to null (ignoreUndefined is off), so that $match would become archiveFlag: null and
+    // match zero donors. The optional `?` is not a softening of the API contract — mandatoriness is
+    // enforced at the edge by the tsoa signature and the .exists() validator, which every
+    // /search/v3 request passes through before reaching here.
+    if (typeof reqQuery.archiveFlag === 'boolean') {
+        queryBuilder.archiveFlag = reqQuery.archiveFlag
+    }
 
     // process blood group
     if (reqQuery.bloodGroup !== BLOOD_GROUP_ANY) {

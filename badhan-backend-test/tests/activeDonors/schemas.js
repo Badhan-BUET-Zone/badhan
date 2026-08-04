@@ -60,6 +60,7 @@ const activeDonorSearchResultSchema = {
           comment: { type: 'string' },
           commentTime: { type: 'integer' },
           availableToAll: { type: 'boolean' },
+          archiveFlag: { type: 'boolean' },
           bloodGroup: { type: 'integer' },
           studentId: { type: 'string' },
           phone: { type: 'integer' },
@@ -85,6 +86,10 @@ const activeDonorSearchResultSchema = {
           'comment',
           'commentTime',
           'availableToAll',
+          // required: the active-donors pipeline is an inclusion projection, so this asserts the
+          // one projection line that carries archiveFlag out to the card chip. Its absence would
+          // otherwise read as "not archived" rather than failing.
+          'archiveFlag',
           'bloodGroup',
           'studentId',
           'phone',

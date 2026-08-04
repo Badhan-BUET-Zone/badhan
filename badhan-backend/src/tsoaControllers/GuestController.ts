@@ -76,6 +76,7 @@ export class GuestController extends Controller {
       commentTime: faker.getTimestamp(240),
       designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
       availableToAll: faker.getBoolean(),
+      archiveFlag: false,
       email: faker.getEmail()
     }
 
@@ -114,6 +115,7 @@ export class GuestController extends Controller {
         name: faker.getName(),
         studentId: faker.getStudentId(),
         availableToAll: faker.getBoolean(),
+        archiveFlag: false,
         email: faker.getEmail()
       }
     }
@@ -154,6 +156,7 @@ export class GuestController extends Controller {
         plateletDonationCount: faker.getDonationCount(),
         commentTime: faker.getTimestamp(240),
         availableToAll: faker.getBoolean(),
+        archiveFlag: false,
         callRecordCount: faker.getRandomIndex(3),
         lastCalled: faker.getTimestamp(10),
         marker: randomMarker
@@ -323,6 +326,7 @@ export class GuestController extends Controller {
       plateletDonations,
       publicContacts,
       availableToAll: faker.getBoolean(),
+      archiveFlag: false,
       email: faker.getEmail(),
       markedBy: randomMarker
     }
@@ -729,7 +733,8 @@ export class GuestController extends Controller {
         hall: faker.getHall(),
         name: faker.getName(),
         studentId: faker.getStudentId(),
-        availableToAll: faker.getBoolean()
+        availableToAll: faker.getBoolean(),
+        archiveFlag: false
       }
     }
   }
@@ -1052,6 +1057,7 @@ export class GuestController extends Controller {
         commentTime: faker.getTimestamp(2),
         lastDonation: faker.getTimestamp(240),
         availableToAll: faker.getBoolean(),
+        archiveFlag: false,
         bloodGroup: faker.getBloodGroup(),
         studentId: faker.getStudentId(),
         phone: faker.getPhone(),
@@ -1095,6 +1101,7 @@ export class GuestController extends Controller {
         comment: faker.getComment(),
         commentTime: faker.getTimestamp(240),
         availableToAll: faker.getBoolean(),
+        archiveFlag: false,
         email: faker.getEmail(),
         created: faker.getTimestamp(240)
       })

@@ -36,6 +36,7 @@ const patchUsersRedirectionSchema = {
         commentTime: { type: 'integer' },
         designation: { type: 'integer' },
         availableToAll: { type: 'boolean' },
+        archiveFlag: { type: 'boolean' },
       },
       required: [
         '_id',
@@ -51,6 +52,7 @@ const patchUsersRedirectionSchema = {
         'commentTime',
         'designation',
         'availableToAll',
+        'archiveFlag',
       ],
     },
   },

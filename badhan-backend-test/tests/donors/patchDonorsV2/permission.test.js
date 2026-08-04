@@ -58,6 +58,7 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
       roomNumber: targetInfo.roomNumber,
       address: targetInfo.address,
       availableToAll: targetInfo.availableToAll,
+      archiveFlag: false,
       email: '',
     }
   );

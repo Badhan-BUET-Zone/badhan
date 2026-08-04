@@ -23,6 +23,7 @@ const donorSchema = {
         commentTime: { type: 'integer' },
         designation: { type: 'integer' },
         availableToAll: { type: 'boolean' },
+        archiveFlag: { type: 'boolean' },
       },
       required: [
         '_id',
@@ -38,6 +39,7 @@ const donorSchema = {
         'commentTime',
         'designation',
         'availableToAll',
+        'archiveFlag',
       ],
     },
   },

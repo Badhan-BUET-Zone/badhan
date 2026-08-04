@@ -14,6 +14,7 @@ export class DonorFactory extends DataFactory {
             roomNumber: faker.getRoom(),
             comment: faker.getComment(),
             availableToAll: faker.getBoolean(),
+            archiveFlag: false,
             designation: faker.getDesignation(),
             ...partialDonor
         })

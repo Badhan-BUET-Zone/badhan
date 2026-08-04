@@ -18,6 +18,7 @@ test('POST&PATCH&DELETE/donors: success', async () => {
       roomNumber: '3009',
       address: 'Azimpur',
       availableToAll: true,
+      archiveFlag: false,
       email: '',
     },
     signInResponse,

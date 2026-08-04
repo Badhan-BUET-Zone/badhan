@@ -290,7 +290,10 @@ export class DonorsController extends Controller {
       hall: 5
     }
   })
-  @Middlewares([donorValidator.validateGETDonors, rateLimiter.commonLimiter, authenticator.handleAuthentication])
+  // No commonLimiter: the archive sweep fetches each donor before patching it (the search response
+  // projects email away, and PATCH /donors/v2 takes a full body), so this route is driven in a loop
+  // too. See the note on PATCH /donors/v2 below.
+  @Middlewares([donorValidator.validateGETDonors, authenticator.handleAuthentication])
   public async getDonor(
     @Query() donorId: string,
     @Request() req: any
@@ -595,7 +598,12 @@ export class DonorsController extends Controller {
     statusCode: HTTP_STATUS.OK,
     message: 'Donor updated successfully'
   })
-  @Middlewares([donorValidator.validatePATCHDonors, rateLimiter.commonLimiter, authenticator.handleAuthentication])
+  // No commonLimiter: the search-results archive sweep drives this route in a client-side loop, one
+  // call per donor, and a 12-per-minute ceiling would 429 it on the sixth donor. handleAuthentication
+  // stays, so the full permission predicate below is unchanged; what goes away is only the per-IP
+  // request ceiling. Precedent in this controller: POST /donors (queue instead of a limiter) and
+  // GET /donors/checkDuplicateMany (no limiter), both for the same reason.
+  @Middlewares([donorValidator.validatePATCHDonors, authenticator.handleAuthentication])
   public async updateDonor(
     @Body() body: {
       donorId: string;
@@ -607,6 +615,7 @@ export class DonorsController extends Controller {
       roomNumber: string;
       address: string;
       availableToAll: boolean;
+      archiveFlag: boolean;
       email: string;
     },
     @Request() req: any
@@ -648,6 +657,18 @@ export class DonorsController extends Controller {
     target.address = body.address
     target.availableToAll = body.availableToAll
     target.email = body.email
+
+    // Archiving is a donor edit, so it inherits the permission predicate already enforced above and
+    // needs no gate of its own. This block is the whole archiving implementation: the detail-page
+    // switch hits it once, the search-results footer hits it once per donor.
+    // Archiving demotes — a volunteer or hall admin becomes a plain donor — but a super admin keeps
+    // designation 3. Unarchiving never restores a designation: demotion is one-way and re-promotion
+    // is done by hand, so no previous designation is stored.
+    const isNewlyArchived: boolean = body.archiveFlag && !target.archiveFlag
+    target.archiveFlag = body.archiveFlag
+    if (isNewlyArchived && target.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
+      target.designation = DESIGNATIONS_INDEX.DONOR
+    }
 
     if (isHallUnknown(target.hall)) {
       target.availableToAll = true
