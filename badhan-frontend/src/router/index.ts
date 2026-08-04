@@ -30,7 +30,7 @@ const routes: CustomRouteConfig[] = [
     component: () => import('../views/ActiveDonors.vue'),
     meta: {
       requiresAuth: true,
-      title: 'Active Donors',
+      title: 'Bookmarked Donors',
       designation: 1,
       reRouteIfAuthorized: false
     },

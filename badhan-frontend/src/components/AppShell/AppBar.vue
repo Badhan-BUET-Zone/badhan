@@ -114,7 +114,7 @@ export default {
         },
         {
           icon: 'mdi-bookmark',
-          text: 'Active Donors',
+          text: 'Bookmarked Donors',
           to: '/activeDonors',
           id: 'activeDonorNavigationId',
           designation: 1

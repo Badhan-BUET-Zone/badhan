@@ -2,7 +2,7 @@ export const MESSAGES = {
   signInSuccess: 'Signed in successfully',
   signOutSuccess: 'Logged out successfully',
   donorCreateSuccess: 'Donor added successfully',
-  markActiveSuccess: 'Donor marked as active donor',
+  markActiveSuccess: 'Donor marked as bookmarked donor',
   unmarkActiveSuccess: 'Donor unmarked',
   callRecordAdded: 'Added call record',
   callRecordDeleted: 'Successfully deleted call record',

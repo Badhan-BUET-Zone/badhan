@@ -33,7 +33,7 @@
               </v-btn>
             </template>
             <v-card rounded>
-              <v-card-title>Active Donor</v-card-title>
+              <v-card-title>Bookmarked Donor</v-card-title>
               <v-card-text>
                 <span v-if="markedBy">Marked by: {{ markedBy }}</span>
                 <v-switch
@@ -42,7 +42,7 @@
                   :disabled="activeDonorLoader"
                   v-model="markedAsActiveDonor"
                   @change="markAsActiveDonorHandler"
-                  label="Active donor"
+                  label="Bookmarked donor"
                   dense>
                 </v-switch>
                 <Button :icon="'mdi-close'" :text="'Close'" :click="()=>{this.activeDonorMenu=false;}"
@@ -792,7 +792,7 @@ export default {
         this.activeDonorLoader = false
         if (result.status !== HTTP_STATUS.CREATED) return
         this.markedBy = this.$store.getters['getName']
-        this.$store.dispatch('notification/notifySuccess', 'Donor marked as active donor')
+        this.$store.dispatch('notification/notifySuccess', 'Donor marked as bookmarked donor')
         return
       }
 
