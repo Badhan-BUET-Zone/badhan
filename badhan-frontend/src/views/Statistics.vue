@@ -13,6 +13,9 @@
       <v-tab id="statisticsAllDonorsTabId" data-cy="statisticsAllDonorsTabId" to="/statistics/donorsAll" style="text-decoration: none">
         All Donors
       </v-tab>
+      <v-tab id="statisticsArchivedDonorsTabId" data-cy="statisticsArchivedDonorsTabId" to="/statistics/archivedDonorsAll" style="text-decoration: none">
+        Archived Donors
+      </v-tab>
       <v-tab id="statisticsLogsByDateTabId" data-cy="statisticsLogsByDateTabId" to="/statistics/logsByDate" style="text-decoration: none">
         App Activity
       </v-tab>

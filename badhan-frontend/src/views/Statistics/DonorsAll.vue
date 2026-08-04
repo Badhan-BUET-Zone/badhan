@@ -1,11 +1,15 @@
 <template>
   <Container>
-    <v-card-title>List of all donors</v-card-title>
+    <v-card-title>{{ pageTitle }}</v-card-title>
     <transition name="slide-fade-down-snapout" mode="out-in">
       <v-data-table :key="'donorsLoading'" v-if="donorsLoaderFlag">
       </v-data-table>
+      <v-card-text :key="'donorsEmpty'" v-else-if="donorsShown && donors.length === 0"
+                   data-cy="statisticsAllDonorsEmptyId">
+        {{ archiveFlag ? 'No archived donors' : 'No donors' }}
+      </v-card-text>
       <v-data-table id="statisticsAllDonorsTableId" data-cy="statisticsAllDonorsTableId" :key="'donorsLoaded'"
-                    v-if="donorsShown"
+                    v-else-if="donorsShown"
                     dense
                     :headers="donorListHeaders"
                     :items="donors"
@@ -56,20 +60,37 @@ export default {
     }
   },
   computed: {
+    // `=== true` rather than truthiness: a route that forgets the meta key must resolve to
+    // the live roster rather than send undefined to a required query param
+    archiveFlag () {
+      return this.$route.meta.archiveFlag === true
+    },
+    pageTitle () {
+      return this.archiveFlag ? 'List of archived donors' : 'List of all donors'
+    }
+  },
+  watch: {
+    // both tabs render this same component, so Vue reuses the instance and mounted() does
+    // not run again — without this the second tab would keep showing the first tab's rows
+    '$route.meta.archiveFlag': 'fetchDonors'
   },
   methods: {
     goToDonorProfile (donorId) {
       createNewPopUpWindow(environmentService.getFrontendBaseURL() + '#/home/details?id=' + donorId)
+    },
+    async fetchDonors () {
+      this.donorsLoaderFlag = true
+      this.donorsShown = false
+      this.donors = []
+      const response = await handleGETDonorsAll({ archiveFlag: this.archiveFlag })
+      this.donorsLoaderFlag = false
+      if (response.status !== HTTP_STATUS.OK) return
+      this.donors = response.data.data
+      this.donorsShown = true
     }
   },
   async mounted () {
-    this.donorsLoaderFlag = true
-    this.donors = []
-    const response = await handleGETDonorsAll()
-    this.donorsLoaderFlag = false
-    if (response.status !== HTTP_STATUS.OK) return
-    this.donors = response.data.data
-    this.donorsShown = true
+    await this.fetchDonors()
   }
 }
 </script>

@@ -147,7 +147,22 @@ const routes: CustomRouteConfig[] = [
           title: 'All Donors',
           requiresAuth: true,
           designation: 3,
-          reRouteIfAuthorized: false
+          reRouteIfAuthorized: false,
+          archiveFlag: false
+        }
+      },
+      {
+        // same component as the tab above: the two tables differ by one boolean, so
+        // duplicating headers, fetch and row template would only guarantee drift
+        name: 'ArchivedDonorsAll',
+        path: 'archivedDonorsAll',
+        component: () => import('../views/Statistics/DonorsAll.vue'),
+        meta: {
+          title: 'Archived Donors',
+          requiresAuth: true,
+          designation: 3,
+          reRouteIfAuthorized: false,
+          archiveFlag: true
         }
       },
       {

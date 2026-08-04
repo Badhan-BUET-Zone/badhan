@@ -9,6 +9,10 @@ export class StatisticsPage {
     cy.get('[data-cy="statisticsAllDonorsTabId"]').click({ force: true });
   }
 
+  openArchivedDonorsTab(): void {
+    cy.get('[data-cy="statisticsArchivedDonorsTabId"]').click({ force: true });
+  }
+
   ensureLogsByDateTabExists(): void {
     cy.get('[data-cy="statisticsLogsByDateTabId"]').should('exist');
   }

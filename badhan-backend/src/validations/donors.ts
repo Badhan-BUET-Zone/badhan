@@ -88,6 +88,12 @@ const validateGETDonorsNew:(req: Request, res: Response, next: NextFunction) => 
   validateQUERYEndTime
 ])
 
+// the same chain the search route uses, reused verbatim: same wire name, same
+// .toBoolean(), same 400s
+const validateGETDonorsAll:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
+  validateQUERYArchiveFlag
+])
+
 export default {
   validatePOSTDonors,
   validatePATCHDonors,
@@ -100,5 +106,6 @@ export default {
   validateGETDonorsDuplicate,
   validatePOSTDonorsPasswordRequest,
   validateGETDonorsDuplicateMany,
-  validateGETDonorsNew
+  validateGETDonorsNew,
+  validateGETDonorsAll
 }

@@ -648,6 +648,7 @@ export class GuestController extends Controller {
         studentId: faker.getStudentId(),
         logCount: faker.getRandomIndex(20),
         designation: faker.getDesignation(),
+        archiveFlag: false,
         _id: faker.getId()
       })
     }

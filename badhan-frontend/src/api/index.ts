@@ -396,9 +396,12 @@ const handleDELETELogs = async () => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
-const handleGETDonorsAll = async () => {
+export interface GETDonorsAllPayloadInterface {
+  archiveFlag: boolean
+}
+const handleGETDonorsAll = async (payload: GETDonorsAllPayloadInterface) => {
   try {
-    return await badhanAxios.get('/donors/all')
+    return await badhanAxios.get('/donors/all', { params: payload })
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }

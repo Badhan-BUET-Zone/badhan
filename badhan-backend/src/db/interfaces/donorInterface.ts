@@ -217,12 +217,16 @@ export const findDonorByPhone = async (phoneNumber: number): Promise<{data?: IDo
     }
 }
 
-export const findAllDonors = async ():Promise<{data: IDonor[], message: string, status: string}> => {
-    const data: IDonor[] = await DonorModel.find({}, {
+export const findAllDonors = async (archiveFlag: boolean):Promise<{data: IDonor[], message: string, status: string}> => {
+    // archiveFlag leads the { archiveFlag, hall, bloodGroup } index, so this partitions
+    // instead of scanning the collection. It is named in the inclusion projection too, or
+    // every row comes back with archiveFlag undefined.
+    const data: IDonor[] = await DonorModel.find({ archiveFlag }, {
         name: 1,
         hall: 1,
         studentId: 1,
-        designation: 1
+        designation: 1,
+        archiveFlag: 1
     }).populate({path: 'logCount'})
     return {
         data,

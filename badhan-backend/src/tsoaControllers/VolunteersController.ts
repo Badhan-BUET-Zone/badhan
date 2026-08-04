@@ -33,7 +33,9 @@ export class VolunteersController extends Controller {
     const res: ExResponse = (req as any).res
     const user: IDonor = res.locals.middlewareResponse.donor
 
-    const allDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDonors()
+    // This legacy alias of GET /donors/all takes no query params, so it serves the live
+    // roster — the same partition the all-donors tab opens on.
+    const allDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDonors(false)
 
     if (allDonorResult.status !== 'OK') {
       this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)

@@ -1043,14 +1043,15 @@ export class DonorsController extends Controller {
       designation: 3
     }]
   })
-  @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
+  @Middlewares([donorValidator.validateGETDonorsAll, rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
   public async getAllDonors(
+    @Query() archiveFlag: boolean,
     @Request() req: any
   ): Promise<{ status: string; statusCode: number; message: string; data?: any[] }> {
     const res: ExResponse = (req as any).res
     const user: IDonor = res.locals.middlewareResponse.donor
 
-    const allDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDonors()
+    const allDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDonors(archiveFlag)
 
     if (allDonorResult.status !== 'OK') {
       this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)

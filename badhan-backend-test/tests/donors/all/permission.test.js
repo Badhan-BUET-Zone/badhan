@@ -20,7 +20,7 @@ test('GET/donors/all: requires super admin (volunteer and hall admin forbidden)'
   };
   await flows.assertForbiddenForVolunteerAndHallAdmin({
     method: 'get',
-    path: `/donors/all`,
+    path: `/donors/all?archiveFlag=true`,
     errorSchema: superAdminPermissionErrorSchema,
     signInResponse,
     newDonorInfo,
