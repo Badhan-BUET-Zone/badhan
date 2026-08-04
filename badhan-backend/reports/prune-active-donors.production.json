@@ -1,0 +1,643 @@
+{
+  "ranAt": "2026-08-04T20:39:04.630Z",
+  "environment": "production",
+  "dryRun": false,
+  "criteria": {
+    "noDonationSince": "2024-08-04T20:39:04.630Z"
+  },
+  "counts": {
+    "activeDonorRows": 170,
+    "donatedWithinTwoYears": 81,
+    "rowsRemoved": 89,
+    "donorsUnmarked": 89,
+    "orphanRows": 0,
+    "rowsKept": 81
+  },
+  "donorIds": [
+    "5e677716ca2dc857938d7b86",
+    "5e6781006ecd148aa8cc77a4",
+    "5e6781006ecd148aa8cc76e4",
+    "5e677716ca2dc857938d7bc7",
+    "6032ec4e6cdf4d00172f5338",
+    "5e6781006ecd148aa8cc772d",
+    "6037234e92d80c0017a6eff2",
+    "6166b172557f6100166d583a",
+    "5e677716ca2dc857938d7ba6",
+    "5e677716ca2dc857938d7b96",
+    "5e6776f512d72ed0423fb06a",
+    "5e6781006ecd148aa8cc75fd",
+    "5e68514995b0367d81546af1",
+    "6032ec4e6cdf4d00172f5377",
+    "5e677716ca2dc857938d7bfa",
+    "60b206f1fbf2bc0015c445dd",
+    "5e6781006ecd148aa8cc778f",
+    "6123a9beb84fa600169c720d",
+    "5e677716ca2dc857938d7b99",
+    "5e677716ca2dc857938d7b95",
+    "5e677716ca2dc857938d7c7a",
+    "5e6776166f73f925e22a077a",
+    "609cc1b8ed0bd3001712142e",
+    "616d96d2114d6a00168b95e3",
+    "62d447d4b30869e9111b3857",
+    "616d790f9a6f8b001614dc49",
+    "6032ec4b6cdf4d00172f5294",
+    "5e677716ca2dc857938d7b8a",
+    "603a91165d4c050017949978",
+    "5e677716ca2dc857938d7be3",
+    "5e677716ca2dc857938d7c6c",
+    "5e6776166f73f925e22a06dc",
+    "5e677716ca2dc857938d7bf1",
+    "5e677716ca2dc857938d7ba5",
+    "5e677fe9d57e95d775c129a7",
+    "5e677716ca2dc857938d7c0a",
+    "5e6781006ecd148aa8cc7795",
+    "5e677716ca2dc857938d7ba8",
+    "5e6781006ecd148aa8cc764a",
+    "62b4a12d09f7d6801901bb12",
+    "62d44d80b30869e9111b38da",
+    "5e677fe9d57e95d775c12990",
+    "5e6781006ecd148aa8cc77d3",
+    "6032ec4a6cdf4d00172f525c",
+    "5e677716ca2dc857938d7b84",
+    "5e677716ca2dc857938d7ba3",
+    "5e677716ca2dc857938d7c64",
+    "5e6777043dc0a87ae4c22377",
+    "5e677fe9d57e95d775c12a39",
+    "5e677716ca2dc857938d7c5c",
+    "5e677fe9d57e95d775c12995",
+    "6166b1c5557f6100166d584d",
+    "62d44c13b30869e9111b38b0",
+    "5e677fe9d57e95d775c129be",
+    "5e677fe9d57e95d775c129b1",
+    "5e677fe9d57e95d775c129ac",
+    "5e677fe9d57e95d775c129d3",
+    "5e677fe9d57e95d775c129c5",
+    "616d6dee9a6f8b001614db05",
+    "619e74457e6c91841b3e5ef3",
+    "5e6777043dc0a87ae4c222e0",
+    "6166b2a4557f6100166d586b",
+    "629e10985a7760264f9c92d6",
+    "62adb03ea75d7ee19b643bfd",
+    "62adb0b8a75d7ee19b643c38",
+    "62b4adba646dd30ddf853af3",
+    "62b4a514483a3b4c6c1ef5d0",
+    "62b4a229483a3b4c6c1ef599",
+    "5e6776f512d72ed0423fb063",
+    "5e6776f512d72ed0423fb05f",
+    "606f572f150a7b0017519f01",
+    "5e6776f512d72ed0423fb06e",
+    "6165dcca8b4e9e001694a262",
+    "5e6781006ecd148aa8cc7712",
+    "606c9e11740d690017dc6087",
+    "616db9f0114d6a00168b9d2d",
+    "6079b68a0cd4050017488128",
+    "6032ec4e6cdf4d00172f533f",
+    "62865c7abe0e79c0779b8f30",
+    "5e6776166f73f925e22a06c3",
+    "5e677716ca2dc857938d7c57",
+    "654358f08309a1b79f90c04a",
+    "62efc901453e4a19b177b46a",
+    "616d9a3c114d6a00168b9683",
+    "5e6781006ecd148aa8cc7675",
+    "6737871a749ffd1c14102dc6",
+    "60a379d0eb57b800159076f6",
+    "690c50d3e5cdb2d4916c1ac2",
+    "6a4e80e99785d02fd9225b1c"
+  ],
+  "removedRows": [
+    {
+      "_id": "6191d1b9e3b77f0b032b7d64",
+      "donorId": "5e677716ca2dc857938d7b86",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636946361359
+    },
+    {
+      "_id": "619b2143257c2e76663ba497",
+      "donorId": "5e6781006ecd148aa8cc77a4",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1637556547991
+    },
+    {
+      "_id": "619b2ec51cfb9e480c9aceb6",
+      "donorId": "5e6781006ecd148aa8cc76e4",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1637560005659
+    },
+    {
+      "_id": "61a248794c2835c12582ae78",
+      "donorId": "5e677716ca2dc857938d7bc7",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1638025337802
+    },
+    {
+      "_id": "61b424ba9f839fbebe170809",
+      "donorId": "6032ec4e6cdf4d00172f5338",
+      "markerId": "5e6776166f73f925e22a05aa",
+      "time": 1639195834366
+    },
+    {
+      "_id": "61b5f19ec1b67c246cf6caa0",
+      "donorId": "5e6781006ecd148aa8cc772d",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1639313822892
+    },
+    {
+      "_id": "61b6282ca55556e598f0d862",
+      "donorId": "6037234e92d80c0017a6eff2",
+      "markerId": "6037234e92d80c0017a6eff2",
+      "time": 1639327788610
+    },
+    {
+      "_id": "61b89f90dda83b8e8e4e2d5f",
+      "donorId": "6166b172557f6100166d583a",
+      "markerId": "5e677716ca2dc857938d7bd6",
+      "time": 1639489424547
+    },
+    {
+      "_id": "61b8e5b38f40c96ff3871f5b",
+      "donorId": "5e677716ca2dc857938d7ba6",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1639507379369
+    },
+    {
+      "_id": "61bf4aadf1b4a07053668323",
+      "donorId": "5e677716ca2dc857938d7b96",
+      "markerId": "603a91165d4c050017949978",
+      "time": 1639926445495
+    },
+    {
+      "_id": "624102a7b10a842fdc3ae82e",
+      "donorId": "5e6776f512d72ed0423fb06a",
+      "markerId": "5e6776f512d72ed0423fb06a",
+      "time": 1648427687116
+    },
+    {
+      "_id": "6276118c54045c9bb6b53525",
+      "donorId": "5e6781006ecd148aa8cc75fd",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1651904908244
+    },
+    {
+      "_id": "62b94a3ecccebdffa9c543d8",
+      "donorId": "5e68514995b0367d81546af1",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1656310334394
+    },
+    {
+      "_id": "6187988a4fa4a511d91f05a6",
+      "donorId": "6032ec4e6cdf4d00172f5377",
+      "markerId": "5e677716ca2dc857938d7c73",
+      "time": 1636276362407
+    },
+    {
+      "_id": "618f53505fd33f9ac7574045",
+      "donorId": "5e677716ca2dc857938d7bfa",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636782928911
+    },
+    {
+      "_id": "618f53955fd33f9ac7574082",
+      "donorId": "60b206f1fbf2bc0015c445dd",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636782997772
+    },
+    {
+      "_id": "618f53fb5fd33f9ac7574103",
+      "donorId": "5e6781006ecd148aa8cc778f",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636783099684
+    },
+    {
+      "_id": "6191d1d1e3b77f0b032b7d86",
+      "donorId": "6123a9beb84fa600169c720d",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636946385523
+    },
+    {
+      "_id": "6191d1e7e3b77f0b032b7d97",
+      "donorId": "5e677716ca2dc857938d7b99",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636946407319
+    },
+    {
+      "_id": "61974aac6fbe3813ce0d2e02",
+      "donorId": "5e677716ca2dc857938d7b95",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1637305004074
+    },
+    {
+      "_id": "619b56175bc029eab78722d1",
+      "donorId": "5e677716ca2dc857938d7c7a",
+      "markerId": "603a91165d4c050017949978",
+      "time": 1637570071267
+    },
+    {
+      "_id": "62016227fa7767e7d3c02804",
+      "donorId": "5e6776166f73f925e22a077a",
+      "markerId": "5e6776166f73f925e22a05aa",
+      "time": 1644257831076
+    },
+    {
+      "_id": "62bad5a21c8055727cdd4548",
+      "donorId": "609cc1b8ed0bd3001712142e",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1656411554802
+    },
+    {
+      "_id": "62d44551b30869e9111b381e",
+      "donorId": "616d96d2114d6a00168b95e3",
+      "markerId": "5e6776c090b43cdb0ddf347a",
+      "time": 1658078545424
+    },
+    {
+      "_id": "62d4484cb30869e9111b3873",
+      "donorId": "62d447d4b30869e9111b3857",
+      "markerId": "5e6776c090b43cdb0ddf347a",
+      "time": 1658079308422
+    },
+    {
+      "_id": "62d449617685d2301e7c6251",
+      "donorId": "616d790f9a6f8b001614dc49",
+      "markerId": "5e6776c090b43cdb0ddf347a",
+      "time": 1658079585911
+    },
+    {
+      "_id": "618f535a5fd33f9ac7574057",
+      "donorId": "6032ec4b6cdf4d00172f5294",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636782938222
+    },
+    {
+      "_id": "61915d6ae038d91aa8aeb446",
+      "donorId": "5e677716ca2dc857938d7b8a",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636916586830
+    },
+    {
+      "_id": "6197a2d5304dc1f34a4b5259",
+      "donorId": "603a91165d4c050017949978",
+      "markerId": "5e677716ca2dc857938d7c73",
+      "time": 1637327573874
+    },
+    {
+      "_id": "61a2488a4c2835c12582ae8b",
+      "donorId": "5e677716ca2dc857938d7be3",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1638025354192
+    },
+    {
+      "_id": "61a54685aa60563aadc632ff",
+      "donorId": "5e677716ca2dc857938d7c6c",
+      "markerId": "603a91165d4c050017949978",
+      "time": 1638221445706
+    },
+    {
+      "_id": "61a7d0bf252eafc547c6faa2",
+      "donorId": "5e6776166f73f925e22a06dc",
+      "markerId": "5e6776166f73f925e22a06dc",
+      "time": 1638387903945
+    },
+    {
+      "_id": "61b7472df6d3777b0c31b0e8",
+      "donorId": "5e677716ca2dc857938d7bf1",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1639401261926
+    },
+    {
+      "_id": "61b8e5c68f40c96ff3871f68",
+      "donorId": "5e677716ca2dc857938d7ba5",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1639507398589
+    },
+    {
+      "_id": "6205388971e60e3a4a03df77",
+      "donorId": "5e677fe9d57e95d775c129a7",
+      "markerId": "5e677fe9d57e95d775c129a7",
+      "time": 1644509321218
+    },
+    {
+      "_id": "620a58075293fbd6578d4fec",
+      "donorId": "5e677716ca2dc857938d7c0a",
+      "markerId": "5e677716ca2dc857938d7c73",
+      "time": 1644845063664
+    },
+    {
+      "_id": "622025155fc6a6c62d378df2",
+      "donorId": "5e6781006ecd148aa8cc7795",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1646273813387
+    },
+    {
+      "_id": "6227286439223b305b366dd9",
+      "donorId": "5e677716ca2dc857938d7ba8",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1646733412785
+    },
+    {
+      "_id": "6288ec6fb946ae13c42a3a46",
+      "donorId": "5e6781006ecd148aa8cc764a",
+      "markerId": "5e677716ca2dc857938d7c73",
+      "time": 1653140591113
+    },
+    {
+      "_id": "62b4a1a9483a3b4c6c1ef578",
+      "donorId": "62b4a12d09f7d6801901bb12",
+      "markerId": "62adb03ea75d7ee19b643bfd",
+      "time": 1656005033634
+    },
+    {
+      "_id": "62d44d9eb30869e9111b38ea",
+      "donorId": "62d44d80b30869e9111b38da",
+      "markerId": "5e6776c090b43cdb0ddf347a",
+      "time": 1658080670865
+    },
+    {
+      "_id": "618b7e463c43c08cce1d5fe7",
+      "donorId": "5e677fe9d57e95d775c12990",
+      "markerId": "5e68514995b0367d81546aa5",
+      "time": 1636531782629
+    },
+    {
+      "_id": "618f54445fd33f9ac757413a",
+      "donorId": "5e6781006ecd148aa8cc77d3",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636783172994
+    },
+    {
+      "_id": "618f545d5fd33f9ac757415e",
+      "donorId": "6032ec4a6cdf4d00172f525c",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636783197294
+    },
+    {
+      "_id": "61915d5be038d91aa8aeb42b",
+      "donorId": "5e677716ca2dc857938d7b84",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636916571193
+    },
+    {
+      "_id": "6192545d7d79a6b45698f8f7",
+      "donorId": "5e677716ca2dc857938d7ba3",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1636979805533
+    },
+    {
+      "_id": "6197e410c60d1cc4a30bb434",
+      "donorId": "5e677716ca2dc857938d7c64",
+      "markerId": "5e677716ca2dc857938d7c73",
+      "time": 1637344272277
+    },
+    {
+      "_id": "619b201b257c2e76663ba438",
+      "donorId": "5e6777043dc0a87ae4c22377",
+      "markerId": "5e6777043dc0a87ae4c22377",
+      "time": 1637556251014
+    },
+    {
+      "_id": "61b58d31b3452fa798db06c8",
+      "donorId": "5e677fe9d57e95d775c12a39",
+      "markerId": "5e677fe9d57e95d775c12990",
+      "time": 1639288113350
+    },
+    {
+      "_id": "61bf4ad0f137288b0e598a36",
+      "donorId": "5e677716ca2dc857938d7c5c",
+      "markerId": "603a91165d4c050017949978",
+      "time": 1639926480648
+    },
+    {
+      "_id": "629222c8790b8b24524747a9",
+      "donorId": "5e677fe9d57e95d775c12995",
+      "markerId": "5e677fe9d57e95d775c12990",
+      "time": 1653744328243
+    },
+    {
+      "_id": "62d446d97685d2301e7c6230",
+      "donorId": "6166b1c5557f6100166d584d",
+      "markerId": "5e6776c090b43cdb0ddf347a",
+      "time": 1658078937104
+    },
+    {
+      "_id": "62d44c397685d2301e7c6292",
+      "donorId": "62d44c13b30869e9111b38b0",
+      "markerId": "5e6776c090b43cdb0ddf347a",
+      "time": 1658080313736
+    },
+    {
+      "_id": "62e6826b36dfca203345a20d",
+      "donorId": "5e677fe9d57e95d775c129be",
+      "markerId": "5e677fe9d57e95d775c129c3",
+      "time": 1659273835394
+    },
+    {
+      "_id": "62e682a236dfca203345a227",
+      "donorId": "5e677fe9d57e95d775c129b1",
+      "markerId": "5e677fe9d57e95d775c129c3",
+      "time": 1659273890614
+    },
+    {
+      "_id": "62e682ad36dfca203345a234",
+      "donorId": "5e677fe9d57e95d775c129ac",
+      "markerId": "5e677fe9d57e95d775c129c3",
+      "time": 1659273901014
+    },
+    {
+      "_id": "62e682c136dfca203345a246",
+      "donorId": "5e677fe9d57e95d775c129d3",
+      "markerId": "5e677fe9d57e95d775c129c3",
+      "time": 1659273921614
+    },
+    {
+      "_id": "62e6830636dfca203345a260",
+      "donorId": "5e677fe9d57e95d775c129c5",
+      "markerId": "5e677fe9d57e95d775c129c3",
+      "time": 1659273990763
+    },
+    {
+      "_id": "62f75132befbed2bcb92d918",
+      "donorId": "616d6dee9a6f8b001614db05",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1660375346932
+    },
+    {
+      "_id": "62ff97b0234ff08fb98f8297",
+      "donorId": "619e74457e6c91841b3e5ef3",
+      "markerId": "619e72aa7e6c91841b3e5ec6",
+      "time": 1660917680214
+    },
+    {
+      "_id": "630218b378c3e4cf5e4143f8",
+      "donorId": "5e6777043dc0a87ae4c222e0",
+      "markerId": "5e6777043dc0a87ae4c222ce",
+      "time": 1661081779402
+    },
+    {
+      "_id": "630465726f5442b3b4e27e42",
+      "donorId": "6166b2a4557f6100166d586b",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661232498880
+    },
+    {
+      "_id": "6304657e6f5442b3b4e27e4f",
+      "donorId": "629e10985a7760264f9c92d6",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661232510025
+    },
+    {
+      "_id": "6304658d6f5442b3b4e27e5c",
+      "donorId": "62adb03ea75d7ee19b643bfd",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661232525075
+    },
+    {
+      "_id": "630465966f5442b3b4e27e69",
+      "donorId": "62adb0b8a75d7ee19b643c38",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661232534182
+    },
+    {
+      "_id": "630465f76f5442b3b4e27e85",
+      "donorId": "62b4adba646dd30ddf853af3",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661232631675
+    },
+    {
+      "_id": "630475c6e8fea3b6991a7072",
+      "donorId": "62b4a514483a3b4c6c1ef5d0",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661236678540
+    },
+    {
+      "_id": "630475e3e8fea3b6991a7084",
+      "donorId": "62b4a229483a3b4c6c1ef599",
+      "markerId": "616d6dee9a6f8b001614db05",
+      "time": 1661236707862
+    },
+    {
+      "_id": "631a3faee0b027731f9592e6",
+      "donorId": "5e6776f512d72ed0423fb063",
+      "markerId": "5e6776f512d72ed0423fb063",
+      "time": 1662664622929
+    },
+    {
+      "_id": "6390d26ee00551469c388ec1",
+      "donorId": "5e6776f512d72ed0423fb05f",
+      "markerId": "5e6776f512d72ed0423fb066",
+      "time": 1670435438478
+    },
+    {
+      "_id": "6390d2fce00551469c388f11",
+      "donorId": "606f572f150a7b0017519f01",
+      "markerId": "5e6776f512d72ed0423fb066",
+      "time": 1670435580567
+    },
+    {
+      "_id": "6390d33de00551469c388f2e",
+      "donorId": "5e6776f512d72ed0423fb06e",
+      "markerId": "5e6776f512d72ed0423fb066",
+      "time": 1670435645234
+    },
+    {
+      "_id": "6394451bf0cd25a7125a1d97",
+      "donorId": "6165dcca8b4e9e001694a262",
+      "markerId": "6165dcca8b4e9e001694a262",
+      "time": 1670661403249
+    },
+    {
+      "_id": "63ab043dd98c74c811609ca1",
+      "donorId": "5e6781006ecd148aa8cc7712",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1672152125385
+    },
+    {
+      "_id": "63ea99aaf5937d4e6451bc5d",
+      "donorId": "606c9e11740d690017dc6087",
+      "markerId": "5e677716ca2dc857938d7c67",
+      "time": 1676319146439
+    },
+    {
+      "_id": "6421200e579efe47dafa5a83",
+      "donorId": "616db9f0114d6a00168b9d2d",
+      "markerId": "5e901d56effc5900177ced73",
+      "time": 1679892494678
+    },
+    {
+      "_id": "647c35c776f45e2b4d886bac",
+      "donorId": "6079b68a0cd4050017488128",
+      "markerId": "5e6776f512d72ed0423fb066",
+      "time": 1685861831234
+    },
+    {
+      "_id": "648ddcf1c760a04025aa389f",
+      "donorId": "6032ec4e6cdf4d00172f533f",
+      "markerId": "619e74457e6c91841b3e5ef8",
+      "time": 1687018737314
+    },
+    {
+      "_id": "649e97adac54e1cb82ba7356",
+      "donorId": "62865c7abe0e79c0779b8f30",
+      "markerId": "62865c7abe0e79c0779b8f30",
+      "time": 1688115117938
+    },
+    {
+      "_id": "64eef625f771027c0704f4aa",
+      "donorId": "5e6776166f73f925e22a06c3",
+      "markerId": "5e6776166f73f925e22a06c3",
+      "time": 1693382181605
+    },
+    {
+      "_id": "6536673275285db04e6bdbbd",
+      "donorId": "5e677716ca2dc857938d7c57",
+      "markerId": "6493044109876a14cdaaee4e",
+      "time": 1698064178709
+    },
+    {
+      "_id": "65437b86e75f5f2289a3669e",
+      "donorId": "654358f08309a1b79f90c04a",
+      "markerId": "6032ec4d6cdf4d00172f5333",
+      "time": 1698921350746
+    },
+    {
+      "_id": "65bb863caee11353d41fd9e4",
+      "donorId": "62efc901453e4a19b177b46a",
+      "markerId": "62efc67ce659c448fa84eb9a",
+      "time": 1706788412623
+    },
+    {
+      "_id": "65e8443b14a4edba39b41ac8",
+      "donorId": "616d9a3c114d6a00168b9683",
+      "markerId": "5e6776f512d72ed0423fb066",
+      "time": 1709720635678
+    },
+    {
+      "_id": "668eba00f541d4d6cdc2db72",
+      "donorId": "5e6781006ecd148aa8cc7675",
+      "markerId": "5e677716ca2dc857938d7b84",
+      "time": 1720629760584
+    },
+    {
+      "_id": "675135a68c732ed57f60bf55",
+      "donorId": "6737871a749ffd1c14102dc6",
+      "markerId": "6737871a749ffd1c14102dc6",
+      "time": 1733375398281
+    },
+    {
+      "_id": "679f353554fa03e9eb755d1a",
+      "donorId": "60a379d0eb57b800159076f6",
+      "markerId": "6484a7d631ccb91896f1ad17",
+      "time": 1738487093795
+    },
+    {
+      "_id": "69a721646eefe1132fe38819",
+      "donorId": "690c50d3e5cdb2d4916c1ac2",
+      "markerId": "687e219964d65430e1c2175f",
+      "time": 1772560740818
+    },
+    {
+      "_id": "6a4e8cc09785d02fd9225c9d",
+      "donorId": "6a4e80e99785d02fd9225b1c",
+      "markerId": "6a4e80e99785d02fd9225b1c",
+      "time": 1783532736286
+    }
+  ]
+}
