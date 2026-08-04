@@ -217,7 +217,7 @@ export const findDonorByPhone = async (phoneNumber: number): Promise<{data?: IDo
     }
 }
 
-export const findAllDesignatedDonors = async ():Promise<{data: IDonor[], message: string, status: string}> => {
+export const findAllDonors = async ():Promise<{data: IDonor[], message: string, status: string}> => {
     const data: IDonor[] = await DonorModel.find({}, {
         name: 1,
         hall: 1,
@@ -226,7 +226,7 @@ export const findAllDesignatedDonors = async ():Promise<{data: IDonor[], message
     }).populate({path: 'logCount'})
     return {
         data,
-        message: 'Volunteers fetched successfully',
+        message: 'Donors fetched successfully',
         status: 'OK'
     }
 }

@@ -5,8 +5,8 @@ export class StatisticsPage {
     cy.get('[data-cy="statisticsDonationReportTabId"]').click({ force: true });
   }
 
-  openAllMembersTab(): void {
-    cy.get('[data-cy="statisticsAllVolunteersTabId"]').click({ force: true });
+  openAllDonorsTab(): void {
+    cy.get('[data-cy="statisticsAllDonorsTabId"]').click({ force: true });
   }
 
   ensureLogsByDateTabExists(): void {
@@ -37,24 +37,24 @@ export class StatisticsPage {
     return cy.get('[data-cy="statsNumberOfVolunteers"]').should('be.visible').invoke('text');
   }
  
-  assertAllMembersTableVisible(): void {
-    cy.get('[data-cy="statisticsAllVolunteersTableId"]').should('be.visible');
+  assertAllDonorsTableVisible(): void {
+    cy.get('[data-cy="statisticsAllDonorsTableId"]').should('be.visible');
   }
 
-  assertAllMembersHasRows(): void {
-    cy.get('[data-cy="statisticsAllVolunteersTableId"] [data-cy="volunteerRow"]').its('length').should('be.gte', 1);
+  assertAllDonorsHasRows(): void {
+    cy.get('[data-cy="statisticsAllDonorsTableId"] [data-cy="donorRow"]').its('length').should('be.gte', 1);
   }
 
-  assertAllMembersDesignationColumn(): void {
-    cy.get('[data-cy="statisticsAllVolunteersTableId"] [data-cy="volunteerRowDesignation"]')
+  assertAllDonorsDesignationColumn(): void {
+    cy.get('[data-cy="statisticsAllDonorsTableId"] [data-cy="donorRowDesignation"]')
       .should('have.length.gte', 1)
       .each(($cell) => {
         expect(['Donor', 'Volunteer', 'Hall Admin', 'Super Admin']).to.include($cell.text().trim());
       });
   }
 
-  assertAllMembersNotPaginated(): void {
-    cy.get('[data-cy="statisticsAllVolunteersTableId"] .v-data-footer').should('not.exist');
+  assertAllDonorsNotPaginated(): void {
+    cy.get('[data-cy="statisticsAllDonorsTableId"] .v-data-footer').should('not.exist');
   }
 
   assertAnyDateLogDetailExists(): void {

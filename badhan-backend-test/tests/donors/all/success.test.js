@@ -1,9 +1,8 @@
-const env = require('../../../config');
 const operations = require('../../lib/operations');
 const { allDonorSchema } = require('../schemas');
 
-test('GET/volunteers/all: success', async () => {
+test('GET/donors/all: success', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  await operations.authedGet('/volunteers/all', signInResponse, allDonorSchema);
+  await operations.authedGet('/donors/all', signInResponse, allDonorSchema);
   await operations.signOut(signInResponse);
 });

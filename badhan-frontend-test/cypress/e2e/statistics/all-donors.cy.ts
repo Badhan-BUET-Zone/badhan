@@ -6,13 +6,13 @@ import { StatisticsPage } from '@pages/StatisticsPage';
 // removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 
-describe('Statistics - All Members tab', () => {
+describe('Statistics - All Donors tab', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
   const stats = new StatisticsPage();
 
-  it('shows at least one member in the All Members table', () => {
+  it('shows at least one donor in the All Donors table', () => {
     // Sign in as superadmin
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
@@ -20,14 +20,14 @@ describe('Statistics - All Members tab', () => {
     // Navigate to Statistics
     drawer.goToStatistics();
 
-    // Switch to All Members tab
-    stats.openAllMembersTab();
+    // Switch to All Donors tab
+    stats.openAllDonorsTab();
 
     // Wait for table to render and assert at least one row
-    stats.assertAllMembersTableVisible();
-    stats.assertAllMembersHasRows();
-    stats.assertAllMembersNotPaginated();
-    stats.assertAllMembersDesignationColumn();
+    stats.assertAllDonorsTableVisible();
+    stats.assertAllDonorsHasRows();
+    stats.assertAllDonorsNotPaginated();
+    stats.assertAllDonorsDesignationColumn();
   });
 });
 

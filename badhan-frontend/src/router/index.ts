@@ -140,11 +140,11 @@ const routes: CustomRouteConfig[] = [
         }
       },
       {
-        name: 'VolunteersAll',
-        path: 'membersAll',
-        component: () => import('../views/Statistics/VolunteersAll.vue'),
+        name: 'DonorsAll',
+        path: 'donorsAll',
+        component: () => import('../views/Statistics/DonorsAll.vue'),
         meta: {
-          title: 'All Members',
+          title: 'All Donors',
           requiresAuth: true,
           designation: 3,
           reRouteIfAuthorized: false

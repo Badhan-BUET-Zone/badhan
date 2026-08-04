@@ -10,8 +10,8 @@
       <v-tab id="statisticsDonationReportTabId" data-cy="statisticsDonationReportTabId" to="/statistics/report" style="text-decoration: none">
         Donation Report
       </v-tab>
-      <v-tab id="statisticsAllVolunteersTabId" data-cy="statisticsAllVolunteersTabId" to="/statistics/membersAll" style="text-decoration: none">
-        All Members
+      <v-tab id="statisticsAllDonorsTabId" data-cy="statisticsAllDonorsTabId" to="/statistics/donorsAll" style="text-decoration: none">
+        All Donors
       </v-tab>
       <v-tab id="statisticsLogsByDateTabId" data-cy="statisticsLogsByDateTabId" to="/statistics/logsByDate" style="text-decoration: none">
         App Activity

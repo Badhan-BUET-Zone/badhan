@@ -513,7 +513,7 @@ const donorsSchema = {
   required: ['status', 'statusCode', 'message', 'donor'],
 };
 
-const allDesignatedDonorSchema = {
+const allDonorSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
@@ -618,7 +618,7 @@ module.exports = {
   duplicateDonorsManySchema,
   designationSchema,
   donorsSchema,
-  allDesignatedDonorSchema,
+  allDonorSchema,
   postDonorSchema,
   patchDonorSchema,
   deleteDonorSchema,

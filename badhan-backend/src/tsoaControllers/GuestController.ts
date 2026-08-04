@@ -631,10 +631,10 @@ export class GuestController extends Controller {
     }
   }
 
-  /** Guest view all volunteers */
-  @Get('donors/designation/all')
+  /** Guest view all donors */
+  @Get('donors/all')
   @Hidden()
-  public async viewAllVolunteers(): Promise<{
+  public async viewAllDonors(): Promise<{
     status: string
     statusCode: number
     message: string

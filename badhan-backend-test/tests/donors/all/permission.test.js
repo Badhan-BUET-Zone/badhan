@@ -4,7 +4,7 @@ const { uniquePhone } = require('../../helpers');
 const { superAdminPermissionErrorSchema } = require('../../common/schemas');
 const { HALLS_INDEX } = require('../../lib/utils/constants');
 
-test('GET/donors/designation/all: requires super admin (volunteer and hall admin forbidden)', async () => {
+test('GET/donors/all: requires super admin (volunteer and hall admin forbidden)', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const newDonorInfo = {
     phone: uniquePhone(),
@@ -20,7 +20,7 @@ test('GET/donors/designation/all: requires super admin (volunteer and hall admin
   };
   await flows.assertForbiddenForVolunteerAndHallAdmin({
     method: 'get',
-    path: `/donors/designation/all`,
+    path: `/donors/all`,
     errorSchema: superAdminPermissionErrorSchema,
     signInResponse,
     newDonorInfo,

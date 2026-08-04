@@ -1026,8 +1026,8 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Get all designated donors (Super Admin only) */
-  @Get('designation/all')
+  /** Get every donor, designated or not (Super Admin only) */
+  @Get('all')
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; data: any[] }>({
     status: 'OK',
@@ -1044,27 +1044,27 @@ export class DonorsController extends Controller {
     }]
   })
   @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
-  public async getAllDesignatedDonors(
+  public async getAllDonors(
     @Request() req: any
   ): Promise<{ status: string; statusCode: number; message: string; data?: any[] }> {
     const res: ExResponse = (req as any).res
     const user: IDonor = res.locals.middlewareResponse.donor
 
-    const allDesignatedDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDesignatedDonors()
+    const allDonorResult: { data: IDonor[]; message: string; status: string } = await donorInterface.findAllDonors()
 
-    if (allDesignatedDonorResult.status !== 'OK') {
+    if (allDonorResult.status !== 'OK') {
       this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: allDesignatedDonorResult.message }
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: allDonorResult.message }
     }
 
-    await logInterface.addLog(user._id, 'GET DONORS DESIGNATION ALL', {})
+    await logInterface.addLog(user._id, 'GET DONORS ALL', {})
 
     this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
       statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
-      data: allDesignatedDonorResult.data
+      data: allDonorResult.data
     }
   }
 }
