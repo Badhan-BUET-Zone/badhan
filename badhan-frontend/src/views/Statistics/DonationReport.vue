@@ -9,10 +9,10 @@
         <v-card-title>Generate Donation Report By Date</v-card-title>
         <v-card-text>
             <div class="mt-2">
-                <DatePicker v-model="startDate" label="Start Date" textFieldId="startDatePicker" />
+                <DatePicker v-model="startDate" label="Start Date" textFieldId="startDatePicker" allow-future-dates />
             </div>
             <div class="mt-2">
-                <DatePicker v-model="endDate" label="End Date" textFieldId="endDatePicker" />
+                <DatePicker v-model="endDate" label="End Date" textFieldId="endDatePicker" allow-future-dates />
             </div>
         </v-card-text>
         <v-card-actions>

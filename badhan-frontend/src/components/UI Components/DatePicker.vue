@@ -27,7 +27,7 @@
       v-model="proxyValue"
       no-title
       scrollable
-      :max="tomorrow"
+      :max="maxDate"
     >
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
@@ -73,6 +73,10 @@ export default {
     showOk: {
       type: Boolean,
       default: true
+    },
+    allowFutureDates: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -89,7 +93,8 @@ export default {
         this.$emit('input', val)
       }
     },
-    tomorrow () {
+    maxDate () {
+      if (this.allowFutureDates) return undefined
       const now = new Date()
       const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
       return tomorrowDate.toISOString().substr(0, 10)
