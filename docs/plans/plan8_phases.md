@@ -1438,8 +1438,20 @@ does not pull ~500 KiB until someone downloads.
   restriction is convenience, not enforcement.
 - **Duration**: a selector with a few sensible values (1, 2, 4, 8, 24 hours), defaulting to 4 (D7).
 - **Generate** calls `POST /feedbacks/registrationToken` and renders the QR **on screen, large**.
-  On-screen is the primary use: a laptop or phone propped on a desk at a hall event. Show the expiry
-  in plain words — *"This code stops working at 6:30 pm today."*
+  On-screen is the primary use, and it has two shapes: a laptop or phone propped on a desk, and
+  **a code projected on a slide at a new-intake event** so an entire room scans at once. The second
+  is the one that matters most — it is the difference between one volunteer typing a hundred
+  students in and a hundred students entering themselves — and it sets the requirements:
+  - **A full-screen mode.** One control that hides the app chrome, the form and the expiry text and
+    fills the viewport with the code on white. A QR competing with a sidebar for a projector's
+    pixels is a QR the back row cannot scan.
+  - **Pure black on pure white, no grey, no rounded modules, no logo in the middle.** Projectors
+    wash out contrast, and a hall's screen is rarely clean.
+  - The code must stay square and centred at any aspect ratio, since the projector's is not the
+    laptop's.
+
+  Outside full-screen, show the expiry in plain words — *"This code stops working at 6:30 pm
+  today."*
 - **Download PDF** reuses `feedbackQrPdf.ts` with a different caption
   (*"Scan to register as a blood donor with Badhan BUET Zone"*) for events where a printed copy is
   easier. The same A4 portrait layout; no new pipeline. English caption, per D18 and D15.
@@ -1464,7 +1476,11 @@ so a staging print tests nothing that will be true of real paper.
 5. Repeat the download on **Android and iOS** — mobile download behaviour differs enough to be its
    own bug source.
 6. **Separately, scan a generated registration QR off a laptop screen** with a phone and complete
-   the form. Screen-scanning is the normal use for that one, so test it the way it will be used.
+   the sequence. Screen-scanning is the normal use for that one, so test it the way it will be used.
+7. **Then scan it off a projector**, in full-screen mode, from the back of a room — the new-intake
+   case (§২ক.১). A projected code is dimmer, lower-contrast and further away than anything else
+   this feature produces, and the failure is public: a hall full of students who cannot scan.
+   Test it in a room with the lights on, which is how orientations actually run.
 
 Record the printer, paper size, phone models and OS versions. If the paper scan fails, the QR
 geometry is not the first suspect — an automated test decodes it — so look at printed size, contrast
@@ -1484,6 +1500,8 @@ and paper quality first.
 - The caption text is exactly the string in D15.
 - The download button is **outside** the artwork SVG, so it cannot reach the PDF.
 - A volunteer's registration page shows their own hall read-only; a super admin's shows a selector.
+- **Full-screen mode hides the app chrome and the form**, and the QR still decodes to the same
+  `/#/register?t=…` string it did before entering it.
 - Inspect one generated PDF by hand: `MediaBox` of `0 0 595.28 841.89` pt, one page, no embedded
   font file, no raster image at all, QR vector.
 
@@ -1494,7 +1512,10 @@ sheet is the same for every hall, so one download serves everyone; that the link
 share in Facebook and WhatsApp groups (§7); that it must be printed from the real app, not a test
 copy, or the QR leads nowhere. Then the registration code: what it is for, how to generate one, how
 to choose a duration, that **it cannot be cancelled once made**, and that submissions from it arrive
-in the Feedback page as new-donor cards. Add one line for the volunteer standing at the desk: the
+in the Feedback page as new-donor cards. **Give the new-intake case its own short passage**, since
+it is the one that earns the feature: put the code on a slide at orientation, use full-screen, pick
+a duration that covers the session, and let the whole room enter itself. Add one line for the
+volunteer standing at the desk: the
 student is answering **one question per screen and can go back**, so "it is still asking me
 things" is the form working, not stuck.
 
@@ -1588,6 +1609,7 @@ repository owner's call.
 | §7 FAQ — deleted donors (**withdrawn — D12**) | 0 (D12), 1.4, 9.2 |
 | §২ক New-donor registration flow, one question per screen | 0 (D2–D6, D19), 1.2, 4, 5, 8, 9.3, 10.3 |
 | §২ক.১ Registration QR — hall, duration, no cancellation | 4.1, 10.3 |
+| §২ক.১ Projected on a slide at a new-intake event | 10.3 (full-screen mode), 10.4, 10.6 |
 | §২ক.৩ The hall comes from the code, not the student | 0 (D6), 5.1, 8.2 |
 | §২ক.৪ Create donor from a submission, then discard | 0 (D13), 6.4, 9.3 |
 | §৩.১ The new-donor card | 6.2, 9.2 |
