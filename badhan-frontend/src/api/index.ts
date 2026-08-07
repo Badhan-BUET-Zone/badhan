@@ -558,6 +558,18 @@ const handleGETPublicContacts = async () => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
+// The certificate page is opened by whoever scans a printed QR code, so this call usually runs with
+// no session at all. badhanAxios is still the right instance: the request interceptor simply sends
+// no x-auth header when the store has no token, and going through it keeps guest mode working
+// (guest mode rewrites the base URL to /guest, where the route is mirrored with faker data).
+const handleGETCertificate = async (donorId: string) => {
+  try {
+    return await badhanAxios.get(`/certificates/${donorId}`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 export interface POSTPublicContactsPayloadInterface {
   donorId: string
   bloodGroup: number
@@ -704,6 +716,7 @@ export {
   handleDELETECallRecord,
   handleGETDonorsDesignation,
   handleGETPublicContacts,
+  handleGETCertificate,
   handlePOSTPublicContacts,
   handleDELETEPublicContacts,
   handleGETLogins,

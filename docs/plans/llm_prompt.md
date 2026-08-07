@@ -1,0 +1,1 @@
+give me open questions as choices in terminal on the things you are ambiguous about. Then integrate my answers with the plan. Do not restate plans that have already been decided.

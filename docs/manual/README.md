@@ -30,7 +30,7 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 **Everyday work**
 
 6. [Searching for donors](06-searching-for-donors.md) — the filters and how to read results
-7. [The donor profile](07-the-donor-profile.md) — every field on a donor's page
+7. [The donor profile](07-the-donor-profile.md) — every field on a donor's page, and the certificate
 8. [Recording donations](08-recording-donations.md) — blood and platelet donation dates
 9. [Call records](09-call-records.md) — keeping track of who has been called
 10. [Bookmarked donors](10-bookmarked-donors.md) — your own shortlist of donors

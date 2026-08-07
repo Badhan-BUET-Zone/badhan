@@ -190,7 +190,16 @@
 
               
 
-              <ContainerOutlined v-if="$store.getters['getDesignation'] >= designation || $isMe(id)">
+              <!--
+                No designation gate on the card itself. Every action inside carries its own,
+                stricter guard — promote/demote need a specific target designation, the recovery
+                link needs super admin or same-hall seniority, delete needs the target at volunteer
+                or below, and the password fields are own-profile only. A viewer junior to the donor
+                they are looking at therefore sees none of them regardless. Gating the card as well
+                only had the effect of hiding Certificate, which is meant to be available to anyone
+                who can open the profile: it shows strictly less than the profile already does.
+              -->
+              <ContainerOutlined>
                 <v-card-title>
                   <v-btn rounded
                          id="profileSettingsId"
@@ -218,6 +227,13 @@
                              v-if="isPasswordLinkResetable">
                         <v-icon left>mdi-lock-reset</v-icon>
                         Password Recovery Link
+                      </v-btn>
+
+                      <v-btn id="certificateButtonId" data-cy="certificateButton" key="certificate"
+                             small class="ma-1" color="primary" rounded
+                             @click="openCertificate">
+                        <v-icon left>mdi-certificate</v-icon>
+                        Certificate
                       </v-btn>
 
                       <div key="linkGenerated" class="mt-2" v-if="passwordRecoveryLink">
@@ -844,6 +860,17 @@ export default {
       await this.$store.dispatch('notification/notifySuccess', response.data.message)
 
       this.passwordRecoveryLink = environmentService.getFrontendBaseURL() + '/#/passwordReset?token=' + response.data.token
+    },
+    // Opened in a new tab so the volunteer keeps the profile they were working in — printing a
+    // certificate is a detour, not a destination. The address is built the same way the password
+    // recovery link is, and the donor's own id is the whole identifier: no token, nothing stored.
+    openCertificate () {
+      // The trailing slash is stripped because VUE_APP_FRONTEND_BASE carries one in the development
+      // environment and not in production. Everywhere else a double slash would just look untidy;
+      // here the address the tab opens is the address the certificate encodes into its QR code, and
+      // that ends up on paper that cannot be reissued.
+      const base = environmentService.getFrontendBaseURL().replace(/\/+$/, '')
+      window.open(base + '/#/certificate?id=' + this.id, '_blank')
     },
     async passwordRecoveryLinkCopyClicked () {
       await this.$copyText(this.passwordRecoveryLink)

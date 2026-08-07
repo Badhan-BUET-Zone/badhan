@@ -1077,6 +1077,26 @@ export class GuestController extends Controller {
     }
   }
 
+  /** Guest fetch a donor certificate */
+  @Get('certificates/{donorId}')
+  @Hidden()
+  public async getCertificate(@Path() donorId: string): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    certificate: { name: string; studentId: string }
+  }> {
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Certificate fetched successfully',
+      certificate: {
+        name: faker.getName(),
+        studentId: faker.getStudentId()
+      }
+    }
+  }
+
   /** Guest get new donors */
   @Get('donors/new')
   @Hidden()

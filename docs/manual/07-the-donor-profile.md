@@ -78,7 +78,8 @@ Saving one does not save the other.
 ## Settings
 
 The **Settings** section holds the actions rather than the facts. Which buttons appear depends
-on your level and on whose profile you are looking at. You may see none of them.
+on your level and on whose profile you are looking at. Often the only one you will see is
+**Certificate**.
 
 | Button | What it does | Who sees it |
 | --- | --- | --- |
@@ -88,6 +89,7 @@ on your level and on whose profile you are looking at. You may see none of them.
 | **Promote to Super Admin** | Makes a volunteer a super admin | Super admin only |
 | **Demote to Volunteer** | Takes a super admin back to volunteer | Super admin only |
 | **Password Recovery Link** | Creates a one-time link so this member can set a password | Hall admin of that hall, or super admin |
+| **Certificate** | Opens this donor's printable certificate in a new tab | Everyone |
 | **Delete this person** | Removes the record entirely | Hall admin of that hall, or super admin |
 | **New Password / Confirm Password** | Change your own password | Only on your own profile |
 
@@ -106,10 +108,48 @@ Three things to know:
 - **Generating a new link signs that person out of every device.** Warn them first.
 - It is **short-lived and one-time**. If it stops working, make another.
 
+### The certificate
+
+Tap **Certificate** and this donor's certificate opens in a new tab: their name, their student
+ID, a thank-you message, the Badhan logo, and a **QR code**. Below it is a **Download PDF**
+button. The PDF is A4, sideways, and ready to print — the button itself does not appear on the
+paper.
+
+Print it, and hand it to the donor.
+
+**What the QR code is for.** Later, anyone holding that piece of paper — an employer, a
+university, anyone at all — can point a phone camera at the QR code. The same certificate opens
+on their screen, straight from Badhan's own website. If the name and student ID on the paper
+match the name and student ID on the screen, the paper is genuine. That is the whole point of
+the certificate, so the QR code matters more than anything else on it.
+
+**Check the name and the student ID before you print.** The certificate reads them from the app
+every time it is opened, but paper cannot be updated. If you print first and correct a spelling
+afterwards, the paper and the screen will no longer match, and the certificate can no longer be
+verified. There is no way to fix a certificate once it has been handed over — only to print a
+new one.
+
+**The certificate is in English, so the name must be too.** If the donor's name is written in
+Bangla on their profile, it will come out as a row of empty boxes on the certificate — on the
+screen and on the paper. The app does not warn you about this. Write the name in English on the
+profile first, then open the certificate.
+
+**Anyone with the link can open it, and no sign-in is needed.** That is deliberate: the person
+checking the certificate has no Badhan account and no reason to get one. It is also why the
+certificate shows only the name and the student ID — never the phone number, the blood group,
+the hall, or the donation history.
+
+**Archived donors keep working.** Someone who has graduated can still have their certificate
+scanned. In fact that is when it matters most.
+
 ### Deleting a person
 
 **Delete this person** asks you to confirm, and then the record is gone. Their donations stop
 counting anywhere in the app, and no page can reach them again. There is no undo.
+
+Deleting also **permanently breaks every certificate already printed for that donor**. Scanning
+the QR code on their paper will show *"This certificate was not found."* and there is no way to
+restore it. Bear that in mind before deleting someone who has been given a certificate.
 
 The app refuses to delete anyone who is still a volunteer, hall admin or super admin: *"Donor
 must be demoted for deletion"*. Demote them to donor first.

@@ -179,6 +179,21 @@ const routes: CustomRouteConfig[] = [
     ]
   },
   {
+    // Reached by scanning a QR code on printed paper, so the visitor is almost never signed in and
+    // has no reason to have an account. The donor id travels as a query parameter — `?id=...` — and
+    // that shape is frozen: it is printed inside every certificate's QR code and cannot be changed
+    // once a single certificate has been handed to a donor.
+    name: 'Certificate',
+    path: '/certificate',
+    component: () => import('../views/Certificate.vue'),
+    meta: {
+      requiresAuth: false,
+      title: 'Certificate',
+      designation: 0,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'CreditsPage',
     path: '/credits',
     component: () => import('../views/Credits.vue'),

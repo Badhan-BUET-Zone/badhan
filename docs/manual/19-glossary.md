@@ -34,6 +34,11 @@ name attached. Formerly called *Active Donor*. [Chapter 10](10-bookmarked-donors
 **Call record.** A note that somebody rang a donor, made automatically when you use **Direct
 call**. [Chapter 9](09-call-records.md)
 
+**Certificate.** A printable page thanking a donor, carrying their name, their student ID and a
+QR code. Opened from the donor's profile, downloaded as a PDF and printed. Anyone can open a
+certificate without signing in, which is why it shows nothing but the name and the student ID.
+[Chapter 7](07-the-donor-profile.md)
+
 **Comment.** A free-text note on a donor, readable by everyone who can see that donor.
 
 **CSV.** A plain table file, the kind Excel and Google Sheets produce with *Save as CSV*. Used
@@ -88,6 +93,10 @@ signs that person out of every device the moment it is generated.
 
 **Promote / demote.** Moving somebody up or down a level. Only hall admins and super admins can
 do it. [Chapter 12](12-members-and-promotions.md)
+
+**QR code.** The square black-and-white pattern on a certificate. Pointing a phone camera at it
+opens that same certificate on Badhan's website, so the paper can be checked against the screen.
+[Chapter 7](07-the-donor-profile.md)
 
 **Rest period.** The time after a donation before a donor is shown as available again: 120 days
 for blood, 12 days for platelets. It affects display and filtering only — the app never refuses
