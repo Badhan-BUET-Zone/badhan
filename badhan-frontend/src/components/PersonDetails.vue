@@ -236,6 +236,12 @@
                         Certificate
                       </v-btn>
 
+                      <!--
+                        Full width and no height: ends the row after Certificate and leaves a gap,
+                        so it does not sit shoulder to shoulder with the destructive buttons below.
+                      -->
+                      <div key="certificateSpacer" style="width: 100%" class="mb-4"></div>
+
                       <div key="linkGenerated" class="mt-2" v-if="passwordRecoveryLink">
                         <v-row no-gutters>
                           <v-col cols="9">
