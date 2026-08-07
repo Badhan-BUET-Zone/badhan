@@ -1,5 +1,8 @@
 # 9. Call records
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Recording donations](08-recording-donations.md) · [Contents](README.md) · [Next: Bookmarked donors →](10-bookmarked-donors.md)
 
 ---

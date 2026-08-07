@@ -1,5 +1,8 @@
 # 5. The screen and the menu
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Roles and permissions](04-roles-and-permissions.md) · [Contents](README.md) · [Next: Searching for donors →](06-searching-for-donors.md)
 
 ---

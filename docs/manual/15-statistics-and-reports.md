@@ -1,5 +1,8 @@
 # 15. Statistics and reports
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: My profile and devices](14-my-profile-and-devices.md) · [Contents](README.md) · [Next: Super admin tools →](16-super-admin-tools.md)
 
 ---

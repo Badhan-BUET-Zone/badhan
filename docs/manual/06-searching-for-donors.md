@@ -1,5 +1,8 @@
 # 6. Searching for donors
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: The screen and the menu](05-the-screen-and-the-menu.md) · [Contents](README.md) · [Next: The donor profile →](07-the-donor-profile.md)
 
 ---

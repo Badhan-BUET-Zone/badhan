@@ -1,5 +1,8 @@
 # 4. Roles and permissions
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Signing in](03-signing-in.md) · [Contents](README.md) · [Next: The screen and the menu →](05-the-screen-and-the-menu.md)
 
 ---

@@ -1,5 +1,8 @@
 # 7. The donor profile
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Searching for donors](06-searching-for-donors.md) · [Contents](README.md) · [Next: Recording donations →](08-recording-donations.md)
 
 ---

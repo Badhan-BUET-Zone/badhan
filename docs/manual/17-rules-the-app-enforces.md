@@ -1,5 +1,8 @@
 # 17. Rules the app enforces
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Super admin tools](16-super-admin-tools.md) · [Contents](README.md) · [Next: When something goes wrong →](18-when-something-goes-wrong.md)
 
 ---

@@ -1,5 +1,8 @@
 # 14. My profile and devices
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Public contacts](13-public-contacts.md) · [Contents](README.md) · [Next: Statistics and reports →](15-statistics-and-reports.md)
 
 ---

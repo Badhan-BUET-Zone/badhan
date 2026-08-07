@@ -1,5 +1,8 @@
 # 12. Members and promotions
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Adding new donors](11-adding-new-donors.md) · [Contents](README.md) · [Next: Public contacts →](13-public-contacts.md)
 
 ---

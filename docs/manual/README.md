@@ -1,5 +1,8 @@
 # The Badhan App — User Manual
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 Everything the Badhan, BUET Zone app can do, explained for people who are not computer
 people. If you have just been given an account and have never opened the app, start at
 chapter 1 and read forward.

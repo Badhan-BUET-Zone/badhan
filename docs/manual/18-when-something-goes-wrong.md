@@ -1,5 +1,8 @@
 # 18. When something goes wrong
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: Rules the app enforces](17-rules-the-app-enforces.md) · [Contents](README.md) · [Next: Glossary →](19-glossary.md)
 
 ---

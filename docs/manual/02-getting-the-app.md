@@ -1,5 +1,8 @@
 # 2. Getting the app
 
+> **Written for readers with no coding experience.** This manual assumes no programming or
+> technical knowledge of any kind — only that you use the Badhan app.
+
 [← Previous: What Badhan is](01-what-is-badhan.md) · [Contents](README.md) · [Next: Signing in →](03-signing-in.md)
 
 ---
