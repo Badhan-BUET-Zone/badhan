@@ -1,5 +1,10 @@
 # Project instructions
 
+## Documentation
+
+Any new or changed app behaviour — a screen, a button, a permission, a rule — must be
+documented in the user manual at [docs/manual/](docs/manual/) in the same change.
+
 ## Running commands
 
 **Never run `npm`, `node`, or `npx` on the host.** Every such command must run
