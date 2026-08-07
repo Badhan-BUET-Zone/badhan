@@ -17,13 +17,52 @@ function getCurrentBranch() {
   }
 }
 
+// The build runs INSIDE the frontend container, not on the host.
+//
+// The host is only in this script because `firebase deploy` needs the host's CLI
+// credentials. Building is a different job with a different requirement — it needs
+// this project's node_modules, which live in the container's anonymous
+// /app/node_modules volume and are deliberately never installed on the host (see
+// docker-compose.yml). Running the build on the host meant keeping a second, hand-
+// maintained install in sync with package.json, and it failed exactly where it hurts
+// most: at deploy time, the first time a dependency was added.
+//
+// `run --rm --no-deps` uses a throwaway container rather than a long-lived dev one,
+// so the artifact never depends on whatever state someone's `docker compose up`
+// happens to be in, and `--no-deps` keeps mongo and the backend out of it — a build
+// needs neither. `npm ci` runs first because a fresh container's node_modules volume
+// is seeded from the image, which goes stale the moment package.json changes; `ci`
+// installs exactly what package-lock.json pins, so the deployed bundle is built from
+// the committed lock file every time.
+//
+// ./badhan-frontend is bind-mounted into the container, so `dist` is written straight
+// to the host, where `firebase deploy` picks it up unchanged.
+function containerBuildCommand(npmScript) {
+  return `docker compose run --rm --no-deps frontend sh -c "npm ci && npm run ${npmScript}"`;
+}
+
 // Resolve the branch-dependent deploy target (build command, Firebase project,
 // hosting config). Shared by the preflight checks and the actual deploy.
 function getDeployTarget(currentBranch) {
   if (currentBranch === "main") {
-    return { buildCmd: "npm run build", project: "badhan-buet" };
+    return { buildCmd: containerBuildCommand("build"), project: "badhan-buet" };
   }
-  return { buildCmd: "npm run build:development", project: "badhan-buet-test" };
+  return { buildCmd: containerBuildCommand("build:development"), project: "badhan-buet-test" };
+}
+
+// docker compose has to be invoked from the repo root, where docker-compose.yml is.
+const REPO_ROOT = resolve(__dirname, "..");
+
+function dockerAvailable() {
+  try {
+    // `docker info` talks to the daemon, so this fails when Docker Desktop is
+    // installed but not running — which is the common case, and which a plain
+    // `docker --version` would happily pass.
+    execSync("docker info", { stdio: "ignore" });
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 // firebase-tools is expected to be installed GLOBALLY (npm install -g
@@ -63,6 +102,15 @@ function checkRequirements(baseDir = __dirname) {
     errors.push(`frontend: required Firebase config "${configFile}" not found (needed for project ${project}).`);
   }
 
+  // The build runs in a container now, so Docker is as much a deploy requirement as
+  // the Firebase CLI is. Caught here rather than three minutes into the deploy.
+  if (!dockerAvailable()) {
+    errors.push(
+      "frontend: Docker is not available (the frontend build runs in the frontend container). " +
+        "Start Docker Desktop and try again."
+    );
+  }
+
   if (!firebaseAvailable()) {
     errors.push(`frontend: firebase-tools not found on PATH. ${FIREBASE_INSTALL_HINT}`);
   } else {
@@ -83,7 +131,10 @@ function checkRequirements(baseDir = __dirname) {
 }
 
 function deployToFirebase() {
-  const baseDir = __dirname; // ensure all commands run in badhan-frontend directory
+  // The firebase deploy runs from badhan-frontend, where the hosting configs and the
+  // built dist live. The build is the exception — it runs from REPO_ROOT, in a
+  // container. See containerBuildCommand.
+  const baseDir = __dirname;
 
   // Re-run preflight so a direct invocation is still guarded.
   const errors = checkRequirements(baseDir);
@@ -99,7 +150,9 @@ function deployToFirebase() {
   const { buildCmd, project: firebaseProject } = getDeployTarget(currentBranch);
 
   console.log(`🔨  Running build command: ${buildCmd}`);
-  run(buildCmd, baseDir);
+  // From the repo root: that is where docker-compose.yml lives. The build still writes
+  // dist into badhan-frontend, because the container bind-mounts it.
+  run(buildCmd, REPO_ROOT);
 
   console.log(`🚀  Deploying to Firebase project '${firebaseProject}'…`);
   const configFile = `firebase.${firebaseProject}.json`;
