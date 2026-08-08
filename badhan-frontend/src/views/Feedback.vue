@@ -2,11 +2,20 @@
   <div>
     <PageTitle></PageTitle>
 
-    <!-- Collapsed by default, and nothing inside it is built or imported until it is expanded:
+    <!-- Both panels share one card and are collapsed by default, so the queue is still the first
+         thing on the page. Nothing inside the QR panel is built or imported until it is expanded:
          this is a volunteer's daily page. -->
-    <FeedbackQrPanel/>
+    <Container>
+      <FeedbackQrPanel/>
+      <OwnFeedbackPanel @submitted="loadFeedbacks"/>
+    </Container>
 
-    <ContainerFlat>
+    <!--
+      Reload and the state of the queue share one card. They are one thought — "here is the queue,
+      and here is how to refresh it" — and splitting them left an almost-empty strip above a
+      one-line message. Each feedback card is its own container below this one, so nothing nests.
+    -->
+    <Container>
       <v-card-text>
         <Button
           data-cy="feedbackReloadButton"
@@ -17,21 +26,25 @@
           :click="loadFeedbacks"
         ></Button>
       </v-card-text>
-    </ContainerFlat>
 
-    <div style="max-width: 700px" class="mx-auto" v-if="loadingFlag">
-      <LoadingMessage/>
-    </div>
-
-    <div style="max-width: 700px" class="mx-auto" v-else>
-      <v-card-text v-if="feedbacks.length === 0" class="title text-center" data-cy="feedbackEmptyState">
-        No feedback is waiting.
+      <v-card-text v-if="loadingFlag">
+        <LoadingMessage/>
       </v-card-text>
 
-      <!--
-        One list, oldest first, both kinds interleaved. No tabs and no filter: the queue is meant to
-        be emptied, and a filter would make it comfortable not to.
-      -->
+      <v-card-text
+        v-else-if="feedbacks.length === 0"
+        class="title text-center"
+        data-cy="feedbackEmptyState"
+      >
+        No feedback is waiting.
+      </v-card-text>
+    </Container>
+
+    <!--
+      One list, oldest first, both kinds interleaved. No tabs and no filter: the queue is meant to
+      be emptied, and a filter would make it comfortable not to.
+    -->
+    <div style="max-width: 700px" class="mx-auto" v-if="!loadingFlag">
       <FeedbackCard
         v-for="feedback in feedbacks"
         :key="feedback._id"
@@ -49,11 +62,12 @@
 
 <script>
 import PageTitle from '@/components/PageTitle'
-import ContainerFlat from '@/components/Container/ContainerFlat'
+import Container from '@/components/Container/Container'
 import Button from '@/components/UI Components/Button'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import FeedbackCard from '@/views/Feedback/FeedbackCard'
 import FeedbackQrPanel from '@/views/Feedback/FeedbackQrPanel'
+import OwnFeedbackPanel from '@/views/Feedback/OwnFeedbackPanel'
 import { handleGETFeedbacks, handleDELETEFeedback } from '@/api'
 import { HTTP_STATUS } from '@/mixins/constants'
 
@@ -66,7 +80,9 @@ import { HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'FeedbackPage',
-  components: { PageTitle, ContainerFlat, Button, LoadingMessage, FeedbackCard, FeedbackQrPanel },
+  components: {
+    PageTitle, Container, Button, LoadingMessage, FeedbackCard, FeedbackQrPanel, OwnFeedbackPanel
+  },
   data: () => {
     return {
       loadingFlag: true,

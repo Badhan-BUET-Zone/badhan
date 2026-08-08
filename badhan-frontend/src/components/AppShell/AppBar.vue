@@ -113,13 +113,6 @@ export default {
           designation: 1
         },
         {
-          icon: 'mdi-bookmark',
-          text: 'Bookmarked Donors',
-          to: '/activeDonors',
-          id: 'activeDonorNavigationId',
-          designation: 1
-        },
-        {
           // No badge and no count. Nothing here tells a volunteer that work is waiting — the app
           // bar makes no request on mount, and there is no count endpoint for it to call. Opening
           // the page has to be a habit, which is what the manual says.
@@ -155,26 +148,34 @@ export default {
             to: '/newDonors',
             id: 'newDonorsNavigationId',
             designation: 2
+          },
+          {
+            // Nested under Donor Creation rather than beside it: generating a code is one of the
+            // ways a donor eventually gets created, and it belongs with the others.
+            //
+            // There is deliberately no "Print Poster" entry anywhere. That sheet is a collapsed
+            // panel at the top of the Feedback page, because it is downloaded once and then not
+            // again for months.
+            icon: 'mdi-account-plus-outline',
+            text: 'Donor Registration QR',
+            to: '/registrationQr',
+            id: 'registrationQrNavigationId',
+            designation: 1
           }
           ]
-        },
-        {
-          // Directly beneath Donor Creation: generating a code is a thing a volunteer does at a
-          // desk or an event, and it is a sibling of creating a donor — which is what it leads to.
-          //
-          // There is deliberately no "Print Poster" entry. That sheet is a collapsed panel at the
-          // top of the Feedback page, because it is downloaded once and then not again for months.
-          icon: 'mdi-account-plus-outline',
-          text: 'Donor Registration QR',
-          to: '/registrationQr',
-          id: 'registrationQrNavigationId',
-          designation: 1
         },
         {
           icon: 'mdi-account-group',
           text: 'Members',
           to: '/members',
           id: 'membersNavigationId',
+          designation: 1
+        },
+        {
+          icon: 'mdi-bookmark',
+          text: 'Bookmarked Donors',
+          to: '/activeDonors',
+          id: 'activeDonorNavigationId',
           designation: 1
         },
         {

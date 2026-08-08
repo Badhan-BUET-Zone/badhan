@@ -94,6 +94,28 @@ at the same time is fine.
 There is no way to write back. A donor's confirmation is scanning the code again a few days
 later and seeing their record updated. That is why step 2 matters.
 
+## Sending a message about yourself
+
+At the top of the Feedback page, beside **Print a QR poster for donors**, there is a second
+collapsible panel: **Send a message about yourself**. Open it, type a message, and press **Send**.
+
+It files the message on **your own** donor record — the one attached to the account you are signed in
+with. You do not type a phone number or a student ID; they are taken from your profile.
+
+What arrives is an ordinary message. It appears in the queue below like any other, it shows your own
+donor card, and **somebody still has to act on it and discard it** — probably you. Sending one does
+not record a donation, does not change your record, and does not notify anybody.
+
+Two things it is genuinely useful for:
+
+- **Checking the feature works** without printing anything or asking a donor to scan a code — for
+  example after a change, or before you tell a hall the poster is live.
+- **Leaving yourself a note that belongs in the queue**, so it is worked through with everything else
+  rather than forgotten in a chat thread.
+
+If the panel says your phone number and student ID could not be read from your profile, sign out and
+in again. That is the only thing it needs.
+
 ## Which messages you see
 
 The same rule as everywhere else in the app: **you see the feedback of the donors you could
@@ -183,6 +205,11 @@ A few things worth knowing:
   the test copy, and paper on a wall cannot be recalled. If you are not sure, ask before printing a
   hundred of them.
 
+Underneath the poster there is also the plain web address the code points at, as a link. Click it to
+open the donor page in a new tab — useful for checking it works before you print anything, and for
+sending the address to a hall group without printing at all. The address is the same for everyone and
+is safe to share.
+
 ## The registration QR code
 
 This is the other code — the one students scan to enter themselves into the database.
@@ -200,6 +227,13 @@ even as a super admin. A hall that wants a code makes its own.
 **It cannot be cancelled.** Once generated, it works until it expires — there is no button to switch
 it off, and no list of active codes. So pick a duration that matches the event: four hours for an
 afternoon at a desk, not twenty-four because it is the largest number.
+
+Once a code is generated, the page also shows its web address as a link. Click it to open the
+registration page yourself and check it works before an event starts.
+
+**Be careful with that address.** Unlike the poster's link, this one has the code built into it —
+anybody you send it to can register donors into your hall until it expires, exactly as if you had
+shown them the QR. Send it only where you would be willing to hold the code up.
 
 ### At a new-intake event
 

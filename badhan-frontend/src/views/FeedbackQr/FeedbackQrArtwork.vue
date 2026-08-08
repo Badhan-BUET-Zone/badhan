@@ -26,6 +26,19 @@
       :fill="COLORS.ink"
     >{{ caption }}</text>
 
+    <!-- Only the registration sheet carries this: it says when the printed code stops working.
+         Absent entirely on the feedback sheet, which never expires. -->
+    <text
+      v-if="subCaption"
+      data-cy="feedbackQrSubCaption"
+      :x="SUB_CAPTION.centerX"
+      :y="SUB_CAPTION.baseline"
+      text-anchor="middle"
+      :font-size="SUB_CAPTION.fontSize"
+      :font-family="SUB_CAPTION.fontFamily"
+      :fill="COLORS.ink"
+    >{{ subCaption }}</text>
+
     <!-- The quiet zone: white paper around the matrix, without which a scanner cannot find the
          code's edges. Nothing may be placed over this area. -->
     <rect
@@ -50,7 +63,7 @@
 </template>
 
 <script>
-import { PAGE, CAPTION, QR, QR_BOX, COLORS } from '@/views/FeedbackQr/feedbackQrLayout'
+import { PAGE, CAPTION, SUB_CAPTION, QR, QR_BOX, COLORS } from '@/views/FeedbackQr/feedbackQrLayout'
 
 export default {
   name: 'FeedbackQrArtwork',
@@ -58,6 +71,11 @@ export default {
     caption: {
       type: String,
       required: true
+    },
+    // The expiry line, on the registration sheet only.
+    subCaption: {
+      type: String,
+      default: ''
     },
     // The module matrix as qrcode's create() returns it: { size, data }, where data is a flat array
     // of one byte per module. Passed in rather than fetched here so the library import stays where
@@ -74,7 +92,7 @@ export default {
     }
   },
   data: () => {
-    return { PAGE, CAPTION, QR, QR_BOX, COLORS }
+    return { PAGE, CAPTION, SUB_CAPTION, QR, QR_BOX, COLORS }
   },
   computed: {
     quietZoneMm () {

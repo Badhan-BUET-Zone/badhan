@@ -92,17 +92,40 @@
 
     <Container v-if="qrMatrix">
       <v-card-text class="title" data-cy="registrationQrExpiry">
-        This code stops working at {{ expiryClock }} — valid for {{ durationLabel }}.
+        {{ expiryLine }}
       </v-card-text>
 
       <div style="max-width: 420px" class="mx-auto">
+        <!-- The same sentence on screen and on paper: a printed code expires, and the sheet has to
+             say so or somebody pins it up and trusts it past its lifetime. -->
         <FeedbackQrArtwork
           ref="artwork"
           :caption="caption"
+          :sub-caption="expiryLine"
           :qr-matrix="qrMatrix"
           :qr-url="qrUrl"
         />
       </div>
+
+      <!--
+        Chrome, not content: outside the artwork SVG, so it never reaches the printed sheet.
+
+        Unlike the poster's link, THIS ONE IS THE CREDENTIAL. The token is in the address, so anyone
+        who has the link can submit until it expires, exactly as if they had scanned the code. That
+        is why the wording here is a warning and the poster's is an invitation to share.
+      -->
+      <v-card-text class="text-center" style="word-break: break-all">
+        <a
+          data-cy="registrationQrLink"
+          :href="qrUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >{{ qrUrl }}</a>
+      </v-card-text>
+      <v-card-text class="subtitle-2" data-cy="registrationQrLinkWarning">
+        This link contains the code itself. Sharing it is the same as letting somebody scan the QR,
+        so send it only where you would show the code.
+      </v-card-text>
 
       <v-card-actions class="justify-center">
         <Button
@@ -184,6 +207,11 @@ export default {
     expiryClock () {
       if (!this.expiresAt) return ''
       return new Date(this.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    },
+    // One string, rendered on screen and printed into the PDF, so the two can never disagree.
+    expiryLine () {
+      if (!this.expiresAt) return ''
+      return `This code stops working at ${this.expiryClock} — valid for ${this.durationLabel}.`
     },
     durationLabel () {
       const match = this.durations.find((option) => option.value === this.durationMinutes)

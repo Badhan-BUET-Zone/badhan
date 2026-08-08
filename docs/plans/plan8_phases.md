@@ -1522,9 +1522,11 @@ collapsed line above the list is awkward.
   deliver that is to use the component, not to imitate it. Everything it offers — the call button,
   the expansion, See profile, even adding a donation date straight from the card — keeps working,
   which is precisely the workflow §4 describes.
-- Below it: the message rendered with `{{ }}` and `white-space: pre-wrap` (never `v-html`, never
-  `VueMarkdown` — see phase 4.2), the submission time via `new Date(date).toLocaleString()`, and
-  **Discard**.
+- Below it, **each under its own label — "Feedback content" and "Date"** — the message rendered with
+  `{{ }}` and `white-space: pre-wrap` (never `v-html`, never `VueMarkdown` — see phase 4.2) and the
+  submission time via `new Date(date).toLocaleString()`. Then **Discard**. The labels matter because
+  a bare paragraph under a donor card reads as part of the card rather than as something the donor
+  typed.
 
 **(b) A message from an unknown donor** (`type: 'feedback'`, `donor` null) — a deleted donor, per
 phase 1.4, or a phone/student ID that no longer matches.
@@ -1556,6 +1558,27 @@ Common to all three:
 - **On 200 or 404** remove the card — 404 means someone else discarded it first, which §4.2 says
   should be a calm message, not an error. There is no count to decrement (8.4).
 - **Empty state:** a plain "No feedback is waiting."
+
+**A second collapsible panel: "Send a message about yourself".** Beside the QR panel (9.1), in the
+same card, collapsed by default. It holds one textarea and a Send button, and it files a message on
+the **signed-in member's own** record — `phone` and `studentId` come from
+[store/myprofile.ts](../../badhan-frontend/src/store/myprofile.ts), never from an input.
+
+**It makes the two ordinary public calls, in order** — `POST /feedbacks/token` with the member's own
+pair, then `POST /feedbacks` with the token that comes back, `type: 'feedback'`, and the pair
+repeated inside `feedbackJSON` because the token carries no identity (2.0).
+
+**There is deliberately no authenticated shortcut.** The public submit route stays the only way a row
+is created, so this panel exercises the real contract rather than a private door around it: if the
+donor journey breaks, this breaks with it. It also means the panel inherits every rule — the message
+is stored verbatim, the hall comes from the token, and the row has to be discarded by hand like any
+other.
+
+On success it clears the field and **emits an event so the page reloads the queue**. It deliberately
+shows **no confirmation line**: the row appearing in the queue below is the confirmation, and it says
+more than a sentence could, because the sender can see exactly what was filed. The public pages keep
+the server's 201 message — there is no queue underneath them to serve as proof. On success the queue is already out of date the moment the call returns, which is why it is refetched. If `myprofile` is missing either field, the panel says so and disables Send rather than
+sending `undefined` into a 400.
 
 ### 8.3 The prefill
 
@@ -1709,6 +1732,12 @@ Then wire it in:
 8. **A `newDonor` row renders the registration card**, and **Create donor** lands on
    `/singleDonorCreation?name=…&phone=…` **with every field already filled in** — assert the field
    values, not just the URL.
+8c. **The self-service panel makes both public calls, in order**: the submitted token equals the one
+    the mint call returned, and the payload repeats the phone and student ID. Asserted through
+    `cy.intercept`, because "it worked" would pass even if the page had grown a private write route.
+8d. **The panel is collapsed on arrival** and its textarea is **absent from the DOM**, not merely
+    hidden — a collapsed expansion panel renders no content, so `not.exist` is the assertion and
+    `not.be.visible` fails for the wrong reason.
 8b. **Reloading that prefilled URL keeps every field** (8.3). This is the property the cut read-one
    endpoint used to provide, and the reason the draft is in the query string rather than the store.
 9. **Saving the prefilled form creates the donor, and the feedback row is still there** (8.3).
@@ -1762,6 +1791,13 @@ permanent line in the sidebar.
 - New component `badhan-frontend/src/views/Feedback/FeedbackQrPanel.vue`, rendered by
   [Feedback.vue](../../badhan-frontend/src/views/Feedback.vue) (phase 8.2) **above the card list**,
   before `LoadingMessage`.
+- **The URL is shown beneath the artwork as a clickable link**, opening in a new tab with
+  `rel="noopener noreferrer"`. It sits **outside the SVG**, like the download button — the printed
+  sheet carries a code and a caption and deliberately no readable URL, so a link inside the artwork
+  would end up on paper. It is built from the configured base URL as a computed value rather than
+  stored, so it appears the moment the panel opens without waiting for the QR library to load. It is
+  there for the volunteer at the screen who wants to check where the code goes, or send the address
+  to somebody without printing anything — which §7 already says is safe.
 - **Collapsed by default**, using the same expansion-panel pattern the app already uses elsewhere.
   Collapsed it is one line — *"Print a QR poster for donors"* — and the queue is still the first
   thing on the page. Expanded it shows the artwork preview and the download button.
@@ -1866,6 +1902,16 @@ Feedback page nor the expanded panel pulls ~500 KiB until someone actually downl
   easier. The same A4 portrait layout; no new pipeline. English caption, matching the sheet. Note that
 a printed registration code still expires — the duration chosen above is baked into it — so a sheet
 printed for a four-hour event is waste paper the next morning.
+- **The generated address is shown as a clickable link**, after generating and not before, opening
+  in a new tab with `rel="noopener noreferrer"` and outside the artwork SVG so it never reaches the
+  printed sheet. It carries the token, so it is byte-identical to what the code encodes — asserted
+  against the decoded QR rather than rebuilt, so the two cannot drift.
+
+  **It needs a warning the poster's link does not.** The poster's address is public by design and
+  §7 encourages sharing it; **this one is the credential**. Anyone holding it can submit until it
+  expires, exactly as if they had scanned the code, so the page says: *"This link contains the code
+  itself. Sharing it is the same as letting somebody scan the QR."* Do not copy the poster's
+  invite-to-share wording onto this one.
 - **A warning line, always visible:** anyone who has this code can submit until it expires, and it
   **cannot be cancelled** — there is no revocation anywhere in this feature (phase 2.0). Generate a
   short one for a short event.

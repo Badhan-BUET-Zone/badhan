@@ -22,6 +22,16 @@ export const CAPTION = {
   fontFamily: 'Helvetica, Arial, sans-serif'
 } as const
 
+// Only the registration sheet uses this. A printed registration code expires, and a sheet that does
+// not say when is a sheet somebody pins up and trusts past its lifetime. The feedback sheet has no
+// sub-caption because it never expires.
+export const SUB_CAPTION = {
+  centerX: PAGE.width / 2,
+  baseline: 72,
+  fontSize: 5,
+  fontFamily: 'Helvetica, Arial, sans-serif'
+} as const
+
 export const QR = {
   // 120 mm, comfortably past the 80 mm floor below which a printed code stops being reliable at
   // notice-board distance. Nothing else is competing for the page, so there is no reason to be shy.

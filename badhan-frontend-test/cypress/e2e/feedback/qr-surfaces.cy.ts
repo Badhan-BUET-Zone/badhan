@@ -70,6 +70,23 @@ describe('The printed feedback sheet', () => {
     cy.get('[data-cy="feedbackQrArtwork"]').find('image').should('not.exist');
   });
 
+  it('shows the donor page URL as a link that opens in a new tab', () => {
+    cy.get('[data-cy="feedbackQrPanelHeader"]').click();
+
+    cy.get('[data-cy="feedbackQrLink"]')
+      .should('have.attr', 'href', `${FRONTEND_BASE}/#/donor`)
+      .and('have.attr', 'target', '_blank')
+      // Without noopener the opened page can reach back through window.opener.
+      .and('have.attr', 'rel')
+      .and('contain', 'noopener');
+
+    cy.get('[data-cy="feedbackQrLink"]').should('have.text', `${FRONTEND_BASE}/#/donor`);
+
+    // Outside the artwork: the printed sheet carries the code and the caption and no readable URL,
+    // so a link inside the SVG would end up on paper.
+    cy.get('[data-cy="feedbackQrArtwork"]').find('[data-cy="feedbackQrLink"]').should('not.exist');
+  });
+
   it('keeps the download button outside the artwork', () => {
     // Chrome must never reach the PDF: svg2pdf converts the SVG, so anything inside it prints.
     cy.get('[data-cy="feedbackQrPanelHeader"]').click();
@@ -96,16 +113,35 @@ describe('The registration QR generator', () => {
   beforeEach(() => {
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    drawer.open();
-    cy.get('[data-cy="registrationQrNavigationId"]').click();
+    drawer.goToRegistrationQr();
   });
 
-  it('sits under Donor Creation, and there is no Print Poster entry anywhere', () => {
+  it('is nested under Donor Creation, and there is no Print Poster entry anywhere', () => {
     drawer.open();
-    cy.get('[data-cy="registrationQrNavigationId"]').should('exist');
+    cy.get('[data-cy="donorCreationNavigationId"]').click();
+
+    // The structural claim, asserted structurally: the entry is a DESCENDANT of the Donor Creation
+    // group, not a sibling of it. Checking that it is absent while collapsed would be testing
+    // Vuetify's expansion state instead — and that state survives a hash-only navigation, so it
+    // passes or fails for reasons that have nothing to do with the menu.
+    cy.get('[data-cy="donorCreationNavigationId"]')
+      .find('[data-cy="registrationQrNavigationId"]')
+      .should('exist');
+
     // The poster is a panel on the Feedback page, not a menu item. A volunteer told to look for one
     // would not find it, which is why the manual describes where the panel is instead.
     cy.contains('.v-list-item', 'Print Poster').should('not.exist');
+
+    // Bookmarked Donors now sits below Members.
+    cy.get('.v-navigation-drawer').then(($drawer) => {
+      const ids = Array.from($drawer[0].querySelectorAll('[data-cy]')).map((el) =>
+        el.getAttribute('data-cy'),
+      );
+      expect(ids.indexOf('activeDonorNavigationId')).to.be.greaterThan(
+        ids.indexOf('membersNavigationId'),
+      );
+    });
+
     cy.get('body').type('{esc}');
   });
 
@@ -151,6 +187,37 @@ describe('The registration QR generator', () => {
     });
   });
 
+  it('shows the generated link, and only after generating', () => {
+    // Nothing to link to before a token exists.
+    cy.get('[data-cy="registrationQrLink"]').should('not.exist');
+
+    cy.get('[data-cy="registrationQrGenerateButton"]').click();
+    cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 }).should('exist');
+
+    cy.get('[data-cy="registrationQrLink"]')
+      .should('have.attr', 'target', '_blank')
+      .and('have.attr', 'rel')
+      .and('contain', 'noopener');
+
+    // The link and the code carry the same address, token included — one is not a shortened or
+    // tokenless version of the other.
+    decodeFeedbackQr().then((decoded) => {
+      cy.get('[data-cy="registrationQrLink"]').should('have.attr', 'href', decoded);
+      cy.get('[data-cy="registrationQrLink"]').should('have.text', decoded);
+    });
+
+    // Unlike the poster's address, this one IS the credential, and the page says so.
+    cy.get('[data-cy="registrationQrLinkWarning"]').should(
+      'contain.text',
+      'Sharing it is the same as letting somebody scan the QR',
+    );
+
+    // Outside the artwork, so it cannot reach the printed sheet.
+    cy.get('[data-cy="feedbackQrArtwork"]')
+      .find('[data-cy="registrationQrLink"]')
+      .should('not.exist');
+  });
+
   it('hides the app chrome in full screen, and the code still decodes the same', () => {
     cy.get('[data-cy="registrationQrGenerateButton"]').click();
     cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 }).should('exist');
@@ -191,6 +258,10 @@ describe('The registration QR generator', () => {
       expect(contents).to.not.contain('/FontFile');
       // No raster image anywhere — the QR is vector geometry, which is what survives printing.
       expect(contents).to.not.contain('/Subtype /Image');
+      // The expiry sentence is printed onto the sheet, not only shown on screen: a registration
+      // code expires, and paper that does not say when gets pinned up and trusted past its life.
+      expect(contents).to.contain('This code stops working at');
+      expect(contents).to.contain('valid for 4 hours');
     });
   });
 });

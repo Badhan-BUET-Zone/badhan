@@ -1,5 +1,5 @@
 <template>
-  <ContainerOutlined :data-cy="'feedbackCard-' + feedback._id">
+  <Container :data-cy="'feedbackCard-' + feedback._id">
 
     <!-- (a) A message from a donor we can find. The card is PersonCardNew itself rather than an
          imitation of it, so the call button, the expansion, See profile and adding a donation date
@@ -57,14 +57,17 @@
     <!-- The message. Rendered with {{ }} and pre-wrap: NEVER v-html and NEVER VueMarkdown, which the
          donor comment field does use. This text is attacker-controlled and is stored exactly as it
          was typed, so Vue's escaping of interpolated output is the only thing making it inert. -->
-    <v-card-text
-      v-if="feedback.type === 'feedback'"
-      style="white-space: pre-wrap"
-      class="body-1"
-      data-cy="feedbackMessageText"
-    >{{ feedback.feedbackJSON.text }}</v-card-text>
+    <template v-if="feedback.type === 'feedback'">
+      <v-card-subtitle class="pb-0">Feedback content</v-card-subtitle>
+      <v-card-text
+        style="white-space: pre-wrap"
+        class="body-1"
+        data-cy="feedbackMessageText"
+      >{{ feedback.feedbackJSON.text }}</v-card-text>
+    </template>
 
-    <v-card-subtitle data-cy="feedbackDate">{{ new Date(feedback.date).toLocaleString() }}</v-card-subtitle>
+    <v-card-subtitle class="pb-0">Date</v-card-subtitle>
+    <v-card-text data-cy="feedbackDate">{{ new Date(feedback.date).toLocaleString() }}</v-card-text>
 
     <v-card-actions>
       <Button
@@ -85,11 +88,11 @@
         :click="confirmDiscard"
       ></Button>
     </v-card-actions>
-  </ContainerOutlined>
+  </Container>
 </template>
 
 <script>
-import ContainerOutlined from '@/components/Container/ContainerOutlined'
+import Container from '@/components/Container/Container'
 import PersonCardNew from '@/components/PersonCardNew'
 import Button from '@/components/UI Components/Button'
 import { decodeEntities } from '@/views/Feedback/decodeEntities'
@@ -99,7 +102,7 @@ import { decodeEntities } from '@/views/Feedback/decodeEntities'
 // does any message whose donor was deleted.
 export default {
   name: 'FeedbackCard',
-  components: { ContainerOutlined, PersonCardNew, Button },
+  components: { Container, PersonCardNew, Button },
   props: {
     feedback: { type: Object, required: true },
     discardingFlag: { type: Boolean, default: false }

@@ -19,6 +19,14 @@ export class NavigationDrawer {
     cy.get('[data-cy="csvDonorCreationId"]').click();
   }
 
+  goToRegistrationQr(): void {
+    // Nested under Donor Creation, so the group has to be expanded first — generating a code is one
+    // of the ways a donor eventually gets created.
+    this.open();
+    cy.get('[data-cy="donorCreationNavigationId"]').click();
+    cy.get('[data-cy="registrationQrNavigationId"]').click();
+  }
+
   goToFeedback(): void {
     // Open main drawer and click Feedback. A plain entry — there is deliberately no badge or count
     // on it, so there is nothing else to wait for.

@@ -317,4 +317,74 @@ describe('The Feedback page', () => {
       });
     });
   });
+
+  it('files a message about yourself through the two public calls', () => {
+    // Two calls, in order: mint a token from the member's own phone and student ID, then submit
+    // with it. There is deliberately no authenticated write path for feedback — this exercises the
+    // same contract a donor at a notice board uses, so it breaks when that journey breaks.
+    cy.intercept('POST', '**/feedbacks/token').as('mintToken');
+    cy.intercept('POST', '**/feedbacks').as('submitFeedback');
+
+    drawer.goToFeedback();
+    cy.get('[data-cy="ownFeedbackPanelHeader"]').click();
+    cy.get('[data-cy="ownFeedbackInput"]').type('A message I filed about myself');
+    cy.get('[data-cy="ownFeedbackSubmitButton"]').click();
+
+    cy.wait('@mintToken').then((mint) => {
+      expect(mint.response.statusCode).to.equal(200);
+
+      cy.wait('@submitFeedback').then((submit) => {
+        expect(submit.response.statusCode).to.equal(201);
+        // The second call carries the token the first returned, and repeats the pair, because the
+        // token itself holds no identity.
+        expect(submit.request.body.token).to.equal(mint.response.body.token);
+        expect(submit.request.body.type).to.equal('feedback');
+        expect(submit.request.body.feedbackJSON.phone).to.equal(mint.response.body.donor.phone);
+        expect(submit.request.body.feedbackJSON.studentId).to.equal(
+          mint.response.body.donor.studentId,
+        );
+      });
+    });
+
+    // There is deliberately no success line: the row appearing in the queue below IS the
+    // confirmation, and it shows exactly what was filed.
+    cy.get('[data-cy="ownFeedbackSuccess"]').should('not.exist');
+    // The field is cleared and the queue below refreshes itself, so the row is on screen without a
+    // manual reload.
+    cy.get('[data-cy="ownFeedbackInput"]').should('have.value', '');
+    cy.contains('[data-cy="feedbackMessageText"]', 'A message I filed about myself').should('exist');
+  });
+
+  it('keeps the send button disabled until something is typed', () => {
+    drawer.goToFeedback();
+    cy.get('[data-cy="ownFeedbackPanelHeader"]').click();
+    cy.get('[data-cy="ownFeedbackSubmitButton"]').should('be.disabled');
+    cy.get('[data-cy="ownFeedbackInput"]').type('now it has content');
+    cy.get('[data-cy="ownFeedbackSubmitButton"]').should('not.be.disabled');
+  });
+
+  it('labels the message and the timestamp on every card', () => {
+    createDonorViaApi({ name: 'Labelled Donor', studentId: uniqueStudentId() }, 'donor');
+
+    cy.get<FeedbackDonor>('@donor').then((donor) => {
+      seedMessageViaApi(donor, 'a labelled message').then(() => {
+        drawer.goToFeedback();
+        // Both are named rather than sitting bare under the donor card.
+        cy.contains('.v-card__subtitle', 'Feedback content').should('be.visible');
+        cy.contains('.v-card__subtitle', 'Date').should('be.visible');
+        cy.get('[data-cy="feedbackMessageText"]').should('have.text', 'a labelled message');
+        cy.get('[data-cy="feedbackDate"]').should('not.have.text', '');
+      });
+    });
+  });
+
+  it('starts collapsed, beside the QR panel and above the queue', () => {
+    drawer.goToFeedback();
+    // Both panels share one card and both are shut on arrival: the queue is what the page is for.
+    // A collapsed expansion panel does not render its content into the DOM at all, so this is
+    // `not.exist` rather than `not.be.visible`.
+    cy.get('[data-cy="ownFeedbackPanelHeader"]').should('be.visible');
+    cy.get('[data-cy="ownFeedbackInput"]').should('not.exist');
+    cy.get('[data-cy="feedbackQrPanelHeader"]').should('be.visible');
+  });
 });
