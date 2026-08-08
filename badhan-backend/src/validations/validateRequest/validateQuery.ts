@@ -114,3 +114,8 @@ export const validateQUERYPhoneList: ValidationChain = query('phoneList').exists
   .customSanitizer((phoneList:string[]):number[] => {
     return phoneList.map((phone: string):number => parseInt(phone,10))
   }).withMessage('Error occurred at phoneList element parseInt')
+
+export const validateQUERYFeedbackId: ValidationChain = query('feedbackId')
+  .exists().withMessage('feedbackId is required')
+  .customSanitizer((value:string):string => String(value))
+  .escape().trim().custom((feedbackId: string):boolean => mongoose.Types.ObjectId.isValid(feedbackId)).withMessage('Enter a valid feedbackId')

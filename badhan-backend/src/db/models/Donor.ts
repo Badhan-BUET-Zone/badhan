@@ -328,6 +328,10 @@ donorSchema.pre<IDonor>('save', function (next: (err?: Error) => void):void{
 })
 
 
+// `Feedbacks` is deliberately absent from this cascade. A feedback row has no donor id
+// to match on, and deleting a donor leaves their messages in the queue for a volunteer
+// to clear by hand. The Feedback page has to render a donor-less row anyway — every
+// new-donor registration is one — so the cascade would buy nothing.
 donorSchema.post('findOneAndDelete', async (donor: IDonor):Promise<void> => {
   await CallRecordModel.deleteMany({ callerId: donor._id })
   await CallRecordModel.deleteMany({ calleeId: donor._id })

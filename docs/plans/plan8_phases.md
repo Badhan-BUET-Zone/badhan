@@ -315,21 +315,36 @@ Write this down where a future reader will trip over it — a one-line comment b
 listing `Feedbacks` as a deliberate omission — because every other donor-owned collection is in
 there and the next person to read it will assume an oversight.
 
-### 1.5 Tests (`badhan-backend-test/tests/feedbacks/`)
+### 1.5 Tests — deferred, and why
 
-There is no route yet, so reach the model the way the existing suites reach the database, or defer
-these into phase 5's suite — but do not skip them:
+**`badhan-backend-test` is HTTP-only.** It drives the API over axios and has no mongoose dependency
+and no database handle; `badhan-backend` itself has no test framework at all. There is no way to
+assert on a model here without either inventing a unit-test harness in the backend or giving the test
+suite direct database access — both larger changes than this phase, and neither asked for.
+
+So the three model tests **land in phase 4's suite**, where `POST /feedbacks` exists and each one can
+be asserted through a route. They are listed here so they are not lost:
 
 1. A row round-trips with all four fields intact — `type`, `hall`, `feedbackJSON`, `date` — and
    `feedbackJSON` comes back as an object rather than a string, **with no `type` key inside it and
-   with `phone` and `studentId` inside it** (1.0).
-1b. A `type` outside `['feedback', 'newDonor']` is rejected by the schema enum.
-2. A `feedbackJSON` over 4 KB is rejected.
-3. **Deleting the donor leaves the feedback row in place** (1.4). This is the test that pins a
-   decision someone will otherwise "fix".
+   with `phone` and `studentId` inside it** (1.0). → phase 4.5 test 1 and test 9.
+2. A `type` outside `['feedback', 'newDonor']` is rejected. → phase 4.5, via the validator, which
+   answers 400 before the schema enum is reached.
+3. A `feedbackJSON` over 4 KB is rejected. → phase 4.5, via the route's size cap; the schema guard
+   sits behind it.
+4. **Deleting the donor leaves the feedback row in place** (1.4). This is the test that pins a
+   decision someone will otherwise "fix", and it needs both `DELETE /donors` and `GET /feedbacks`, so
+   it lands in **phase 5.6**.
 
-**Phase 1 is done when** the container boots, `syncIndexes` reports the three new indexes, and the
-round-trip tests pass.
+**What was verified for this phase instead**, by a throwaway script run against the model inside the
+backend container and then deleted: the four-field round trip; `feedbackJSON` stored as an object
+with its `phone`, `studentId` and apostrophes intact; the `date` default; the `type` enum; the hall
+bounds, including `ATTACHED` being accepted; the 4 KB guard rejecting 5 KB and accepting 3.9 KB;
+`findFeedbackById` / `deleteFeedbackById` returning `OK` then `ERROR`; the donor-delete cascade
+leaving the row; and exactly three indexes on the collection (`_id`, `{hall,date}`, `{date}`).
+
+**Phase 1 is done when** the container boots and `syncIndexes` reports the two new indexes
+(`Feedbacks ➕ added`), `tsc --noEmit` and `tslint` are clean, and the model behaviour in 1.5 holds.
 
 ---
 
@@ -398,8 +413,10 @@ Rules:
   (phase 9.3). Adding a claim is a privacy decision, not a convenience — re-read 2.0 first.
 - **Expiry is a JWT `exp` claim**, so `jwt.verify` enforces it and nothing in the app has to compare
   clocks by hand. Distinguish `TokenExpiredError` from every other failure — the pages want to say
-  "this QR code has expired", which is actionable, rather than "invalid".
-- **A small payload keeps the QR scannable.** Three claims is about as low-density as a signed JWT
+  "this QR code has expired", which is actionable, rather than "invalid". Pass
+  **`noTimestamp: true`** alongside `expiresIn`: `jsonwebtoken` otherwise adds an `iat` claim that
+  nothing reads, and dropping it is what keeps the payload exactly two claims.
+- **A small payload keeps the QR scannable.** Two claims is about as low-density as a signed JWT
   gets, which is what makes the code readable from the back of a room (phase 9.3).
 - **Nothing is stored** (2.0). The module touches no collection.
 
@@ -481,6 +498,11 @@ Unit-level, against the module:
 7. An absent `durationMinutes` gives 15 minutes (2.3).
 
 **Phase 2 is done when** all seven pass and nothing outside this module knows how a token is built.
+
+Four more were worth adding while the module was in front of me, and they are cheap to keep: the
+lower clamp (0 → 1 minute), a token whose `hall` is out of range, a token with no `hall` at all, and
+malformed input — `'not.a.jwt'` and `''` — returning `invalid` rather than throwing. The last pair
+matters because the submit route hands this function whatever arrived in a request body.
 
 ---
 
@@ -976,6 +998,12 @@ The donor fetch (4.1):
 **Phase 4 is done when** both journeys write rows, neither can wear the other's hat, and nothing
 outside `feedbacks` moved.
 
+Seven more earned their place while building it: a `type` outside the enum → 400; a missing `token` →
+400; an extra key on a `feedback` payload → 400; an oversized payload → **400 rather than 500** (the
+size is checked *after* escaping, because escaping expands and the schema's own 4 KB guard would
+otherwise fail the insert); `lastDonation` in the future → 400; `lastDonation` set while its count is
+`0` → 400; and the guest mirror answering 201 while writing nothing.
+
 ---
 
 ## Phase 5 — The volunteer-facing endpoints
@@ -1129,6 +1157,12 @@ role:
 
 **Phase 5 is done when** the matrix passes and a volunteer cannot obtain another hall's row through
 either of the two routes.
+
+Six more were added while building it: `GET` and `DELETE` without a session → 401; a malformed
+`feedbackId` → 400 rather than a cast error; `GET FEEDBACKS` logged with a `resultCount`; the guest
+mirror returning one row of each `type` with the registration row's `donor` null; and — pinning the
+one-list decision — **`?type=newDonor` returning exactly the same array as no query at all**, so
+adding a filter later has to be a deliberate change rather than a silently honoured parameter.
 
 ---
 
@@ -1359,6 +1393,12 @@ Rules for the sequence:
   see** (the conditional date steps drop out of the denominator). Twelve questions is long enough
   that a sequence with no visible end is one people abandon, and a counter that silently shrinks is
   worse than one that was honest from the start.
+
+  In practice that means **the denominator starts at ten and grows**. Until a count is answered it
+  is not greater than zero, so both date steps are already excluded and the student sees "of 10"
+  from question one; answering a non-zero count inserts a step and the denominator becomes 11 or
+  12. Growth is the honest direction — the warning above is about shrinking — and it is asserted in
+  7.3's conditional-step test.
 - **`hall` is set once, from the token, and never from an input.** It goes into the `answers` object
   at mount time, so the submitted payload matches phase 1.2's key list exactly.
 - **Validate at the step, not at the end.** The step's Next button is disabled until its own answer
@@ -1404,16 +1444,27 @@ Two details worth getting right:
 6. **There is no hall input anywhere in the sequence** (7.2) — assert its absence on every step and
    on the review screen — and the submitted `feedbackJSON.hall` equals the token's hall, as does the
    row's `hall` column.
-7. The submitted `feedbackJSON` carries `donationCount: 0`, `lastDonation: null`,
-   `plateletDonationCount: 0`, `lastPlateletDonation: null` and `availableToAll: false` even though
-   no screen asked for them (7.2) — and the submission is **accepted**, proving the payload still
-   satisfies phase 4.2's key list.
+7. **The donation-history answers reach the payload.** Answer a non-zero `donationCount` and a
+   date, and assert `feedbackJSON` carries both, plus the platelet pair and `availableToAll`.
+7b. **Answering `0` skips the date step.** Assert the "when did you last donate" screen never
+   renders, that the payload carries `lastDonation: null`, that the progress denominator drops, and
+   that going back and changing the count to a non-zero value re-inserts the step.
 8. No `t` → the invalid-link state, and **no step 1**.
 9. An expired token → the expired state.
 10. **No donor is created** — count donors before and after.
 
 **Phase 7 is done when** a signed-out browser with a valid token can answer its way through the
 sequence, and the row lands in the right hall's queue.
+
+Two more were added: **every skipped step sends its default** — asserted by walking the sequence
+using nothing but Skip and then deep-equalling the payload's key list against phase 1.2's — and the
+**review screen names the hall** the code was opened for.
+
+A note for whoever writes the next spec against this page: the steps sit inside a transition with
+`mode="out-in"`, so the leaving component is removed before the entering one appears. A test that
+clicks Back or Next twice without asserting the new step in between lands on a detached button and
+fails for reasons that have nothing to do with the page. The helpers in
+`cypress/support/helpers/feedback.ts` assert the step first; do the same for direct clicks.
 
 ---
 

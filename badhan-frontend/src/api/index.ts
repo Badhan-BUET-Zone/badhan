@@ -551,6 +551,30 @@ const handleGETDonorsDesignation = async () => {
   }
 }
 
+// The two calls behind the whole feedback feature, and both run without a session most of the time.
+// badhanAxios is still the right instance: its request interceptor simply sends no x-auth header
+// when the store has no token, and going through it keeps guest mode working (guest mode rewrites
+// the base URL to /guest, where both routes are mirrored).
+//
+// The mint route has no session branch at all, so a signed-in volunteer calling it gets exactly what
+// an anonymous donor gets. That is what lets the QR generator in phase 9 reuse this same call with
+// the member's own phone and student id.
+const handlePOSTFeedbackToken = async (payload: { phone: number, studentId: string, durationMinutes?: number }) => {
+  try {
+    return await badhanAxios.post('/feedbacks/token', payload)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handlePOSTFeedback = async (payload: { token: string, type: string, feedbackJSON: object }) => {
+  try {
+    return await badhanAxios.post('/feedbacks', payload)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 const handleGETPublicContacts = async () => {
   try {
     return await badhanAxios.get('/publicContacts')
@@ -716,6 +740,8 @@ export {
   handleDELETECallRecord,
   handleGETDonorsDesignation,
   handleGETPublicContacts,
+  handlePOSTFeedbackToken,
+  handlePOSTFeedback,
   handleGETCertificate,
   handlePOSTPublicContacts,
   handleDELETEPublicContacts,

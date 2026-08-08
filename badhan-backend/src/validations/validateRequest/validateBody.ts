@@ -3,6 +3,8 @@ import mongoose from 'mongoose'
 import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
 import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
+import { FEEDBACK_TOKEN_MAX_MINUTES } from '../../services/feedbackToken'
+import { FEEDBACK_TYPE_VALUES } from '../../db/models/Feedback'
 
 export const validateBODYPhone: ValidationChain = body('phone')
   .exists().withMessage('Phone number is required')
@@ -117,3 +119,21 @@ export const validateBODYEmail: ValidationChain = body('email')
     }
     return checkEmail(email)
   }).withMessage('email is not valid')
+
+// The token's lifetime, in minutes. Optional: absent means the service's default of 15.
+// The ceiling is enforced here and again in feedbackToken.mintFeedbackToken, because it
+// is a property of the token rather than of one endpoint that happens to mint it.
+export const validateBODYDurationMinutes: ValidationChain = body('durationMinutes')
+  .optional()
+  .isInt({ min: 1, max: FEEDBACK_TOKEN_MAX_MINUTES }).toInt()
+  .withMessage(`durationMinutes must be an integer between 1 and ${FEEDBACK_TOKEN_MAX_MINUTES}`)
+
+// The submission's own discriminator. It lives on the body rather than inside
+// feedbackJSON because it is what selects the payload validator and, later, the card.
+export const validateBODYType: ValidationChain = body('type')
+  .exists().withMessage('type is required')
+  .isIn(FEEDBACK_TYPE_VALUES).withMessage(`type must be one of ${FEEDBACK_TYPE_VALUES.join(', ')}`)
+
+export const validateBODYToken: ValidationChain = body('token')
+  .exists().not().isEmpty().withMessage('token is required')
+  .customSanitizer((value:any):string => String(value)).trim()

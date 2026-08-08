@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Query, Route, Tags } from 'tsoa'
 import * as faker from '../doc/faker'
+import * as feedbackToken from '../services/feedbackToken'
 import { DESIGNATIONS_INDEX, HTTP_STATUS } from '../constants'
 
 @Route('guest')
@@ -21,6 +22,175 @@ export class GuestController extends Controller {
       statusCode: HTTP_STATUS.CREATED,
       message: 'Guest sign in will not show actual nor accurate data',
       token: faker.getToken()
+    }
+  }
+
+  /**
+   * Guest feedback token — returns a faker donor and a REAL, mintable token.
+   *
+   * Guest mode should exercise the same code path rather than a stub: the token this
+   * returns actually verifies, so the guest QR generator and the guest donor page behave
+   * like the real thing all the way through to submission.
+   */
+  @Post('feedbacks/token')
+  @Hidden()
+  public async postFeedbackToken(
+    @Body() body: { phone: number; studentId: string; durationMinutes?: number }
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    token: string
+    expiresAt: number
+    donor: {
+      name: string
+      phone: number
+      studentId: string
+      bloodGroup: number
+      hall: number
+      donationCount: number
+      plateletDonationCount: number
+      lastDonation: number
+      lastPlateletDonation: number
+    }
+  }> {
+    const hall: number = faker.getHall()
+    const minted: { token: string; expiresAt: number } = feedbackToken.mintFeedbackToken(hall, body.durationMinutes)
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Token generated successfully',
+      token: minted.token,
+      expiresAt: minted.expiresAt,
+      donor: {
+        name: faker.getName(),
+        phone: faker.getPhone(),
+        studentId: faker.getStudentId(),
+        bloodGroup: faker.getBloodGroup(),
+        hall,
+        donationCount: faker.getDonationCount(),
+        plateletDonationCount: faker.getDonationCount(),
+        lastDonation: faker.getTimestamp(30),
+        lastPlateletDonation: faker.getTimestamp(30)
+      }
+    }
+  }
+
+  /**
+   * Guest feedback submission — returns the same 201 without writing anything.
+   *
+   * The only guest mirror that deliberately does NOT exercise the real path: writing
+   * would put demo rows into a real hall's queue.
+   */
+  @Post('feedbacks')
+  @Hidden()
+  public async postFeedback(
+    @Body() body: { token: string; type: string; feedbackJSON: any }
+  ): Promise<{ status: string; statusCode: number; message: string }> {
+    this.setStatus(HTTP_STATUS.CREATED)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.CREATED,
+      message: 'Thank you. Your message has reached the volunteers.'
+    }
+  }
+
+  /**
+   * Guest feedback queue — one row of each type, so the Feedback page can be demoed
+   * without filing a real submission. The newDonor row is the only way to show that card
+   * at all without writing to a real hall's queue.
+   */
+  @Get('feedbacks')
+  @Hidden()
+  public async getFeedbacks(): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    feedbacks: any[]
+  }> {
+    const card = (): any => ({
+      _id: faker.getId(),
+      name: faker.getName(),
+      phone: faker.getPhone(),
+      studentId: faker.getStudentId(),
+      bloodGroup: faker.getBloodGroup(),
+      hall: faker.getHall(),
+      address: faker.getAddress(),
+      roomNumber: faker.getRoom(),
+      comment: faker.getComment(),
+      commentTime: faker.getTimestamp(10),
+      availableToAll: faker.getBoolean(),
+      archiveFlag: false,
+      donationCount: faker.getDonationCount(),
+      plateletDonationCount: faker.getDonationCount(),
+      lastDonation: faker.getTimestamp(60),
+      lastPlateletDonation: faker.getTimestamp(40),
+      lastCalled: faker.getTimestamp(5),
+      callCountLast3Days: faker.getRandInt(0, 3),
+      markerName: faker.getName()
+    })
+
+    const donorCard: any = card()
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Feedbacks fetched successfully',
+      feedbacks: [
+        {
+          _id: faker.getId(),
+          type: 'feedback',
+          hall: donorCard.hall,
+          feedbackJSON: {
+            phone: donorCard.phone,
+            studentId: donorCard.studentId,
+            text: 'I donated on 12 March, please add it'
+          },
+          date: faker.getTimestamp(3),
+          donor: donorCard
+        },
+        {
+          _id: faker.getId(),
+          type: 'newDonor',
+          hall: faker.getHall(),
+          feedbackJSON: {
+            name: faker.getName(),
+            phone: faker.getPhone(),
+            studentId: faker.getStudentId(),
+            bloodGroup: faker.getBloodGroup(),
+            hall: faker.getHall(),
+            address: faker.getAddress(),
+            roomNumber: faker.getRoom(),
+            comment: faker.getComment(),
+            donationCount: 0,
+            lastDonation: null,
+            plateletDonationCount: 0,
+            lastPlateletDonation: null,
+            availableToAll: false
+          },
+          date: faker.getTimestamp(1),
+          donor: null
+        }
+      ]
+    }
+  }
+
+  /** Guest discard — answers 200 without removing anything */
+  @Delete('feedbacks')
+  @Hidden()
+  public async deleteFeedback(@Query() feedbackId: string): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Feedback discarded successfully'
     }
   }
 

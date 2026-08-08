@@ -60,6 +60,35 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    name: 'PublicDonor',
+    path: '/donor',
+    component: () => import('../views/PublicDonor.vue'),
+    meta: {
+      // Both signed-out and signed-in visitors go through: requiresAuth false lets an
+      // anonymous donor in, and reRouteIfAuthorized false stops a signed-in volunteer
+      // being bounced to /home — which is what makes the page testable without signing
+      // out. The same pair PublicContacts and Certificate use.
+      requiresAuth: false,
+      title: 'Badhan Donor',
+      designation: 0,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
+    name: 'PublicRegistration',
+    path: '/register',
+    component: () => import('../views/PublicRegistration.vue'),
+    meta: {
+      // The token travels as ?t=<jwt>. It is a capability rather than a secret about a
+      // person — it names a hall and an expiry and nothing else — which is why it is safe
+      // in a URL, in a QR code and in a browser history.
+      requiresAuth: false,
+      title: 'Register with Badhan',
+      designation: 0,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'PublicContacts',
     path: '/contacts',
     component: () => import('../views/PublicContacts.vue'),

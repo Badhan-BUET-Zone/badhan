@@ -217,6 +217,87 @@ export const findDonorByPhone = async (phoneNumber: number): Promise<{data?: IDo
     }
 }
 
+export interface IPublicDonorProfile {
+    name: string
+    phone: number
+    studentId: string
+    bloodGroup: number
+    hall: number
+    donationCount: number
+    plateletDonationCount: number
+    lastDonation: number
+    lastPlateletDonation: number
+}
+
+/**
+ * The nine fields a donor may see about themselves without a session, plus nothing else.
+ *
+ * Anyone who knows both a phone number and a student id can read this, so what is *not*
+ * here is the point: no address, room number, email, comment, call record, designation,
+ * availableToAll, archiveFlag or donation list.
+ *
+ * The $project below is an INCLUSION projection deliberately. A field added to the Donor
+ * schema later is then invisible here by default; an exclusion projection would leak it
+ * the day it was added.
+ *
+ * Archived donors match normally — archiving is a search behaviour, not a record state —
+ * so there is no archiveFlag filter.
+ *
+ * Counts come from the collections rather than from a field: extra donations recorded at
+ * donor creation are materialised as real Donations rows, so $size is the true count.
+ */
+export const findPublicDonorProfile = async (phone: number, studentId: string): Promise<{data?: IPublicDonorProfile, message: string, status: string}> => {
+    const matches: IPublicDonorProfile[] = await DonorModel.aggregate([
+        {
+            $match: { phone, studentId }
+        }, {
+            $lookup: {
+                from: 'donations',
+                localField: '_id',
+                foreignField: 'donorId',
+                as: 'donations'
+            }
+        }, {
+            $lookup: {
+                from: 'plateletdonations',
+                localField: '_id',
+                foreignField: 'donorId',
+                as: 'plateletDonations'
+            }
+        }, {
+            $project: {
+                _id: 0,
+                name: 1,
+                phone: 1,
+                studentId: 1,
+                bloodGroup: 1,
+                hall: 1,
+                donationCount: { $size: '$donations' },
+                plateletDonationCount: { $size: '$plateletDonations' },
+                lastDonation: { $ifNull: [{ $max: '$donations.date' }, 0] },
+                lastPlateletDonation: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] }
+            }
+        }
+    ])
+
+    // Not exactly one match is a failure, not a pick-the-first. `phone` is unique in the
+    // schema so two matches should be unreachable, but duplicate records are exactly the
+    // mess this feature has to survive, and answering from the wrong one is worse than
+    // answering not-found.
+    if (matches.length !== 1) {
+        return {
+            message: 'Donor not found',
+            status: 'ERROR'
+        }
+    }
+
+    return {
+        data: matches[0],
+        message: 'Donor fetched successfully',
+        status: 'OK'
+    }
+}
+
 export const findAllDonors = async (archiveFlag: boolean):Promise<{data: IDonor[], message: string, status: string}> => {
     // archiveFlag leads the { archiveFlag, hall, bloodGroup } index, so this partitions
     // instead of scanning the collection. It is named in the inclusion projection too, or
