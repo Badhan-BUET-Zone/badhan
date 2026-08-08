@@ -575,6 +575,22 @@ const handlePOSTFeedback = async (payload: { token: string, type: string, feedba
   }
 }
 
+const handleGETFeedbacks = async () => {
+  try {
+    return await badhanAxios.get('/feedbacks')
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleDELETEFeedback = async (feedbackId: string) => {
+  try {
+    return await badhanAxios.delete('/feedbacks', { params: { feedbackId } })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 const handleGETPublicContacts = async () => {
   try {
     return await badhanAxios.get('/publicContacts')
@@ -741,6 +757,8 @@ export {
   handleGETDonorsDesignation,
   handleGETPublicContacts,
   handlePOSTFeedbackToken,
+  handleGETFeedbacks,
+  handleDELETEFeedback,
   handlePOSTFeedback,
   handleGETCertificate,
   handlePOSTPublicContacts,

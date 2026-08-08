@@ -50,6 +50,10 @@ everything, including the reports, the backups and the appointment of hall admin
 | Bookmark donors | ❌ | ✅ | ✅ | ✅ |
 | Add a new donor | ❌ | ✅ | ✅ | ✅ |
 | Upload a file of many donors | ❌ | ✅ | ✅ | ✅ |
+| See feedback from their own hall's donors | ❌ | ✅ | ✅ | ✅ |
+| See feedback from another hall's donors | ❌ | ❌ | ❌ | ✅ |
+| Discard a message they can see | ❌ | ✅ | ✅ | ✅ |
+| Generate a registration QR code for their own hall | ❌ | ✅ | ✅ | ✅ |
 | See "Newly Created Donors" | ❌ | ❌ | ✅ | ✅ |
 | Promote a donor to volunteer | ❌ | ❌ | ✅ (own hall) | ✅ |
 | Demote a volunteer to donor | ❌ | ❌ | ✅ (own hall) | ✅ |

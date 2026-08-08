@@ -7,11 +7,16 @@
 
 ---
 
-There are two ways to put new people into the app: one at a time by filling a form, or many at
-once from a file. Use the form for the person standing in front of you; use the file after a
-donation camp, when you have a hundred names on a list.
+There are three ways to put new people into the app: one at a time by filling a form, many at
+once from a file, or from a registration a student sent in themselves. Use the form for the
+person standing in front of you; use the file after a donation camp, when you have a hundred
+names on a list.
 
-Both are under **Donor Creation** in the menu.
+The first two are under **Donor Creation** in the menu. The third starts on the **Feedback**
+page: a student scans a QR code, answers a few questions on their own phone, and their answers
+arrive as a card with a **Create donor** button that opens this same form already filled in.
+**A registration does not create a donor by itself** — a volunteer still reviews every field and
+presses Save. See [chapter 20](20-donor-feedback.md).
 
 ---
 

@@ -19,6 +19,13 @@ export class NavigationDrawer {
     cy.get('[data-cy="csvDonorCreationId"]').click();
   }
 
+  goToFeedback(): void {
+    // Open main drawer and click Feedback. A plain entry — there is deliberately no badge or count
+    // on it, so there is nothing else to wait for.
+    this.open();
+    cy.get('[data-cy="feedbackNavigationId"]').click();
+  }
+
   goToMyProfile(): void {
     // Open main drawer and click My Profile
     this.open();

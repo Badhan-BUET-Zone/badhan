@@ -1115,9 +1115,14 @@ Order of checks, and the answers:
    `logInterface.addLog(user._id, 'DELETE FEEDBACKS', { feedbackId, type, hall, feedbackJSON, date })`.
    `feedbackJSON` carries the phone and student ID, so the whole submission is still in the log
    (1.0).
-   The **full submission goes into the log** so a discarded message can still be recovered by a
-   super admin (§4.1). Write the log *after* a successful delete, so a failed delete leaves no
-   misleading entry.
+   The **full submission goes into the log** so a discarded message can still be recovered (§4.1).
+   Write the log *after* a successful delete, so a failed delete leaves no misleading entry.
+
+   **Recovery needs database access, not the app.** `GET /log` projects only `name`, `hall`, `date`
+   and `operation` — `details` is not returned by any route, and nothing in this plan adds one. So
+   "a super admin can find what was discarded in the logs" is true of the *data*, not of anything a
+   super admin can do from a screen. The manual says so in those terms. If in-app recovery is ever
+   wanted, it is a new route over a field that is already being written.
 4. Return **200** with `Feedback discarded successfully`.
 
 Add `validateQUERYFeedbackId` to
@@ -1948,11 +1953,34 @@ there is no way to make one on another hall's behalf, so a hall that wants a cod
 2. `docker compose exec backend npm run tsoa:routes` — a build step; `src/tsoaRoutes/` is gitignored
    and produces no diff.
 3. `docker compose build backend-test` then `docker compose run --rm backend-test` — the **full**
-   backend suite, not only the new tests.
+   backend suite, not only the new tests. The image has no volume mount, so **rebuild it or the run
+   uses the old tests**.
+
+   > **Two full runs inside five minutes will fail spuriously, and the failures look nothing like
+   > the cause.** The suite signs in roughly once per test — about 184 sign-ins — and `signInLimiter`
+   > allows `3 × 100` per five minutes in the test environment. A second run inside that window
+   > exhausts it, and dozens of unrelated tests then fail with `429 Please try again after 5 minutes`
+   > on `/users/signin`. Restarting the backend clears the limiter (it is in-memory), or wait out the
+   > window. **Do not go looking for a regression** — check one failure's message first.
+   >
+   > The feedback suites add ~26 sign-ins to that budget. They cannot share one: `setup-after-env`
+   > purges the database between tests, which drops the `Tokens` row a cached session depends on, so
+   > a `beforeAll` sign-in fails with "You have been logged out" partway through the file.
 4. `docker compose exec frontend npm run build`, and **check the bundle**: `qrcode`, `jspdf` and
    `svg2pdf.js` must all sit behind dynamic imports on the QR routes. Grep the built chunks rather
    than eyeballing sizes; if `app.js` grew noticeably, an import escaped. Nothing else should have
    grown — the sheet embeds no font and no image.
+
+   The check that settles it:
+
+   ```
+   docker compose exec frontend grep -c "jsPDF\|svg2pdf\|QRCode" dist/js/app.*.js   # must be 0
+   ```
+
+   As built: `app.js` is ~130 KiB and matches none of the three; `qrcode` sits in its own ~25 KiB
+   `feedback-qr` chunk; and `jspdf`/`svg2pdf.js` share the existing ~505 KiB `certificate-pdf`
+   chunk — webpack merges them because the module sets are identical, which is the right outcome
+   rather than two copies.
 5. `docker compose run --rm frontend-test` — the full Cypress suite.
 6. Re-run the **physical scan gate** (9.4) against a build produced from the final merged code.
 

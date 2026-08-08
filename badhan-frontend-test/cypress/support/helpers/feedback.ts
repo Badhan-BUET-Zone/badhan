@@ -5,6 +5,7 @@ export const API_BASE_URL = (Cypress.env('apiBaseURL') as string) || 'http://loc
 // Index 2 in the project's bloodGroups array is B+, not A+.
 const BLOOD_GROUP_B_POS = 2;
 export const HALL_SUHRAWARDY = 5;
+export const HALL_TITUMIR = 6;
 
 const toInternationalPhone = (localPhone: string) => Number(`88${localPhone}`);
 
@@ -41,7 +42,15 @@ export const superAdminToken = (): Cypress.Chainable<string> =>
 // Donors are created over the API rather than through the creation form: these specs are about the
 // public page, and driving the UI would only add unrelated ways to fail.
 export const createDonorViaApi = (
-  overrides: Partial<{ name: string; studentId: string; comment: string; address: string; roomNumber: string }>,
+  overrides: Partial<{
+    name: string;
+    studentId: string;
+    comment: string;
+    address: string;
+    roomNumber: string;
+    hall: number;
+    availableToAll: boolean;
+  }>,
   alias: string,
 ): void => {
   const localPhone = uniqueLocalPhone();
@@ -55,14 +64,16 @@ export const createDonorViaApi = (
       body: {
         phone,
         bloodGroup: BLOOD_GROUP_B_POS,
-        hall: HALL_SUHRAWARDY,
+        hall: overrides.hall ?? HALL_SUHRAWARDY,
         name: overrides.name ?? 'Feedback Spec Donor',
         studentId: overrides.studentId ?? '1605031',
         address: overrides.address ?? 'Azimpur',
         roomNumber: overrides.roomNumber ?? '3009',
         comment: overrides.comment ?? 'feedback spec comment',
         extraDonationCount: 0,
-        availableToAll: true,
+        // Defaults to true so a spec signed in as a super admin sees the donor from any hall. Pass
+        // false when the point of the spec IS that another hall cannot see them.
+        availableToAll: overrides.availableToAll ?? true,
       },
     }).then((response) => {
       cy.wrap({
@@ -161,4 +172,126 @@ export const answerChoice = (field: string, value: string | number | boolean): v
 export const skipStep = (field: string): void => {
   onStep(field);
   cy.get('[data-cy="registrationSkipButton"]').click();
+};
+
+// Seeds a row straight into the queue over the API: mint a token with the target donor's own
+// credentials, then submit as that donor. That is the same path the public page takes, so nothing
+// here is a shortcut around the real rules.
+export const seedMessageViaApi = (donor: FeedbackDonor, text: string): Cypress.Chainable<void> =>
+  mintTokenViaApi(donor.phone, donor.studentId).then((token) =>
+    cy
+      .request({
+        method: 'POST',
+        url: `${API_BASE_URL}/feedbacks`,
+        body: {
+          token,
+          type: 'feedback',
+          feedbackJSON: { phone: donor.phone, studentId: donor.studentId, text },
+        },
+      })
+      .then(() => undefined),
+  );
+
+export const seedRegistrationViaApi = (
+  minter: FeedbackDonor,
+  payload: Record<string, unknown>,
+): Cypress.Chainable<void> =>
+  mintTokenViaApi(minter.phone, minter.studentId).then((token) =>
+    cy
+      .request({
+        method: 'POST',
+        url: `${API_BASE_URL}/feedbacks`,
+        body: {
+          token,
+          type: 'newDonor',
+          feedbackJSON: {
+            name: 'Seeded Student',
+            phone: Number(`88${uniqueLocalPhone()}`),
+            studentId: '1905301',
+            bloodGroup: 2,
+            hall: HALL_SUHRAWARDY,
+            address: 'Seeded Address',
+            roomNumber: '101',
+            comment: 'seeded comment',
+            donationCount: 0,
+            lastDonation: null,
+            plateletDonationCount: 0,
+            lastPlateletDonation: null,
+            availableToAll: false,
+            ...payload,
+          },
+        },
+      })
+      .then(() => undefined),
+  );
+
+// Clears the whole queue so a spec starts from a known state. Discards through the real route, one
+// row at a time, exactly as a volunteer would.
+export const clearFeedbacksViaApi = (): void => {
+  superAdminToken().then((token) => {
+    cy.request({ method: 'GET', url: `${API_BASE_URL}/feedbacks`, headers: { 'x-auth': token } }).then(
+      (response) => {
+        (response.body.feedbacks as { _id: string }[]).forEach((feedback) => {
+          cy.request({
+            method: 'DELETE',
+            url: `${API_BASE_URL}/feedbacks?feedbackId=${feedback._id}`,
+            headers: { 'x-auth': token },
+            failOnStatusCode: false,
+          });
+        });
+      },
+    );
+  });
+};
+
+// A volunteer of Suhrawardy who can actually sign in. Promotion and password-setting go through the
+// same routes the members specs use.
+export const createVolunteerInHallViaApi = (
+  overrides: { name: string; studentId: string },
+  alias: string,
+): void => {
+  const localPhone = uniqueLocalPhone();
+  const phone = Number(`88${localPhone}`);
+
+  superAdminToken().then((token) => {
+    const headers = { 'x-auth': token };
+    cy.request({
+      method: 'POST',
+      url: `${API_BASE_URL}/donors`,
+      headers,
+      body: {
+        phone,
+        bloodGroup: BLOOD_GROUP_B_POS,
+        hall: HALL_SUHRAWARDY,
+        name: overrides.name,
+        studentId: overrides.studentId,
+        address: 'Azimpur',
+        roomNumber: '3009',
+        comment: 'feedback spec volunteer',
+        extraDonationCount: 0,
+        availableToAll: false,
+      },
+    }).then((creation) => {
+      const donorId = creation.body.newDonor._id;
+      cy.request({
+        method: 'PATCH',
+        url: `${API_BASE_URL}/donors/designation`,
+        headers,
+        body: { donorId, designation: 1 },
+      }).then(() => {
+        cy.request({ method: 'POST', url: `${API_BASE_URL}/donors/password`, headers, body: { donorId } }).then(
+          (recovery) => {
+            cy.request({
+              method: 'PATCH',
+              url: `${API_BASE_URL}/users/password`,
+              headers: { 'x-auth': recovery.body.token },
+              body: { password: 'archivetest1' },
+            }).then(() => {
+              cy.wrap({ donorId, localPhone, phone }).as(alias);
+            });
+          },
+        );
+      });
+    });
+  });
 };

@@ -120,6 +120,16 @@ export default {
           designation: 1
         },
         {
+          // No badge and no count. Nothing here tells a volunteer that work is waiting — the app
+          // bar makes no request on mount, and there is no count endpoint for it to call. Opening
+          // the page has to be a habit, which is what the manual says.
+          icon: 'mdi-message-alert',
+          text: 'Feedback',
+          to: '/feedback',
+          id: 'feedbackNavigationId',
+          designation: 1
+        },
+        {
           icon: 'mdi-plus',
           text: 'Donor Creation',
           to: '/singleDonorCreation',
@@ -147,6 +157,18 @@ export default {
             designation: 2
           }
           ]
+        },
+        {
+          // Directly beneath Donor Creation: generating a code is a thing a volunteer does at a
+          // desk or an event, and it is a sibling of creating a donor — which is what it leads to.
+          //
+          // There is deliberately no "Print Poster" entry. That sheet is a collapsed panel at the
+          // top of the Feedback page, because it is downloaded once and then not again for months.
+          icon: 'mdi-account-plus-outline',
+          text: 'Donor Registration QR',
+          to: '/registrationQr',
+          id: 'registrationQrNavigationId',
+          designation: 1
         },
         {
           icon: 'mdi-account-group',

@@ -12,7 +12,8 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 
 ## How to read this
 
-- **Brand new?** Read chapters 1 to 11. That is everything a volunteer does day to day.
+- **Brand new?** Read chapters 1 to 11, then [chapter 20](20-donor-feedback.md). That is
+  everything a volunteer does day to day.
 - **Just need one thing?** Jump straight to that chapter. Each one stands on its own.
 - **Something went wrong?** Go to [chapter 18](18-when-something-goes-wrong.md).
 - **A word you don't recognise?** Go to the [glossary](19-glossary.md).
@@ -35,6 +36,7 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 9. [Call records](09-call-records.md) — keeping track of who has been called
 10. [Bookmarked donors](10-bookmarked-donors.md) — your own shortlist of donors
 11. [Adding new donors](11-adding-new-donors.md) — one at a time, or many from a file
+20. [Donor feedback and new donor registration](20-donor-feedback.md) — the public pages, the Feedback queue, the QR codes
 
 **For admins**
 
@@ -49,6 +51,10 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 17. [Rules the app enforces](17-rules-the-app-enforces.md) — every refusal, and what to do about it
 18. [When something goes wrong](18-when-something-goes-wrong.md) — common problems and fixes
 19. [Glossary](19-glossary.md) — every term in one place
+
+*Chapter 20 is listed under "Everyday work" above, where you would look for it. It is numbered
+20 because chapters are never renumbered — renumbering would break every cross-reference in the
+manual.*
 
 ---
 

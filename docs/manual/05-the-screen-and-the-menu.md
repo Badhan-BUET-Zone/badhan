@@ -31,6 +31,7 @@ may be shorter than a colleague's.
 | --- | --- | --- |
 | **Home** | Search for donors. The page you will use most. [Chapter 6](06-searching-for-donors.md) | Volunteer and above |
 | **Bookmarked Donors** | Your own shortlist of donors. [Chapter 10](10-bookmarked-donors.md) | Volunteer and above |
+| **Feedback** | Messages and registrations sent from the public pages. [Chapter 20](20-donor-feedback.md) | Volunteer and above |
 | **Donor Creation** | Opens into three entries below | Volunteer and above |
 | → Single Donor Creation | Add one new donor by filling a form. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |
 | → Upload CSV of Donors | Add many donors at once from a file. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |

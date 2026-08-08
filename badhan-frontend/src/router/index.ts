@@ -25,6 +25,33 @@ interface CustomRoute extends Route{
 
 const routes: CustomRouteConfig[] = [
   {
+    name: 'Feedback',
+    path: '/feedback',
+    component: () => import('../views/Feedback.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Feedback',
+      designation: 1,
+      reRouteIfAuthorized: false
+    },
+    children: [
+      {
+        // The shared Details view, exactly as ActiveDonors uses it: "See profile" opens the
+        // donor's full profile over the list so a volunteer can do the actual work without
+        // losing their place in the queue.
+        name: 'FeedbackDetails',
+        path: 'details',
+        component: Details,
+        meta: {
+          title: 'Donor Details',
+          requiresAuth: true,
+          designation: 1,
+          reRouteIfAuthorized: false
+        }
+      }
+    ]
+  },
+  {
     name: 'ActiveDonors',
     path: '/activeDonors',
     component: () => import('../views/ActiveDonors.vue'),
@@ -71,6 +98,17 @@ const routes: CustomRouteConfig[] = [
       requiresAuth: false,
       title: 'Badhan Donor',
       designation: 0,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
+    name: 'RegistrationQr',
+    path: '/registrationQr',
+    component: () => import('../views/RegistrationQr.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Donor Registration QR',
+      designation: 1,
       reRouteIfAuthorized: false
     }
   },

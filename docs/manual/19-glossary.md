@@ -3,7 +3,7 @@
 > **Written for readers with no coding experience.** This manual assumes no programming or
 > technical knowledge of any kind — only that you use the Badhan app.
 
-[← Previous: When something goes wrong](18-when-something-goes-wrong.md) · [Contents](README.md)
+[← Previous: When something goes wrong](18-when-something-goes-wrong.md) · [Contents](README.md) · [Next: Donor feedback →](20-donor-feedback.md)
 
 ---
 
@@ -98,9 +98,27 @@ do it. [Chapter 12](12-members-and-promotions.md)
 opens that same certificate on Badhan's website, so the paper can be checked against the screen.
 [Chapter 7](07-the-donor-profile.md)
 
+**QR code.** A square black-and-white pattern a phone camera can read. Badhan uses two: a
+permanent one on a printed sheet that opens the public feedback page, and a temporary one a
+volunteer generates so students can register themselves. [Chapter 20](20-donor-feedback.md).
+
+**Registration QR code.** The temporary one. A volunteer generates it, it works for a chosen
+length of time, and students who scan it answer a few questions about themselves. What they
+send arrives on the Feedback page as a new donor submission — **it does not create a donor**.
+[Chapter 20](20-donor-feedback.md).
+
 **Rest period.** The time after a donation before a donor is shown as available again: 120 days
 for blood, 12 days for platelets. It affects display and filtering only — the app never refuses
 a date because of it.
+
+**Feedback.** A message or a registration sent from one of the public pages by somebody with no
+account. It waits on the **Feedback** page until a volunteer reads it, does whatever it asks for
+on the donor's own profile, and discards it. Discarding deletes the message and nothing else.
+[Chapter 20](20-donor-feedback.md).
+
+**The public donor page.** The page at `badhan-buet.web.app/#/donor` that any donor can open
+without signing in. They prove who they are with their phone number and student ID, see their own
+record, and leave a message. They cannot change anything from it. [Chapter 20](20-donor-feedback.md).
 
 **Student ID.** The 7-digit number identifying a BUET student. Batch, then department, then the
 individual number.
@@ -116,4 +134,4 @@ within their own hall. Cannot promote anybody.
 
 ---
 
-[← Previous: When something goes wrong](18-when-something-goes-wrong.md) · [Contents](README.md)
+[← Previous: When something goes wrong](18-when-something-goes-wrong.md) · [Contents](README.md) · [Next: Donor feedback →](20-donor-feedback.md)
