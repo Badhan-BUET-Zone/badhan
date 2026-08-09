@@ -215,3 +215,25 @@ test('POST/feedbacks: bad tokens and bad payloads are refused', async () => {
     400
   );
 });
+
+test('POST/feedbacks: a registration naming (Unknown) or Attached is refused', async () => {
+  // A registration is a creation, so the payload takes the creation set — the seven halls only.
+  // Under an All Halls token this value also decides the row's hall column, so the narrowing keeps
+  // (Unknown) out of the queue as well as out of the draft.
+  const signInResponse = await operations.signInSuperAdmin();
+  const donorInfo = buildDonorInfo();
+  await operations.createDonor(donorInfo, signInResponse);
+  const token = await mintToken(donorInfo.phone, donorInfo.studentId);
+
+  for (const hall of [HALLS_INDEX.UNKNOWN, HALLS_INDEX.ATTACHED]) {
+    await expectStatus(
+      () =>
+        operations.guestPost('/feedbacks', {
+          token,
+          type: 'newDonor',
+          feedbackJSON: buildNewDonorPayload({ hall }),
+        }),
+      400
+    );
+  }
+});

@@ -75,6 +75,11 @@ person to read:
 Comments are saved with their own **Save Comment** button, separate from the details above.
 Saving one does not save the other.
 
+**On a donor whose hall is (Unknown), the comment box is switched off** and reads *"Set this
+donor's hall before adding a comment."* Pick one of the seven halls in the details above and it
+comes back to life straight away — you do not have to save first. Only records added before
+(Unknown) was withdrawn can be in this state ([chapter 4](04-roles-and-permissions.md)).
+
 ## Settings
 
 The **Settings** section holds the actions rather than the facts. Which buttons appear depends

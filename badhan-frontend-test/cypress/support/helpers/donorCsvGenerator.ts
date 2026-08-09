@@ -70,7 +70,7 @@ export function generateDonors(count = 5): GeneratedDonor[] {
       plateletDonationCount: '0',
       lastPlateletDonation: '',
       // availableToAll so the donor matches the home page's default "Public Data" search
-      // (the same reason the single-donor spec creates its donor in the Unknown hall).
+      // (the same reason the single-donor spec ticks Public Data on its donor).
       availableToAll: 'yes'
     });
   }

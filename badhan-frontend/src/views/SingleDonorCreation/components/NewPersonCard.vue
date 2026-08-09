@@ -77,7 +77,7 @@
         />
 
 
-          <v-checkbox id="newDonorPublicDataCheckboxId" data-cy="newDonorPublicDataCheckboxId" :disabled="isHallUnknown(halls.indexOf(hall))" dense v-model="availableToAll"
+          <v-checkbox id="newDonorPublicDataCheckboxId" data-cy="newDonorPublicDataCheckboxId" dense v-model="availableToAll"
                       @blur="$v.availableToAll.$touch()" :error-messages="availableToAllErrors"
                       label="Public Data"></v-checkbox>
 
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { DESIGNATIONS_INDEX, HALLS_INDEX, HTTP_STATUS, bloodGroups, departments, halls, isHallRestricted, isHallUnknown, nullDepartment, restrictedHallNames } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS, bloodGroups, departments, halls, isHallRestricted, isHallUnknown, nullDepartment, restrictedHallNames } from '@/mixins/constants'
 import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
 import { handleGETDonorsDuplicate, handlePOSTDonors } from '@/api'
 import Container from '@/components/Container/Container'
@@ -223,8 +223,11 @@ export default {
       }
     },
 
+    // The seven halls and nothing else. (Unknown) is gone: a new record must name a hall. The
+    // volunteer who picked it to make a donor visible across halls wants the Public Data checkbox,
+    // which is what (Unknown) was silently forcing anyway.
     availableHalls () {
-      return [...restrictedHallNames(), halls[HALLS_INDEX.UNKNOWN]]
+      return restrictedHallNames()
     },
     phoneErrors () {
       const errors = []
@@ -289,14 +292,6 @@ export default {
       if (!this.$v.availableToAll.$dirty) return errors
       !this.$v.availableToAll.isBoolean && errors.push('Max donation count can be 99')
       return errors
-    }
-  },
-
-  watch: {
-    'hall' (to, _from) {
-      if (to === '(Unknown)') {
-        this.availableToAll = true
-      }
     }
   },
 
@@ -367,7 +362,12 @@ export default {
       ? this.bloodGroups[this.$props.donor.bloodGroup]
       : ''
 
-    this.hall = (this.$props.donor && typeof this.$props.donor.hall === 'number' && this.halls[this.$props.donor.hall] !== undefined)
+    // (Unknown) falls back to blank alongside an out-of-range hall. A registration submitted before
+    // (Unknown) was forbidden can still be sitting in the feedback queue carrying hall 8; prefilling
+    // it would put a value in the model that availableHalls no longer offers, which Vuetify renders
+    // as a blank field that silently submits 8. Blank makes the `required` validator do the work.
+    this.hall = (this.$props.donor && typeof this.$props.donor.hall === 'number' &&
+      this.halls[this.$props.donor.hall] !== undefined && !isHallUnknown(this.$props.donor.hall))
       ? this.halls[this.$props.donor.hall]
       : ''
 
@@ -390,8 +390,6 @@ export default {
     }
   },
   methods: {
-    // exposed for the template, which cannot see module imports
-    isHallUnknown,
     async createDonorClicked () {
       await this.$v.$touch()
       if (this.$v.$anyError) {

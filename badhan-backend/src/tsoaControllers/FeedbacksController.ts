@@ -132,9 +132,9 @@ export class FeedbacksController extends Controller {
       // clause of its own — no member's hall is -1, so this rejects an "All Halls" request
       // from anyone below super admin by the same test.
       //
-      // Deliberately stricter than isHallRestricted is elsewhere: a volunteer may not state
-      // ATTACHED or UNKNOWN either, even though those are unrestricted halls for reading. A
-      // code is something you make for a hall you belong to.
+      // ATTACHED and UNKNOWN never get this far: validateBODYQrHall refuses them for every
+      // caller, super admin included, because a code is something you make for a hall you
+      // belong to and nobody belongs to either of those.
       if (requester!.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN && body.hall !== requester!.hall) {
         this.setStatus(HTTP_STATUS.FORBIDDEN)
         return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: NOT_AUTHORIZED_MESSAGE }
@@ -262,9 +262,9 @@ export class FeedbacksController extends Controller {
     // HALL_ANY is the exception, and it is the point of an "All Halls" code: nobody named a
     // hall when the code was made, so the submission names it. For a message that means the
     // hall of the donor just fetched — a database record, not the body. For a registration it
-    // means the payload's hall, which the payload validator has already pinned to a real hall
-    // (HALL_INDICES_ALLOWED_FOR_DONOR, which excludes -1 — do not relax that check; it is what
-    // makes this branch safe).
+    // means the payload's hall, which the payload validator has already pinned to one of the seven
+    // (HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, which excludes -1 and (Unknown) — do not relax
+    // that check; it is what makes this branch safe).
     let rowHall: number = verification.hall
     if (verification.hall === HALL_ANY) {
       rowHall = body.type === FEEDBACK_TYPES.FEEDBACK ? matchedDonor!.hall : body.feedbackJSON.hall
@@ -273,6 +273,10 @@ export class FeedbacksController extends Controller {
     // HALL_ANY must never be stored. Unreachable given the two branches above; it exists so
     // that a future third `type` cannot reach the collection with -1 and fail as a 500 in the
     // model's own hall validator.
+    //
+    // The set stays the WIDER one — the one a record may hold, not the one a creation may name.
+    // A `feedback` row's hall comes from a matched donor's record, and that record may legitimately
+    // still be (Unknown); narrowing this to the creation set would 400 those messages.
     if (![...HALL_INDICES_ALLOWED_FOR_DONOR, HALLS_INDEX.ATTACHED].includes(rowHall)) {
       this.setStatus(HTTP_STATUS.BAD_REQUEST)
       return { status: 'ERROR', statusCode: HTTP_STATUS.BAD_REQUEST, message: MINT_FAILURE_MESSAGE }

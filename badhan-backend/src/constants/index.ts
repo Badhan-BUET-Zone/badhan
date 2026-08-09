@@ -55,7 +55,10 @@ export const HALL_ANY: number = -1
 // Derived sets — the single source of truth for the validators.
 // Module-local: it exists only to feed HALL_INDICES_ALLOWED_FOR_DONOR.
 const HALL_INDICES_ALL: number[] = Object.values(HALLS_INDEX)
-// Attached (7) is deliberately not an allowed hall for a donor record.
+// The halls a donor record may HOLD. Attached (7) is deliberately not one of them. (Unknown) IS
+// one of them and must stay one: records created before plan11 carry it, and search, the report
+// drill-down, the feedback model and feedback visibility are all keyed on this set.
+// For what a NEW record may carry, use HALL_INDICES_ALLOWED_FOR_DONOR_CREATION below.
 export const HALL_INDICES_ALLOWED_FOR_DONOR: number[] =
   HALL_INDICES_ALL.filter((hall: number): boolean => hall !== HALLS_INDEX.ATTACHED)
 export const BLOOD_GROUP_INDICES: number[] = Object.values(BLOOD_GROUPS_INDEX)
@@ -86,6 +89,26 @@ export const DEPARTMENT_CODES_FOR_VALIDATION: number[] = [0, ...DEPARTMENT_CODES
 export const isHallRestricted = (hall: number): boolean => hall <= HALLS_INDEX.TITUMIR
 export const hasNoSpecificHall = (hall: number): boolean => hall > HALLS_INDEX.TITUMIR
 export const isHallUnknown = (hall: number): boolean => hall === HALLS_INDEX.UNKNOWN
+
+// The halls a registration QR code may be aimed at: the seven real ones and nothing else.
+// Narrower than HALL_INDICES_ALLOWED_FOR_DONOR, which also admits (Unknown) — a donor RECORD
+// may have no recorded hall, but a CODE is made for a place with people in it, and there is
+// no room full of students from (Unknown) waiting to scan one.
+// Equal in value to HALL_INDICES_ALLOWED_FOR_DONOR_CREATION below since plan11, by coincidence
+// of two separate rules rather than by a shared definition. Keep them apart.
+export const HALL_INDICES_ALLOWED_FOR_QR: number[] = HALL_INDICES_ALL.filter(isHallRestricted)
+
+// The halls a donor record may be CREATED with. (Unknown) is out: plan11 stopped new records
+// being born without a hall.
+//
+// This is NOT the set a record may HOLD. That is HALL_INDICES_ALLOWED_FOR_DONOR above, which
+// keeps (Unknown) so the donors created before plan11 stay searchable, editable and archivable —
+// the database was deliberately not migrated.
+//
+// Equal in value to HALL_INDICES_ALLOWED_FOR_QR today and deliberately not defined as it: a QR
+// code excludes (Unknown) because a code is aimed at a room of people, this excludes it because
+// a new record must name a hall. Two rules that happen to agree, and either may move alone.
+export const HALL_INDICES_ALLOWED_FOR_DONOR_CREATION: number[] = HALL_INDICES_ALL.filter(isHallRestricted)
 
 // tslint:disable-next-line:typedef  (`as const` supplies the type; an explicit one would widen it back to number)
 export const HTTP_STATUS = {

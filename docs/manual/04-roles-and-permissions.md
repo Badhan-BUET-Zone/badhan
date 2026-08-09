@@ -94,10 +94,15 @@ Besides the seven hall units, a donor's hall can be one of two special values:
 **Attached** — for students not attached to any of the seven halls. These records are open to
 members of every hall.
 
-**(Unknown)** — the hall was never recorded. These records are open to members of every hall,
-and **anyone can edit them**, precisely so that whoever finds out the real hall can fill it
-in. If you meet a donor whose hall is (Unknown), setting it correctly is a small favour to
-everyone.
+**(Unknown)** — the hall was never recorded. **New donors can no longer be given it.** The
+creation form, the CSV import and the public registration page all require one of the seven
+halls. Donors added before that rule keep it.
+
+Those older records are open to members of every hall, and **anyone can edit them**, precisely
+so that whoever finds out the real hall can fill it in. Two things they cannot do until
+somebody does: their **comment cannot be changed**, and they **cannot be made a volunteer**.
+If you meet a donor whose hall is (Unknown), setting it correctly is the favour that unlocks
+the rest of their record.
 
 ## Before you delete anybody
 

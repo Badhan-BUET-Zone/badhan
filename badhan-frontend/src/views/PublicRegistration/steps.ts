@@ -1,4 +1,4 @@
-import { bloodGroups, halls, restrictedHallNames, HALLS_INDEX } from '@/mixins/constants'
+import { bloodGroups, restrictedHallNames } from '@/mixins/constants'
 
 // The thirteen questions, in order.
 //
@@ -51,17 +51,18 @@ const isPastDate = (value: unknown): boolean => {
   return !Number.isNaN(time) && time <= Date.now()
 }
 
-// The halls a student may say they are in: the seven residential halls plus (Unknown).
+// The halls a student may say they are in: the seven residential halls, and nothing else.
 //
 // It is exactly the set NewPersonCard offers the volunteer on the donor-creation form, and exactly
-// HALL_INDICES_ALLOWED_FOR_DONOR on the backend. The three must stay in step — a hall a student can
-// pick but a volunteer cannot save would be a dead end at creation time. Attached is in none of
-// them; HALL_ANY is in none of them either, because it is a property of a code and never of a
+// HALL_INDICES_ALLOWED_FOR_DONOR_CREATION on the backend. The three must stay in step — a hall a
+// student can pick but a volunteer cannot save would be a dead end at creation time.
+//
+// Narrower than HALL_INDICES_ALLOWED_FOR_DONOR, which still admits (Unknown) for the records that
+// already hold it: registering is a creation, and a creation must name a hall. Attached is in none
+// of them; HALL_ANY is in none of them either, because it is a property of a code and never of a
 // person.
-export const HALL_CHOICES: { label: string, value: number }[] = [
-  ...restrictedHallNames().map((label: string, value: number) => ({ label, value })),
-  { label: halls[HALLS_INDEX.UNKNOWN], value: HALLS_INDEX.UNKNOWN }
-]
+export const HALL_CHOICES: { label: string, value: number }[] =
+  restrictedHallNames().map((label: string, value: number) => ({ label, value }))
 
 export const REGISTRATION_STEPS: RegistrationStep[] = [
   {

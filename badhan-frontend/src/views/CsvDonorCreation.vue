@@ -285,7 +285,7 @@ export default {
         { column: 'phone', required: 'yes', accepted: '11 digits, 01XXXXXXXXX' },
         { column: 'studentId', required: 'yes', accepted: '7 digits, e.g. 1605011' },
         { column: 'bloodGroup', required: 'yes', accepted: 'A+ A- B+ B- O+ O- AB+ AB-' },
-        { column: 'hall', required: 'yes', accepted: 'Ahsanullah, Chatri, Nazrul, Rashid, Sher-e-Bangla, Suhrawardy, Titumir, Unknown' },
+        { column: 'hall', required: 'yes', accepted: 'Ahsanullah, Chatri, Nazrul, Rashid, Sher-e-Bangla, Suhrawardy, Titumir' },
         { column: 'roomNumber', required: 'no', accepted: 'text; blank → (Unknown)' },
         { column: 'address', required: 'no', accepted: 'text; blank → (Unknown)' },
         { column: 'comment', required: 'no', accepted: 'text; blank → (Unknown)' },

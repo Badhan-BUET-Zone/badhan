@@ -33,7 +33,8 @@ describe('Newly Created Donors', () => {
 
     newDonor.selectBloodGroup(BLOOD_GROUP.A_POS);
 
-    newDonor.selectHall(HALL.UNKNOWN);
+    // (Unknown) is no longer offered on this form: a new record must name a hall.
+    newDonor.selectHall(HALL.SUHRAWARDY);
 
     newDonor.setDonationCounts({ wholeBloodCount: 0, plateletCount: 0 });
     newDonor.submit();

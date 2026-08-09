@@ -172,12 +172,12 @@
                     </div>
                     <v-textarea id="donorDetailsCommentTextBoxId" data-cy="donorDetailsCommentTextBoxId" rounded dense class="mt-5" name="comment" outlined v-model="comment"
                                 label="Comment" auto-grow
-                                :disabled="commentLoaderFlag" :rows="1"
-                                :messages="'Last Updated: '+ (commentTime==0?'Unknown':new Date(commentTime).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })+' on '+new Date(commentTime).toLocaleTimeString())">
+                                :disabled="commentLoaderFlag || !isCommentEditable" :rows="1"
+                                :messages="commentMessage">
                     </v-textarea>
 
                     <v-btn id="donorDetailsCommentSaveButtonId" data-cy="donorDetailsCommentSaveButtonId" color="primary" rounded small
-                           :disabled="commentLoaderFlag"
+                           :disabled="commentLoaderFlag || !isCommentEditable"
                            @click="saveCommentClicked()">
                       <v-icon left>
                         mdi-content-save
@@ -735,6 +735,25 @@ export default {
 
     isDetailsEditable () {
       return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || this.$isMe(this.id) || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation) || isHallUnknown(halls.indexOf(this.hall))
+    },
+
+    // A record with no recorded hall is one waiting to be completed, not one to annotate. The
+    // backend refuses the same write with a 409; this is what stops the user reaching it. Note it
+    // reads `this.hall` — the value currently in the form — so picking a hall re-enables the box
+    // before the save, which is the point.
+    isCommentEditable () {
+      return !isHallUnknown(halls.indexOf(this.hall))
+    },
+
+    commentMessage () {
+      if (!this.isCommentEditable) {
+        return 'Set this donor\'s hall before adding a comment'
+      }
+      if (this.commentTime === 0) {
+        return 'Last Updated: Unknown'
+      }
+      const day = new Date(this.commentTime).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
+      return 'Last Updated: ' + day + ' on ' + new Date(this.commentTime).toLocaleTimeString()
     },
 
     phoneErrors () {

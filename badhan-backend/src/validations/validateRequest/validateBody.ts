@@ -2,7 +2,7 @@ import { body, ValidationChain } from 'express-validator'
 import mongoose from 'mongoose'
 import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
-import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
+import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR, HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, HALL_INDICES_ALLOWED_FOR_QR } from '../../constants'
 import { FEEDBACK_TOKEN_MAX_MINUTES } from '../../services/feedbackToken'
 import { FEEDBACK_TYPE_VALUES } from '../../db/models/Feedback'
 
@@ -21,22 +21,36 @@ export const validateBODYPublicContactBloodGroup: ValidationChain = body('bloodG
   .isInt().toInt().withMessage('bloodGroup must be integer')
   .isIn([BLOOD_GROUP_ANY, ...BLOOD_GROUP_INDICES_POSITIVE]).withMessage('Please input valid blood group (-1,0,2,4,6)')
 
+// The hall on a donor EDIT. Still admits (Unknown), because an edit re-sends the donor's own
+// stored hall: the bulk archive sweep echoes it verbatim, and forbidding it here would make the
+// records plan11 promised to leave alone the only ones that cannot be archived.
 export const validateBODYHall: ValidationChain = body('hall')
   .exists().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')
   .isIn(HALL_INDICES_ALLOWED_FOR_DONOR).withMessage('Please input an allowed hall number')
 
+// The hall on a donor CREATION. (Unknown) is rejected here and only here — see
+// HALL_INDICES_ALLOWED_FOR_DONOR_CREATION. The message is identical to validateBODYHall's on
+// purpose: no client parses a new string.
+export const validateBODYHallForCreation: ValidationChain = body('hall')
+  .exists().withMessage('hall is required')
+  .isInt().toInt().withMessage('hall must be integer')
+  .isIn(HALL_INDICES_ALLOWED_FOR_DONOR_CREATION).withMessage('Please input an allowed hall number')
+
 // Optional, and present only on a registration-QR mint, where it says which hall the code is
 // for. Stating it is a permissioned act — see handleAuthenticationIfHallStated — so a body
 // carrying it must identify its caller, and the route decides whether that caller may.
 //
-// Deliberately NOT the same set as validateBODYHall: ATTACHED is out, because a code is
-// something you make for a hall you belong to and nobody belongs to Attached, and HALL_ANY is
-// in, because an "All Halls" code names no hall and no donor record is ever -1.
+// Deliberately NOT the same set as validateBODYHall: ATTACHED and (Unknown) are out, because a
+// code is something you make for a hall you belong to and nobody belongs to either of those, and
+// HALL_ANY is in, because an "All Halls" code names no hall and no donor record is ever -1.
+//
+// This governs only the STATED hall. A donor whose own record says (Unknown) can still mint the
+// anonymous way — that token carries their record's hall and never comes through here.
 export const validateBODYQrHall: ValidationChain = body('hall')
   .optional()
   .isInt().toInt().withMessage('hall must be integer')
-  .isIn([...HALL_INDICES_ALLOWED_FOR_DONOR, HALL_ANY]).withMessage('Please input an allowed hall number')
+  .isIn([...HALL_INDICES_ALLOWED_FOR_QR, HALL_ANY]).withMessage('Please input an allowed hall number')
 
 export const validateBODYName: ValidationChain = body('name')
   .exists().withMessage('name is required')

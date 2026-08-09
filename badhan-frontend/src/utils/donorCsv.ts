@@ -20,8 +20,10 @@ const CANONICAL_BY_LOWER: Record<string, string> = CANONICAL_HEADERS.reduce(
   {} as Record<string, string>
 )
 
-// CSV hall label -> backend hall index. Note the CSV uses `Unknown` (not the app's
-// internal `(Unknown)`), and `Attached` is deliberately not accepted.
+// CSV hall label -> backend hall index. The seven residential halls and nothing else: neither
+// `Attached` nor `Unknown` is accepted. `Unknown` used to be, mapping to the app's internal
+// `(Unknown)` (index 8); an import is a creation, and a creation must name a hall. A row still
+// naming it is reported broken by the same "not a recognised hall" message as any other typo.
 const CSV_HALL_TO_INDEX: Record<string, number> = {
   Ahsanullah: 0,
   Chatri: 1,
@@ -29,8 +31,7 @@ const CSV_HALL_TO_INDEX: Record<string, number> = {
   Rashid: 3,
   'Sher-e-Bangla': 4,
   Suhrawardy: 5,
-  Titumir: 6,
-  Unknown: 8
+  Titumir: 6
 }
 
 // Dates are `DD/MM/YY` — day, month and 2-digit year separated by `/`, e.g. `23/7/26`.
@@ -183,10 +184,9 @@ function validateRow (raw: Record<string, string>): { errors: DonorCsvFieldError
   else if (attRaw === 'no') availableToAll = false
   else push('availableToAll', `\`${raw.availableToAll ?? ''}\` must be \`yes\` or \`no\``)
 
-  // hall=Unknown must pair with availableToAll=yes (not silently overridden).
-  if (hall === CSV_HALL_TO_INDEX.Unknown && availableToAll === false) {
-    push('availableToAll', 'availableToAll must be `yes` when hall is `Unknown`')
-  }
+  // No hall/availableToAll pairing rule: `Unknown` is no longer an accepted hall, so there is no
+  // longer a hall that forces `yes`. Removed rather than left in place — `CSV_HALL_TO_INDEX.Unknown`
+  // is now `undefined`, and the comparison against it would hold for every unrecognised hall.
 
   if (errors.length > 0) return { errors, normalized: null }
 
@@ -310,13 +310,15 @@ export function parseDonorCsv (text: string): DonorCsvParseResult {
 }
 
 // Sample CSV for the "Download demo CSV" button (plans/phases.md Phase 6.2). Three valid
-// rows exercising every column — one fully-populated, one with hall=Unknown, one plain —
-// each already in the single accepted form and canonical case, so copying from it can
-// never produce a case/format rejection. The comments mark the rows as throwaway data.
+// rows exercising every column — one fully-populated, one availableToAll, one plain — each
+// already in the single accepted form and canonical case, so copying from it can never
+// produce a case/format rejection. The comments mark the rows as throwaway data.
+// The second row used to demonstrate hall=Unknown; that hall is no longer accepted, and what
+// it was really being used for — a donor every hall can contact — is availableToAll=yes.
 export const DEMO_CSV: string = [
   CANONICAL_HEADERS.join(','),
   'Demo Donor One,01712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no',
-  'Demo Donor Two,01898765432,1805062,O-,Unknown,N/A,Chattogram,Hall unknown - becomes available to all,0,,0,,yes',
+  'Demo Donor Two,01898765432,1805062,O-,Ahsanullah,N/A,Chattogram,Contactable by every hall - availableToAll is yes,0,,0,,yes',
   'Demo Donor Three,01911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no'
 ].join('\n') + '\n'
 

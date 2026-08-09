@@ -154,12 +154,14 @@ describe('The registration QR generator', () => {
     // Scoped to the open menu: the navigation drawer is full of .v-list-item too.
     const openMenu = '.v-menu__content.menuable__content__active';
 
-    // The seven halls, (Unknown), and one option that is not a hall at all.
-    cy.get(`${openMenu} .v-list-item`).should('have.length', 9);
+    // The seven halls, and one option that is not a hall at all.
+    cy.get(`${openMenu} .v-list-item`).should('have.length', 8);
     cy.contains(`${openMenu} .v-list-item`, 'Titumir').should('exist');
     cy.contains(`${openMenu} .v-list-item`, 'All Halls').should('exist');
-    // Attached is not offered: a code is something you make for a hall you belong to.
+    // Neither Attached nor (Unknown) is offered: a code is something you make for a hall you
+    // belong to, and nobody belongs to either of those.
     cy.contains(`${openMenu} .v-list-item`, 'Attached').should('not.exist');
+    cy.contains(`${openMenu} .v-list-item`, '(Unknown)').should('not.exist');
     cy.get('body').type('{esc}');
   });
 

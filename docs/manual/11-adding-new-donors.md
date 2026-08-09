@@ -42,8 +42,9 @@ Open **Single Donor Creation**. Fill in the form:
 existed, this is how their history is carried over. From now on you will not type counts — you
 will just record dates ([chapter 8](08-recording-donations.md)).
 
-**If you pick a hall of "Unknown"**, the record becomes editable by members of every hall, so
-that whoever finds out the real hall can correct it.
+**The hall must be one of the seven.** "Unknown" is no longer offered — a new record has to say
+where the donor lives. If what you actually wanted was a donor every hall can reach, pick their
+real hall and tick **Public Data**; that is the setting "Unknown" used to switch on for you.
 
 ### The duplicate check
 
@@ -80,7 +81,7 @@ The columns, in the app's own words:
 | `phone` | yes | 11 digits, `01XXXXXXXXX` |
 | `studentId` | yes | 7 digits, e.g. `1605011` |
 | `bloodGroup` | yes | `A+ A- B+ B- O+ O- AB+ AB-` |
-| `hall` | yes | Ahsanullah, Chatri, Nazrul, Rashid, Sher-e-Bangla, Suhrawardy, Titumir, Unknown |
+| `hall` | yes | Ahsanullah, Chatri, Nazrul, Rashid, Sher-e-Bangla, Suhrawardy, Titumir |
 | `roomNumber` | no | text; leave blank and it becomes (Unknown) |
 | `address` | no | text; leave blank and it becomes (Unknown) |
 | `comment` | no | text; leave blank and it becomes (Unknown) |

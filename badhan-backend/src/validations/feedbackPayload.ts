@@ -1,7 +1,7 @@
 import {
   BLOOD_GROUP_INDICES,
   DEPARTMENT_CODES_FOR_VALIDATION,
-  HALL_INDICES_ALLOWED_FOR_DONOR,
+  HALL_INDICES_ALLOWED_FOR_DONOR_CREATION,
   year2000TimeStamp
 } from '../constants'
 import { FEEDBACK_TYPES, FEEDBACK_JSON_MAX_BYTES } from '../db/models/Feedback'
@@ -182,7 +182,10 @@ const validateNewDonorPayload = (payload: any): IPayloadResult => {
   if (!Number.isInteger(payload.bloodGroup) || !BLOOD_GROUP_INDICES.includes(payload.bloodGroup)) {
     return fail('Please input valid blood group from 0 to 7')
   }
-  if (!Number.isInteger(payload.hall) || !HALL_INDICES_ALLOWED_FOR_DONOR.includes(payload.hall)) {
+  // A registration is a creation, so it takes the creation set: (Unknown) is out. Under an
+  // All Halls token this value also decides the row's hall column, so the narrowing applies to
+  // the queue as well as to the draft.
+  if (!Number.isInteger(payload.hall) || !HALL_INDICES_ALLOWED_FOR_DONOR_CREATION.includes(payload.hall)) {
     return fail('Please input an allowed hall number')
   }
 

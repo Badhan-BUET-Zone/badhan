@@ -24,7 +24,7 @@ describe('docs screenshot — the hall dropdown, open', () => {
     cy.get(openMenu).should('be.visible');
 
     // The menu has its own max-height and scrolls internally, so a taller viewport does not bring
-    // the ninth item into view — All Halls sits below the fold of the list itself. Scroll the list,
+    // the last item into view — All Halls sits below the fold of the list itself. Scroll the list,
     // not the page. The capture then shows the bottom of it, which is the half that matters here.
     cy.get(openMenu).scrollTo('bottom');
     cy.contains(`${openMenu} .v-list-item`, 'All Halls').should('be.visible');

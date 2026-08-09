@@ -28,7 +28,10 @@ describe('My Profile - Edit and Save Details', () => {
     profile.typeStudentId(TEST_DATA.updatedStudentId);
     profile.typeEmail(TEST_DATA.updatedEmail);
     profile.selectBloodGroup(BLOOD_GROUP.O_POS);
-    profile.selectHall(HALL.UNKNOWN);
+    // A real hall, not (Unknown). The edit form still offers (Unknown) — donors/unknown-hall.cy.ts
+    // is what covers that — but a record carrying it cannot have its comment edited, and this spec
+    // edits the comment below.
+    profile.selectHall(HALL.TITUMIR);
     profile.typeRoom(TEST_DATA.updatedRoom);
     profile.typeAddress(TEST_DATA.updatedAddress);
     profile.togglePublicData(true);
@@ -52,7 +55,7 @@ describe('My Profile - Edit and Save Details', () => {
       studentId: TEST_DATA.updatedStudentId,
       email: TEST_DATA.updatedEmail,
       bloodGroupLabel: BLOOD_GROUP.O_POS,
-      hallLabel: HALL.UNKNOWN,
+      hallLabel: HALL.TITUMIR,
       room: TEST_DATA.updatedRoom,
       address: TEST_DATA.updatedAddress,
       publicData: true,

@@ -94,7 +94,7 @@ hall admin.
 | *"Only a volunteer can be promoted to super admin"* | Same thing. |
 | *"Only super admins can change hall admin or super admin designations"* | You are a hall admin trying to appoint hall admins or super admins. |
 | *"Only hall admins or above can access this route"* | You are a volunteer. Volunteers cannot promote or demote anybody. |
-| *"Donor does not have a valid hall"* | The person's hall is **Attached** or **(Unknown)**. Members must belong to one of the seven halls — set their real hall on their profile first. |
+| *"Donor does not have a valid hall"* | The person's hall is **Attached** or **(Unknown)**. Members must belong to one of the seven halls — set their real hall on their profile first. The same message appears if you try to change the comment on such a record. |
 | *"You cannot modify the details of a Badhan member with higher designation"* | The person is above you. |
 | *"You are not authorized to access a donor of different hall"* | They are not in your hall, and you are not a super admin. |
 

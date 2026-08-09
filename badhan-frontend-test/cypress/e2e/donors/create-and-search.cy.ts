@@ -30,7 +30,11 @@ describe('Create donor and find via search', () => {
     // Fill and create donor
     newDonor.fillBasic({ name: donorName, phone: donorPhone, studentId });
     newDonor.selectBloodGroup(BLOOD_GROUP.O_POS);
-    newDonor.selectHall(HALL.UNKNOWN);
+    // A real hall plus Public Data. (Unknown) used to do both jobs at once — it is no longer offered
+    // on this form, and the checkbox it was silently forcing is what the Public Data search filter
+    // below actually matches on.
+    newDonor.selectHall(HALL.SUHRAWARDY);
+    newDonor.setPublicData(true);
     newDonor.fillOptional({ room: 'C-101', address: 'Search Street', comment: 'Searchable donor' });
     newDonor.submit();
 

@@ -64,6 +64,14 @@ hall really needs correcting.
 **Members must belong to one of the seven halls.** You cannot promote somebody whose hall is
 Attached or (Unknown) — *"Donor does not have a valid hall."* Set their real hall first.
 
+**A new donor must name a hall.** (Unknown) is not offered on the creation form, is not an
+accepted CSV hall, and is not one of the choices on the public registration page. Donors added
+before this rule keep it and are left alone.
+
+**A donor whose hall is (Unknown) has no comment box.** It is switched off until one of the
+seven halls is chosen. Everything else about the record — searching, editing, archiving,
+recording donations, call records — works as normal.
+
 ---
 
 ## Rules about promotion

@@ -66,7 +66,8 @@ cannot sign in.
 learning and showing. [Chapter 3](03-signing-in.md)
 
 **Hall.** The residence hall a donor belongs to: Ahsanullah, Chatri, Nazrul, Rashid,
-Sher-e-Bangla, Suhrawardy, Titumir, plus **Attached** and **(Unknown)**.
+Sher-e-Bangla, Suhrawardy, Titumir. Older records may also carry **Attached** or **(Unknown)**;
+neither can be given to a new donor.
 
 **Hall Admin.** The member who runs one hall's records. One per hall.
 [Chapter 12](12-members-and-promotions.md)
@@ -126,8 +127,11 @@ individual number.
 **Super Admin.** A member with no hall limit, who can do everything including reports, archiving
 and backups.
 
-**(Unknown).** A hall setting meaning nobody recorded which hall. These records can be edited by
-members of any hall, so that whoever finds out can fix it.
+**(Unknown).** A hall setting meaning nobody recorded which hall. **New donors can no longer be
+given it** — the creation form, the CSV import and the public registration page all require one of
+the seven halls. Donors added before that rule keep it, and can still be searched, edited and
+archived by members of any hall; their comment cannot be changed and they cannot be made a
+volunteer until someone sets their real hall.
 
 **Volunteer.** A working member of Badhan. Can search, call, record donations and add donors,
 within their own hall. Cannot promote anybody.

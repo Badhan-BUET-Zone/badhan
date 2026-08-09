@@ -233,6 +233,14 @@ code left on a desk or found in a downloads folder can be identified without sca
 super admin can make one for **any** hall — so a hall that wants a code no longer has to find
 somebody with a record there; they can ask a super admin.
 
+**Only the seven halls are offered.** Neither **Attached** nor **(Unknown)** appears in the
+dropdown, and a code cannot be made for either. Those two describe a *record* — a donor whose hall
+was never written down — not a place with students in it to scan a code.
+
+The same seven are the only choices the **student** gets under an All Halls code. Registering
+creates a donor, and a new donor must name a hall, so **(Unknown)** is not an answer they can
+give.
+
 **Making a code is recorded.** Who made it, for which hall, and for how long — a super admin can
 look it up afterwards if a question ever comes up about where a batch of submissions came from.
 

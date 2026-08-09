@@ -176,10 +176,16 @@ test('POST/feedbacks/token: a hall outside the allowed set is a 400, session or 
   const me = await operations.getMe(signInResponse);
   const credentials = { phone: me.data.donor.phone, studentId: me.data.donor.studentId };
 
-  // Attached is a real hall index and still refused: a code is something you make for a hall you
-  // belong to, and nobody belongs to Attached. A super admin gets the same 400 as anybody.
+  // Attached and (Unknown) are real hall indices and still refused: a code is something you make
+  // for a hall you belong to, and nobody belongs to either. A super admin gets the same 400 as
+  // anybody. (Unknown) is the narrower of the two rules — it IS a legal hall on a donor record,
+  // so this is the test that stops the QR set drifting back to the donor set.
   await expectStatus(
     () => operations.authedPost('/feedbacks/token', { ...credentials, hall: HALLS_INDEX.ATTACHED }, signInResponse),
+    400
+  );
+  await expectStatus(
+    () => operations.authedPost('/feedbacks/token', { ...credentials, hall: HALLS_INDEX.UNKNOWN }, signInResponse),
     400
   );
   await expectStatus(
@@ -197,6 +203,42 @@ test('POST/feedbacks/token: a hall outside the allowed set is a 400, session or 
     () => operations.guestPost('/feedbacks/token', { ...credentials, hall: 99 }),
     400
   );
+});
+
+test('POST/feedbacks/token: an (Unknown) donor still mints the anonymous way', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+  // Created with a real hall and moved to (Unknown) by an edit, because a creation may no longer
+  // name (Unknown). This is exactly how the records this test is about came to exist: they predate
+  // the rule, and PATCH still accepts the hall so they stay editable.
+  const donorInfo = buildDonorInfo({ hall: HALLS_INDEX.CHATRI });
+  const creation = await operations.createDonor(donorInfo, signInResponse);
+  await operations.updateDonor(
+    {
+      donorId: creation.data.newDonor._id,
+      name: donorInfo.name,
+      phone: donorInfo.phone,
+      studentId: donorInfo.studentId,
+      bloodGroup: donorInfo.bloodGroup,
+      hall: HALLS_INDEX.UNKNOWN,
+      roomNumber: donorInfo.roomNumber,
+      address: donorInfo.address,
+      availableToAll: donorInfo.availableToAll,
+      email: '',
+    },
+    signInResponse
+  );
+
+  // (Unknown) is refused as a STATED hall and must stay legal as a RECORDED one. This donor has
+  // no hall on file and is still entitled to the ordinary feedback link from the public page; the
+  // narrowing above is about which halls a code may be aimed at, not about who may have one.
+  const response = await operations.guestPost(
+    '/feedbacks/token',
+    { phone: donorInfo.phone, studentId: donorInfo.studentId },
+    postFeedbackTokenSchema
+  );
+
+  expect(response.status).toBe(200);
+  expect(decodeJwtPayload(response.data.token).hall).toBe(HALLS_INDEX.UNKNOWN);
 });
 
 test('POST/feedbacks/token: a signed-in caller stating no hall gets the anonymous answer', async () => {

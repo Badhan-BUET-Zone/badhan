@@ -63,6 +63,20 @@ describe('CSV Donor Upload', () => {
     csvPage.assertErrorRowCount(2);
   });
 
+  it('rejects a row naming the Unknown hall', () => {
+    signIn();
+
+    // `Unknown` used to be an accepted CSV hall label mapping to (Unknown). An import is a
+    // creation, and a creation must name a hall, so the row is now broken like any other typo.
+    const donors = generateDonors(2);
+    donors[1].hall = 'Unknown';
+    csvPage.selectFile(donorsToCsv(donors));
+
+    csvPage.assertToCreateCount(1);
+    csvPage.assertErrorRowCount(1);
+    csvPage.assertInlineError('not a recognised hall');
+  });
+
   it('detects already-existing donors and offers a See Donor button', () => {
     signIn();
 

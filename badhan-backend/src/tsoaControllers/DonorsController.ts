@@ -165,12 +165,9 @@ export class DonorsController extends Controller {
       }
     }
 
-    // if the hall is unknown, then the donor must be available to all
-    let availableToAll: boolean = body.availableToAll
-    if (isHallUnknown(body.hall)) {
-      availableToAll = true
-    }
-
+    // No "(Unknown) forces availableToAll" branch here: validatePOSTDonors rejects (Unknown) on a
+    // creation, so body.hall is always a real hall. The PATCH counterpart keeps that branch — that
+    // route still accepts (Unknown), for the records created before it was forbidden.
     const donorInsertionResult: { data: IDonor; message: string; status: string } = await donorInterface.insertDonor(
       body.phone,
       body.bloodGroup,
@@ -180,7 +177,7 @@ export class DonorsController extends Controller {
       body.address,
       body.roomNumber,
       body.comment,
-      availableToAll
+      body.availableToAll
     )
 
     if (donorInsertionResult.status !== 'OK') {
@@ -457,6 +454,11 @@ export class DonorsController extends Controller {
     statusCode: HTTP_STATUS.FORBIDDEN,
     message: 'You are not authorized to access a donor of different hall'
   })
+  @Response<{ status: string; statusCode: number; message: string }>(409, 'Donor has no valid hall', {
+    status: 'ERROR',
+    statusCode: HTTP_STATUS.CONFLICT,
+    message: 'Donor does not have a valid hall'
+  })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
     statusCode: HTTP_STATUS.OK,
@@ -484,6 +486,15 @@ export class DonorsController extends Controller {
         this.setStatus(HTTP_STATUS.FORBIDDEN)
         return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You are not authorized to access a donor of different hall' }
       }
+    }
+
+    // A record with no recorded hall is one waiting to be completed, not one to annotate. Same
+    // message as the designation route below, which has always refused for the same reason.
+    // isHallUnknown rather than hasNoSpecificHall: a donor record cannot hold Attached, so the two
+    // agree today, and naming the value keeps the rule readable when they stop agreeing.
+    if (isHallUnknown(targetDonor.hall)) {
+      this.setStatus(HTTP_STATUS.CONFLICT)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Donor does not have a valid hall' }
     }
 
     targetDonor.comment = body.comment

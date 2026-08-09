@@ -218,8 +218,11 @@ describe('The public registration page', () => {
         // A real question this time: nothing is preselected and Next stays dead until an answer.
         cy.get('[data-cy="registrationLockedHall"]').should('not.exist');
         cy.get('[data-cy="registrationNextButton"]').should('be.disabled');
-        // The seven halls and (Unknown) — the same set a volunteer may save on the creation form.
-        cy.get('[data-cy^="registrationChoice-"]').should('have.length', 8);
+        // The seven halls and nothing else — the same set a volunteer may pick on the creation
+        // form. (Unknown) is no longer among them: registering is a creation, and a creation must
+        // name a hall.
+        cy.get('[data-cy^="registrationChoice-"]').should('have.length', 7);
+        cy.contains('[data-cy^="registrationChoice-"]', '(Unknown)').should('not.exist');
 
         answerChoice('hall', HALL_TITUMIR);
         answerText('donationCount', '0');

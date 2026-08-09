@@ -37,8 +37,11 @@ describe('Single Donor Creation', () => {
     // Blood group select via data-cy attribute on Selector
     newDonor.selectBloodGroup(BLOOD_GROUP.A_POS);
 
-    // Hall select (uses data-cy="hall-select")
-    newDonor.selectHall(HALL.UNKNOWN);
+    // Hall select (uses data-cy="hall-select"). A real hall plus Public Data: (Unknown) is no
+    // longer offered on this form, and it was silently forcing availableToAll — which is what the
+    // Home page's default "Public Data" search below actually matches on.
+    newDonor.selectHall(HALL.SUHRAWARDY);
+    newDonor.setPublicData(true);
 
     // Optional fields
     newDonor.fillOptional({ room: '1001', address: 'Test Address', comment: 'Test Comment' });

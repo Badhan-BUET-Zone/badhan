@@ -195,7 +195,7 @@ import { COPY } from '@/views/FeedbackQr/feedbackQrLayout'
 import { REGISTRATION_QR_FILE_NAME, downloadQrPdf } from '@/views/FeedbackQr/feedbackQrPdf'
 import { handlePOSTFeedbackToken } from '@/api'
 import {
-  DESIGNATIONS_INDEX, HALLS_INDEX, HALL_ANY, HTTP_STATUS, halls, restrictedHallNames
+  DESIGNATIONS_INDEX, HALL_ANY, HTTP_STATUS, halls, restrictedHallNames
 } from '@/mixins/constants'
 
 // A generator, not a document. Its primary use is on screen: a laptop propped on a desk, or — the
@@ -240,12 +240,12 @@ export default {
     canChooseHall () {
       return this.$store.getters.getDesignation === DESIGNATIONS_INDEX.SUPER_ADMIN
     },
-    // The seven halls, (Unknown), and one option that is not a hall at all. It is the same set a
-    // student may pick from on the registration page, plus All Halls.
+    // The seven halls, and one option that is not a hall at all. Narrower than the list a student
+    // may pick from on the registration page: that one includes (Unknown), because a student may
+    // genuinely not know, but a code is aimed at a room of people and no room is (Unknown).
     hallOptions () {
       return [
         ...restrictedHallNames().map((text, value) => ({ text, value })),
-        { text: halls[HALLS_INDEX.UNKNOWN], value: HALLS_INDEX.UNKNOWN },
         { text: COPY.allHallsLabel, value: HALL_ANY }
       ]
     },
