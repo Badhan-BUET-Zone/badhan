@@ -4,7 +4,9 @@
   // pinned to TS 4.5.5 (Vue 2 / vue-cli 5), which predates both `"bundler"` and
   // `ignoreDeprecations`. Point the editor at the newest TypeScript the repo
   // actually uses, so it reports what the containers report.
+  // VS Code ignores a workspace `tsdk` until the user opts in, so prompt for it.
   "typescript.tsdk": "badhan-frontend-test/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "search.exclude": {
     "**/trash/**": true,
     "**/badhan-datainput-frontend/**": true
