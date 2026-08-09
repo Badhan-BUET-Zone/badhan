@@ -6,6 +6,7 @@
   "scripts": {
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
+    "docs:screenshots": "cypress run --config-file cypress.docs.config.ts",
     "test": "cypress run"
   },
   "keywords": [
