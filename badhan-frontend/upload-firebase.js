@@ -5,6 +5,7 @@ const { execSync } = require("child_process");
 const { existsSync } = require("fs");
 const { resolve } = require("path");
 const { runCli, captureCli, dockerAvailable, REPO_ROOT } = require("../deploy-container");
+const { environmentForBranch } = require("../environments");
 
 function run(command, cwd) {
   return execSync(command, { stdio: "inherit", cwd });
@@ -44,12 +45,23 @@ function containerBuildCommand(npmScript) {
 }
 
 // Resolve the branch-dependent deploy target (build command, Firebase project,
-// hosting config). Shared by the preflight checks and the actual deploy.
+// hosting config) from ../environments.js — the one place the branch → target
+// map lives, shared with the backend's upload-gcloud.js so the two can no longer
+// drift.
+//
+// `configFile` comes off the environment rather than being interpolated from the
+// project id, which is what used to tie the hosting config's *file name* to a
+// cloud project id and made the environment the one thing the name did not say.
+//
+// Throws for a branch with no deploy target; checkRequirements turns that into a
+// preflight bullet.
 function getDeployTarget(currentBranch) {
-  if (currentBranch === "main") {
-    return { buildCmd: containerBuildCommand("build"), project: "badhan-buet" };
-  }
-  return { buildCmd: containerBuildCommand("build:development"), project: "badhan-buet-test" };
+  const environment = environmentForBranch(currentBranch);
+  return {
+    buildCmd: containerBuildCommand(environment.frontendBuildScript),
+    project: environment.firebaseProject,
+    configFile: environment.firebaseConfig,
+  };
 }
 
 // Every firebase call goes to the `frontend-deploy` service — the `deploy`
@@ -99,8 +111,16 @@ function checkRequirements(baseDir = __dirname) {
     return errors;
   }
 
-  const { project } = getDeployTarget(currentBranch);
-  const configFile = `firebase.${project}.json`;
+  // An unlisted branch is a preflight failure, not an exception. Nothing below
+  // can be checked without a target, so report and stop.
+  let project;
+  let configFile;
+  try {
+    ({ project, configFile } = getDeployTarget(currentBranch));
+  } catch (err) {
+    errors.push(`frontend: ${err.message}`);
+    return errors;
+  }
 
   if (!existsSync(resolve(baseDir, configFile))) {
     errors.push(`frontend: required Firebase config "${configFile}" not found (needed for project ${project}).`);
@@ -156,7 +176,7 @@ function deployToFirebase() {
   const currentBranch = getCurrentBranch();
   console.log(`🔍  Current branch: ${currentBranch}`);
 
-  const { buildCmd, project: firebaseProject } = getDeployTarget(currentBranch);
+  const { buildCmd, project: firebaseProject, configFile } = getDeployTarget(currentBranch);
 
   console.log(`🔨  Running build command: ${buildCmd}`);
   // From the repo root: that is where docker-compose.yml lives. The build still writes
@@ -164,7 +184,6 @@ function deployToFirebase() {
   run(buildCmd, REPO_ROOT);
 
   console.log(`🚀  Deploying to Firebase project '${firebaseProject}'…`);
-  const configFile = `firebase.${firebaseProject}.json`;
 
   // Runs in the frontend-deploy container, whose /repo/badhan-frontend is this
   // directory (a plain bind mount, no node_modules volume over it) — including

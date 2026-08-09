@@ -6,8 +6,10 @@
     "serve": "vue-cli-service serve",
     "serve:local": "vue-cli-service serve --mode local",
     "serve:production": "npm run build && http-server dist",
-    "build": "vue-cli-service build",
+    "build": "npm run build:production",
+    "build:production": "vue-cli-service build --mode production",
     "build:development": "vue-cli-service build --mode development",
+    "build:local": "vue-cli-service build --mode local",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },

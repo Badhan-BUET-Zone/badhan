@@ -25,6 +25,7 @@
 
 const { execSync } = require("child_process");
 const { runCli, ensureAuthDir, childEnv, REPO_ROOT } = require("./deploy-container");
+const { environmentForBranch } = require("./environments");
 const backend = require("./badhan-backend/upload-gcloud");
 const frontend = require("./badhan-frontend/upload-firebase");
 
@@ -58,10 +59,39 @@ function runCompose(args) {
   execSync(`docker compose ${args}`, { stdio: "inherit", cwd: REPO_ROOT, env: childEnv() });
 }
 
+// Say where this deploy is going before it spends six minutes on tests.
+//
+// Both upload scripts resolve the branch themselves and each reports an unlisted
+// one through its own preflight, so the throw here is not the only guard — it is
+// the one that fires first and says it once, rather than as two identical
+// bullets in a report about credentials.
+function announceEnvironment() {
+  let branch;
+  try {
+    branch = execSync("git rev-parse --abbrev-ref HEAD", { encoding: "utf8", cwd: REPO_ROOT }).trim();
+  } catch (_) {
+    console.error("❌  Unable to determine the current git branch (is this a repo?).");
+    process.exit(1);
+  }
+
+  let environment;
+  try {
+    environment = environmentForBranch(branch);
+  } catch (err) {
+    console.error(`❌  ${err.message.replace(/\n\s+/, "\n    ")}`);
+    process.exit(1);
+  }
+
+  console.log(
+    `🌍  Branch "${branch}" → environment ${environment.name} (${environment.gcpProject}).`
+  );
+}
+
 // Both preflights in one pass. Each returns human-readable strings and touches
 // nothing, so there is no reason to stop at the first failing one and hide a
 // firebase problem behind a gcloud problem.
 function preflight() {
+  announceEnvironment();
   const errors = [...backend.checkRequirements(), ...frontend.checkRequirements()];
   if (errors.length > 0) {
     console.error("❌  Deployment requirements not met:");
