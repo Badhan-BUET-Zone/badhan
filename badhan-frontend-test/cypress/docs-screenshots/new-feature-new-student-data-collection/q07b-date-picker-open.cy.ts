@@ -18,6 +18,6 @@ describe('docs screenshot — the date picker on a donation-date question', () =
     cy.get('[data-cy="registrationPicker-lastDonation"]').should('be.visible');
     hideOverlays();
     cy.wait(1500);
-    cy.screenshot('registration-q06b-date-picker', { capture: 'viewport' });
+    cy.screenshot('registration-q07b-date-picker', { capture: 'viewport' });
   });
 });

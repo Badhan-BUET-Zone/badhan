@@ -26,7 +26,14 @@
     <!-- (c) A registration submission. Nobody to render a card for — that is the whole point. -->
     <div v-else data-cy="feedbackNewDonorCard">
       <v-card-title>New donor submission</v-card-title>
-      <v-card-subtitle>Sent from the {{ feedback.hall | getHallName }} registration code</v-card-subtitle>
+      <!--
+        The row's hall names the LIST this landed in, not the code that produced it. Under a code
+        made for one named hall those are the same thing; under an "All Halls" code they are not —
+        the student chose, and saying "sent from the Titumir registration code" would then be a
+        plain untruth. The card cannot tell the two apart, because the row stores only the hall it
+        was routed to, so it states the thing it does know.
+      -->
+      <v-card-subtitle>In the {{ feedback.hall | getHallName }} list</v-card-subtitle>
       <v-simple-table>
         <tbody>
           <tr><td>Name</td><td data-cy="feedbackNewDonorName">{{ decoded.name }}</td></tr>

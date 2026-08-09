@@ -41,7 +41,10 @@
 
     <!-- Registration sheets only: which hall the code is for, or "All Halls". A code left on a
          desk should be identifiable without scanning it. The feedback poster is zone-wide and
-         passes nothing here. -->
+         passes nothing here.
+
+         It sits ABOVE the caption because the quiet-zone rectangle below would erase it — see the
+         note on HALL_LINE in feedbackQrLayout.ts before moving it. -->
     <text
       v-if="hallLine"
       data-cy="feedbackQrHallLine"

@@ -161,7 +161,10 @@ export const REGISTRATION_STEPS: RegistrationStep[] = [
   {
     field: 'comment',
     question: 'Anything else we should know?',
-    hint: 'Anything the questions above did not cover — including which hall you actually live in.',
+    // The hall clause still earns its place: under a code made for one named hall the student was
+    // shown a hall they could not change, and this is where they say it is the wrong one. Under an
+    // All Halls code they chose it themselves and the clause simply does not apply to them.
+    hint: 'Anything the questions above did not cover — including where you actually live, if the hall above is not yours.',
     kind: 'text',
     optional: true,
     maxlength: 500,

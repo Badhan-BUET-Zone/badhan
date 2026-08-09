@@ -9,10 +9,13 @@ import { hideOverlays } from '../hideOverlays';
 
 describe('docs screenshot — the review screen', () => {
   it('captures every answer, the hall line and the Submit button', () => {
-    // Wide enough that no question wraps and tall enough for all twelve rows plus Submit: an
-    // element taller than the viewport gets clipped, not stitched, so the frame has to fit it.
-    cy.viewport(1000, 1200);
-    // 'review' is not a step, so the walk answers all twelve questions and lands here — including
+    // Wide enough that no question wraps. It is NOT tall enough for all thirteen rows and cannot
+    // be: an element capture is capped at roughly the headless window height whatever the viewport
+    // says, and it clips rather than stitches. So this frame carries the top — the heading, the
+    // hall line and the first answers — and 08b-review-submit.cy.ts carries the end of the table
+    // and the buttons. The two overlap by a few rows on purpose.
+    cy.viewport(1000, 1300);
+    // 'review' is not a step, so the walk answers all thirteen questions and lands here — including
     // the two conditional dates, so the screen shows the full sequence rather than a short one.
     walkTo('review', '1905221');
 

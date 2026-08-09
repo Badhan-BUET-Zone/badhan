@@ -36,11 +36,15 @@ export const SUB_CAPTION = {
 // Which hall the code is for, in words — a hall name, or "All Halls". Registration sheets only; the
 // feedback poster is zone-wide and has no hall to name.
 //
-// It sits in the gap that already existed between the sub-caption (72) and the QR box (90), so
-// adding it moves no other measurement and does not shrink the code.
+// ABOVE the caption, not below the sub-caption, and that is not a typographic preference. The quiet
+// zone is painted as a white rectangle starting at `QR_BOX.y - quietZoneMm`, and quietZoneMm is
+// four MODULES converted to millimetres — so it grows as the code gets sparser and its top edge
+// moves with the length of whatever is encoded. A line placed in the gap above the QR box was
+// erased by that rectangle for real registration tokens. Up here there is nothing to collide with
+// for any module count, and no other measurement had to move.
 export const HALL_LINE = {
   centerX: PAGE.width / 2,
-  baseline: 82,
+  baseline: 46,
   fontSize: 6,
   fontFamily: 'Helvetica, Arial, sans-serif'
 } as const
