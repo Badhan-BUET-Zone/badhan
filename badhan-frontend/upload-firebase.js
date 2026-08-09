@@ -52,21 +52,28 @@ function getDeployTarget(currentBranch) {
   return { buildCmd: containerBuildCommand("build:development"), project: "badhan-buet-test" };
 }
 
-// firebase-tools is installed globally in the `deploy` image, not here and not
-// on the host: it is a deploy tool rather than a dependency of this app, so a
-// local install would be masked by the container's anonymous node_modules
-// volume and would bloat every `npm ci` image build. See
-// ../deploy-container.js.
+// Every firebase call goes to the `frontend-deploy` service — the `deploy`
+// target of this directory's Dockerfile, i.e. this app's own image plus the CLI
+// that deploys it. Spread into each call rather than hidden in a default, so a
+// misrouted command fails in deploy-container.js instead of in a container that
+// has no firebase.
+const FIREBASE = { service: "frontend-deploy" };
+
+// firebase-tools is installed globally in that stage, not in package.json and
+// not on the host: it is a deploy tool rather than a dependency of this app, a
+// local install would be masked by the frontend service's anonymous
+// node_modules volume, and putting it in package.json would bloat every
+// `npm ci`. See ../deploy-container.js.
 function firebaseAvailable() {
-  return captureCli("firebase --version").length > 0;
+  return captureCli("firebase --version", FIREBASE).length > 0;
 }
 
 const FIREBASE_INSTALL_HINT =
-  "Rebuild the deploy image with `docker compose --profile deploy build deploy`.";
+  "Rebuild it with `docker compose --profile deploy build frontend-deploy`.";
 
 // The account the container is logged in as, for readable failures.
 function firebaseActiveAccount() {
-  const out = captureCli("firebase login:list");
+  const out = captureCli("firebase login:list", FIREBASE);
   const match = out.match(/[\w.+-]+@[\w.-]+/);
   return match ? match[0] : "unknown";
 }
@@ -104,10 +111,10 @@ function checkRequirements(baseDir = __dirname) {
   if (!dockerAvailable()) {
     errors.push(
       "frontend: Docker is not available (the build runs in the frontend container, " +
-        "the Firebase CLI in the deploy container). Start Docker Desktop and try again."
+        "the Firebase CLI in the frontend-deploy container). Start Docker Desktop and try again."
     );
   } else if (!firebaseAvailable()) {
-    errors.push(`frontend: firebase-tools not available in the deploy container. ${FIREBASE_INSTALL_HINT}`);
+    errors.push(`frontend: firebase-tools not available in the frontend-deploy container. ${FIREBASE_INSTALL_HINT}`);
   } else {
     // `firebase login:list` only reads the stored token; it can't tell whether
     // that token still works. `projects:list` actually calls the Firebase API,
@@ -115,16 +122,16 @@ function checkRequirements(baseDir = __dirname) {
     // Its output is kept rather than discarded, because it also answers the
     // question a token refresh cannot: can THIS account see the project this
     // branch deploys to?
-    const projects = captureCli("firebase projects:list");
+    const projects = captureCli("firebase projects:list", FIREBASE);
     if (!projects) {
       errors.push(
         "frontend: firebase credentials are missing or expired (API call failed). " +
-          "Run `./deploy --relogin` (plain `firebase login` reports 'Already logged in' and won't refresh an expired token)."
+          "Run `./deploy.js --relogin` (plain `firebase login` reports 'Already logged in' and won't refresh an expired token)."
       );
     } else if (!listsProject(projects, project)) {
       errors.push(
         `frontend: logged in as ${firebaseActiveAccount()}, which cannot see Firebase project "${project}" ` +
-          `(branch "${currentBranch}"). Run \`./deploy --relogin\` and pick an account with access.`
+          `(branch "${currentBranch}"). Run \`./deploy.js --relogin\` and pick an account with access.`
       );
     }
   }
@@ -159,11 +166,12 @@ function deployToFirebase() {
   console.log(`🚀  Deploying to Firebase project '${firebaseProject}'…`);
   const configFile = `firebase.${firebaseProject}.json`;
 
-  // Runs in the deploy container, whose /repo/badhan-frontend is this directory
-  // (bind mount) — including the dist the frontend container just built.
+  // Runs in the frontend-deploy container, whose /repo/badhan-frontend is this
+  // directory (a plain bind mount, no node_modules volume over it) — including
+  // the dist the frontend container just built.
   runCli(
     `firebase deploy --only hosting --project "${firebaseProject}" --config "${configFile}"`,
-    { workdir: "/repo/badhan-frontend" }
+    { ...FIREBASE, workdir: "/repo/badhan-frontend" }
   );
 
   console.log("✅  Deployment complete.");

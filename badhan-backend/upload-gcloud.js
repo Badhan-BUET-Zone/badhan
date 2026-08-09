@@ -46,11 +46,18 @@ function getDeployTarget(currentBranch) {
   };
 }
 
-// gcloud runs in the `deploy` container, reading its credentials from
-// .deploy-auth/ — see ../deploy-container.js. So "is gcloud installed" is now
-// "was the image built", not "is it on the host's PATH".
+// Every gcloud call goes to the `backend-deploy` service — the `deploy` target
+// of this directory's Dockerfile, i.e. the backend's own image plus the CLI
+// that deploys it. Spread into each call rather than hidden in a default, so a
+// misrouted command fails in deploy-container.js instead of in a container that
+// has no gcloud.
+const GCLOUD = { service: "backend-deploy" };
+
+// gcloud runs in that container, reading its credentials from .deploy-auth/ —
+// see ../deploy-container.js. So "is gcloud installed" is now "was the image
+// built", not "is it on the host's PATH".
 function gcloudAvailable() {
-  return captureCli("gcloud version").length > 0;
+  return captureCli("gcloud version", GCLOUD).length > 0;
 }
 
 // Validate that gcloud has WORKING credentials, not merely a configured active
@@ -59,14 +66,14 @@ function gcloudAvailable() {
 // failure the deploy hits. `print-access-token` forces an actual token refresh
 // and fails the same way the deploy would, so we exercise it here.
 function gcloudHasValidCredentials() {
-  return captureCli("gcloud auth print-access-token").length > 0;
+  return captureCli("gcloud auth print-access-token", GCLOUD).length > 0;
 }
 
 // The account the container is logged in as. Only used to make a failure
 // readable ("logged in as the wrong person" rather than a permissions mystery),
 // so an empty answer is fine.
 function gcloudActiveAccount() {
-  return captureCli("gcloud auth list --filter=status:ACTIVE --format='value(account)'") || "unknown";
+  return captureCli("gcloud auth list --filter=status:ACTIVE --format='value(account)'", GCLOUD) || "unknown";
 }
 
 // A valid token is not the same as access to the branch's target project: a
@@ -80,7 +87,7 @@ function gcloudActiveAccount() {
 // roles/appengine.appViewer, not to soften the check into a warning the deploy
 // then ignores.
 function gcloudCanSeeProject(project) {
-  return captureCli(`gcloud app describe --project ${project}`).length > 0;
+  return captureCli(`gcloud app describe --project ${project}`, GCLOUD).length > 0;
 }
 
 // Confirm we can reach the secrets repo and that the target branch exists,
@@ -155,22 +162,22 @@ function checkRequirements(baseDir = __dirname) {
   // too. Caught here rather than three minutes into the deploy.
   if (!dockerAvailable()) {
     errors.push(
-      "backend: Docker is not available (the deploy CLIs run in the `deploy` container). " +
+      "backend: Docker is not available (gcloud runs in the `backend-deploy` container). " +
         "Start Docker Desktop and try again."
     );
   } else if (!gcloudAvailable()) {
     errors.push(
-      "backend: gcloud is not available in the deploy container. " +
-        "Build it with `docker compose --profile deploy build deploy`."
+      "backend: gcloud is not available in the backend-deploy container. " +
+        "Build it with `docker compose --profile deploy build backend-deploy`."
     );
   } else if (!gcloudHasValidCredentials()) {
     errors.push(
-      "backend: gcloud credentials are missing or expired (token refresh failed). Run `./deploy --relogin`."
+      "backend: gcloud credentials are missing or expired (token refresh failed). Run `./deploy.js --relogin`."
     );
   } else if (!gcloudCanSeeProject(project)) {
     errors.push(
       `backend: logged in as ${gcloudActiveAccount()}, which cannot access App Engine project "${project}" ` +
-        `(branch "${currentBranch}"). Run \`./deploy --relogin\` and pick an account with access.`
+        `(branch "${currentBranch}"). Run \`./deploy.js --relogin\` and pick an account with access.`
     );
   }
 
@@ -222,10 +229,12 @@ function deployToGoogleCloud() {
 
     try {
       updateLastDeployed(baseDir);
-      // Runs in the deploy container, whose /repo/badhan-backend IS this
-      // directory (bind mount), so the upload payload is byte-for-byte what a
-      // host `gcloud app deploy` would have sent.
+      // Runs in the backend-deploy container, whose /repo/badhan-backend IS
+      // this directory (a plain bind mount — the service deliberately layers
+      // no node_modules or dist volume over it), so the upload payload is
+      // byte-for-byte what a host `gcloud app deploy` would have sent.
       runCli(`gcloud app deploy --project ${project} ./${yaml} --quiet`, {
+        ...GCLOUD,
         workdir: "/repo/badhan-backend",
       });
     } finally {

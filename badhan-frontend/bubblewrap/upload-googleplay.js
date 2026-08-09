@@ -78,8 +78,8 @@ function imageEnv() {
 // The Android SDK version is a second place compileSdkVersion lives: the image
 // installs exactly one platform, where the host SDK happened to have several.
 // A bubblewrap regeneration that bumps app/build.gradle to a new API — or the
-// AGP classpath, which decides the default build-tools — must move
-// badhan-android/Dockerfile with it, or the build dies inside gradle with an
+// AGP classpath, which decides the default build-tools — must move the
+// Dockerfile beside it with it, or the build dies inside gradle with an
 // unrelated-looking error minutes in. Fail here instead, naming the fix.
 function sdkVersionErrors(baseDir, env) {
   let appGradle;
@@ -99,14 +99,14 @@ function sdkVersionErrors(baseDir, env) {
     errors.push(
       `bubblewrap: app/build.gradle wants compileSdkVersion ${compileSdk} but the android image ` +
         `installed platform ${env.ANDROID_API}. Update ANDROID_API (and BUILD_TOOLS) in ` +
-        "badhan-android/Dockerfile and rebuild."
+        "badhan-frontend/bubblewrap/Dockerfile and rebuild."
     );
   }
   if (agp && env.AGP_VERSION && agp !== env.AGP_VERSION) {
     errors.push(
       `bubblewrap: build.gradle uses Android Gradle Plugin ${agp} but the android image was built ` +
         `for ${env.AGP_VERSION}. AGP decides the default build-tools version, so update AGP_VERSION ` +
-        "and AGP_BUILD_TOOLS in badhan-android/Dockerfile and rebuild."
+        "and AGP_BUILD_TOOLS in badhan-frontend/bubblewrap/Dockerfile and rebuild."
     );
   }
   return errors;

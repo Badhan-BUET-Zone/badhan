@@ -20,6 +20,10 @@ services:
   backend:
     build:
       context: ./badhan-backend
+      # Explicit because the Dockerfile is multi-stage: with no target, a build
+      # resolves to the LAST stage, which is the deploy one. Dev must stop at
+      # `app`.
+      target: app
     ports:
       - "3000:3000"
     volumes:
@@ -40,6 +44,7 @@ services:
   internal:
     build:
       context: ./badhan-backend
+      target: app
     command: npx nodemon --watch dist --ext js,map --delay 200ms --legacyWatch --exec "npm run internal-server"
     ports:
       - "4000:4000"
@@ -61,6 +66,7 @@ services:
   frontend:
     build:
       context: ./badhan-frontend
+      target: app
     ports:
       - "8080:8080"
     volumes:
@@ -97,39 +103,59 @@ services:
       internal:
         condition: service_healthy
 
-  # Deploy tooling. `profiles: ["deploy"]` keeps a ~1 GB image out of
-  # `docker compose up -d` — it is built on first use, like the test services.
+  # Deploy tooling. Each app owns the CLI that deploys it, as the `deploy`
+  # target of that app's Dockerfile, so there is no separate deploy image and
+  # the CLI layer sits on top of layers the dev stack already built.
+  # `profiles: ["deploy"]` keeps both targets out of `docker compose up -d` —
+  # they are built on first use, like the test services.
+  #
   # Credentials live in .deploy-auth/ inside the bind-mounted repo (reached via
-  # CLOUDSDK_CONFIG / XDG_CONFIG_HOME, not $HOME), so gcloud/firebase auth
-  # survives `docker compose down -v` and the host needs neither CLI installed.
-  deploy:
+  # CLOUDSDK_CONFIG / XDG_CONFIG_HOME, not $HOME), so auth survives
+  # `docker compose down -v` and the host needs neither CLI installed.
+  #
+  # Both mount the whole repo and nothing else. That is deliberate: the
+  # app services layer a node_modules volume (and, for the backend, a dist
+  # volume) over their bind mount, and either would change what
+  # `gcloud app deploy` uploads. A deploy must see the working tree exactly as
+  # the host has it.
+  backend-deploy:
     profiles: ["deploy"]
     build:
-      context: ./badhan-deploy
+      context: ./badhan-backend
+      target: deploy
     # Root on macOS (Docker Desktop maps bind-mount writes to the invoking user
-    # anyway); the host uid on Linux/WSL2, exported by ./deploy and
+    # anyway); the host uid on Linux/WSL2, exported by childEnv() in
     # deploy-container.js, so files written into .deploy-auth/ stay yours.
     user: "${DEPLOY_UID:-0}:${DEPLOY_GID:-0}"
     environment:
       CLOUDSDK_CONFIG: /repo/.deploy-auth/gcloud
+    volumes:
+      - .:/repo
+    working_dir: /repo
+
+  frontend-deploy:
+    profiles: ["deploy"]
+    build:
+      context: ./badhan-frontend
+      target: deploy
+    user: "${DEPLOY_UID:-0}:${DEPLOY_GID:-0}"
+    environment:
       XDG_CONFIG_HOME: /repo/.deploy-auth/xdg
-    # The whole repo, because the wrapper picks the working directory per
-    # command (-w /repo/badhan-backend, -w /repo/badhan-frontend). No
-    # node_modules volume: this container never runs the app's code, and
-    # mounting one would change what `gcloud app deploy` uploads.
     volumes:
       - .:/repo
     working_dir: /repo
 
   # Google Play toolchain (JDK 17 + Android SDK + bubblewrap + fastlane), kept
-  # as a separate ~3-4 GB image because a Play release is rare, independent of
-  # ./deploy, and touches neither gcloud nor firebase. Every secret it uses is
-  # cloned per-run into badhan-frontend/bubblewrap and deleted afterwards, so
-  # there is nothing to persist and no login flow.
+  # as a separate ~3 GB image rather than a stage of the frontend: it is built
+  # on a JDK base, not a Node one, and a Play release is rare and independent of
+  # ./deploy.js. Its Dockerfile lives next to the gradle project it builds; the
+  # .dockerignore beside it keeps the build context to that one file. Every
+  # secret it uses is cloned per-run into badhan-frontend/bubblewrap and deleted
+  # afterwards, so there is nothing to persist and no login flow.
   android:
     profiles: ["deploy"]
     build:
-      context: ./badhan-android
+      context: ./badhan-frontend/bubblewrap
     user: "${DEPLOY_UID:-0}:${DEPLOY_GID:-0}"
     volumes:
       - .:/repo

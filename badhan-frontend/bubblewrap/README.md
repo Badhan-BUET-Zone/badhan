@@ -19,10 +19,10 @@ docker compose --profile deploy build android
 
 The image bakes `~/.bubblewrap/config.json`, so there is no `bubblewrap doctor` step and
 no host JDK/SDK to register. The Play service-account key is fetched per run and deleted
-afterwards, so unlike `./deploy` there is no login and nothing persisted.
+afterwards, so unlike `./deploy.js` there is no login and nothing persisted.
 
 The image pins the Android platform and build-tools it installs (`ANDROID_API`,
-`BUILD_TOOLS`, `AGP_VERSION` in [../../badhan-android/Dockerfile](../../badhan-android/Dockerfile)).
+`BUILD_TOOLS`, `AGP_VERSION` in [Dockerfile](Dockerfile)).
 `--check` compares them against `compileSdkVersion` in `app/build.gradle` and the AGP
 classpath in `build.gradle` and fails if they drift — if a bubblewrap regeneration bumps
 either, update the Dockerfile and rebuild.

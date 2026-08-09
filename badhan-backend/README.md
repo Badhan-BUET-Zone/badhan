@@ -41,9 +41,12 @@ Response:
 
 
 ## Deploying to GCP App Engine
-* `gcloud` is **not** installed on the host — it runs in the `deploy` container. Build it
-  once with `docker compose --profile deploy build deploy`.
-* Verify the container's gcloud: `docker compose --profile deploy run --rm -T deploy gcloud version`
+* `gcloud` is **not** installed on the host — it runs in the `backend-deploy` container,
+  which is the `deploy` stage of this directory's [Dockerfile](Dockerfile): this same
+  image plus the CLI. Build it once with
+  `docker compose --profile deploy build backend-deploy`.
+* Verify the container's gcloud:
+  `docker compose --profile deploy run --rm -T backend-deploy gcloud version`
 
 The output should look something like below:
 ```
@@ -55,7 +58,7 @@ gcloud-crc32c 1.0.0
 gsutil 5.35
 ```
 
-* `./deploy --login` from the repo root — it prints a URL to open in any browser and takes
+* `./deploy.js --login` from the repo root — it prints a URL to open in any browser and takes
   the code back. Credentials land in `.deploy-auth/` (gitignored) and survive
   `docker compose down -v`.
 * Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.

@@ -1,7 +1,9 @@
 "use strict";
 
-// Runs the deploy CLIs (gcloud, firebase, bubblewrap, fastlane) inside the
-// `deploy` / `android` containers instead of on the host.
+// Runs the deploy CLIs (gcloud, firebase, bubblewrap, fastlane) inside
+// containers instead of on the host. Each CLI lives with the thing it deploys:
+// gcloud in `backend-deploy` (the deploy stage of badhan-backend's Dockerfile),
+// firebase in `frontend-deploy`, and the Play toolchain in `android`.
 //
 // The upload scripts themselves stay on the host — they shell out to
 // `docker compose` for the frontend build, which a container could not do
@@ -33,6 +35,9 @@ function ensureAuthDir() {
 // the repo is on the Linux filesystem and container root would leave root-owned
 // files behind). On macOS, Docker Desktop already maps bind-mount writes to the
 // invoking user, so the compose default of 0:0 is correct.
+//
+// Exported because ./deploy runs the test-profile containers through compose
+// directly, and they need the same mapping.
 function childEnv(extra = {}) {
   const env = { ...process.env, ...extra };
   if (process.platform === "linux") {
@@ -46,6 +51,12 @@ function childEnv(extra = {}) {
 // container. `workdir` is a path INSIDE the container (/repo/...), because the
 // repo root is bind-mounted at /repo.
 //
+// `service` is required and has no default: each CLI now lives in the deploy
+// stage of the app it deploys (gcloud in `backend-deploy`, firebase in
+// `frontend-deploy`, the Play toolchain in `android`), and a wrong or missing
+// one would surface as "command not found" from a container that simply does
+// not have that CLI. Failing here names the actual mistake.
+//
 // `interactive` controls the TTY. Compose allocates one by default, which the
 // login flows need for their paste-back prompts; every check that parses stdout
 // passes -T instead, because a TTY corrupts captured output with control codes.
@@ -53,7 +64,8 @@ function childEnv(extra = {}) {
 // `passEnv` lists variable NAMES to forward with a bare `-e NAME`, which makes
 // compose inherit the value from this process. Never `-e NAME=value`: that
 // would put secrets (the keystore password) in the host process table.
-function cliCommand(cmd, { service = "deploy", workdir = "/repo", interactive = false, passEnv = [] } = {}) {
+function cliCommand(cmd, { service, workdir = "/repo", interactive = false, passEnv = [] } = {}) {
+  if (!service) throw new Error(`No compose service given for CLI command: ${cmd}`);
   const flags = [interactive ? "" : "-T", ...passEnv.map((n) => `-e ${n}`), `-w ${workdir}`];
   return `docker compose --profile deploy run --rm ${flags.filter(Boolean).join(" ")} ${service} ${cmd}`;
 }
@@ -114,6 +126,7 @@ function toContainerPath(hostPath) {
 
 module.exports = {
   cliCommand,
+  childEnv,
   runCli,
   captureCli,
   dockerAvailable,
