@@ -11,11 +11,12 @@
 ## Local setup
 
 - Follow the instructions of [this readme](../README.md)
-- Open a new bash/zsh terminal with `badhan-backend-test` folder as the working directory.
+- Open a new bash/zsh terminal with the repository root as the working directory, and
+  bring the dev stack up with `docker compose up -d`.
 
 ## To run all tests
 
-- Run `bash start`
+- Run `docker compose run --rm backend-test`
   The following output should be there:
 
 ```
@@ -30,9 +31,9 @@ There should not be any failed test.
 
 ## To run only a single test file
 
-- `bash start <path to the test file>`.
+- `docker compose run --rm backend-test npm test -- <path to the test file>`.
 
-Example: `bash start ./users/signIn/success.test.js`
+Example: `docker compose run --rm backend-test npm test -- tests/users/signIn/success.test.js`
 The following output should be shown.
 
 ```
