@@ -27,9 +27,6 @@ module.exports = defineConfig({
       rules: [{
         test: /\.md$/,
         loader: 'raw-loader' // npm install -D raw-loader
-      }, {
-        test: /\.gradle$/,
-        loader: 'raw-loader' // npm install -D raw-loader
       }]
     }
   }
