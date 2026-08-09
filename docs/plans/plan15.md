@@ -64,8 +64,8 @@ Two consequences of that unification are goals in their own right, and are calle
 
 | Phase | Title | Depends on | Deployable alone |
 | --- | --- | --- | --- |
-| [P1](#phase-p1--the-branch-rename) | Rename `main` → `production`, `test-branch` → `development`, and every reference to them | — | yes (no app code runs) |
-| [P2](#phase-p2--one-map-environmentsjs) | `environments.js`: the single branch → environment → target map | P1 | yes |
+| [P1](#phase-p1--the-branch-rename) ✅ | Rename `main` → `production`, `test-branch` → `development`, and every reference to them | — | yes (no app code runs) |
+| [P2](#phase-p2--one-map-environmentsjs) ✅ | `environments.js`: the single branch → environment → target map | P1 | yes |
 | [P3](#phase-p3--the-backend-speaks-three-words) | `local` becomes a real backend environment; scripts and yaml renamed | P2 | yes |
 | [P4](#phase-p4--the-frontend-speaks-three-words) | `local` becomes a real frontend environment; build scripts named per environment; `testing` and the admin-console variable deleted | P2 | yes |
 | [P5](#phase-p5--make-the-development-site-a-pwa) | **Convert the development site into a real PWA**; per-environment PWA identity | P4 | yes |
@@ -76,6 +76,31 @@ Two consequences of that unification are goals in their own right, and are calle
 
 P1 is the only phase with an irreversible external step (the GitHub default branch). P3–P7 are each
 independently revertable. P5 is the only phase a user can perceive.
+
+### Status
+
+**P1 and P2 have landed** (commit `7e00d956` on `production`, merged to `development` as `1b6fc889`).
+The remote now has exactly two branches; `main` (last commit `5be9de16`) and `test-branch` (last
+commit `e3a8bddc`) were deleted after both were confirmed to be ancestors of their replacements.
+Branch protection moved from `main` to `production` unchanged, and all 15 README images were verified
+`200` from the `production` path before the deletion.
+
+Two things landed slightly out of their listed phase, both because P2 could not work without them:
+
+- **`build:production` and `build:local`** ([P4.6](#p46-frontend-npm-scripts)) — `environments.js`
+  names `build:production` as production's build script, and the script did not exist yet. Bare
+  `build` is now an alias; `build:production` was verified to produce a byte-identical
+  `dist/manifest.json` (`index.html` differs only by its injected build timestamp).
+- **The development `immutable` cache rules** ([P2.4](#p24-file-renames)) — landed with the config
+  rename, as written. The two Firebase configs now differ only in `site`.
+
+App Engine entrypoints still read `start:prod` / `start:dev`: those lines belong to
+[P3.2](#p32-scripts-and-entrypoints) and were deliberately left alone, since renaming the scripts
+without them boots a container whose entrypoint does not exist.
+
+Everything from §0 below describes the state **before** these two phases and is left as written;
+links in it to `app_prod.yaml`, `app_dev.yaml` and `firebase.badhan-*.json` therefore no longer
+resolve. That is the record of what was found, not a to-do.
 
 ---
 
