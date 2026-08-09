@@ -384,6 +384,10 @@ rollback path for P2, and any Android build or bookmarked deployment still in th
 reading them. Retiring the cloud-side resources is a follow-up, appropriate once a release built
 from P2 has been in production long enough to be confident.
 
+**Since done:** that follow-up ran on 2026-08-09, immediately after the P2 release went live —
+see [§5](#5-the-cloud-side-follow-up). The rollback path it protected is gone with it; reverting P2
+now would need the contributor data re-created from `contributors.json`.
+
 ---
 
 ## Phase P4 — docs and the maintainer path
@@ -469,10 +473,73 @@ images, pointless once the file is in the bundle, and visible as a grey disc on 
 past quickly. Verified by driving the real app: signed in through Cypress, navigated to Credits, and
 screenshotted at 1280px.
 
-Not done, deliberately: the Realtime Database node and the Storage objects are still live
-([§3.4](#34-leave-the-cloud-resources-alone)), and `firebase-tools` remains a frontend
-`devDependency` even though plan 13 moved it into the deploy image globally — a separate leftover,
-not this plan's business.
+Not done at the time: the Realtime Database node and the Storage objects were left live
+([§3.4](#34-leave-the-cloud-resources-alone)); they have since been retired, see
+[§5](#5-the-cloud-side-follow-up). `firebase-tools` remains a frontend `devDependency` even though
+plan 13 moved it into the deploy image globally — a separate leftover, not this plan's business.
+
+---
+
+## §5 The cloud-side follow-up
+
+The P2 release deployed to production on 2026-08-09 (App Engine `20260809t213804`, Hosting release
+the same evening). Verified first that the served bundle no longer reaches Firebase — the Credits
+chunk `769.dfa04b31.js` came back byte-identical to the local build, with its avatars inlined and
+zero `firebaseio`/`firebasestorage` references — and only then retired the cloud side. The Android
+build is a bubblewrap TWA pointing at the same Hosting site, so there is no separately-versioned
+client left reading the old sources.
+
+What went, from `badhan-buet.appspot.com`:
+
+| Removed | Objects | Bytes |
+| --- | --- | --- |
+| Stale App Engine staging blobs, root, all stamped 2026-07-24 | 287 | 2,000,704 |
+| `profilepics/` — the pre-vendoring avatars | 16 | 6,154,280 |
+| `badhan-admin-api/` — the retired admin console's duplicates of the same photos | 11 | 2,600,106 |
+
+The staging blobs were a stray copy of the backend tree (`source-context` pins commit `a22ac9c5`),
+superseded by the proper `staging.badhan-buet.appspot.com` bucket and recoverable from git either
+way. The bucket now holds `backup/` and nothing else — 5 objects, the backup/restore tool's
+territory, untouched.
+
+In the Realtime Database, `/data` was deleted and the rules went from `".read": true` to
+`".read": false, ".write": false`. `/contributors` and `/frontendSettings` were already null
+([§0.1](#01-only-one-of-the-three-realtime-database-endpoints-has-data)).
+
+### 5.1 The exposure this closed
+
+Worth recording, because it was not what the plan went looking for. The bucket carried
+`allUsers` → `roles/storage.objectViewer` **at the bucket level**, which grants `objects.list` as
+well as `objects.get`. Anyone could enumerate it unauthenticated — and `backup/` holds `mongodump`
+archives of the production database, written there by
+[internalRoutes/index.ts](../../badhan-backend/src/internalRoutes/index.ts). Four of them, newest
+1.66 MB, all anonymously downloadable.
+
+The public grant is what the Credits page's tokenless
+`firebasestorage.googleapis.com/…?alt=media` URLs depended on, which is why it could only be removed
+after P2 was actually serving. Removing it does not affect the backup tool: the backend's
+`firebase-adminsdk-qe3r6@badhan-buet` service account holds `objects.create`/`get`/`list`/`delete`
+through its own project-level grant, confirmed by `testPermissions` before and after.
+
+Two traps worth knowing about for anything similar:
+
+- **Object ACLs outlive the bucket policy.** Uniform bucket-level access is off here, so removing
+  the bucket binding is not sufficient on its own — per-object and default-object ACLs also have to
+  be checked. They turned out clean (no `allUsers` entry in either), but that was luck, not design.
+- **A public object stays cached at the edge.** The first post-removal fetch of a backup zip
+  returned `200` from cache with `public, max-age=3600` still attached. A cache-busted request is
+  what actually shows the `403`. Do not read an uncached `200` as "the change didn't work".
+
+Verified after the fact, anonymously: bucket listing `401`, every backup zip `403` (cache-busted),
+old avatar URLs `404`, RTDB read `Permission denied`. Production frontend, Credits chunk, and the
+backend statistics endpoint all still `200`.
+
+Still open, and the reason this is worth a second look: `staging.badhan-buet.appspot.com` and
+`us.artifacts.badhan-buet.appspot.com` are private, but nothing *enforces* that on any of the three
+buckets. Turning on uniform bucket-level access and public access prevention on
+`badhan-buet.appspot.com` would make the state above hard to undo by accident; neither was enabled
+here, because UBLA is a one-way door after 90 days and that is a decision to take deliberately
+rather than as the tail of a cleanup.
 
 ---
 
