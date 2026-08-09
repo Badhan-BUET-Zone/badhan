@@ -7,6 +7,7 @@ const { resolve } = require("path");
 const os = require("os");
 const https = require("https");
 const { runCli, captureCli, dockerAvailable } = require("../deploy-container");
+const { environmentForBranch } = require("../environments");
 
 // Env files are NOT committed to this repo. They live in a private secrets
 // repo and are cloned into place only for the duration of a deploy, then
@@ -26,24 +27,16 @@ function getCurrentBranch() {
   return execSync("git rev-parse --abbrev-ref HEAD", { encoding: "utf8" }).trim();
 }
 
-// Resolve the branch-dependent deploy target (env file, App Engine config,
-// GCP project). Shared by both the preflight checks and the actual deploy so
-// the two can never drift.
+// Resolve the branch-dependent deploy target (env file, App Engine config, GCP
+// project). A thin wrapper over ../environments.js, which is the one place the
+// branch → target map now lives: this file and upload-firebase.js used to hold
+// a copy each, keyed differently enough that they could not be diffed by eye.
+//
+// Throws for a branch with no deploy target. Every caller below is inside
+// checkRequirements or downstream of it, so the throw surfaces as a preflight
+// bullet rather than a stack trace.
 function getDeployTarget(currentBranch) {
-  if (currentBranch === "main") {
-    return {
-      envFile: "env.production",
-      yaml: "app_prod.yaml",
-      project: "badhan-buet",
-      baseUrl: "https://badhan-buet.uc.r.appspot.com",
-    };
-  }
-  return {
-    envFile: "env.development",
-    yaml: "app_dev.yaml",
-    project: "badhan-buet-test",
-    baseUrl: "https://badhan-buet-test.uc.r.appspot.com",
-  };
+  return environmentForBranch(currentBranch);
 }
 
 // Every gcloud call goes to the `backend-deploy` service — the `deploy` target
@@ -141,7 +134,22 @@ function checkRequirements(baseDir = __dirname) {
     return errors;
   }
 
-  const { envFile, yaml, project } = getDeployTarget(currentBranch);
+  // An unlisted branch is a preflight failure, not an exception: report it the
+  // same way as every other unmet requirement and stop, since nothing below can
+  // be checked without knowing the target.
+  let environment;
+  try {
+    environment = getDeployTarget(currentBranch);
+  } catch (err) {
+    errors.push(`backend: ${err.message}`);
+    return errors;
+  }
+
+  const {
+    backendEnvFile: envFile,
+    appEngineConfig: yaml,
+    gcpProject: project,
+  } = environment;
 
   // The env file is fetched from the secrets repo at deploy time. Accept a
   // local copy if one already exists; otherwise require the secrets repo to be
@@ -214,7 +222,11 @@ function deployToGoogleCloud() {
     }
 
     const currentBranch = getCurrentBranch();
-    const { envFile, yaml, project } = getDeployTarget(currentBranch);
+    const {
+      backendEnvFile: envFile,
+      appEngineConfig: yaml,
+      gcpProject: project,
+    } = getDeployTarget(currentBranch);
 
     // Fetch the env file from the secrets repo unless a local copy already
     // exists. Only files WE fetched are cleaned up afterwards, so a
@@ -288,7 +300,7 @@ function probe(url) {
 // Poll the deployed backend until it answers 200. Returns true once live,
 // false if the whole budget is exhausted.
 async function liveCheck(currentBranch = getCurrentBranch()) {
-  const { project, baseUrl } = getDeployTarget(currentBranch);
+  const { gcpProject: project, backendBaseUrl: baseUrl } = getDeployTarget(currentBranch);
   const url = `${baseUrl}${LIVE_CHECK_PATH}`;
   const budgetSeconds = (LIVE_CHECK_ATTEMPTS * LIVE_CHECK_INTERVAL_MS) / 1000;
 

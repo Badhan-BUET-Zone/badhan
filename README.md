@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="150" height="150" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/logo.png"/>
+  <img width="150" height="150" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/logo.png"/>
   <h1>Badhan, BUET Zone</h1>
 </div>
 <a name="tableofcontent"/>
@@ -177,6 +177,36 @@ Deployment is a manual, run-by-hand step. From the repo root:
 ./deploy.js
 ```
 
+## Branches and environments
+
+There are three environments — `production`, `development` and `local` — and two of them
+are deployable. **The git branch name *is* the environment name**, and the map between
+them lives in exactly one place: [`environments.js`](environments.js) at the repo root,
+which both upload scripts require.
+
+| Branch | Environment | GCP project | Firebase project | Backend | Frontend |
+| --- | --- | --- | --- | --- | --- |
+| `production` | `production` | `badhan-buet` | `badhan-buet` | https://badhan-buet.uc.r.appspot.com | https://badhan-buet.web.app |
+| `development` | `development` | `badhan-buet-test` | `badhan-buet-test` | https://badhan-buet-test.uc.r.appspot.com | https://badhan-buet-test-46eca.web.app |
+| any other | — | — | — | **refuses to deploy** | **refuses to deploy** |
+| — | `local` | — | — | http://localhost:3000 | http://localhost:8080 |
+
+`local` is not a deploy target: it has no cloud project and no branch of its own.
+
+**Any branch other than those two refuses to deploy**, in the preflight, before the test
+suites run:
+
+```
+❌  Deployment requirements not met:
+   • branch "mahathir/#72/platelet-count" has no deploy target.
+     Deployable branches: production, development.
+```
+
+There is no override flag and no confirmation prompt. To try a feature branch on the
+development site, merge it to `development` and deploy from there. This is deliberate:
+until this was enforced, *every* branch that was not `main` deployed to the shared
+development environment without saying so.
+
 This runs both test suites first (backend Jest, then frontend Cypress) and only
 deploys if **both** pass — the test gate cannot be skipped. On success it deploys the
 backend to Google Cloud (`upload-gcloud.js`) and the frontend to Firebase
@@ -201,9 +231,13 @@ everything else. Use `./deploy.js --relogin` when a token has expired or you nee
 accounts — plain re-login answers *"Already logged in"* and won't refresh it.
 
 The preflight that runs before the test suites checks more than "a token refreshes": it
-confirms the logged-in account can actually reach the project this branch deploys to
-(`badhan-buet` on `main`, `badhan-buet-test` otherwise), so being logged in as the wrong
-Google account fails in seconds rather than after both test suites.
+confirms the logged-in account can actually reach the project this branch deploys to (see
+the table above), so being logged in as the wrong Google account fails in seconds rather
+than after both test suites. It also prints the resolved target before anything else runs:
+
+```
+🌍  Branch "production" → environment production (badhan-buet).
+```
 
 ## Supported host platforms
 
@@ -241,57 +275,57 @@ Once the stack is back up, re-run the two `curl` commands above to reseed the da
 
 We provide the documentation of all endpoints of our `badhan-backend` API. Visit https://badhan-buet-test.uc.r.appspot.com/docs/ to see and use the API endpoints directly. Visit this [video](https://youtu.be/vHnDgW04c1w) for instructions on using the API.
 
-<img width="1799" height="928" alt="Backend API documentation" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/api-docs.png" />
+<img width="1799" height="928" alt="Backend API documentation" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/api-docs.png" />
 
 # Video Trailer of App
 Click to see video
 
-[![Video Title](https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/video-thumbnail.jpg)](https://www.youtube.com/watch?v=cB0ci0pjCY8)
+[![Video Title](https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/video-thumbnail.jpg)](https://www.youtube.com/watch?v=cB0ci0pjCY8)
 
 # Screenshots
 
-<img width="1491" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/screenshot-1.png" />
-<img width="1579" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/screenshot-2.png" />
+<img width="1491" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/screenshot-1.png" />
+<img width="1579" height="875" alt="Badhan web app screenshot" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/screenshot-2.png" />
 
 **Login** — Sign in by phone and password, with the last six months of donation counts shown on the landing screen.
 
-<img width="280" alt="Login screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/login.png" />
+<img width="280" alt="Login screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/login.png" />
 
 **Donor search** — Filter donors by name, blood group, batch, address, hall and availability.
 
-<img width="280" alt="Donor search filters" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-search-filters.png" />
+<img width="280" alt="Donor search filters" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/donor-search-filters.png" />
 
 **Search results** — Matching donors grouped by batch, colour-coded by whether they are eligible to donate yet.
 
-<img width="280" alt="Donor search results grouped by batch" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-search-results.png" />
+<img width="280" alt="Donor search results grouped by batch" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/donor-search-results.png" />
 
 **Donor quick actions** — Expand any result to see contact details and call the donor or log a donation without leaving the list.
 
-<img width="280" alt="Expanded donor card with quick actions" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-quick-actions.png" />
+<img width="280" alt="Expanded donor card with quick actions" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/donor-quick-actions.png" />
 
 **Donor profile** — Full donor record with volunteer status, blood and platelet donation history, and per-donor settings.
 
-<img width="280" alt="Donor profile page" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/donor-profile.png" />
+<img width="280" alt="Donor profile page" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/donor-profile.png" />
 
 **Create donor** — Register a new donor with contact, hall, blood group and donation-count details.
 
-<img width="280" alt="Create donor form" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/create-donor.png" />
+<img width="280" alt="Create donor form" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/create-donor.png" />
 
 **Bulk CSV upload** — Import many donors at once from a CSV, with the accepted column formats documented on the page.
 
-<img width="900" alt="Bulk donor CSV upload screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-donor-upload.png" />
+<img width="900" alt="Bulk donor CSV upload screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/csv-donor-upload.png" />
 
 **CSV validation** — Every row is validated before upload, with the offending cells highlighted and the failed rows downloadable as a CSV to fix and retry.
 
-<img width="900" alt="CSV upload showing per-row validation errors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-upload-errors.png" />
+<img width="900" alt="CSV upload showing per-row validation errors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/csv-upload-errors.png" />
 
 **Duplicate detection** — Donors already in the database are flagged instead of re-created, with a direct link to the existing record.
 
-<img width="900" alt="CSV upload showing already existing donors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/csv-upload-duplicates.png" />
+<img width="900" alt="CSV upload showing already existing donors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/csv-upload-duplicates.png" />
 
 **Backup and restore** — Super admins can snapshot the database and restore any backup to the local, test or production environment.
 
-<img width="900" alt="Backup and restore screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/main/docs/images/backup-and-restore.png" />
+<img width="900" alt="Backup and restore screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/backup-and-restore.png" />
 
 # Website
 https://badhan-buet.web.app/#/

@@ -1,0 +1,40 @@
+{
+  "hosting": {
+    "site": "badhan-buet-test-46eca",
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      { "source": "**", "destination": "/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      },
+      {
+        "source": "/js/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "/css/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "/img/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      }
+    ]
+  }
+}

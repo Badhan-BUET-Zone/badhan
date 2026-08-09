@@ -42,6 +42,10 @@ places where `npm`/`node`/`npx` on the host is allowed:
 They are exceptions because they **orchestrate**: they read the git branch, clone the
 secrets repo, and shell out to `docker compose`, which a container has no socket to do.
 `./deploy.js` is itself a Node script and requires the other three in-process.
+They share two host-side modules, which are libraries rather than entry points:
+[deploy-container.js](deploy-container.js) (runs a CLI inside its deploy container) and
+[environments.js](environments.js) (the single branch → environment → deploy-target map;
+add a new environment or retarget one there, never in an upload script).
 Every tool they drive — `gcloud`, `firebase`, `bubblewrap`, `fastlane`, and every build —
 runs in a container, via [deploy-container.js](deploy-container.js). Do not add a host
 CLI dependency to them; add it to the `deploy` stage of the relevant app's
