@@ -39,7 +39,10 @@ Two consequences of that unification are goals in their own right, and are calle
 
 ## At a glance
 
-| | Today | After plan 15 |
+"Today" below means *before plan 15 started*. The branch, deploy-target, config-file and
+frontend-build-script rows are already in their right-hand state — see [Status](#status).
+
+| | Today (pre-plan) | After plan 15 |
 | --- | --- | --- |
 | Environment names in use | `main`, `test-branch`, `production`, `development`, `local`, `test`, `testing`, `dev`, `prod` | `production`, `development`, `local` — nothing else |
 | Git branches | `main`, `test-branch` | `production`, `development` |
@@ -80,10 +83,14 @@ independently revertable. P5 is the only phase a user can perceive.
 ### Status
 
 **P1 and P2 have landed** (commit `7e00d956` on `production`, merged to `development` as `1b6fc889`).
-The remote now has exactly two branches; `main` (last commit `5be9de16`) and `test-branch` (last
-commit `e3a8bddc`) were deleted after both were confirmed to be ancestors of their replacements.
-Branch protection moved from `main` to `production` unchanged, and all 15 README images were verified
-`200` from the `production` path before the deletion.
+The remote has exactly two branches, `production` is the default, and `main` / `test-branch` are
+gone. The transcript of the rename — including four ways it diverged from the plan as written, which
+the next such change should expect — is [§P1.2](#p12-the-rename-sequence-as-executed); the
+verification results are [§P1.3](#p13-verification--results).
+
+**P3 onwards have not started.** The next branch cut from `production` inherits the map; the next one
+that lands on `production` must be merged down to `development`, for the reason in
+[§P1.2](#p12-the-rename-sequence-as-executed).
 
 Two things landed slightly out of their listed phase, both because P2 could not work without them:
 
@@ -173,12 +180,16 @@ production. The one screen that exercises the update path
 force-reloads the page when a new worker activates) is only ever exercised by real users.
 
 This interacts with the cache-header work recorded in plan 14's follow-up: the development Firebase
-config ([firebase.badhan-buet-test.json](../../badhan-frontend/firebase.badhan-buet-test.json)) has
-only the blanket `no-cache` rule, while production
-([firebase.badhan-buet.json](../../badhan-frontend/firebase.badhan-buet.json)) adds the three
-`immutable` rules for `/js/**`, `/css/**`, `/img/**`. So the two environments differ in *both* the
-service worker and the caching headers — the two things that most need a rehearsal before
-production.
+config (then `firebase.badhan-buet-test.json`, now
+[firebase.development.json](../../badhan-frontend/firebase.development.json)) had only the blanket
+`no-cache` rule, while production (then `firebase.badhan-buet.json`, now
+[firebase.production.json](../../badhan-frontend/firebase.production.json)) added the three
+`immutable` rules for `/js/**`, `/css/**`, `/img/**`. So the two environments differed in *both* the
+service worker and the caching headers — the two things that most need a rehearsal before production.
+
+**The caching half of this is fixed**: [§P2.4](#p24-file-renames) landed the three `immutable` rules
+on development, and the two configs now differ only in `site`. The service-worker half is still open
+and is [P5](#phase-p5--make-the-development-site-a-pwa).
 
 ### 0.5 The PWA manifest is identical in every environment
 
@@ -272,7 +283,7 @@ Every screenshot and logo in [README.md](../../README.md) is an absolute
 `raw.githubusercontent.com` does **not** follow GitHub's branch-rename redirects; the moment `main`
 stops existing, all 15 return 404 and the README renders as broken-image icons on GitHub, on npm-style
 mirrors, and in the organisation profile. This is why P1 orders the rename the way it does
-([§P1.2](#p12-the-rename-sequence-order-matters)).
+([§P1.2](#p12-the-rename-sequence-as-executed)).
 
 [docs/blog/branch-and-commit-convention.md:3-7](../blog/branch-and-commit-convention.md#L3-L7) also
 names `master` and `test-branch` as the protected branches, for repos that were merged into this
@@ -358,7 +369,11 @@ No build step ships `environments.js` into either app; duplicating the three lit
 
 ## Phase P1 — the branch rename
 
-### P1.1 What changes
+> **Landed.** Commit `7e00d956` on `production`. The sequence below is the record of what was run —
+> [§P1.2](#p12-the-rename-sequence-as-executed) notes the four places execution diverged from the
+> plan as written.
+
+### P1.1 What changed
 
 | File | Change |
 | --- | --- |
@@ -372,54 +387,83 @@ Deploy-script branch literals are **not** touched here — they move wholesale i
 the deploy from `production` would take the development path, so **P1 and P2 land together or P1 does
 not get pushed**. They are listed separately only because their review surfaces are unrelated.
 
-### P1.2 The rename sequence (order matters)
+### P1.2 The rename sequence, as executed
 
 `raw.githubusercontent.com` 404s the instant `main` disappears ([§0.10](#010-renaming-main-breaks-15-image-links-in-the-readme)),
-so create the new name *before* removing the old one and land the URL rewrite in between.
+so the new name was created *before* the old one was removed, with the URL rewrite landing in
+between. Everything was run through `git` and `gh` rather than the GitHub UI, so the sequence is a
+transcript rather than a description of clicks.
 
-**Executed by Claude via `git` and `gh`, not by hand in the GitHub UI** — every step below is a
-command, so the sequence is reproducible and reviewable rather than a description of clicks. Two
-preconditions, checked before step 1: `gh auth status` is authenticated, and the token carries admin
-rights on `Badhan-BUET-Zone/badhan` (`gh api repos/Badhan-BUET-Zone/badhan --jq .permissions.admin`
-prints `true`). If either fails, stop and hand the sequence over rather than half-running it.
+Preconditions, checked first: `gh auth status` authenticated as `mirmahathir1`, and
+`gh api repos/Badhan-BUET-Zone/badhan --jq .permissions.admin` → `true`. Also checked, because both
+change what the sequence has to do: `gh pr list --state open` → **none**, so nothing needed
+retargeting; and `main` was **4 commits behind** `test-branch`, so `production` was cut from `main`'s
+commit and the newer work stayed on `development`.
 
-1. `git switch main && git pull`
-2. `git switch -c production` — new branch, same commit; both names now resolve on the remote once
-   pushed: `git push -u origin production`
-3. On `production`, commit the P1 + P2 changes (README URLs among them) and push.
-4. Move the default branch:
-   `gh api -X PATCH repos/Badhan-BUET-Zone/badhan -f default_branch=production`.
-   Then move protection rules: read the existing ones with
-   `gh api repos/Badhan-BUET-Zone/badhan/branches/main/protection` and re-apply the same payload to
-   `…/branches/production/protection` with `-X PUT`. A 404 on the read means `main` was unprotected
-   and there is nothing to move.
-5. Verify: open the README on GitHub; all 15 images render. Also
-   `gh api repos/Badhan-BUET-Zone/badhan --jq .default_branch` → `production`.
-6. **Stop here and get explicit go-ahead.** The next command is the plan's only irreversible external
-   step: `git push origin --delete main`. Nothing before it has removed anything.
-7. `git branch -m test-branch development && git push -u origin development && git push origin --delete test-branch`
-8. Every clone: `git fetch --prune && git remote set-head origin -a`; rename local branches with
-   `git branch -m`.
-9. Re-point anything outside this repo that names `main`. Open PRs first — GitHub retargets these
-   automatically on a *rename*, but steps 2/6 are a create-then-delete, so they must be retargeted
-   before step 6 or they close: list them with `gh pr list --base main --json number,title` and
-   retarget each with `gh pr edit <n> --base production`. Then the organisation profile README, and
-   any bookmark or hook in the Badhan-BUET-Zone org — those are outside `gh`'s reach here and are
-   yours to check.
+1. `git switch main && git pull --ff-only`
+2. `git switch -c production` → `git push -u origin production`. Both names now resolved; nothing
+   removed.
+3. Committed P1 + P2 on `production` (`7e00d956`) and pushed.
+4. `gh api -X PATCH repos/Badhan-BUET-Zone/badhan -f default_branch=production`, then the protection
+   rules: read from `…/branches/main/protection`, **reshaped**, and `PUT` to
+   `…/branches/production/protection`.
+5. Verified: default branch `production`, and all 15 raw-content image URLs returned `200` from the
+   `production` path.
+6. Created `development` and brought the map onto it — **not in the plan as written**, see below.
+7. Confirmed `main ⊂ production` and `test-branch ⊂ development` with `git merge-base --is-ancestor`,
+   then **stopped for explicit go-ahead** before any deletion.
+8. Stripped protection from `main`, then `git push origin --delete main` and
+   `git push origin --delete test-branch`.
+9. `git fetch --prune && git remote set-head origin -a`; deleted the stale local `main`.
 
-There is no CI in this repo (`.github/` does not exist), so nothing else keys on the branch name.
+Four divergences from the plan as written, each of which the next rename should expect:
 
-### P1.3 Verification
+- **`main` could not be deleted while protected.** Its rule set had `allow_deletions: false`, so
+  `gh api -X DELETE …/branches/main/protection` had to run first. The plan's step 6 assumed the
+  delete would just work.
+- **The protection payload is not round-trippable.** `GET …/protection` returns `restrictions` and
+  `bypass_pull_request_allowances` as arrays of *objects*; `PUT` requires arrays of login/slug
+  *strings*, and `required_status_checks: null` must be sent explicitly. The read payload has to be
+  reshaped, not replayed. What transferred: one required approving review, `mirmahathir1` as the
+  bypass user, no force pushes, no deletions, `block_creations`, admins not enforced.
+- **`development` was created before `main` was deleted, not after** (plan steps 6 → 7 ran in the
+  reverse order). Both deletions then happened together at the end, so the repository never had a
+  moment with only one of the two new branches.
+- **`production` was merged into `development`** (`1b6fc889`), which the plan never says to do.
+  Without it, `development` would still hold the old `if (branch === "main")` scripts and none of the
+  renamed configs — it would have kept deploying correctly *by accident*, via the fallthrough this
+  plan exists to delete. **Any future phase that lands on `production` first must be merged down the
+  same way.**
+
+There is no CI in this repo (`.github/` does not exist), so nothing else keyed on the branch name.
+
+### P1.3 Verification — results
 
 ```
-git ls-remote --heads origin | grep -E 'production|development'   # both present
-git ls-remote --heads origin | grep -E 'main|test-branch'          # empty
-grep -rn "badhan/main" README.md                                   # empty
+git ls-remote --heads origin        # development, production — and nothing else ✓
+grep -c "badhan/main" README.md                       # 0 ✓
+grep -c "badhan/production/docs/images" README.md     # 15 ✓
+curl -o /dev/null -w '%{http_code}' \
+  https://raw.githubusercontent.com/…/badhan/production/docs/images/logo.png   # 200 ✓
+gh api repos/Badhan-BUET-Zone/badhan --jq .default_branch                      # production ✓
+grep -rn '"main"\|test-branch' deploy.js environments.js \
+  badhan-backend/upload-gcloud.js badhan-frontend/upload-firebase.js           # empty ✓
 ```
+
+All 15 image URLs were checked individually, not just the logo; every one returned `200`.
+
+The deleted branches' tips, should either ever need restoring: `main` was `5be9de16`, `test-branch`
+was `e3a8bddc`. Both are reachable from `production` and `development` respectively, so neither is
+lost — `git push origin 5be9de16:refs/heads/main` would bring the name back.
 
 ---
 
 ## Phase P2 — one map (`environments.js`)
+
+> **Landed**, in the same commit as P1. [environments.js](../../environments.js) exists and is
+> required by all three of `deploy.js`, `upload-gcloud.js` and `upload-firebase.js`. The refusal path
+> was exercised on a throwaway branch through each of the three entry points, and both preflights
+> were confirmed still green on `production` and on `development`.
 
 ### P2.1 The new module
 
@@ -450,23 +494,32 @@ function environmentForBranch(branch) { … }
 `local` is deliberately absent from this module: it has no deploy target, and adding it would invite
 a caller to try.
 
+One guard the sketch above does not show: the lookup rejects a branch whose name happens to be an
+`Object.prototype` key. `ENVIRONMENTS["constructor"]` is truthy, so `environmentForBranch` also
+requires `environment.branch === branch` before returning. Verified against `constructor`,
+`toString` and `__proto__`, all refused.
+
 ### P2.2 Callers
 
-- [upload-gcloud.js](../../badhan-backend/upload-gcloud.js): delete `getDeployTarget`
-  ([:31-46](../../badhan-backend/upload-gcloud.js#L31-L46)), call `environmentForBranch`. Its three
-  current consumers (`checkRequirements`, `deployToGoogleCloud`, `liveCheck`) take the fields off the
-  returned object; keep `getDeployTarget` exported as a thin wrapper so the module's public shape does
-  not change.
-- [upload-firebase.js](../../badhan-frontend/upload-firebase.js): same, and derive `configFile` from
-  `firebaseConfig` instead of interpolating the project id
-  ([:103](../../badhan-frontend/upload-firebase.js#L103),
-  [:167](../../badhan-frontend/upload-firebase.js#L167)). Its `getDeployTarget`
-  ([:48-54](../../badhan-frontend/upload-firebase.js#L48-L54)) is the **only** caller of the bare
-  `build` script in the repo, and it becomes `build:production` — see
+- [upload-gcloud.js](../../badhan-backend/upload-gcloud.js): `getDeployTarget`'s branch `if` is gone;
+  it is now a one-line wrapper over `environmentForBranch`, kept exported so the module's public shape
+  did not change. Its three consumers (`checkRequirements`, `deployToGoogleCloud`, `liveCheck`)
+  destructure the canonical field names off the returned object
+  (`backendEnvFile`, `appEngineConfig`, `gcpProject`, `backendBaseUrl`).
+- [upload-firebase.js](../../badhan-frontend/upload-firebase.js): same, and `configFile` now comes off
+  `firebaseConfig` instead of being interpolated from the project id — the line that used to tie a
+  hosting config's *file name* to a cloud project id. Its `getDeployTarget` was the **only** caller of
+  the bare `build` script in the repo, and now names `build:production` — see
   [§P4.6](#p46-frontend-npm-scripts).
-- [deploy.js](../../deploy.js): print the resolved environment before the preflight — one line,
+- Both `checkRequirements` functions wrap the lookup in a `try`/`catch` that pushes the message and
+  returns early: nothing below can be checked without a target, and an unlisted branch should read as
+  an unmet requirement rather than a stack trace.
+- [deploy.js](../../deploy.js): prints the resolved environment before the preflight — one line,
   `🌍  Branch "production" → environment production (badhan-buet).` A deploy should say where it is
-  going before it spends six minutes on tests.
+  going before it spends six minutes on tests. It resolves the branch itself and exits there, so an
+  unlisted branch is reported **once**, ahead of any Docker call, rather than as the same bullet
+  twice — the two upload scripts each report it too, and their copies are the guard for a direct
+  `--check` invocation.
 - [upload-googleplay.js](../../badhan-android/upload-googleplay.js): consumes only
   `ENVIRONMENTS.production.frontendBaseUrl`, in P7.
 
@@ -482,6 +535,10 @@ preflight report rather than as a stack trace:
      Deployable branches: production, development.
 ```
 
+Verified on a throwaway branch through all three entry points — `deploy.js` (which aborts at the
+announce step, before Docker and before the test suites), `upload-gcloud.js --check` and
+`upload-firebase.js --check` — each exiting non-zero with that message.
+
 This is a **behaviour change**, and the one most likely to surprise: feature branches that used to
 deploy to the development site now cannot. That is the point — the development site is the
 `development` branch's, and testing a feature branch means merging it there. Call it out in the
@@ -496,19 +553,24 @@ one answer to, and a prompt makes an unattended deploy hang. Two branches, two t
 
 | From | To |
 | --- | --- |
-| [badhan-backend/app_prod.yaml](../../badhan-backend/app_prod.yaml) | `app.production.yaml` |
-| [badhan-backend/app_dev.yaml](../../badhan-backend/app_dev.yaml) | `app.development.yaml` |
-| [badhan-frontend/firebase.badhan-buet.json](../../badhan-frontend/firebase.badhan-buet.json) | `firebase.production.json` |
-| [badhan-frontend/firebase.badhan-buet-test.json](../../badhan-frontend/firebase.badhan-buet-test.json) | `firebase.development.json` |
+| `badhan-backend/app_prod.yaml` | [app.production.yaml](../../badhan-backend/app.production.yaml) |
+| `badhan-backend/app_dev.yaml` | [app.development.yaml](../../badhan-backend/app.development.yaml) |
+| `badhan-frontend/firebase.badhan-buet.json` | [firebase.production.json](../../badhan-frontend/firebase.production.json) |
+| `badhan-frontend/firebase.badhan-buet-test.json` | [firebase.development.json](../../badhan-frontend/firebase.development.json) |
 
-`git mv`, so history follows. The `"site"` values inside the Firebase configs are Firebase's own
-identifiers and stay exactly as they are. The yaml `entrypoint:` lines change with P3's script rename.
+Done with `git mv`, and git recorded all four as 100% renames, so history follows. The `"site"` values
+inside the Firebase configs are Firebase's own identifiers and were left exactly as they are.
 
-While the development Firebase config is open: give it the same `/js/**`, `/css/**`, `/img/**`
-`immutable` rules production has ([§0.4](#04-the-service-worker-never-runs-outside-production--a-live-pwa-defect)),
-so the environment that is supposed to rehearse production actually rehearses its caching. The
-last-match-wins ordering that plan 14's follow-up established must be preserved: the blanket
-`no-cache` rule first, the three `immutable` rules after it.
+**The yaml `entrypoint:` lines were deliberately left saying `npm run start:prod` / `start:dev`** —
+they change with P3's script rename, and moving either half alone boots an App Engine container whose
+entrypoint does not exist.
+
+The development Firebase config also picked up the same `/js/**`, `/css/**`, `/img/**` `immutable`
+rules production has ([§0.4](#04-the-service-worker-never-runs-outside-production--a-live-pwa-defect)),
+so the environment that is supposed to rehearse production now rehearses its caching too. The
+last-match-wins ordering plan 14's follow-up established is preserved: blanket `no-cache` first, the
+three `immutable` rules after it. Verified by diffing the two configs with `site` blanked — they are
+now **identical**.
 
 ---
 
@@ -1080,22 +1142,33 @@ tests run against a local stack whose `env.local` sits on the developer's own di
 
 ## §2 Risks
 
+### Retired — P1 and P2 have landed
+
+| Risk | Outcome |
+| --- | --- |
+| README images 404 during the rename | **Did not occur.** `production` was created and the URL rewrite pushed before `main` was deleted; all 15 URLs were individually confirmed `200` from the `production` path first |
+| P1 without P2 deploys `production` to the test project | **Did not occur.** The two shipped as one commit, and `production` never existed on the remote carrying the old branch literals |
+| Open PRs lose their base branch | **Not applicable.** `gh pr list --state open` returned none before the rename began |
+| `gh` lacks admin rights, so P1 stops half-done | **Did not occur.** Both preconditions passed up front. A related one the plan missed did bite: `main`'s protection had `allow_deletions: false`, so the rule had to be deleted before the branch could be — see [§P1.2](#p12-the-rename-sequence-as-executed) |
+| Feature branches can no longer deploy | **Realised, intended.** Exercised on a throwaway branch through all three entry points; each refuses with the two deployable branch names |
+| `npm run build` diverges from `build:production` | **Cannot.** `build` is defined *as* `npm run build:production`. The renamed script was also confirmed to produce a byte-identical `dist/manifest.json` |
+
+One risk this plan never listed, worth carrying forward: **a phase landing on `production` without
+being merged down leaves `development` on the old code.** It nearly happened here — see the fourth
+divergence in [§P1.2](#p12-the-rename-sequence-as-executed).
+
+### Open
+
 | Risk | Where | Mitigation |
 | --- | --- | --- |
-| README images 404 during the rename | [§0.10](#010-renaming-main-breaks-15-image-links-in-the-readme) | create `production` before deleting `main`; land the URL rewrite in between ([§P1.2](#p12-the-rename-sequence-order-matters)) |
-| P1 without P2 deploys `production` to the test project | branch literals still say `"main"` | ship P1+P2 as one push; never leave the pair half-landed |
 | App Engine boots a missing entrypoint | [§P3.2](#p32-scripts-and-entrypoints) | grep gate in [§P8.3](#p83-the-grep-gate); the deploy's own `liveCheck` catches it within 120 s and exits non-zero |
 | Development site self-reloads once after P5 | [§P5.1](#p51-register-the-service-worker-everywhere-except-local) | expected; release note |
 | A stale development worker survives a bad deploy and keeps serving the old shell | [§P5.1](#p51-register-the-service-worker-everywhere-except-local) — this is now possible on development because it was always possible on production | the same escape hatch production has: DevTools → Application → Service Workers → *Unregister*, then hard reload. Item 6 of [§P5.3](#p53-acceptance--the-development-site-is-a-pwa) exists to catch it before production |
 | Production PWA gets re-labelled | [§P5.2](#p52-per-environment-pwa-identity) | diff `dist/manifest.json` against a pre-change production build; the production strings must be identical |
-| Feature branches can no longer deploy | [§P2.3](#p23-an-unlisted-branch-refuses-to-deploy) | intended; the message names the two deployable branches |
 | Someone's local `env.*` files go stale | backend env files are gitignored | file *names* and keys do not change ([§P9.2](#p92-the-key-audit)) — nothing to re-fetch |
 | A hand-run `node dist/bin/www.js` now exits instead of starting | [§P3.1](#p31-local-joins-the-union) | intended; the error names the three valid values. Every scripted entry point already sets `NODE_ENV`, and `_bootstrap` still defaults the migration/task/report scripts to `local` |
-| Open PRs lose their base branch | [§P1.2](#p12-the-rename-sequence-order-matters) step 9 | `gh pr edit --base production` for each, **before** step 6; the create-then-delete sequence does not auto-retarget |
-| `gh` lacks admin rights, so P1 stops half-done | [§P1.2](#p12-the-rename-sequence-order-matters) | both preconditions are checked before step 1; every step through 5 is additive, and the delete is gated on explicit go-ahead, so an abort leaves `main` and `production` both working |
 | Installed dev PWA caption is truncated to *Badhan (deve…* | [§P5.2](#p52-per-environment-pwa-identity) | accepted; the label still reads as not-production, and the full string shows in the install prompt and app switcher |
 | A `curl` against the internal restore route now 400s | [§P6.1](#p61-one-parameter) | intended; the error names the three values. The only real client sends the parameter on every call |
-| `npm run build` diverges from `build:production` | [§P4.6](#p46-frontend-npm-scripts) | it is defined *as* `npm run build:production`, not as a copy of the command, so it cannot |
 
 ## §3 Decisions taken
 
@@ -1127,11 +1200,11 @@ Recorded here so the reasoning survives the conversation that produced it.
    ([§P4.6](#p46-frontend-npm-scripts)). Every environment is buildable by name, and production stops
    being the unnamed default — but `npm run build` keeps working, because it is what a Vue CLI project
    is expected to answer to and it is a one-line delegation that cannot drift.
-7. **P1's GitHub steps are executed via `gh`, by Claude, not clicked in the UI**
-   ([§P1.2](#p12-the-rename-sequence-order-matters)). Reproducible and reviewable. Two preconditions
-   are checked up front (`gh` authenticated, admin on the repo), everything through step 5 is
-   additive, and `git push origin --delete main` — the plan's only irreversible external action —
-   waits on an explicit go-ahead.
+7. **P1's GitHub steps were executed via `gh`, not clicked in the UI**
+   ([§P1.2](#p12-the-rename-sequence-as-executed)). Reproducible and reviewable, and it is why the
+   divergences are recorded as commands rather than remembered as clicks. Two preconditions were
+   checked up front (`gh` authenticated, admin on the repo), everything before the deletions was
+   additive, and both deletions waited on an explicit go-ahead. **Done.**
 8. **`?environment=` is required, not defaulted to `local`** ([§P6.1](#p61-one-parameter)). Same rule
    as mandatory `NODE_ENV`, applied to the more dangerous operation: restore overwrites a database,
    and a server cannot tell "I meant local" from "I forgot the parameter". Costs one explicit
