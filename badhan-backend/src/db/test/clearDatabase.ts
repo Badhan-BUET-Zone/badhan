@@ -4,6 +4,7 @@ import { DonorFactory } from './factories/donorFactory'
 import { DESIGNATIONS_INDEX, HALLS_INDEX } from '../../constants'
 import { IDonor } from '../models/Donor'
 import { DonorModel } from '../models/Donor'
+import { syncCollectionValidators } from '../syncIndexes'
 import * as faker from '../../doc/faker'
 
 
@@ -23,6 +24,11 @@ export const clearDatabase = async (): Promise<{ ok: boolean, error?: unknown }>
         myConsole.log(`Dropping database "${db.databaseName}"…`)
         await db.dropDatabase()
         myConsole.log('Database dropped successfully.')
+        // Dropping the database takes the collection validators with it, and the server is already
+        // up so the boot-time sync will not run again. Without this line every test run and every
+        // local purge would proceed with no guard on donors.designation — which is precisely the
+        // state that let the field go missing in production.
+        await syncCollectionValidators()
         // Re-create essential seed data (Super Admin)
         const currentBatchString: string = String(new Date().getFullYear() % 100).padStart(2, '0')
         const randomStudentIdTail: string = faker.getStudentId().slice(2)

@@ -21,7 +21,12 @@ export interface IDonor extends Document {
   hall: number;
   address: string;
   roomNumber: string;
-  designation?: number;
+  // Not optional. The field carries `default: 0` and `required: true` below, the
+  // `donors` collection validator (DONOR_VALIDATOR) refuses a document without it, and the
+  // 20260809_materialize-required-defaults migration removed the last legacy documents that
+  // predated all of that. Declaring it optional invited `donor.designation!` at every read site,
+  // which asserted the invariant while the type denied it.
+  designation: number;
   name: string;
   comment: string;
   commentTime?: number;
@@ -247,6 +252,43 @@ const donorSchema: Schema = new Schema<IDonor>({
  */
 donorSchema.index({ archiveFlag: 1, hall: 1, bloodGroup: 1 })
 donorSchema.index({ archiveFlag: 1, availableToAll: 1, bloodGroup: 1 })
+
+/*
+ * The server-side guarantee that a donor carries a designation.
+ *
+ * Mongoose `required` is only enforced when a document is validated — `save()`. It does nothing on
+ * `updateOne`/`updateMany`/`findOneAndUpdate` unless `runValidators` is passed, and nothing at all
+ * for a write that goes straight through the driver. The production collection held documents with
+ * no `designation` field for exactly that reason, and mongoose hid them: a schema default is applied
+ * when a document is *hydrated*, so every `find()` reported `designation: 0` while the stored
+ * document had no such field and matched neither `{designation: 0}` nor any `$in` list.
+ *
+ * This validator closes the hole below mongoose, where it cannot be bypassed.
+ *
+ * Deliberately narrow — one field. A validator asserting the whole donor schema would make every
+ * legacy-malformed donor unwritable, and the first symptom would be an opaque
+ * "Document failed validation" when somebody pressed Save on a profile they were trying to repair.
+ *
+ * `bsonType: 'number'`, not `'int'`: mongoose stores an integral JS number as BSON int32 today, but
+ * a legacy document holding a double would then be unwritable — the very failure the narrow scope
+ * exists to avoid. `enum` does the real work.
+ *
+ * Applied by syncCollectionValidators() on every boot, because it is not part of the collection's
+ * identity the way an index is: `mongorestore --drop` and `dropDatabase()` both discard it silently.
+ */
+export const DONOR_VALIDATOR: Record<string, any> = {
+  $jsonSchema: {
+    bsonType: 'object',
+    required: ['designation'],
+    properties: {
+      designation: {
+        bsonType: 'number',
+        enum: [0, 1, 2, 3],
+        description: 'designation must be present and one of 0, 1, 2, 3'
+      }
+    }
+  }
+}
 
 donorSchema.virtual('callRecords', {
   ref: 'CallRecords',

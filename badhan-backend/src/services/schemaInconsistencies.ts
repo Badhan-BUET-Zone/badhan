@@ -90,12 +90,24 @@ async function analyzeModel(model: Model<any>): Promise<ModelReport> {
     }
   }
 
-  const cursor: AsyncIterable<any> = model.find().cursor() as any
+  /*
+   * `.lean()` is load-bearing, not an optimization.
+   *
+   * A mongoose document applies schema defaults when it is *hydrated*, not only when it is created.
+   * This analyzer used to walk hydrated documents and call `doc.toObject()`, so by the time the
+   * missing-required check below ran, every absent field that had a default had already been filled
+   * in — and the `missingRequired` bucket could not report it. `designation`, `archiveFlag`,
+   * `address`, `roomNumber`, `comment` and `commentTime` were all invisible to this report, on every
+   * model. Production had donors with no stored `designation` for years and this page said nothing.
+   *
+   * Lean documents are the raw BSON, which is the only thing worth auditing here.
+   */
+  const cursor: AsyncIterable<any> = model.find().lean().cursor() as any
   for await (const doc of cursor) {
     report.totalDocs += 1
-    const plain: any = doc.toObject({ depopulate: true, virtuals: false })
+    const plain: any = doc
     const docKeys: string[] = Object.keys(plain)
-    const docId: string = String(plain._id || doc._id || 'unknown')
+    const docId: string = String(plain._id || 'unknown')
 
   function ensureDocExtra(): Record<string, any> { if (!report.docLevel.extraFields[docId]) report.docLevel.extraFields[docId] = {}; return report.docLevel.extraFields[docId] }
   function ensureDocMissing(): string[] { if (!report.docLevel.missingRequired[docId]) report.docLevel.missingRequired[docId] = []; return report.docLevel.missingRequired[docId] }
@@ -152,7 +164,13 @@ async function analyzeModel(model: Model<any>): Promise<ModelReport> {
     }
 
     // Constraint violations
-    const validationError: any = doc.validateSync()
+    //
+    // These need a document, and the cursor now yields raw objects — so rehydrate one here rather
+    // than give the bucket up. `hydrate()` does apply schema defaults, exactly like the `find()`
+    // this analyzer used to walk — but it is confined to this one check, and the `required` kind is
+    // skipped below, so it cannot mask anything. The missing/null/extra/type buckets above all read
+    // `plain`, which is the stored document.
+    const validationError: any = model.hydrate(plain).validateSync()
     if (validationError && validationError.errors) {
       for (const [pathKey, err] of Object.entries(validationError.errors) as [string, any][]) {
         const kind: string = err.kind || 'user-defined'

@@ -491,8 +491,13 @@ export const findDonorsByAggregate = async (reqQuery: {
     }
 
 export const findDonorAndUpdate = async (query: { hall: number, designation: number }, donorUpdate: { $set: { designation: number } }): Promise<{data?: IDonor, message: string, status: string}> => {
+    // runValidators: mongoose enforces `required`, `min`/`max` and the schema's own validators only
+    // when a document is validated — `save()`. An update statement bypasses all of it by default,
+    // which is how a donor could end up with no designation at all. Update validators run only for
+    // the paths named in the update, so this cannot trip over an unrelated legacy field.
     const data: IDonor | null = await DonorModel.findOneAndUpdate(query, donorUpdate, {
-        returnOriginal: false
+        returnOriginal: false,
+        runValidators: true
     })
     if (data) {
         return {

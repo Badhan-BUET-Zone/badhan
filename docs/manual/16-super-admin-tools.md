@@ -83,6 +83,12 @@ Tap **Refresh** and the page lists what it found, grouped into kinds:
 - **Extra fields** — leftovers the app no longer uses
 - **Rule violations** — a value outside what is allowed, such as an impossible phone number
 
+**The list got longer, and that is the fix.** Until recently this page could not see a missing
+field whenever the app had a sensible stand-in value for it. A donor record with no role recorded,
+for instance, was read as "Donor" everywhere in the app, so the page saw a role and reported
+nothing — while the record itself still had none. That blind spot is gone, so the list may now name
+things that were always there and were never shown to you. Longer is not worse.
+
 **What you should do with it:** treat it as a to-do list, not an emergency. Most entries are
 harmless leftovers. Where a real donor record is named, you can usually fix it by opening that
 donor's profile and filling in what is missing.

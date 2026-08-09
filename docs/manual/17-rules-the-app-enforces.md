@@ -150,6 +150,11 @@ recorded with your name and the time. Super admins can read it
 
 **Archiving a member also demotes them to donor.**
 
+**Every donor record carries a role.** There is no such thing as a record with no role — the
+database itself refuses one now. Records old enough to have been saved without one have been
+repaired to Donor, which is what the app had been showing for them all along
+([chapter 4](04-roles-and-permissions.md)).
+
 ---
 
 ## Two messages from the app itself

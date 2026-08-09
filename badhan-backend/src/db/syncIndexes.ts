@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import myConsole from '../utils/myConsole';
 import fs from 'fs';
 import path from 'path';
+import { DONOR_VALIDATOR } from './models/Donor';
 
 /* ────────────────────────────────────────────────────────────── */
 /* 1.  Recursively load every model file in ./models so each
@@ -107,9 +108,63 @@ export async function syncAllModels(): Promise<void> {
 }
 
 /* ────────────────────────────────────────────────────────────── */
-/* 3.  Convenience helper used by mongoose.ts                    */
+/* 3.  Align collection-level validators.
+/*
+/*     Unlike an index, a validator is not something mongoose knows how to sync, and it does not
+/*     survive the two things that routinely recreate a collection here: `mongorestore --drop`
+/*     (the Restore button) and `dropDatabase()` (the purge that every test run starts with).
+/*     Both would leave the collection with no validator and no complaint, so it is re-applied on
+/*     every boot — the same reasoning that keeps the index declarations in the schema file.
+/*
+/*     Never throws. A boot that cannot set a validator (no `collMod` right, a restore in flight,
+/*     a database that has not created the collection yet) must still be a boot.
+/* ────────────────────────────────────────────────────────────── */
+const COLLECTION_VALIDATORS: { collection: string; validator: Record<string, any> }[] = [
+  { collection: 'donors', validator: DONOR_VALIDATOR }
+];
+
+export async function syncCollectionValidators(): Promise<void> {
+  const db: mongoose.mongo.Db | undefined = mongoose.connection.db;
+  if (!db) {
+    myConsole.log('⚠️   No database handle; skipped collection validators.');
+    return;
+  }
+
+  for (const { collection, validator } of COLLECTION_VALIDATORS) {
+    try {
+      // collMod needs the collection to exist. On a fresh or just-dropped database it does not, so
+      // create it first — an existing collection makes this a harmless NamespaceExists.
+      const existing: any[] = await db.listCollections({ name: collection }).toArray();
+      if (existing.length === 0) {
+        await db.createCollection(collection);
+      }
+
+      await db.command({
+        collMod: collection,
+        validator,
+        validationLevel: 'strict',
+        validationAction: 'error'
+      });
+
+      // Read it back rather than trusting the command. A validator that silently failed to apply
+      // looks exactly like one that is working until the day it is needed.
+      const [confirmed] = await db.listCollections({ name: collection }).toArray() as any[];
+      if (confirmed?.options?.validator) {
+        myConsole.log(`${collection.padEnd(24)} 🔒 validator applied`);
+      } else {
+        myConsole.log(`${collection.padEnd(24)} ⚠️  validator did not stick`);
+      }
+    } catch (e: any) {
+      myConsole.log(`${collection.padEnd(24)} ⚠️  validator not applied: ${e?.message}`);
+    }
+  }
+}
+
+/* ────────────────────────────────────────────────────────────── */
+/* 4.  Convenience helper used by mongoose.ts                    */
 /* ────────────────────────────────────────────────────────────── */
 export async function loadAndSyncIndexes(): Promise<void> {
   loadAllModels();
   await syncAllModels();
+  await syncCollectionValidators();
 }

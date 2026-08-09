@@ -558,7 +558,7 @@ export class DonorsController extends Controller {
     }
 
     // Check higher designation
-    if (user.designation! < targetDonor.designation! && !user._id.equals(targetDonor._id)) {
+    if (user.designation < targetDonor.designation && !user._id.equals(targetDonor._id)) {
       this.setStatus(HTTP_STATUS.FORBIDDEN)
       return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
@@ -649,7 +649,7 @@ export class DonorsController extends Controller {
     }
 
     // Check higher designation
-    if (user.designation! < target.designation! && !user._id.equals(target._id)) {
+    if (user.designation < target.designation && !user._id.equals(target._id)) {
       this.setStatus(HTTP_STATUS.FORBIDDEN)
       return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
@@ -743,12 +743,12 @@ export class DonorsController extends Controller {
     }
 
     // Check higher designation
-    if (user.designation! < donor.designation! && !user._id.equals(donor._id)) {
+    if (user.designation < donor.designation && !user._id.equals(donor._id)) {
       this.setStatus(HTTP_STATUS.FORBIDDEN)
       return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'You cannot modify the details of a Badhan member with higher designation' }
     }
 
-    if (donor.designation! > 1) {
+    if (donor.designation > DESIGNATIONS_INDEX.VOLUNTEER) {
       this.setStatus(HTTP_STATUS.CONFLICT)
       return { status: 'ERROR', statusCode: HTTP_STATUS.CONFLICT, message: 'Donor must be demoted for deletion' }
     }
@@ -823,12 +823,12 @@ export class DonorsController extends Controller {
     }
 
     // Check if user is hall admin or above
-    if (user.designation! < DESIGNATIONS_INDEX.HALL_ADMIN) {
+    if (user.designation < DESIGNATIONS_INDEX.HALL_ADMIN) {
       this.setStatus(HTTP_STATUS.FORBIDDEN)
       return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: 'Only hall admins or above can access this route' }
     }
 
-    const from: number = donor.designation!
+    const from: number = donor.designation
     const to: number = body.designation
     const isSuperAdmin: boolean = user.designation === DESIGNATIONS_INDEX.SUPER_ADMIN
 
@@ -1021,7 +1021,7 @@ export class DonorsController extends Controller {
     const authenticatedUser: IDonor = res.locals.middlewareResponse.donor
 
     const existingDonorsResult: { donors: IDonor[]; message: string; status: string } = await donorInterface.findDonorIdsByPhone(
-      authenticatedUser.designation!,
+      authenticatedUser.designation,
       authenticatedUser.hall,
       phoneList
     )

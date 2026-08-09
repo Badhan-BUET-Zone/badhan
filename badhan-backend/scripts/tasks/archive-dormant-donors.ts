@@ -5,7 +5,6 @@
  *
  *   - archiveFlag = true;
  *   - designation 1 (volunteer) or 2 (hall admin) becomes 0 (donor). Super admins keep theirs.
- *     A donor with no designation field is left alone: the schema default is already 0.
  *
  * The demotion is one-way. Unarchiving does NOT restore a designation, by design — re-promotion is
  * a manual action from the Settings block. Nothing else changes: activedonors rows survive,
@@ -95,9 +94,10 @@ async function main(): Promise<void> {
       skipped.push({ donorId, reason: 'donor not found' });
       continue;
     }
-    // A missing designation is a plain donor (schema default), so only an explicit 2 or 3 is a
-    // reason to skip. Written as an explicit membership test rather than `> VOLUNTEER`, which
-    // undefined would silently pass.
+    // An explicit membership test rather than `> VOLUNTEER`. Every donor carries a designation now
+    // (20260809_materialize-required-defaults, plus the collection validator), so the two are
+    // equivalent — but this reads from a `.lean()` query, which applies no schema default, so the
+    // form that cannot be fooled by an absent field is the one worth keeping.
     if (donor.designation === DESIGNATIONS_INDEX.HALL_ADMIN || donor.designation === DESIGNATIONS_INDEX.SUPER_ADMIN) {
       skipped.push({ donorId, reason: `designation is now ${donor.designation}` });
       continue;
@@ -130,14 +130,18 @@ async function main(): Promise<void> {
   } else {
     // Two updates rather than one per donor: the demotion applies only to the volunteers, and
     // splitting it keeps each statement a plain, reviewable filter.
+    // runValidators on both: an update statement enforces nothing by default, and a script that
+    // writes 1371 donors in two statements is exactly where a bad value would go unnoticed.
     const archiveResult: any = await DonorModel.updateMany(
       { _id: { $in: toArchive.map((id: string): any => new mongoose.Types.ObjectId(id)) } },
-      { $set: { archiveFlag: true } }
+      { $set: { archiveFlag: true } },
+      { runValidators: true }
     );
     myConsole.log(`Archived ${archiveResult.modifiedCount} donor(s).`);
     const demoteResult: any = await DonorModel.updateMany(
       { _id: { $in: toDemote.map((id: string): any => new mongoose.Types.ObjectId(id)) } },
-      { $set: { designation: DESIGNATIONS_INDEX.DONOR } }
+      { $set: { designation: DESIGNATIONS_INDEX.DONOR } },
+      { runValidators: true }
     );
     myConsole.log(`Demoted ${demoteResult.modifiedCount} volunteer(s) to donor.`);
   }

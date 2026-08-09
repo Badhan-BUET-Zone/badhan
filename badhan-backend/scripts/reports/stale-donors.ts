@@ -3,8 +3,7 @@
  *
  * Lists the ids of every donor who meets all of the following, and writes them to a JSON file:
  *
- *   - designation is not HALL_ADMIN or SUPER_ADMIN — a missing designation counts as DONOR,
- *     which is the schema default and what 1349 legacy documents carry;
+ *   - designation is not HALL_ADMIN or SUPER_ADMIN;
  *   - no blood donation and no platelet donation dated within the last 365 days;
  *   - no log entry within the last 365 days, i.e. the account itself has been idle;
  *   - student batch earlier than 20.
@@ -99,9 +98,12 @@ async function main(): Promise<void> {
   );
   myConsole.log(`Accounts with a log entry in the window: ${activeInLogs.size}.`);
 
-  // Expressed as an exclusion, not `$in: [0, 1]`: 1349 legacy donor documents have no
-  // designation field at all, and a missing field matches no $in list. The schema default is
-  // DONOR, so an absent designation is a plain donor and belongs in this report.
+  // Expressed as an exclusion, not `$in: [0, 1]`. When this report was first written, 1349 donor
+  // documents had no designation field at all and a missing field matches no $in list, so an
+  // inclusion query silently dropped a third of the collection. Those documents were materialized by
+  // the 20260809_materialize-required-defaults migration and the `donors` validator now refuses a
+  // donor without the field, so the two forms finally agree — but the exclusion stays, because
+  // "not an admin" is what the rule actually says.
   const excludedDesignations: number[] = [DESIGNATIONS_INDEX.HALL_ADMIN, DESIGNATIONS_INDEX.SUPER_ADMIN];
   const candidates: any[] = await DonorModel.find(
     { designation: { $nin: excludedDesignations } },
