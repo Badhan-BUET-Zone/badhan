@@ -5,17 +5,7 @@
         color="grey"
         class="ma-2"
     >
-      <v-img :src="person.imageUrl" lazy-src="@/assets/account.png">
-        <template v-slot:placeholder>
-          <v-row
-              class="fill-height ma-0"
-              align="center"
-              justify="center"
-          >
-            <v-skeleton-loader type="avatar"></v-skeleton-loader>
-          </v-row>
-        </template>
-      </v-img>
+      <v-img :src="avatar"/>
     </v-avatar>
     <v-card-title>
       {{ person.name }}
@@ -58,6 +48,17 @@ export default {
     ContainerOutlined
   },
   name: 'PersonCredit',
+  computed: {
+    // `person.image` is a filename in src/assets/contributors/, not a URL — the
+    // avatars ship in the bundle. The static prefix is what lets webpack resolve
+    // the dynamic part. A record with no photograph of its own falls back to the
+    // shared silhouette.
+    avatar () {
+      return this.person.image
+        ? require(`@/assets/contributors/${this.person.image}`)
+        : require('@/assets/account.png')
+    }
+  },
   methods: {
     goTo (url) {
       window.open(url, '_blank')

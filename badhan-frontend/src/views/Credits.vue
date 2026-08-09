@@ -14,9 +14,7 @@
         </v-card-text>
       </Container>
 
-      <transition name="slide-fade-down-snapout" mode="out-in">
-        <LoadingMessage v-if="contributorsLoader" :key="'creditedLoading'"/>
-        <Container v-else-if="activeDevelopers.length!==0" :key="'creditedLoaded'">
+      <Container>
         <v-card-title>
           Active Developers
         </v-card-title>
@@ -50,7 +48,6 @@
           </v-row>
         </v-card-text>
       </Container>
-      </transition>
   </div>
 </template>
 
@@ -58,19 +55,32 @@
 import PageTitle from '@/components/PageTitle'
 import Container from '@/components/Container/Container'
 import PersonCredit from '@/views/Credits/components/PersonCredit'
-import { handleGETContributors } from '@/api'
-import LoadingMessage from '@/components/LoadingMessage.vue'
-import { HTTP_STATUS } from '@/mixins/constants'
+
+// The contributor list used to be fetched from a Firebase Realtime Database, and each
+// avatar from a Firebase Storage bucket, on every visit to this page. It is a
+// hand-maintained list that changes a few times a year, so it now lives in the
+// repository and ships in the bundle: this page makes no network calls at all.
+// Edits go through a pull request — see badhan-frontend/tools/vendor-contributors.js.
+import contributors from '@/data/contributors.json'
+
+// The list is a constant, so the grouping is computed once at module load rather
+// than per instance. The order inside each group is the order of the file.
+const byType = contributors.reduce((groups, person) => {
+  if (!Object.prototype.hasOwnProperty.call(groups, person.type)) {
+    groups[person.type] = []
+  }
+  groups[person.type].push(person)
+  return groups
+}, {})
 
 export default {
   name: 'CreditsPage',
-  components: { LoadingMessage, PersonCredit, Container, PageTitle },
+  components: { PersonCredit, Container, PageTitle },
   data () {
     return {
-      contributorsLoader: false,
-      activeDevelopers: [],
-      contributorsFromBadhan: [],
-      legacyDevelopers: []
+      activeDevelopers: byType['Active Developers'] || [],
+      contributorsFromBadhan: byType['Contributors of Badhan'] || [],
+      legacyDevelopers: byType['Legacy Developers'] || []
     }
   },
   methods: {
@@ -78,27 +88,8 @@ export default {
       window.open(url, '_blank')
     }
   },
-  async mounted () {
+  mounted () {
     this.$vuetify.goTo(0)
-    this.contributorsLoader = true
-    const response = await handleGETContributors()
-    this.contributorsLoader = false
-    if (response.status !== HTTP_STATUS.OK) return
-    const rawContributors = response.data
-    const groupedContributors = Object.entries(rawContributors).reduce(function (obj, singleElement) {
-      const type = singleElement[1].type
-      if (!Object.prototype.hasOwnProperty.call(obj, type)) {
-        obj[type] = []
-      }
-      obj[type].push(singleElement[1])
-      return obj
-    }, {})
-    this.activeDevelopers = groupedContributors['Active Developers']
-    this.legacyDevelopers = groupedContributors['Legacy Developers']
-    this.contributorsFromBadhan = groupedContributors['Contributors of Badhan']
-    console.log(this.activeDevelopers)
-    console.log(this.legacyDevelopers)
-    console.log(this.contributorsFromBadhan)
   }
 }
 </script>

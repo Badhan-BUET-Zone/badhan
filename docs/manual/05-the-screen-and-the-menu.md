@@ -40,7 +40,7 @@ may be shorter than a colleague's.
 | **Members** | Volunteers of your hall and the hall admins of every hall. [Chapter 12](12-members-and-promotions.md) | Volunteer and above |
 | **Public Contacts** | The emergency contact list. [Chapter 13](13-public-contacts.md) | Volunteer and above |
 | **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |
-| **Credits** | The people who built the app | Volunteer and above |
+| **Credits** | The people who built the app. Works without a connection | Volunteer and above |
 | **About** | What Badhan is, plus which version you are on | Volunteer and above |
 | **Super Admin** | Opens into four entries below | Super Admin only |
 | → Statistics | Donation reports, charts, activity logs. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |

@@ -1,0 +1,376 @@
+[
+  {
+    "name": "Tanzid Hasan Shuvo",
+    "type": "Contributors of Badhan",
+    "calender": "August 2022 - Present",
+    "image": "tanzid-hasan-shuvo.webp",
+    "contribution": [
+      "Q/A & Test"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/mdtanzidhasan"
+      }
+    ]
+  },
+  {
+    "name": "Mir Mahathir Mohammad",
+    "type": "Active Developers",
+    "calender": "January 2020- Present",
+    "image": "mir-mahathir-mohammad.webp",
+    "contribution": [
+      "UX Design",
+      "Web Frontend Development",
+      "Hybrid Android App",
+      "E2E UI Automated Testing",
+      "API Development",
+      "Admin Console"
+    ],
+    "links": [
+      {
+        "color": "red",
+        "icon": "gmail",
+        "link": "mailto:mirmahathir1@gmail.com"
+      },
+      {
+        "color": "blue",
+        "icon": "linkedin",
+        "link": "https://www.linkedin.com/in/mir-mahathir-mohammad-59bb671a5/"
+      },
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/mirmahathir1"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/MirMahathirMohammad"
+      }
+    ]
+  },
+  {
+    "name": "Sumaiya Azad",
+    "type": "Legacy Developers",
+    "calender": "June 2021 - May 2022",
+    "image": "sumaiya-azad.webp",
+    "contribution": [
+      "API Development",
+      "Backend Documentation",
+      "Automated Testing",
+      "Admin API"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/sumaiyaazad"
+      },
+      {
+        "color": "red",
+        "icon": "gmail",
+        "link": "mailto:azadsumaiya00@gmail.com"
+      },
+      {
+        "color": "blue",
+        "icon": "linkedin",
+        "link": "https://www.linkedin.com/in/sumaiyaazad/"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/su.maiya.3388"
+      }
+    ]
+  },
+  {
+    "name": "Hasan Masum",
+    "type": "Active Developers",
+    "calender": "July 2021 - Present",
+    "image": "hasan-masum.webp",
+    "contribution": [
+      "Data Input Frontend",
+      "Prototyping and UX Design",
+      "Testing and Bug Report"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/hmasum52"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/hmasum52/"
+      },
+      {
+        "color": "red",
+        "icon": "gmail",
+        "link": "mailto:1805052@ugrad.cse.buet.ac.bd"
+      }
+    ]
+  },
+  {
+    "name": "Sanju Basak",
+    "type": "Legacy Developers",
+    "calender": "July 2021 - Feb 2024",
+    "image": "sanju-basak.webp",
+    "contribution": [
+      "Google Play Management",
+      "Data Input API",
+      "Testing and Bug Report"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/Sanju-Basak"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/sanju.basak.71"
+      },
+      {
+        "color": "red",
+        "icon": "gmail",
+        "link": "mailto:sanjubasakndc18@gmail.com"
+      }
+    ]
+  },
+  {
+    "name": "MH Rahat",
+    "type": "Contributors of Badhan",
+    "calender": "January 2020 - Present",
+    "image": "mh-rahat.webp",
+    "contribution": [
+      "Initiator of Badhan App",
+      "Test and Bug Report",
+      "Promo Video Editor"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/mhrahat01"
+      }
+    ]
+  },
+  {
+    "name": "Shadman Sakib Showrov",
+    "type": "Contributors of Badhan",
+    "calender": "January 2020 - Present",
+    "image": "shadman-sakib-showrov.webp",
+    "contribution": [
+      "Active User"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "linkedin",
+        "link": "https://www.linkedin.com/in/showrov1996"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/share/1CV2HFGWPe/"
+      }
+    ]
+  },
+  {
+    "name": "Aniruddha GS",
+    "type": "Legacy Developers",
+    "calender": "January 2020 - April 2021",
+    "image": "aniruddha-gs.webp",
+    "contribution": [
+      "API Development",
+      "Database Administration"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/aniruddhags3927"
+      }
+    ]
+  },
+  {
+    "name": "Priyeta Saha",
+    "type": "Legacy Developers",
+    "calender": "January 2020 - May 2020",
+    "image": "priyeta-saha.webp",
+    "contribution": [
+      "Flutter Android App"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/profile.php?id=100010509641367"
+      }
+    ]
+  },
+  {
+    "name": "Anisha Islam",
+    "type": "Legacy Developers",
+    "calender": "January 2020 - June 2020",
+    "image": "anisha-islam.webp",
+    "contribution": [
+      "API Development"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/anisha.islam.1690"
+      }
+    ]
+  },
+  {
+    "name": "Atiqur Rahman Shuvo",
+    "type": "Legacy Developers",
+    "calender": "April 2021 - May 2021",
+    "image": "atiqur-rahman-shuvo.webp",
+    "contribution": [
+      "Data Processing"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/Shiroe041"
+      }
+    ]
+  },
+  {
+    "name": "Mahmud Akon",
+    "type": "Contributors of Badhan",
+    "calender": "November 2023 - Present",
+    "image": "mahmud-akon.webp",
+    "contribution": [
+      "Q/A & Test",
+      "Feature Review"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/orgs/Badhan-BUET-Zone/people/mahmudakonam"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/mahmudakonam"
+      }
+    ]
+  },
+  {
+    "name": "Md. Muqtadir Fuad",
+    "type": "Contributors of Badhan",
+    "calender": "May 2025 - Present",
+    "image": "md-muqtadir-fuad.webp",
+    "contribution": [
+      "Figma UX Design",
+      "Feature Review",
+      "Q/A & Test"
+    ],
+    "links": [
+      {
+        "color": "red",
+        "icon": "gmail",
+        "link": "mailto:mmfuad01@gmail.com"
+      },
+      {
+        "color": "blue",
+        "icon": "linkedin",
+        "link": "https://www.linkedin.com/in/md-muqtadir-fuad/"
+      },
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/md-muqtadir-fuad"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://fb.com/md.muqtadir.fuad"
+      }
+    ]
+  },
+  {
+    "name": "Ilhan Masud",
+    "type": "Contributors of Badhan",
+    "calender": "August 2025 - Present",
+    "image": "ilhan-masud.webp",
+    "contribution": [
+      "Q/A & Test"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/ilhnmsd01"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/ilhnmsd.01"
+      }
+    ]
+  },
+  {
+    "name": "Nobel Dey",
+    "type": "Contributors of Badhan",
+    "calender": "August 2025 - Present",
+    "image": null,
+    "contribution": [
+      "Q/A & Test"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/neospark31"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/nobel.dey.58"
+      }
+    ]
+  },
+  {
+    "name": "Md. Al Amin Ifti",
+    "type": "Active Developers",
+    "calender": "Aug 2025 - Present",
+    "image": "md-al-amin-ifti.webp",
+    "contribution": [
+      "Refactor Automated Backend Testing"
+    ],
+    "links": [
+      {
+        "color": "grey",
+        "icon": "github",
+        "link": "https://github.com/iftialmin10"
+      },
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/ifti.alamin"
+      },
+      {
+        "color": "blue",
+        "icon": "linkedin",
+        "link": "https://www.linkedin.com/in/md-al-amin-ifti-72b723234/"
+      },
+      {
+        "color": "red",
+        "icon": "gmail",
+        "link": "mailto:iftialmin73@gmail.com"
+      }
+    ]
+  }
+]
