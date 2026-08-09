@@ -4,8 +4,10 @@
 // Builds the Badhan Android app with Bubblewrap (Trusted Web Activity) and
 // uploads the resulting bundle to Google Play via `fastlane supply`.
 //
-// This runs on the HOST, not in Docker: Bubblewrap needs a JDK + Android SDK,
-// and fastlane is a Ruby gem. See ../../CLAUDE.md for why that's an exception.
+// The script itself runs on the HOST (it clones the secrets repo and shells out
+// to docker, which a container has no socket to do), but every tool it drives —
+// bubblewrap, gradle, the JDK, fastlane — runs in the `android` container. See
+// ../../CLAUDE.md and ../../deploy-container.js.
 //
 // Note: the TWA is only a shell around https://badhan-buet.web.app — this does
 // NOT build the web frontend. Deploy the site first (upload-firebase.js), then
@@ -15,6 +17,10 @@ const { execSync } = require("child_process");
 const { existsSync, mkdtempSync, copyFileSync, rmSync, readFileSync } = require("fs");
 const { resolve, basename } = require("path");
 const os = require("os");
+const { runCli, captureCli, dockerAvailable, toContainerPath } = require("../../deploy-container");
+
+// Everything below runs in the android service, from this directory.
+const ANDROID = { service: "android", workdir: "/repo/badhan-frontend/bubblewrap" };
 
 // The signing keystore and the Play service-account key are NOT committed to
 // this repo. They live in a private secrets repo and are cloned into place only
@@ -51,47 +57,56 @@ function run(command, cwd, env) {
   return execSync(command, { stdio: "inherit", cwd, env: env ? { ...process.env, ...env } : process.env });
 }
 
-function commandExists(cmd) {
-  try {
-    execSync(`command -v ${cmd}`, { stdio: "ignore" });
-    return true;
-  } catch (_) {
-    return false;
+const ANDROID_IMAGE_HINT = "Build it with `docker compose --profile deploy build android`.";
+
+// The JDK 17 and Android SDK locations are baked into the image's
+// ~/.bubblewrap/config.json, so the host-side "did you run `bubblewrap doctor`"
+// checks are gone. What can still go wrong is the opposite: the image and the
+// gradle files drifting apart.
+//
+// The image reports what it actually installed via ENV rather than via a
+// comment, so this compares the real numbers.
+function imageEnv() {
+  const env = {};
+  for (const line of captureCli("printenv", ANDROID).split("\n")) {
+    const i = line.indexOf("=");
+    if (i > 0) env[line.slice(0, i)] = line.slice(i + 1).trim();
   }
+  return env;
 }
 
-// Bubblewrap keeps the JDK 17 and Android SDK locations in ~/.bubblewrap/
-// config.json. If they're missing it falls back to an interactive wizard that
-// offers to download them — which hangs any non-interactive run — so we check
-// them up front and point at `bubblewrap doctor` instead.
-function bubblewrapSdkErrors() {
-  const configPath = resolve(os.homedir(), ".bubblewrap", "config.json");
-  if (!existsSync(configPath)) {
-    return ["bubblewrap: ~/.bubblewrap/config.json missing. Run `bubblewrap doctor` to set up the JDK 17 and Android SDK."];
+// The Android SDK version is a second place compileSdkVersion lives: the image
+// installs exactly one platform, where the host SDK happened to have several.
+// A bubblewrap regeneration that bumps app/build.gradle to a new API — or the
+// AGP classpath, which decides the default build-tools — must move the
+// Dockerfile beside it with it, or the build dies inside gradle with an
+// unrelated-looking error minutes in. Fail here instead, naming the fix.
+function sdkVersionErrors(baseDir, env) {
+  let appGradle;
+  let rootGradle;
+  try {
+    appGradle = readFileSync(resolve(baseDir, "app", "build.gradle"), "utf8");
+    rootGradle = readFileSync(resolve(baseDir, "build.gradle"), "utf8");
+  } catch (e) {
+    return [`bubblewrap: could not read the gradle files to check SDK versions (${e.message}).`];
   }
 
-  let config;
-  try {
-    config = JSON.parse(readFileSync(configPath, "utf8"));
-  } catch (e) {
-    return [`bubblewrap: ~/.bubblewrap/config.json could not be parsed (${e.message}).`];
-  }
+  const compileSdk = (appGradle.match(/compileSdkVersion\s+(\d+)/) || [])[1];
+  const agp = (rootGradle.match(/com\.android\.tools\.build:gradle:([\d.]+)/) || [])[1];
 
   const errors = [];
-  // On macOS the configured jdkPath is the .jdk bundle; java lives under it.
-  const javaHome =
-    process.platform === "darwin" ? resolve(config.jdkPath || "", "Contents/Home") : config.jdkPath || "";
-  if (!config.jdkPath || !existsSync(resolve(javaHome, "bin/java"))) {
+  if (compileSdk && env.ANDROID_API && compileSdk !== env.ANDROID_API) {
     errors.push(
-      "bubblewrap: JDK 17 not configured (jdkPath in ~/.bubblewrap/config.json). " +
-        "Install one (`brew install openjdk@17`) and register it with " +
-        "`bubblewrap updateConfig --jdkPath <path>`."
+      `bubblewrap: app/build.gradle wants compileSdkVersion ${compileSdk} but the android image ` +
+        `installed platform ${env.ANDROID_API}. Update ANDROID_API (and BUILD_TOOLS) in ` +
+        "badhan-frontend/bubblewrap/Dockerfile and rebuild."
     );
   }
-  if (!config.androidSdkPath || !existsSync(resolve(config.androidSdkPath, "build-tools"))) {
+  if (agp && env.AGP_VERSION && agp !== env.AGP_VERSION) {
     errors.push(
-      "bubblewrap: Android SDK not configured (androidSdkPath in ~/.bubblewrap/config.json). " +
-        "Register it with `bubblewrap updateConfig --androidSdkPath <path>`, then verify with `bubblewrap doctor`."
+      `bubblewrap: build.gradle uses Android Gradle Plugin ${agp} but the android image was built ` +
+        `for ${env.AGP_VERSION}. AGP decides the default build-tools version, so update AGP_VERSION ` +
+        "and AGP_BUILD_TOOLS in badhan-frontend/bubblewrap/Dockerfile and rebuild."
     );
   }
   return errors;
@@ -167,12 +182,21 @@ function checkRequirements(baseDir = __dirname, { publish = true } = {}) {
   const errors = [];
 
   // Tooling first: a missing CLI is the most common failure and the one with an
-  // actionable fix, so report it before anything else.
-  if (publish && !commandExists("fastlane")) {
-    errors.push("bubblewrap: fastlane not found on PATH. Install it with `brew install fastlane`.");
-  }
-  if (!commandExists("bubblewrap")) {
-    errors.push("bubblewrap: CLI not found on PATH. Install it with `npm install -g @bubblewrap/cli`.");
+  // actionable fix, so report it before anything else. It all lives in the
+  // android image now, so Docker is the requirement behind every other one.
+  if (!dockerAvailable()) {
+    errors.push(
+      "bubblewrap: Docker is not available (the Android toolchain runs in the `android` container). " +
+        "Start Docker Desktop and try again."
+    );
+  } else {
+    if (captureCli("bubblewrap --version", ANDROID).length === 0) {
+      errors.push(`bubblewrap: CLI not available in the android container. ${ANDROID_IMAGE_HINT}`);
+    }
+    if (publish && captureCli("fastlane --version", ANDROID).length === 0) {
+      errors.push(`bubblewrap: fastlane not available in the android container. ${ANDROID_IMAGE_HINT}`);
+    }
+    errors.push(...sdkVersionErrors(baseDir, imageEnv()));
   }
 
   if (!existsSync(resolve(baseDir, "twa-manifest.json"))) {
@@ -208,10 +232,17 @@ function build(baseDir) {
   const password = readFileSync(resolve(baseDir, KEY_PASSWORD_FILE), "utf8").trim();
 
   console.log("🔨  Building with Bubblewrap…");
-  run(
-    `bubblewrap build --skipPwaValidation --signingKeyPath "${keystorePath}" --signingKeyAlias "${keyAlias}"`,
-    baseDir,
-    { BUBBLEWRAP_KEYSTORE_PASSWORD: password, BUBBLEWRAP_KEY_PASSWORD: password }
+  // The passwords are forwarded by NAME (`-e BUBBLEWRAP_KEYSTORE_PASSWORD`), so
+  // compose inherits the values from this process instead of putting them in
+  // the host's command line where `ps` would show them.
+  runCli(
+    `bubblewrap build --skipPwaValidation --signingKeyPath "${toContainerPath(keystorePath)}" ` +
+      `--signingKeyAlias "${keyAlias}"`,
+    {
+      ...ANDROID,
+      passEnv: ["BUBBLEWRAP_KEYSTORE_PASSWORD", "BUBBLEWRAP_KEY_PASSWORD"],
+      env: { BUBBLEWRAP_KEYSTORE_PASSWORD: password, BUBBLEWRAP_KEY_PASSWORD: password },
+    }
   );
 
   const apkPath = resolve(baseDir, APK_FILE);
@@ -241,12 +272,14 @@ function upload(baseDir, track, { status = DEFAULT_STATUS, rollout } = {}) {
   const releaseStatus = rollout ? "inProgress" : status;
 
   console.log(`🚀  Uploading version code ${versionCode} to the '${track}' track (${releaseStatus})…`);
-  run(
+  // Paths handed to a containerized command must be container paths: the host
+  // absolute path from `resolve` means nothing inside the android container.
+  runCli(
     [
       "fastlane supply",
-      `--json_key "${resolve(baseDir, PLAY_KEY_FILE)}"`,
+      `--json_key "${toContainerPath(resolve(baseDir, PLAY_KEY_FILE))}"`,
       `--package_name "${packageId}"`,
-      `--aab "${aabPath}"`,
+      `--aab "${toContainerPath(aabPath)}"`,
       // Without this, supply globs the directory and also picks up the
       // leftover app-release-unsigned-aligned.apk from the build.
       "--skip_upload_apk true",
@@ -257,7 +290,7 @@ function upload(baseDir, track, { status = DEFAULT_STATUS, rollout } = {}) {
       `--release_status ${releaseStatus}`,
       ...(rollout ? [`--rollout ${rollout}`] : []),
     ].join(" "),
-    baseDir
+    ANDROID
   );
 
   if (releaseStatus === "draft") {

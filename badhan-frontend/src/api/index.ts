@@ -4,7 +4,7 @@
 
 /*
 This module handles all necessary tasks to communicate with the backend.
-Current active backends are- an express app and firebase realtime database
+The only backend is an express app.
  */
 import axios, {AxiosError, AxiosResponse} from 'axios'
 
@@ -35,10 +35,6 @@ const resetBaseURL = () => {
 const isGuestEnabled = () => {
   return badhanAxios.defaults.baseURL?.includes('/guest')
 }
-
-const firebaseAxios = axios.create({
-  baseURL: 'https://badhan-buet-default-rtdb.firebaseio.com'
-})
 
 badhanAxios.interceptors.request.use((config) => {
   // Do something before request is sent
@@ -110,33 +106,6 @@ export interface BadhanAxiosResponseInterface<T extends BadhanAxiosResponseDataI
 export interface BadhanAxiosErrorInterface<T extends BadhanAxiosResponseDataInterface> extends AxiosError {
   response: BadhanAxiosResponseInterface<T>
 }
-
-firebaseAxios.interceptors.request.use((config) => {
-  // Do something before request is sent
-  store.commit('setAppBarLoadingFlag')
-
-  myConsole.log('%cAPI:', 'color: #ff00ff',' REQUEST TO ' + config.url + ': ', config.data)
-
-  store.dispatch('notification/clearNotification')
-
-  return config
-}, function (error) {
-  // Do something with request error
-  store.commit('unsetAppBarLoadingFlag')
-  return Promise.reject(error)
-})
-
-firebaseAxios.interceptors.response.use((response) => {
-  // Do something before request is sent
-  store.commit('unsetAppBarLoadingFlag')
-  myConsole.log('%cAPI:', 'color: #00ff00',' RESPONSE FROM ' + response.config.url + ': ', response)
-  return response
-}, (error) => {
-  // Do something with request error
-  store.commit('unsetAppBarLoadingFlag')
-  store.dispatch('notification/notifyError', processError(error))
-  return Promise.reject(error)
-})
 
 /// //////////////////////ROUTES////////////////////////////////////////////////////
 /*
@@ -694,32 +663,8 @@ const handleGETActiveDonors = async (payload: GETActiveDonorsPayloadInterface) =
   }
 }
 
-/// ///////////////////////FIREBASE API CALLS ////////////////////////
-const handleGETCredits = async () => {
-  try {
-    return await firebaseAxios.get('/contributors.json')
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
-const handleGETContributors = async () => {
-  try {
-    return await firebaseAxios.get('/data.json')
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
-const handleGETFrontendSettings = async () => {
-  try {
-    return await firebaseAxios.get('/frontendSettings.json')
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
-
 export {
   badhanAxios,
-  firebaseAxios,
   enableGuestAPI,
   resetBaseURL,
   isGuestEnabled,
@@ -747,7 +692,6 @@ export {
   handleGETStatistics,
   handleDELETELogs,
   handleGETDonorsAll,
-  handleGETCredits,
   handlePATCHDonorsComment,
   handlePATCHDonors,
   handleDELETEDonations,
@@ -772,9 +716,5 @@ export {
   handleDELETELogins,
   handlePOSTActiveDonors,
   handleDELETEActiveDonors,
-  handleGETActiveDonors,
-
-  // firebase methods
-  handleGETFrontendSettings,
-  handleGETContributors
+  handleGETActiveDonors
 }

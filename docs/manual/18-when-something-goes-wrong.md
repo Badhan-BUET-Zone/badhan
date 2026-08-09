@@ -168,7 +168,9 @@ If none of the above fits, report it — and make the report useful:
 5. If a developer asks, open **Dev Console** (super admins), do the thing again, and send a
    screenshot of what appears.
 
-The developers are listed on the **Credits** page in the menu.
+The developers are listed on the **Credits** page in the menu. That page is built into the app, so
+it opens even when nothing else will — useful when the problem you are reporting is that you cannot
+reach the server.
 
 ---
 

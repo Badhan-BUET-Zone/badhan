@@ -4,6 +4,7 @@
 const { execSync } = require("child_process");
 const { existsSync } = require("fs");
 const { resolve } = require("path");
+const { runCli, captureCli, dockerAvailable, REPO_ROOT } = require("../deploy-container");
 
 function run(command, cwd) {
   return execSync(command, { stdio: "inherit", cwd });
@@ -17,10 +18,11 @@ function getCurrentBranch() {
   }
 }
 
-// The build runs INSIDE the frontend container, not on the host.
+// The build runs INSIDE the frontend container, and the deploy inside the deploy
+// container. This script stays on the host only to orchestrate the two: it shells
+// out to `docker compose`, which a container has no socket to do.
 //
-// The host is only in this script because `firebase deploy` needs the host's CLI
-// credentials. Building is a different job with a different requirement — it needs
+// The build is a different job from the deploy, in a different container: it needs
 // this project's node_modules, which live in the container's anonymous
 // /app/node_modules volume and are deliberately never installed on the host (see
 // docker-compose.yml). Running the build on the host meant keeping a second, hand-
@@ -50,36 +52,38 @@ function getDeployTarget(currentBranch) {
   return { buildCmd: containerBuildCommand("build:development"), project: "badhan-buet-test" };
 }
 
-// docker compose has to be invoked from the repo root, where docker-compose.yml is.
-const REPO_ROOT = resolve(__dirname, "..");
+// Every firebase call goes to the `frontend-deploy` service — the `deploy`
+// target of this directory's Dockerfile, i.e. this app's own image plus the CLI
+// that deploys it. Spread into each call rather than hidden in a default, so a
+// misrouted command fails in deploy-container.js instead of in a container that
+// has no firebase.
+const FIREBASE = { service: "frontend-deploy" };
 
-function dockerAvailable() {
-  try {
-    // `docker info` talks to the daemon, so this fails when Docker Desktop is
-    // installed but not running — which is the common case, and which a plain
-    // `docker --version` would happily pass.
-    execSync("docker info", { stdio: "ignore" });
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
-
-// firebase-tools is expected to be installed GLOBALLY (npm install -g
-// firebase-tools), not as a repo dependency: deploy runs on the host, and a
-// local install would be masked by the container's anonymous node_modules
-// volume and would bloat every `npm ci` image build. So we look for `firebase`
-// on PATH rather than in node_modules.
+// firebase-tools is installed globally in that stage, not in package.json and
+// not on the host: it is a deploy tool rather than a dependency of this app, a
+// local install would be masked by the frontend service's anonymous
+// node_modules volume, and putting it in package.json would bloat every
+// `npm ci`. See ../deploy-container.js.
 function firebaseAvailable() {
-  try {
-    execSync("firebase --version", { stdio: "ignore" });
-    return true;
-  } catch (_) {
-    return false;
-  }
+  return captureCli("firebase --version", FIREBASE).length > 0;
 }
 
-const FIREBASE_INSTALL_HINT = "Install it globally with `npm install -g firebase-tools`.";
+const FIREBASE_INSTALL_HINT =
+  "Rebuild it with `docker compose --profile deploy build frontend-deploy`.";
+
+// The account the container is logged in as, for readable failures.
+function firebaseActiveAccount() {
+  const out = captureCli("firebase login:list", FIREBASE);
+  const match = out.match(/[\w.+-]+@[\w.-]+/);
+  return match ? match[0] : "unknown";
+}
+
+// Match a project id as a whole token: a plain `includes("badhan-buet")` is
+// satisfied by "badhan-buet-test", which would pass the production check on an
+// account that can only see the test project.
+function listsProject(output, project) {
+  return new RegExp(`(?:^|[^\\w-])${project}(?![\\w-])`).test(output);
+}
 
 // Side-effect-free preflight: validate everything the frontend deploy needs
 // WITHOUT building, installing, or deploying. Returns an array of
@@ -102,27 +106,32 @@ function checkRequirements(baseDir = __dirname) {
     errors.push(`frontend: required Firebase config "${configFile}" not found (needed for project ${project}).`);
   }
 
-  // The build runs in a container now, so Docker is as much a deploy requirement as
-  // the Firebase CLI is. Caught here rather than three minutes into the deploy.
+  // Both the build and the Firebase CLI run in containers, so Docker is the
+  // first deploy requirement. Caught here rather than three minutes in.
   if (!dockerAvailable()) {
     errors.push(
-      "frontend: Docker is not available (the frontend build runs in the frontend container). " +
-        "Start Docker Desktop and try again."
+      "frontend: Docker is not available (the build runs in the frontend container, " +
+        "the Firebase CLI in the frontend-deploy container). Start Docker Desktop and try again."
     );
-  }
-
-  if (!firebaseAvailable()) {
-    errors.push(`frontend: firebase-tools not found on PATH. ${FIREBASE_INSTALL_HINT}`);
+  } else if (!firebaseAvailable()) {
+    errors.push(`frontend: firebase-tools not available in the frontend-deploy container. ${FIREBASE_INSTALL_HINT}`);
   } else {
     // `firebase login:list` only reads the stored token; it can't tell whether
     // that token still works. `projects:list` actually calls the Firebase API,
     // so a revoked/expired credential fails here the same way a deploy would.
-    try {
-      execSync("firebase projects:list", { stdio: "ignore" });
-    } catch (_) {
+    // Its output is kept rather than discarded, because it also answers the
+    // question a token refresh cannot: can THIS account see the project this
+    // branch deploys to?
+    const projects = captureCli("firebase projects:list", FIREBASE);
+    if (!projects) {
       errors.push(
         "frontend: firebase credentials are missing or expired (API call failed). " +
-          "Run `firebase login --reauth` (plain `firebase login` reports 'Already logged in' and won't refresh an expired token)."
+          "Run `./deploy.js --relogin` (plain `firebase login` reports 'Already logged in' and won't refresh an expired token)."
+      );
+    } else if (!listsProject(projects, project)) {
+      errors.push(
+        `frontend: logged in as ${firebaseActiveAccount()}, which cannot see Firebase project "${project}" ` +
+          `(branch "${currentBranch}"). Run \`./deploy.js --relogin\` and pick an account with access.`
       );
     }
   }
@@ -157,9 +166,12 @@ function deployToFirebase() {
   console.log(`🚀  Deploying to Firebase project '${firebaseProject}'…`);
   const configFile = `firebase.${firebaseProject}.json`;
 
-  run(
+  // Runs in the frontend-deploy container, whose /repo/badhan-frontend is this
+  // directory (a plain bind mount, no node_modules volume over it) — including
+  // the dist the frontend container just built.
+  runCli(
     `firebase deploy --only hosting --project "${firebaseProject}" --config "${configFile}"`,
-    baseDir
+    { ...FIREBASE, workdir: "/repo/badhan-frontend" }
   );
 
   console.log("✅  Deployment complete.");

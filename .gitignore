@@ -1,2 +1,8 @@
 .DS_Store
 docs/anonymized/
+
+# Deploy CLI credentials — written by the `deploy` container (CLOUDSDK_CONFIG /
+# XDG_CONFIG_HOME) so gcloud / firebase auth survives `docker compose down -v`.
+# Refresh tokens: never commit.
+.deploy-auth/
+.claude/

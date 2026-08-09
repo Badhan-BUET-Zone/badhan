@@ -13,7 +13,9 @@ project's `node_modules` (they live in the container volumes), so host runs will
 behave inconsistently.
 
 Service names (see [docker-compose.yml](docker-compose.yml)): `backend`, `frontend`,
-`internal`, `mongo`, `backend-test`, `frontend-test`.
+`internal`, `mongo`, `backend-test`, `frontend-test`, and — under the `deploy` profile,
+driven by the scripts below rather than by hand — `backend-deploy`, `frontend-deploy`,
+`android`.
 
 Run commands with `docker compose exec <service> <cmd>` when the stack is up, or
 `docker compose run --rm <service> <cmd>` for a one-off when it isn't. Examples:
@@ -29,9 +31,21 @@ Start the stack first if needed: `docker compose up -d`.
 
 ### Exceptions
 
-These three scripts are host-only tooling — they run outside Docker and are the **only**
+These four scripts are host-only tooling — they run outside Docker and are the **only**
 places where `npm`/`node`/`npx` on the host is allowed:
 
+- [deploy.js](deploy.js)
 - [badhan-frontend/bubblewrap/upload-googleplay.js](badhan-frontend/bubblewrap/upload-googleplay.js)
 - [badhan-frontend/upload-firebase.js](badhan-frontend/upload-firebase.js)
 - [badhan-backend/upload-gcloud.js](badhan-backend/upload-gcloud.js)
+
+They are exceptions because they **orchestrate**: they read the git branch, clone the
+secrets repo, and shell out to `docker compose`, which a container has no socket to do.
+`./deploy.js` is itself a Node script and requires the other three in-process.
+Every tool they drive — `gcloud`, `firebase`, `bubblewrap`, `fastlane`, and every build —
+runs in a container, via [deploy-container.js](deploy-container.js). Do not add a host
+CLI dependency to them; add it to the `deploy` stage of the relevant app's
+Dockerfile ([badhan-backend](badhan-backend/Dockerfile),
+[badhan-frontend](badhan-frontend/Dockerfile)) or to
+[badhan-frontend/bubblewrap/Dockerfile](badhan-frontend/bubblewrap/Dockerfile)
+for the Android toolchain, instead.

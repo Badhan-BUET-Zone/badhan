@@ -174,14 +174,47 @@ That's it. You have done the local setup for developing the app.
 Deployment is a manual, run-by-hand step. From the repo root:
 
 ```
-./deploy
+./deploy.js
 ```
 
 This runs both test suites first (backend Jest, then frontend Cypress) and only
 deploys if **both** pass — the test gate cannot be skipped. On success it deploys the
 backend to Google Cloud (`upload-gcloud.js`) and the frontend to Firebase
-(`upload-firebase.js`). Deployment runs on the host, not in a container, so your local
-`gcloud` and `firebase` CLI authentication is used.
+(`upload-firebase.js`). `deploy` is a Node script that requires those two in-process;
+it uses only the standard library, so there is nothing to install for it.
+
+## First-time deploy setup
+
+`gcloud` and `firebase` are **not** installed on the host. Each ships with the app it
+deploys, as the `deploy` stage of that app's Dockerfile: gcloud in `backend-deploy`,
+firebase in `frontend-deploy`. Both stages sit on top of the images the dev stack already
+builds, and neither is built by `docker compose up`. Log in once:
+
+```
+./deploy.js --login
+```
+
+Each CLI prints a URL; open it in any browser, approve, and paste the code back. The
+credentials are stored in `.deploy-auth/` at the repo root (gitignored), which is an
+ordinary host directory, so they survive `docker compose down -v`, image rebuilds, and
+everything else. Use `./deploy.js --relogin` when a token has expired or you need to switch
+accounts — plain re-login answers *"Already logged in"* and won't refresh it.
+
+The preflight that runs before the test suites checks more than "a token refreshes": it
+confirms the logged-in account can actually reach the project this branch deploys to
+(`badhan-buet` on `main`, `badhan-buet-test` otherwise), so being logged in as the wrong
+Google account fails in seconds rather than after both test suites.
+
+## Supported host platforms
+
+**macOS and Linux.** Windows is supported through **WSL2 only** — clone the repo inside
+the WSL2 filesystem (`~/…`), not under `/mnt/c`, or you get both terrible bind-mount
+performance and the file-locking edge cases that the credential store is sensitive to.
+Native Git Bash / mintty is not supported.
+
+The only host prerequisites are **Docker, git, and Node** — Node purely to run the
+deploy orchestration scripts, which import nothing outside its standard library. The
+app's own Node, the deploy CLIs, and the Android toolchain all live in containers.
 
 # Purge and Seed the Database
 

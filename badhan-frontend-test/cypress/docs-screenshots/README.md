@@ -2,7 +2,7 @@
 
 These specs are **not tests**. Each one drives the app to a particular state and photographs it for
 a guide in [docs/blog/](../../../docs/blog/). They live outside `cypress/e2e/`, so the automated
-suite's `specPattern` never picks them up and `./deploy` never runs them.
+suite's `specPattern` never picks them up and `./deploy.js` never runs them.
 
 ## Folders
 

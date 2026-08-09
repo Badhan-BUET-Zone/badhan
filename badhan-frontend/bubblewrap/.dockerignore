@@ -1,0 +1,8 @@
+# This directory is the build context for the `android` image, and it is also
+# where the Play build runs: it holds the gradle project, the gradle cache, the
+# signed .aab/.apk, and (transiently) the cloned keystore and service-account
+# key. The Dockerfile COPYs none of it — the repo is bind-mounted at /repo at
+# run time — so shipping any of it to the daemon would be pure cost, and would
+# put secrets in a build context for no reason.
+*
+!Dockerfile
