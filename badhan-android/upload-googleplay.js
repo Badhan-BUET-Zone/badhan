@@ -7,7 +7,7 @@
 // The script itself runs on the HOST (it clones the secrets repo and shells out
 // to docker, which a container has no socket to do), but every tool it drives —
 // bubblewrap, gradle, the JDK, fastlane — runs in the `android` container. See
-// ../../CLAUDE.md and ../../deploy-container.js.
+// ../CLAUDE.md and ../deploy-container.js.
 //
 // Note: the TWA is only a shell around https://badhan-buet.web.app — this does
 // NOT build the web frontend. Deploy the site first (upload-firebase.js), then
@@ -17,10 +17,10 @@ const { execSync } = require("child_process");
 const { existsSync, mkdtempSync, copyFileSync, rmSync, readFileSync } = require("fs");
 const { resolve, basename } = require("path");
 const os = require("os");
-const { runCli, captureCli, dockerAvailable, toContainerPath } = require("../../deploy-container");
+const { runCli, captureCli, dockerAvailable, toContainerPath } = require("../deploy-container");
 
 // Everything below runs in the android service, from this directory.
-const ANDROID = { service: "android", workdir: "/repo/badhan-frontend/bubblewrap" };
+const ANDROID = { service: "android", workdir: "/repo/badhan-android" };
 
 // The signing keystore and the Play service-account key are NOT committed to
 // this repo. They live in a private secrets repo and are cloned into place only
@@ -99,14 +99,14 @@ function sdkVersionErrors(baseDir, env) {
     errors.push(
       `bubblewrap: app/build.gradle wants compileSdkVersion ${compileSdk} but the android image ` +
         `installed platform ${env.ANDROID_API}. Update ANDROID_API (and BUILD_TOOLS) in ` +
-        "badhan-frontend/bubblewrap/Dockerfile and rebuild."
+        "badhan-android/Dockerfile and rebuild."
     );
   }
   if (agp && env.AGP_VERSION && agp !== env.AGP_VERSION) {
     errors.push(
       `bubblewrap: build.gradle uses Android Gradle Plugin ${agp} but the android image was built ` +
         `for ${env.AGP_VERSION}. AGP decides the default build-tools version, so update AGP_VERSION ` +
-        "and AGP_BUILD_TOOLS in badhan-frontend/bubblewrap/Dockerfile and rebuild."
+        "and AGP_BUILD_TOOLS in badhan-android/Dockerfile and rebuild."
     );
   }
   return errors;

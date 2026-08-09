@@ -35,7 +35,7 @@ These four scripts are host-only tooling — they run outside Docker and are the
 places where `npm`/`node`/`npx` on the host is allowed:
 
 - [deploy.js](deploy.js)
-- [badhan-frontend/bubblewrap/upload-googleplay.js](badhan-frontend/bubblewrap/upload-googleplay.js)
+- [badhan-android/upload-googleplay.js](badhan-android/upload-googleplay.js)
 - [badhan-frontend/upload-firebase.js](badhan-frontend/upload-firebase.js)
 - [badhan-backend/upload-gcloud.js](badhan-backend/upload-gcloud.js)
 
@@ -47,5 +47,5 @@ runs in a container, via [deploy-container.js](deploy-container.js). Do not add 
 CLI dependency to them; add it to the `deploy` stage of the relevant app's
 Dockerfile ([badhan-backend](badhan-backend/Dockerfile),
 [badhan-frontend](badhan-frontend/Dockerfile)) or to
-[badhan-frontend/bubblewrap/Dockerfile](badhan-frontend/bubblewrap/Dockerfile)
+[badhan-android/Dockerfile](badhan-android/Dockerfile)
 for the Android toolchain, instead.

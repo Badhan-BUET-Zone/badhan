@@ -150,19 +150,19 @@ services:
   # on a JDK base, not a Node one, and a Play release is rare and independent of
   # ./deploy.js. Its Dockerfile lives next to the gradle project it builds; the
   # .dockerignore beside it keeps the build context to that one file. Every
-  # secret it uses is cloned per-run into badhan-frontend/bubblewrap and deleted
+  # secret it uses is cloned per-run into badhan-android and deleted
   # afterwards, so there is nothing to persist and no login flow.
   android:
     profiles: ["deploy"]
     build:
-      context: ./badhan-frontend/bubblewrap
+      context: ./badhan-android
     user: "${DEPLOY_UID:-0}:${DEPLOY_GID:-0}"
     volumes:
       - .:/repo
       # Gradle's download of AGP/Gradle itself — a cache, not a credential, so
       # losing it to `down -v` costs one slow build and nothing else.
       - android-gradle:/home/deploy/.gradle
-    working_dir: /repo/badhan-frontend/bubblewrap
+    working_dir: /repo/badhan-android
 
 volumes:
   mongo-data:
