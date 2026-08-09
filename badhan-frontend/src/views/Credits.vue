@@ -3,10 +3,10 @@
     <PageTitle :title="$route.meta.title"></PageTitle>
 
       <Container>
-        <v-card-title>
+        <v-card-title class="py-2">
           Feedback
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="pt-0 pb-2">
           <div>If you love using this app, give a review in Google play store :D It would really inspire us to keep this
             app alive.
           </div>
@@ -15,34 +15,34 @@
       </Container>
 
       <Container>
-        <v-card-title>
-          Active Developers
+        <v-card-title class="py-2">
+          Lead
         </v-card-title>
 
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" v-for="(person, index) in activeDevelopers" :key="index">
+        <v-card-text class="pt-0 pb-2">
+          <v-row dense>
+            <v-col cols="12" sm="6" md="4" v-for="(person, index) in lead" :key="index">
               <PersonCredit :person="person">
               </PersonCredit>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-title>
-          Contributors from Badhan
+        <v-card-title class="py-2">
+          Developers
         </v-card-title>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" v-for="(person, index) in contributorsFromBadhan" :key="index">
+        <v-card-text class="pt-0 pb-2">
+          <v-row dense>
+            <v-col cols="12" sm="6" md="4" v-for="(person, index) in developers" :key="index">
               <PersonCredit :person="person"></PersonCredit>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-title>
-          Legacy Developers
+        <v-card-title class="py-2">
+          Contributors from Badhan
         </v-card-title>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" v-for="(person, index) in legacyDevelopers" :key="index">
+        <v-card-text class="pt-0 pb-2">
+          <v-row dense>
+            <v-col cols="12" sm="6" md="4" v-for="(person, index) in contributorsFromBadhan" :key="index">
               <PersonCredit :person="person"></PersonCredit>
             </v-col>
           </v-row>
@@ -78,9 +78,9 @@ export default {
   components: { PersonCredit, Container, PageTitle },
   data () {
     return {
-      activeDevelopers: byType['Active Developers'] || [],
-      contributorsFromBadhan: byType['Contributors of Badhan'] || [],
-      legacyDevelopers: byType['Legacy Developers'] || []
+      lead: byType.Lead || [],
+      developers: byType.Developers || [],
+      contributorsFromBadhan: byType['Contributors of Badhan'] || []
     }
   },
   methods: {

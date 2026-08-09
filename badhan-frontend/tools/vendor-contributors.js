@@ -43,12 +43,40 @@ const QUALITY = 80;
 
 // Credits.vue groups on `type`. A value outside this set does not error — the
 // person silently disappears from the page — so it is asserted, not trusted.
-const TYPES = ["Active Developers", "Legacy Developers", "Contributors of Badhan"];
+const TYPES = ["Lead", "Developers", "Contributors of Badhan"];
+
+// The database still carries the older three-way split. It distinguished current
+// from former developers, which meant a person's group changed as they moved on
+// and the page read as a ranking; one "Developers" group and an explicit lead is
+// both truer and less maintenance. Kept here so re-running this script reproduces
+// what is committed rather than resurrecting the old grouping.
+const LEAD = "Mir Mahathir Mohammad";
+const TYPE_MAP = {
+  "Active Developers": "Developers",
+  "Legacy Developers": "Developers",
+  "Contributors of Badhan": "Contributors of Badhan"
+};
+
+function resolveType(person) {
+  if (person.name === LEAD) return "Lead";
+  const mapped = TYPE_MAP[person.type];
+  if (!mapped) throw new Error(`${person.name}: unmapped source type ${JSON.stringify(person.type)}`);
+  return mapped;
+}
 
 // Records whose imageUrl is the bucket's shared silhouette rather than a photograph.
 // They get `image: null` and no committed file: the frontend already ships an
 // identical placeholder at src/assets/account.png and uses it as the null case.
 const PLACEHOLDER_OBJECTS = ["profilepics/avatar.jpg"];
+
+// Records whose committed photograph is better than the one the database has, because
+// someone sent a real photo after the migration. Migration mode keeps the committed
+// file instead of downloading — otherwise a re-run would quietly undo the improvement,
+// which would break the one property that makes re-running safe. Takes precedence over
+// PLACEHOLDER_OBJECTS: that is exactly the case these entries exist to fix.
+const KEEP_LOCAL_PHOTO = {
+  "Nobel Dey": "nobel-dey.webp"
+};
 
 // Total budget for src/assets/contributors/. Sixteen 200px WebP avatars land near
 // 150 KB; a build that blows past this means a resize silently did not happen.
@@ -98,13 +126,20 @@ function verify(records, sourceCount) {
     problems.push(`wrote ${records.length} records from ${sourceCount} source records`);
   }
 
+  // The Lead group renders as its own section at the top. Zero means the name
+  // constant drifted from the data and the section is silently empty.
+  const leads = records.filter((record) => record.type === "Lead");
+  if (leads.length !== 1) {
+    problems.push(`expected exactly 1 Lead, found ${leads.length}`);
+  }
+
   const slugs = new Set();
   for (const record of records) {
     if (!TYPES.includes(record.type)) {
       problems.push(`${record.name}: unknown type ${JSON.stringify(record.type)}`);
     }
-    if (!record.name || !record.calender) {
-      problems.push(`${record.name || "(unnamed)"}: missing name or calender`);
+    if (!record.name) {
+      problems.push(`a record is missing its name`);
     }
     if (record.image !== null) {
       if (!fs.existsSync(path.join(IMAGE_DIR, record.image))) {
@@ -145,8 +180,26 @@ async function migrate() {
 
   fs.mkdirSync(IMAGE_DIR, { recursive: true });
   fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
+
+  // People added after the migration exist only in git — the database has never
+  // heard of them. Rebuilding blindly from the database would delete them and their
+  // avatars, so they are carried through untouched. This is what makes re-running
+  // safe: it refreshes what came from the database and leaves everything else alone.
+  const existing = fs.existsSync(DATA_FILE) ? JSON.parse(fs.readFileSync(DATA_FILE, "utf8")) : [];
+  const sourceNames = new Set(source.map((person) => person.name));
+  const carried = existing.filter((record) => !sourceNames.has(record.name));
+
+  const kept = new Set([
+    ...Object.values(KEEP_LOCAL_PHOTO),
+    ...carried.map((record) => record.image).filter(Boolean)
+  ]);
   for (const file of fs.readdirSync(IMAGE_DIR)) {
-    fs.unlinkSync(path.join(IMAGE_DIR, file));
+    if (!kept.has(file)) fs.unlinkSync(path.join(IMAGE_DIR, file));
+  }
+  for (const file of kept) {
+    if (!fs.existsSync(path.join(IMAGE_DIR, file))) {
+      throw new Error(`KEEP_LOCAL_PHOTO names ${file}, which is not in src/assets/contributors/`);
+    }
   }
 
   const records = [];
@@ -154,7 +207,10 @@ async function migrate() {
     const objectPath = storageObjectPath(person.imageUrl);
     let image = null;
 
-    if (PLACEHOLDER_OBJECTS.includes(objectPath)) {
+    if (KEEP_LOCAL_PHOTO[person.name]) {
+      image = KEEP_LOCAL_PHOTO[person.name];
+      console.log(`${person.name}: keeping the committed ${image}`);
+    } else if (PLACEHOLDER_OBJECTS.includes(objectPath)) {
       console.log(`${person.name}: placeholder avatar, using the local fallback`);
     } else {
       const buffer = await download(person.imageUrl);
@@ -162,17 +218,25 @@ async function migrate() {
       console.log(`${person.name}: ${objectPath} -> ${image}`);
     }
 
+    // `calender` (sic) is dropped: it held a "January 2020 - Present" range per
+    // person, which went stale silently the moment someone stopped contributing
+    // and nobody remembered to edit it. Credit does not expire, so there is
+    // nothing for a date range to say here.
     records.push({
       name: person.name,
-      type: person.type,
-      calender: person.calender,
+      type: resolveType(person),
       image,
       contribution: person.contribution,
       links: person.links
     });
   }
 
-  verify(records, source.length);
+  for (const record of carried) {
+    console.log(`${record.name}: not in the database, carried through from the committed file`);
+  }
+  records.push(...carried);
+
+  verify(records, source.length + carried.length);
   fs.writeFileSync(DATA_FILE, JSON.stringify(records, null, 2) + "\n");
   console.log(`wrote ${path.relative(ROOT, DATA_FILE)}`);
 }
@@ -188,7 +252,6 @@ async function addOne(photoPath, name) {
       {
         name,
         type: `one of: ${TYPES.join(" | ")}`,
-        calender: "Month YYYY - Present",
         image,
         contribution: ["…"],
         links: [{ icon: "github", color: "grey", link: "https://github.com/…" }]

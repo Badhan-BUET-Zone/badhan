@@ -1,24 +1,24 @@
 <template>
   <ContainerOutlined>
+    <!-- The avatar stays at 100px deliberately; everything around it is what got
+         tightened, so three cards fit across a row without the photos suffering. -->
     <v-avatar
         size="100"
         color="grey"
-        class="ma-2"
+        class="ma-1"
     >
-      <v-img :src="avatar"/>
+      <!-- `eager` because the file is already in the bundle: v-img otherwise waits
+           for an intersection observer and shows a grey disc on the way past. -->
+      <v-img :src="avatar" eager/>
     </v-avatar>
-    <v-card-title>
+    <v-card-title class="py-1 px-2 text-subtitle-1 font-weight-medium">
       {{ person.name }}
     </v-card-title>
-    <v-card-subtitle>
-      {{ person.calender }}
-    </v-card-subtitle>
-
-    <v-card-text class="text--primary">
+    <v-card-text class="text--primary py-0 px-2 text-body-2">
       <div v-for="(description, index) in person.contribution" :key="index">{{ description }}</div>
     </v-card-text>
 
-    <v-card-actions>
+    <v-card-actions class="pa-1">
       <v-btn
           v-for="(link,linkIndex) in person.links"
           :key="linkIndex"
@@ -28,10 +28,9 @@
           @click="goTo(link.link)"
           small
       >
-        <v-icon
-            left
-            dark
-        >
+        <!-- No `left` on the icon: these buttons carry no label, and `left`'s
+             trailing margin left them visibly off-centre. -->
+        <v-icon dark>
           mdi-{{ link.icon }}
         </v-icon>
       </v-btn>

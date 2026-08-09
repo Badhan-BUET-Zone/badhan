@@ -2,7 +2,6 @@
   {
     "name": "Tanzid Hasan Shuvo",
     "type": "Contributors of Badhan",
-    "calender": "August 2022 - Present",
     "image": "tanzid-hasan-shuvo.webp",
     "contribution": [
       "Q/A & Test"
@@ -17,8 +16,7 @@
   },
   {
     "name": "Mir Mahathir Mohammad",
-    "type": "Active Developers",
-    "calender": "January 2020- Present",
+    "type": "Lead",
     "image": "mir-mahathir-mohammad.webp",
     "contribution": [
       "UX Design",
@@ -53,8 +51,7 @@
   },
   {
     "name": "Sumaiya Azad",
-    "type": "Legacy Developers",
-    "calender": "June 2021 - May 2022",
+    "type": "Developers",
     "image": "sumaiya-azad.webp",
     "contribution": [
       "API Development",
@@ -87,8 +84,7 @@
   },
   {
     "name": "Hasan Masum",
-    "type": "Active Developers",
-    "calender": "July 2021 - Present",
+    "type": "Developers",
     "image": "hasan-masum.webp",
     "contribution": [
       "Data Input Frontend",
@@ -115,8 +111,7 @@
   },
   {
     "name": "Sanju Basak",
-    "type": "Legacy Developers",
-    "calender": "July 2021 - Feb 2024",
+    "type": "Developers",
     "image": "sanju-basak.webp",
     "contribution": [
       "Google Play Management",
@@ -144,7 +139,6 @@
   {
     "name": "MH Rahat",
     "type": "Contributors of Badhan",
-    "calender": "January 2020 - Present",
     "image": "mh-rahat.webp",
     "contribution": [
       "Initiator of Badhan App",
@@ -162,7 +156,6 @@
   {
     "name": "Shadman Sakib Showrov",
     "type": "Contributors of Badhan",
-    "calender": "January 2020 - Present",
     "image": "shadman-sakib-showrov.webp",
     "contribution": [
       "Active User"
@@ -182,8 +175,7 @@
   },
   {
     "name": "Aniruddha GS",
-    "type": "Legacy Developers",
-    "calender": "January 2020 - April 2021",
+    "type": "Developers",
     "image": "aniruddha-gs.webp",
     "contribution": [
       "API Development",
@@ -199,8 +191,7 @@
   },
   {
     "name": "Priyeta Saha",
-    "type": "Legacy Developers",
-    "calender": "January 2020 - May 2020",
+    "type": "Developers",
     "image": "priyeta-saha.webp",
     "contribution": [
       "Flutter Android App"
@@ -215,8 +206,7 @@
   },
   {
     "name": "Anisha Islam",
-    "type": "Legacy Developers",
-    "calender": "January 2020 - June 2020",
+    "type": "Developers",
     "image": "anisha-islam.webp",
     "contribution": [
       "API Development"
@@ -231,8 +221,7 @@
   },
   {
     "name": "Atiqur Rahman Shuvo",
-    "type": "Legacy Developers",
-    "calender": "April 2021 - May 2021",
+    "type": "Developers",
     "image": "atiqur-rahman-shuvo.webp",
     "contribution": [
       "Data Processing"
@@ -248,7 +237,6 @@
   {
     "name": "Mahmud Akon",
     "type": "Contributors of Badhan",
-    "calender": "November 2023 - Present",
     "image": "mahmud-akon.webp",
     "contribution": [
       "Q/A & Test",
@@ -270,7 +258,6 @@
   {
     "name": "Md. Muqtadir Fuad",
     "type": "Contributors of Badhan",
-    "calender": "May 2025 - Present",
     "image": "md-muqtadir-fuad.webp",
     "contribution": [
       "Figma UX Design",
@@ -303,7 +290,6 @@
   {
     "name": "Ilhan Masud",
     "type": "Contributors of Badhan",
-    "calender": "August 2025 - Present",
     "image": "ilhan-masud.webp",
     "contribution": [
       "Q/A & Test"
@@ -324,8 +310,7 @@
   {
     "name": "Nobel Dey",
     "type": "Contributors of Badhan",
-    "calender": "August 2025 - Present",
-    "image": null,
+    "image": "nobel-dey.webp",
     "contribution": [
       "Q/A & Test"
     ],
@@ -344,8 +329,7 @@
   },
   {
     "name": "Md. Al Amin Ifti",
-    "type": "Active Developers",
-    "calender": "Aug 2025 - Present",
+    "type": "Developers",
     "image": "md-al-amin-ifti.webp",
     "contribution": [
       "Refactor Automated Backend Testing"
@@ -370,6 +354,21 @@
         "color": "red",
         "icon": "gmail",
         "link": "mailto:iftialmin73@gmail.com"
+      }
+    ]
+  },
+  {
+    "name": "Nashit Hasan",
+    "type": "Contributors of Badhan",
+    "image": "nashit-hasan.webp",
+    "contribution": [
+      "Testing and Bug Report"
+    ],
+    "links": [
+      {
+        "color": "blue",
+        "icon": "facebook",
+        "link": "https://www.facebook.com/th.nashit"
       }
     ]
   }

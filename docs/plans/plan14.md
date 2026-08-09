@@ -116,6 +116,12 @@ already ships a local placeholder, [`src/assets/account.png`](../../badhan-front
 used as `lazy-src` on the very same component. That record should reference the existing local
 placeholder rather than getting a byte-identical duplicate committed under a person's name.
 
+**Since resolved:** a real photograph was supplied after the migration, so the record now carries
+`nobel-dey.webp` like everyone else and no record is left on the placeholder. The database still
+points him at the silhouette, which is what `KEEP_LOCAL_PHOTO` in the script exists to override —
+see [§1.2](#12-the-migration-script). The null-image path in the data and the `account.png` fallback
+in the component both stay, because the next person added without a photo will need them.
+
 ### 0.6 The write path is already gone
 
 The only thing that ever wrote to this database is
@@ -138,19 +144,24 @@ returns. The id keys are RTDB primary keys; in a file, array order *is* the orde
 piece of editorial control the current setup lacks entirely (today the Credits page renders in
 whatever order `Object.entries` yields, i.e. numeric-ish key order, i.e. by date of addition).
 
-Keep the field names — `name`, `type`, `calender`, `contribution`, `links` — so
+Keep the field names — `name`, `type`, `contribution`, `links` — so
 [Credits.vue](../../badhan-frontend/src/views/Credits.vue)'s grouping logic changes as little as
-possible. Note `calender` is misspelled in the data and in the template; renaming it is a separate
-cleanup, not this plan's business. Drop `id`, which exists only to key the RTDB node. Replace
-`imageUrl` with `image`, holding a repo-relative asset filename rather than an absolute URL — the
-field changes meaning, so it should change name.
+possible. Drop `id`, which exists only to key the RTDB node. Replace `imageUrl` with `image`,
+holding a repo-relative asset filename rather than an absolute URL — the field changes meaning, so
+it should change name.
+
+Drop `calender` (sic) too. It held a per-person date range — `January 2020 - Present` — which is a
+field nobody can keep true: it goes stale the moment someone stops contributing, and the only way to
+notice is for a reader to already know. It also gave the page a subtitle line whose main effect was
+to sort people by how recently they were active, which is the same thing the
+`Active` / `Legacy` split did and the same reason both are gone
+([§1.1](#11-the-shape-of-the-vendored-data)). Credit does not expire.
 
 ```json
 [
   {
     "name": "Mir Mahathir Mohammad",
-    "type": "Active Developers",
-    "calender": "January 2020- Present",
+    "type": "Lead",
     "image": "mir-mahathir-mohammad.webp",
     "contribution": ["UX Design", "Web Frontend Development", "…"],
     "links": [{ "icon": "github", "color": "grey", "link": "https://github.com/mirmahathir1" }]
@@ -158,9 +169,18 @@ field changes meaning, so it should change name.
 ]
 ```
 
-The three `type` values are load-bearing — `Active Developers`, `Legacy Developers`,
-`Contributors of Badhan` — because P2 groups on them. A typo silently drops a person from the page,
-which is the strongest argument in [§1.5](#15-guard-the-data-shape) for a shape check.
+The three `type` values are load-bearing — `Lead`, `Developers`, `Contributors of Badhan` — because
+P2 groups on them. A typo silently drops a person from the page, which is the strongest argument in
+[§1.5](#15-guard-the-data-shape) for a shape check.
+
+The database has a different, older split: `Active Developers` / `Legacy Developers` /
+`Contributors of Badhan`. That distinction sorted developers by whether they were still around,
+which meant a person's group changed as they moved on and the page read as a ranking of who
+currently mattered. One `Developers` group, with the project lead called out separately, says the
+same thing without the demotion. The script maps the old values to the new ones on the way through
+(`TYPE_MAP` and `LEAD`), so re-running it reproduces what is committed rather than resurrecting the
+old grouping — the section-title change in `Credits.vue` and the data must move together or people
+silently vanish.
 
 ### 1.2 The migration script
 
@@ -185,16 +205,20 @@ trade for a tool that will be re-run every time someone joins.
 Filenames should be slugs of the person's name (`mir-mahathir-mohammad.webp`), not timestamps. WebP
 at quality ~80 for 200×200 photographs is comfortably under 15 KB each.
 
-Two special cases: `Nobel Dey` gets `"image": null` and no downloaded file
-([§0.5](#05-one-record-already-points-at-a-shared-placeholder)); any future record whose download
-404s should fail the script loudly rather than emit a broken reference.
+Three special cases. A record on the shared silhouette gets `"image": null` and no downloaded file
+([§0.5](#05-one-record-already-points-at-a-shared-placeholder)). A record listed in
+`KEEP_LOCAL_PHOTO` keeps the file already committed instead of downloading — that is how a photo
+supplied *after* the migration survives a re-run, rather than being silently replaced by whatever
+the database still holds. And any record whose download 404s should fail the script loudly rather
+than emit a broken reference.
 
 ### 1.3 Verify the result
 
-Check the vendored set against the live one before trusting it: 16 records in, 15 images out
-(Nobel Dey excluded), every `type` one of the three known values, every `image` resolving to a file
-that exists, total `src/assets/contributors/` under 250 KB. A short assertion block at the end of
-the script is worth more than a manual diff, because it also runs on every future re-run.
+Check the vendored set against the live one before trusting it: every database record in and an
+image out for each, plus any git-only records carried through, every
+`type` one of the three known values, exactly one `Lead`, every `image` resolving to a file that
+exists, total `src/assets/contributors/` under 250 KB. A short assertion block at the end of the
+script is worth more than a manual diff, because it also runs on every future re-run.
 
 ### 1.4 Where the files go
 
@@ -258,8 +282,8 @@ dead weight and can go; `lazy-src` can stay as the null-case source.
 ### 2.3 What to check after this phase
 
 Open the Credits page with the network panel filtered to XHR and images: zero requests. All three
-groups render, in `contributors.json` order, with the same people as production today. Nobel Dey
-shows the silhouette. No console errors about unresolved modules — the failure mode of a bad
+groups render, in `contributors.json` order, with the same people as production today, every one
+with a photograph. No console errors about unresolved modules — the failure mode of a bad
 `require` path is a build-time error in most cases but a runtime one in a few, so this needs an
 actual page load, not just a green `npm run build`.
 
@@ -417,7 +441,7 @@ All four phases landed together.
 
 | | Before | After |
 | --- | --- | --- |
-| Avatar bytes | 5,180,871 (4.94 MB) | **122,458 (120 KB)**, 15 × 200px WebP |
+| Avatar bytes | 5,180,871 (4.94 MB) | **134,486 (131 KB)**, 17 × 200px WebP |
 | Largest single avatar | 2,128,690 B, 850×1063 | 13,124 B, 200×200 |
 | Network calls to render Credits | 1 JSON + 16 images | **0** |
 | `firebaseAxios` | instance + 2 interceptors + 3 calls + 4 exports | **gone** |
@@ -427,13 +451,23 @@ All four phases landed together.
 Verified:
 
 - **Content fidelity.** The 16 vendored records were diffed field-by-field against the live database
-  (`name`, `type`, `calender`, `contribution`, `links`) in the same order: zero mismatches. Groups
-  come out 3 Active / 6 Legacy / 7 Contributors, one `null` image (Nobel Dey).
+  (`name`, `contribution`, `links`) in the same order: zero mismatches. `type` and `calender` are the
+  two deliberate departures — see [§1.1](#11-the-shape-of-the-vendored-data); groups come out
+  1 Lead / 8 Developers / 7 Contributors, every record with a photograph, and none carrying a date
+  range. One person has since been added straight to the file (Nashit Hasan), bringing it to 17.
 - **Bundling.** `npm run build` resolves all 15 avatars through the `require` context plus
   `account.png`; the built Credits chunk contains the data and 9 inlined avatars, and
   `grep -rl "firebaseio\|firebasestorage" dist/js` finds nothing.
 - **Compile.** `vue-cli-service lint` clean on every touched file; dev server compiles with
   "No issues found".
+
+Two follow-on changes to the page itself, outside the plan's original scope but enabled by it:
+the grid went from two columns to three (`md="4"`, `dense` rows) with the surrounding padding
+tightened, and `v-img` gained `eager`. The avatars stayed at 100px throughout. `eager` matters
+because Vuetify lazy-loads images behind an intersection observer by default — sensible for remote
+images, pointless once the file is in the bundle, and visible as a grey disc on anything scrolled
+past quickly. Verified by driving the real app: signed in through Cypress, navigated to Credits, and
+screenshotted at 1280px.
 
 Not done, deliberately: the Realtime Database node and the Storage objects are still live
 ([§3.4](#34-leave-the-cloud-resources-alone)), and `firebase-tools` remains a frontend
@@ -452,6 +486,5 @@ not this plan's business.
 3. ~~**Shape guard.**~~ Resolved *against* the recommendation — see
    [§1.5](#15-guard-the-data-shape); there is no unit test suite to put it in, so it lives in the
    script.
-4. **`calender` → `calendar`.** Still open. The misspelling is in the data and the template. Left
-   alone deliberately so the migration diff stayed verifiably faithful; it is now a two-file rename
-   whenever someone wants it.
+4. ~~**`calender` → `calendar`.**~~ Moot: the field was dropped rather than renamed
+   ([§1.1](#11-the-shape-of-the-vendored-data)), which takes the misspelling with it.

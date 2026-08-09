@@ -26,8 +26,7 @@ position on the page, within the person's group.
 | Field | Notes |
 | --- | --- |
 | `name` | as it should appear |
-| `type` | **exactly** one of `Active Developers`, `Legacy Developers`, `Contributors of Badhan` — anything else and the person silently does not render |
-| `calender` | free text, e.g. `August 2025 - Present`. Misspelled in the data and the template; leave it |
+| `type` | **exactly** one of `Lead`, `Developers`, `Contributors of Badhan` — anything else and the person silently does not render. `Lead` is a one-person group; the script fails if it does not hold exactly one |
 | `image` | the filename from step 1, or `null` for the shared silhouette |
 | `contribution` | array of short strings, one per line on the card |
 | `links` | `icon` is an [MDI](https://pictogrammers.com/library/mdi/) name without the `mdi-` prefix; `color` is a Vuetify colour |
@@ -49,7 +48,18 @@ docker compose run --rm --no-deps frontend node tools/vendor-contributors.js
 ```
 
 This is only useful for verifying the committed files still match what the app used to serve. It
-**discards anything added since the migration**, because those people exist only in git. No
-credentials are needed — the database node and the bucket objects are publicly readable.
+refreshes the records that came from the database and **carries everyone else through untouched** —
+people added since the migration exist only in git, and a re-run neither drops them nor deletes
+their avatars. No credentials are needed: the database node and the bucket objects are publicly
+readable.
+
+Two mappings at the top of the script exist so a re-run reproduces what is committed, rather than
+resurrecting what the database still holds:
+
+- `TYPE_MAP` and `LEAD` — the database still carries the older `Active Developers` /
+  `Legacy Developers` split, which collapses into `Developers` plus a one-person `Lead`.
+- `KEEP_LOCAL_PHOTO` — records whose committed photo is better than the database's. Add a name here
+  whenever someone sends a real photo for a record the database still has on the silhouette,
+  otherwise the next re-run puts the silhouette back.
 
 See [docs/plans/plan14.md](../../docs/plans/plan14.md) for why any of this moved.
