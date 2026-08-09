@@ -41,19 +41,23 @@ Response:
 
 
 ## Deploying to GCP App Engine
-* Install `gcloud` from https://cloud.google.com/sdk/docs/install
-* Verify gcloud installation. `gcloud -v`
+* `gcloud` is **not** installed on the host — it runs in the `deploy` container. Build it
+  once with `docker compose --profile deploy build deploy`.
+* Verify the container's gcloud: `docker compose --profile deploy run --rm -T deploy gcloud version`
 
 The output should look something like below:
 ```
 Google Cloud SDK 529.0.0
+alpha 2025.06.27
 bq 2.1.19
 core 2025.06.27
 gcloud-crc32c 1.0.0
 gsutil 5.35
 ```
 
-* `gcloud auth login`
+* `./deploy --login` from the repo root — it prints a URL to open in any browser and takes
+  the code back. Credentials land in `.deploy-auth/` (gitignored) and survive
+  `docker compose down -v`.
 * Get necessary permission from [me](https://github.com/mirmahathir1) to have access to `badhan-buet-test` gcloud project.
 * Get `env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
 * `bash ./upload-gcloud.sh`

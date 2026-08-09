@@ -35,3 +35,10 @@ places where `npm`/`node`/`npx` on the host is allowed:
 - [badhan-frontend/bubblewrap/upload-googleplay.js](badhan-frontend/bubblewrap/upload-googleplay.js)
 - [badhan-frontend/upload-firebase.js](badhan-frontend/upload-firebase.js)
 - [badhan-backend/upload-gcloud.js](badhan-backend/upload-gcloud.js)
+
+They are exceptions because they **orchestrate**: they read the git branch, clone the
+secrets repo, and shell out to `docker compose`, which a container has no socket to do.
+Every tool they drive — `gcloud`, `firebase`, `bubblewrap`, `fastlane`, and every build —
+runs in a container, via [deploy-container.js](deploy-container.js). Do not add a host
+CLI dependency to them; add it to `badhan-deploy/Dockerfile` or
+`badhan-android/Dockerfile` instead.

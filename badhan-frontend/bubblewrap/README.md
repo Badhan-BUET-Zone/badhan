@@ -10,12 +10,22 @@ with Bubblewrap, uploads the bundle, then deletes the secrets it fetched.
 
 ## One-time setup
 
-Both tools run on the host (Bubblewrap needs a JDK + Android SDK, fastlane is a Ruby gem):
+The whole toolchain — JDK 17, the Android SDK, Bubblewrap, and fastlane — lives in the
+`android` container. Nothing to install on the host but Docker:
 
 ```
-npm install -g @bubblewrap/cli
-brew install fastlane
+docker compose --profile deploy build android
 ```
+
+The image bakes `~/.bubblewrap/config.json`, so there is no `bubblewrap doctor` step and
+no host JDK/SDK to register. The Play service-account key is fetched per run and deleted
+afterwards, so unlike `./deploy` there is no login and nothing persisted.
+
+The image pins the Android platform and build-tools it installs (`ANDROID_API`,
+`BUILD_TOOLS`, `AGP_VERSION` in [../../badhan-android/Dockerfile](../../badhan-android/Dockerfile)).
+`--check` compares them against `compileSdkVersion` in `app/build.gradle` and the AGP
+classpath in `build.gradle` and fails if they drift — if a bubblewrap regeneration bumps
+either, update the Dockerfile and rebuild.
 
 ## Usage
 

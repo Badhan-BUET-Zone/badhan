@@ -97,6 +97,48 @@ services:
       internal:
         condition: service_healthy
 
+  # Deploy tooling. `profiles: ["deploy"]` keeps a ~1 GB image out of
+  # `docker compose up -d` — it is built on first use, like the test services.
+  # Credentials live in .deploy-auth/ inside the bind-mounted repo (reached via
+  # CLOUDSDK_CONFIG / XDG_CONFIG_HOME, not $HOME), so gcloud/firebase auth
+  # survives `docker compose down -v` and the host needs neither CLI installed.
+  deploy:
+    profiles: ["deploy"]
+    build:
+      context: ./badhan-deploy
+    # Root on macOS (Docker Desktop maps bind-mount writes to the invoking user
+    # anyway); the host uid on Linux/WSL2, exported by ./deploy and
+    # deploy-container.js, so files written into .deploy-auth/ stay yours.
+    user: "${DEPLOY_UID:-0}:${DEPLOY_GID:-0}"
+    environment:
+      CLOUDSDK_CONFIG: /repo/.deploy-auth/gcloud
+      XDG_CONFIG_HOME: /repo/.deploy-auth/xdg
+    # The whole repo, because the wrapper picks the working directory per
+    # command (-w /repo/badhan-backend, -w /repo/badhan-frontend). No
+    # node_modules volume: this container never runs the app's code, and
+    # mounting one would change what `gcloud app deploy` uploads.
+    volumes:
+      - .:/repo
+    working_dir: /repo
+
+  # Google Play toolchain (JDK 17 + Android SDK + bubblewrap + fastlane), kept
+  # as a separate ~3-4 GB image because a Play release is rare, independent of
+  # ./deploy, and touches neither gcloud nor firebase. Every secret it uses is
+  # cloned per-run into badhan-frontend/bubblewrap and deleted afterwards, so
+  # there is nothing to persist and no login flow.
+  android:
+    profiles: ["deploy"]
+    build:
+      context: ./badhan-android
+    user: "${DEPLOY_UID:-0}:${DEPLOY_GID:-0}"
+    volumes:
+      - .:/repo
+      # Gradle's download of AGP/Gradle itself — a cache, not a credential, so
+      # losing it to `down -v` costs one slow build and nothing else.
+      - android-gradle:/home/deploy/.gradle
+    working_dir: /repo/badhan-frontend/bubblewrap
+
 volumes:
   mongo-data:
   backend-dist:
+  android-gradle:

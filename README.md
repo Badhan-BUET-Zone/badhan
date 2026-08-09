@@ -180,8 +180,37 @@ Deployment is a manual, run-by-hand step. From the repo root:
 This runs both test suites first (backend Jest, then frontend Cypress) and only
 deploys if **both** pass — the test gate cannot be skipped. On success it deploys the
 backend to Google Cloud (`upload-gcloud.js`) and the frontend to Firebase
-(`upload-firebase.js`). Deployment runs on the host, not in a container, so your local
-`gcloud` and `firebase` CLI authentication is used.
+(`upload-firebase.js`).
+
+## First-time deploy setup
+
+`gcloud` and `firebase` are **not** installed on the host — they run in the `deploy`
+container. Log in once:
+
+```
+./deploy --login
+```
+
+Each CLI prints a URL; open it in any browser, approve, and paste the code back. The
+credentials are stored in `.deploy-auth/` at the repo root (gitignored), which is an
+ordinary host directory, so they survive `docker compose down -v`, image rebuilds, and
+everything else. Use `./deploy --relogin` when a token has expired or you need to switch
+accounts — plain re-login answers *"Already logged in"* and won't refresh it.
+
+The preflight that runs before the test suites checks more than "a token refreshes": it
+confirms the logged-in account can actually reach the project this branch deploys to
+(`badhan-buet` on `main`, `badhan-buet-test` otherwise), so being logged in as the wrong
+Google account fails in seconds rather than after both test suites.
+
+## Supported host platforms
+
+**macOS and Linux.** Windows is supported through **WSL2 only** — clone the repo inside
+the WSL2 filesystem (`~/…`), not under `/mnt/c`, or you get both terrible bind-mount
+performance and the file-locking edge cases that the credential store is sensitive to.
+Native Git Bash / mintty is not supported.
+
+The only host prerequisites are **Docker, git, and bash**. Everything else — Node, the
+deploy CLIs, and the Android toolchain — lives in containers.
 
 # Purge and Seed the Database
 

@@ -32,7 +32,7 @@ the CLIs already store today.
 | Surviving `docker compose down -v` | n/a (host) | **yes** — the credentials are host files |
 | How you log in | `gcloud auth login`, `firebase login` (browser opens) | `./deploy --login` (paste a URL into any browser, paste the code back) |
 | Deploy blocked when not logged in | yes, preflight already checks | **yes, and it checks access to the *target project*, not just token refresh** |
-| Supported host OS | macOS (the `darwin` branch in `upload-googleplay.js` is load-bearing) | **macOS, Windows, Linux** — see [§0.6](#06-the-plan-must-work-on-macos-windows-and-linux) |
+| Supported host OS | macOS (the `darwin` branch in `upload-googleplay.js` is load-bearing) | **macOS and Linux** (Windows via WSL2, which is Linux) — see [§0.6](#06-the-plan-must-work-on-macos-and-linux) |
 | Where the orchestration runs | host (`deploy`, `upload-*.js`, `upload-googleplay.js`) | **unchanged** — host |
 | Where the frontend build runs | `frontend` container | **unchanged** |
 | Secrets-repo clone, git branch detection | host | **unchanged** — host |
@@ -65,7 +65,7 @@ to authenticate the container first, the next deploy has no credentials at all.
 | firebase-tools | `~/.config/configstore/firebase-tools.json` | JSON: refresh token, active user | `XDG_CONFIG_HOME` |
 
 The default targets are `$HOME/.config/…`, but the plan uses the env overrides in the last column
-instead of mounting over `$HOME` — see [§0.6(a)](#06-the-plan-must-work-on-macos-windows-and-linux)
+instead of mounting over `$HOME` — see [§0.6(a)](#06-the-plan-must-work-on-macos-and-linux)
 for why that difference matters.
 
 firebase-tools also writes `~/.cache/firebase/` — that is a tooling/emulator cache, not credentials.
@@ -115,13 +115,21 @@ to App Engine on the very next deploy.
 neither uploader can reach them. One gitignore entry, no ignore-file coupling, no way for a later
 edit to `.gcloudignore` to expose them.
 
+**Decided: in the repo, not in `$HOME`.** The alternative — a host directory outside the tree
+(`~/.badhan-deploy-auth`, bind-mounted) — would survive `git clean -xdf` and be shared by every clone
+on the machine. It is rejected because it reintroduces a second bind mount and a `${HOME}`-relative
+source path in `docker-compose.yml`, undoing the single-mount simplification of
+[§0.6(a)](#06-the-plan-must-work-on-macos-and-linux), in exchange for two failure modes that are
+cheap here: `git clean -xdf` and a fresh clone both cost one `./deploy --login`. No
+`BADHAN_DEPLOY_AUTH` override either — one documented, tested path.
+
 ### 0.5 Risk: gcloud's credential store is SQLite on a bind mount
 
 `credentials.db` and `access_tokens.db` are SQLite. SQLite over Docker Desktop's older macOS file
 sharing (osxfs / gRPC-FUSE) has a history of `database is locked` and `disk I/O error` from broken
 `fcntl` locking. VirtioFS — the default in current Docker Desktop — does not have this problem, and
 there is only ever one writer here. On native Linux the mount is a plain bind and the question does
-not arise; Windows/WSL2 behaves like the macOS case, so re-run the P1 verification block there too.
+not arise, and WSL2 keeps the repo on the Linux filesystem, so the risk is macOS-only.
 
 This is the single assumption the plan rests on, so [P1](#phase-p1--the-deploy-image-and-the-credential-mounts)
 verifies it explicitly before anything is built on top. If it fails: switch Docker Desktop to
@@ -129,15 +137,23 @@ VirtioFS (Settings → General → file sharing implementation). If it still fai
 named volume for the gcloud config dir plus a `./deploy --save-auth` that `docker cp`s it out to
 `.deploy-auth/` — worse ergonomics, same durability. Do not adopt the fallback speculatively.
 
-### 0.6 The plan must work on macOS, Windows and Linux
+### 0.6 The plan must work on macOS and Linux
 
-Three consequences, each of which changes a concrete thing below.
+**Decided: macOS and Linux are the supported hosts. Windows is supported through WSL2 only**, which
+is a Linux host as far as everything below is concerned — the repo lives on the Linux filesystem, the
+uid is a real Linux uid, and `./deploy` runs under a real bash. Native Windows entry points (Git
+Bash, mintty, `MSYS_NO_PATHCONV`, `winpty`, a repo-root `.gitattributes` for CRLF) are **out of
+scope**: they add path-mangling and line-ending workarounds to three scripts to support a shell
+nobody here uses, and WSL2 is the documented answer instead. If a Git Bash user appears later, the
+change is additive and isolated to `deploy-container.js` plus `.gitattributes`.
 
-**(a) Credential paths move off `$HOME` and onto the env overrides.** Docker Desktop (macOS,
-Windows) maps bind-mount writes to the invoking host user, so a container running as root leaves
-files the developer owns. Native Linux does not: container root writes root-owned files into
-`.deploy-auth/`, and the next `mkdir`/`rm` from the host fails. The fix is to let the service run as
-an arbitrary uid — which is only possible if nothing depends on `$HOME` being `/root`.
+That leaves two consequences, each of which changes a concrete thing below.
+
+**(a) Credential paths move off `$HOME` and onto the env overrides.** Docker Desktop on macOS maps
+bind-mount writes to the invoking host user, so a container running as root leaves files the
+developer owns. Native Linux does not: container root writes root-owned files into `.deploy-auth/`,
+and the next `mkdir`/`rm` from the host fails. The fix is to let the service run as an arbitrary
+uid — which is only possible if nothing depends on `$HOME` being `/root`.
 
 Both CLIs already support this, via the env overrides recorded in [§0.1](#01-both-clis-keep-credentials-in-plain-directories-under-home):
 
@@ -166,29 +182,13 @@ RUN mkdir -p /home/deploy && chmod 0777 /home/deploy
 if [ "$(uname -s)" = "Linux" ]; then export DEPLOY_UID="$(id -u)" DEPLOY_GID="$(id -g)"; fi
 ```
 
-On macOS and Windows the default of `0:0` is correct — Docker Desktop already does the mapping, and
-a non-root uid there buys nothing while risking permission failures inside the image.
+On macOS the default of `0:0` is correct — Docker Desktop already does the mapping, and a non-root
+uid there buys nothing while risking permission failures inside the image. Under WSL2 the `Linux`
+branch fires, which is what we want: the repo is on the Linux filesystem and the ownership problem is
+the native-Linux one.
 
-**(c) Windows entry points and path mangling.** `./deploy` is bash, so Windows means **WSL2
-(recommended, and it behaves as Linux for (a) and (b)) or Git Bash**. Git Bash needs two things:
-
-- `MSYS_NO_PATHCONV=1` when invoking docker, or it rewrites `-w /repo/badhan-backend` into a Windows
-  path like `C:/Program Files/Git/repo/badhan-backend`. `deploy-container.js` sets it in the child
-  env unconditionally — it is inert everywhere else.
-- A new repo-root `.gitattributes` so a Windows checkout does not CRLF the shell scripts:
-
-  ```
-  * text=auto
-  deploy text eol=lf
-  *.sh text eol=lf
-  badhan-frontend/bubblewrap/gradlew text eol=lf
-  ```
-
-  Without this, `./deploy` fails with `bad interpreter: /usr/bin/env bash^M`.
-
-Interactive `docker compose run` (the [P2](#phase-p2--login-inside-the-container) login flows) works
-in WSL2 and in Windows Terminal's Git Bash; older mintty setups need `winpty`. Document it, don't
-engineer around it.
+Interactive `docker compose run` (the [P2](#phase-p2--login-inside-the-container) login flows) needs
+a real TTY. It has one on macOS, on Linux, and in WSL2 under Windows Terminal.
 
 ---
 
@@ -204,6 +204,12 @@ FROM node:22.23.1-bookworm-slim
 
 # The Google Cloud CLI ships via Google's apt repo. python3 comes in as a
 # dependency of google-cloud-cli; do not install it separately.
+#
+# Pinned for the same reason as FIREBASE_TOOLS_VERSION below: an unpinned
+# apt install makes every rebuild a silent gcloud upgrade. Set this to the
+# version `gcloud version` reports on the host today; find the exact apt
+# version string with `apt-cache madison google-cloud-cli` inside the image.
+ARG GCLOUD_VERSION=529.0.0-0
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends curl ca-certificates gnupg; \
@@ -213,7 +219,7 @@ RUN set -eux; \
 https://packages.cloud.google.com/apt cloud-sdk main" \
       > /etc/apt/sources.list.d/google-cloud-sdk.list; \
     apt-get update; \
-    apt-get install -y --no-install-recommends google-cloud-cli; \
+    apt-get install -y --no-install-recommends "google-cloud-cli=${GCLOUD_VERSION}"; \
     apt-get purge -y --auto-remove gnupg; \
     rm -rf /var/lib/apt/lists/*; \
     gcloud version
@@ -233,8 +239,14 @@ RUN mkdir -p /home/deploy && chmod 0777 /home/deploy
 WORKDIR /repo
 ```
 
-`FIREBASE_TOOLS_VERSION=15.24.0` is what `firebase --version` reports on the host today, so the first
-containerized deploy is not also a CLI upgrade. Bump it as a separate, deliberate change.
+`FIREBASE_TOOLS_VERSION=15.24.0` and `GCLOUD_VERSION` are what `firebase --version` and
+`gcloud version` report on the host today, so the first containerized deploy is not also a CLI
+upgrade. Bump each as a separate, deliberate change — and note the asymmetry: an npm version stays
+installable forever, while Google's apt repo eventually prunes old `google-cloud-cli` packages. A pin
+that has aged out fails the build loudly with `Version '…' for 'google-cloud-cli' was not found`,
+which is the right failure — it forces a deliberate bump rather than an unnoticed one. Both pins
+being P2-verified ([§2.1](#21-the-two-flows)) means "the login flag works on this exact version" is a
+statement about a version that cannot drift underneath it.
 
 `google-cloud-cli` core is sufficient for `gcloud app deploy` against a `nodejs22` standard runtime —
 the build runs server-side via `gcp-build`, no local app-engine component is involved. If gcloud
@@ -265,10 +277,10 @@ Notes on each choice:
   use, the same way `backend-test` / `frontend-test` are.
 - **`.:/repo`** — the whole repo, not the two app directories, because the wrapper picks the working
   directory per command (`-w /repo/badhan-backend`, `-w /repo/badhan-frontend`). Per
-  [§0.6(a)](#06-the-plan-must-work-on-macos-windows-and-linux) it is also the *only* mount: the
+  [§0.6(a)](#06-the-plan-must-work-on-macos-and-linux) it is also the *only* mount: the
   credential directories are reached through `CLOUDSDK_CONFIG` / `XDG_CONFIG_HOME`, not through
   `$HOME`.
-- **`user:`** defaults to root and is overridden only on Linux ([§0.6(b)](#06-the-plan-must-work-on-macos-windows-and-linux)).
+- **`user:`** defaults to root and is overridden only on Linux ([§0.6(b)](#06-the-plan-must-work-on-macos-and-linux)).
 - **No `node_modules` volume.** This container never runs the app's code. Mounting one would make the
   host's empty `node_modules` mountpoint into something else and change what `gcloud app deploy`
   uploads.
@@ -385,10 +397,10 @@ const { execSync } = require("child_process");
 
 const REPO_ROOT = __dirname;
 
-// §0.6(b)/(c): the uid mapping is Linux-only, and Git Bash mangles /repo paths
-// unless MSYS_NO_PATHCONV is set. Both are inert on the other platforms.
+// §0.6(b): the uid mapping is Linux-only (WSL2 reports "linux", which is what we
+// want). On macOS the compose default of 0:0 stands.
 function childEnv(extra = {}) {
-  const env = { ...process.env, MSYS_NO_PATHCONV: "1", ...extra };
+  const env = { ...process.env, ...extra };
   if (process.platform === "linux") {
     env.DEPLOY_UID = String(process.getuid());
     env.DEPLOY_GID = String(process.getgid());
@@ -493,6 +505,16 @@ Both errors should name the account in play (`gcloud auth list --format=value(ac
 `firebase login:list`) so "logged in as the wrong person" reads as itself rather than as a
 permissions mystery.
 
+**Both checks hard-fail — decided.** A failure exits non-zero, names the active account and the
+expected project, and points at `./deploy --relogin`; there is no warn-and-continue mode and no
+`--skip-project-check` escape hatch. The known false-positive is narrow and worth accepting: an
+account holding only `roles/appengine.deployer` can deploy but lacks `appengine.applications.get`,
+so `gcloud app describe` would block it. That is not how this project's deploy accounts are set up —
+they are owners — and a warning that the deploy then ignores gives back exactly the three-minutes-in
+failure P4 exists to prevent. If a narrow-role account ever does appear, the fix is to grant it
+`roles/appengine.appViewer` (or swap the probe for `gcloud app versions list --limit=1`), not to
+soften the check.
+
 This closes the requirement that a deploy verify *both* CLIs are properly logged in before it starts:
 the two `--check` calls at [deploy:18-21](../../deploy#L18-L21) already run before the test suites, so
 P4 needs no change to `./deploy` itself.
@@ -506,7 +528,9 @@ toolchain: a JDK 17, an Android SDK, `@bubblewrap/cli`, and a Ruby gem. It is al
 likely to be missing on a second machine, and the one whose host paths are hardest to reproduce —
 `~/.bubblewrap/config.json` today points at `/opt/homebrew/opt/openjdk@17/...` and
 `~/Library/Android/sdk`, both macOS-specific. Containerizing it is what makes
-[§0.6](#06-the-plan-must-work-on-macos-windows-and-linux) true rather than aspirational.
+[§0.6](#06-the-plan-must-work-on-macos-and-linux) true rather than aspirational — without P5, a Linux
+host can run `./deploy` but still cannot cut a Play release, and the README would have to say so.
+**Decided: P5 stays in plan 13**, landing on its own cycle per [§6.2](#62-rollout) step 5.
 
 ### 5.1 `badhan-android/Dockerfile`
 
@@ -533,9 +557,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # Android SDK. The versions track app/build.gradle: compileSdkVersion 36,
-# targetSdkVersion 36 — bump these together or the build fails.
+# targetSdkVersion 36 — bump these together or the build fails. Drift is caught
+# by the preflight check in 5.3, not by this comment.
+# Two build-tools on purpose: BUILD_TOOLS matches the compile SDK, and
+# AGP_BUILD_TOOLS is the default AGP 8.9.x picks when build.gradle names no
+# buildToolsVersion (it does not). Without the second, gradle downloads it
+# mid-build.
 ARG ANDROID_API=36
 ARG BUILD_TOOLS=36.0.0
+ARG AGP_BUILD_TOOLS=35.0.0
+ARG AGP_VERSION=8.9.1
 RUN mkdir -p $ANDROID_HOME/cmdline-tools \
     && curl -fsSL -o /tmp/cmdline-tools.zip \
        https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
@@ -556,7 +587,7 @@ RUN npm install -g @bubblewrap/cli@${BUBBLEWRAP_VERSION} \
 # an interactive wizard that offers to download a JDK — which hangs a non-
 # interactive run. Baking it is what lets upload-googleplay.js delete its
 # bubblewrapSdkErrors() check entirely (see 5.3).
-RUN mkdir -p /home/deploy/.bubblewrap \
+RUN mkdir -p /home/deploy/.bubblewrap "$GRADLE_USER_HOME" \
     && printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" \
        > /home/deploy/.bubblewrap/config.json \
     && chmod -R 0777 /home/deploy
@@ -599,6 +630,11 @@ credential, so a named volume is right:
 with `android-gradle:` added to the top-level `volumes:`. Losing it to `down -v` costs one slow
 build, nothing more.
 
+`$GRADLE_USER_HOME` must exist in the image *before* the `chmod -R 0777` (hence the `mkdir -p` in
+5.1): Docker seeds a new named volume from the image's directory at that path, so an absent or
+root-only-writable `/home/deploy/.gradle` produces a root-owned volume that the Linux `user:` uid
+cannot write — a first gradle run that fails with a permission error nothing in the plan explains.
+
 ### 5.3 Call sites in `upload-googleplay.js`
 
 | Today | After |
@@ -609,11 +645,30 @@ build, nothing more.
 | `build()` → `run("bubblewrap build …", baseDir, { BUBBLEWRAP_KEYSTORE_PASSWORD, BUBBLEWRAP_KEY_PASSWORD })` | `runCli("bubblewrap build …", { service: "android", workdir: "/repo/badhan-frontend/bubblewrap", passEnv: ["BUBBLEWRAP_KEYSTORE_PASSWORD", "BUBBLEWRAP_KEY_PASSWORD"], env: { … } })` — bare `-e NAME` so the password never enters the host command line (3.1) |
 | `upload()` → `run("fastlane supply …", baseDir)` | `runCli("fastlane supply …", { service: "android", workdir: "/repo/badhan-frontend/bubblewrap" })`, with `--json_key`/`--aab` rewritten to `/repo/...` container paths |
 
+**New check, replacing the deleted `bubblewrapSdkErrors()`: SDK-version drift.** `bubblewrapSdkErrors`
+guarded against a mis-set-up host; the containerized equivalent guards against the image and
+`app/build.gradle` disagreeing (§7.5). Add to `checkRequirements`, host-side and offline:
+
+- read `compileSdkVersion` / `buildToolsVersion` out of
+  `badhan-frontend/bubblewrap/app/build.gradle` with a regex — no gradle, no container;
+- read the image's values from a single `printenv` in the android container, which reports
+  `ANDROID_API` / `BUILD_TOOLS` / `AGP_VERSION` because they are re-exported as `ENV` after the
+  sdkmanager step — so the image states what it actually installed rather than what a comment claims;
+- compare the AGP classpath too (`com.android.tools.build:gradle:<v>` in `build.gradle`), since AGP
+  is what picks the default build-tools when `app/build.gradle` names no `buildToolsVersion` — which
+  it does not;
+- hard-fail when they differ, naming both values and pointing at the two `ARG`s in
+  `badhan-android/Dockerfile`.
+
+The failure this prevents is a bubblewrap regeneration bumping the gradle file to API 37 and the
+next Play release dying inside gradle with an unrelated-looking message, minutes in.
+
 Path handling is the one place to be careful: `resolve(baseDir, KEYSTORE_FILE)` produces a **host**
 absolute path that means nothing inside the container. Every path handed to a containerized command
 becomes `/repo/badhan-frontend/bubblewrap/<file>`. Add a single helper next to the others in
-`deploy-container.js` — `toContainerPath(hostPath)` = `hostPath.replace(REPO_ROOT, "/repo")` with
-backslashes normalized to `/` for Windows — and route the four path arguments through it.
+`deploy-container.js` — `toContainerPath(hostPath)` = `hostPath.replace(REPO_ROOT, "/repo")` — and
+route the four path arguments through it. No separator normalization: the supported hosts
+([§0.6](#06-the-plan-must-work-on-macos-and-linux)) all use `/`.
 
 Unchanged and still host-side: the secrets clone and cleanup, `git ls-remote`, `readManifest`,
 `existsSync` checks on the produced `.apk`/`.aab`, the track/status/rollout argument parsing, and the
@@ -626,6 +681,10 @@ docker compose --profile deploy build android
 node badhan-frontend/bubblewrap/upload-googleplay.js --check
 node badhan-frontend/bubblewrap/upload-googleplay.js --build-only   # produces .apk + .aab
 ```
+
+`--check` must now also fail on a deliberately mismatched `ARG ANDROID_API`: build the image with
+`--build-arg ANDROID_API=35`, confirm `--check` refuses and names both versions, then rebuild
+without it. A drift check that has never been seen to fail is not a check.
 
 The `.aab` must be byte-comparable in structure to the committed
 `app-release-bundle.aab` — same package id, same version code, and **signed by the same keystore**;
@@ -656,10 +715,13 @@ deleted from there. No rollout.
   only place documenting the JDK 17 / Android SDK / `bubblewrap doctor` / `brew install fastlane`
   setup. After P5 none of that is a host requirement; replace it with
   `docker compose --profile deploy build android`.
-- **A new "supported host platforms" section** (README): macOS, Windows via WSL2 or Git Bash, Linux —
-  including the `MSYS_NO_PATHCONV` / `winpty` notes and the `.gitattributes` requirement from
-  [§0.6(c)](#06-the-plan-must-work-on-macos-windows-and-linux). The only host prerequisites become
-  Docker, git, and bash.
+- **A new "supported host platforms" section** (README): **macOS and Linux, with Windows supported
+  through WSL2 only** ([§0.6](#06-the-plan-must-work-on-macos-and-linux)). Say the WSL2 part
+  explicitly, including that the repo must be cloned inside the WSL2 filesystem rather than under
+  `/mnt/c` — that is the one thing a Windows developer can get wrong and then hit both the SQLite
+  locking risk of [§0.5](#05-risk-gclouds-credential-store-is-sqlite-on-a-bind-mount) and terrible
+  bind-mount performance. Native Git Bash / mintty is explicitly unsupported. The only host
+  prerequisites become Docker, git, and bash.
 - **`docs/manual/` needs no change.** The repo rule is that new or changed *app* behaviour — a screen,
   a button, a permission, a rule — is documented there. This plan changes no app behaviour; it is
   developer tooling only. Stated explicitly so the omission reads as a decision.
@@ -677,16 +739,21 @@ deleted from there. No rollout.
    Play Console.
 6. Leave the host CLIs and the host Android toolchain installed for one cycle each. Uninstalling them
    is not part of this plan.
-7. **Verify on a second platform before calling §0.6 done.** The uid mapping and the Git Bash path
-   mangling are the two things that cannot be tested from macOS, and both fail loudly rather than
-   subtly. A `docker compose --profile deploy run --rm deploy gcloud version` plus one `--check` on a
-   Linux and a Windows host is enough.
+7. **Verify on Linux before calling §0.6 done.** The uid mapping is the one thing that cannot be
+   tested from macOS, and it fails loudly rather than subtly. A
+   `docker compose --profile deploy run --rm deploy gcloud version`, one `--check`, and an
+   `ls -la .deploy-auth/` showing host-owned files on a Linux host is enough — WSL2 counts as that
+   Linux host, so no separate Windows pass is needed.
 
 ### 6.3 Rollback
 
 Every phase is revertible independently, and the escape hatch does not depend on the repo state: the
 host CLIs, `~/.config/gcloud`, and `~/.bubblewrap/config.json` are untouched throughout, so
-`git revert` of P3 or P5 restores host deploys immediately. `.deploy-auth/` can be deleted at any
+`git revert` of P3 or P5 restores host deploys immediately. **Decided: that is the only escape
+hatch** — no `BADHAN_HOST_CLI=1` env fallback that keeps a host-CLI branch alive inside
+`deploy-container.js`. A temporary dual codepath is one nobody deletes, and it would quietly become
+the path that still works while the container path rots; a revert is a commit and a re-run, which is
+the right price for something that should happen approximately never. `.deploy-auth/` can be deleted at any
 time — the only cost is redoing `./deploy --login`.
 
 ---
@@ -695,19 +762,36 @@ time — the only cost is redoing `./deploy --login`.
 
 1. **The gcloud login flag** (§2.1). `--no-launch-browser` vs `--no-browser` on the pinned SDK
    version. Settle it in P2 by running it, and write the answer into `./deploy --login`.
-2. **SQLite over the bind mount** (§0.5). Settled by the P1 verification block. If it fails, the plan
-   still holds; only the storage mechanism changes.
-3. **Image size vs. `google/cloud-sdk:slim` as the base.** This plan starts from
-   `node:22.23.1-bookworm-slim` to keep the Node version pinned to the same digest as every other
-   image in the repo, and installs gcloud on top. Inverting it (cloud-sdk base + Node) saves nothing
-   meaningful and unpins Node. Revisit only if the apt install proves brittle.
+2. ~~**SQLite over the bind mount**~~ (§0.5) — **settled: it works.** Verified on macOS /
+   Docker Desktop / VirtioFS during P1: gcloud config writes persist across container recreation as
+   host-owned files, and a direct `sqlite3` probe inside `.deploy-auth/` (rollback journal and WAL,
+   200+ inserts) completes cleanly. The §0.5 named-volume fallback is not needed and was not adopted.
+3. ~~**Image size vs. `google/cloud-sdk:slim` as the base**~~ — **decided: `node:22.23.1-bookworm-slim`
+   plus a version-pinned apt install of gcloud.** Keeping the Node base preserves the digest pin every
+   other image in the repo uses; inverting it (cloud-sdk base + Node) saves nothing meaningful and
+   unpins Node. The one real argument for inverting — that the apt install floats — is answered by
+   `ARG GCLOUD_VERSION` in [§1.1](#11-badhan-deploydockerfile). Revisit only if the apt install proves
+   brittle.
 4. ~~**Whether `./deploy` should offer to log in inline**~~ — **decided: no.** The preflight prints
    `run ./deploy --relogin` and exits non-zero. `./deploy` stays a single unattended run.
-5. **The Android SDK component versions are a second place `compileSdkVersion` lives** (§5.1). Today
-   the host SDK happens to have `build-tools` 34/35/36 installed and the build picks what it needs;
-   the image installs exactly one. If a future bubblewrap regeneration bumps `app/build.gradle` to
-   API 37, the Dockerfile `ARG`s must move with it or the build fails with a confusing gradle error.
-   Consider deriving them in the P5 verification step rather than trusting the comment.
+5. ~~**The Android SDK component versions are a second place `compileSdkVersion` lives**~~ (§5.1) —
+   **decided: keep the hardcoded `ARG`s, and add a preflight that fails loudly on drift**
+   ([§5.3](#53-call-sites-in-upload-googleplayjs)). Deriving them at image-build time was rejected:
+   `docker build` has no access to the repo's gradle file without a wrapper passing `--build-arg`,
+   which is more machinery than the failure justifies. A host-side regex comparison in
+   `checkRequirements` gets the same drift caught, before the container starts, with a message that
+   says what to edit.
 6. **Whether the `deploy` and `android` images should share a base layer.** They overlap only in
    node + git + ca-certificates, ~200 MB, against a large increase in coupling between two images
    with unrelated upgrade cadences. Kept separate; revisit only if a third deploy image appears.
+7. ~~**Native Windows (Git Bash) support**~~ — **decided: out of scope**, WSL2 only
+   ([§0.6](#06-the-plan-must-work-on-macos-and-linux)).
+8. ~~**Whether P4 should hard-fail or warn**~~ — **decided: hard-fail, no override flag**
+   ([P4](#phase-p4--prove-were-logged-in-to-the-right-project)).
+9. ~~**Whether P5 belongs in this plan**~~ — **decided: yes**, landing on its own cycle
+   ([§6.2](#62-rollout) step 5).
+10. ~~**Where the credentials live**~~ — **decided: `.deploy-auth/` inside the repo**, not a
+    `$HOME`-relative host directory ([§0.4](#04-credentials-must-not-live-under-badhan-backend)).
+11. ~~**A runtime escape hatch back to the host CLIs during the P3 cutover**~~ — **decided: no.**
+    No `BADHAN_HOST_CLI=1`, no dual codepath in `deploy-container.js`; `git revert` is the rollback
+    ([§6.3](#63-rollback)).
