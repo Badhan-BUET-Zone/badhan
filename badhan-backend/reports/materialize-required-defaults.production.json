@@ -1,0 +1,348 @@
+{
+  "ranAt": "2026-08-09T16:59:44.853Z",
+  "environment": "production",
+  "dryRun": false,
+  "counts": {
+    "requiredPathsInspected": 40,
+    "pathsWithGaps": 2,
+    "pathsBackfilled": 1,
+    "documentsModified": 1349,
+    "pathsNeedingReview": 1
+  },
+  "validator": {
+    "applied": false,
+    "reason": "collMod is not permitted for this database user (user is not allowed to do action [collMod] on [Badhan.donors]). Grant dbAdmin on this database, or apply the validator with an admin connection."
+  },
+  "findings": [
+    {
+      "model": "CallRecords",
+      "path": "callerId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 8529
+    },
+    {
+      "model": "CallRecords",
+      "path": "calleeId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 8529
+    },
+    {
+      "model": "CallRecords",
+      "path": "date",
+      "classification": "static-default",
+      "defaultValue": 0,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 8529
+    },
+    {
+      "model": "Donations",
+      "path": "phone",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 9341
+    },
+    {
+      "model": "Donations",
+      "path": "donorId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 9341
+    },
+    {
+      "model": "Donations",
+      "path": "date",
+      "classification": "static-default",
+      "defaultValue": 0,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 9341
+    },
+    {
+      "model": "Logs",
+      "path": "donorId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 39918
+    },
+    {
+      "model": "Logs",
+      "path": "date",
+      "classification": "function-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 39918
+    },
+    {
+      "model": "Logs",
+      "path": "operation",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 39918
+    },
+    {
+      "model": "Logs",
+      "path": "details",
+      "classification": "no-default",
+      "missingBefore": 2582,
+      "modified": 0,
+      "totalDocs": 39918
+    },
+    {
+      "model": "PublicContacts",
+      "path": "donorId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 9
+    },
+    {
+      "model": "PublicContacts",
+      "path": "bloodGroup",
+      "classification": "static-default",
+      "defaultValue": -1,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 9
+    },
+    {
+      "model": "ActiveDonors",
+      "path": "donorId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 75
+    },
+    {
+      "model": "ActiveDonors",
+      "path": "markerId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 75
+    },
+    {
+      "model": "ActiveDonors",
+      "path": "time",
+      "classification": "function-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 75
+    },
+    {
+      "model": "Tokens",
+      "path": "donorId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 116
+    },
+    {
+      "model": "Tokens",
+      "path": "token",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 116
+    },
+    {
+      "model": "Tokens",
+      "path": "os",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 116
+    },
+    {
+      "model": "Tokens",
+      "path": "browserFamily",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 116
+    },
+    {
+      "model": "Tokens",
+      "path": "device",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 116
+    },
+    {
+      "model": "Tokens",
+      "path": "ipAddress",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 116
+    },
+    {
+      "model": "PlateletDonations",
+      "path": "phone",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 13
+    },
+    {
+      "model": "PlateletDonations",
+      "path": "donorId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 13
+    },
+    {
+      "model": "PlateletDonations",
+      "path": "date",
+      "classification": "static-default",
+      "defaultValue": 0,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 13
+    },
+    {
+      "model": "Donor",
+      "path": "phone",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "studentId",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "bloodGroup",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "hall",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "address",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "roomNumber",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "designation",
+      "classification": "static-default",
+      "defaultValue": 0,
+      "missingBefore": 1349,
+      "modified": 1349,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "name",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "comment",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "commentTime",
+      "classification": "static-default",
+      "defaultValue": 946684800000,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "availableToAll",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "archiveFlag",
+      "classification": "static-default",
+      "defaultValue": false,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Feedbacks",
+      "path": "type",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 0
+    },
+    {
+      "model": "Feedbacks",
+      "path": "hall",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 0
+    },
+    {
+      "model": "Feedbacks",
+      "path": "feedbackJSON",
+      "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 0
+    },
+    {
+      "model": "Feedbacks",
+      "path": "date",
+      "classification": "function-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 0
+    }
+  ]
+}
