@@ -51,13 +51,24 @@ function buildNewDonorPayload(overrides = {}) {
   };
 }
 
-// The mint route is unauthenticated, which is the point: a donor at a notice board has no session,
-// and a volunteer generating a QR code goes through this very same call with their own credentials.
+// Stating no hall is the anonymous path: a donor at a notice board has no session, and the token
+// carries the matched donor's own hall.
 async function mintToken(phone, studentId, durationMinutes) {
   const body = durationMinutes === undefined
     ? { phone, studentId }
     : { phone, studentId, durationMinutes };
   const response = await operations.guestPost('/feedbacks/token', body);
+  return response.data.token;
+}
+
+// Stating a hall is the other branch: it needs a session and a designation that allows that hall,
+// and it is the one the QR generator always takes. `hall` may be HALL_ANY for an "All Halls" code.
+async function mintTokenForHall(phone, studentId, hall, signInResponse) {
+  const response = await operations.authedPost(
+    '/feedbacks/token',
+    { phone, studentId, hall },
+    signInResponse
+  );
   return response.data.token;
 }
 
@@ -85,5 +96,6 @@ module.exports = {
   buildNewDonorPayload,
   uniqueStudentId,
   mintToken,
+  mintTokenForHall,
   decodeJwtPayload,
 };

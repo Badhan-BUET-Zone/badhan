@@ -39,6 +39,20 @@
       :fill="COLORS.ink"
     >{{ subCaption }}</text>
 
+    <!-- Registration sheets only: which hall the code is for, or "All Halls". A code left on a
+         desk should be identifiable without scanning it. The feedback poster is zone-wide and
+         passes nothing here. -->
+    <text
+      v-if="hallLine"
+      data-cy="feedbackQrHallLine"
+      :x="HALL_LINE.centerX"
+      :y="HALL_LINE.baseline"
+      text-anchor="middle"
+      :font-size="HALL_LINE.fontSize"
+      :font-family="HALL_LINE.fontFamily"
+      :fill="COLORS.ink"
+    >{{ hallLine }}</text>
+
     <!-- The quiet zone: white paper around the matrix, without which a scanner cannot find the
          code's edges. Nothing may be placed over this area. -->
     <rect
@@ -63,7 +77,7 @@
 </template>
 
 <script>
-import { PAGE, CAPTION, SUB_CAPTION, QR, QR_BOX, COLORS } from '@/views/FeedbackQr/feedbackQrLayout'
+import { PAGE, CAPTION, SUB_CAPTION, HALL_LINE, QR, QR_BOX, COLORS } from '@/views/FeedbackQr/feedbackQrLayout'
 
 export default {
   name: 'FeedbackQrArtwork',
@@ -74,6 +88,11 @@ export default {
     },
     // The expiry line, on the registration sheet only.
     subCaption: {
+      type: String,
+      default: ''
+    },
+    // Which hall the code is for — a hall name, or "All Halls". Registration sheets only.
+    hallLine: {
       type: String,
       default: ''
     },
@@ -92,7 +111,7 @@ export default {
     }
   },
   data: () => {
-    return { PAGE, CAPTION, SUB_CAPTION, QR, QR_BOX, COLORS }
+    return { PAGE, CAPTION, SUB_CAPTION, HALL_LINE, QR, QR_BOX, COLORS }
   },
   computed: {
     quietZoneMm () {

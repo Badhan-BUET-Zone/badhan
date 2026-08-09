@@ -14,8 +14,14 @@
     >
       <!-- Square and centred at any aspect ratio: a projector's is not a laptop's. -->
       <div style="width: min(90vw, 90vh); height: min(90vw, 90vh)">
+        <!--
+          The hall line survives into full screen; the caption and the expiry do not. A projected
+          code should say which hall it is for — the back row can read four words — and everything
+          else is chrome nobody reads from there anyway.
+        -->
         <FeedbackQrArtwork
           :caption="''"
+          :hall-line="generatedHallLine"
           :qr-matrix="qrMatrix"
           :qr-url="qrUrl"
           data-cy="registrationQrFullScreenArtwork"
@@ -40,12 +46,35 @@
         the Feedback page as a new donor submission — it does not create a donor.
       </v-card-text>
 
-      <!-- The hall is not a control. Whoever generates the code decides it, because the code is
-           minted with their own record, and there is no way to make one on another hall's behalf —
-           not even for a super admin. -->
-      <v-card-text data-cy="registrationQrHall">
+      <!--
+        For most members the hall is not a control: a code is for the hall you belong to, and the
+        server refuses any other. A super admin may state any hall, so they get the dropdown — and
+        one option that is not a hall at all.
+      -->
+      <v-card-text v-if="!canChooseHall" data-cy="registrationQrHall">
         This code will be for <b>{{ hall | getHallName }}</b>. A code is always for your own hall;
-        a hall that wants one makes its own.
+        if another hall needs one, a super admin can make it.
+      </v-card-text>
+
+      <v-card-text v-else>
+        <v-select
+          id="registrationQrHallSelector"
+          data-cy="registrationQrHallSelector"
+          v-model="selectedHall"
+          :items="hallOptions"
+          label="Which hall is this code for?"
+          outlined
+          rounded
+          dense
+          hide-details
+        ></v-select>
+      </v-card-text>
+
+      <!-- An All Halls code changes what the student is asked, so it says so at the moment of
+           choosing rather than being discovered at the desk. -->
+      <v-card-text v-if="isAllHalls" class="subtitle-2" data-cy="registrationQrAllHallsNotice">
+        Students who scan this code will be asked which hall they are in, and their submission goes
+        to that hall's volunteers.
       </v-card-text>
 
       <v-card-text v-if="!canGenerate" class="title error--text" data-cy="registrationQrProfileMissing">
@@ -102,6 +131,7 @@
           ref="artwork"
           :caption="caption"
           :sub-caption="expiryLine"
+          :hall-line="generatedHallLine"
           :qr-matrix="qrMatrix"
           :qr-url="qrUrl"
         />
@@ -164,7 +194,9 @@ import { registrationPageUrl } from '@/views/FeedbackQr/qrUrl'
 import { COPY } from '@/views/FeedbackQr/feedbackQrLayout'
 import { REGISTRATION_QR_FILE_NAME, downloadQrPdf } from '@/views/FeedbackQr/feedbackQrPdf'
 import { handlePOSTFeedbackToken } from '@/api'
-import { HTTP_STATUS } from '@/mixins/constants'
+import {
+  DESIGNATIONS_INDEX, HALLS_INDEX, HALL_ANY, HTTP_STATUS, halls, restrictedHallNames
+} from '@/mixins/constants'
 
 // A generator, not a document. Its primary use is on screen: a laptop propped on a desk, or — the
 // case that earns the whole feature — a code projected at a new-intake event so a room full of
@@ -175,6 +207,14 @@ export default {
   components: { PageTitle, Container, Button, FeedbackQrArtwork },
   data: () => {
     return {
+      // The dropdown's value, for a super admin. Set at mount to their own hall — a default of All
+      // Halls would make the most permissive code the easiest one to make by accident. Nobody else
+      // sees this control, and the server refuses anybody else who posts a hall anyway.
+      selectedHall: null,
+      // The hall the generated code is actually for. Set from what was sent, and only after a
+      // successful mint, so the label and the code cannot disagree and no label appears before
+      // there is a code to label.
+      generatedHall: null,
       durationMinutes: 240,
       durations: [
         { text: '1 hour', value: 60 },
@@ -197,6 +237,36 @@ export default {
     hall () {
       return this.$store.getters.getHall
     },
+    canChooseHall () {
+      return this.$store.getters.getDesignation === DESIGNATIONS_INDEX.SUPER_ADMIN
+    },
+    // The seven halls, (Unknown), and one option that is not a hall at all. It is the same set a
+    // student may pick from on the registration page, plus All Halls.
+    hallOptions () {
+      return [
+        ...restrictedHallNames().map((text, value) => ({ text, value })),
+        { text: halls[HALLS_INDEX.UNKNOWN], value: HALLS_INDEX.UNKNOWN },
+        { text: COPY.allHallsLabel, value: HALL_ANY }
+      ]
+    },
+    isAllHalls () {
+      return this.selectedHall === HALL_ANY
+    },
+    // What Generate actually sends. For everybody but a super admin there is no control, so it is
+    // simply their own hall — read here rather than copied at mount, so it cannot depend on whether
+    // the profile had loaded by then. A hall is sent ALWAYS, which is what puts every QR mint on
+    // the authenticated, logged branch.
+    hallToMint () {
+      if (!this.canChooseHall) return this.hall
+      return this.selectedHall === null ? this.hall : this.selectedHall
+    },
+    // Printed onto the sheet and shown on screen, from the hall the server minted for.
+    generatedHallLine () {
+      if (this.generatedHall === null) return ''
+      if (this.generatedHall === HALL_ANY) return COPY.allHallsLabel
+      const name = halls[this.generatedHall]
+      return name === undefined ? '' : `${name} Hall`
+    },
     // The mint route is the ordinary public one and takes a phone and a student ID, so the page
     // sends the signed-in member's own. Without them there is nothing to send, and sending
     // undefined would be a 400 dressed up as a mystery.
@@ -218,24 +288,44 @@ export default {
       return match ? match.text : `${this.durationMinutes} minutes`
     }
   },
+  mounted () {
+    this.selectedHall = this.hall
+  },
   methods: {
     async generate () {
       this.generatingFlag = true
       this.errorMessage = ''
 
       const profile = this.$store.state.myprofile
-      // The same call /#/donor makes. The server has no idea a volunteer is on the other end, and
-      // the token it returns carries only a hall — so nothing about this member reaches the code.
+      // The same route /#/donor calls, with one field more. A `hall` is sent ALWAYS — even by a
+      // volunteer, for whom it is simply their own — because that is the branch the server
+      // authenticates and logs, and "who made this code" should be answerable for every code and
+      // not only for the ones a super admin aimed somewhere.
+      //
+      // The token that comes back carries a hall and an expiry and nothing else, so nothing about
+      // this member reaches the code.
       const response = await handlePOSTFeedbackToken({
         phone: profile.phone,
         studentId: profile.studentId,
-        durationMinutes: this.durationMinutes
+        durationMinutes: this.durationMinutes,
+        hall: this.hallToMint
       })
 
       this.generatingFlag = false
 
       if (!response) {
         this.errorMessage = 'Could not reach Badhan. Please check your connection and try again.'
+        return
+      }
+      // Both of these should be unreachable from this page — it only offers halls the signed-in
+      // member may state — so they are worth naming rather than folding into the generic failure.
+      // If one ever appears, the page and the server have drifted.
+      if (response.status === HTTP_STATUS.FORBIDDEN) {
+        this.errorMessage = 'You can only generate a code for your own hall.'
+        return
+      }
+      if (response.status === HTTP_STATUS.UNAUTHORIZED) {
+        this.errorMessage = 'Your session has expired. Please sign in again.'
         return
       }
       if (response.status !== HTTP_STATUS.OK) {
@@ -246,6 +336,7 @@ export default {
       // The donor summary comes back with it and is deliberately ignored: this page is about the
       // token, not about the member who happened to mint it.
       this.expiresAt = response.data.expiresAt
+      this.generatedHall = this.hallToMint
       this.qrUrl = registrationPageUrl(response.data.token)
 
       const qrcode = await import(/* webpackChunkName: "feedback-qr" */ 'qrcode')

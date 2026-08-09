@@ -556,10 +556,15 @@ const handleGETDonorsDesignation = async () => {
 // when the store has no token, and going through it keeps guest mode working (guest mode rewrites
 // the base URL to /guest, where both routes are mirrored).
 //
-// The mint route has no session branch at all, so a signed-in volunteer calling it gets exactly what
-// an anonymous donor gets. That is what lets the QR generator in phase 9 reuse this same call with
-// the member's own phone and student id.
-const handlePOSTFeedbackToken = async (payload: { phone: number, studentId: string, durationMinutes?: number }) => {
+// One route, one optional field. Send no `hall` — as the public donor page and the self-service
+// panel do — and the answer does not depend on whether anybody is signed in: the token carries the
+// matched donor's own hall, exactly as it always has.
+//
+// Send a `hall` and the request must be authenticated, and the caller must be allowed to state that
+// hall: their own, or, for a super admin, any hall or HALL_ANY for an "All Halls" registration code.
+// The QR generator always sends one, even a volunteer's own, because that is the branch the server
+// logs.
+const handlePOSTFeedbackToken = async (payload: { phone: number, studentId: string, durationMinutes?: number, hall?: number }) => {
   try {
     return await badhanAxios.post('/feedbacks/token', payload)
   } catch (e) {

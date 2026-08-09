@@ -54,6 +54,8 @@ everything, including the reports, the backups and the appointment of hall admin
 | See feedback from another hall's donors | ❌ | ❌ | ❌ | ✅ |
 | Discard a message they can see | ❌ | ✅ | ✅ | ✅ |
 | Generate a registration QR code for their own hall | ❌ | ✅ | ✅ | ✅ |
+| Generate a registration QR code for another hall | ❌ | ❌ | ❌ | ✅ |
+| Generate an "All Halls" registration QR code | ❌ | ❌ | ❌ | ✅ |
 | See "Newly Created Donors" | ❌ | ❌ | ✅ | ✅ |
 | Promote a donor to volunteer | ❌ | ❌ | ✅ (own hall) | ✅ |
 | Demote a volunteer to donor | ❌ | ❌ | ✅ (own hall) | ✅ |

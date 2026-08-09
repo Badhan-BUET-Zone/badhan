@@ -35,7 +35,7 @@ export class GuestController extends Controller {
   @Post('feedbacks/token')
   @Hidden()
   public async postFeedbackToken(
-    @Body() body: { phone: number; studentId: string; durationMinutes?: number }
+    @Body() body: { phone: number; studentId: string; durationMinutes?: number; hall?: number }
   ): Promise<{
     status: string
     statusCode: number
@@ -54,7 +54,10 @@ export class GuestController extends Controller {
       lastPlateletDonation: number
     }
   }> {
-    const hall: number = faker.getHall()
+    // The requested hall when one is stated — including HALL_ANY, so the guest QR generator
+    // can demonstrate an "All Halls" code — and a faker hall otherwise. No designation
+    // branch: the guest user is a super admin, so there is nothing here to refuse.
+    const hall: number = (body.hall !== undefined && body.hall !== null) ? body.hall : faker.getHall()
     const minted: { token: string; expiresAt: number } = feedbackToken.mintFeedbackToken(hall, body.durationMinutes)
 
     this.setStatus(HTTP_STATUS.OK)
@@ -69,7 +72,9 @@ export class GuestController extends Controller {
         phone: faker.getPhone(),
         studentId: faker.getStudentId(),
         bloodGroup: faker.getBloodGroup(),
-        hall,
+        // The caller's own hall, which is not the token's when a hall was stated — and must
+        // never be HALL_ANY, since no donor record is -1.
+        hall: faker.getHall(),
         donationCount: faker.getDonationCount(),
         plateletDonationCount: faker.getDonationCount(),
         lastDonation: faker.getTimestamp(30),

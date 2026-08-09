@@ -2,6 +2,7 @@ import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { decodeFeedbackQr } from '@support/helpers/decodeQr';
+import { createVolunteerInHallViaApi, HALL_SUHRAWARDY } from '@support/helpers/feedback';
 
 // The two QR surfaces. Everything here checks what a camera would actually read, not what the app
 // says it encoded — the decode is the only assertion that exercises the hand-built module geometry.
@@ -145,13 +146,77 @@ describe('The registration QR generator', () => {
     cy.get('body').type('{esc}');
   });
 
-  it('shows the hall read-only, with no selector for anyone', () => {
-    // Signed in here as a super admin, who an earlier revision would have given a hall selector.
-    // There is none: the hall comes from whoever mints the code, so there is nothing to choose.
-    cy.get('[data-cy="registrationQrHall"]').should('be.visible');
-    cy.get('[data-cy="registrationQrHall"]').should('contain.text', 'A code is always for your own hall');
-    cy.get('[data-cy="registrationQrHall"]').find('select').should('not.exist');
-    cy.get('[data-cy="registrationQrHall"]').find('input').should('not.exist');
+  it('gives a super admin a hall dropdown, including All Halls', () => {
+    // Stating a hall is a permissioned act, and this is the designation that may state any of them.
+    cy.get('[data-cy="registrationQrHall"]').should('not.exist');
+    cy.get('[data-cy="registrationQrHallSelector"]').should('exist').click();
+
+    // Scoped to the open menu: the navigation drawer is full of .v-list-item too.
+    const openMenu = '.v-menu__content.menuable__content__active';
+
+    // The seven halls, (Unknown), and one option that is not a hall at all.
+    cy.get(`${openMenu} .v-list-item`).should('have.length', 9);
+    cy.contains(`${openMenu} .v-list-item`, 'Titumir').should('exist');
+    cy.contains(`${openMenu} .v-list-item`, 'All Halls').should('exist');
+    // Attached is not offered: a code is something you make for a hall you belong to.
+    cy.contains(`${openMenu} .v-list-item`, 'Attached').should('not.exist');
+    cy.get('body').type('{esc}');
+  });
+
+  it('says what an All Halls code does, and only when one is selected', () => {
+    cy.get('[data-cy="registrationQrAllHallsNotice"]').should('not.exist');
+
+    cy.get('[data-cy="registrationQrHallSelector"]').click();
+    cy.contains('.v-list-item', 'All Halls').click();
+
+    // It changes what the student is asked, so it says so at the moment of choosing rather than
+    // being discovered at the desk.
+    cy.get('[data-cy="registrationQrAllHallsNotice"]').should(
+      'contain.text',
+      'asked which hall they are in',
+    );
+  });
+
+  it('mints for the chosen hall, and prints that hall on the sheet', () => {
+    cy.get('[data-cy="registrationQrHallSelector"]').click();
+    cy.contains('.v-list-item', 'Titumir').click();
+    cy.get('[data-cy="registrationQrGenerateButton"]').click();
+    cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 }).should('exist');
+
+    // Asserted from the decoded pixels, not from the page's own state: what the camera reads is the
+    // only thing that matters, and the label and the token must not be able to drift apart.
+    decodeFeedbackQr().then((decoded) => {
+      const token = decodeURIComponent(decoded.split('?t=')[1]);
+      const payload = JSON.parse(
+        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')),
+      ) as Record<string, unknown>;
+      expect(payload.hall).to.equal(6); // Titumir
+    });
+
+    cy.get('[data-cy="feedbackQrHallLine"]').should('have.text', 'Titumir Hall');
+    // Caption, expiry, hall — three lines and no more.
+    cy.get('[data-cy="feedbackQrArtwork"]').find('text').should('have.length', 3);
+  });
+
+  it('mints an All Halls code, whose token names no hall', () => {
+    cy.get('[data-cy="registrationQrHallSelector"]').click();
+    cy.contains('.v-list-item', 'All Halls').click();
+    cy.get('[data-cy="registrationQrGenerateButton"]').click();
+    cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 }).should('exist');
+
+    decodeFeedbackQr().then((decoded) => {
+      const token = decodeURIComponent(decoded.split('?t=')[1]);
+      const payload = JSON.parse(
+        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')),
+      ) as Record<string, unknown>;
+      // -1 is not a hall. It is what tells the registration page to ask.
+      expect(payload.hall).to.equal(-1);
+      // Still exactly two claims: the extra value went into the claim that already existed, so the
+      // code is no denser than it was.
+      expect(Object.keys(payload).sort()).to.deep.equal(['exp', 'hall']);
+    });
+
+    cy.get('[data-cy="feedbackQrHallLine"]').should('have.text', 'All Halls');
   });
 
   it('warns that a generated code cannot be cancelled', () => {
@@ -232,6 +297,12 @@ describe('The registration QR generator', () => {
       cy.get('[data-cy="registrationQrExpiry"]').should('not.exist');
       cy.get('[data-cy="registrationQrGenerateButton"]').should('not.exist');
 
+      // The hall line survives, because a projected code should say which hall it is for and four
+      // words cost the code nothing.
+      cy.get('[data-cy="registrationQrFullScreen"]')
+        .find('[data-cy="feedbackQrHallLine"]')
+        .should('exist');
+
       decodeFeedbackQr('[data-cy="registrationQrFullScreenArtwork"]').then((inFullScreen) => {
         expect(inFullScreen).to.equal(beforeFullScreen);
       });
@@ -262,6 +333,49 @@ describe('The registration QR generator', () => {
       // code expires, and paper that does not say when gets pinned up and trusted past its life.
       expect(contents).to.contain('This code stops working at');
       expect(contents).to.contain('valid for 4 hours');
+      // And which hall it is for, so a sheet left on a desk is identifiable without scanning it.
+      expect(contents).to.contain('Hall');
     });
+  });
+});
+
+describe('The registration QR generator, as a volunteer', () => {
+  const signInPage = new SignInPage();
+  const drawer = new NavigationDrawer();
+
+  beforeEach(() => {
+    createVolunteerInHallViaApi(
+      { name: 'QR Spec Volunteer', studentId: `1905${String(Date.now()).slice(-3)}` },
+      'volunteer',
+    );
+    cy.get<{ localPhone: string }>('@volunteer').then((volunteer) => {
+      cy.visit('/');
+      signInPage.signIn(volunteer.localPhone, 'archivetest1');
+      drawer.goToRegistrationQr();
+    });
+  });
+
+  it('gets no dropdown, and is told a super admin can make one for another hall', () => {
+    // The absence is cosmetic — the server refuses any hall but their own regardless — but a
+    // control that would always fail should not be offered.
+    cy.get('[data-cy="registrationQrHallSelector"]').should('not.exist');
+    cy.get('[data-cy="registrationQrHall"]').should('contain.text', 'always for your own hall');
+    cy.get('[data-cy="registrationQrHall"]').should('contain.text', 'a super admin can make it');
+  });
+
+  it('still states its own hall in the request, so the mint is logged', () => {
+    // Every QR mint takes the authenticated, logged branch — that is why a volunteer sends a hall
+    // it could have omitted. "It worked" would pass without this, so the body is asserted directly.
+    cy.intercept('POST', '**/feedbacks/token').as('mint');
+    cy.get('[data-cy="registrationQrGenerateButton"]').click();
+
+    cy.wait('@mint').then((interception) => {
+      expect(interception.request.body).to.have.property('hall');
+      expect(interception.request.body.hall).to.equal(HALL_SUHRAWARDY);
+      expect(interception.request.headers).to.have.property('x-auth');
+    });
+
+    cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 }).should('exist');
+    cy.get('[data-cy="feedbackQrHallLine"]').should('have.text', 'Suhrawardy Hall');
   });
 });

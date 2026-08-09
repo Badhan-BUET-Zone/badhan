@@ -1,13 +1,17 @@
 import {
   answerChoice,
   answerText,
+  confirmLockedHall,
   createDonorViaApi,
   feedbacksViaApi,
   mintTokenViaApi,
+  mintTokenForHallViaApi,
   skipStep,
   visitRegistrationPage,
   FeedbackDonor,
+  HALL_ANY,
   HALL_SUHRAWARDY,
+  HALL_TITUMIR,
   API_BASE_URL,
 } from '@support/helpers/feedback';
 
@@ -22,12 +26,14 @@ const uniqueStudentId = (() => {
   };
 })();
 
-// Walks every step except the two conditional dates, which a zero count removes.
-const answerShortSequence = (studentId: string, localPhone: string) => {
+// Walks every step except the two conditional dates, which a zero count removes. The hall step is
+// there in both modes; under a code made for a named hall it is disabled and merely confirmed.
+const answerShortSequence = (studentId: string, localPhone: string, hallLabel = 'Suhrawardy Hall') => {
   answerText('name', 'Registration Spec Student');
   answerText('studentId', studentId);
   answerText('phone', localPhone);
   answerChoice('bloodGroup', 2); // B+
+  confirmLockedHall(hallLabel);
   answerText('donationCount', '0');
   answerText('plateletDonationCount', '0');
   answerText('roomNumber', '404');
@@ -70,7 +76,8 @@ describe('The public registration page', () => {
         cy.get('[data-cy="registrationReviewValue-name"]').should('have.text', 'Registration Spec Student');
         cy.get('[data-cy="registrationReviewValue-studentId"]').should('have.text', studentId);
         cy.get('[data-cy="registrationReviewValue-bloodGroup"]').should('have.text', 'B+');
-        // The hall is shown, never asked.
+        // Under a named-hall code the review names the hall the form was opened for.
+        cy.get('[data-cy="registrationReviewHall"]').should('contain.text', 'This form was opened for');
         cy.get('[data-cy="registrationReviewHall"]').should('contain.text', 'Suhrawardy');
 
         cy.get('[data-cy="registrationSubmitButton"]').click();
@@ -163,42 +170,97 @@ describe('The public registration page', () => {
     });
   });
 
-  it('offers no hall input anywhere in the sequence', () => {
+  it('shows the hall as a disabled field under a named-hall code, and offers no way to change it', () => {
     const studentId = uniqueStudentId();
 
     cy.get<FeedbackDonor>('@minter').then((minter) => {
       mintTokenViaApi(minter.phone, minter.studentId).then((token) => {
         visitRegistrationPage(token);
 
-        // Checked at every step, not just the first: the hall must not reappear as question nine.
-        const assertNoHallInput = () => {
-          cy.get('[data-cy="registrationInput-hall"]').should('not.exist');
-          cy.get('[data-cy="registrationStep-hall"]').should('not.exist');
-        };
-
-        assertNoHallInput();
-        answerText('name', 'No Hall Input Student');
-        assertNoHallInput();
+        answerText('name', 'Locked Hall Student');
         answerText('studentId', studentId);
-        assertNoHallInput();
         answerText('phone', '01799900044');
-        assertNoHallInput();
         answerChoice('bloodGroup', 2);
-        assertNoHallInput();
-        answerText('donationCount', '0');
-        assertNoHallInput();
-        answerText('plateletDonationCount', '0');
-        assertNoHallInput();
-        answerText('roomNumber', '404');
-        assertNoHallInput();
-        answerText('address', 'Palashi');
-        assertNoHallInput();
-        answerChoice('availableToAll', false);
-        assertNoHallInput();
-        answerText('comment', 'no hall input');
 
-        cy.get('[data-cy="registrationReview"]').should('be.visible');
-        assertNoHallInput();
+        // A field showing a value, not a sentence — the student sees where the submission is going
+        // in the same place they would have chosen it under an All Halls code.
+        cy.get('[data-cy="registrationStep-hall"]').should('exist');
+        cy.get('[data-cy="registrationLockedHall"]')
+          .should('be.disabled')
+          .and('have.value', 'Suhrawardy Hall');
+        cy.get('[data-cy="registrationLockedHallNotice"]').should('contain.text', 'Suhrawardy Hall');
+
+        // And no way to answer it differently: the choice buttons an All Halls code renders are
+        // absent from the DOM, not merely inert.
+        cy.get(`[data-cy="registrationChoice-${HALL_TITUMIR}"]`).should('not.exist');
+        cy.get(`[data-cy="registrationChoice-${HALL_SUHRAWARDY}"]`).should('not.exist');
+
+        // Already answered, so Next is live on arrival — the one step where that is true.
+        cy.get('[data-cy="registrationNextButton"]').should('not.be.disabled').click();
+        cy.get('[data-cy="registrationStep-donationCount"]').should('exist');
+      });
+    });
+  });
+
+  it('asks which hall under an All Halls code, and routes the row by the answer', () => {
+    const studentId = uniqueStudentId();
+
+    cy.get<FeedbackDonor>('@minter').then((minter) => {
+      mintTokenForHallViaApi(minter.phone, minter.studentId, HALL_ANY).then((token) => {
+        visitRegistrationPage(token);
+
+        answerText('name', 'All Halls Student');
+        answerText('studentId', studentId);
+        answerText('phone', '01799900144');
+        answerChoice('bloodGroup', 2);
+
+        cy.get('[data-cy="registrationStep-hall"]').should('exist');
+        // A real question this time: nothing is preselected and Next stays dead until an answer.
+        cy.get('[data-cy="registrationLockedHall"]').should('not.exist');
+        cy.get('[data-cy="registrationNextButton"]').should('be.disabled');
+        // The seven halls and (Unknown) — the same set a volunteer may save on the creation form.
+        cy.get('[data-cy^="registrationChoice-"]').should('have.length', 8);
+
+        answerChoice('hall', HALL_TITUMIR);
+        answerText('donationCount', '0');
+        answerText('plateletDonationCount', '0');
+        answerText('roomNumber', '404');
+        answerText('address', 'Palashi');
+        answerChoice('availableToAll', false);
+        answerText('comment', 'all halls spec');
+
+        cy.get('[data-cy="registrationReviewHall"]').should('contain.text', 'You chose');
+        cy.get('[data-cy="registrationReviewHall"]').should('contain.text', 'Titumir');
+        cy.get('[data-cy="registrationSubmitButton"]').click();
+        cy.get('[data-cy="registrationThanks"]').should('be.visible');
+
+        feedbacksViaApi().then((feedbacks) => {
+          const mine = feedbacks.find((f) => f.feedbackJSON?.studentId === studentId);
+          // The student's answer decides the queue. This is the only place in the feature where a
+          // submitter influences routing, and it is the point of an All Halls code.
+          expect(mine.hall).to.equal(HALL_TITUMIR);
+          expect(mine.feedbackJSON.hall).to.equal(HALL_TITUMIR);
+        });
+      });
+    });
+  });
+
+  it('keeps the chosen hall when going back', () => {
+    cy.get<FeedbackDonor>('@minter').then((minter) => {
+      mintTokenForHallViaApi(minter.phone, minter.studentId, HALL_ANY).then((token) => {
+        visitRegistrationPage(token);
+
+        answerText('name', 'Back To Hall Student');
+        answerText('studentId', uniqueStudentId());
+        answerText('phone', '01799900155');
+        answerChoice('bloodGroup', 2);
+        answerChoice('hall', HALL_TITUMIR);
+
+        cy.get('[data-cy="registrationStep-donationCount"]').should('exist');
+        cy.get('[data-cy="registrationBackButton"]').click();
+
+        cy.get('[data-cy="registrationStep-hall"]').should('exist');
+        cy.get('[data-cy="registrationNextButton"]').should('not.be.disabled');
       });
     });
   });
@@ -214,6 +276,7 @@ describe('The public registration page', () => {
         answerText('studentId', studentId);
         answerText('phone', '01799900055');
         answerChoice('bloodGroup', 2);
+        confirmLockedHall('Suhrawardy Hall');
 
         // A non-zero count keeps the date question in the sequence.
         answerText('donationCount', '3');
@@ -253,15 +316,16 @@ describe('The public registration page', () => {
         answerText('studentId', uniqueStudentId());
         answerText('phone', '01799900066');
         answerChoice('bloodGroup', 2);
+        confirmLockedHall('Suhrawardy Hall');
 
-        // Ten steps, not twelve: asking somebody who has never donated when they last donated is a
-        // screen with no valid answer. The denominator starts at ten and GROWS if a count turns out
-        // to be non-zero — never the other way round, because a counter that shrinks halfway
-        // through reads as a bug.
-        cy.get('[data-cy="registrationProgress"]').should('contain.text', 'of 10');
+        // Eleven steps, not thirteen: asking somebody who has never donated when they last donated
+        // is a screen with no valid answer. The denominator starts at eleven and GROWS if a count
+        // turns out to be non-zero — never the other way round, because a counter that shrinks
+        // halfway through reads as a bug. The hall step is in that count in both modes.
+        cy.get('[data-cy="registrationProgress"]').should('contain.text', 'of 11');
         answerText('donationCount', '0');
         cy.get('[data-cy="registrationQuestion"]').should('not.contain.text', 'last donate blood');
-        cy.get('[data-cy="registrationProgress"]').should('contain.text', 'of 10');
+        cy.get('[data-cy="registrationProgress"]').should('contain.text', 'of 11');
 
         // Going back and changing the count puts the question back, and the denominator grows.
         cy.get('[data-cy="registrationStep-plateletDonationCount"]').should('exist');
@@ -270,7 +334,7 @@ describe('The public registration page', () => {
         cy.get('[data-cy="registrationInput-donationCount"]').clear().type('2');
         cy.get('[data-cy="registrationNextButton"]').click();
         cy.get('[data-cy="registrationQuestion"]').should('contain.text', 'last donate blood');
-        cy.get('[data-cy="registrationProgress"]').should('contain.text', 'of 11');
+        cy.get('[data-cy="registrationProgress"]').should('contain.text', 'of 12');
       });
     });
   });
@@ -286,6 +350,8 @@ describe('The public registration page', () => {
         answerText('studentId', studentId);
         answerText('phone', '01799900077');
         answerChoice('bloodGroup', 2);
+        // The hall step has no Skip in either mode — it is never optional.
+        confirmLockedHall('Suhrawardy Hall');
         skipStep('donationCount');
         skipStep('plateletDonationCount');
         skipStep('roomNumber');
@@ -345,6 +411,22 @@ describe('The public registration page', () => {
 
     visitRegistrationPage(expiredToken);
     cy.get('[data-cy="registrationExpired"]').should('be.visible');
+    cy.get('[data-cy="registrationInput-name"]').should('not.exist');
+  });
+
+  it('rejects a token whose hall is neither a hall nor All Halls', () => {
+    // The client-side decoder was widened by exactly one value. -2 is not it.
+    const bogusToken = [
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      btoa(JSON.stringify({ hall: -2, exp: Math.floor(Date.now() / 1000) + 3600 }))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, ''),
+      'notarealsignature',
+    ].join('.');
+
+    visitRegistrationPage(bogusToken);
+    cy.get('[data-cy="registrationInvalidLink"]').should('be.visible');
     cy.get('[data-cy="registrationInput-name"]').should('not.exist');
   });
 

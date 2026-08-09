@@ -1,6 +1,6 @@
-import { bloodGroups } from '@/mixins/constants'
+import { bloodGroups, halls, restrictedHallNames, HALLS_INDEX } from '@/mixins/constants'
 
-// The twelve questions, in order.
+// The thirteen questions, in order.
 //
 // Declarative on purpose. An earlier shape would have been twelve near-identical .vue files, which
 // puts the validation rules twelve places away from each other and makes keeping them in step with
@@ -10,8 +10,12 @@ import { bloodGroups } from '@/mixins/constants'
 // NewPersonCard's keysExpected — the payload this builds is handed straight to that component by
 // the Feedback page's prefill.
 //
-// `hall` is deliberately absent: it is fixed by the token, and a screen that cannot be answered is
-// not a step.
+// `hall` IS a step, and it is the one step that renders two ways. Under a code made for a named
+// hall it is disabled and already answered; under an "All Halls" code the student picks. An
+// earlier revision left it out on the rule that a screen which cannot be answered is not a step —
+// but with All Halls codes the hall is a real question, and having it appear in one mode and
+// vanish in the other would give the two codes visibly different sequences for no reason a student
+// could see. So it is always there, and PublicRegistration.vue decides how it renders.
 
 export interface RegistrationStep {
   field: string
@@ -47,6 +51,18 @@ const isPastDate = (value: unknown): boolean => {
   return !Number.isNaN(time) && time <= Date.now()
 }
 
+// The halls a student may say they are in: the seven residential halls plus (Unknown).
+//
+// It is exactly the set NewPersonCard offers the volunteer on the donor-creation form, and exactly
+// HALL_INDICES_ALLOWED_FOR_DONOR on the backend. The three must stay in step — a hall a student can
+// pick but a volunteer cannot save would be a dead end at creation time. Attached is in none of
+// them; HALL_ANY is in none of them either, because it is a property of a code and never of a
+// person.
+export const HALL_CHOICES: { label: string, value: number }[] = [
+  ...restrictedHallNames().map((label: string, value: number) => ({ label, value })),
+  { label: halls[HALLS_INDEX.UNKNOWN], value: HALLS_INDEX.UNKNOWN }
+]
+
 export const REGISTRATION_STEPS: RegistrationStep[] = [
   {
     field: 'name',
@@ -78,6 +94,13 @@ export const REGISTRATION_STEPS: RegistrationStep[] = [
     kind: 'choice',
     choices: bloodGroups.map((label: string, value: number) => ({ label, value })),
     valid: (v: unknown): boolean => Number.isInteger(v)
+  },
+  {
+    field: 'hall',
+    question: 'Which hall are you in?',
+    kind: 'choice',
+    choices: HALL_CHOICES,
+    valid: (v: unknown): boolean => HALL_CHOICES.some((choice) => choice.value === v)
   },
   {
     field: 'donationCount',

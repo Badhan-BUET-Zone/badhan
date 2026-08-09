@@ -10,9 +10,10 @@ export const PAGE = {
   height: 297
 } as const
 
-// The whole sheet is a caption and a QR code. There is no logo, no border, no hall name, no
-// readable URL and no Bangla line — each of those was withdrawn deliberately, and the missing
-// Bangla is why no font has to be embedded (see feedbackQrPdf.ts).
+// The feedback sheet is a caption and a QR code: no logo, no border, no hall name, no readable URL
+// and no Bangla line — each of those was withdrawn deliberately, and the missing Bangla is why no
+// font has to be embedded (see feedbackQrPdf.ts). The registration sheet adds two short lines and
+// nothing else: when the code expires, and which hall it is for.
 export const CAPTION = {
   centerX: PAGE.width / 2,
   baseline: 60,
@@ -29,6 +30,18 @@ export const SUB_CAPTION = {
   centerX: PAGE.width / 2,
   baseline: 72,
   fontSize: 5,
+  fontFamily: 'Helvetica, Arial, sans-serif'
+} as const
+
+// Which hall the code is for, in words — a hall name, or "All Halls". Registration sheets only; the
+// feedback poster is zone-wide and has no hall to name.
+//
+// It sits in the gap that already existed between the sub-caption (72) and the QR box (90), so
+// adding it moves no other measurement and does not shrink the code.
+export const HALL_LINE = {
+  centerX: PAGE.width / 2,
+  baseline: 82,
+  fontSize: 6,
   fontFamily: 'Helvetica, Arial, sans-serif'
 } as const
 
@@ -55,5 +68,8 @@ export const COLORS = {
 
 export const COPY = {
   feedbackCaption: 'Scan to submit feedback to Badhan BUET Zone',
-  registrationCaption: 'Scan to register as a blood donor with Badhan BUET Zone'
+  registrationCaption: 'Scan to register as a blood donor with Badhan BUET Zone',
+  // What the hall line says for a code that names no hall. The student is asked which hall they
+  // are in, so the sheet cannot claim one.
+  allHallsLabel: 'All Halls'
 } as const

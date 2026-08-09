@@ -64,6 +64,29 @@ const handleAuthentication = async (req: Request, res: Response, next:  NextFunc
   return next()
 }
 
+/**
+ * Authentication that applies only to a request which states a `hall`.
+ *
+ * The feedback mint route is public: a donor arriving from a printed QR code has no session
+ * and must still get 200. But stating a hall is a permissioned act — it is how a member asks
+ * for a registration code aimed at a hall — so a body carrying one has to identify its caller.
+ *
+ * THE BRANCH IS KEYED ON THE BODY, NEVER ON WHETHER AN x-auth HEADER HAPPENS TO BE PRESENT.
+ * A request with no hall is treated identically whether or not somebody is signed in, which is
+ * what keeps the route's public behaviour one thing rather than two. Do not "improve" this into
+ * "authenticate when a token is present": that makes an anonymous route's answer depend on a
+ * header, which is exactly what it must not do.
+ *
+ * Place it AFTER the body validator in the middleware chain, so `hall` has already been checked
+ * and coerced by the time this reads it: a malformed hall is then a 400 and not a 401.
+ */
+const handleAuthenticationIfHallStated = async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
+  if (req.body === undefined || req.body === null || req.body.hall === undefined || req.body.hall === null) {
+    return next()
+  }
+  return handleAuthentication(req, res, next)
+}
+
 const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation === DESIGNATIONS_INDEX.SUPER_ADMIN) {
     return next()
@@ -113,6 +136,7 @@ const handleHallPermission = async (req: Request, res: Response, next:  NextFunc
 export default {
   // CHECK PERMISSIONS
   handleAuthentication,
+  handleAuthenticationIfHallStated,
   handleHallAdminCheck,
   handleSuperAdminCheck,
   handleHallPermission,

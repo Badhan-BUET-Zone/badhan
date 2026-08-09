@@ -12,7 +12,7 @@ import { IDonor } from '../db/models/Donor'
 import authenticator from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
 import feedbackValidator from '../validations/feedbacks'
-import { HTTP_STATUS } from '../constants'
+import { DESIGNATIONS_INDEX, HALLS_INDEX, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR, HTTP_STATUS } from '../constants'
 
 // Every failure of the mint route answers with this, byte for byte. No match, phone
 // matched but student id did not, student id matched but phone did not, more than one
@@ -54,9 +54,19 @@ export class FeedbacksController extends Controller {
    * Mint a feedback submission token.
    *
    * Unauthenticated on purpose: a donor arriving from a printed QR code sends no
-   * `x-auth` header and must still get 200. A signed-in volunteer generating a
-   * registration QR code calls this very same route with their own phone and student id,
-   * so there is no session branch and no second code path.
+   * `x-auth` header and must still get 200. A volunteer generating a registration QR code
+   * calls this very same route with their own phone and student id.
+   *
+   * ONE OPTIONAL FIELD BRANCHES IT, AND THE BRANCH IS KEYED ON THE BODY, NOT ON THE SESSION:
+   *
+   *   { phone, studentId }        no session   → the token carries the matched donor's hall
+   *   { phone, studentId, hall }  session       → the token carries `hall`, if the caller may
+   *                                               state it
+   *
+   * A request that states no hall is answered identically whether or not somebody is signed
+   * in — the handler never inspects the session on that path — which is what keeps the public
+   * behaviour of this route one thing. Stating a hall is what requires a session, and it is
+   * also what makes minting attributable at last.
    */
   @Post('token')
   @SuccessResponse(200, 'Token generated successfully')
@@ -83,9 +93,16 @@ export class FeedbacksController extends Controller {
       lastPlateletDonation: 1707000000000
     }
   })
-  @Middlewares([feedbackValidator.validatePOSTToken, rateLimiter.feedbackTokenLimiter])
+  // The validator runs first, so a malformed `hall` is a 400 here rather than a 401 below.
+  // handleAuthenticationIfHallStated runs last and only bites when `hall` is present.
+  @Middlewares([
+    feedbackValidator.validatePOSTToken,
+    rateLimiter.feedbackTokenLimiter,
+    authenticator.handleAuthenticationIfHallStated
+  ])
   public async postToken(
-    @Body() body: { phone: number; studentId: string; durationMinutes?: number }
+    @Body() body: { phone: number; studentId: string; durationMinutes?: number; hall?: number },
+    @Request() req: any
   ): Promise<IPostTokenResponse> {
     const lookupResult: { data?: IPublicDonorProfile; message: string; status: string } =
       await donorInterface.findPublicDonorProfile(body.phone, body.studentId)
@@ -97,18 +114,53 @@ export class FeedbacksController extends Controller {
 
     const profile: IPublicDonorProfile = lookupResult.data
 
-    // Only the hall travels into the token. The phone and student id found this record;
-    // they go no further, because a registration token is printed into a QR code that a
-    // room full of students can decode.
-    const minted: { token: string; expiresAt: number } =
-      feedbackToken.mintFeedbackToken(profile.hall, body.durationMinutes)
+    // Only a hall travels into the token. The phone and student id found this record; they
+    // go no further, because a registration token is printed into a QR code that a room
+    // full of students can decode.
+    //
+    // Which hall depends on the one optional field. Absent → the matched donor's own, which
+    // is the whole of the anonymous path and is unchanged.
+    let tokenHall: number = profile.hall
+    const hallStated: boolean = body.hall !== undefined && body.hall !== null
+    let requester: IDonor | null = null
 
-    // No log entry, ever. logInterface.addLog needs a user id and there is no session
-    // here. The consequence is accepted and recorded: generating a registration QR is
-    // unattributable — nothing records who made a code, for which hall, or for how long.
+    if (hallStated) {
+      // Only reachable with a session: handleAuthenticationIfHallStated answered 401 otherwise.
+      requester = (req as any).res.locals.middlewareResponse.donor
+
+      // The same comparison SearchController and DonorsController use. HALL_ANY needs no
+      // clause of its own — no member's hall is -1, so this rejects an "All Halls" request
+      // from anyone below super admin by the same test.
+      //
+      // Deliberately stricter than isHallRestricted is elsewhere: a volunteer may not state
+      // ATTACHED or UNKNOWN either, even though those are unrestricted halls for reading. A
+      // code is something you make for a hall you belong to.
+      if (requester!.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN && body.hall !== requester!.hall) {
+        this.setStatus(HTTP_STATUS.FORBIDDEN)
+        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: NOT_AUTHORIZED_MESSAGE }
+      }
+
+      tokenHall = body.hall!
+    }
+
+    const minted: { token: string; expiresAt: number } =
+      feedbackToken.mintFeedbackToken(tokenHall, body.durationMinutes)
+
+    // No log entry when no hall is stated: logInterface.addLog needs a user id and there is
+    // no session on that path. A request that states a hall has one, and is logged — which
+    // is what makes generating a registration QR attributable at last.
+    if (hallStated) {
+      await logInterface.addLog(requester!._id, 'POST FEEDBACK TOKEN', {
+        hall: tokenHall,
+        durationMinutes: body.durationMinutes,
+        expiresAt: minted.expiresAt
+      })
+    }
 
     // Built field by field. Never spread the document, never toObject() it — that is how
-    // an address or a comment ends up on a public page.
+    // an address or a comment ends up on a public page. It is the CALLER'S OWN record on
+    // both branches, looked up from the phone and student id they sent, so a super admin
+    // minting for another hall learns nothing about that hall.
     this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
@@ -181,24 +233,53 @@ export class FeedbacksController extends Controller {
     // lookup would either find nothing every time or block a genuine registration whose
     // phone somebody else already holds. Duplicate detection belongs in the creation
     // form, with a human present.
+    let matchedDonor: IPublicDonorProfile | null = null
     if (body.type === FEEDBACK_TYPES.FEEDBACK) {
       const donorLookup: { data?: IPublicDonorProfile; message: string; status: string } =
         await donorInterface.findPublicDonorProfile(body.feedbackJSON.phone, body.feedbackJSON.studentId)
-      if (donorLookup.status !== 'OK') {
+      if (donorLookup.status !== 'OK' || !donorLookup.data) {
         this.setStatus(HTTP_STATUS.NOT_FOUND)
         return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: MINT_FAILURE_MESSAGE }
       }
+      matchedDonor = donorLookup.data
     }
 
-    // 5. THE HALL COMES FROM THE TOKEN, NEVER FROM THE BODY.
+    // 5. THE HALL COMES FROM THE TOKEN IN EVERY CASE THE TOKEN NAMES ONE.
     //
-    // A newDonor payload carries its own `hall` — NewPersonCard's key list requires it —
-    // and the registration form now fixes that value to the token's, so the two will
-    // normally be equal. Do not "simplify" this by reading body.feedbackJSON.hall: the
-    // body is attacker-controlled and the token is not, and this is the only field a
-    // submitter cannot aim. Nor is it read off the donor fetched in step 4.
+    //   token hall   type       row hall                    decided by
+    //   ----------   --------   -------------------------   ---------------------------
+    //   a real hall  feedback   the token's                  the token
+    //   a real hall  newDonor   the token's                  the token
+    //   HALL_ANY     feedback   the fetched donor's hall     the server, from a record
+    //   HALL_ANY     newDonor   feedbackJSON.hall            THE SUBMITTER
+    //
+    // Rows one and two are unchanged and must stay that way: a newDonor payload carries its
+    // own `hall` — NewPersonCard's key list requires it — and under a hall-bearing token that
+    // value is stored inside the JSON for the volunteer to read and has NO effect on the
+    // column. Do not "simplify" this by always reading body.feedbackJSON.hall: the body is
+    // attacker-controlled and the token is not.
+    //
+    // HALL_ANY is the exception, and it is the point of an "All Halls" code: nobody named a
+    // hall when the code was made, so the submission names it. For a message that means the
+    // hall of the donor just fetched — a database record, not the body. For a registration it
+    // means the payload's hall, which the payload validator has already pinned to a real hall
+    // (HALL_INDICES_ALLOWED_FOR_DONOR, which excludes -1 — do not relax that check; it is what
+    // makes this branch safe).
+    let rowHall: number = verification.hall
+    if (verification.hall === HALL_ANY) {
+      rowHall = body.type === FEEDBACK_TYPES.FEEDBACK ? matchedDonor!.hall : body.feedbackJSON.hall
+    }
+
+    // HALL_ANY must never be stored. Unreachable given the two branches above; it exists so
+    // that a future third `type` cannot reach the collection with -1 and fail as a 500 in the
+    // model's own hall validator.
+    if (![...HALL_INDICES_ALLOWED_FOR_DONOR, HALLS_INDEX.ATTACHED].includes(rowHall)) {
+      this.setStatus(HTTP_STATUS.BAD_REQUEST)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.BAD_REQUEST, message: MINT_FAILURE_MESSAGE }
+    }
+
     const insertion: { data: IFeedback; message: string; status: string } =
-      await feedbackInterface.insertFeedback(body.type, verification.hall, body.feedbackJSON)
+      await feedbackInterface.insertFeedback(body.type, rowHall, body.feedbackJSON)
 
     if (insertion.status !== 'OK') {
       this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)

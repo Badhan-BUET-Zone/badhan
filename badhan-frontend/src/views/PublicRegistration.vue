@@ -28,7 +28,8 @@
         <div v-else-if="onReview" :key="'registrationReview'" data-cy="registrationReview">
           <v-card-title>Check your answers</v-card-title>
           <v-card-text class="subtitle-2" data-cy="registrationReviewHall">
-            This form was opened for {{ hall | getHallName }} Hall.
+            <span v-if="hallLocked">This form was opened for {{ lockedHallName }}.</span>
+            <span v-else>You chose {{ chosenHallName }}.</span>
           </v-card-text>
           <v-card-text v-if="expiryLabel" class="subtitle-2" data-cy="registrationExpiryNotice">
             This form is open until {{ expiryLabel }}.
@@ -88,8 +89,29 @@
           @skip="skip"
           @next="next"
         >
+          <!--
+            The hall under a code made for one named hall: a field showing a value, disabled.
+            Not a sentence and not a hidden field — a student should see where their submission
+            is going, in the same place they would have chosen it under an All Halls code, and
+            should be able to see at a glance that it is not theirs to change.
+          -->
+          <div v-if="currentStep.field === 'hall' && hallLocked">
+            <v-text-field
+              data-cy="registrationLockedHall"
+              :value="lockedHallName"
+              disabled
+              outlined
+              rounded
+              dense
+              hide-details
+            ></v-text-field>
+            <v-card-text class="subtitle-2 pl-0" data-cy="registrationLockedHallNotice">
+              This code was made for {{ lockedHallName }}. Your submission goes to that hall's
+              volunteers. If you live somewhere else, say so in the last question.
+            </v-card-text>
+          </div>
           <ChoiceQuestion
-            v-if="currentStep.kind === 'choice'"
+            v-else-if="currentStep.kind === 'choice'"
             :value="answers[currentStep.field]"
             :choices="currentStep.choices"
             @input="setAnswer(currentStep.field, $event)"
@@ -128,9 +150,9 @@ import DatePicker from '@/components/UI Components/DatePicker'
 import QuestionShell from '@/views/PublicRegistration/QuestionShell'
 import ChoiceQuestion from '@/views/PublicRegistration/ChoiceQuestion'
 import AnswerInput from '@/views/PublicRegistration/AnswerInput'
-import { REGISTRATION_STEPS, SKIP_DEFAULTS } from '@/views/PublicRegistration/steps'
+import { REGISTRATION_STEPS, SKIP_DEFAULTS, HALL_CHOICES } from '@/views/PublicRegistration/steps'
 import { handlePOSTFeedback } from '@/api'
-import { HTTP_STATUS, halls } from '@/mixins/constants'
+import { HTTP_STATUS, HALL_ANY, halls } from '@/mixins/constants'
 
 // The page a student reaches by scanning a volunteer's registration QR code.
 //
@@ -140,6 +162,10 @@ import { HTTP_STATUS, halls } from '@/mixins/constants'
 //
 // The token in ?t= is a capability, not a secret about anybody: it names a hall and an expiry and
 // nothing else, which is why it is safe in a URL, in a QR code and in a browser history.
+//
+// The hall it names may be HALL_ANY, which is not a hall: it is what an "All Halls" code carries,
+// and it means the student is asked which hall they are in rather than being shown one. That is the
+// only difference between the two modes — same sequence, same step count, same submission.
 
 export default {
   name: 'PublicRegistrationPage',
@@ -149,6 +175,9 @@ export default {
       state: 'loading',
       token: '',
       hall: null,
+      // True when the token names a real hall, false under an "All Halls" code. It decides how
+      // the hall step renders and nothing else — the step itself is always in the sequence.
+      hallLocked: false,
       expiresAt: null,
       stepIndex: 0,
       onReview: false,
@@ -183,6 +212,14 @@ export default {
     expiryLabel () {
       if (!this.expiresAt) return ''
       return new Date(this.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    },
+    lockedHallName () {
+      const choice = HALL_CHOICES.find((option) => option.value === this.hall)
+      return choice ? choice.label + ' Hall' : ''
+    },
+    chosenHallName () {
+      const choice = HALL_CHOICES.find((option) => option.value === this.answers.hall)
+      return choice ? choice.label + ' Hall' : ''
     }
   },
   mounted () {
@@ -209,12 +246,18 @@ export default {
         return
       }
 
-      if (payload === null || typeof payload.hall !== 'number' || halls[payload.hall] === undefined) {
+      // HALL_ANY is legal and means "All Halls"; every other value must be a real hall. Widening
+      // this by exactly one value is the point — a token claiming any other number is still an
+      // invalid link.
+      const claimsRealHall = typeof payload.hall === 'number' && halls[payload.hall] !== undefined
+      const claimsAnyHall = payload.hall === HALL_ANY
+      if (payload === null || (!claimsRealHall && !claimsAnyHall)) {
         this.state = 'invalid'
         return
       }
 
       this.hall = payload.hall
+      this.hallLocked = claimsRealHall
       this.expiresAt = payload.exp ? payload.exp * 1000 : null
 
       if (this.expiresAt && this.expiresAt <= Date.now()) {
@@ -222,9 +265,10 @@ export default {
         return
       }
 
-      // hall is set once, here, and never from an input. It is in the answers object so the
-      // submitted payload matches the key list exactly.
-      this.answers = { hall: this.hall }
+      // Under a code made for a named hall the answer is given here, once, and the step renders
+      // disabled. Under an All Halls code it is left unset so the student has to choose — Next
+      // stays disabled until they do.
+      this.answers = this.hallLocked ? { hall: this.hall } : {}
       this.state = 'ready'
     },
     setAnswer (field, value) {
@@ -301,7 +345,10 @@ export default {
         phone: Number('88' + String(this.answers.phone || '')),
         studentId: String(this.answers.studentId || ''),
         bloodGroup: this.answers.bloodGroup,
-        hall: this.hall,
+        // The token's hall when it named one, the student's answer when it did not. Never
+        // HALL_ANY: the step's own validator only accepts a real hall, and the server rejects
+        // -1 in this field regardless.
+        hall: this.answers.hall,
         address: String(this.answers.address || ''),
         roomNumber: String(this.answers.roomNumber || ''),
         comment: String(this.answers.comment || ''),

@@ -3,6 +3,7 @@ import {
   validateBODYPhone,
   validateBODYStudentId,
   validateBODYDurationMinutes,
+  validateBODYQrHall,
   validateBODYType,
   validateBODYToken
 } from './validateRequest/validateBody'
@@ -11,13 +12,18 @@ import { validateFeedbackJSON, IPayloadResult } from './feedbackPayload'
 import { body, ValidationChain } from 'express-validator'
 import { NextFunction, Request, Response } from 'express'
 
-// Both credentials are required. There is deliberately no `hall` here: the token's hall
-// is read from the matched donor record, never from the request, so there is nothing for
-// a caller to state and nothing to cross-check.
+// Both credentials are required on every call. `hall` is optional and is the whole branch:
+// omit it and the token carries the matched donor's own hall, exactly as it always has;
+// state it and the request must identify a caller who is allowed to state that hall
+// (handleAuthenticationIfHallStated, then the designation check in the controller).
+//
+// This chain runs BEFORE that middleware, which is what makes a malformed hall a 400 rather
+// than a 401.
 const validatePOSTToken: (req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validateBODYPhone,
   validateBODYStudentId,
-  validateBODYDurationMinutes
+  validateBODYDurationMinutes,
+  validateBODYQrHall
 ])
 
 // feedbackJSON is nested and its rules are per-type, so the work happens in

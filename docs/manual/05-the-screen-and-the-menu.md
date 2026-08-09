@@ -32,10 +32,11 @@ may be shorter than a colleague's.
 | **Home** | Search for donors. The page you will use most. [Chapter 6](06-searching-for-donors.md) | Volunteer and above |
 | **Bookmarked Donors** | Your own shortlist of donors. [Chapter 10](10-bookmarked-donors.md) | Volunteer and above |
 | **Feedback** | Messages and registrations sent from the public pages. [Chapter 20](20-donor-feedback.md) | Volunteer and above |
-| **Donor Creation** | Opens into three entries below | Volunteer and above |
+| **Donor Creation** | Opens into four entries below | Volunteer and above |
 | → Single Donor Creation | Add one new donor by filling a form. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |
 | → Upload CSV of Donors | Add many donors at once from a file. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |
 | → Newly Created Donors | See who was added between two dates. [Chapter 11](11-adding-new-donors.md) | Hall Admin and above |
+| → Donor Registration QR | Make a QR code students scan to enter themselves. Super admins also choose which hall it is for, or make one for all halls. [Chapter 20](20-donor-feedback.md) | Volunteer and above |
 | **Members** | Volunteers of your hall and the hall admins of every hall. [Chapter 12](12-members-and-promotions.md) | Volunteer and above |
 | **Public Contacts** | The emergency contact list. [Chapter 13](13-public-contacts.md) | Volunteer and above |
 | **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |

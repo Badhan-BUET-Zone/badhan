@@ -18,6 +18,10 @@ const HALLS_INDEX = {
   UNKNOWN: 8,
 };
 
+// Not a hall. The sentinel a registration QR code carries when it names none — the student is asked
+// which hall they are in, and their submission is routed by that answer.
+const HALL_ANY = -1;
+
 const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
@@ -31,5 +35,6 @@ const HTTP_STATUS = {
 
 module.exports = {
   HALLS_INDEX,
+  HALL_ANY,
   HTTP_STATUS,
 };

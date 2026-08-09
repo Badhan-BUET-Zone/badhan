@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import dotenv from '../dotenv'
-import { HALLS_INDEX, HALL_INDICES_ALLOWED_FOR_DONOR } from '../constants'
+import { HALLS_INDEX, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR } from '../constants'
 
 /**
  * The one token the public side of the feedback feature uses.
@@ -15,12 +15,17 @@ import { HALLS_INDEX, HALL_INDICES_ALLOWED_FOR_DONOR } from '../constants'
  *
  * Nothing is stored and nothing can be revoked: a leaked token stays live until it
  * expires, which is why the ceiling is 24 hours.
+ *
+ * `hall` may also be HALL_ANY, which is NOT a hall: it is the claim an "All Halls"
+ * registration code carries, and it means "the submitter names the hall". Nothing in this
+ * module treats it specially — it is simply a legal value here, and the submit route is
+ * what resolves it into a real hall or refuses. It never reaches a stored row.
  */
 
 export const FEEDBACK_TOKEN_DEFAULT_MINUTES: number = 15
 export const FEEDBACK_TOKEN_MAX_MINUTES: number = 1440 // 24 hours
 
-const ALLOWED_TOKEN_HALLS: number[] = [...HALL_INDICES_ALLOWED_FOR_DONOR, HALLS_INDEX.ATTACHED]
+const ALLOWED_TOKEN_HALLS: number[] = [...HALL_INDICES_ALLOWED_FOR_DONOR, HALLS_INDEX.ATTACHED, HALL_ANY]
 
 export interface IFeedbackTokenValid {
   valid: true

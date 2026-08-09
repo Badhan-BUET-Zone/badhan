@@ -152,10 +152,13 @@ That card has two buttons: **Create donor** and **Discard**.
 - They answer **one question at a time on their phone**, and **nothing reaches Badhan until
   they finish**. So a student who says they filled it in, but whose card never appeared, most
   likely stopped partway through. Ask them to scan and start again.
-- They are **never asked which hall they are in**. The code decides that — a submission goes
-  to the hall of whoever generated the code. A student who scanned another hall's code will
-  appear in *that* hall's list. If they actually live somewhere else they may have said so in
-  the comment; either way, pick the right hall yourself when you create the donor.
+- **The hall is a field on their phone**, and what it does depends on the code they scanned:
+  - **An ordinary code** shows them the hall it was made for, **greyed out** — they can see where
+    their submission is going but cannot change it. A student who scanned another hall's code
+    appears in *that* hall's list. If they actually live somewhere else they may have said so in
+    the comment; either way, pick the right hall yourself when you create the donor.
+  - **An All Halls code** asks them to choose, and **their answer decides whose list it lands in**.
+    Still check it before saving — it is the student's own claim, like everything else on the card.
 - They **are** asked how many times they have donated and when. **Every number on that card is
   the student's own claim**, not a Badhan record. Treat it exactly as you would if they had
   told you at a desk: check it before saving.
@@ -216,13 +219,40 @@ This is the other code — the one students scan to enter themselves into the da
 
 It lives at **Donor Registration QR** in the menu, just under Donor Creation.
 
-1. Choose **how long it should work** — one, two, four, eight or twenty-four hours.
-2. Tap **Generate**.
-3. The code appears, and above it a line saying in plain words when it stops working:
+1. **Super admins only:** choose **which hall the code is for** from the dropdown. Everybody else
+   makes codes for their own hall, and the page says so instead of offering a choice.
+2. Choose **how long it should work** — one, two, four, eight or twenty-four hours.
+3. Tap **Generate**.
+4. The code appears, and above it a line saying in plain words when it stops working:
    *"This code stops working at 6:30 pm — valid for 4 hours."*
 
-**A code is always for your own hall.** There is no way to make one on another hall's behalf, not
-even as a super admin. A hall that wants a code makes its own.
+The sheet and the screen both say **which hall the code is for**, in words under the caption, so a
+code left on a desk or found in a downloads folder can be identified without scanning it.
+
+**Whose hall a code is for.** A volunteer or hall admin can only make one for their own hall. A
+super admin can make one for **any** hall — so a hall that wants a code no longer has to find
+somebody with a record there; they can ask a super admin.
+
+**Making a code is recorded.** Who made it, for which hall, and for how long — a super admin can
+look it up afterwards if a question ever comes up about where a batch of submissions came from.
+
+### The "All Halls" option
+
+The dropdown has one option that is not a hall: **All Halls**. It is for events where students from
+several halls are in one room — a joint orientation, a campus-wide drive — and only a super admin
+can make one.
+
+Under an ordinary code, the student is **shown** their hall and cannot change it. Under an All Halls
+code, the student is **asked** which hall they are in, and **their answer decides whose list the
+submission lands in**.
+
+Two things follow from that:
+
+- **A student who picks the wrong hall lands in the wrong list.** That is not a disaster — whoever
+  creates the donor picks the hall on the creation form anyway, exactly as they would correct a
+  misspelled name. But it is a reason to prefer a hall's own code when the event belongs to one hall.
+- **Use the named code by default.** All Halls exists for the rooms where a single hall's code would
+  be wrong; it is not the better version of the same thing.
 
 **It cannot be cancelled.** Once generated, it works until it expires — there is no button to switch
 it off, and no list of active codes. So pick a duration that matches the event: four hours for an
@@ -232,8 +262,8 @@ Once a code is generated, the page also shows its web address as a link. Click i
 registration page yourself and check it works before an event starts.
 
 **Be careful with that address.** Unlike the poster's link, this one has the code built into it —
-anybody you send it to can register donors into your hall until it expires, exactly as if you had
-shown them the QR. Send it only where you would be willing to hold the code up.
+anybody you send it to can register donors into the code's hall until it expires, exactly as if you
+had shown them the QR. Send it only where you would be willing to hold the code up.
 
 ### At a new-intake event
 

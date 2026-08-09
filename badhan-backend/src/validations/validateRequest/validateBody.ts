@@ -2,7 +2,7 @@ import { body, ValidationChain } from 'express-validator'
 import mongoose from 'mongoose'
 import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
-import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
+import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR } from '../../constants'
 import { FEEDBACK_TOKEN_MAX_MINUTES } from '../../services/feedbackToken'
 import { FEEDBACK_TYPE_VALUES } from '../../db/models/Feedback'
 
@@ -25,6 +25,18 @@ export const validateBODYHall: ValidationChain = body('hall')
   .exists().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')
   .isIn(HALL_INDICES_ALLOWED_FOR_DONOR).withMessage('Please input an allowed hall number')
+
+// Optional, and present only on a registration-QR mint, where it says which hall the code is
+// for. Stating it is a permissioned act — see handleAuthenticationIfHallStated — so a body
+// carrying it must identify its caller, and the route decides whether that caller may.
+//
+// Deliberately NOT the same set as validateBODYHall: ATTACHED is out, because a code is
+// something you make for a hall you belong to and nobody belongs to Attached, and HALL_ANY is
+// in, because an "All Halls" code names no hall and no donor record is ever -1.
+export const validateBODYQrHall: ValidationChain = body('hall')
+  .optional()
+  .isInt().toInt().withMessage('hall must be integer')
+  .isIn([...HALL_INDICES_ALLOWED_FOR_DONOR, HALL_ANY]).withMessage('Please input an allowed hall number')
 
 export const validateBODYName: ValidationChain = body('name')
   .exists().withMessage('name is required')

@@ -6,6 +6,9 @@ export const API_BASE_URL = (Cypress.env('apiBaseURL') as string) || 'http://loc
 const BLOOD_GROUP_B_POS = 2;
 export const HALL_SUHRAWARDY = 5;
 export const HALL_TITUMIR = 6;
+// Not a hall: the sentinel an "All Halls" registration code carries. A student scanning one is
+// asked which hall they are in, and their submission is routed by that answer.
+export const HALL_ANY = -1;
 
 const toInternationalPhone = (localPhone: string) => Number(`88${localPhone}`);
 
@@ -133,6 +136,24 @@ export const mintTokenViaApi = (
     })
     .then((response) => response.body.token as string);
 
+// The other branch of the same route: stating a hall needs a session and a designation that allows
+// it, and it is the branch the QR generator always takes. `hall` may be HALL_ANY.
+export const mintTokenForHallViaApi = (
+  phone: number,
+  studentId: string,
+  hall: number,
+): Cypress.Chainable<string> =>
+  superAdminToken().then((token) =>
+    cy
+      .request({
+        method: 'POST',
+        url: `${API_BASE_URL}/feedbacks/token`,
+        headers: { 'x-auth': token },
+        body: { phone, studentId, hall },
+      })
+      .then((response) => response.body.token as string),
+  );
+
 export const visitRegistrationPage = (token: string | null): void => {
   cy.clearLocalStorage();
   cy.visit(token === null ? '/#/register' : `/#/register?t=${token}`);
@@ -172,6 +193,14 @@ export const answerChoice = (field: string, value: string | number | boolean): v
 export const skipStep = (field: string): void => {
   onStep(field);
   cy.get('[data-cy="registrationSkipButton"]').click();
+};
+
+// The hall step under a code made for one named hall: a field showing a value, disabled, already
+// answered. Next is enabled on arrival, which is the difference from every other step.
+export const confirmLockedHall = (expectedLabel: string): void => {
+  onStep('hall');
+  cy.get('[data-cy="registrationLockedHall"]').should('be.disabled').and('have.value', expectedLabel);
+  cy.get('[data-cy="registrationNextButton"]').should('not.be.disabled').click();
 };
 
 // Seeds a row straight into the queue over the API: mint a token with the target donor's own
