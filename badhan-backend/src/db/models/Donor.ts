@@ -276,6 +276,17 @@ donorSchema.index({ archiveFlag: 1, availableToAll: 1, bloodGroup: 1 })
  * Applied by syncCollectionValidators() on every boot, because it is not part of the collection's
  * identity the way an index is: `mongorestore --drop` and `dropDatabase()` both discard it silently.
  */
+/*
+ * Not applied on the managed cluster today. `collMod` is a database-admin action and the application
+ * connects as a readWrite user, so syncCollectionValidators() logs a warning and moves on; granting
+ * the privilege (a custom role carrying just `collMod` on `donors` is enough) is all it would take
+ * for this to start applying itself on the next boot, with no code change.
+ *
+ * Until then the guarantee is the one below it — the schema default, `required: true`, the
+ * `runValidators` on the update paths, and the pre-update hook that refuses to remove the field.
+ * Those cover every write this application makes; what stays uncovered is a write from outside it,
+ * which is how the 1349 legacy documents came to be.
+ */
 export const DONOR_VALIDATOR: Record<string, any> = {
   $jsonSchema: {
     bsonType: 'object',
@@ -353,6 +364,39 @@ donorSchema.methods.toJSON = function (): IDonor {
 
   return donorObject
 }
+
+/*
+ * Refuse any update that would leave a donor without a designation.
+ *
+ * `required: true` above is enforced when a *document* is validated — `save()`. An update statement
+ * is not a document: `updateOne({$unset: {designation: 1}})` succeeds silently unless the caller
+ * remembers `runValidators`. The call sites that exist today do pass it; this hook is for the one
+ * somebody writes next year, and it cannot be forgotten because it lives on the schema.
+ *
+ * It is the last line of defence rather than the first, because the collection validator that would
+ * catch this below mongoose is not applied on the managed cluster (see DONOR_VALIDATOR).
+ */
+const DESIGNATION_REMOVING_OPS: any[] = ['updateOne', 'updateMany', 'findOneAndUpdate', 'replaceOne', 'findOneAndReplace']
+
+donorSchema.pre(DESIGNATION_REMOVING_OPS, function (next: (err?: Error) => void): void {
+  const update: any = (this as any).getUpdate()
+  if (!update) {
+    return next()
+  }
+
+  const removed: boolean = Boolean(update.$unset) && 'designation' in update.$unset
+  // `null` and `undefined` both store or leave nothing usable; a missing key in $set is fine, it
+  // simply means this update is not about designation.
+  const nulled: boolean =
+    (Boolean(update.$set) && 'designation' in update.$set && update.$set.designation === null) ||
+    ('designation' in update && update.designation === null)
+
+  if (removed || nulled) {
+    return next(new Error('DB: designation cannot be removed from a donor'))
+  }
+
+  return next()
+})
 
 // reason for definition of next function: https://github.com/Automattic/mongoose/issues/11449
 donorSchema.pre<IDonor>('save', function (next: (err?: Error) => void):void{

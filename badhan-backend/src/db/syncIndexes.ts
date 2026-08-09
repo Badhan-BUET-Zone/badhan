@@ -118,9 +118,34 @@ export async function syncAllModels(): Promise<void> {
 /*
 /*     Never throws. A boot that cannot set a validator (no `collMod` right, a restore in flight,
 /*     a database that has not created the collection yet) must still be a boot.
+/*
+/*     And never applies a validator that the stored documents would fail. `validationLevel:
+/*     'strict'` validates every future write to a document, so switching it on over documents that
+/*     violate it does not reject them now — it makes them permanently unwritable, and the first
+/*     symptom is "Document failed validation" when somebody presses Save on the very record they
+/*     were trying to repair. `countViolations` is that gate, and it is why this function is safe to
+/*     run on connect from any process, including a migration that has not backfilled yet.
 /* ────────────────────────────────────────────────────────────── */
-const COLLECTION_VALIDATORS: { collection: string; validator: Record<string, any> }[] = [
-  { collection: 'donors', validator: DONOR_VALIDATOR }
+interface CollectionValidator {
+  collection: string;
+  validator: Record<string, any>;
+  countViolations: (db: mongoose.mongo.Db) => Promise<number>;
+}
+
+const COLLECTION_VALIDATORS: CollectionValidator[] = [
+  {
+    collection: 'donors',
+    validator: DONOR_VALIDATOR,
+    // Absent, or present and outside 0..3. `$exists: true` on the second clause keeps the two
+    // disjoint: a missing field matches `$nin` as well.
+    countViolations: async (db: mongoose.mongo.Db): Promise<number> =>
+      db.collection('donors').countDocuments({
+        $or: [
+          { designation: { $exists: false } },
+          { designation: { $exists: true, $nin: [0, 1, 2, 3] } }
+        ]
+      })
+  }
 ];
 
 export async function syncCollectionValidators(): Promise<void> {
@@ -130,13 +155,22 @@ export async function syncCollectionValidators(): Promise<void> {
     return;
   }
 
-  for (const { collection, validator } of COLLECTION_VALIDATORS) {
+  for (const { collection, validator, countViolations } of COLLECTION_VALIDATORS) {
     try {
       // collMod needs the collection to exist. On a fresh or just-dropped database it does not, so
       // create it first — an existing collection makes this a harmless NamespaceExists.
       const existing: any[] = await db.listCollections({ name: collection }).toArray();
       if (existing.length === 0) {
         await db.createCollection(collection);
+      }
+
+      const violations: number = await countViolations(db);
+      if (violations > 0) {
+        myConsole.log(
+          `${collection.padEnd(24)} ⚠️  validator NOT applied: ${violations} document(s) would ` +
+          'become unwritable. Run the 20260809_materialize-required-defaults migration.'
+        );
+        continue;
       }
 
       await db.command({

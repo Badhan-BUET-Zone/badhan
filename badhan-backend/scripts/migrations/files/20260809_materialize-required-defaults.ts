@@ -172,12 +172,24 @@ async function applyDonorValidator(): Promise<{ applied: boolean; reason?: strin
     return { applied: false, reason: 'dry run' };
   }
 
-  await db.command({
-    collMod: 'donors',
-    validator: DONOR_VALIDATOR,
-    validationLevel: 'strict',
-    validationAction: 'error'
-  });
+  try {
+    await db.command({
+      collMod: 'donors',
+      validator: DONOR_VALIDATOR,
+      validationLevel: 'strict',
+      validationAction: 'error'
+    });
+  } catch (e: any) {
+    // Distinguish "not allowed" from "data is wrong". A managed cluster hands the application a
+    // readWrite user, and collMod needs dbAdmin on the database — a privilege question for whoever
+    // administers the cluster, not something a re-run will fix.
+    const reason: string = /not allowed to do action/.test(String(e?.message))
+      ? `collMod is not permitted for this database user (${e.message}). ` +
+        'Grant dbAdmin on this database, or apply the validator with an admin connection.'
+      : `collMod failed: ${e?.message}`;
+    log(`  ${reason}`);
+    return { applied: false, reason };
+  }
 
   // Read it back. A validator that failed to apply looks exactly like one that is working.
   const [confirmed] = await db.listCollections({ name: 'donors' }).toArray();
@@ -236,10 +248,25 @@ export default async function run(): Promise<void> {
   fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, { encoding: 'utf8' });
   log(`Report written to ${reportPath}`);
 
-  // A dry run that could not apply the validator is expected. A real run that could not is not:
-  // the migration has half-finished, and the caller must see that rather than read "complete".
-  if (!DRY_RUN && !validator.applied) {
-    throw new Error(`Backfill finished but the validator was not applied — ${validator.reason}`);
+  // Two different kinds of "the validator is not on", and only one of them is a failure.
+  //
+  // Not permitted (the managed cluster hands this application a readWrite user, and `collMod` needs
+  // a database-admin privilege) is a known, accepted state: the backfill is the repair, the schema
+  // and its pre-update hook are the guard, and the validator applies itself on the first boot after
+  // somebody grants the privilege. A warning, not an exit code.
+  //
+  // Documents still violating the invariant after the backfill IS a failure. It means a designation
+  // outside 0..3 that no default can repair, the migration did not achieve what it exists for, and
+  // the run must not report "complete".
+  const { missing, outOfRange } = await donorDesignationViolations();
+  if (!DRY_RUN && (missing > 0 || outOfRange > 0)) {
+    throw new Error(
+      `Backfill finished but ${missing} donor(s) still have no designation and ${outOfRange} hold a ` +
+      'value outside 0..3. Repair those documents by hand, then re-run.'
+    );
+  }
+  if (!validator.applied && !DRY_RUN) {
+    log(`  note: collection validator not applied — ${validator.reason}`);
   }
 
   log(DRY_RUN ? 'DRY_RUN complete (no writes performed).' : 'Migration complete.');

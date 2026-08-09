@@ -9,9 +9,10 @@ This plan repairs the data, makes the absence unrepresentable at the database le
 application-level holes that could reintroduce it, and fixes the report that was supposed to have
 told us about it years ago and never did.
 
-**Status: P1–P4 implemented and verified locally.** The rollout below has not been run — no database
-other than `local` has been touched. See [§2](#2-as-implemented) for what the implementation added
-beyond this plan.
+**Status: P1, P3 and P4 shipped. P2 (the collection validator) is written but not in force** — the
+application's database user cannot run `collMod`, so mongoose carries the invariant instead. Read
+[§2.0](#20-the-collection-validator-is-deferred--mongoose-is-the-guard) before the phases below: it
+changes what P2 means.
 
 ---
 
@@ -20,8 +21,8 @@ beyond this plan.
 | | Today | After plan 12 |
 | --- | --- | --- |
 | A donor document with no `designation` | exists in production | **backfilled to `0`** |
-| Raw-driver insert of a donor with no `designation` | accepted | **rejected by the server** |
-| `$unset: { designation }` through mongoose | accepted silently | **rejected** |
+| Raw-driver insert of a donor with no `designation` | accepted | still accepted — see [§2.0](#20-the-collection-validator-is-deferred--mongoose-is-the-guard) |
+| `$unset: { designation }` through mongoose | accepted silently | **rejected**, with or without `runValidators` |
 | `IDonor.designation` | `designation?: number` — 7 `!` assertions downstream | **`designation: number`, no assertions** |
 | Schema Inconsistencies page | silently hides every missing field that has a default | **lists them** |
 | Other required fields missing from old documents | present in production | **backfilled where a static default exists** |
@@ -260,7 +261,60 @@ and the instrument stays broken.
 
 ## §2 As implemented
 
+### 2.0 The collection validator is deferred — mongoose is the guard
+
+`collMod` is a database-admin action. The application connects to the managed cluster as a
+**readWrite** user, so applying a validator is refused:
+
+```
+donors  ⚠️  validator not applied: user is not allowed to do action [collMod] on [Badhan-Test.donors]
+```
+
+Granting it (a custom role carrying just `collMod` on `donors` would be enough) was considered and
+declined for now, so §1.3's `$jsonSchema` guard is **not in force on development or production**. The
+code stays and applies itself on the first boot after the privilege exists — no change needed then.
+
+What carries the invariant instead:
+
+| Guard | Covers | Verified |
+| --- | --- | --- |
+| `default: 0` + `required: true` | every `save()` — all donor creation and every profile edit | existing suite |
+| **new** `pre` hook on `updateOne`/`updateMany`/`findOneAndUpdate`/`replaceOne`/`findOneAndReplace` | any update that `$unset`s or nulls `designation`, **with or without** `runValidators` | probe below |
+| `runValidators: true` on the two donor update paths | value-level rules (`min`/`max`/`enum`) on those statements | existing suite |
+| `IDonor.designation: number` | the compiler | `tsc --noEmit` |
+| `DONOR_VALIDATOR` (dormant) | writes from outside this application | not in force |
+
+The pre-update hook is new — it was not in the plan. It exists because losing the database-level
+guard means a future `updateOne` that forgets `runValidators` would otherwise be able to strip the
+field again, and a hook on the schema cannot be forgotten. Verified with the local validator switched
+off, so mongoose was the only thing standing:
+
+```
+BLOCKED   updateOne $unset designation (no runValidators)
+BLOCKED   findOneAndUpdate $set designation: null
+BLOCKED   updateMany $unset designation
+ACCEPTED  updateOne $set designation: 2      (legitimate promotion)
+ACCEPTED  updateOne $set comment             (unrelated field)
+```
+
+What remains uncovered is exactly what caused the problem: a write from outside this application.
+That is the gap the validator would close, and it stays open until the privilege is granted.
+
+Consequently the migration **does not fail** when `collMod` is unauthorized — it logs the reason and
+completes, because the backfill is the repair. It still fails if documents violate the invariant after
+the backfill, which would mean a `designation` outside 0..3 that no default can fix.
+
+### 2.1 Other deltas
+
 Four things the implementation added or changed against the plan above.
+
+**The boot-time sync refuses to lock a collection whose documents would fail.** §1.4 had the boot
+sync applying the validator unconditionally, and `syncCollectionValidators()` runs on *every* connect
+— including the migration's own bootstrap. On a database where `collMod` is permitted, a **dry run**
+would therefore have applied a strict validator to 1349 violating donors before the backfill ran,
+making them unwritable: the exact failure §1.3 and the P1-before-P2 ordering exist to prevent, reached
+by a path neither noticed. The sync now counts violations first and skips with a warning. This was
+found on the development run, where the missing privilege happened to mask it.
 
 **The purge re-applies the validators too.** §1.4 covered `mongorestore --drop`; it missed
 `dropDatabase()`, which [clearDatabase.ts](../../badhan-backend/src/db/test/clearDatabase.ts) calls on
