@@ -1,4 +1,10 @@
 {
+  // VS Code bundles TypeScript 6.0, which errors on `moduleResolution: "node"` —
+  // a deprecation neither project can silence: badhan-frontend is pinned to TS
+  // 4.5.5 (Vue 2 / vue-cli 5), which rejects `ignoreDeprecations` outright, and
+  // badhan-frontend-test's TS 5.9.2 rejects the "6.0" value. Point the editor at
+  // the newest TypeScript the repo actually uses so it reports what CI reports.
+  "typescript.tsdk": "badhan-frontend-test/node_modules/typescript/lib",
   "search.exclude": {
     "**/trash/**": true,
     "**/badhan-datainput-frontend/**": true
