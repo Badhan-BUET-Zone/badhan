@@ -13,7 +13,11 @@ const printServiceWorkerBaseAndEnv = ():void => {
   ServiceWorkerConsoleLog(`Service worker base: ${process.env.BASE_URL}, env: ${environmentService.getEnvironmentName()}`)
 }
 
-if (environmentService.isEnvironmentProduction()) {
+// Everywhere except local. Production and development run the same worker, the same
+// update flow and the same cache headers, so the update path finally has somewhere to
+// be rehearsed. Local keeps none of it: a service worker over a webpack dev server
+// serves stale bundles and is the most confusing thing a new contributor can hit.
+if (!environmentService.isEnvironmentLocal()) {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready () {
       ServiceWorkerConsoleLog('App is being served from cache by a service worker.\n For more details, visit https://goo.gl/AFskqB')

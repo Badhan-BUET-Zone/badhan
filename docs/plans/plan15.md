@@ -588,7 +588,10 @@ the shared test site from inside the app.
 | [.env.production](../../badhan-frontend/.env.production) | drop `VUE_APP_ADMIN_CONSOLE_URL` |
 
 `NODE_ENV` stays as each file sets it — `.env.local` deliberately builds in development mode
-(unminified, with devtools) while calling itself the `local` *environment*. After this phase
+(unminified, with devtools) while calling itself the `local` *environment*. (For `.env.development`
+this was later reversed: it now builds in production flavour, because that is the only way the
+development site gets a service worker at all — see
+[§P5.2](#p52-register-the-service-worker-everywhere-except-local).) After this phase
 `NODE_ENV` and `VUE_APP_ENVIRONMENT` are no longer redundant: the first is the webpack build flavour,
 the second is which deployment this is. Say so in a comment at the top of each file, because the
 difference is exactly the thing that made `local` invisible.
@@ -746,9 +749,19 @@ annotates its own scripts.
 
 ## Phase P5 — make the development site a PWA
 
+> **Landed, with one correction to the plan and half the acceptance still owed.** The registration
+> guard is now `!isEnvironmentLocal()` and the PWA identity is per-environment. **The plan was wrong
+> about the worker already existing** — `build:development` emitted no `service-worker.js` at all, and
+> the fix is in [§P5.2](#p52-register-the-service-worker-everywhere-except-local). Build-time
+> acceptance passes: production's `dist/manifest.json` differs from its pre-change baseline in
+> `theme_color` and nothing else; development's differs from production's in `name` / `short_name` and
+> nothing else, same icon set; both builds emit a `service-worker.js` with the same 62-entry precache;
+> `build:local` emits none. **The six-item browser checklist in
+> [§P5.4](#p54-acceptance--the-development-site-is-a-pwa) has not been run** — it needs the
+> development site deployed twice and a real browser, so it is owed before this phase is called done.
+
 **Depends on:** [P4](#phase-p4--the-frontend-speaks-three-words) · **Deployable alone:** yes ·
-**Reversible:** yes, independently · **Status:** not started. This is the only phase a user can
-perceive.
+**Reversible:** yes, independently. This is the only phase a user can perceive.
 
 Today only production is a Progressive Web App. Development ships a manifest and icons, so a browser
 will offer to install it, but the installed result has **no service worker** — no offline cache, no
@@ -819,18 +832,48 @@ Android splash are different reds.
 if (!environmentService.isEnvironmentLocal()) {
 ```
 
-One character of logic, and the development site becomes a PWA. Concretely, it gains:
+One character of logic — but **not** on its own, see the correction below. Concretely, development
+gains:
 
 | Capability | Comes from | Testable on development after P5 |
 | --- | --- | --- |
-| Precached app shell, offline load | Workbox's generated `service-worker.js` (`@vue/cli-plugin-pwa` already emits it on every build — it was only never registered) | yes |
+| Precached app shell, offline load | Workbox's generated `service-worker.js` — which this phase had to make the development build actually emit, see below | yes |
 | Installability with a *working* offline story | manifest + a registered worker with a fetch handler | yes |
 | "New content is available" → `skipWaiting` → auto-reload | [registerServiceWorker.ts:29-45](../../badhan-frontend/src/registerServiceWorker.ts#L29-L45) | **yes — this is the one that has never been rehearsed** |
 | Offline/online lifecycle logging | [:46-48](../../badhan-frontend/src/registerServiceWorker.ts#L46-L48) | yes |
 | Cache-header interaction (immutable hashed assets vs `no-cache` index) | the development Firebase config, aligned in [§P2.7](#p27-file-renames) | yes |
 
-The worker file itself needs no new work: `@vue/cli-plugin-pwa` has been generating it into `dist/` for
-every environment all along. Nothing has been asking the browser to install it.
+**Correction — the worker was never being generated for development, and the one-line guard alone
+would have shipped a 404.** This plan asserted that `@vue/cli-plugin-pwa` had been emitting
+`service-worker.js` into `dist/` for every environment and that only the registration was missing.
+It had not. The plugin wraps its entire Workbox block in
+`if (process.env.NODE_ENV === 'production')` — `node_modules/@vue/cli-plugin-pwa/index.js:36`, not a
+file this repo tracks, which is why nothing here contradicted the claim — and
+`.env.development` set `NODE_ENV=development` — so `npm run build:development` produced no worker file
+at all. Flipping the guard would have had the deployed development site request
+`${BASE_URL}service-worker.js`, receive the SPA fallback or a 404, and log a registration error: no
+precache, no offline shell, and above all no update-and-reload path — the one capability this phase
+exists to create a rehearsal for.
+
+**The fix — [.env.development](../../badhan-frontend/.env.development) now sets
+`NODE_ENV=production`.** The development *environment* is built in production *flavour*. This is the
+sharper form of the same idea [§P4.2](#p42-env-files) already states — `NODE_ENV` is the webpack build
+flavour, `VUE_APP_ENVIRONMENT` is which deployment this is, and they are independent — so
+`--mode development` still loads this file and still sets `VUE_APP_ENVIRONMENT=development`. Verified:
+the development build now emits a `service-worker.js` byte-for-byte the same size as production's,
+with the same 62 precache entries. It also makes the rest of the rehearsal honest: minification, chunk
+splitting, source maps and Workbox configuration on development are now production's, not a second
+configuration that only resembles it.
+
+What development loses is the unminified bundle, the Vue devtools hook and the development-mode
+warnings. That is the intended trade and it costs nothing that was not already available: the `local`
+environment still builds in development flavour ([.env.local](../../badhan-frontend/.env.local)) and is
+where debugging belongs. A test site whose job is to rehearse production cannot also be the place with
+production disabled.
+
+**This supersedes the sentence in [§P4.2](#p42-env-files) that said `NODE_ENV` stays as each file sets
+it.** That decision holds for `.env.local` — the file it was written about, and the one where the two
+values genuinely differ in meaning — and is reversed for `.env.development`.
 
 Local keeps none of it, which is right: a service worker over a webpack dev server serves stale
 bundles and is the single most confusing thing a new contributor can hit.
@@ -909,8 +952,21 @@ the pre-change baseline with `npm run build` on the current tree *before*
 [§P4.7](#p47-frontend-npm-scripts) renames it — the two commands must produce the same bytes across the
 rename, which is the check that `build:production` really is what `build` was.
 
+**Ran, and passed.** The baseline manifest was
+`{"name":"Badhan","short_name":"Badhan","theme_color":"#ee0000",…}`; production now emits the same
+object with `theme_color` `#B71C1C` and no other difference. Development differs from it in `name` and
+`short_name` only, with the identical four-icon set. Two further checks the plan did not list, added
+because of the correction in [§P5.2](#p52-register-the-service-worker-everywhere-except-local):
+`dist/service-worker.js` exists for `build:production` **and** `build:development`, at the same size
+and with the same 62 precache entries, and does **not** exist for `build:local` — so local cannot
+register a worker even if the guard were wrong. One incidental change worth recording:
+`pwa.name` was previously unset, so `<meta name="apple-mobile-web-app-title">` read
+`badhan-frontend`, the package name; it now reads `Badhan` / `Badhan (development)`. The `<title>`
+tag still reads `badhan-frontend` and is untouched, per [§P4.4](#p44-what-the-user-sees).
+
 Then deploy development and walk the checklist in a browser — **all six must pass**, and the same six
-must still pass on production:
+must still pass on production. **None of the six has been run yet:** they need the development site
+deployed, and item 6 needs it deployed twice. This is the outstanding half of P5.
 
 1. DevTools → Application → **Service Workers**: one worker, status *activated and is running*.
 2. Application → **Manifest**: `Badhan (development)`, icons resolve, no manifest errors.
@@ -944,14 +1000,24 @@ anything else, you are on a test copy and the information in it may not be real"
 | A stale development worker survives a bad deploy and keeps serving the old shell — now possible on development because it was always possible on production | the same escape hatch production has: DevTools → Application → Service Workers → *Unregister*, then hard reload. Item 6 of [§P5.4](#p54-acceptance--the-development-site-is-a-pwa) exists to catch it before production |
 | Production PWA gets re-labelled | diff `dist/manifest.json` against a pre-change production build; the production strings must be identical |
 | Installed dev PWA caption is truncated to *Badhan (deve…* | accepted; the label still reads as not-production, and the full string shows in the install prompt and app switcher |
+| The development site is now a minified production-flavour build, so Vue devtools and development warnings are gone from it | intended, and the point: a rehearsal of production has to be production's build. `local` is unchanged and is where debugging belongs ([§P5.2](#p52-register-the-service-worker-everywhere-except-local)) |
+| The development bundle is now minified, so a stack trace from the test site is less readable | source maps are still emitted (`productionSourceMap` is Vue CLI's default and is not disabled) — exactly as on production, which is the environment this one is now rehearsing |
 
 ---
 
 ## Phase P6 — backup/restore uses the same three words
 
+> **Landed.** Both halves shipped together, as [§P6.2](#p62-one-parameter) requires. Exercised against
+> the running internal server: `POST /restore/123` with no parameter → `400 environment is required.
+> It must be one of: production, development, local`; `?environment=prodcution` → `400 environment must
+> be one of: …`; `?environment=production` → the unchanged `403 Production restore is not allowed`;
+> `?environment=local` → past validation to `404 backup with specified timestamp not found`. The guest
+> route behaves the same. Backend typecheck and both lints clean. Two divergences, in
+> [§P6.2](#p62-one-parameter) and [§P6.3](#p63-labels).
+
 **Depends on:** [P3](#phase-p3--the-backend-speaks-three-words),
 [P4](#phase-p4--the-frontend-speaks-three-words) · **Deployable alone:** yes (internal tool) ·
-**Reversible:** yes, independently · **Status:** not started.
+**Reversible:** yes, independently.
 
 | | Today (pre-plan) | After plan 15 |
 | --- | --- | --- |
@@ -1009,16 +1075,34 @@ The internal server is not mounted publicly and is only ever called by the local
 straight cut with no compatibility shim is fine — but P6 must ship the backend and frontend halves in
 the same change.
 
+**Divergence — the silent fallback to local had to go with it, and the guest route needed the same
+change.** Two things the plan did not name:
+
+- The old body read `let mongoURI = MONGODB_URI_LOCAL; if (development) mongoURI =
+  MONGODB_URI_DEVELOPMENT || mongoURI`. That second `||` meant a restore *aimed at development* landed
+  on the developer's own database whenever `env.development` was missing or had no `MONGODB_URI` — the
+  same "infer the target" failure this phase exists to remove, one layer down. The URI now comes from a
+  `{ production, development, local }` record with no fallback, and an empty one is a
+  `BadRequestError400` naming the environment and the env file it should have come from.
+- `POST /guest/restore/:date` read `req.query.production` too, and shares `validatePOSTRestore`. It now
+  takes `environment` as well, so the guest walkthrough exercises the same contract the real screen
+  does rather than a stale one.
+
 ### P6.3 Labels
 
 [BackupRestore.vue](../../badhan-frontend/src/views/BackupRestore.vue): "Restore to Test" and the
 row-level "Restore Test" both become **"Restore to Development"**; `restoreToTestFlagsArray` →
 `restoreToDevelopmentFlagsArray`; `handleRestoreToTest` → `handleRestoreToDevelopment`; the toast
 "restored backup to test environment" → "…to development environment". "Restore to Local" and "Restore
-to Production" are already right as labels — but the local handler
-([:271](../../badhan-frontend/src/views/BackupRestore.vue#L271)) currently relies on sending *no* flag,
-so it is the one call site that changes behaviourally: it must now send `?environment=local`
-explicitly ([§P6.2](#p62-one-parameter)).
+to Production" are already right as labels — **except the row-level production button, which the survey
+missed: it said "Restore Prod"**, the same abbreviation defect as "Restore Test" one column over. Both
+row-level buttons now read in full, matching the latest-backup card. The local handler
+currently relies on sending *no* flag, so it changes behaviourally: it must now send
+`?environment=local` explicitly ([§P6.2](#p62-one-parameter)). **There turned out to be two such call
+sites, not one** — [§P6.1](#p61-what-was-found) counted three restore calls, but the **Copy to Local
+DB** button ([:391](../../badhan-frontend/src/views/BackupRestore.vue#L391)) makes a fourth: it creates
+a backup and immediately restores it, relying on the same "no flag means local". It now names `local`
+too, which is the only reason that button still works.
 
 ### P6.4 Manual
 
@@ -1038,8 +1122,15 @@ environment".
 
 ## Phase P7 — Android is production-only, and says so
 
+> **Landed.** [upload-googleplay.js](../../badhan-android/upload-googleplay.js) now requires
+> [environments.js](../../environments.js) and asserts all five production URLs in
+> `twa-manifest.json` against `ENVIRONMENTS.production.frontendBaseUrl`; the header comment, the
+> Android README and the manual all say Android is production-only. Exercised both ways: silent on the
+> current tree, and on a copy with production "moved" to `badhan-new.web.app` it reported exactly the
+> three fields that changed and left the two that had not. `signingKey.path` untouched, as decided.
+
 **Depends on:** [P2](#phase-p2--one-map-environmentsjs) · **Deployable alone:** yes ·
-**Reversible:** yes, independently · **Status:** not started.
+**Reversible:** yes, independently.
 
 | | Today (pre-plan) | After plan 15 |
 | --- | --- | --- |
@@ -1083,6 +1174,16 @@ What P7 adds is the assertion that the decision stays true:
   [02-getting-the-app.md](../manual/02-getting-the-app.md): the Play Store app is always the
   production app; a test copy is reachable only through the browser.
 
+Two details of how the assertion landed:
+
+- **It compares origins, not strings.** `host` is a bare hostname and the other four are absolute
+  URLs, so the check parses them and compares `URL.origin`. A scheme change or a trailing slash is not
+  a domain change and should not be reported as one; a different host is, and is.
+- **`productionShellErrors` is exported.** The rest of `checkRequirements` needs Docker and a ~3 GB
+  Android image to say anything, so an assertion buried inside it could only be exercised by running a
+  real preflight. Exported, it can be — and was — run directly against both the current manifest and a
+  deliberately moved one, which is the only way to know a guard of this shape actually fires.
+
 The unrelated `signingKey.path` Windows staleness ([§P7.1](#p71-what-was-found)) is already worked
 around and is left alone — fixing it here would mix an unrelated change into a vocabulary plan.
 
@@ -1090,7 +1191,12 @@ around and is left alone — fixing it here would mix an unrelated change into a
 
 ## Phase P8 — docs
 
-**Depends on:** all phases · **Deployable alone:** — · **Status:** not started.
+> **Landed.** The [§P2.2](#p22-exactly-three-names) table is now in
+> [README.md](../../README.md)'s *Branches and environments* section, the grep gate has been run and
+> every line of it is clear, and the manual read-through turned up two things
+> ([§P8.2](#p82-manual)).
+
+**Depends on:** all phases · **Deployable alone:** —
 
 ### P8.1 One reference table
 
@@ -1098,6 +1204,15 @@ Add the [§P2.2](#p22-exactly-three-names) table to [README.md](../../README.md)
 deploy section, and replace the parenthetical at [:205](../../README.md#L205) with a pointer to it.
 That table is the artefact this whole plan exists to produce: one place that answers "which URL, which
 database, which project, which branch" for all three environments.
+
+**Done, into the *Branches and environments* section [P1](#phase-p1--the-branch-rename) created** —
+which already sat where this phase wanted the table and already held the reduced branch → project map
+that replaced the parenthetical. That map has been swapped for the full
+[§P2.2](#p22-exactly-three-names) table: seventeen rows, three columns, plus a row the plan's own table
+does not have — the backup restore target from [P6](#phase-p6--backuprestore-uses-the-same-three-words),
+since `?environment=…` is now part of the same vocabulary. The prose that follows it (an unlisted
+branch refuses to deploy, no override flag, `local` is not a deploy target) is unchanged and is the
+reason no separate pointer sentence was needed.
 
 ### P8.2 Manual
 
@@ -1108,6 +1223,27 @@ and the About row, [§P6.4](#p64-manual) for the restore labels,
 [04-roles-and-permissions.md](../manual/04-roles-and-permissions.md) and
 [16-super-admin-tools.md](../manual/16-super-admin-tools.md) are the two most likely to name an
 environment in passing.
+
+**Done. Neither guess was right, and the sweep found two other things.** `grep -rni "environment"
+docs/manual/` returns **nothing at all** — the manual never uses the word, which is correct for a
+manual written for readers with no technical background, and is why the phase-by-phase edits landed as
+"test copy", "the real app" and button labels instead. `04-roles-and-permissions.md` names no
+environment anywhere.
+
+- **Fixed:** [18-when-something-goes-wrong.md](../manual/18-when-something-goes-wrong.md)'s *"A
+  coloured badge names a version in the corner"* now says what the badge can actually say —
+  `development` on the shared test site, `local` on a developer's own machine, and nothing at all on
+  the real app. It was written when `local` reported itself as `development`
+  ([§P4.1](#p41-what-was-found)), so it could not have named the third value before P4.
+- **Considered and left alone:** the **Dev Console** screen
+  ([16-super-admin-tools.md:101](../manual/16-super-admin-tools.md#L101), and the menu item in
+  [AppBar.vue:238](../../badhan-frontend/src/components/AppShell/AppBar.vue#L238)). It is a `dev`
+  abbreviation in a user-visible label, which [§P2.2](#p22-exactly-three-names) forbids — but the
+  `dev` there is short for *developer*, not for the development *environment*, and this plan unifies
+  environment names. Renaming it would be a UI change with its own reasons, unrelated to the
+  vocabulary. Same reasoning that left `"Admin Console"` in
+  [contributors.json](../../badhan-frontend/src/data/contributors.json) alone in
+  [§P4.6](#p46-remove-vue_app_admin_console_url-entirely).
 
 ### P8.3 The grep gate
 
@@ -1123,11 +1259,19 @@ below should return nothing:
 
 ```
 # no old branch names
+#   Two carve-outs, both deliberate: package.json's `"main": "index.js"` is npm's
+#   entry-point field, not a branch — the risk this plan predicted, that grepping
+#   for "main" alone flags a legitimate use of the word. And SECRETS_BRANCH is the
+#   *secrets* repos' branch in upload-googleplay.js and fetch-backup-secrets.js,
+#   left at its current value on purpose (§P9.1).
 grep -rn --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=archive \
-  --exclude-dir=implemented -E "test-branch|\"main\"|'main'" .
+  --exclude-dir=docs --exclude-dir=dist --exclude-dir=build \
+  -E "test-branch|\"main\"|'main'" . \
+  | grep -v '"main": "index.js"' | grep -v 'SECRETS_BRANCH'
 
 # no abbreviations or fourth names
 grep -rn --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=archive \
+  --exclude-dir=docs --exclude-dir=dist --exclude-dir=build \
   -E "app_(dev|prod)\.yaml|serve:(dev|prod)\b|start:(dev|prod)\b|'testing'|firebase\.badhan-" .
 
 # the admin console is gone from the live tree  (P4.6)
@@ -1153,8 +1297,23 @@ grep -c "badhan/production/docs/images" README.md      # 15
 grep -c "badhan/main" README.md                        # 0
 ```
 
-`docs/plans/implemented/` is excluded throughout: implemented plans record what was true when they
-were written and are not rewritten.
+`docs/` is excluded throughout, not just `docs/plans/implemented/`. Plans record what was true when
+they were written; so does [branch-and-commit-convention.md](../blog/branch-and-commit-convention.md),
+whose whole point is the sentence *"These branches were called `main` … and `test-branch` until the
+rename"*. A gate that fires on a correct historical statement teaches people to ignore the gate. The
+prose in `docs/` is checked by reading it ([§P8.2](#p82-manual)), which is the right instrument for
+prose.
+
+**Ran, all eight clear.** Gates 1–4 and 7 returned nothing. The three that print rather than stay
+silent printed what they should: both App Engine entrypoints naming `start:production` /
+`start:development` and both scripts existing; all four frontend build scripts with bare `build` as
+the alias, and `upload-firebase.js` calling none of them by the bare name; and README at 15 image
+URLs on `production`, 0 on `main`.
+
+The two carve-outs in gate 1 were found by running it, not predicted — the first draft of this gate
+flagged `"main": "index.js"` in two `package.json` files and the two `SECRETS_BRANCH` constants. Both
+are recorded above rather than silently dropped, because a gate whose exclusions are invisible is a
+gate nobody can re-derive.
 
 ### P8.4 The commit message is the only release note
 
@@ -1169,7 +1328,12 @@ directory holds conventions that stay true, not events, and a one-off announceme
 
 ## Phase P9 — push any changed secrets, last
 
-**Depends on:** all phases · **Deployable alone:** — · **Status:** not started.
+> **Landed, and it changed nothing — which was the expected outcome.** The audit ran and confirms the
+> secrets repo needs no push: no key that lives in a secret env file was renamed by any phase of this
+> plan, and the three file names were already the three canonical words. Results in
+> [§P9.3](#p93-the-key-audit).
+
+**Depends on:** all phases · **Deployable alone:** —
 
 The secret env files are the one part of the ecosystem this repo cannot see: `env.production`,
 `env.development` and `env.local` are gitignored
@@ -1234,6 +1398,38 @@ docker compose exec backend node -e "console.log(Object.keys(require('dotenv').p
 
 — compare against the five names above, for each environment, and record the result in the P9 commit
 message. If the list matches, the phase is done.
+
+**Ran, for all three environments. The lists match; the phase is done.** All three files hold exactly
+the same four keys:
+
+```
+env.production  -> JWT_SECRET, MONGODB_URI, RATE_LIMITER_ENABLE, VUE_APP_FRONTEND_BASE
+env.development -> JWT_SECRET, MONGODB_URI, RATE_LIMITER_ENABLE, VUE_APP_FRONTEND_BASE
+env.local       -> JWT_SECRET, MONGODB_URI, RATE_LIMITER_ENABLE, VUE_APP_FRONTEND_BASE
+```
+
+Four, not five, and that is the correct answer: `NODE_ENV` is the fifth key the backend reads and it
+comes from the npm script, never from the file — which this section predicted, and which
+[P3](#phase-p3--the-backend-speaks-three-words) depends on, since making it mandatory would otherwise
+have made every one of these files invalid.
+
+Two corroborating checks, because the file listing alone only proves what the files hold today and not
+that the plan left them alone:
+
+- `process.env.*` in [dotenv/index.ts](../../badhan-backend/src/dotenv/index.ts) is **identical**
+  between `HEAD` and the working tree — this plan renamed no key it reads. The same holds for the
+  three `readMongoUriFromEnvFile` arguments in
+  [internalRoutes/index.ts](../../badhan-backend/src/internalRoutes/index.ts), even though
+  [P6](#phase-p6--backuprestore-uses-the-same-three-words) rewrote the function that consumes them.
+- The remaining `process.env.*` names anywhere in `badhan-backend/src` and `scripts` —
+  `GAE_ENV`, `PORT`, `INTERNAL_PORT`, `DRY_RUN`, `MIGRATION_CONCURRENCY`, `SECRETS_REPO_URL`,
+  `SECRETS_BRANCH`, `BADHAN_FIREBASE_SERVICE_ACCOUNT`, `BADHAN_FIREBASE_STORAGE_BUCKET` — are runtime
+  and tooling knobs, not keys inside the secret env files, and none was touched.
+
+One limit worth stating rather than glossing: the listing above is of the copies on this machine, not
+of the secrets repo. That is the right check for the question P9 asks — *did this plan change a key
+name?* — and the answer comes from the code diff above, not from the files. Nothing here can attest
+that someone's local copies are in sync with the repo, and nothing in this plan needed them to be.
 
 ### P9.4 The key rename that is *not* taken
 

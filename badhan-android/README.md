@@ -4,6 +4,22 @@ The Play Store app is a [Trusted Web Activity](https://developer.chrome.com/docs
 wrapper around https://badhan-buet.web.app — it does **not** bundle the frontend.
 Deploy the site first; rebuild the app only when the manifest, icons, or version change.
 
+## Android is production-only
+
+There is one Play listing and it wraps **production**. This script never reads the git
+branch: it builds the same production shell from `production`, from `development`, from
+anywhere. There is no `development` variant of the Android app, and adding one would mean
+a second `packageId`, a second signing key, a second store entry and a second review
+queue — to wrap a site any browser can already open. Test the development site in a
+browser instead; it installs to a home screen as **Badhan (development)**.
+
+The decision is asserted rather than remembered. The preflight checks every production URL
+in [twa-manifest.json](twa-manifest.json) — `host`, `iconUrl`, `maskableIconUrl`,
+`webManifestUrl`, `fullScopeUrl` — against `ENVIRONMENTS.production.frontendBaseUrl` in
+[../environments.js](../environments.js), the same constant the frontend deploy uses. If
+production ever moves to a new domain, `--check` fails naming the field, instead of
+shipping a store build pointed at a dead host.
+
 [upload-googleplay.js](upload-googleplay.js) automates the whole flow: it fetches the
 signing keystore and the Play service-account key from the private secrets repo, builds
 with Bubblewrap, uploads the bundle, then deletes the secrets it fetched.

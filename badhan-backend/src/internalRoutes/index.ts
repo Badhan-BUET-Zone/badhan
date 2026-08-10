@@ -2,7 +2,7 @@
 import express, { Router, Request, Response, NextFunction } from 'express'
 import '../db/mongoose' // ensure mongoose connection is initialized (cached if already connected)
 import rateLimiter from '../middlewares/rateLimiter'
-import { param, validationResult } from 'express-validator'
+import { param, query, validationResult } from 'express-validator'
 import { spawnSync } from 'child_process'
 import path from 'path'
 import fs from 'fs'
@@ -33,6 +33,16 @@ const readMongoUriFromEnvFile = (envFileName: string): string => {
 const MONGODB_URI_PRODUCTION = readMongoUriFromEnvFile('env.production')
 const MONGODB_URI_DEVELOPMENT = readMongoUriFromEnvFile('env.development')
 const MONGODB_URI_LOCAL = readMongoUriFromEnvFile('env.local')
+
+// The three environment names, spelled the same way everywhere in the ecosystem, and the
+// file each one's connection string comes from. A restore names its target with one of
+// these; nothing is inferred.
+const RESTORE_ENVIRONMENTS = ['production', 'development', 'local']
+const MONGODB_URI_BY_ENVIRONMENT: Record<string, { uri: string, envFile: string }> = {
+  production: { uri: MONGODB_URI_PRODUCTION, envFile: 'env.production' },
+  development: { uri: MONGODB_URI_DEVELOPMENT, envFile: 'env.development' },
+  local: { uri: MONGODB_URI_LOCAL, envFile: 'env.local' }
+}
 // dynamic requires for libs without type defs
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const AdmZip = require('adm-zip')
@@ -79,8 +89,16 @@ const runValidations = (validations: any[]) => async (req: Request, res: Respons
   return res.status(HTTP_STATUS.BAD_REQUEST).send(new BadRequestError400(errors.array()[0].msg, {}))
 }
 
+// Required, and deliberately not defaulted to local: a restore overwrites a database, the
+// request is one URL away from naming production, and "I forgot the parameter" and "I meant
+// local" look identical to the server.
+const validateQUERYEnvironment = query('environment')
+  .exists().withMessage(`environment is required. It must be one of: ${RESTORE_ENVIRONMENTS.join(', ')}`)
+  .bail()
+  .isIn(RESTORE_ENVIRONMENTS).withMessage(`environment must be one of: ${RESTORE_ENVIRONMENTS.join(', ')}`)
+
 const validateDELETEBackup = runValidations([validatePARAMDate])
-const validatePOSTRestore = runValidations([validatePARAMDate])
+const validatePOSTRestore = runValidations([validatePARAMDate, validateQUERYEnvironment])
 
 // --- Firebase storage setup (lightweight replication) ---
 // Expect service account JSON file path via env BADHAN_FIREBASE_SERVICE_ACCOUNT (fallback to local relative path like backup project)
@@ -226,13 +244,19 @@ const listController = async () => {
   return new OKResponse200('Successfully fetched list of backups', { backups: backupList })
 }
 
-const restoreController = async ({ time, production, development }: { time: number, production: boolean, development: boolean }) => {
-  console.log('[backup] restore command initiated time=', time)
-  if (production) {
+const restoreController = async ({ time, environment }: { time: number, environment: string }) => {
+  console.log('[backup] restore command initiated time=', time, 'environment=', environment)
+  if (environment === 'production') {
     return new ForbiddenError403('Production restore is not allowed', {})
   }
-  let mongoURI = MONGODB_URI_LOCAL
-  if (development) mongoURI = MONGODB_URI_DEVELOPMENT || mongoURI
+  // No fallback. The previous shape defaulted to the local URI and fell back to it when the
+  // development one was missing, so a restore aimed at development could quietly land on the
+  // developer's own machine instead.
+  const target = MONGODB_URI_BY_ENVIRONMENT[environment]
+  if (!target.uri) {
+    return new BadRequestError400(`no MONGODB_URI for the ${environment} environment; ${target.envFile} is missing or has no MONGODB_URI`, {})
+  }
+  const mongoURI = target.uri
   console.log('[backup] using mongoURI:', mongoURI)
   const backupList = await storage.getBackupList()
   if (!backupList.includes(time)) {
@@ -261,7 +285,7 @@ const restoreController = async ({ time, production, development }: { time: numb
       error: child.stderr,
       childStatus: child.status
     },
-    argv: { time, production, development }
+    argv: { time, environment }
   })
 }
 
@@ -352,8 +376,7 @@ router.post('/restore/:date',
   rateLimiter.commonLimiter,
   commonQueue,
   handle(async (req: Request) => restoreController({
-    production: req.query.production === 'true',
-    development: req.query.development === 'true',
+    environment: String(req.query.environment),
     time: parseInt(req.params.date, 10)
   })))
 
@@ -387,8 +410,8 @@ const guestBackupController = async () =>
 const guestDeleteController = async ({ time }: { time: number }) =>
   new OKResponse200('successfully deleted backup (guest)', { time })
 
-const guestRestoreController = async ({ production }: { production: boolean }) => {
-  if (production) {
+const guestRestoreController = async ({ environment }: { environment: string }) => {
+  if (environment === 'production') {
     return new ForbiddenError403('Production restore is not allowed', {})
   }
   return new OKResponse200('Backup successfully restored (guest)', {})
@@ -424,7 +447,7 @@ router.post('/guest/restore/:date',
   validatePOSTRestore,
   rateLimiter.commonLimiter,
   handle(async (req: Request) => guestRestoreController({
-    production: req.query.production === 'true'
+    environment: String(req.query.environment)
   })))
 
 router.post('/guest/purge-local-db',

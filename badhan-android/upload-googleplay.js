@@ -12,12 +12,22 @@
 // Note: the TWA is only a shell around https://badhan-buet.web.app — this does
 // NOT build the web frontend. Deploy the site first (upload-firebase.js), then
 // run this when the manifest, icons, or version change.
+//
+// Android has no development environment. This always builds the production
+// shell, from any branch — it never reads the git branch at all, and there is
+// no `development` TWA to build. That is a deliberate design decision, not an
+// oversight: a second Play listing would need its own packageId, its own
+// signing key, its own store entry and its own review queue, to wrap a site any
+// browser can already open. The cost is real; the benefit is a second icon.
+// What used to be missing was any assertion that the decision stayed true —
+// see productionShellErrors() below.
 
 const { execSync } = require("child_process");
 const { existsSync, mkdtempSync, copyFileSync, rmSync, readFileSync } = require("fs");
 const { resolve, basename } = require("path");
 const os = require("os");
 const { runCli, captureCli, dockerAvailable, toContainerPath } = require("../deploy-container");
+const { ENVIRONMENTS } = require("../environments");
 
 // Everything below runs in the android service, from this directory.
 const ANDROID = { service: "android", workdir: "/repo/badhan-android" };
@@ -170,6 +180,53 @@ function readManifest(baseDir) {
   };
 }
 
+// The one assertion that keeps "Android is production-only" honest.
+//
+// twa-manifest.json hardcodes the production frontend in five places. If someone
+// moves production to a new domain, nothing else in this repo would notice that the
+// Android app still points at the old one — the shell would build, upload, pass
+// review, and open a dead host on every phone that installed it. So every one of the
+// five is checked against ENVIRONMENTS.production.frontendBaseUrl, the same constant
+// the frontend deploy uses, and a mismatch fails the preflight naming the field.
+//
+// `host` is a bare hostname; the other four are absolute URLs, compared by origin so
+// a scheme or a trailing-slash difference is not reported as a domain change.
+const PRODUCTION_FRONTEND_URL = ENVIRONMENTS.production.frontendBaseUrl;
+const PRODUCTION_URL_FIELDS = ["iconUrl", "maskableIconUrl", "webManifestUrl", "fullScopeUrl"];
+
+function productionShellErrors(baseDir) {
+  const errors = [];
+  const manifest = JSON.parse(readFileSync(resolve(baseDir, "twa-manifest.json"), "utf8"));
+  const expected = new URL(PRODUCTION_FRONTEND_URL);
+
+  if (manifest.host !== expected.host) {
+    errors.push(
+      `bubblewrap: twa-manifest.json "host" is "${manifest.host}", but production is ` +
+        `"${expected.host}" (environments.js). The Android app is the production shell only; ` +
+        `update twa-manifest.json to match, or the store build points at the wrong site.`
+    );
+  }
+
+  for (const field of PRODUCTION_URL_FIELDS) {
+    const value = manifest[field];
+    let origin;
+    try {
+      origin = new URL(value).origin;
+    } catch {
+      errors.push(`bubblewrap: twa-manifest.json "${field}" is not a valid URL ("${value}").`);
+      continue;
+    }
+    if (origin !== expected.origin) {
+      errors.push(
+        `bubblewrap: twa-manifest.json "${field}" points at ${origin}, but production is ` +
+          `${expected.origin} (environments.js).`
+      );
+    }
+  }
+
+  return errors;
+}
+
 function requiredSecrets(publish) {
   return publish ? [...BUILD_SECRETS, PLAY_KEY_FILE] : BUILD_SECRETS;
 }
@@ -204,6 +261,7 @@ function checkRequirements(baseDir = __dirname, { publish = true } = {}) {
   } else {
     try {
       readManifest(baseDir);
+      errors.push(...productionShellErrors(baseDir));
     } catch (e) {
       errors.push(`bubblewrap: twa-manifest.json could not be parsed (${e.message}).`);
     }
@@ -329,7 +387,7 @@ function buildAndUpload({ publish = true, track = DEFAULT_TRACK, status, rollout
   return true;
 }
 
-module.exports = { buildAndUpload, checkRequirements, build, upload };
+module.exports = { buildAndUpload, checkRequirements, build, upload, productionShellErrors };
 
 // Run when executed directly.
 //   --check          preflight only (no build, no upload)

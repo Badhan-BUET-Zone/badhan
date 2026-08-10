@@ -24,6 +24,10 @@ button on the sign-in screen.
 The phone app is the website wrapped in an app icon, so it always shows the latest version.
 You never have to update it for new features — they simply appear.
 
+**The Play Store app is always the real app.** There is only one Badhan in the Play Store and
+it always shows the live information. Test copies exist only as websites — if someone asks you
+to try something on a test copy, they will send you a link to open in your browser.
+
 ## Adding the website to your home screen
 
 If you prefer not to install anything from the Play Store, you can still get an icon on your
@@ -35,6 +39,14 @@ phone:
 
 You now have a Badhan icon that opens straight into the app, without the browser's address
 bar in the way.
+
+**If the icon says something other than Badhan.** A test copy of the site installs under the
+name **Badhan (development)**. On a phone the caption under the icon is short, so you may see
+only the beginning of it — something like *Badhan (deve…* — while the full name appears in the
+install prompt and when you switch between open apps. That name is the signal that you are not
+on the real app: the information in a test copy may not be real, and anything you change there
+does not reach anyone. The real app installs as plain **Badhan**. You can have both on the same
+phone; they do not interfere with each other.
 
 ## What happens when you have a weak connection
 

@@ -95,11 +95,11 @@
                   Restore to Local
                 </v-btn>
                 <v-btn class="ma-2" small color="info"
-                       :loading="restoreToTestFlagsArray[0]"
+                       :loading="restoreToDevelopmentFlagsArray[0]"
                        :disabled="anyRowBusy(0)"
-                       @click="handleRestoreToTest(backupTimestamps[0], 0)">
+                       @click="handleRestoreToDevelopment(backupTimestamps[0], 0)">
                   <v-icon left>mdi-database-import</v-icon>
-                  Restore to Test
+                  Restore to Development
                 </v-btn>
                 <v-btn class="ma-2" small color="primary"
                        :loading="restoreToProductionFlagsArray[0]"
@@ -133,18 +133,18 @@
                       Restore to Local
                     </v-btn>
                     <v-btn class="ma-2" x-small color="info"
-                            :loading="restoreToTestFlagsArray[index]"
+                            :loading="restoreToDevelopmentFlagsArray[index]"
                             :disabled="anyRowBusy(index)"
-                            @click="handleRestoreToTest(timestamp, index)">
+                            @click="handleRestoreToDevelopment(timestamp, index)">
                         <v-icon left small>mdi-database-import</v-icon>
-                        Restore Test
+                        Restore to Development
                     </v-btn>
                     <v-btn class="ma-2" x-small color="primary"
                             :loading="restoreToProductionFlagsArray[index]"
                             :disabled="anyRowBusy(index)"
                             @click="handleRestoreToProduction(timestamp, index)">
                         <v-icon left small>mdi-cloud-upload</v-icon>
-                        Restore Prod
+                        Restore to Production
                     </v-btn>
 
                 </v-card>
@@ -173,7 +173,7 @@ export default {
     backupTimestampsErrorFlag: false,
     firebaseError: null,
 
-    restoreToTestFlagsArray: [],
+    restoreToDevelopmentFlagsArray: [],
     restoreToProductionFlagsArray: [],
     deleteLoaderFlagsArray: [],
     restoreToLocalFlagsArray: [],
@@ -210,12 +210,12 @@ export default {
       }
     },
     anyRowBusy (index) {
-    return !!(this.deleteLoaderFlagsArray[index] || this.restoreToTestFlagsArray[index] || this.restoreToProductionFlagsArray[index] || this.restoreToLocalFlagsArray[index])
+    return !!(this.deleteLoaderFlagsArray[index] || this.restoreToDevelopmentFlagsArray[index] || this.restoreToProductionFlagsArray[index] || this.restoreToLocalFlagsArray[index])
     },
     initRowFlags (length) {
   this.deleteLoaderFlagsArray = Array(length).fill(false)
   this.restoreToProductionFlagsArray = Array(length).fill(false)
-  this.restoreToTestFlagsArray = Array(length).fill(false)
+  this.restoreToDevelopmentFlagsArray = Array(length).fill(false)
   this.restoreToLocalFlagsArray = Array(length).fill(false)
     },
     setFlagForSpecificIndex (arr, index) {
@@ -265,16 +265,16 @@ export default {
         this.$store.dispatch('notification/notifyError', msg)
       }
     },
-    async handleRestoreToTest (timestamp, index) {
-      this.restoreToTestFlagsArray = this.setFlagForSpecificIndex(this.restoreToTestFlagsArray, index)
+    async handleRestoreToDevelopment (timestamp, index) {
+      this.restoreToDevelopmentFlagsArray = this.setFlagForSpecificIndex(this.restoreToDevelopmentFlagsArray, index)
       try {
-        const response = await this.backupAPIAxios.post(`/restore/${timestamp}?development=true`)
+        const response = await this.backupAPIAxios.post(`/restore/${timestamp}?environment=development`)
         this.initRowFlags(this.backupTimestamps.length)
         if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
-        this.$store.dispatch('notification/notifySuccess', 'Successfully restored backup to test environment')
+        this.$store.dispatch('notification/notifySuccess', 'Successfully restored backup to development environment')
       } catch (e) {
         this.initRowFlags(this.backupTimestamps.length)
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
@@ -284,7 +284,7 @@ export default {
     async handleRestoreToProduction (timestamp, index) {
       this.restoreToProductionFlagsArray = this.setFlagForSpecificIndex(this.restoreToProductionFlagsArray, index)
       try {
-        const response = await this.backupAPIAxios.post(`/restore/${timestamp}?production=true`)
+        const response = await this.backupAPIAxios.post(`/restore/${timestamp}?environment=production`)
         this.initRowFlags(this.backupTimestamps.length)
         if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
@@ -300,7 +300,7 @@ export default {
       async handleRestoreToLocal (timestamp, index) {
         this.restoreToLocalFlagsArray = this.setFlagForSpecificIndex(this.restoreToLocalFlagsArray, index)
         try {
-          const response = await this.backupAPIAxios.post(`/restore/${timestamp}`)
+          const response = await this.backupAPIAxios.post(`/restore/${timestamp}?environment=local`)
           this.initRowFlags(this.backupTimestamps.length)
           if (response.status !== HTTP_STATUS.OK) {
             this.$store.dispatch('notification/notifyError', response.data.message)
@@ -388,7 +388,7 @@ export default {
           this.initRowFlags(this.backupTimestamps.length)
         }
         // Step 2: Restore that backup to local
-        const restoreResponse = await this.backupAPIAxios.post(`/restore/${createdAt}`)
+        const restoreResponse = await this.backupAPIAxios.post(`/restore/${createdAt}?environment=local`)
         this.copyToLocalLoaderFlag = false
         if (restoreResponse.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', restoreResponse.data.message || 'Failed to restore newly created backup locally')

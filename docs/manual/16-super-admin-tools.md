@@ -44,7 +44,7 @@ the date and time it was taken.
 | --- | --- |
 | **Delete** | Removes that backup permanently. |
 | **Restore to Local** | Loads it into the copy on this computer. |
-| **Restore to Test** | Loads it into the practice copy of the app. |
+| **Restore to Development** | Loads it into the practice copy of the app — the shared test site. |
 | **Restore to Production** | **Loads it into the real, live app, replacing what is there now.** |
 
 ### Read this before touching anything
@@ -56,7 +56,7 @@ destructive button in the whole application.
 Sensible habits:
 
 - **Take a new backup before restoring an old one.** Then a mistake is recoverable.
-- **Restore to Local or Test first** and look at the result before touching production.
+- **Restore to Local or Development first** and look at the result before touching production.
 - **Do not restore in the middle of a busy day.** Whatever volunteers are entering at that
   moment will be lost.
 - **When in doubt, don't.** Ask a developer. Nothing here is so urgent that it cannot wait an

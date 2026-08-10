@@ -184,14 +184,36 @@ are deployable. **The git branch name *is* the environment name**, and the map b
 them lives in exactly one place: [`environments.js`](environments.js) at the repo root,
 which both upload scripts require.
 
-| Branch | Environment | GCP project | Firebase project | Backend | Frontend |
-| --- | --- | --- | --- | --- | --- |
-| `production` | `production` | `badhan-buet` | `badhan-buet` | https://badhan-buet.uc.r.appspot.com | https://badhan-buet.web.app |
-| `development` | `development` | `badhan-buet-test` | `badhan-buet-test` | https://badhan-buet-test.uc.r.appspot.com | https://badhan-buet-test-46eca.web.app |
-| any other | — | — | — | **refuses to deploy** | **refuses to deploy** |
-| — | `local` | — | — | http://localhost:3000 | http://localhost:8080 |
+Written in full, lower case, everywhere: branch names, npm scripts, file names, env vars,
+query parameters, UI labels, docs. No `prod`, no `dev`, no `test`, no `staging`, and no
+cloud-project id standing in for an environment name.
 
-`local` is not a deploy target: it has no cloud project and no branch of its own.
+| | `production` | `development` | `local` |
+| --- | --- | --- | --- |
+| Git branch | `production` | `development` | — (any branch, never deployed) |
+| Backend `NODE_ENV` | `production` | `development` | `local` |
+| Backend env file | `env.production` | `env.development` | `env.local` |
+| App Engine config | `app.production.yaml` | `app.development.yaml` | — |
+| GCP project | `badhan-buet` | `badhan-buet-test` | — (mongo container) |
+| Backend base URL | https://badhan-buet.uc.r.appspot.com | https://badhan-buet-test.uc.r.appspot.com | http://localhost:3000 |
+| Frontend mode / env file | `production` / `.env.production` | `development` / `.env.development` | `local` / `.env.local` |
+| Frontend build script | `build:production` | `build:development` | `build:local` |
+| `VUE_APP_ENVIRONMENT` | `production` | `development` | `local` |
+| Firebase config | `firebase.production.json` | `firebase.development.json` | — |
+| Firebase project / site | `badhan-buet` / `badhan-buet` | `badhan-buet-test` / `badhan-buet-test-46eca` | — |
+| Frontend URL | https://badhan-buet.web.app | https://badhan-buet-test-46eca.web.app | http://localhost:8080 |
+| Service worker | registers | registers | **never** |
+| PWA name | `Badhan` | `Badhan (development)` | — |
+| Android TWA | this one, only | — | — |
+| Watermark | hidden | shown | shown |
+| Backup restore target | `?environment=production` (refused) | `?environment=development` | `?environment=local` |
+
+`local` is not a deploy target: it has no cloud project, no App Engine config, no Firebase
+site and no branch of its own. That is the one structural asymmetry — the model is "two
+deployment environments plus a local one" rather than three peers.
+
+The Play Store app wraps **production only**, from any branch; there is no `development`
+Android build. See [badhan-android/README.md](badhan-android/README.md).
 
 **Any branch other than those two refuses to deploy**, in the preflight, before the test
 suites run:
@@ -323,7 +345,7 @@ Click to see video
 
 <img width="900" alt="CSV upload showing already existing donors" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/csv-upload-duplicates.png" />
 
-**Backup and restore** — Super admins can snapshot the database and restore any backup to the local, test or production environment.
+**Backup and restore** — Super admins can snapshot the database and restore any backup to the local, development or production environment.
 
 <img width="900" alt="Backup and restore screen" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/backup-and-restore.png" />
 

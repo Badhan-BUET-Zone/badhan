@@ -148,8 +148,10 @@ That button does not work yet. Ask a hall admin or super admin to delete the rec
 Close it completely and open it again. The app checks for a new version each time it starts.
 
 **A coloured badge names a version in the corner.**
-You are on a test copy, not the real app. Nothing you do there is real. Go to
-https://badhan-buet.web.app or open the Play Store app.
+You are on a test copy, not the real app. Nothing you do there is real. The badge says
+`development` on the shared test site and `local` on a copy running on a developer's own
+machine; on the real app there is no badge at all. Go to https://badhan-buet.web.app or open
+the Play Store app.
 
 **Nothing loads at all.**
 Check your connection. The app itself opens from your phone, but every piece of donor
