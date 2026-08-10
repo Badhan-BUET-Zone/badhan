@@ -9,10 +9,10 @@ mongoose.Promise = global.Promise;
 /* Connect → load models → sync indexes                          */
 /* ────────────────────────────────────────────────────────────── */
 async function connectToDB(): Promise<void> {
-  const flavour: 'Test' | 'Production' = String(dotenv.MONGODB_URI).includes('Test')
-    ? 'Test'
-    : 'Production';
-  myConsole.log(`Connecting to ${flavour} database…`);
+  // The environment name, not a guess at the URI: this used to sniff the
+  // substring 'Test' out of MONGODB_URI and so reported 'Production' for a
+  // local database.
+  myConsole.log(`Connecting to the ${dotenv.NODE_ENV} database…`);
 
   try {
     const opts: ConnectOptions = {

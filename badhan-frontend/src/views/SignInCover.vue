@@ -36,7 +36,7 @@
                       <v-chip
                           color="secondary"
                       >
-                        {{$getEnvironmentName()==="production"?"production":$getEnvironmentName()}}
+                        {{$getEnvironmentName()}}
                       </v-chip>
                     </div>
                     <DonationsMonthlyBarChart :key="'barchartKey'" />

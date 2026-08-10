@@ -28,7 +28,7 @@
           <p>
             Error loading backups. Ensure the backup server is running on localhost:4000 and reload this page.
             See
-            <a href="https://github.com/Badhan-BUET-Zone/badhan-admin-frontend" target="_blank" rel="noopener">setup docs</a>.
+            <a href="https://github.com/Badhan-BUET-Zone/badhan#run-the-code" target="_blank" rel="noopener">setup docs</a>.
           </p>
         </div>
 

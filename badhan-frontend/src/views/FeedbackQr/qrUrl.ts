@@ -8,8 +8,8 @@ import { environmentService } from '@/mixins/environment'
 // is inside the app, the target is a public page — so "encode where I am" would encode the wrong
 // thing.
 //
-// The consequence is worth knowing: a code produced on a dev or staging host encodes THAT host.
-// For the printed sheet that means permanently dead paper. Print only from production.
+// The consequence is worth knowing: a code produced on the development or local environment encodes
+// THAT host. For the printed sheet that means permanently dead paper. Print only from production.
 const base = (): string => environmentService.getFrontendBaseURL().replace(/\/+$/, '')
 
 export const donorPageUrl = (): string => `${base()}/#/donor`

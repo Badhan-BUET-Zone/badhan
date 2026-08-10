@@ -1,10 +1,15 @@
 import {myConsole} from "@/mixins/myConsole";
 
+// The three environment names, spelled the same way everywhere in the ecosystem.
+// Duplicated from environments.js at the repo root on purpose: no build step ships
+// that host-side module into this app.
+const ENVIRONMENT_NAMES = ['production', 'development', 'local'] as const
+type EnvironmentName = typeof ENVIRONMENT_NAMES[number]
+
 interface EnvironmentInterface {
     readonly VUE_APP_BADHAN_API_BASE_URL: string,
     readonly VUE_APP_FRONTEND_BASE: string,
     readonly NODE_ENV: string,
-    readonly VUE_APP_ADMIN_CONSOLE_URL: string,
     readonly VUE_APP_ENVIRONMENT: string,
 }
 
@@ -15,7 +20,6 @@ export const environmentObject: EnvironmentInterface = {
     VUE_APP_BADHAN_API_BASE_URL: process.env.VUE_APP_BADHAN_API_BASE_URL,
     VUE_APP_FRONTEND_BASE: process.env.VUE_APP_FRONTEND_BASE,
     NODE_ENV: process.env.NODE_ENV,
-    VUE_APP_ADMIN_CONSOLE_URL: process.env.VUE_APP_ADMIN_CONSOLE_URL,
     VUE_APP_ENVIRONMENT: process.env.VUE_APP_ENVIRONMENT,
 } as EnvironmentInterface
 
@@ -25,14 +29,24 @@ Object.entries(environmentObject).forEach(([key, value]:[string,string], _index:
     }
 });
 
+// VUE_APP_ENVIRONMENT gets a stronger check than "is it defined": a misspelling makes
+// every environment question below answer false, so the app would look healthy while
+// behaving as though it were nowhere. A frontend cannot exit the way the backend does,
+// but it can refuse to be quiet about it.
+if (!ENVIRONMENT_NAMES.includes(environmentObject.VUE_APP_ENVIRONMENT as EnvironmentName)) {
+    myConsole.log(
+        `🛑  VUE_APP_ENVIRONMENT="${environmentObject.VUE_APP_ENVIRONMENT}" is not one of:`,
+        `${ENVIRONMENT_NAMES.join(', ')}. Every environment check in this app will answer false.`
+    )
+}
+
 interface EnvironmentServiceInterface {
     isEnvironmentProduction: () => boolean
     isEnvironmentDevelopment: () => boolean
-    isEnvironmentTesting: () => boolean
+    isEnvironmentLocal: () => boolean
     getEnvironmentName: () => string
     getAPIBaseURL: () => string
     getFrontendBaseURL: () => string
-    getAdminFrontendBaseURL: () => string
 }
 export const environmentService: EnvironmentServiceInterface = {
     isEnvironmentProduction: ():boolean => {
@@ -41,8 +55,8 @@ export const environmentService: EnvironmentServiceInterface = {
     isEnvironmentDevelopment: (): boolean => {
         return environmentObject.VUE_APP_ENVIRONMENT === 'development'
     },
-    isEnvironmentTesting: (): boolean => {
-        return environmentObject.VUE_APP_ENVIRONMENT === 'testing'
+    isEnvironmentLocal: (): boolean => {
+        return environmentObject.VUE_APP_ENVIRONMENT === 'local'
     },
     getEnvironmentName: (): string => {
         return environmentObject.VUE_APP_ENVIRONMENT
@@ -58,8 +72,5 @@ export const environmentService: EnvironmentServiceInterface = {
     },
     getFrontendBaseURL: (): string => {
         return environmentObject.VUE_APP_FRONTEND_BASE
-    },
-    getAdminFrontendBaseURL: (): string => {
-        return environmentObject.VUE_APP_ADMIN_CONSOLE_URL
     }
 }

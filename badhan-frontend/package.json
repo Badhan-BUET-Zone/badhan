@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "serve:local": "vue-cli-service serve --mode local",
+    "__comment_on_serve_production": "not a deploy: it builds and serves dist over http-server on this machine. The only script in either app whose name is an environment but whose meaning is a local convenience",
     "serve:production": "npm run build && http-server dist",
+    "__comment_on_build": "bare `build` is an alias, not a second copy of the command, so it cannot drift from build:production. It exists because `npm run build` is what a Vue CLI project is expected to answer to",
     "build": "npm run build:production",
     "build:production": "vue-cli-service build --mode production",
     "build:development": "vue-cli-service build --mode development",

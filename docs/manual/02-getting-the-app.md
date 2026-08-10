@@ -60,7 +60,7 @@ Open **About** from the menu. At the bottom of that page you will see:
 
 | Row | What it means |
 | --- | --- |
-| **Build** | Which copy of the app you are on. Normally `production`. If it says anything else, you are on a test copy and the information in it may not be real. |
+| **Build** | Which copy of the app you are on: `production`, `development` or `local`. Normally `production`. If it says anything else, you are on a test copy — `development` is the shared test site, `local` is a copy running on a developer's own machine — and the information in it may not be real. |
 | **TWA** | Says `detected` if you are in the Play Store app, `not detected` if you are in a browser. |
 | **Last Updated** | When this version of the app was published. |
 

@@ -5,11 +5,16 @@
 </template>
 
 <script>
+import { environmentService } from '@/mixins/environment'
+
 export default {
   name: 'EnvironmentWatermark',
   computed: {
+    // Routed through the environment service rather than reading process.env here, so
+    // exactly one place in the app knows how the environment name is spelled. Shows on
+    // development and on local; hidden only in production.
     isNonProduction () {
-      return process.env.VUE_APP_ENVIRONMENT !== 'production'
+      return !environmentService.isEnvironmentProduction()
     },
     isGuest () {
       return this.$store.getters['getIsGuest']

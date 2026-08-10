@@ -13,7 +13,7 @@ const printServiceWorkerBaseAndEnv = ():void => {
   ServiceWorkerConsoleLog(`Service worker base: ${process.env.BASE_URL}, env: ${environmentService.getEnvironmentName()}`)
 }
 
-if (environmentService.isEnvironmentProduction() || environmentService.isEnvironmentTesting()) {
+if (environmentService.isEnvironmentProduction()) {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready () {
       ServiceWorkerConsoleLog('App is being served from cache by a service worker.\n For more details, visit https://goo.gl/AFskqB')

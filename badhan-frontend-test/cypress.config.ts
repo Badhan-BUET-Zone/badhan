@@ -1,3 +1,9 @@
+// This suite runs against the `local` environment — a stack brought up by docker
+// compose, with VUE_APP_ENVIRONMENT=local. Every knob below is a host or a URL, not
+// an environment name, and it should stay that way: do not add a
+// VUE_APP_ENVIRONMENT of any value here to make an assertion pass. There are exactly
+// three environment names (production, development, local) and the app decides which
+// one it is from its .env file, not from the test runner.
 import { defineConfig } from 'cypress';
 import axios from 'axios';
 import fs from 'fs';

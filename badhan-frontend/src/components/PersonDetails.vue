@@ -890,10 +890,11 @@ export default {
     // certificate is a detour, not a destination. The address is built the same way the password
     // recovery link is, and the donor's own id is the whole identifier: no token, nothing stored.
     openCertificate () {
-      // The trailing slash is stripped because VUE_APP_FRONTEND_BASE carries one in the development
-      // environment and not in production. Everywhere else a double slash would just look untidy;
-      // here the address the tab opens is the address the certificate encodes into its QR code, and
-      // that ends up on paper that cannot be reissued.
+      // The trailing slash is stripped defensively. VUE_APP_FRONTEND_BASE no longer carries one in
+      // any environment, but this guard costs nothing and protects the next hand-edit of an env
+      // file. Everywhere else a double slash would just look untidy; here the address the tab opens
+      // is the address the certificate encodes into its QR code, and that ends up on paper that
+      // cannot be reissued.
       const base = environmentService.getFrontendBaseURL().replace(/\/+$/, '')
       window.open(base + '/#/certificate?id=' + this.id, '_blank')
     },
