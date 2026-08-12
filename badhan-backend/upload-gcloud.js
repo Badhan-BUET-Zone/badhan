@@ -12,12 +12,15 @@ const { environmentForBranch } = require("../environments");
 // Env files are NOT committed to this repo. They live in a private secrets
 // repo and are cloned into place only for the duration of a deploy, then
 // removed. Override the URL/branch via env vars if your access is over SSH
-// (e.g. SECRETS_REPO_URL=git@github.com:mirmahathir1/secrets.git).
+// (e.g. SECRETS_REPO_URL=git@github.com:Badhan-BUET-Zone/secrets.git).
+//
+// The org repo is the only secrets source in this ecosystem: the Android and
+// backup fetchers point here too. This script used to default to a personal
+// fork on `master` instead, so a deploy that did not set SECRETS_REPO_URL read
+// production credentials from a second, unmanaged copy.
 const SECRETS_REPO_URL =
-  process.env.SECRETS_REPO_URL || "https://github.com/mirmahathir1/secrets.git";
-const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "master";
-// Path of the env files within the secrets repo.
-const SECRETS_SUBDIR = "badhan-backend";
+  process.env.SECRETS_REPO_URL || "https://github.com/Badhan-BUET-Zone/secrets.git";
+const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "main";
 
 function run(command, cwd) {
   return execSync(command, { stdio: "inherit", cwd });
@@ -101,14 +104,17 @@ function secretsBranchReachable() {
 // Clone the env file for `envFile` from the secrets repo into `baseDir`.
 // Returns the absolute path written. Uses a throwaway temp clone that is
 // always removed. Throws if the file isn't present in the secrets repo.
+//
+// The secrets repo is flat: every file sits at its root under the same name it
+// takes on disk here, so `envFile` is both the source and the destination name.
 function fetchSecretEnv(baseDir, envFile) {
   const tmp = mkdtempSync(resolve(os.tmpdir(), "badhan-secrets-"));
   try {
     run(`git clone --depth 1 --branch ${SECRETS_BRANCH} ${SECRETS_REPO_URL} "${tmp}"`);
-    const src = resolve(tmp, SECRETS_SUBDIR, envFile);
+    const src = resolve(tmp, envFile);
     if (!existsSync(src)) {
       throw new Error(
-        `"${SECRETS_SUBDIR}/${envFile}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
+        `"${envFile}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
       );
     }
     const dest = resolve(baseDir, envFile);

@@ -20,13 +20,13 @@ const SECRETS_REPO_URL =
   process.env.SECRETS_REPO_URL ||
   "https://github.com/Badhan-BUET-Zone/secrets.git";
 const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "main";
-// Directory within the secrets repo that holds the backup config.
-const SECRETS_SUBDIR = "badhan-backup/config";
 
 // badhan-backend root (this script lives in badhan-backend/scripts).
 const BASE_DIR = resolve(__dirname, "..");
 
-// Each secret: path within SECRETS_SUBDIR -> destination relative to BASE_DIR.
+// Each secret: name at the secrets repo root -> destination relative to
+// BASE_DIR. The repo is flat, so `src` is a bare filename; `dest` still carries
+// the config/ prefix the internal server expects locally.
 // - config.env               : backup MongoDB URIs / settings
 // - badhan-buet-...json       : Firebase service account (default path the
 //                               internal server looks for; see internalRoutes)
@@ -48,10 +48,10 @@ function main() {
     );
 
     for (const { src, dest } of FILES) {
-      const from = resolve(tmp, SECRETS_SUBDIR, src);
+      const from = resolve(tmp, src);
       if (!existsSync(from)) {
         throw new Error(
-          `"${SECRETS_SUBDIR}/${src}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
+          `"${src}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
         );
       }
       const to = resolve(BASE_DIR, dest);

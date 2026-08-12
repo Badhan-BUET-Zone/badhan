@@ -40,15 +40,12 @@ const SECRETS_REPO_URL =
   process.env.SECRETS_REPO_URL || "https://github.com/Badhan-BUET-Zone/secrets.git";
 const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "main";
 
-// Secrets to fetch: filename in this directory -> path within the secrets repo.
+// Secrets to fetch. The secrets repo is flat — every file sits at its root
+// under the same name it takes in this directory — so these names are both the
+// source and the destination, and there is no path map to keep in step.
 const KEYSTORE_FILE = "signature.jks";
 const KEY_PASSWORD_FILE = "key_password.txt";
 const PLAY_KEY_FILE = "badhan-buet-f095674c5125.json";
-const SECRETS = {
-  [KEYSTORE_FILE]: "badhan-web/signature.jks",
-  [KEY_PASSWORD_FILE]: "badhan-web/key_password.txt",
-  [PLAY_KEY_FILE]: `badhan-web/bubblewrap/${PLAY_KEY_FILE}`,
-};
 
 // The keystore and the key inside it share one password.
 const BUILD_SECRETS = [KEYSTORE_FILE, KEY_PASSWORD_FILE];
@@ -150,10 +147,10 @@ function fetchSecrets(baseDir, files) {
     run(`git clone --depth 1 --branch ${SECRETS_BRANCH} ${SECRETS_REPO_URL} "${tmp}"`);
     const fetched = [];
     for (const file of missing) {
-      const src = resolve(tmp, SECRETS[file]);
+      const src = resolve(tmp, file);
       if (!existsSync(src)) {
         throw new Error(
-          `"${SECRETS[file]}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
+          `"${file}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
         );
       }
       const dest = resolve(baseDir, file);
