@@ -7,22 +7,36 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "jsx": "preserve",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "types": [
       "webpack-env",
-      "jest",
       "vuetify"
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
+      ],
+      // Three aliases that exist only because "moduleResolution": "bundler"
+      // respects package.json "exports", and these Vue 2 packages predate the
+      // convention of listing their types there. Without them the types are
+      // present on disk but unreachable: vuex and vue-router resolve to `any`,
+      // and vue-router's `declare module 'vue/types/options'` augmentation --
+      // the one that adds the `router` option in main.ts -- silently fails to
+      // attach. The paths are stable because these packages are end-of-life.
+      "vuex": [
+        "./node_modules/vuex/types/index.d.ts"
+      ],
+      "vue-router": [
+        "./node_modules/vue-router/types/index.d.ts"
+      ],
+      "vue/types/*": [
+        "./node_modules/vue/types/*"
       ]
     },
     "lib": [
