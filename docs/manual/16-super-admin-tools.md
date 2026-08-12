@@ -96,6 +96,12 @@ donor's profile and filling in what is missing.
 If the list is long, or nothing on it makes sense, send it to a developer. The output is aimed
 at them, not at you, and reading it is not part of your job.
 
+**If the page cannot reach the server**, it says so in a yellow box, tells you the server is
+expected at `localhost:4000`, and links to the setup instructions. This is normal when you are
+not running the app on your own machine — the report comes from a developer-only server. Nothing
+is broken; the page simply has nothing to show. Any other failure appears in a red box with the
+reason. Either way, **Refresh** tries again.
+
 ---
 
 ## Dev Console
