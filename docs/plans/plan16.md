@@ -6,6 +6,7 @@
 ## Phase P1 — decide what "replace the certificate SVG" means
 
 **Depends on:** — · **Deployable alone:** no, this phase is analysis only · **Reversible:** n/a
+**Status:** Not started — mark `Implementation complete` once this phase's work is done.
 
 `temp/` holds four exports of one Illustrator document — `Badhan New Certificate.ai`, `.eps`,
 `.pdf`, `.svg` — none committed, per the user's note. The task is to make the live certificate match
@@ -151,6 +152,7 @@ department-code lookup table.
 
 **Depends on:** [P1](#phase-p1--decide-what-replace-the-certificate-svg-means) · **Deployable alone:**
 yes, independently of P3-P6 · **Reversible:** yes, by a follow-up migration
+**Status:** Not started — mark `Implementation complete` once this phase's work is done.
 
 Three new fields: `fatherName` and `motherName` (added to mirror the existing `comment` field
 exactly — same shape, same default convention, same layering between Mongoose and the request
@@ -309,6 +311,7 @@ an explicit, post-launch decision to turn it on.
 [P2](#phase-p2--donor-schema-fathername-mothername-and-the-certificate-toggle) · **Deployable alone:**
 no — needs `fatherName`/`motherName`/`isCertificateEnabled` to exist first · **Reversible:** yes,
 independently of P2
+**Status:** Not started — mark `Implementation complete` once this phase's work is done.
 
 **Major change from how this plan started.** The certificate was going to stay a browser-built
 artifact — a live `<svg>` the frontend hydrates and converts to a vector PDF with `svg2pdf.js`. That
@@ -532,6 +535,7 @@ should describe this inline view, not just the download button.
 **Depends on:** [P2](#phase-p2--donor-schema-fathername-mothername-and-the-certificate-toggle) ·
 **Deployable alone:** yes · **Reversible:** yes — the backfilled value is a knowable constant,
 trivially reset
+**Status:** Not started — mark `Implementation complete` once this phase's work is done.
 
 Every donor created before this schema change has none of the three new fields — the same shape as
 the `designation` gap the existing
@@ -564,6 +568,7 @@ every existing donor missing them, the same default values the schema itself now
 [P3](#phase-p3--certificate-rendering-moves-to-the-backend) · **Deployable alone:** no, lands with the
 feature per [CLAUDE.md](../../CLAUDE.md)'s rule that behaviour and manual changes ship together ·
 **Reversible:** yes
+**Status:** Not started — mark `Implementation complete` once this phase's work is done.
 
 | File | Change |
 | --- | --- |
@@ -576,6 +581,7 @@ feature per [CLAUDE.md](../../CLAUDE.md)'s rule that behaviour and manual change
 ## Phase P6 — verification
 
 **Depends on:** all of the above
+**Status:** Not started — mark `Implementation complete` once this phase's work is done.
 
 - `docker compose exec backend npx tsc --noEmit` and `docker compose exec frontend npm run build` —
   both clean.
