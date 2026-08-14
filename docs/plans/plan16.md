@@ -114,6 +114,12 @@ honorific, "Mr." / "Mrs.", literal text baked into the layout, not stored per-do
 department/faculty line. **Decision needed before P2/P3 can be sized precisely** —
 [§P1.5](#p15-open-question-department-and-hall-text).
 
+**Decision, confirmed with the user: the gender-dependent wording ("his/her", "son/daughter of")
+stays generic, printed as-is for every donor.** The schema has no gender/sex field today, and none is
+added by this plan — the placeholder slash-text from the supplied artwork is kept literally rather
+than resolved per donor, which keeps this plan's scope to the two name fields plus the toggle instead
+of adding a fourth schema field with its own validators/forms/CSV/migration/docs footprint.
+
 ### P1.5 Open question: department and hall text
 
 The new wording asks for two things the Donor schema does not currently carry as free text:
@@ -158,9 +164,9 @@ checked against the actual schema and corrected).
 | Layer | `comment`, today | `fatherName` / `motherName`, added |
 | --- | --- | --- |
 | `IDonor` interface | [Donor.ts:31](../../badhan-backend/src/db/models/Donor.ts#L31) `comment: string;` | same shape, two new lines |
-| Mongoose schema | [Donor.ts:202-209](../../badhan-backend/src/db/models/Donor.ts#L202-L209) — `trim`, `default: '(Unknown)'`, `required: true`, `minlength: 2`, `maxlength: 500` | identical block, twice, `default: '(Unknown)'` |
+| Mongoose schema | [Donor.ts:202-209](../../badhan-backend/src/db/models/Donor.ts#L202-L209) — `trim`, `default: '(Unknown)'`, `required: true`, `minlength: 2`, `maxlength: 500` | same block shape, twice, `default: '(Unknown)'`, but **`minlength: 3`/`maxlength: 100`** — see [§P2.1a](#p21a-decision-name-length-not-comment-length) |
 | Swagger doc block | lines ~89-92 | two new property blocks, same shape |
-| Request validator | [validateBody.ts:75-78](../../badhan-backend/src/validations/validateRequest/validateBody.ts#L75-L78) `validateBODYComment` — `.exists().not().isEmpty()`, length 2-500 | `validateBODYFatherName`, `validateBODYMotherName`, same chain shape |
+| Request validator | [validateBody.ts:75-78](../../badhan-backend/src/validations/validateRequest/validateBody.ts#L75-L78) `validateBODYComment` — `.exists().not().isEmpty()`, length 2-500 | `validateBODYFatherName`, `validateBODYMotherName`, same chain shape but length 3-100, matching `validateBODYName`'s bounds instead |
 | POST /donors required list | [validations/donors.ts:7-23](../../badhan-backend/src/validations/donors.ts#L7-L23) `validatePOSTDonors` includes `validateBODYComment` | add both new chains — **required on create**, per the task |
 | PATCH /donors/v2 | `comment` is **absent** from `validatePATCHDonors` ([donors.ts:25-37](../../badhan-backend/src/validations/donors.ts#L25-L37)) — comment has its own dedicated PATCH route instead | `fatherName`/`motherName` are ordinary profile fields, not comment-like append-only notes — add to the **general** PATCH body and validator instead of creating dedicated routes (see [§P2.2](#p22-decision-general-patch-not-a-dedicated-route)) |
 | `DonorsController.ts` POST body type | line 129 `comment: string;` | two new lines in the same inline type ([DonorsController.ts:121-133](../../badhan-backend/src/tsoaControllers/DonorsController.ts#L121-L133)) |
@@ -170,6 +176,17 @@ checked against the actual schema and corrected).
 | Demo CSV | `DEMO_CSV` constant, lines 318-323, built from `CANONICAL_HEADERS` | header row picks the new columns up automatically; the 3 sample data rows need literal values added |
 | `NewPersonCard.vue` (create form) | plain text field, no vuelidate rule, defaults to `'(Unknown)'` client-side if blank before submit (line 413) | two new text fields, same no-vuelidate-but-defaulted pattern — see [§P2.3](#p23-frontend-form-fields) |
 | `PersonDetails.vue` (edit form) | comment is edited via its **own** dedicated save button/PATCH ([lines 173-185](../../badhan-backend/../badhan-frontend/src/components/PersonDetails.vue), [saveCommentClicked, ~973-982](../../badhan-frontend/src/components/PersonDetails.vue)) — address/roomNumber instead bundle into the general PATCH | fatherName/motherName bundle into the **general** PATCH alongside name/address/roomNumber, not a dedicated per-field route — see [§P2.2](#p22-decision-general-patch-not-a-dedicated-route) |
+
+### P2.1a Decision — name length, not comment length
+
+**Decision, confirmed with the user:** `fatherName`/`motherName` are bounded `minlength: 3`,
+`maxlength: 100` — the same bounds as the existing `name` field
+([Donor.ts:199-200](../../badhan-backend/src/db/models/Donor.ts#L199-L200)) — not `comment`'s `2-500`.
+These fields hold a person's name, the same kind of value as the donor's own `name`, so they're sized
+like one; `comment`'s wider 2-500 range exists for free-text notes, which this isn't. Every other part
+of the `comment` mirroring in [§P2.1](#p21-what-changes-and-where--mirroring-comment-field-for-field)
+(default convention, layering between Mongoose and the request validator, required-on-create) still
+holds — only the length bounds diverge.
 
 ### P2.2 Decision — general PATCH, not a dedicated route
 
@@ -185,7 +202,10 @@ required strings) rather than inventing a fourth small route to maintain.
 
 Two new text inputs in [NewPersonCard.vue](../../badhan-frontend/src/views/SingleDonorCreation/components/NewPersonCard.vue)
 (create) and [PersonDetails.vue](../../badhan-frontend/src/components/PersonDetails.vue) (edit),
-placed next to **Name** since they are the same kind of fact about the same person. **Decision —
+placed next to **Name** since they are the same kind of fact about the same person. **Decision,
+confirmed with the user: Father's Name before Mother's Name**, in both forms and in the underlying
+field order (`fatherName` before `motherName` throughout the schema/validators/CSV) — matching the
+certificate template's own order ("son/daughter of Mr. `____` and Mrs. `____`"). **Decision —
 required client-side**, unlike `comment`: the task states these are "a required field for the API",
 and `comment`'s no-vuelidate-rule pattern exists because comment is optional-with-a-fallback at the
 UI layer even though Mongoose marks it required. Father's/mother's name should behave like `name`
@@ -434,11 +454,23 @@ already implements — the algorithm ports directly, only the measurement API ch
 ### P3.6 The rasterised background — server-side and private
 
 Same rasterisation decision as before ([§P1.3](#p13-why-the-raw-svg-cannot-be-used-directly)), moved
-off the public frontend bundle entirely:
+off the public frontend bundle entirely.
 
-- Export the supplied SVG (or the AI file, via Illustrator — the actual source of truth) with every
-  **dynamic** field's placeholder text and the placeholder QR removed, at ≥300 DPI for an A4 sheet
-  (3508 × 2480 px), to PNG.
+**Decision, confirmed with the user: derived programmatically from the SVG, not exported by hand in
+Illustrator.** `temp/Badhan New Certificate.svg` is edited to strip the **dynamic** field placeholder
+text and the placeholder QR (both identified in [§P1.4](#p14-what-the-svgs-text-content-actually-says-the-template-to-match)),
+then rasterised at ≥300 DPI for an A4 sheet (3508 × 2480 px) to PNG with a scriptable, Dockerised
+CLI tool — `resvg` or `rsvg-convert` — run as a one-off build/prep step, not a per-request dependency
+(the render pipeline in [§P3.5](#p35-the-render-pipeline-pdfkit) only ever reads the finished PNG from
+disk). This keeps the whole pipeline reproducible and re-runnable from the committed SVG without
+depending on Illustrator or a human export step — the same reproducibility [§P1.3](#p13-why-the-raw-svg-cannot-be-used-directly)
+already wanted for the hand-ported layout, now extended to the background image too. The six
+unembedded font families named in [§P1.3](#p13-why-the-raw-svg-cannot-be-used-directly) still need to
+resolve correctly for this rasterisation step, since the background bakes in the four decorative/fixed
+faces ([§P3.4](#p34-fonts-embedded-not-linked)) — the same TTFs bundled for pdfkit
+([§P3.4](#p34-fonts-embedded-not-linked)) are installed in whichever container runs the SVG→PNG
+conversion, so the rasteriser sees real font files rather than falling back to a substitute.
+
 - The file lives under `badhan-backend/src/assets/` (or equivalent), loaded by the render pipeline at
   request time from local disk/bundle — **never imported into `badhan-frontend`, never referenced by
   any frontend-served bundle, never returned by any JSON endpoint.** This is the concrete fix for "the
@@ -449,7 +481,10 @@ off the public frontend bundle entirely:
   worth compressing sensibly so the Docker image and cold-start read stay small, but this is an ops
   concern, not a public payload-size concern anymore.
 - `certificateLogo.ts`'s existing pattern (a header comment documenting the exact export command used)
-  is still the right convention to copy for reproducibility — just relocated to the backend.
+  is still the right convention to copy for reproducibility — here, a checked-in prep script (e.g.
+  `badhan-backend/scripts/render-certificate-background.*`) invoking the SVG→PNG CLI with the exact
+  flags used, rather than a comment describing a manual Illustrator export, since there no longer is
+  one.
 
 ### P3.7 The old frontend template is deleted, not kept as a fallback
 
