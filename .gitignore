@@ -6,3 +6,4 @@ docs/anonymized/
 # Refresh tokens: never commit.
 .deploy-auth/
 .claude/
+temp/
