@@ -354,14 +354,11 @@ PDF binary:
   bypassing the normal return-an-object flow) — the first controller in this codebase to do so, worth
   flagging in review since it is a new pattern, not an established one to copy from elsewhere in this
   repo.
-- **Rate limiting:** `commonLimiter` (12 req/min per IP, [rateLimiter.ts:33-37](../../badhan-backend/src/middlewares/rateLimiter.ts#L33-L37))
-  is shared by several lightweight JSON routes and is not sized for CPU-bound PDF rendering on an
-  unauthenticated endpoint. Following this file's own precedent of a bespoke budget per abuse profile
-  (`feedbackTokenLimiter`'s comment, [rateLimiter.ts:45-50](../../badhan-backend/src/middlewares/rateLimiter.ts#L45-L50),
-  argues exactly this: a shared budget means fixing one abuse case throttles unrelated callers) — add a
-  dedicated `certificateLimiter`, tighter than 12/min, so a burst of certificate requests (or a script
-  hammering the QR-scan endpoint) cannot cheaply spend server CPU rendering PDFs for the whole app to
-  share a budget with.
+- **Rate limiting: decision, confirmed with the user — reuse `commonLimiter`** (12 req/min per IP,
+  [rateLimiter.ts:33-37](../../badhan-backend/src/middlewares/rateLimiter.ts#L33-L37)), the same shared
+  limiter already applied to other lightweight JSON routes. No dedicated `certificateLimiter` is added —
+  this keeps the endpoint's middleware identical to its current setup rather than introducing a new
+  bespoke budget for this plan to size and maintain.
 
 ### P3.4 Fonts: embedded, not linked
 
@@ -376,9 +373,11 @@ a controlled environment rather than in every visitor's browser:
 - `GreatVibes-Regular` (the script face used for the heading/name text in the supplied artwork) is
   freely licensed — bundle the actual TTF in the backend image (`badhan-backend/src/assets` or
   similar), not a CDN reference. `PalatinoLinotype-Roman` and `MyriadPro-Regular` are commercial
-  Adobe/Linotype faces with no free redistribution — substitute a metrically-close free face (a serif
-  for Palatino, a humanist sans for MyriadPro) rather than bundling a font Badhan has no license to
-  ship. `FuturaBT-HeavyItalic`/`SourceSerifPro-Bold` (the "BADHAN" wordmark and registration line) and
+  Adobe/Linotype faces with no free redistribution — **decision, confirmed with the user: substitute
+  PT Serif for Palatino and PT Sans for MyriadPro**, both SIL Open Font License faces, metrically close
+  to their commercial counterparts and bundled the same way as `GreatVibes-Regular` (actual TTF in the
+  backend image, not a CDN reference) — rather than bundling a font Badhan has no license to ship.
+  `FuturaBT-HeavyItalic`/`SourceSerifPro-Bold` (the "BADHAN" wordmark and registration line) and
   `Kalpurush` (the fixed decorative Bangla slogan in the corners, confirmed static —
   [temp SVG lines 38644-38645](../../temp/Badhan%20New%20Certificate.svg)) are all part of the
   rasterised background image ([§P3.6](#p36-the-rasterised-background--server-side-and-private)),
