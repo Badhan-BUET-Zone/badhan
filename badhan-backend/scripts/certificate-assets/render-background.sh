@@ -7,8 +7,11 @@
 #     badhan-backend/scripts/certificate-assets/render-background.sh
 #
 # This is a one-off prep step, not part of any build or request. The render pipeline
-# (src/services/certificate/) only ever reads the finished PNG, and the artwork is not committed —
-# so re-run this only when the designer supplies a new export, and commit the PNG it produces.
+# (src/services/certificate/) only ever reads the finished PNG, and neither the artwork nor the PNG
+# it bakes is committed — both are the designer's licensed work. So re-run this only when the
+# designer supplies a new export, then publish the PNG it produces to the private secrets repo
+# (Badhan-BUET-Zone/secrets, at its root as certificate-background.png), which is where
+# ../../upload-gcloud.js fetches it from at deploy time.
 #
 # 300 DPI on an A4 sheet is 3508 x 2480 px. The certificate exists to be printed and then
 # photographed by a stranger months later, so the background is prepared at print resolution rather

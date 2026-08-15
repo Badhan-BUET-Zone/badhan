@@ -65,6 +65,36 @@ gsutil 5.35
 * Get `env.development` from [me](https://github.com/mirmahathir1) and put the file in the cloned repository.
 * `bash ./upload-gcloud.sh`
 
+### Secrets the deploy fetches for you
+
+Two files the backend needs are **not committed** — they live at the root of the private
+[secrets repo](https://github.com/Badhan-BUET-Zone/secrets) and
+[upload-gcloud.js](upload-gcloud.js) clones them into place for the duration of a deploy,
+then removes exactly the ones it fetched:
+
+| Secrets repo | Lands at | What it is |
+| --- | --- | --- |
+| `env.development` / `env.production` | `badhan-backend/` | The branch's env file. |
+| `certificate-background.png` | `src/assets/` | The designer's certificate artwork. |
+
+A local copy is always preferred and never deleted, so if you already have either file on
+disk the deploy leaves it alone.
+
+The artwork is the designer's licensed work, which is why it is gitignored rather than
+committed. The certificate renderer reads it from `src/assets/` on every request and
+throws without it, so **a fresh clone cannot serve or test certificates until you put it
+there** — copy it from the secrets repo:
+
+```
+git clone --depth 1 https://github.com/Badhan-BUET-Zone/secrets.git /tmp/badhan-secrets
+cp /tmp/badhan-secrets/certificate-background.png badhan-backend/src/assets/
+```
+
+Without it the certificate route answers 500 and the
+`badhan-backend-test/tests/certificates/` suite fails on PDF size. Re-baking the artwork
+from a new designer export is [scripts/certificate-assets/render-background.sh](scripts/certificate-assets/render-background.sh);
+publish its output back to the secrets repo rather than committing it here.
+
 Expected output:
 ```
 File upload done.
