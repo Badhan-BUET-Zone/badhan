@@ -6,6 +6,12 @@ app.yml
 env.production
 env.development
 dist
+
+# The designer's certificate artwork. Like the env files above, it lives in the
+# private secrets repo and is fetched into place for a deploy, not committed —
+# see upload-gcloud.js and scripts/certificate-assets/render-background.sh.
+src/assets/certificate-background.png
+
 .vscode
 .DS_Store
 src/.DS_Store

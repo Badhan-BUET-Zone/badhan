@@ -2,8 +2,8 @@
 "use strict";
 
 const { execSync } = require("child_process");
-const { existsSync, writeFileSync, mkdtempSync, copyFileSync, rmSync } = require("fs");
-const { resolve } = require("path");
+const { existsSync, writeFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } = require("fs");
+const { resolve, dirname } = require("path");
 const os = require("os");
 const https = require("https");
 const { runCli, captureCli, dockerAvailable } = require("../deploy-container");
@@ -21,6 +21,20 @@ const { environmentForBranch } = require("../environments");
 const SECRETS_REPO_URL =
   process.env.SECRETS_REPO_URL || "https://github.com/Badhan-BUET-Zone/secrets.git";
 const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "main";
+
+// The designer's certificate artwork is fetched from the same repo, for the same
+// reason: it is licensed work we were given rather than something this repo owns,
+// so it is not committed. The renderer reads it from src/assets/ at request time
+// (src/services/certificate/certificateRenderer.ts) and throws without it, so a
+// deploy that skipped this would upload a backend whose certificate route is dead.
+//
+// The secrets repo is flat — everything sits at its root — but this one lands in a
+// subdirectory rather than beside package.json, so it carries its destination
+// explicitly instead of relying on source name === on-disk name like the env files.
+const CERTIFICATE_BACKGROUND = {
+  source: "certificate-background.png",
+  dest: "src/assets/certificate-background.png",
+};
 
 function run(command, cwd) {
   return execSync(command, { stdio: "inherit", cwd });
@@ -101,25 +115,35 @@ function secretsBranchReachable() {
   }
 }
 
-// Clone the env file for `envFile` from the secrets repo into `baseDir`.
-// Returns the absolute path written. Uses a throwaway temp clone that is
-// always removed. Throws if the file isn't present in the secrets repo.
-//
-// The secrets repo is flat: every file sits at its root under the same name it
-// takes on disk here, so `envFile` is both the source and the destination name.
-function fetchSecretEnv(baseDir, envFile) {
+// Clone the given secrets from the secrets repo into `baseDir`. Each entry is
+// `{ source, dest }` — its name at the root of the flat secrets repo, and its
+// path relative to `baseDir` here. Only entries that aren't already present
+// locally are fetched; returns the absolute paths of the ones WE wrote, so the
+// caller can clean up exactly those and never delete a pre-existing local copy.
+// Uses a throwaway temp clone that is always removed. Throws if a wanted file
+// isn't present in the secrets repo.
+function fetchSecrets(baseDir, entries) {
+  const missing = entries.filter((entry) => !existsSync(resolve(baseDir, entry.dest)));
+  if (missing.length === 0) return [];
+
   const tmp = mkdtempSync(resolve(os.tmpdir(), "badhan-secrets-"));
   try {
     run(`git clone --depth 1 --branch ${SECRETS_BRANCH} ${SECRETS_REPO_URL} "${tmp}"`);
-    const src = resolve(tmp, envFile);
-    if (!existsSync(src)) {
-      throw new Error(
-        `"${envFile}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
-      );
+    const fetched = [];
+    for (const entry of missing) {
+      const src = resolve(tmp, entry.source);
+      if (!existsSync(src)) {
+        throw new Error(
+          `"${entry.source}" not found in secrets repo (${SECRETS_REPO_URL}@${SECRETS_BRANCH}).`
+        );
+      }
+      const dest = resolve(baseDir, entry.dest);
+      mkdirSync(dirname(dest), { recursive: true });
+      copyFileSync(src, dest);
+      fetched.push(dest);
+      console.log(`🔐  Fetched ${entry.dest}.`);
     }
-    const dest = resolve(baseDir, envFile);
-    copyFileSync(src, dest);
-    return dest;
+    return fetched;
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }
@@ -157,16 +181,16 @@ function checkRequirements(baseDir = __dirname) {
     gcpProject: project,
   } = environment;
 
-  // The env file is fetched from the secrets repo at deploy time. Accept a
-  // local copy if one already exists; otherwise require the secrets repo to be
-  // reachable so the fetch will succeed.
-  if (!existsSync(resolve(baseDir, envFile))) {
-    if (!secretsBranchReachable()) {
-      errors.push(
-        `backend: "${envFile}" not present locally and secrets repo not reachable ` +
-          `(${SECRETS_REPO_URL} branch ${SECRETS_BRANCH}). Check git access.`
-      );
-    }
+  // The env file and the certificate artwork are fetched from the secrets repo
+  // at deploy time. Accept local copies if they already exist; otherwise require
+  // the secrets repo to be reachable so the fetch will succeed.
+  const fromSecrets = [{ source: envFile, dest: envFile }, CERTIFICATE_BACKGROUND];
+  const absent = fromSecrets.filter((entry) => !existsSync(resolve(baseDir, entry.dest)));
+  if (absent.length > 0 && !secretsBranchReachable()) {
+    errors.push(
+      `backend: ${absent.map((e) => `"${e.dest}"`).join(" and ")} not present locally and ` +
+        `secrets repo not reachable (${SECRETS_REPO_URL} branch ${SECRETS_BRANCH}). Check git access.`
+    );
   }
   if (!existsSync(resolve(baseDir, yaml))) {
     errors.push(`backend: required App Engine config "${yaml}" not found.`);
@@ -234,16 +258,14 @@ function deployToGoogleCloud() {
       gcpProject: project,
     } = getDeployTarget(currentBranch);
 
-    // Fetch the env file from the secrets repo unless a local copy already
-    // exists. Only files WE fetched are cleaned up afterwards, so a
-    // pre-existing local env is never deleted.
-    const envPath = resolve(baseDir, envFile);
-    let fetchedEnv = false;
-    if (!existsSync(envPath)) {
-      console.log(`🔐  Fetching ${envFile} from secrets repo…`);
-      fetchSecretEnv(baseDir, envFile);
-      fetchedEnv = true;
-    }
+    // Fetch the env file and the certificate artwork from the secrets repo
+    // unless local copies already exist. Only files WE fetched are cleaned up
+    // afterwards, so a pre-existing local env — or a designer's working copy of
+    // the artwork — is never deleted.
+    const fetched = fetchSecrets(baseDir, [
+      { source: envFile, dest: envFile },
+      CERTIFICATE_BACKGROUND,
+    ]);
 
     try {
       updateLastDeployed(baseDir);
@@ -256,9 +278,9 @@ function deployToGoogleCloud() {
         workdir: "/repo/badhan-backend",
       });
     } finally {
-      if (fetchedEnv) {
-        rmSync(envPath, { force: true });
-        console.log(`🧹  Removed fetched ${envFile}.`);
+      for (const path of fetched) {
+        rmSync(path, { force: true });
+        console.log(`🧹  Removed fetched ${path.slice(baseDir.length + 1)}.`);
       }
     }
     return true;
