@@ -27,6 +27,8 @@ Open **Single Donor Creation**. Fill in the form:
 | Field | What to put |
 | --- | --- |
 | **Name** | Required. Any text, but not blank. |
+| **Father's Name** | Required. Any text, but not blank. Printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)), so write it in English. |
+| **Mother's Name** | Required. Any text, but not blank. Printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)), so write it in English. |
 | **Phone** | Required. 11 digits. This must not already belong to another donor. |
 | **Student ID** | Required. Exactly 7 digits, e.g. `1605011`. First two digits are the batch, next two the department. If the department is unknown, put `00` there. |
 | **Blood Group** | Required. Pick from the list. |
@@ -78,6 +80,8 @@ The columns, in the app's own words:
 | Column | Required? | What is accepted — nothing else |
 | --- | --- | --- |
 | `name` | yes | text, not blank |
+| `fatherName` | no | text; leave blank and it becomes (Unknown) |
+| `motherName` | no | text; leave blank and it becomes (Unknown) |
 | `phone` | yes | 11 digits, `01XXXXXXXXX` |
 | `studentId` | yes | 7 digits, e.g. `1605011` |
 | `bloodGroup` | yes | `A+ A- B+ B- O+ O- AB+ AB-` |
@@ -93,6 +97,12 @@ The columns, in the app's own words:
 
 > **Dates are day/month/year.** `7/8/26` means the 7th of August 2026, not the 8th of July.
 > Spreadsheets love to reformat dates on their own — check the file after saving.
+
+> **The parents' names are stricter on the form than in a file.** Typing one donor, you cannot
+> leave them blank. In a CSV the columns must be there but the cells may be empty, and empty
+> becomes `(Unknown)` — a file of two hundred rows cannot stop and ask you. Fill them in where you
+> know them: `(Unknown)` is what gets printed on that donor's certificate until somebody edits the
+> profile by hand.
 
 ### Checking before uploading
 

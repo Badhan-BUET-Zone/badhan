@@ -1,17 +1,17 @@
 {
-  "ranAt": "2026-08-09T16:33:49.468Z",
+  "ranAt": "2026-08-15T04:29:52.279Z",
   "environment": "development",
   "dryRun": true,
   "counts": {
-    "requiredPathsInspected": 40,
-    "pathsWithGaps": 2,
-    "pathsBackfilled": 1,
+    "requiredPathsInspected": 43,
+    "pathsWithGaps": 1,
+    "pathsBackfilled": 0,
     "documentsModified": 0,
     "pathsNeedingReview": 1
   },
   "validator": {
     "applied": false,
-    "reason": "refusing to apply the validator: 1349 donor(s) missing designation and 0 out of range would become unwritable. Fix those documents, then re-run."
+    "reason": "dry run"
   },
   "findings": [
     {
@@ -70,7 +70,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 39877
+      "totalDocs": 39880
     },
     {
       "model": "Logs",
@@ -78,7 +78,7 @@
       "classification": "function-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 39877
+      "totalDocs": 39880
     },
     {
       "model": "Logs",
@@ -86,15 +86,15 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 39877
+      "totalDocs": 39880
     },
     {
       "model": "Logs",
       "path": "details",
       "classification": "no-default",
-      "missingBefore": 2581,
+      "missingBefore": 2582,
       "modified": 0,
-      "totalDocs": 39877
+      "totalDocs": 39880
     },
     {
       "model": "PublicContacts",
@@ -143,7 +143,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 113
+      "totalDocs": 93
     },
     {
       "model": "Tokens",
@@ -151,7 +151,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 113
+      "totalDocs": 93
     },
     {
       "model": "Tokens",
@@ -159,7 +159,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 113
+      "totalDocs": 93
     },
     {
       "model": "Tokens",
@@ -167,7 +167,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 113
+      "totalDocs": 93
     },
     {
       "model": "Tokens",
@@ -175,7 +175,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 113
+      "totalDocs": 93
     },
     {
       "model": "Tokens",
@@ -183,7 +183,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 113
+      "totalDocs": 93
     },
     {
       "model": "PlateletDonations",
@@ -265,7 +265,7 @@
       "path": "designation",
       "classification": "static-default",
       "defaultValue": 0,
-      "missingBefore": 1349,
+      "missingBefore": 0,
       "modified": 0,
       "totalDocs": 4578
     },
@@ -273,6 +273,24 @@
       "model": "Donor",
       "path": "name",
       "classification": "no-default",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "fatherName",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "motherName",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
       "missingBefore": 0,
       "modified": 0,
       "totalDocs": 4578
@@ -306,6 +324,15 @@
     {
       "model": "Donor",
       "path": "archiveFlag",
+      "classification": "static-default",
+      "defaultValue": false,
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4578
+    },
+    {
+      "model": "Donor",
+      "path": "isCertificateEnabled",
       "classification": "static-default",
       "defaultValue": false,
       "missingBefore": 0,

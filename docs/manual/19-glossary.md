@@ -34,9 +34,11 @@ name attached. Formerly called *Active Donor*. [Chapter 10](10-bookmarked-donors
 **Call record.** A note that somebody rang a donor, made automatically when you use **Direct
 call**. [Chapter 9](09-call-records.md)
 
-**Certificate.** A printable page thanking a donor, carrying their name, their student ID and a
-QR code. Opened from the donor's profile, downloaded as a PDF and printed. Anyone can open a
-certificate without signing in, which is why it shows nothing but the name and the student ID.
+**Certificate.** A printable page acknowledging a donor, carrying their name, their father's and
+mother's names, their department, their hall and a QR code. It exists only once somebody ticks
+**Enable certificate** on that donor. Opened from the donor's profile, downloaded as a PDF and
+printed. Anyone can open a certificate without signing in, which is why it shows nothing beyond
+those few facts — never a phone number, blood group or donation history.
 [Chapter 7](07-the-donor-profile.md)
 
 **Comment.** A free-text note on a donor, readable by everyone who can see that donor.

@@ -1275,11 +1275,16 @@ export class GuestController extends Controller {
     // real certificate — the demo is worth nothing if the one page it cannot fake is this one.
     // isCertificateEnabled is true here by construction: a guest has no donor to enable it for,
     // and the not-enabled state is reachable in the real app instead.
+    // The parents' names drop any honorific faker attached: the certificate prints "Mr." and
+    // "Mrs." itself, as part of the sentence, so a faked "Mr. Antonio Langworth" reads as
+    // "Mrs. Mr. Antonio Langworth" on the page.
+    const withoutTitle = (name: string): string => name.replace(/^(Mr|Mrs|Ms|Miss|Dr|Prof)\.?\s+/i, '')
+
     return certificateResponse(this, {
       _id: donorId,
       name: faker.getName(),
-      fatherName: faker.getName(),
-      motherName: faker.getName(),
+      fatherName: withoutTitle(faker.getName()),
+      motherName: withoutTitle(faker.getName()),
       studentId: faker.getStudentId(),
       hall: faker.getHall()
     } as unknown as IDonor)

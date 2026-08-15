@@ -700,7 +700,31 @@ geometry changes.
 **Depends on:** [P2](#phase-p2--donor-schema-fathername-mothername-and-the-certificate-toggle) ·
 **Deployable alone:** yes · **Reversible:** yes — the backfilled value is a knowable constant,
 trivially reset
-**Status:** Not started — mark `Implementation complete` once this phase's work is done.
+**Status:** Development complete; **production still to run.** No code changed, as this phase
+predicted — the existing sweep picked the three new fields up on a re-run.
+
+- Dry-run on development reported exactly what this phase expected: `Donor.fatherName`,
+  `Donor.motherName` and `Donor.isCertificateEnabled`, all classified `static-default`, 4578
+  documents each, and no gap on `designation` (the earlier run closed it). The one other gap,
+  `Logs.details` (2582/39880, `no-default`), is pre-existing and is what the migration's own header
+  describes as deliberately not written.
+- The real run set `'(Unknown)'`, `'(Unknown)'` and `false` on 4578 donors. A second dry-run
+  afterwards reports **0 paths to backfill**, leaving only the pre-existing `Logs.details` review
+  line — so the backfill is complete and idempotent, exactly as documented.
+- Step 2 (the `donors.designation` collection validator) did not apply: `collMod` is not permitted
+  for the application's database user on `Badhan-Test`. This is the known, accepted state the
+  migration's own comment describes — a privilege question, not a data one — and it is unchanged by
+  this plan.
+- **Production has not been run.** The dry-run against production was blocked by the sandbox's
+  permission classifier rather than attempted and failed, so nothing is known yet about production's
+  gap counts. Run the dry-run first and confirm the same three paths appear, then the real run:
+
+```
+docker compose run --rm -e NODE_ENV=production -e DRY_RUN=1 backend \
+  npx ts-node --transpile-only scripts/migrations/index.ts 20260809_materialize-required-defaults
+docker compose run --rm -e NODE_ENV=production backend \
+  npx ts-node --transpile-only scripts/migrations/index.ts 20260809_materialize-required-defaults
+```
 
 Every donor created before this schema change has none of the three new fields — the same shape as
 the `designation` gap the existing
@@ -733,7 +757,31 @@ every existing donor missing them, the same default values the schema itself now
 [P3](#phase-p3--certificate-rendering-moves-to-the-backend) · **Deployable alone:** no, lands with the
 feature per [CLAUDE.md](../../CLAUDE.md)'s rule that behaviour and manual changes ship together ·
 **Reversible:** yes
-**Status:** Not started — mark `Implementation complete` once this phase's work is done.
+**Status:** Implementation complete. Chapter 7's certificate section landed with
+[P3](#phase-p3--certificate-rendering-moves-to-the-backend); the rest is done here. Three
+corrections to what the table below assumed, plus three chapters it did not list:
+
+- **The CSV columns are not "required, text not blank".** The table below specifies them
+  "matching `name`'s row, not `comment`'s". The implementation does the opposite, deliberately and
+  correctly: [donorCsv.ts](../../badhan-frontend/src/utils/donorCsv.ts) groups them with the
+  free-text fields, so the *column* must exist but the *cell* may be empty and becomes
+  `'(Unknown)'`. That is exactly what [§P2.3](#p23-frontend-form-fields) designed — the default
+  fires only on the bulk paths that cannot prompt anyone. Documented as it behaves, with a note
+  explaining why the form is stricter than a file.
+- **There is no "Edit" button on the profile.** The fields are editable in place for whoever has
+  permission, and there is a **Save** button; the certificate section was corrected to say so.
+- **The demo CSV rows needed nothing.** [P2](#phase-p2--donor-schema-fathername-mothername-and-the-certificate-toggle)
+  already added `Demo Father One`/`Demo Mother One` and the rest; verified all 15 columns line up
+  against `CANONICAL_HEADERS`.
+
+Also updated, because each carried a statement this plan made false:
+
+| File | Change |
+| --- | --- |
+| [07-the-donor-profile.md](../manual/07-the-donor-profile.md) | **Person Details** field table gains Father's/Mother's Name and **Enable certificate**; the Settings table's Certificate row notes it only opens once enabled |
+| [17-rules-the-app-enforces.md](../manual/17-rules-the-app-enforces.md) | "Names cannot be blank" now names all three, and states the CSV exception |
+| [19-glossary.md](../manual/19-glossary.md) | the **Certificate** entry said "nothing but the name and the student ID" — a description of the old artwork, and the student ID is not on the new one at all |
+| [20-donor-feedback.md](../manual/20-donor-feedback.md) | a registration submission carries no parents' names, so the prefilled creation form arrives with two blank required boxes — worth saying, since nothing on the card supplies them |
 
 | File | Change |
 | --- | --- |
@@ -746,7 +794,55 @@ feature per [CLAUDE.md](../../CLAUDE.md)'s rule that behaviour and manual change
 ## Phase P6 — verification
 
 **Depends on:** all of the above
-**Status:** Not started — mark `Implementation complete` once this phase's work is done.
+**Status:** Implementation complete, with **one item outstanding that is not this plan's to close**:
+the production migration run from [P4](#phase-p4--backfill-existing-donors). Everything else below
+was run and is green.
+
+| Check | Result |
+| --- | --- |
+| `npx tsc --noEmit`, `npm run lint` (backend) | clean |
+| `npm run build` (frontend) | clean |
+| `docker compose run --rm backend-test` | **222/222** |
+| `docker compose run --rm frontend-test` | **120/120**, 37 specs |
+| No certificate asset in `badhan-frontend/dist` | confirmed — see below |
+| Rendered PDF vs `temp/Badhan New Certificate.pdf` | matches — see below |
+| Development backfill leaves zero gaps | confirmed in [P4](#phase-p4--backfill-existing-donors) |
+| Production backfill | **not run** — blocked, see [P4](#phase-p4--backfill-existing-donors) |
+
+**Four checks this phase asked for had no test yet; they do now.** The backend suite grew from 218
+to 222:
+
+- `POST /donors` refuses a body omitting `fatherName`, and one omitting `motherName`
+  ([requiredFields.test.js](../../badhan-backend-test/tests/donors/donorsPostPatchDelete/requiredFields.test.js)).
+- A donor created without anyone sending `isCertificateEnabled` reads back `false` — read back
+  through the API rather than trusted from the schema, since a default mongoose applies on hydration
+  but never writes is precisely the gap [P4](#phase-p4--backfill-existing-donors) exists to close and
+  would look identical from the creation response.
+- **An ordinary volunteer** can enable a certificate through the general PATCH, and it takes effect
+  immediately — the decision in [§P2.6](#p26-iscertificateenabled) that this field carries no
+  permission rule of its own.
+- The route is rate limited. Exhausting the limiter is not the check (12/min in production, 1200/min
+  locally, so it would take 1200 renders); `commonLimiter` announces itself in `X-RateLimit-*` on
+  every response, and those headers vanish the moment the middleware does.
+
+**The asset check, precisely.** No `.ttf`/`.otf`, no `certificate-background`, and no reference to
+`GreatVibes`/`FuturaBT`/`PlayfairDisplay` anywhere under `badhan-frontend/dist`. The one remaining
+`svg2pdf` reference in the bundle belongs to the feedback/registration QR sheets, which still build
+their PDFs in the browser and are untouched by this plan
+([§P3.7](#p37-the-old-frontend-template-is-deleted-not-kept-as-a-fallback)).
+
+**The visual check.** A certificate fetched from the running backend, rasterised at 110 DPI beside
+the supplied PDF at the same scale: border, marbling, watermark, logo, wordmark, both organisation
+lines, the heading, every word and rule of the body, the signature block and both Bangla slogans all
+land identically. The three differences are the intended ones — real donor values in place of the
+designer's samples, a real QR where the placeholder frame was, and no 3 mm bleed
+([§P3.1](#p31-why-server-side-not-a-frontend-asset), trim size only).
+
+**One defect this phase found and fixed.** Guest mode's faked parents' names came from
+`faker.name.findName()`, which sometimes attaches an honorific — and the certificate prints "Mr."
+and "Mrs." itself as part of the sentence, so the demo could read "Mrs. Mr. Antonio Langworth".
+Stripped in `GuestController`. Guest-only and cosmetic, but it is on the one page guest mode cannot
+fake.
 
 - `docker compose exec backend npx tsc --noEmit` and `docker compose exec frontend npm run build` —
   both clean.

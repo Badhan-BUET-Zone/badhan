@@ -1,6 +1,7 @@
 const { HALLS_INDEX, HTTP_STATUS } = require('../lib/utils/constants');
 const { uniquePhone } = require('../lib/utils/helpers');
 const operations = require('../lib/operations');
+const flows = require('../lib/flows');
 const { certificateNotFoundSchema, certificateNotEnabledSchema } = require('./schemas');
 
 // GET /certificates/{donorId} is the only route in the project that is public by design rather than
@@ -117,6 +118,47 @@ test('GET /certificates: a donor whose certificate is not enabled is refused, di
 
   await operations.deleteDonor(donorId, signInResponse);
   await operations.signOut(signInResponse);
+});
+
+test('GET /certificates: an ordinary volunteer can turn a certificate on, and it takes effect at once', async () => {
+  // isCertificateEnabled rides the general profile PATCH with no permission rule of its own, so
+  // whoever may edit a donor may enable their certificate. That is the decision this pins: if
+  // somebody later gates the field to hall admin, this fails rather than the behaviour changing
+  // quietly.
+  const signInResponse = await operations.signInSuperAdmin();
+  const volunteerInfo = donorInfo({ name: 'Certificate Enabling Volunteer', studentId: 1605016 });
+  const { volunteerToken } = await flows.createVolunteerWithToken(volunteerInfo, signInResponse);
+
+  // Same hall as the volunteer, which is what makes them editable by one.
+  const info = donorInfo({ name: 'Certificate Volunteer Target', studentId: 1605017 });
+  const donorId = (await operations.createDonor(info, signInResponse)).data.newDonor._id;
+
+  await operations.expectGuestError(
+    'get',
+    `/certificates/${donorId}`,
+    certificateNotEnabledSchema
+  );
+
+  await operations.updateDonor(patchBody(donorId, info, false, true), { data: { token: volunteerToken } });
+  expectPdf(await operations.guestGetBinary(`/certificates/${donorId}`));
+
+  await operations.deleteDonor(donorId, signInResponse);
+  await operations.signOut(signInResponse);
+});
+
+test('GET /certificates: the route is rate limited', async () => {
+  // The endpoint renders a full-page PDF per call on a public, unauthenticated route, so losing
+  // its limiter would be worth noticing. Exhausting it is not the check — the limit is 12/min in
+  // production and 1200/min here — but commonLimiter announces itself in every response, and those
+  // headers disappear the moment the middleware does.
+  const response = await operations.expectGuestError(
+    'get',
+    '/certificates/000000000000000000000000',
+    certificateNotFoundSchema
+  );
+
+  expect(response.headers['x-ratelimit-limit']).toBeDefined();
+  expect(response.headers['x-ratelimit-remaining']).toBeDefined();
 });
 
 test('GET /certificates: an archived donor still resolves', async () => {

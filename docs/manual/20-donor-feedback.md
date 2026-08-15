@@ -162,6 +162,10 @@ That card has two buttons: **Create donor** and **Discard**.
 - They **are** asked how many times they have donated and when. **Every number on that card is
   the student's own claim**, not a Badhan record. Treat it exactly as you would if they had
   told you at a desk: check it before saving.
+- They are **not** asked for their father's and mother's names, so those two boxes arrive blank
+  and the form will not save until you fill them in. There is nothing on the card to copy them
+  from — ask the student, or put what you know. They are printed on the donor's certificate
+  ([chapter 7](07-the-donor-profile.md)).
 
 ## Two things that will look wrong but are not
 

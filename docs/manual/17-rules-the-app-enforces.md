@@ -51,7 +51,10 @@ instead of making a new one.
 **Student IDs are 7 digits, numbers only.** First two digits are the batch, next two the
 department. Use `00` for the department if it is genuinely unknown.
 
-**Names cannot be blank.**
+**Names cannot be blank** — the donor's own, their father's and their mother's. All three are
+required whenever you type a donor into a form. A CSV upload is the one exception: it accepts a
+blank parent's name and stores `(Unknown)`, because a file of hundreds of rows cannot stop and ask
+([chapter 11](11-adding-new-donors.md)).
 
 **An email must look like an email**, if you fill one in at all. It is optional.
 

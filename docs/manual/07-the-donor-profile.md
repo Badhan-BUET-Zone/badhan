@@ -30,6 +30,8 @@ Tap **Person Details** to open or close this section. It holds the facts about t
 | Field | Rules |
 | --- | --- |
 | **Name** | Cannot be left empty. |
+| **Father's Name** | Cannot be left empty. Printed on the donor's certificate. |
+| **Mother's Name** | Cannot be left empty. Printed on the donor's certificate. |
 | **Phone** | Exactly 11 digits, numbers only. **No two donors may share a phone number** — this is how the app tells people apart. |
 | **Email** | Optional. Used only for password recovery. You can edit it for a plain donor or for yourself; for another member the box is locked and says *"You cannot edit this email"*. |
 | **Blood Group** | Picked from the list of eight. |
@@ -38,6 +40,7 @@ Tap **Person Details** to open or close this section. It holds the facts about t
 | **Address** | Optional. |
 | **Hall** | Picked from the list. Locked for volunteers and hall admins — a member's hall cannot be changed here. |
 | **Public Data** | See below. |
+| **Enable certificate** | Off until someone ticks it. Until then this donor has no certificate at all — see [The certificate](#the-certificate). |
 
 Change what you need, then tap **Save**. If a field is greyed out and will not accept typing,
 you are not allowed to edit this person — see [chapter 4](04-roles-and-permissions.md).
@@ -94,7 +97,7 @@ on your level and on whose profile you are looking at. Often the only one you wi
 | **Promote to Super Admin** | Makes a volunteer a super admin | Super admin only |
 | **Demote to Volunteer** | Takes a super admin back to volunteer | Super admin only |
 | **Password Recovery Link** | Creates a one-time link so this member can set a password | Hall admin of that hall, or super admin |
-| **Certificate** | Opens this donor's printable certificate in a new tab | Everyone |
+| **Certificate** | Opens this donor's printable certificate in a new tab — once it has been enabled for them | Everyone |
 | **Delete this person** | Removes the record entirely | Hall admin of that hall, or super admin |
 | **New Password / Confirm Password** | Change your own password | Only on your own profile |
 
@@ -116,8 +119,8 @@ Three things to know:
 ### The certificate
 
 **Turn it on first.** A certificate does not exist for anyone until someone switches it on for
-that donor. On the profile, tap **Edit**, tick **Enable certificate**, and save. Until you do,
-the certificate page says *"This donor's certificate has not been enabled yet."* — to you and to
+that donor. Open **Person Details** on their profile, tick **Enable certificate**, and tap **Save**.
+Until you do, the certificate page says *"This donor's certificate has not been enabled yet."* — to you and to
 anyone scanning a printed code alike. Every donor starts this way, including everyone who was
 already in the app before certificates existed, so expect to tick this box the first time you
 prepare a certificate for someone. Untick it and save, and the certificate stops opening again
