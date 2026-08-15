@@ -11,6 +11,8 @@ test('POST&PATCH&DELETE/donors: success', async () => {
     {
       donorId: donorCreation.data.newDonor._id,
       name: 'Blah Blah',
+      fatherName: newDonorInfo.fatherName,
+      motherName: newDonorInfo.motherName,
       phone: newDonorInfo.phone,
       studentId: newDonorInfo.studentId,
       bloodGroup: newDonorInfo.bloodGroup,
@@ -19,6 +21,7 @@ test('POST&PATCH&DELETE/donors: success', async () => {
       address: 'Azimpur',
       availableToAll: true,
       archiveFlag: false,
+      isCertificateEnabled: false,
       email: '',
     },
     signInResponse,

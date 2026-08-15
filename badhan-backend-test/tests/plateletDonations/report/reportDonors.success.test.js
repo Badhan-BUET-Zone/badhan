@@ -17,6 +17,8 @@ test('GET/platelet-donations/report/donors: lists the platelet donations behind 
       bloodGroup: BLOOD_GROUP,
       hall: HALLS_INDEX.NAZRUL,
       name: 'Platelet Drill Down Donor',
+      fatherName: 'Platelet Drill Down Donor Father',
+      motherName: 'Platelet Drill Down Donor Mother',
       studentId: 1900501,
       address: 'Test Address',
       roomNumber: '5001',

@@ -13,6 +13,8 @@ const donorInfo = (overrides = {}) => ({
   bloodGroup: 2,
   hall: HALLS_INDEX.SUHRAWARDY,
   name: 'Unknown Hall Suite',
+  fatherName: 'Unknown Hall Suite Father',
+  motherName: 'Unknown Hall Suite Mother',
   studentId: 1606060,
   address: 'Azimpur',
   roomNumber: '3009',
@@ -44,6 +46,8 @@ const makeUnknownHallDonor = async (signInResponse, overrides = {}) => {
     {
       donorId,
       name: info.name,
+      fatherName: info.fatherName,
+      motherName: info.motherName,
       phone: info.phone,
       studentId: info.studentId,
       bloodGroup: info.bloodGroup,
@@ -99,6 +103,8 @@ test('PATCH /donors: an (Unknown) donor can be archived', async () => {
     {
       donorId,
       name: info.name,
+      fatherName: info.fatherName,
+      motherName: info.motherName,
       phone: info.phone,
       studentId: info.studentId,
       bloodGroup: info.bloodGroup,
@@ -108,6 +114,7 @@ test('PATCH /donors: an (Unknown) donor can be archived', async () => {
       availableToAll: info.availableToAll,
       email: '',
       archiveFlag: true,
+      isCertificateEnabled: false,
     },
     signInResponse
   );
@@ -125,6 +132,8 @@ test('PATCH /donors: an (Unknown) donor can be repaired by setting a real hall',
     {
       donorId,
       name: info.name,
+      fatherName: info.fatherName,
+      motherName: info.motherName,
       phone: info.phone,
       studentId: info.studentId,
       bloodGroup: info.bloodGroup,
@@ -162,6 +171,8 @@ test('PATCH /donors/comment: works again once the hall is set', async () => {
     {
       donorId,
       name: info.name,
+      fatherName: info.fatherName,
+      motherName: info.motherName,
       phone: info.phone,
       studentId: info.studentId,
       bloodGroup: info.bloodGroup,

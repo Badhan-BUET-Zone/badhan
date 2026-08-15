@@ -24,6 +24,8 @@ test('GET/donations/report/donors: lists the donations behind a report cell', as
       bloodGroup: BLOOD_GROUP,
       hall: HALLS_INDEX.CHATRI,
       name: 'Drill Down Donor',
+      fatherName: 'Drill Down Donor Father',
+      motherName: 'Drill Down Donor Mother',
       studentId: 1900301,
       address: 'Test Address',
       roomNumber: '3001',

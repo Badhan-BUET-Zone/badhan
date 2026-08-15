@@ -23,6 +23,8 @@ const donorInfo = (overrides = {}) => ({
   bloodGroup: 2,
   hall: HALLS_INDEX.SUHRAWARDY,
   name: 'Archive Partition Donor',
+  fatherName: 'Archive Partition Donor Father',
+  motherName: 'Archive Partition Donor Mother',
   studentId: 1606090,
   address: 'Azimpur',
   roomNumber: '3009',

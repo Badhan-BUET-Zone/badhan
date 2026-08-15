@@ -13,6 +13,8 @@ const donorInfo = (overrides = {}) => ({
   bloodGroup: 2,
   hall: HALLS_INDEX.SUHRAWARDY,
   name: 'All Donors Row',
+  fatherName: 'All Donors Row Father',
+  motherName: 'All Donors Row Mother',
   studentId: 1606095,
   address: 'Azimpur',
   roomNumber: '3009',
@@ -27,6 +29,8 @@ const archive = (donorId, info, signInResponse) =>
     {
       donorId,
       name: info.name,
+      fatherName: info.fatherName,
+      motherName: info.motherName,
       phone: info.phone,
       studentId: info.studentId,
       bloodGroup: info.bloodGroup,
@@ -35,6 +39,7 @@ const archive = (donorId, info, signInResponse) =>
       address: info.address,
       availableToAll: info.availableToAll,
       archiveFlag: true,
+      isCertificateEnabled: false,
       email: '',
     },
     signInResponse

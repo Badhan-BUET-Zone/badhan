@@ -21,6 +21,8 @@ function buildDonorInfo(overrides = {}) {
     bloodGroup: 2,
     hall: HALLS_INDEX.CHATRI,
     name: 'Feedback Suite Donor',
+    fatherName: 'Feedback Suite Donor Father',
+    motherName: 'Feedback Suite Donor Mother',
     studentId: uniqueStudentId(),
     address: 'Test Address',
     roomNumber: '1003',

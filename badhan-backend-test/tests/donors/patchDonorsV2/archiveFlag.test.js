@@ -23,6 +23,8 @@ const donorInfo = (overrides = {}) => ({
   bloodGroup: 2,
   hall: HALLS_INDEX.SUHRAWARDY,
   name: 'Archive Write Path',
+  fatherName: 'Archive Father',
+  motherName: 'Archive Mother',
   studentId: 1606091,
   address: 'Azimpur',
   roomNumber: '3009',
@@ -35,6 +37,8 @@ const donorInfo = (overrides = {}) => ({
 const patchBody = (donorId, info, archiveFlag) => ({
   donorId,
   name: info.name,
+  fatherName: info.fatherName,
+  motherName: info.motherName,
   phone: info.phone,
   studentId: info.studentId,
   bloodGroup: info.bloodGroup,
@@ -43,6 +47,7 @@ const patchBody = (donorId, info, archiveFlag) => ({
   address: info.address,
   availableToAll: info.availableToAll,
   archiveFlag,
+  isCertificateEnabled: false,
   email: '',
 });
 

@@ -9,6 +9,8 @@ test('hall admin permission test', async () => {
     bloodGroup: 2,
     hall: me.data.donor.hall,
     name: 'Blah Blah',
+    fatherName: 'Father Blah',
+    motherName: 'Mother Blah',
     studentId: 1606060,
     address: 'Azimpur',
     roomNumber: '3009',

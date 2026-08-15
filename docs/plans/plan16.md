@@ -6,7 +6,10 @@
 ## Phase P1 — decide what "replace the certificate SVG" means
 
 **Depends on:** — · **Deployable alone:** no, this phase is analysis only · **Reversible:** n/a
-**Status:** Not started — mark `Implementation complete` once this phase's work is done.
+**Status:** Implementation complete — analysis recorded below, re-verified against the current
+repo (four `temp/` exports present; `FONT_FAMILY` at
+[certificateLayout.ts:107](../../badhan-frontend/src/views/Certificate/certificateLayout.ts#L107);
+SVG's six `font-family` classes confirmed unchanged).
 
 `temp/` holds four exports of one Illustrator document — `Badhan New Certificate.ai`, `.eps`,
 `.pdf`, `.svg` — none committed, per the user's note. The task is to make the live certificate match
@@ -152,7 +155,12 @@ department-code lookup table.
 
 **Depends on:** [P1](#phase-p1--decide-what-replace-the-certificate-svg-means) · **Deployable alone:**
 yes, independently of P3-P6 · **Reversible:** yes, by a follow-up migration
-**Status:** Not started — mark `Implementation complete` once this phase's work is done.
+**Status:** Implementation complete — backend model/validators/controller, frontend forms/CSV/API
+types, and test fixtures (including `GuestController`'s hand-built fake-data endpoints) all updated;
+`docker compose exec backend npx tsc --noEmit`, `docker compose exec frontend npm run build`, and the
+full `docker compose run backend-test` suite (217/217) all pass. `docs/manual/` updates are deferred
+to [P5](#phase-p5--documentation), which lands with [P3](#phase-p3--certificate-rendering-moves-to-the-backend)
+per this repo's CLAUDE.md rule that behaviour and manual changes ship together.
 
 Three new fields: `fatherName` and `motherName` (added to mirror the existing `comment` field
 exactly — same shape, same default convention, same layering between Mongoose and the request

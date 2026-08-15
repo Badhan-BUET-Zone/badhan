@@ -9,7 +9,7 @@ import type { POSTDonorsPayloadInterface } from '@/api'
 // Canonical header row. Column order in the file does not matter — columns are matched
 // by header name (case-insensitive, trimmed) back onto these canonical names.
 export const CANONICAL_HEADERS: string[] = [
-  'name', 'phone', 'studentId', 'bloodGroup', 'hall', 'roomNumber', 'address',
+  'name', 'fatherName', 'motherName', 'phone', 'studentId', 'bloodGroup', 'hall', 'roomNumber', 'address',
   'comment', 'donationCount', 'lastDonation', 'plateletDonationCount',
   'lastPlateletDonation', 'availableToAll'
 ]
@@ -134,6 +134,8 @@ function validateRow (raw: Record<string, string>): { errors: DonorCsvFieldError
   const roomNumber = (raw.roomNumber ?? '').trim() || '(Unknown)'
   const address = (raw.address ?? '').trim() || '(Unknown)'
   const comment = (raw.comment ?? '').replace(/[\r\n]+/g, ' ').trim() || '(Unknown)'
+  const fatherName = (raw.fatherName ?? '').trim() || '(Unknown)'
+  const motherName = (raw.motherName ?? '').trim() || '(Unknown)'
 
   // donationCount — required, integer 0–99. Blank rejected.
   const dcRaw = (raw.donationCount ?? '').trim()
@@ -193,6 +195,8 @@ function validateRow (raw: Record<string, string>): { errors: DonorCsvFieldError
   // CSV counts are totals; the API's extra*Count is total minus the one implied by the date.
   const normalized: POSTDonorsPayloadInterface = {
     name,
+    fatherName,
+    motherName,
     phone,
     bloodGroup,
     hall,
@@ -317,9 +321,9 @@ export function parseDonorCsv (text: string): DonorCsvParseResult {
 // it was really being used for — a donor every hall can contact — is availableToAll=yes.
 export const DEMO_CSV: string = [
   CANONICAL_HEADERS.join(','),
-  'Demo Donor One,01712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no',
-  'Demo Donor Two,01898765432,1805062,O-,Ahsanullah,N/A,Chattogram,Contactable by every hall - availableToAll is yes,0,,0,,yes',
-  'Demo Donor Three,01911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no'
+  'Demo Donor One,Demo Father One,Demo Mother One,01712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no',
+  'Demo Donor Two,Demo Father Two,Demo Mother Two,01898765432,1805062,O-,Ahsanullah,N/A,Chattogram,Contactable by every hall - availableToAll is yes,0,,0,,yes',
+  'Demo Donor Three,Demo Father Three,Demo Mother Three,01911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no'
 ].join('\n') + '\n'
 
 /**

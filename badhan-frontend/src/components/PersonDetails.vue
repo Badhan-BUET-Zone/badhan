@@ -116,6 +116,12 @@
                       <TextField id="donorDetailsNameTextBoxId" data-cy="donorDetailsNameTextBoxId" label="Name" v-model="name" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.name.$touch()"
                                     :error-messages="nameErrors"></TextField>
+                      <TextField id="donorDetailsFatherNameTextBoxId" data-cy="donorDetailsFatherNameTextBoxId" label="Father's Name" v-model="fatherName" :hint="''"
+                                    :disabled="!isDetailsEditable" @blur="$v.fatherName.$touch()"
+                                    :error-messages="fatherNameErrors"></TextField>
+                      <TextField id="donorDetailsMotherNameTextBoxId" data-cy="donorDetailsMotherNameTextBoxId" label="Mother's Name" v-model="motherName" :hint="''"
+                                    :disabled="!isDetailsEditable" @blur="$v.motherName.$touch()"
+                                    :error-messages="motherNameErrors"></TextField>
                       <TextField id="donorDetailsPhoneTextBoxId" data-cy="donorDetailsPhoneTextBoxId" label="Phone" v-model="phone" :hint="''"
                                     :disabled="!isDetailsEditable" @blur="$v.phone.$touch()"
                                     :error-messages="phoneErrors"></TextField>
@@ -148,6 +154,10 @@
                                   dense
                                   label="Public Data"></v-checkbox>
 
+                      <v-checkbox id="donorDetailsCertificateEnabledCheckboxId" data-cy="donorDetailsCertificateEnabledCheckboxId" :disabled="!isDetailsEditable" v-model="isCertificateEnabled"
+                                  dense
+                                  label="Enable certificate"></v-checkbox>
+
                       <v-switch
                         v-if="$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN"
                         id="donorDetailsArchiveSwitchId"
@@ -161,7 +171,7 @@
 
                       <div v-if="$store.getters['getDesignation'] > designation || $isMe(id)">
                         <v-btn id="donorDetailsSaveButtonId" data-cy="donorDetailsSaveButtonId" color="primary" rounded class="white--text ml-2" small
-                               :disabled="detailsLoaderFlag || !isDetailsEditable || $v.name.$error || $v.phone.$error || $v.studentId.$error || $v.email.$error"
+                               :disabled="detailsLoaderFlag || !isDetailsEditable || $v.name.$error || $v.fatherName.$error || $v.motherName.$error || $v.phone.$error || $v.studentId.$error || $v.email.$error"
                                @click="saveDetailsClicked()">
                           <v-icon left>
                             mdi-content-save
@@ -574,6 +584,8 @@ export default {
 
       id: null,
       name: '',
+      fatherName: '',
+      motherName: '',
       oldPhone: '',
       phone: '',
       studentId: '',
@@ -601,6 +613,7 @@ export default {
       comment: '',
       availableToAll: false,
       archiveFlag: false,
+      isCertificateEnabled: false,
 
       // history flag
       showHistory: false,
@@ -689,6 +702,12 @@ export default {
       }
     },
     name: {
+      required
+    },
+    fatherName: {
+      required
+    },
+    motherName: {
       required
     },
     newPassword: {
@@ -784,6 +803,18 @@ export default {
       const errors = []
       if (!this.$v.name.$dirty) return errors
       !this.$v.name.required && errors.push('Name is required')
+      return errors
+    },
+    fatherNameErrors () {
+      const errors = []
+      if (!this.$v.fatherName.$dirty) return errors
+      !this.$v.fatherName.required && errors.push('Father\'s name is required')
+      return errors
+    },
+    motherNameErrors () {
+      const errors = []
+      if (!this.$v.motherName.$dirty) return errors
+      !this.$v.motherName.required && errors.push('Mother\'s name is required')
       return errors
     },
     newPasswordErrors () {
@@ -1107,11 +1138,13 @@ export default {
     },
     async saveDetailsClicked () {
       await this.$v.name.$touch()
+      await this.$v.fatherName.$touch()
+      await this.$v.motherName.$touch()
       await this.$v.phone.$touch()
       await this.$v.studentId.$touch()
       await this.$v.email.$touch()
 
-      if (this.$v.name.$error || this.$v.phone.$error || this.$v.studentId.$error || this.$v.email.$error) {
+      if (this.$v.name.$error || this.$v.fatherName.$error || this.$v.motherName.$error || this.$v.phone.$error || this.$v.studentId.$error || this.$v.email.$error) {
         return
       }
 
@@ -1127,6 +1160,8 @@ export default {
       const sendData = {
         donorId: this.id,
         name: this.name,
+        fatherName: this.fatherName,
+        motherName: this.motherName,
         phone: parseInt('88' + this.phone),
         studentId: this.studentId,
         email: this.email,
@@ -1137,7 +1172,9 @@ export default {
         availableToAll: this.availableToAll,
         // unconditional: the validator makes archiveFlag a required body field, so users
         // who never see the switch round-trip the donor's existing value
-        archiveFlag: this.archiveFlag
+        archiveFlag: this.archiveFlag,
+        // unconditional for the same reason as archiveFlag above
+        isCertificateEnabled: this.isCertificateEnabled
       }
       // mirrors the server side demotion rule: a super admin keeps their designation
       const isNewlyArchived = this.archiveFlag && !this.profile.archiveFlag
@@ -1258,6 +1295,8 @@ export default {
     const profile = this.profile
     this.id = profile._id
     this.name = profile.name
+    this.fatherName = profile.fatherName
+    this.motherName = profile.motherName
     this.phone = profile.phone.toString().substr(2)
     this.oldPhone = profile.phone
     this.studentId = profile.studentId
@@ -1272,6 +1311,7 @@ export default {
     this.commentTime = profile.commentTime
     this.availableToAll = profile.availableToAll
     this.archiveFlag = profile.archiveFlag
+    this.isCertificateEnabled = profile.isCertificateEnabled
     this.publicContacts = profile.publicContacts
     this.callRecords = profile.callRecords
     this.donationList = profile.donations

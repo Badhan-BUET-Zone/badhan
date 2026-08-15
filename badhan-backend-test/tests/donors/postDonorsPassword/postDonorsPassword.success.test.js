@@ -11,6 +11,8 @@ test('POST/donors/password: success', async () => {
     bloodGroup: 2,
     hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
+    fatherName: 'Volunteer User Father',
+    motherName: 'Volunteer User Mother',
     studentId: 1900401,
     address: 'Test Address',
     roomNumber: '4001',

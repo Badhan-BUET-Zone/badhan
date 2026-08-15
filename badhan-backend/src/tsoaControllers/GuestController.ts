@@ -242,6 +242,8 @@ export class GuestController extends Controller {
       _id: faker.getId(),
       phone: faker.getPhone(),
       name: faker.getName(),
+      fatherName: faker.getName(),
+      motherName: faker.getName(),
       studentId: faker.getStudentId(),
       bloodGroup: faker.getBloodGroup(),
       hall: faker.getHall(),
@@ -252,6 +254,7 @@ export class GuestController extends Controller {
       designation: DESIGNATIONS_INDEX.SUPER_ADMIN,
       availableToAll: faker.getBoolean(),
       archiveFlag: false,
+      isCertificateEnabled: false,
       email: faker.getEmail()
     }
 
@@ -288,9 +291,12 @@ export class GuestController extends Controller {
         bloodGroup: faker.getBloodGroup(),
         hall: faker.getHall(),
         name: faker.getName(),
+        fatherName: faker.getName(),
+        motherName: faker.getName(),
         studentId: faker.getStudentId(),
         availableToAll: faker.getBoolean(),
         archiveFlag: false,
+        isCertificateEnabled: false,
         email: faker.getEmail()
       }
     }
@@ -486,6 +492,8 @@ export class GuestController extends Controller {
       _id: faker.getId(),
       phone: faker.getPhone(),
       name: faker.getName(),
+      fatherName: faker.getName(),
+      motherName: faker.getName(),
       studentId: faker.getStudentId(),
       lastDonation: faker.getTimestamp(240),
       lastPlateletDonation: faker.getTimestamp(240),
@@ -502,6 +510,7 @@ export class GuestController extends Controller {
       publicContacts,
       availableToAll: faker.getBoolean(),
       archiveFlag: false,
+      isCertificateEnabled: false,
       email: faker.getEmail(),
       markedBy: randomMarker
     }
@@ -908,9 +917,12 @@ export class GuestController extends Controller {
         bloodGroup: faker.getBloodGroup(),
         hall: faker.getHall(),
         name: faker.getName(),
+        fatherName: faker.getName(),
+        motherName: faker.getName(),
         studentId: faker.getStudentId(),
         availableToAll: faker.getBoolean(),
-        archiveFlag: false
+        archiveFlag: false,
+        isCertificateEnabled: false
       }
     }
   }
@@ -1288,6 +1300,8 @@ export class GuestController extends Controller {
         _id: faker.getId(),
         phone: faker.getPhone(),
         name: faker.getName(),
+        fatherName: faker.getName(),
+        motherName: faker.getName(),
         studentId: faker.getStudentId(),
         bloodGroup: faker.getBloodGroup(),
         hall: faker.getHall(),
@@ -1298,6 +1312,7 @@ export class GuestController extends Controller {
         commentTime: faker.getTimestamp(240),
         availableToAll: faker.getBoolean(),
         archiveFlag: false,
+        isCertificateEnabled: false,
         email: faker.getEmail(),
         created: faker.getTimestamp(240)
       })

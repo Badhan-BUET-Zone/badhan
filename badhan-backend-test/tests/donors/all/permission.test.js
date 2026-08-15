@@ -11,6 +11,8 @@ test('GET/donors/all: requires super admin (volunteer and hall admin forbidden)'
     bloodGroup: 2,
     hall: HALLS_INDEX.CHATRI,
     name: 'Volunteer User',
+    fatherName: 'Volunteer User Father',
+    motherName: 'Volunteer User Mother',
     studentId: 1900302,
     address: 'Test Address',
     roomNumber: '3002',

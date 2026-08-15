@@ -279,6 +279,8 @@ const handlePOSTSignIn = async (payload: POSTSignInPayloadInterface) => {
 }
 export interface POSTDonorsPayloadInterface {
   name: string,
+  fatherName: string,
+  motherName: string,
   phone: number,
   bloodGroup: number,
   hall: number,
@@ -389,6 +391,8 @@ const handlePATCHDonorsComment = async (payload: PATCHDonorsCommentPayloadInterf
 export interface PATCHDonorsPayloadInterface {
   donorId: string,
   name: string,
+  fatherName: string,
+  motherName: string,
   phone: number,
   studentId: string,
   email: string,
@@ -397,7 +401,8 @@ export interface PATCHDonorsPayloadInterface {
   roomNumber: string,
   address: string,
   availableToAll: boolean,
-  archiveFlag: boolean
+  archiveFlag: boolean,
+  isCertificateEnabled: boolean
 }
 const handlePATCHDonors = async (payload: PATCHDonorsPayloadInterface) => {
   try {

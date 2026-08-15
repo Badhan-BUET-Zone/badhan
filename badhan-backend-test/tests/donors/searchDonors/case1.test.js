@@ -20,6 +20,8 @@ test('GET/search/v3: success', async () => {
     bloodGroup: 2,
     hall: HALLS_INDEX.SUHRAWARDY,
     name: 'Blah Blah',
+    fatherName: 'Search Case1 Father',
+    motherName: 'Search Case1 Mother',
     studentId: 1606060,
     address: 'Azimpur',
     roomNumber: '3009',

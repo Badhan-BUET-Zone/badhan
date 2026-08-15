@@ -12,6 +12,8 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
       bloodGroup: 2,
       hall: HALLS_INDEX.CHATRI,
       name: 'Requester Volunteer',
+      fatherName: 'Requester Volunteer Father',
+      motherName: 'Requester Volunteer Mother',
       studentId: 2001061,
       address: 'Hall 1 Address',
       roomNumber: '16262',
@@ -28,6 +30,8 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
     bloodGroup: 2,
     hall: HALLS_INDEX.NAZRUL,
     name: 'Target Donor',
+    fatherName: 'Target Donor Father',
+    motherName: 'Target Donor Mother',
     studentId: 2011062,
     address: 'Hall 2 Address',
     roomNumber: '26363',
@@ -51,6 +55,8 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
     {
       donorId: donorHall2.data.newDonor._id,
       name: 'Updated Name',
+      fatherName: targetInfo.fatherName,
+      motherName: targetInfo.motherName,
       phone: targetInfo.phone,
       studentId: targetInfo.studentId,
       bloodGroup: targetInfo.bloodGroup,
@@ -59,6 +65,7 @@ test('PATCH /donors/v2: forbidden when target donor is in different hall', async
       address: targetInfo.address,
       availableToAll: targetInfo.availableToAll,
       archiveFlag: false,
+      isCertificateEnabled: false,
       email: '',
     }
   );

@@ -28,10 +28,13 @@ export interface IDonor extends Document {
   // which asserted the invariant while the type denied it.
   designation: number;
   name: string;
+  fatherName: string;
+  motherName: string;
   comment: string;
   commentTime?: number;
   availableToAll: boolean;
   archiveFlag: boolean;
+  isCertificateEnabled: boolean;
   email?: string;
 }
 
@@ -86,6 +89,14 @@ export interface IDonor extends Document {
  *           type: string
  *           description: name of donor
  *           example: Mir Mahathir Mohammad
+ *         fatherName:
+ *           type: string
+ *           description: name of donor's father
+ *           example: Abdul Karim
+ *         motherName:
+ *           type: string
+ *           description: name of donor's mother
+ *           example: Rahima Khatun
  *         comment:
  *           type: string
  *           description: additional information of the donor
@@ -101,6 +112,10 @@ export interface IDonor extends Document {
  *         archiveFlag:
  *           type: boolean
  *           description: if this flag is true, then the donor is archived and is kept out of the default search space
+ *           example: false
+ *         isCertificateEnabled:
+ *           type: boolean
+ *           description: if this flag is true, then the donor's certificate can be verified/downloaded
  *           example: false
  *         email:
  *           type: string
@@ -199,6 +214,22 @@ const donorSchema: Schema = new Schema<IDonor>({
     minlength: 3,
     maxlength: 100
   },
+  fatherName: {
+    type: String,
+    trim: true,
+    default: '(Unknown)',
+    required: true,
+    minlength: 3,
+    maxlength: 100
+  },
+  motherName: {
+    type: String,
+    trim: true,
+    default: '(Unknown)',
+    required: true,
+    minlength: 3,
+    maxlength: 100
+  },
   comment: {
     type: String,
     trim: true,
@@ -220,6 +251,11 @@ const donorSchema: Schema = new Schema<IDonor>({
     required: true
   },
   archiveFlag: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isCertificateEnabled: {
     type: Boolean,
     required: true,
     default: false

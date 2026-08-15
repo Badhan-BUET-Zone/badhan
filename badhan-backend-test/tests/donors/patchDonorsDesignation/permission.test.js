@@ -12,6 +12,8 @@ const donorInfo = (overrides = {}) => ({
   bloodGroup: 2,
   hall: HALLS_INDEX.CHATRI,
   name: 'Blah Blah',
+  fatherName: 'Father Blah',
+  motherName: 'Mother Blah',
   studentId: 1606060,
   address: 'Azimpur',
   roomNumber: '3009',

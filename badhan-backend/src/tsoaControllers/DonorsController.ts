@@ -126,6 +126,8 @@ export class DonorsController extends Controller {
       address: string;
       roomNumber: string;
       name: string;
+      fatherName: string;
+      motherName: string;
       comment: string;
       availableToAll: boolean;
       extraDonationCount: number;
@@ -177,7 +179,9 @@ export class DonorsController extends Controller {
       body.address,
       body.roomNumber,
       body.comment,
-      body.availableToAll
+      body.availableToAll,
+      body.fatherName,
+      body.motherName
     )
 
     if (donorInsertionResult.status !== 'OK') {
@@ -619,6 +623,8 @@ export class DonorsController extends Controller {
     @Body() body: {
       donorId: string;
       name: string;
+      fatherName: string;
+      motherName: string;
       phone: number;
       studentId: string;
       bloodGroup: number;
@@ -627,6 +633,7 @@ export class DonorsController extends Controller {
       address: string;
       availableToAll: boolean;
       archiveFlag: boolean;
+      isCertificateEnabled: boolean;
       email: string;
     },
     @Request() req: any
@@ -660,6 +667,8 @@ export class DonorsController extends Controller {
     }
 
     target.name = body.name
+    target.fatherName = body.fatherName
+    target.motherName = body.motherName
     target.phone = body.phone
     target.studentId = body.studentId
     target.bloodGroup = body.bloodGroup
@@ -667,6 +676,7 @@ export class DonorsController extends Controller {
     target.roomNumber = body.roomNumber
     target.address = body.address
     target.availableToAll = body.availableToAll
+    target.isCertificateEnabled = body.isCertificateEnabled
     target.email = body.email
 
     // Archiving is a donor edit, so it inherits the permission predicate already enforced above and

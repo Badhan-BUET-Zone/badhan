@@ -57,6 +57,16 @@ export const validateBODYName: ValidationChain = body('name')
   .customSanitizer((value:any):string => { return String(value) }).escape().trim()
   .isLength({ min: 3, max: 100 }).withMessage('name must be between 3 and 100 characters')
 
+export const validateBODYFatherName: ValidationChain = body('fatherName')
+  .exists().withMessage('fatherName is required')
+  .customSanitizer((value:any):string => { return String(value) }).escape().trim()
+  .isLength({ min: 3, max: 100 }).withMessage('fatherName must be between 3 and 100 characters')
+
+export const validateBODYMotherName: ValidationChain = body('motherName')
+  .exists().withMessage('motherName is required')
+  .customSanitizer((value:any):string => { return String(value) }).escape().trim()
+  .isLength({ min: 3, max: 100 }).withMessage('motherName must be between 3 and 100 characters')
+
 export const validateBODYStudentId: ValidationChain = body('studentId')
   .exists().withMessage('studentId is required')
   .customSanitizer((value:any):string => String(value)).escape().trim()
@@ -106,6 +116,11 @@ export const validateBODYAvailableToAll: ValidationChain = body('availableToAll'
 export const validateBODYArchiveFlag: ValidationChain = body('archiveFlag')
   .exists().withMessage('archiveFlag is required')
   .isBoolean().withMessage('archiveFlag must be boolean')
+  .toBoolean()
+
+export const validateBODYIsCertificateEnabled: ValidationChain = body('isCertificateEnabled')
+  .exists().withMessage('isCertificateEnabled is required')
+  .isBoolean().withMessage('isCertificateEnabled must be boolean')
   .toBoolean()
 
 export const validateBODYAddress: ValidationChain = body('address')

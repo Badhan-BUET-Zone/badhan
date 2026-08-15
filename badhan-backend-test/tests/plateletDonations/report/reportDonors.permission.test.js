@@ -11,6 +11,8 @@ test('GET/platelet-donations/report/donors: requires super admin (volunteer and 
     bloodGroup: 2,
     hall: HALLS_INDEX.CHATRI,
     name: 'Platelet Report Donors Volunteer',
+    fatherName: 'Platelet Report Donors Volunteer Father',
+    motherName: 'Platelet Report Donors Volunteer Mother',
     studentId: 1900601,
     address: 'Test Address',
     roomNumber: '6001',

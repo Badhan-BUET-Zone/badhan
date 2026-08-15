@@ -11,6 +11,8 @@ test('GET/donations/report/donors: requires super admin (volunteer and hall admi
     bloodGroup: 2,
     hall: HALLS_INDEX.CHATRI,
     name: 'Report Donors Volunteer',
+    fatherName: 'Report Donors Volunteer Father',
+    motherName: 'Report Donors Volunteer Mother',
     studentId: 1900401,
     address: 'Test Address',
     roomNumber: '4001',

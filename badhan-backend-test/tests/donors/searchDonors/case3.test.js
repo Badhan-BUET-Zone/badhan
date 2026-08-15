@@ -20,6 +20,8 @@ test('searchDonors: blood donation 110 days ago', async () => {
     bloodGroup: 2,
     hall: HALLS_INDEX.SUHRAWARDY,
     name: 'Blood110',
+    fatherName: 'Blood110 Father',
+    motherName: 'Blood110 Mother',
     studentId: 1606062,
     address: 'Azimpur',
     roomNumber: '3011',

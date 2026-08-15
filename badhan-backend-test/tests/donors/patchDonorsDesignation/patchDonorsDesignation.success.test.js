@@ -18,6 +18,8 @@ const donorInfo = (overrides = {}) => ({
   bloodGroup: 2,
   hall: HALLS_INDEX.SUHRAWARDY,
   name: 'Blah Blah',
+  fatherName: 'Father Blah',
+  motherName: 'Mother Blah',
   studentId: 1606060,
   address: 'Azimpur',
   roomNumber: '3009',
@@ -77,6 +79,8 @@ test('PATCH /donors/designation: super admin promotes a volunteer whose hall is 
     {
       donorId,
       name: info.name,
+      fatherName: info.fatherName,
+      motherName: info.motherName,
       phone: info.phone,
       studentId: info.studentId,
       bloodGroup: info.bloodGroup,

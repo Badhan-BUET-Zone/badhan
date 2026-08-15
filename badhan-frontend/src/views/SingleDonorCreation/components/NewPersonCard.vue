@@ -5,6 +5,14 @@
                     :hint="''"
                     @blur="$v.name.$touch()"
                     :error-messages="nameErrors"></TextField>
+      <TextField id="newDonorFatherNameTextBoxId" data-cy="newDonorFatherNameTextBoxId" class="required" label="Father's Name" v-model="fatherName"
+                    :hint="''"
+                    @blur="$v.fatherName.$touch()"
+                    :error-messages="fatherNameErrors"></TextField>
+      <TextField id="newDonorMotherNameTextBoxId" data-cy="newDonorMotherNameTextBoxId" class="required" label="Mother's Name" v-model="motherName"
+                    :hint="''"
+                    @blur="$v.motherName.$touch()"
+                    :error-messages="motherNameErrors"></TextField>
       <TextField id="newDonorPhoneTextBoxId" data-cy="newDonorPhoneTextBoxId" :loading="phoneDuplicateCheckLoader" :disabled="phoneDuplicateCheckLoader" class="required" label="Phone" v-model="computedPhone" :hint="''" @blur="$v.phone.$touch()"
                     :error-messages="phoneErrors"></TextField>
       <transition name="slide-fade-down">
@@ -160,6 +168,12 @@ export default {
       name: {
         required
       },
+      fatherName: {
+        required
+      },
+      motherName: {
+        required
+      },
       bloodGroup: {
         required
       },
@@ -245,6 +259,18 @@ export default {
       !this.$v.name.required && errors.push('Name is required')
       return errors
     },
+    fatherNameErrors () {
+      const errors = []
+      if (!this.$v.fatherName.$dirty) return errors
+      !this.$v.fatherName.required && errors.push('Father\'s name is required')
+      return errors
+    },
+    motherNameErrors () {
+      const errors = []
+      if (!this.$v.motherName.$dirty) return errors
+      !this.$v.motherName.required && errors.push('Mother\'s name is required')
+      return errors
+    },
     studentIdErrors () {
       const errors = []
       if (!this.$v.studentId.$dirty) return errors
@@ -303,6 +329,8 @@ export default {
       nullDepartment,
 
       name: '',
+      fatherName: '',
+      motherName: '',
       phone: '',
       studentId: '',
       bloodGroup: '',
@@ -339,7 +367,7 @@ export default {
   },
 
   mounted () {
-  const keysExpected = ['name', 'phone', 'studentId', 'bloodGroup', 'hall', 'address', 'roomNumber', 'comment', 'donationCount', 'lastDonation', 'plateletDonationCount', 'lastPlateletDonation', 'key', 'availableToAll']
+  const keysExpected = ['name', 'fatherName', 'motherName', 'phone', 'studentId', 'bloodGroup', 'hall', 'address', 'roomNumber', 'comment', 'donationCount', 'lastDonation', 'plateletDonationCount', 'lastPlateletDonation', 'key', 'availableToAll']
   // Accept new platelet fields but don't warn if missing (backward compatibility)
     if (this.$props && this.$props.donor) {
     Object.keys(this.$props.donor).forEach((key) => {
@@ -356,6 +384,8 @@ export default {
     }
 
     this.name = this.$props.donor && this.$props.donor.name ? String(this.$props.donor.name) : ''
+    this.fatherName = this.$props.donor && this.$props.donor.fatherName ? String(this.$props.donor.fatherName) : ''
+    this.motherName = this.$props.donor && this.$props.donor.motherName ? String(this.$props.donor.motherName) : ''
     this.phone = this.$props.donor && this.$props.donor.phone != null ? String(this.$props.donor.phone).replace(/^88/, '') : ''
     this.studentId = this.$props.donor && this.$props.donor.studentId != null ? String(this.$props.donor.studentId) : ''
     this.bloodGroup = (this.$props.donor && typeof this.$props.donor.bloodGroup === 'number' && this.bloodGroups[this.$props.donor.bloodGroup] !== undefined)
@@ -416,6 +446,8 @@ export default {
 
       const newDonor = {
         name: String(this.name),
+        fatherName: String(this.fatherName),
+        motherName: String(this.motherName),
         phone: Number('88' + this.phone),
         bloodGroup: Number(this.bloodGroups.indexOf(this.bloodGroup)),
         hall: Number(this.halls.indexOf(this.hall)),
@@ -447,6 +479,8 @@ export default {
       await this.$v.$reset()
 
       this.name = ''
+      this.fatherName = ''
+      this.motherName = ''
       this.phone = ''
       this.studentId = ''
       this.bloodGroup = ''

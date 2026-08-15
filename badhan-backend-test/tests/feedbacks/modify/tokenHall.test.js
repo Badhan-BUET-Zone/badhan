@@ -216,6 +216,8 @@ test('POST/feedbacks/token: an (Unknown) donor still mints the anonymous way', a
     {
       donorId: creation.data.newDonor._id,
       name: donorInfo.name,
+      fatherName: donorInfo.fatherName,
+      motherName: donorInfo.motherName,
       phone: donorInfo.phone,
       studentId: donorInfo.studentId,
       bloodGroup: donorInfo.bloodGroup,
