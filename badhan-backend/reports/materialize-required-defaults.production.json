@@ -1,12 +1,12 @@
 {
-  "ranAt": "2026-08-09T16:59:44.853Z",
+  "ranAt": "2026-08-15T05:39:01.014Z",
   "environment": "production",
   "dryRun": false,
   "counts": {
-    "requiredPathsInspected": 40,
-    "pathsWithGaps": 2,
-    "pathsBackfilled": 1,
-    "documentsModified": 1349,
+    "requiredPathsInspected": 43,
+    "pathsWithGaps": 4,
+    "pathsBackfilled": 3,
+    "documentsModified": 13743,
     "pathsNeedingReview": 1
   },
   "validator": {
@@ -20,7 +20,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 8529
+      "totalDocs": 8590
     },
     {
       "model": "CallRecords",
@@ -28,7 +28,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 8529
+      "totalDocs": 8590
     },
     {
       "model": "CallRecords",
@@ -37,7 +37,7 @@
       "defaultValue": 0,
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 8529
+      "totalDocs": 8590
     },
     {
       "model": "Donations",
@@ -45,7 +45,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 9341
+      "totalDocs": 9343
     },
     {
       "model": "Donations",
@@ -53,7 +53,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 9341
+      "totalDocs": 9343
     },
     {
       "model": "Donations",
@@ -62,7 +62,7 @@
       "defaultValue": 0,
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 9341
+      "totalDocs": 9343
     },
     {
       "model": "Logs",
@@ -70,7 +70,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 39918
+      "totalDocs": 40245
     },
     {
       "model": "Logs",
@@ -78,7 +78,7 @@
       "classification": "function-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 39918
+      "totalDocs": 40245
     },
     {
       "model": "Logs",
@@ -86,15 +86,15 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 39918
+      "totalDocs": 40245
     },
     {
       "model": "Logs",
       "path": "details",
       "classification": "no-default",
-      "missingBefore": 2582,
+      "missingBefore": 2602,
       "modified": 0,
-      "totalDocs": 39918
+      "totalDocs": 40245
     },
     {
       "model": "PublicContacts",
@@ -143,7 +143,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 116
+      "totalDocs": 109
     },
     {
       "model": "Tokens",
@@ -151,7 +151,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 116
+      "totalDocs": 109
     },
     {
       "model": "Tokens",
@@ -159,7 +159,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 116
+      "totalDocs": 109
     },
     {
       "model": "Tokens",
@@ -167,7 +167,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 116
+      "totalDocs": 109
     },
     {
       "model": "Tokens",
@@ -175,7 +175,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 116
+      "totalDocs": 109
     },
     {
       "model": "Tokens",
@@ -183,7 +183,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 116
+      "totalDocs": 109
     },
     {
       "model": "PlateletDonations",
@@ -216,7 +216,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -224,7 +224,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -232,7 +232,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -240,7 +240,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -249,7 +249,7 @@
       "defaultValue": "(Unknown)",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -258,16 +258,16 @@
       "defaultValue": "(Unknown)",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
       "path": "designation",
       "classification": "static-default",
       "defaultValue": 0,
-      "missingBefore": 1349,
-      "modified": 1349,
-      "totalDocs": 4578
+      "missingBefore": 0,
+      "modified": 0,
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -275,7 +275,25 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
+    },
+    {
+      "model": "Donor",
+      "path": "fatherName",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
+      "missingBefore": 4581,
+      "modified": 4581,
+      "totalDocs": 4581
+    },
+    {
+      "model": "Donor",
+      "path": "motherName",
+      "classification": "static-default",
+      "defaultValue": "(Unknown)",
+      "missingBefore": 4581,
+      "modified": 4581,
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -284,7 +302,7 @@
       "defaultValue": "(Unknown)",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -293,7 +311,7 @@
       "defaultValue": 946684800000,
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -301,7 +319,7 @@
       "classification": "no-default",
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
     },
     {
       "model": "Donor",
@@ -310,7 +328,16 @@
       "defaultValue": false,
       "missingBefore": 0,
       "modified": 0,
-      "totalDocs": 4578
+      "totalDocs": 4581
+    },
+    {
+      "model": "Donor",
+      "path": "isCertificateEnabled",
+      "classification": "static-default",
+      "defaultValue": false,
+      "missingBefore": 4581,
+      "modified": 4581,
+      "totalDocs": 4581
     },
     {
       "model": "Feedbacks",
