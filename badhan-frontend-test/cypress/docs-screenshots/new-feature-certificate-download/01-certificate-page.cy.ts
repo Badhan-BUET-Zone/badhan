@@ -3,7 +3,7 @@ import { hideOverlays } from '../hideOverlays';
 
 // Documentation screenshot for docs/blog/new-feature-certificate-download.md.
 // ONE cy.screenshot() per spec file — in headless Electron the second capture in a file comes out
-// blank. The page fades in over 0.3s, so wait after the artwork exists or it records at opacity 0.
+// blank. The page fades in over 0.3s, so wait after the frame exists or it records at opacity 0.
 
 describe('docs screenshot — certificate page', () => {
   it('captures the certificate as a verifier sees it', () => {
@@ -12,8 +12,7 @@ describe('docs screenshot — certificate page', () => {
 
     cy.get('@docsDonorId').then((donorId) => {
       visitCertificateSignedOut(String(donorId));
-      cy.get('[data-cy="certificateArtwork"]').should('exist');
-      cy.get('[data-cy="certificateQr"]').should('exist');
+      cy.get('[data-cy="certificateFrame"]').should('be.visible');
       hideOverlays();
       cy.wait(1500);
       cy.get('[data-cy="certificateContent"]').screenshot('certificate-page');

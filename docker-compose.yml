@@ -103,6 +103,22 @@ services:
       internal:
         condition: service_healthy
 
+  # Bakes badhan-backend/src/assets/certificate-background.png from the Illustrator artwork in
+  # temp/. A one-off prep step — the certificate renderer reads only the committed PNG — so it sits
+  # behind its own profile and is built on first use:
+  #
+  #   docker compose --profile assets run --rm certificate-assets \
+  #     badhan-backend/scripts/certificate-assets/render-background.sh
+  #
+  # Mounts the whole repo because it reads from temp/ and writes into badhan-backend/src/assets/.
+  certificate-assets:
+    profiles: ["assets"]
+    build:
+      context: ./badhan-backend/scripts/certificate-assets
+    volumes:
+      - .:/repo
+    working_dir: /repo
+
   # Deploy tooling. Each app owns the CLI that deploys it, as the `deploy`
   # target of that app's Dockerfile, so there is no separate deploy image and
   # the CLI layer sits on top of layers the dev stack already built.

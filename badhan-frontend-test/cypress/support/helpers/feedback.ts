@@ -69,6 +69,10 @@ export const createDonorViaApi = (
         bloodGroup: BLOOD_GROUP_B_POS,
         hall: overrides.hall ?? HALL_SUHRAWARDY,
         name: overrides.name ?? 'Feedback Spec Donor',
+        // Required on creation since plan16 P2. No spec here asserts on them, so they are derived
+        // from the donor's own name rather than given a generator of their own.
+        fatherName: `${overrides.name ?? 'Feedback Spec Donor'} Father`,
+        motherName: `${overrides.name ?? 'Feedback Spec Donor'} Mother`,
         studentId: overrides.studentId ?? '1605031',
         address: overrides.address ?? 'Azimpur',
         roomNumber: overrides.roomNumber ?? '3009',
@@ -293,6 +297,8 @@ export const createVolunteerInHallViaApi = (
         bloodGroup: BLOOD_GROUP_B_POS,
         hall: HALL_SUHRAWARDY,
         name: overrides.name,
+        fatherName: `${overrides.name} Father`,
+        motherName: `${overrides.name} Mother`,
         studentId: overrides.studentId,
         address: 'Azimpur',
         roomNumber: '3009',

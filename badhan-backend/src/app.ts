@@ -16,7 +16,11 @@ import path from 'node:path';
 
 const app:Express = express()
 
-app.use(cors())
+// Content-Disposition has to be named explicitly: a browser hides every response header from
+// cross-origin JavaScript except a short safelist, and the frontend is a different origin from this
+// API in every environment. Without this the certificate page can read the PDF but not the filename
+// the backend chose for it, and quietly saves the file under the donor's database id instead.
+app.use(cors({ exposedHeaders: ['Content-Disposition'] }))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(logger('dev'))

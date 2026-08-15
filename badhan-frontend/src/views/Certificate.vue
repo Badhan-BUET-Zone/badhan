@@ -7,29 +7,40 @@
           <LoadingMessage/>
         </v-card-text>
 
-        <div v-else-if="certificate" :key="'certificateLoaded'" data-cy="certificateContent">
-          <CertificateArtwork
-            ref="artwork"
-            :name="certificate.name"
-            :student-id="certificate.studentId"
-            :qr-matrix="qrMatrix"
-            :qr-url="qrUrl"
-          />
+        <div v-else-if="certificateUrl" :key="'certificateLoaded'" data-cy="certificateContent">
           <!--
-            Chrome, not content: the button sits outside the artwork, so it can never appear in the
+            The certificate itself, shown on screen before anyone decides to download it. Whoever
+            scans the QR on a piece of paper is standing there holding that paper: they need to see
+            the document, compare it, and leave — not download a file first. The aspect ratio is the
+            page's own (297:210), so the whole A4 landscape sheet is visible at once rather than the
+            top corner of it.
+          -->
+          <div class="certificate-frame">
+            <iframe
+              data-cy="certificateFrame"
+              :src="certificateUrl"
+              title="Certificate"
+            ></iframe>
+          </div>
+          <!--
+            Chrome, not content: the button sits outside the frame, so it can never appear in the
             PDF or on the printed page.
           -->
           <v-card-actions class="justify-center">
             <Button
               data-cy="certificateDownloadButton"
               :icon="'mdi-download'"
-              :text="downloadingFlag ? 'Preparing…' : 'Download PDF'"
+              :text="'Download PDF'"
               :color="'primary'"
-              :disabled="downloadingFlag"
               :click="downloadPdf"
             ></Button>
           </v-card-actions>
         </div>
+
+        <v-card-text v-else-if="notEnabledFlag" :key="'certificateNotEnabled'" class="title text-center"
+                     data-cy="certificateNotEnabled">
+          This donor's certificate has not been enabled yet.
+        </v-card-text>
 
         <v-card-text v-else-if="notFoundFlag" :key="'certificateNotFound'" class="title text-center"
                      data-cy="certificateNotFound">
@@ -60,50 +71,70 @@
 import Container from '@/components/Container/Container'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button'
-import CertificateArtwork from '@/views/Certificate/CertificateArtwork.vue'
-import { downloadCertificatePdf } from '@/views/Certificate/certificatePdf'
 import { handleGETCertificate } from '@/api'
 import { HTTP_STATUS } from '@/mixins/constants'
 
 // The verification page behind every printed certificate's QR code. It is deliberately reachable
 // without a session: whoever scans the paper — an employer, a university, anyone — has no Badhan
-// account and no reason to get one. Nothing here is rendered from the URL; the name and student ID
-// are read from the database on every open, so correcting a typo in the app corrects what a scan
-// shows (it does not, and cannot, correct paper already printed).
+// account and no reason to get one.
+//
+// This page draws nothing. The backend renders the finished PDF and this fetches it once, then both
+// shows it and offers it for download from the same bytes. That is not an implementation detail: it
+// is the only way the artwork can stay private, because everything a browser is sent — every image,
+// font and layout constant in the bundle — is served to anyone who loads the page, with no auth.
+//
+// Nothing is rendered from the URL either. The donor's details are read from the database on every
+// open, so correcting a typo in the app corrects what a scan shows (it does not, and cannot,
+// correct paper already printed).
 
 export default {
   name: 'CertificatePage',
-  components: { CertificateArtwork, Button, LoadingMessage, Container },
+  components: { Button, LoadingMessage, Container },
   data: () => {
     return {
       loadingFlag: true,
-      certificate: null,
-      qrMatrix: null,
-      qrUrl: '',
-      downloadingFlag: false,
-      // Distinguished from the error state on purpose: "not found" is a settled answer and offering
-      // a retry button would invite someone to keep hammering a certificate that does not exist,
-      // while a network failure is worth retrying.
-      notFoundFlag: false
+      // An object URL over the fetched PDF. One fetch feeds both the frame and the download, so
+      // pressing download never asks the server for the certificate a second time.
+      certificateUrl: '',
+      fileName: 'certificate.pdf',
+      // Three settled answers, told apart on purpose. "Not found" and "not enabled" are final and
+      // offer no retry — hammering the server would not change either — while a network failure is
+      // worth retrying, and gets the button.
+      notFoundFlag: false,
+      notEnabledFlag: false
     }
   },
   watch: {
     // Going from one certificate to another changes only the query string, and the router reuses
     // the mounted component rather than rebuilding it. Without this the page would keep showing the
-    // previous donor — and, worse, the previous donor's QR code, since the code is built from the
-    // URL at load time. A certificate showing one person's name over another person's QR is
-    // precisely the failure this whole feature exists to make impossible.
+    // previous donor's certificate.
     '$route.query.id' () {
       this.loadCertificate()
     }
   },
   methods: {
+    // An object URL pins its blob in memory until it is revoked, and this page is opened, closed
+    // and reopened by people scanning codes.
+    releaseCertificate () {
+      if (this.certificateUrl) {
+        URL.revokeObjectURL(this.certificateUrl)
+        this.certificateUrl = ''
+      }
+    },
+
+    // The name the browser saves the file under. The Content-Disposition header carries the one the
+    // backend chose; falling back to the donor id keeps the file identifiable if a proxy strips it.
+    readFileName (response, donorId) {
+      const disposition = response.headers ? response.headers['content-disposition'] : ''
+      const match = disposition ? disposition.match(/filename="([^"]+)"/) : null
+      return match ? match[1] : `Badhan-Certificate-${donorId}.pdf`
+    },
+
     async loadCertificate () {
       this.loadingFlag = true
-      this.certificate = null
-      this.qrMatrix = null
-      this.qrUrl = ''
+      this.releaseCertificate()
       this.notFoundFlag = false
+      this.notEnabledFlag = false
 
       const donorId = this.$route.query.id
 
@@ -126,8 +157,10 @@ export default {
       }
 
       if (response.status === HTTP_STATUS.OK) {
-        this.certificate = response.data.certificate
-        await this.buildQrMatrix()
+        this.fileName = this.readFileName(response, donorId)
+        this.certificateUrl = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+      } else if (response.status === HTTP_STATUS.FORBIDDEN) {
+        this.notEnabledFlag = true
       } else if (response.status === HTTP_STATUS.NOT_FOUND) {
         this.notFoundFlag = true
       }
@@ -135,43 +168,17 @@ export default {
       this.loadingFlag = false
     },
 
-    // The QR encodes this page's own address, so the printed code and the link are the same object
-    // by construction and cannot drift apart. The consequence is that a PDF downloaded from a dev
-    // or staging host encodes that host — print only from production.
-    //
-    // qrcode is imported here rather than at the top of the file so it stays out of the sign-in
-    // bundle: most people who load this app never open a certificate.
-    async buildQrMatrix () {
-      try {
-        const qrcode = await import(/* webpackChunkName: "certificate-qr" */ 'qrcode')
-        const url = window.location.href
-        // create() returns the module matrix rather than a picture, which lets the artwork draw the
-        // code as vector geometry. Error correction M is the standard trade-off between density and
-        // tolerance of a smudged or creased print.
-        const code = qrcode.create(url, { errorCorrectionLevel: 'M' })
-        this.qrUrl = url
-        this.qrMatrix = { size: code.modules.size, data: code.modules.data }
-      } catch (error) {
-        // A certificate without its QR is still a readable, useful document — it simply cannot be
-        // verified by scanning. Better that than an error page.
-        this.qrMatrix = null
-      }
-    },
-
-    async downloadPdf () {
-      this.downloadingFlag = true
-      try {
-        // The artwork component's root element is the SVG itself, and it is what gets converted —
-        // not a screenshot of the page, so nothing around it (this button included) can leak in.
-        await downloadCertificatePdf(
-          this.$refs.artwork.$el,
-          this.certificate.studentId,
-          this.$route.query.id
-        )
-      } catch (error) {
-        this.$store.dispatch('notification/notifyError', 'Could not prepare the PDF. Please try again.')
-      }
-      this.downloadingFlag = false
+    // Saved from the bytes already in the page, so the file that lands on disk is byte-for-byte the
+    // one on screen.
+    downloadPdf () {
+      const link = document.createElement('a')
+      link.href = this.certificateUrl
+      link.download = this.fileName
+      // Attached before it is clicked and removed after: a detached anchor's click is ignored in
+      // some browsers, which fails silently — the visitor presses Download and simply gets nothing.
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   },
   async mounted () {
@@ -180,10 +187,30 @@ export default {
     // history and in any screenshot of the verifier's phone.
     document.title = 'Certificate — Badhan, BUET Zone'
     await this.loadCertificate()
+  },
+  beforeDestroy () {
+    this.releaseCertificate()
   }
 }
 </script>
 
 <style scoped>
+/*
+  The A4 landscape page's own proportions, so the frame is the shape of the thing inside it and no
+  scrollbar appears around a certificate that would otherwise fit.
+*/
+.certificate-frame {
+  position: relative;
+  width: 100%;
+  padding-top: 70.7%;
+}
 
+.certificate-frame iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 </style>

@@ -46,6 +46,13 @@ async function guestGet(path, schema) {
   return response;
 }
 
+// For the one route that answers with a file rather than JSON. arraybuffer keeps axios from
+// running the bytes through a UTF-8 decode, which would quietly corrupt them before a test could
+// look at the signature.
+async function guestGetBinary(path) {
+  return badhanAxios.get(path, { responseType: 'arraybuffer' });
+}
+
 async function guestPost(path, body, schema) {
   const response = await badhanAxios.post(path, body);
   if (schema) validateSchema(response.data, schema);
@@ -141,6 +148,7 @@ module.exports = {
   authedPatch,
   authedDelete,
   guestGet,
+  guestGetBinary,
   guestPost,
   guestPatch,
   guestDelete,

@@ -162,6 +162,30 @@ full `docker compose run backend-test` suite (217/217) all pass. `docs/manual/` 
 to [P5](#phase-p5--documentation), which lands with [P3](#phase-p3--certificate-rendering-moves-to-the-backend)
 per this repo's CLAUDE.md rule that behaviour and manual changes ship together.
 
+**Four gaps found and closed while verifying [P3](#phase-p3--certificate-rendering-moves-to-the-backend).**
+The backend suite was green because it is written against the API; the Cypress suite was not run, and
+16 of its 37 specs were failing. Two of the four were live bugs in the app, not test debt:
+
+1. **The batch archive sweep was broken.** [Home.vue](../../badhan-frontend/src/views/Home.vue)
+   builds its `PATCH /donors/v2` body field by field and never learned the new fields, so every sweep
+   stopped at the first donor with *"Stopped after 0 of N donors"*. It type-checks nowhere — the file
+   is plain JS, so `PATCHDonorsPayloadInterface` never applied to it, which is how this reached the
+   branch at all. `fatherName`, `motherName` and `isCertificateEnabled` added.
+2. **The single-donor creation form could not be submitted.**
+   [SingleDonorCreation.vue](../../badhan-frontend/src/views/SingleDonorCreation.vue) builds the
+   blank draft it hands to `NewPersonCard`, and did not put the two new keys on it. `NewPersonCard`
+   warns about a draft missing an expected key — [§P2.3](#p23-frontend-form-fields) correctly added
+   both to `keysExpected` — and any warning disables the **Create** button. So the form rendered its
+   new fields, validated them, and refused to submit. This affected the reset path *and* the
+   feedback-queue prefill path, i.e. every way of reaching the form.
+3. Cypress's three shared donor-creation helpers (`members.ts`, `feedback.ts` ×2) and the
+   `patchDonorViaApi` helper did not send the new fields.
+4. `donorCsvGenerator.ts`'s `CANONICAL_HEADERS` had drifted from the app's
+   ([donorCsv.ts](../../badhan-frontend/src/utils/donorCsv.ts)), so every generated upload was
+   missing two columns.
+
+After these, `docker compose run --rm frontend-test` is green: 120 tests, 37 specs.
+
 Three new fields: `fatherName` and `motherName` (added to mirror the existing `comment` field
 exactly — same shape, same default convention, same layering between Mongoose and the request
 validator), and `isCertificateEnabled` (a new boolean gate, [§P2.6](#p26-iscertificateenabled)).
@@ -319,7 +343,17 @@ an explicit, post-launch decision to turn it on.
 [P2](#phase-p2--donor-schema-fathername-mothername-and-the-certificate-toggle) · **Deployable alone:**
 no — needs `fatherName`/`motherName`/`isCertificateEnabled` to exist first · **Reversible:** yes,
 independently of P2
-**Status:** Not started — mark `Implementation complete` once this phase's work is done.
+**Status:** Implementation complete. Backend renders the PDF with `pdfkit` and returns it from
+`GET /certificates/{donorId}`; the frontend template is deleted and the page embeds the fetched PDF;
+the background PNG is baked from the supplied SVG by a Dockerised prep step. Verified: backend
+`tsc --noEmit` and `tslint` clean, frontend `npm run build` clean, `backend-test` 218/218,
+certificate Cypress specs 10/10, and no certificate asset appears anywhere in `badhan-frontend/dist`.
+Six things diverged from what this phase assumed when it was written, each recorded at the section
+it belongs to: [§P3.4](#p34-fonts-embedded-not-linked) (fonts), [§P3.5](#p35-the-render-pipeline-pdfkit)
+(no student ID on the new artwork; department name rather than raw code),
+[§P3.6](#p36-the-rasterised-background--server-side-and-private) (two further SVG export defects),
+[§P3.7](#p37-the-old-frontend-template-is-deleted-not-kept-as-a-fallback) (`jspdf`/`svg2pdf.js` stay),
+and [§P3.10](#p310-what-this-phase-found-that-the-plan-did-not-predict).
 
 **Major change from how this plan started.** The certificate was going to stay a browser-built
 artifact — a live `<svg>` the frontend hydrates and converts to a vector PDF with `svg2pdf.js`. That
@@ -414,6 +448,25 @@ a controlled environment rather than in every visitor's browser:
   rasterised background image ([§P3.6](#p36-the-rasterised-background--server-side-and-private)),
   drawn once at asset-preparation time, not by pdfkit per request — so pdfkit itself never needs those
   four faces at all, only whichever face renders the live donor-specific text.
+
+**What was actually built, and why it is better than the substitution plan above.** Every live value
+on the certificate is in `GreatVibes-Regular` and nothing else, so pdfkit needs exactly **one** font
+file: [badhan-backend/src/assets/fonts/GreatVibes-Regular.ttf](../../badhan-backend/src/assets/fonts/GreatVibes-Regular.ttf),
+bundled with its OFL licence. No substitution is needed at render time at all.
+
+The substitutions this section proposed for the *background* — PT Serif for Palatino, PT Sans for
+MyriadPro — were **not** needed either, and were not used. The supplied PDF has all six families
+subset-embedded ([§P1.3](#p13-why-the-raw-svg-cannot-be-used-directly) established this as the
+diagnosis; it turns out to also be the cure), so
+[install-fonts.py](../../badhan-backend/scripts/certificate-assets/install-fonts.py) recovers the
+artwork's own Futura and Palatino from the PDF with `mutool extract` and aliases them to the names
+the SVG asks for. The background is therefore drawn in the designer's real type rather than in a
+lookalike. Nothing commercial is committed or redistributed: the subsets are extracted at prep time
+inside the container, used to bake one PNG, and discarded with the container. The freely licensed
+half — Playfair Display, Great Vibes, Kalpurush — is baked into the prep image from its own sources.
+Two of the six families named in the SVG turned out not to be used by the artwork's final text at
+all: `MyriadPro-Regular` only ever set the "QR Code" placeholder label, and the body is Playfair
+Display rather than the Palatino the class names suggest.
 - No browser, no `@font-face`, no CSS — the entire "does the viewer's device happen to have this font
   installed" problem disappears, because nothing is rendered on the viewer's device anymore.
 
@@ -462,6 +515,31 @@ the same measure-then-decide loop `CertificateArtwork.vue`'s `fitName`/`splitInt
 ([CertificateArtwork.vue:213-261](../../badhan-frontend/src/views/Certificate/CertificateArtwork.vue#L213-L261))
 already implements — the algorithm ports directly, only the measurement API changes.
 
+**As built, three details of this list changed:**
+
+1. **There is no student ID on the new certificate.** The supplied artwork has no blank for one —
+   confirmed against both the SVG's text and `pdftotext` on the PDF, and consistent with
+   [§P1.4](#p14-what-the-svgs-text-content-actually-says-the-template-to-match), which transcribes
+   the whole document and contains no student ID. The list above inherited it from the old
+   template. It is not drawn, and the verification workflow now compares **names** rather than name
+   plus student ID; the manual is updated to match. The student ID is still *used* — it is where
+   the department comes from.
+2. **The department prints as a name, not a raw code.** [§P1.5](#p15-open-question-department-and-hall-text)
+   settled on the raw code specifically to avoid "building and maintaining a department-code lookup
+   table". No table needed building: `departments` already exists in
+   [badhan-backend/src/constants/index.ts](../../badhan-backend/src/constants/index.ts), is already
+   maintained, and is already what every studentId validator is derived from. `1605011` therefore
+   prints as `MME`-style text — exactly what the designer's own sample shows — rather than `05`. The
+   parenthesised code the drop-downs carry (`"CSE (05)"`) is trimmed off for print, and a studentId
+   whose department code has no name (code `00`, which the validator accepts) still falls back to
+   the digits.
+3. **Fitting shrinks, and never wraps.** The old template had a two-line fallback because it had the
+   room for one. This artwork does not: each blank is a single ruled line with the next line of the
+   sentence 25 pt below it, so a wrapped name would print on top of the sentence. Since width scales
+   linearly with font size, the exact fitting size is one division rather than a loop of stops
+   ([certificateRenderer.ts](../../badhan-backend/src/services/certificate/certificateRenderer.ts)),
+   floored at 9 pt. Confirmed against a 52-character name: it fits, on one line, uncut.
+
 ### P3.6 The rasterised background — server-side and private
 
 Same rasterisation decision as before ([§P1.3](#p13-why-the-raw-svg-cannot-be-used-directly)), moved
@@ -497,17 +575,55 @@ conversion, so the rasteriser sees real font files rather than falling back to a
   flags used, rather than a comment describing a manual Illustrator export, since there no longer is
   one.
 
+**As built:** [badhan-backend/scripts/certificate-assets/](../../badhan-backend/scripts/certificate-assets/)
+holds a Dockerfile, two Python steps and a driver, wired up as a `certificate-assets` service behind
+a new `assets` profile in [docker-compose.yml](../../docker-compose.yml):
+
+```
+docker compose --profile assets run --rm certificate-assets \
+  badhan-backend/scripts/certificate-assets/render-background.sh
+```
+
+`rsvg-convert` at 3508 x 2480 (300 DPI A4), then `optipng`, producing a 2.1 MB
+[certificate-background.png](../../badhan-backend/src/assets/certificate-background.png).
+
+Stripping the placeholders is stated as two rules rather than as a list of coordinates — every
+`<text>` in GreatVibes is a filled-in value, plus the QR label and its box — so a re-export that
+moves the sample text still strips correctly, and the script exits non-zero rather than baking a
+stranger's name into the background if the count ever changes.
+
+**Two further export defects turned up, beyond the missing fonts
+[§P1.3](#p13-why-the-raw-svg-cannot-be-used-directly) found**, both fixed in
+[prepare-background-svg.py](../../badhan-backend/scripts/certificate-assets/prepare-background-svg.py)
+and both confirmed against the PDF:
+
+1. **Four text classes carry a font-size and no font-family at all** — the heading, the organisation
+   line, the whole body paragraph and the signature block. They were not merely referencing an
+   unavailable font; they were referencing *nothing*, falling back to whatever the viewer defaulted
+   to. This is the larger half of the reported mismatch: it is why the body rendered upright in a
+   generic serif instead of Playfair Display italic, and why the words collided.
+2. **The Bangla corner slogans exported as unshaped garbage** — `এককর রক অননর জজবন` where the
+   document reads `একের রক্ত অন্যের জীবন`. Every vowel sign and conjunct was dropped on the way out,
+   so the correct text is not recoverable from the SVG and is restored from the PDF, which renders
+   it correctly. Keyed on the broken string, so a fixed re-export falls through untouched.
+
 ### P3.7 The old frontend template is deleted, not kept as a fallback
 
 `badhan-frontend/src/views/Certificate/CertificateArtwork.vue`, `certificateLayout.ts`,
 `certificateLogo.ts`, and `certificatePdf.ts` are all removed — their logic (name-fitting, QR
 generation, layout constants) is ported into the backend per [§P3.5](#p35-the-render-pipeline-pdfkit),
 not duplicated. Keeping both would mean two certificate renderers to keep visually in sync, which is
-the exact drift this plan's font/geometry work is trying to eliminate. `jspdf` and `svg2pdf.js`
+the exact drift this plan's font/geometry work is trying to eliminate. ~~`jspdf` and `svg2pdf.js`
 become unused frontend dependencies once this lands — remove them from
-`badhan-frontend/package.json` rather than leaving dead weight (they were imported dynamically,
-on-click, specifically to keep them out of the main bundle — with the download button no longer
-building anything client-side, there is no remaining caller).
+`badhan-frontend/package.json`~~
+
+**Corrected: `jspdf`, `svg2pdf.js` and `qrcode` all stay.** The four certificate files are deleted
+as described, but the claim that nothing else calls those libraries was wrong. The feedback and
+registration QR sheets still build their PDFs in the browser exactly as the certificate used to —
+[feedbackQrPdf.ts](../../badhan-frontend/src/views/FeedbackQr/feedbackQrPdf.ts) imports both, and
+`qrcode` is used by [RegistrationQr.vue](../../badhan-frontend/src/views/RegistrationQr.vue) and
+[FeedbackQrPanel.vue](../../badhan-frontend/src/views/Feedback/FeedbackQrPanel.vue). Removing them
+would have broken three working features. Nothing was removed from `badhan-frontend/package.json`.
 
 ### P3.8 The frontend's new role: inline preview plus download
 
@@ -535,6 +651,47 @@ PDF back, and displays it in an `<iframe>`/`<embed>` (via a `Blob` object URL, a
 still sees the certificate on-screen without downloading — the closer match to today's verification
 workflow and the manual's existing description of it. [§P5](#phase-p5--documentation)'s docs pass
 should describe this inline view, not just the download button.
+
+**As built:** one fetch feeds both, so pressing Download never asks the server a second time and the
+saved file is byte-for-byte what is on screen. The frame keeps the page's own 297:210 aspect ratio,
+so the whole sheet is visible at once on a phone rather than its top corner. The object URL is
+revoked when the page is left or the id changes.
+
+### P3.10 What this phase found that the plan did not predict
+
+Four things that were not visible until the code ran, each fixed here rather than left for a later
+phase to trip over:
+
+1. **`Content-Disposition` was invisible to the page.** A browser hides every response header from
+   cross-origin JavaScript bar a short safelist, and the frontend is a different origin from the API
+   in every environment. The page could read the PDF but not the filename the backend chose for it,
+   and silently saved certificates under the donor's database id. Fixed by naming the header in the
+   CORS config ([app.ts](../../badhan-backend/src/app.ts)) — a one-line change with a comment, since
+   nothing else in the app has ever needed a non-safelisted response header.
+2. **tsoa's binary path is not the one [§P3.3](#p33-the-new-endpoint) predicted.** A returned
+   `Buffer` is handed to `res.json()`, which turns a PDF into a JSON array of byte values; only a
+   real stream is piped. And using `@Res()` for the *success* path — which is what §P3.3 specified —
+   races: piping starts on the next tick, so tsoa still sees an unsent response and writes JSON into
+   the middle of the PDF. What works is the reverse: return a `Readable` for success, and answer the
+   two failures through `@Res()`, whose `res.json()` completes synchronously. Written up in the
+   controller, since it is the only route in the codebase that does this.
+3. **The guest mirror had to be rebuilt, not just re-typed.** `GET /guest/certificates/{donorId}`
+   returned faked JSON; guest mode would have shown a broken page. It now renders through the real
+   pipeline with faker data — the certificate page being the one page a stub cannot fake, since the
+   document *is* the content.
+4. **`VUE_APP_FRONTEND_BASE` in [env.development](../../badhan-backend/env.development) was
+   malformed** — `https://http://badhan-buet-test-46eca.web.app/`. Harmless while nothing read it;
+   this phase is the first consumer, and it is what the printed QR code encodes, so a certificate
+   generated on the development site would have carried an unopenable address. Corrected.
+
+**One piece of coverage was lost, deliberately.** The old Cypress suite rasterised the in-page SVG
+and decoded the QR with `jsQR`, which is the only check that would catch a module grid that is
+transposed, inverted or off by a row. The code now lives inside a server-rendered PDF, and neither
+Cypress nor the backend suite can rasterise one, so `decodeCertificateQr` is deleted (the feedback
+sheets keep theirs, since those are still in-page SVG). The rendered code was verified by hand with
+`zbarimg` against a 300 DPI raster of a real certificate, decoding to the expected
+`<frontend base>/certificate?id=<donorId>`; re-do that check by hand whenever the renderer's QR
+geometry changes.
 
 ---
 

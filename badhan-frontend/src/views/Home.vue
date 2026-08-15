@@ -438,6 +438,8 @@ export default {
         const patchResponse = await handlePATCHDonors({
           donorId: donor._id,
           name: donor.name,
+          fatherName: donor.fatherName,
+          motherName: donor.motherName,
           phone: donor.phone,
           studentId: donor.studentId,
           email: donor.email,
@@ -446,6 +448,7 @@ export default {
           roomNumber: donor.roomNumber,
           address: donor.address,
           availableToAll: donor.availableToAll,
+          isCertificateEnabled: donor.isCertificateEnabled,
           archiveFlag: target
         })
         if (patchResponse.status !== HTTP_STATUS.OK) {

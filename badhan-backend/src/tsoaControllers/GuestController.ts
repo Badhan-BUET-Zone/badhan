@@ -1,8 +1,11 @@
 import 'reflect-metadata'
 import { Body, Controller, Delete, Get, Hidden, Middlewares, Patch, Path, Post, Query, Route, Tags } from 'tsoa'
+import { Readable } from 'stream'
 import * as faker from '../doc/faker'
 import * as feedbackToken from '../services/feedbackToken'
 import { DESIGNATIONS_INDEX, HTTP_STATUS } from '../constants'
+import { IDonor } from '../db/models/Donor'
+import { certificateResponse } from './CertificatesController'
 
 @Route('guest')
 @Tags('Guest')
@@ -1267,21 +1270,19 @@ export class GuestController extends Controller {
   /** Guest fetch a donor certificate */
   @Get('certificates/{donorId}')
   @Hidden()
-  public async getCertificate(@Path() donorId: string): Promise<{
-    status: string
-    statusCode: number
-    message: string
-    certificate: { name: string; studentId: string }
-  }> {
-    return {
-      status: 'OK',
-      statusCode: HTTP_STATUS.OK,
-      message: 'Certificate fetched successfully',
-      certificate: {
-        name: faker.getName(),
-        studentId: faker.getStudentId()
-      }
-    }
+  public async getCertificate(@Path() donorId: string): Promise<Readable> {
+    // Rendered by the same pipeline as the real route rather than stubbed, so guest mode shows a
+    // real certificate — the demo is worth nothing if the one page it cannot fake is this one.
+    // isCertificateEnabled is true here by construction: a guest has no donor to enable it for,
+    // and the not-enabled state is reachable in the real app instead.
+    return certificateResponse(this, {
+      _id: donorId,
+      name: faker.getName(),
+      fatherName: faker.getName(),
+      motherName: faker.getName(),
+      studentId: faker.getStudentId(),
+      hall: faker.getHall()
+    } as unknown as IDonor)
   }
 
   /** Guest get new donors */

@@ -92,6 +92,12 @@ export default {
       // numerically, so these three have to be coerced or the selectors show nothing.
       this.donor = {
         name: text('name'),
+        // Read even though nothing sends them today: the public registration form does not ask for
+        // parents' names, so a draft coming from the feedback queue leaves these blank for the
+        // volunteer to fill in. The keys still have to be here — NewPersonCard warns about a draft
+        // missing an expected key, and that warning disables its Create button.
+        fatherName: text('fatherName'),
+        motherName: text('motherName'),
         phone: text('phone'),
         studentId: text('studentId'),
         bloodGroup: number('bloodGroup'),
@@ -111,6 +117,8 @@ export default {
     reset () {
       this.donor = {
         name: null,
+        fatherName: null,
+        motherName: null,
         phone: null,
         studentId: null,
         bloodGroup: null,

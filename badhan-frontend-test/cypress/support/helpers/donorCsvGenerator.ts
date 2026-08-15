@@ -9,8 +9,10 @@
 // every generated donor here keeps them viewable regardless of the caller's permissions.
 export const TESTER_HALL = 'Suhrawardy';
 
+// Mirrors CANONICAL_HEADERS in badhan-frontend/src/utils/donorCsv.ts. The uploader matches the
+// header row against that list, so a column missing here is a column the app reports as missing.
 export const CANONICAL_HEADERS = [
-  'name', 'phone', 'studentId', 'bloodGroup', 'hall', 'roomNumber', 'address',
+  'name', 'fatherName', 'motherName', 'phone', 'studentId', 'bloodGroup', 'hall', 'roomNumber', 'address',
   'comment', 'donationCount', 'lastDonation', 'plateletDonationCount',
   'lastPlateletDonation', 'availableToAll'
 ] as const;
@@ -24,6 +26,8 @@ const BATCH_YEARS = ['16', '17', '18', '19', '20', '21', '22'];
 
 export interface GeneratedDonor {
   name: string;
+  fatherName: string;
+  motherName: string;
   phone: string; // 11-digit 01XXXXXXXXX
   studentId: string; // 7 digits
   bloodGroup: string;
@@ -58,6 +62,8 @@ export function generateDonors(count = 5): GeneratedDonor[] {
     const studentId = pick(BATCH_YEARS) + pick(ALLOWED_DEPT_CODES) + digits(3);
     donors.push({
       name: 'CSV Donor ' + uniqueTail,
+      fatherName: 'CSV Father ' + uniqueTail,
+      motherName: 'CSV Mother ' + uniqueTail,
       phone,
       studentId,
       bloodGroup: pick(BLOOD_GROUPS),

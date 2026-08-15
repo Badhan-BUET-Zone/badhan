@@ -41,6 +41,10 @@ export const createDonorViaApi = (donor: DonorSpec): Cypress.Chainable<string> =
         headers,
         body: {
           name: donor.name,
+          // Required on creation since plan16 P2, and not something these specs are about — a
+          // fixture name derived from the donor's own keeps them unique without another generator.
+          fatherName: `${donor.name} Father`,
+          motherName: `${donor.name} Mother`,
           phone: parseInt(`88${donor.phone}`, 10),
           studentId: donor.studentId,
           bloodGroup: 0,
@@ -115,6 +119,8 @@ export const patchDonorViaApi = (
           body: {
             donorId,
             name: donor.name,
+            fatherName: donor.fatherName,
+            motherName: donor.motherName,
             phone: donor.phone,
             studentId: donor.studentId,
             email: donor.email,
@@ -124,6 +130,7 @@ export const patchDonorViaApi = (
             address: donor.address,
             availableToAll: donor.availableToAll,
             archiveFlag: donor.archiveFlag,
+            isCertificateEnabled: donor.isCertificateEnabled,
             ...overrides,
           },
         });

@@ -115,34 +115,46 @@ Three things to know:
 
 ### The certificate
 
-Tap **Certificate** and this donor's certificate opens in a new tab: their name, their student
-ID, a thank-you message, the Badhan logo, and a **QR code**. Below it is a **Download PDF**
-button. The PDF is A4, sideways, and ready to print — the button itself does not appear on the
-paper.
+**Turn it on first.** A certificate does not exist for anyone until someone switches it on for
+that donor. On the profile, tap **Edit**, tick **Enable certificate**, and save. Until you do,
+the certificate page says *"This donor's certificate has not been enabled yet."* — to you and to
+anyone scanning a printed code alike. Every donor starts this way, including everyone who was
+already in the app before certificates existed, so expect to tick this box the first time you
+prepare a certificate for someone. Untick it and save, and the certificate stops opening again
+straight away, on paper already printed as well as on screen.
+
+Once it is on, tap **Certificate** and the certificate opens in a new tab: the donor's name,
+their father's and mother's names, their department, their hall, and a **QR code**, on Badhan's
+printed certificate design. Below it is a **Download PDF** button. The page is A4, sideways, and
+ready to print — the button itself does not appear on the paper.
 
 Print it, and hand it to the donor.
 
 **What the QR code is for.** Later, anyone holding that piece of paper — an employer, a
 university, anyone at all — can point a phone camera at the QR code. The same certificate opens
-on their screen, straight from Badhan's own website. If the name and student ID on the paper
-match the name and student ID on the screen, the paper is genuine. That is the whole point of
-the certificate, so the QR code matters more than anything else on it.
+on their screen, straight from Badhan's own website. If the names on the paper match the names on
+the screen, the paper is genuine. That is the whole point of the certificate, so the QR code
+matters more than anything else on it.
 
-**Check the name and the student ID before you print.** The certificate reads them from the app
-every time it is opened, but paper cannot be updated. If you print first and correct a spelling
-afterwards, the paper and the screen will no longer match, and the certificate can no longer be
-verified. There is no way to fix a certificate once it has been handed over — only to print a
-new one.
+**Check the names before you print.** The certificate reads them from the app every time it is
+opened, but paper cannot be updated. If you print first and correct a spelling afterwards, the
+paper and the screen will no longer match, and the certificate can no longer be verified. There
+is no way to fix a certificate once it has been handed over — only to print a new one.
 
-**The certificate is in English, so the name must be too.** If the donor's name is written in
-Bangla on their profile, it will come out as a row of empty boxes on the certificate — on the
-screen and on the paper. The app does not warn you about this. Write the name in English on the
-profile first, then open the certificate.
+**The certificate is in English, so the names must be too.** If a name is written in Bangla on the
+profile, it comes out blank on the certificate — on the screen and on the paper. The app does not
+warn you about this. Write the names in English on the profile first, then open the certificate.
 
 **Anyone with the link can open it, and no sign-in is needed.** That is deliberate: the person
 checking the certificate has no Badhan account and no reason to get one. It is also why the
-certificate shows only the name and the student ID — never the phone number, the blood group,
-the hall, or the donation history.
+certificate shows only the names, the department and the hall — never the phone number, the blood
+group, the room number, or the donation history.
+
+**The certificate is made by Badhan's server, not by your browser.** You are shown a finished
+document, the same one that downloads. Nothing about the design — the artwork, the lettering, the
+layout — is ever sent to a browser, so there is nothing for anyone to copy off the page and no way
+to produce a convincing forgery from what the site hands out. It also means the certificate looks
+identical everywhere: the same on an old phone as on a new laptop, and the same on paper.
 
 **Archived donors keep working.** Someone who has graduated can still have their certificate
 scanned. In fact that is when it matters most.

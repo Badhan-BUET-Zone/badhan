@@ -581,9 +581,21 @@ const handleGETPublicContacts = async () => {
 // no session at all. badhanAxios is still the right instance: the request interceptor simply sends
 // no x-auth header when the store has no token, and going through it keeps guest mode working
 // (guest mode rewrites the base URL to /guest, where the route is mirrored with faker data).
+// The one route that answers with a PDF instead of JSON — the certificate is rendered on the
+// backend, so nothing about the template reaches this bundle — and the one route whose failures are
+// ordinary states of the page rather than errors: "no such certificate" and "not enabled yet" are
+// what the visitor opened the page to be told. validateStatus keeps both out of the shared error
+// interceptor, which would otherwise raise a red toast over a page that is already explaining
+// itself, and could not say anything useful anyway: with responseType 'blob' the error body is a
+// Blob, so processError() finds no message on it.
 const handleGETCertificate = async (donorId: string) => {
   try {
-    return await badhanAxios.get(`/certificates/${donorId}`)
+    return await badhanAxios.get(`/certificates/${donorId}`, {
+      responseType: 'blob',
+      validateStatus: (status: number) => [
+        HTTP_STATUS.OK, HTTP_STATUS.FORBIDDEN, HTTP_STATUS.NOT_FOUND
+      ].includes(status)
+    })
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }

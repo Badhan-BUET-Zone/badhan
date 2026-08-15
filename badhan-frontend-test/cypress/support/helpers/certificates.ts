@@ -23,9 +23,53 @@ export interface CertificateDonor {
   studentId: string;
 }
 
+// Every donor is created with their certificate off — that is the schema default, and the creation
+// route has no field for it. A certificate only becomes reachable when somebody turns it on, so the
+// specs that want a readable certificate ask for it here, and the one spec about the not-enabled
+// state simply does not.
+export const enableCertificateViaApi = (donorId: string): void => {
+  superAdminToken().then((token) => {
+    cy.request({
+      method: 'GET',
+      url: `${API_BASE_URL}/donors?donorId=${donorId}`,
+      headers: { 'x-auth': token },
+    }).then((donorResponse) => {
+      const existing = donorResponse.body.donor;
+      // The general profile PATCH takes the whole profile, so it is re-sent as it stands with the
+      // one flag flipped — the same request the edit form makes.
+      cy.request({
+        method: 'PATCH',
+        url: `${API_BASE_URL}/donors/v2`,
+        headers: { 'x-auth': token },
+        body: {
+          donorId,
+          name: existing.name,
+          fatherName: existing.fatherName,
+          motherName: existing.motherName,
+          phone: existing.phone,
+          studentId: existing.studentId,
+          bloodGroup: existing.bloodGroup,
+          hall: existing.hall,
+          roomNumber: existing.roomNumber,
+          address: existing.address,
+          availableToAll: existing.availableToAll,
+          archiveFlag: existing.archiveFlag,
+          isCertificateEnabled: true,
+          email: existing.email || '',
+        },
+      });
+    });
+  });
+};
+
 // Donors are created over the API rather than through the creation form: these specs are about how
 // the certificate page reads and renders, and driving the UI would only add unrelated ways to fail.
-export const createDonorViaApi = (donor: CertificateDonor, alias: string): void => {
+// The certificate is left disabled unless the caller asks — see enableCertificateViaApi.
+export const createDonorViaApi = (
+  donor: CertificateDonor,
+  alias: string,
+  { enableCertificate = true } = {}
+): void => {
   cy.request({
     method: 'POST',
     url: `${API_BASE_URL}/users/signin`,
@@ -43,6 +87,8 @@ export const createDonorViaApi = (donor: CertificateDonor, alias: string): void 
         bloodGroup: BLOOD_GROUP_A_POS,
         hall: HALL_SUHRAWARDY,
         name: donor.name,
+        fatherName: `${donor.name} Father`,
+        motherName: `${donor.name} Mother`,
         studentId: donor.studentId,
         address: 'Azimpur',
         roomNumber: '3009',
@@ -51,7 +97,11 @@ export const createDonorViaApi = (donor: CertificateDonor, alias: string): void 
         availableToAll: true,
       },
     }).then((creationResponse) => {
-      cy.wrap(creationResponse.body.newDonor._id).as(alias);
+      const donorId = creationResponse.body.newDonor._id as string;
+      if (enableCertificate) {
+        enableCertificateViaApi(donorId);
+      }
+      cy.wrap(donorId).as(alias);
     });
   });
 };
@@ -112,6 +162,8 @@ export const createMemberViaApi = (
       bloodGroup: BLOOD_GROUP_A_POS,
       hall: donor.hall,
       name: donor.name,
+      fatherName: `${donor.name} Father`,
+      motherName: `${donor.name} Mother`,
       studentId: donor.studentId,
       address: 'Azimpur',
       roomNumber: '3009',
