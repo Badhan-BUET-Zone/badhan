@@ -85,7 +85,7 @@ The columns, in the app's own words:
 | `phone` | yes | 11 digits, `01XXXXXXXXX` |
 | `studentId` | yes | 7 digits, e.g. `1605011` |
 | `bloodGroup` | yes | `A+ A- B+ B- O+ O- AB+ AB-` |
-| `hall` | yes | Ahsanullah, Chatri, Nazrul, Rashid, Sher-e-Bangla, Suhrawardy, Titumir |
+| `hall` | yes | Ahsan Ullah, Sabekun Nahar Sony, Kazi Nazrul Islam, Rashid, Sher-E-Bangla, Suhrawardy, Titumir |
 | `roomNumber` | no | text; leave blank and it becomes (Unknown) |
 | `address` | no | text; leave blank and it becomes (Unknown) |
 | `comment` | no | text; leave blank and it becomes (Unknown) |

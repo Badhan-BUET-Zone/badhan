@@ -38,18 +38,18 @@ export const BLOOD_GROUP = {
 export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as const;
 
 export const HALL = {
-  AHSANULLAH: 'Ahsanullah',
-  CHATRI: 'Chatri',
-  NAZRUL: 'Nazrul',
+  AHSANULLAH: 'Ahsan Ullah',
+  CHATRI: 'Sabekun Nahar Sony',
+  NAZRUL: 'Kazi Nazrul Islam',
   RASHID: 'Rashid',
-  SHEREBANGLA: 'Sher-e-Bangla',
+  SHEREBANGLA: 'Sher-E-Bangla',
   SUHRAWARDY: 'Suhrawardy',
   TITUMIR: 'Titumir',
   ATTACHED: 'Attached',
   UNKNOWN: '(Unknown)',
 } as const;
 
-export const HALLS = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)'] as const;
+export const HALLS = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)'] as const;
 
 export const RADIO_VALUES = {
   PUBLIC_DATA: 'AvailableToAll',

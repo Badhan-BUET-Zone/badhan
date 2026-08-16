@@ -20,10 +20,10 @@ with 8 Zones,124 Units and 22,380 Volunteers. It was established on 24 October, 
 BADHAN,BUET Zone was officially inaugerated  on 18 September,2005 as a Zone of BADHAN. It has seven unit
 chronologically,
 - Ahsan Ullah Hall Unit
-- Chatri Hall Unit
-- Nazrul Hall Unit
+- Sabekun Nahar Sony Hall Unit
+- Kazi Nazrul Islam Hall Unit
 - Suhrawardy Hall Unit
-- Sher-e-Bangla Hall Unit
+- Sher-E-Bangla Hall Unit
 - Rashid Hall Unit
 - Titumir Hall Unit.
 

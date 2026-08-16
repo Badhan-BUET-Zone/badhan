@@ -25,11 +25,11 @@ const CANONICAL_BY_LOWER: Record<string, string> = CANONICAL_HEADERS.reduce(
 // `(Unknown)` (index 8); an import is a creation, and a creation must name a hall. A row still
 // naming it is reported broken by the same "not a recognised hall" message as any other typo.
 const CSV_HALL_TO_INDEX: Record<string, number> = {
-  Ahsanullah: 0,
-  Chatri: 1,
-  Nazrul: 2,
+  'Ahsan Ullah': 0,
+  'Sabekun Nahar Sony': 1,
+  'Kazi Nazrul Islam': 2,
   Rashid: 3,
-  'Sher-e-Bangla': 4,
+  'Sher-E-Bangla': 4,
   Suhrawardy: 5,
   Titumir: 6
 }
@@ -321,8 +321,8 @@ export function parseDonorCsv (text: string): DonorCsvParseResult {
 // it was really being used for — a donor every hall can contact — is availableToAll=yes.
 export const DEMO_CSV: string = [
   CANONICAL_HEADERS.join(','),
-  'Demo Donor One,Demo Father One,Demo Mother One,01712345678,1605011,A+,Sher-e-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no',
-  'Demo Donor Two,Demo Father Two,Demo Mother Two,01898765432,1805062,O-,Ahsanullah,N/A,Chattogram,Contactable by every hall - availableToAll is yes,0,,0,,yes',
+  'Demo Donor One,Demo Father One,Demo Mother One,01712345678,1605011,A+,Sher-E-Bangla,304,"Dhanmondi, Dhaka",Sample row - delete before uploading,3,20/11/24,1,14/2/25,no',
+  'Demo Donor Two,Demo Father Two,Demo Mother Two,01898765432,1805062,O-,Ahsan Ullah,N/A,Chattogram,Contactable by every hall - availableToAll is yes,0,,0,,yes',
   'Demo Donor Three,Demo Father Three,Demo Mother Three,01911223344,2000011,B+,Titumir,112,Mirpur,No donation history,0,,0,,no'
 ].join('\n') + '\n'
 
