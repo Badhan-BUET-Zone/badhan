@@ -7,7 +7,7 @@ import { departments, halls } from '../../constants'
 import dotenvEnvFile from '../../dotenv'
 import {
   Blank, DEPARTMENT, FATHER_NAME, HALL, INK, MINIMUM_FONT_SIZE, MOTHER_NAME, NAME, PAGE, PAPER,
-  QR, UNIT, VALUE_FONT_FILE
+  QR, UNIT, VALUE_FONT_FILE, VERIFY, VERIFY_FONT
 } from './certificateLayout'
 
 // Draws a donor's certificate as a finished PDF, on the server, and hands back the bytes.
@@ -149,6 +149,44 @@ const drawQrCode = (document: PDFKit.PDFDocument, url: string): void => {
   document.restore()
 }
 
+// Makes the code clickable, and captions it.
+//
+// A printed certificate is scanned; a certificate read on a screen cannot be, and until now offered
+// a reader nothing to do about the code at all. Both the code's own square and the caption under it
+// become link annotations pointing at the same page the code encodes, so a PDF viewer opens the
+// verification page on a click. Annotations are metadata, not marks on the page: nothing here
+// changes what prints, and the caption is the only new ink.
+const drawVerifyLink = (document: PDFKit.PDFDocument, url: string): void => {
+  const left: number = QR.centerX - QR.size / 2
+  const top: number = QR.centerY - QR.size / 2
+
+  document.link(left, top, QR.size, QR.size, url)
+
+  document.save()
+  document.font(VERIFY_FONT).fontSize(VERIFY.fontSize).fillColor(INK)
+
+  // Centred under the code on the code's own centre line, so caption and QR read as one object.
+  const width: number = document.widthOfString(VERIFY.text)
+  const captionLeft: number = QR.centerX - width / 2
+
+  document.text(VERIFY.text, captionLeft, VERIFY.baseline, {
+    lineBreak: false,
+    baseline: 'alphabetic'
+  })
+
+  // The annotation box is drawn from the baseline outwards rather than from the text's own metrics:
+  // a link target wants to be comfortably clickable, and a couple of points of slack around an 8 pt
+  // line costs nothing because the paper around it is blank.
+  document.link(
+    captionLeft,
+    VERIFY.baseline - VERIFY.fontSize,
+    width,
+    VERIFY.fontSize * 1.35,
+    url
+  )
+  document.restore()
+}
+
 // `withSignatureBlock` is the caller's answer to "is whoever asked for this signed in", not a
 // judgement this file makes. See CertificatesController for how it is decided.
 export const renderCertificatePdf = async (donor: IDonor, withSignatureBlock: boolean): Promise<Buffer> => {
@@ -181,7 +219,9 @@ export const renderCertificatePdf = async (donor: IDonor, withSignatureBlock: bo
     drawValue(document, hallName(donor.hall), UNIT)
   }
 
-  drawQrCode(document, certificateVerificationUrl(String(donor._id)))
+  const verificationUrl: string = certificateVerificationUrl(String(donor._id))
+  drawQrCode(document, verificationUrl)
+  drawVerifyLink(document, verificationUrl)
 
   const chunks: Buffer[] = []
   document.on('data', (chunk: Buffer): number => chunks.push(chunk))

@@ -151,6 +151,12 @@ wrong except the code. Open the donor's profile again, download the certificate 
 and swap the paper — the new code scans correctly. Certificates downloaded from this date onward
 are fine.
 
+**If you send the certificate as a file instead of on paper, it can be clicked.** Under the QR
+code is a small line reading *Click to Verify*. Whoever opens the PDF on a computer or phone can
+click either that line or the QR code itself and the verification page opens — no second device
+and no camera needed, which is what a code on a screen would otherwise require. On paper the line
+is just a note; the code is what gets scanned.
+
 They are not signed in, so **what they see has no signature lines on it** — just the certificate
 and its details. That is on purpose, and it is not a sign that anything is wrong: the signed paper
 is the one in their hand, and showing them a blank-looking copy to sign would only confuse the

@@ -31,6 +31,7 @@
     "jspdf": "^4.2.1",
     "lodash": "^4.17.21",
     "papaparse": "^5.5.4",
+    "pdfjs-dist": "^2.16.105",
     "qrcode": "^1.5.4",
     "register-service-worker": "^1.7.2",
     "roboto-fontface": "*",

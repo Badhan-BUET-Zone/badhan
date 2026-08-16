@@ -5,9 +5,13 @@ import { createDonorViaApi, visitCertificateSignedOut } from '@support/helpers/c
 // check is that the page fetches the document once, shows it, and hands over the same bytes when
 // someone presses download.
 //
-// What is NOT covered here, and was before: decoding the QR code from the rendered pixels. The code
-// now lives inside a server-rendered PDF, and neither Cypress nor the backend suite can rasterise
-// one. The geometry is checked by hand against a decoder when the renderer changes.
+// The page draws the PDF onto a canvas with pdf.js rather than handing it to an <iframe>, because a
+// browser can be set to download PDFs instead of displaying them and the verification page would
+// then show a browser notice where the certificate should be. So "shows it" means pixels were
+// painted, which is what these assert on.
+//
+// The QR code's payload is covered in the backend suite, which reads the module grid out of the
+// PDF's content stream — see badhan-backend-test/tests/certificates/qrPayload.test.js.
 
 describe('Certificate PDF', () => {
   const donor = { name: 'Pdf Download Donor', studentId: '1605031' };
@@ -22,11 +26,27 @@ describe('Certificate PDF', () => {
 
       cy.get('[data-cy="certificateFrame"]')
         .should('be.visible')
-        // A blob URL, not a request the browser makes on its own: the page already holds the bytes,
-        // so showing and saving the certificate cost one fetch between them.
-        .and(($frame) => {
-          expect($frame.attr('src')).to.match(/^blob:/);
+        // Drawn, not merely present. An undrawn canvas keeps the 300x150 default it is born with,
+        // so a real size is the evidence that pdf.js rasterised the page into it.
+        .and(($canvas) => {
+          const canvas = $canvas[0] as HTMLCanvasElement;
+          expect(canvas.width, 'canvas was sized from the PDF page').to.be.greaterThan(1000);
+          expect(canvas.height, 'canvas kept the page aspect ratio').to.be.greaterThan(500);
         });
+
+      // Not blank. A canvas that was sized but never painted is uniformly transparent, which is
+      // exactly what a silent pdf.js failure would leave behind.
+      cy.get('[data-cy="certificateFrame"]').should(($canvas) => {
+        const canvas = $canvas[0] as HTMLCanvasElement;
+        const context = canvas.getContext('2d');
+        const sample = context!.getImageData(
+          Math.floor(canvas.width / 2),
+          Math.floor(canvas.height / 2),
+          1,
+          1
+        ).data;
+        expect(sample[3], 'the middle of the page is opaque').to.be.greaterThan(0);
+      });
     });
   });
 

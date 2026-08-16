@@ -71,6 +71,14 @@ const gridFromResponse = (response) => {
   return grid;
 };
 
+// Link annotations are dictionaries in the PDF's object section rather than marks in the content
+// stream, and PDFKit writes them uncompressed, so they can be read straight off the bytes.
+const linkTargets = (response) => {
+  const latin = Buffer.from(response.data).toString('latin1');
+  const matches = latin.match(/\/URI \(([^)]*)\)/g) || [];
+  return matches.map((entry) => entry.replace(/^\/URI \(/, '').replace(/\)$/, ''));
+};
+
 test('GET /certificates: the QR code encodes the donor’s hash-routed verification page', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const info = donorInfo({ name: 'Certificate Qr Payload', studentId: 1605032 });
@@ -102,6 +110,24 @@ test('GET /certificates: the signed-in and public certificates carry the same QR
 
   expect(renderGrid(signedIn)).toEqual(renderGrid(anonymous));
   expect(renderGrid(anonymous)).toEqual(renderGrid(expectedQrGrid(verificationUrl(donorId))));
+
+  await operations.deleteDonor(donorId, signInResponse);
+  await operations.signOut(signInResponse);
+});
+
+test('GET /certificates: the QR code and its caption are both clickable links', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+  const info = donorInfo({ name: 'Certificate Qr Clickable', studentId: 1605036 });
+  const donorId = await createDonorWithCertificate(info, signInResponse);
+
+  // A certificate is handed over as a file at least as often as it is printed, and a code on a
+  // screen cannot be scanned by the screen showing it. Two annotations — one over the code, one
+  // over the caption under it — both aimed at the page the code itself encodes.
+  const response = await operations.guestGetBinary(`/certificates/${donorId}`);
+  expect(response.status).toEqual(HTTP_STATUS.OK);
+
+  const targets = linkTargets(response);
+  expect(targets).toEqual([verificationUrl(donorId), verificationUrl(donorId)]);
 
   await operations.deleteDonor(donorId, signInResponse);
   await operations.signOut(signInResponse);
