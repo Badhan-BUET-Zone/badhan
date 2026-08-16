@@ -10,7 +10,7 @@ export const departments: string[] = [
   'IPE (08)', 'NULL', 'ME (10)', 'MME (11)',
   'NAME (12)', 'NULL', 'NULL', 'URP (15)',
   'WRE (16)', 'NCE (17)', 'BME (18)']
-export const halls: string[] = ['Ahsanullah', 'Chatri', 'Nazrul', 'Rashid', 'Sher-e-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
+export const halls: string[] = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 // tslint:disable-next-line:typedef  (`as const` supplies the type; an explicit one would widen it back to number)
 export const HALLS_INDEX = {
   AHSANULLAH: 0,

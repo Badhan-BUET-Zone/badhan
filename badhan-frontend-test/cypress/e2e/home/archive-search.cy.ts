@@ -19,7 +19,7 @@ const DAY_IN_MS = 24 * 3600 * 1000;
 // Everything a generated link carries except archiveFlag — i.e. exactly what a link built
 // before this feature existed looks like
 const LEGACY_LINK =
-  '/#/home?name=&bloodGroup=-1&batch=&address=&hall=Ahsanullah' +
+  '/#/home?name=&bloodGroup=-1&batch=&address=&hall=Ahsan%20Ullah' +
   '&availability=true&notAvailability=false&radios=AvailableToAll&download=false';
 
 describe('Archive search: setting, mirror, banner and shareable URL', () => {

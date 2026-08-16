@@ -9,8 +9,8 @@
 
 Badhan is a voluntary blood donors' organisation. It was founded on 24 October 1997 and works
 across the country. Badhan, BUET Zone was inaugurated on 18 September 2005 and covers seven
-hall units at BUET: Ahsanullah, Chatri, Nazrul, Suhrawardy, Sher-e-Bangla, Rashid and
-Titumir.
+hall units at BUET: Ahsan Ullah, Sabekun Nahar Sony, Kazi Nazrul Islam, Suhrawardy,
+Sher-E-Bangla, Rashid and Titumir.
 
 The Badhan app exists for one reason: **so that when someone needs blood, a volunteer can
 find a suitable donor in seconds instead of asking around.**

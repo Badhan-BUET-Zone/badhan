@@ -68,8 +68,9 @@ cannot sign in.
 **Guest login.** A demonstration sign-in with made-up donors, where nothing is saved. Safe for
 learning and showing. [Chapter 3](03-signing-in.md)
 
-**Hall.** The residence hall a donor belongs to: Ahsanullah, Chatri, Nazrul, Rashid,
-Sher-e-Bangla, Suhrawardy, Titumir. Older records may also carry **Attached** or **(Unknown)**;
+**Hall.** The residence hall a donor belongs to: Ahsan Ullah, Sabekun Nahar Sony,
+Kazi Nazrul Islam, Rashid, Sher-E-Bangla, Suhrawardy, Titumir. Older records may also carry
+**Attached** or **(Unknown)**;
 neither can be given to a new donor.
 
 **Hall Admin.** The member who runs one hall's records. One per hall.
