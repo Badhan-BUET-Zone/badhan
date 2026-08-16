@@ -1,3 +1,5 @@
+const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { defineConfig } = require('@vue/cli-service')
 
 // This file is plain CommonJS evaluated at build time, after Vue CLI has loaded the
@@ -46,6 +48,24 @@ module.exports = defineConfig({
       poll: 1000,
       ignored: /node_modules/,
     },
+    plugins: [
+      // pdf.js's glyph outlines for the PDF standard-14 fonts (Helvetica and friends), which it
+      // fetches at render time rather than bundling. The certificate's "Click to Verify" caption is
+      // Helvetica, and a standard-14 font is by specification NOT embedded in the file — every
+      // conforming PDF reader is required to already have it. pdf.js is the exception: it carries
+      // the outlines as separate files and has to be told where they are, or the caption silently
+      // falls back to a substitute face.
+      //
+      // The whole directory is copied rather than the one file that is actually used. Nothing here
+      // reaches a visitor who does not need it — the fetch happens only when a document names the
+      // font — and picking files by hand would break quietly the first time the caption changed.
+      new CopyWebpackPlugin({
+        patterns: [{
+          from: path.dirname(require.resolve('pdfjs-dist/package.json')) + '/standard_fonts',
+          to: 'standard_fonts',
+        }],
+      }),
+    ],
     module: {
       rules: [{
         test: /\.md$/,

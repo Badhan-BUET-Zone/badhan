@@ -109,6 +109,30 @@ export const QR = {
   centerY: QR_FRAME.top + QR_FRAME.height / 2
 } as const
 
+// The caption under the code, and the one thing on the certificate addressed to a reader looking at
+// a screen rather than at paper. A certificate is handed over as a PDF at least as often as it is
+// printed, and someone reading it in a PDF viewer cannot scan a code that is already on their
+// screen — so the code and this caption are both link annotations pointing at the same verification
+// page (see drawVerifyLink in certificateRenderer).
+//
+// It sits below the placeholder frame rather than inside it: the frame is filled by the code and
+// its quiet zone with nothing to spare, and the quiet zone is the one part of a QR code that must
+// not be encroached on. The blank paper between the frame and the body text is where this goes.
+//
+// 8 pt is small enough to read as a footnote next to a 22 pt document, and the artwork leaves this
+// area empty, so nothing is displaced by it.
+// tslint:disable-next-line:typedef  (`as const` supplies the type; an explicit one would widen it back)
+export const VERIFY = {
+  text: 'Click to Verify',
+  fontSize: 8,
+  baseline: QR_FRAME.top + QR_FRAME.height + 11.5
+} as const
+
+// A standard PDF font rather than the artwork's script face. GreatVibes is a handwriting script
+// drawn for the donor's name at 35 pt; at 8 pt it is not legible, and this line is an instruction
+// rather than part of the document's voice.
+export const VERIFY_FONT: string = 'Helvetica'
+
 // The artwork's own base paper colour. The quiet zone is painted in it rather than in white so the
 // patch is invisible against the background, while still giving the code a clean, untextured
 // margin — the diagonal hatching underneath is faint, but a printed code has to work from a bad
