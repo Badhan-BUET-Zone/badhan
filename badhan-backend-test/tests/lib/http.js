@@ -53,22 +53,12 @@ async function guestGetBinary(path) {
   return badhanAxios.get(path, { responseType: 'arraybuffer' });
 }
 
-// The same file route, asked for with a session. The certificate is the one route whose answer
-// differs by whether a token is present, so both halves of that need a way to be called.
+// The same file route, asked for with a session — the certificate is served to signed-in and
+// anonymous callers alike, and a test comparing the two needs both halves.
 async function authedGetBinary(path, signInResponse) {
   return badhanAxios.get(path, {
     responseType: 'arraybuffer',
     headers: { 'x-auth': signInResponse.data.token },
-  });
-}
-
-// A token that is well formed and signed by us but no longer resolves to a session — what a
-// signed-out device still holds. The certificate route must treat it as anonymous rather than
-// answering 401, so it needs to be forgeable in a test.
-async function getBinaryWithToken(path, token) {
-  return badhanAxios.get(path, {
-    responseType: 'arraybuffer',
-    headers: { 'x-auth': token },
   });
 }
 
@@ -169,7 +159,6 @@ module.exports = {
   guestGet,
   guestGetBinary,
   authedGetBinary,
-  getBinaryWithToken,
   guestPost,
   guestPatch,
   guestDelete,

@@ -40,15 +40,10 @@ const assetDirectory = (): string => {
   return found
 }
 
-// One background per viewer, both baked from the one artwork by scripts/certificate-assets/. They
-// differ by the signature block at the foot of the page and by nothing else.
-//
-// The pairing below is the correctness condition of this file: the UNIT blank — the "____ Unit"
-// rule in the third signature line — exists ONLY in the signed background. Drawing it on the public
-// one would print a hall name onto empty paper near the bottom edge, with no rule under it and no
-// sentence around it. Background and UNIT move together or not at all.
+// The one background, baked from the designer's artwork by scripts/certificate-assets/. It carries
+// the signature block at the foot of the page, and every viewer gets it: the certificate is a
+// document to be printed and signed, and it is the same document whoever asked for it.
 const BACKGROUND_FILE: string = 'certificate-background.png'
-const PUBLIC_BACKGROUND_FILE: string = 'certificate-background-public.png'
 
 // One registered name for the one face the renderer draws with. Every value on the certificate is
 // in the artwork's script face; all the fixed wording is already part of the background.
@@ -187,9 +182,7 @@ const drawVerifyLink = (document: PDFKit.PDFDocument, url: string): void => {
   document.restore()
 }
 
-// `withSignatureBlock` is the caller's answer to "is whoever asked for this signed in", not a
-// judgement this file makes. See CertificatesController for how it is decided.
-export const renderCertificatePdf = async (donor: IDonor, withSignatureBlock: boolean): Promise<Buffer> => {
+export const renderCertificatePdf = async (donor: IDonor): Promise<Buffer> => {
   const assets: string = assetDirectory()
 
   // Sized from the artwork rather than by naming A4, so the background lands 1:1 with no scaling
@@ -203,7 +196,7 @@ export const renderCertificatePdf = async (donor: IDonor, withSignatureBlock: bo
   })
 
   document.registerFont(VALUE_FONT, path.join(assets, 'fonts', VALUE_FONT_FILE))
-  document.image(path.join(assets, withSignatureBlock ? BACKGROUND_FILE : PUBLIC_BACKGROUND_FILE), 0, 0, {
+  document.image(path.join(assets, BACKGROUND_FILE), 0, 0, {
     width: PAGE.width,
     height: PAGE.height
   })
@@ -213,11 +206,7 @@ export const renderCertificatePdf = async (donor: IDonor, withSignatureBlock: bo
   drawValue(document, donor.motherName, MOTHER_NAME)
   drawValue(document, departmentName(donor.studentId), DEPARTMENT)
   drawValue(document, hallName(donor.hall), HALL)
-
-  // Paired with the background chosen above — see the note beside PUBLIC_BACKGROUND_FILE.
-  if (withSignatureBlock) {
-    drawValue(document, hallName(donor.hall), UNIT)
-  }
+  drawValue(document, hallName(donor.hall), UNIT)
 
   const verificationUrl: string = certificateVerificationUrl(String(donor._id))
   drawQrCode(document, verificationUrl)

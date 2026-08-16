@@ -103,10 +103,10 @@ services:
       internal:
         condition: service_healthy
 
-  # Bakes both of badhan-backend/src/assets/certificate-background{,-public}.png from the designer's
-  # Illustrator artwork, which it fetches from certificate-artwork/ in the private secrets repo. A
-  # one-off prep step — the certificate renderer reads only the finished PNGs, which come from that
-  # same repo rather than from git — so it sits behind its own profile and is built on first use:
+  # Bakes badhan-backend/src/assets/certificate-background.png from the designer's Illustrator
+  # artwork, which it fetches from certificate-artwork/ in the private secrets repo. A one-off prep
+  # step — the certificate renderer reads only the finished PNG, which comes from that same repo
+  # rather than from git — so it sits behind its own profile and is built on first use:
   #
   #   GH_TOKEN=$(gh auth token) docker compose --profile assets run --rm -e GH_TOKEN \
   #     certificate-assets badhan-backend/scripts/certificate-assets/render-background.sh

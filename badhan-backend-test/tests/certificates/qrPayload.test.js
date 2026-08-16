@@ -95,26 +95,6 @@ test('GET /certificates: the QR code encodes the donor’s hash-routed verificat
   await operations.signOut(signInResponse);
 });
 
-test('GET /certificates: the signed-in and public certificates carry the same QR code', async () => {
-  const signInResponse = await operations.signInSuperAdmin();
-  const info = donorInfo({ name: 'Certificate Qr Both Variants', studentId: 1605033 });
-  const donorId = await createDonorWithCertificate(info, signInResponse);
-
-  // The two variants differ by their background — the signed-in one has the signature block. Where
-  // the paper points must not be one of the things that differs: the copy a volunteer prints and
-  // the copy a verifier is shown have to lead to the same place, or the comparison is meaningless.
-  const anonymous = gridFromResponse(await operations.guestGetBinary(`/certificates/${donorId}`));
-  const signedIn = gridFromResponse(
-    await operations.authedGetBinary(`/certificates/${donorId}`, signInResponse)
-  );
-
-  expect(renderGrid(signedIn)).toEqual(renderGrid(anonymous));
-  expect(renderGrid(anonymous)).toEqual(renderGrid(expectedQrGrid(verificationUrl(donorId))));
-
-  await operations.deleteDonor(donorId, signInResponse);
-  await operations.signOut(signInResponse);
-});
-
 test('GET /certificates: the QR code and its caption are both clickable links', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const info = donorInfo({ name: 'Certificate Qr Clickable', studentId: 1605036 });

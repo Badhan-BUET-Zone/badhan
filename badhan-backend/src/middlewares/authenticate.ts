@@ -87,64 +87,6 @@ const handleAuthenticationIfHallStated = async (req: Request, res: Response, nex
   return handleAuthentication(req, res, next)
 }
 
-/**
- * Identify the caller if they happen to be signed in, and never reject.
- *
- * Every branch calls next(). An absent header, a token that does not verify, a token that has been
- * revoked, a token whose donor no longer exists — all of them mean one thing here, "not signed in",
- * and none of them is an error worth answering with, because the caller is entitled to the route
- * either way. A single res.status().send() added to this function would turn the public
- * verification page — reached from printed paper already in circulation — into a 401.
- *
- * READ handleAuthenticationIfHallStated ABOVE BEFORE REUSING THIS. Its comment forbids keying an
- * anonymous route's behaviour on whether an x-auth header is present, and it is right to for the
- * route it guards: there, a header would decide whether a *permissioned act* is allowed, so the
- * same request would mean two different things. This middleware is the case that rule does not
- * cover. Being signed in here changes only which of two backgrounds the certificate is drawn on;
- * it grants nothing, and adds no donor field to the response that an anonymous caller would not
- * already have received. Do not use it to gate data.
- */
-const handleOptionalAuthentication = async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
-  const token: string | undefined = req.header('x-auth')
-
-  if (!token) {
-    return next()
-  }
-
-  try {
-    await jwt.verify(token, dotenv.JWT_SECRET)
-  } catch (e) {
-    return next()
-  }
-
-  const cachedUser: IDonor = tokenCache.get(token)!
-  if (cachedUser) {
-    res.locals.middlewareResponse = {
-      donor: cachedUser,
-      token
-    }
-    return next()
-  }
-
-  const tokenCheckResult: {data?: IToken, message: string, status: string} = await tokenInterface.findTokenDataByToken(token)
-  if (tokenCheckResult.status !== 'OK' || !tokenCheckResult.data) {
-    return next()
-  }
-
-  const findDonorResult: {message: string, status: string, data?: IDonor} = await donorInterface.findDonorById(tokenCheckResult.data.donorId)
-  if (findDonorResult.status !== 'OK' || !findDonorResult.data) {
-    return next()
-  }
-
-  const donor: IDonor = findDonorResult.data
-  tokenCache.add(token, donor)
-  res.locals.middlewareResponse = {
-    donor,
-    token
-  }
-  return next()
-}
-
 const handleSuperAdminCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation === DESIGNATIONS_INDEX.SUPER_ADMIN) {
     return next()
@@ -195,7 +137,6 @@ export default {
   // CHECK PERMISSIONS
   handleAuthentication,
   handleAuthenticationIfHallStated,
-  handleOptionalAuthentication,
   handleHallAdminCheck,
   handleSuperAdminCheck,
   handleHallPermission,

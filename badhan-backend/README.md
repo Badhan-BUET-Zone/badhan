@@ -67,7 +67,7 @@ gsutil 5.35
 
 ### Secrets the deploy fetches for you
 
-Three files the backend needs are **not committed** — they live at the root of the private
+Two files the backend needs are **not committed** — they live at the root of the private
 [secrets repo](https://github.com/Badhan-BUET-Zone/secrets) and
 [upload-gcloud.js](upload-gcloud.js) clones them into place for the duration of a deploy,
 then removes exactly the ones it fetched:
@@ -75,33 +75,27 @@ then removes exactly the ones it fetched:
 | Secrets repo | Lands at | What it is |
 | --- | --- | --- |
 | `env.development` / `env.production` | `badhan-backend/` | The branch's env file. |
-| `certificate-background.png` | `src/assets/` | The certificate artwork, with the signature block. |
-| `certificate-background-public.png` | `src/assets/` | The same artwork without it. |
+| `certificate-background.png` | `src/assets/` | The designer's certificate artwork. |
 
-A local copy is always preferred and never deleted, so if you already have any of these on
+A local copy is always preferred and never deleted, so if you already have either file on
 disk the deploy leaves it alone.
-
-**Both backgrounds are required.** The renderer picks between them per request — the
-signature block is on the certificate a signed-in viewer gets and off the one served to
-whoever scanned a printed QR code — so a deploy carrying only one has a half-dead
-certificate route rather than an obvious failure.
 
 The artwork is the designer's licensed work, which is why it is gitignored rather than
 committed. The certificate renderer reads it from `src/assets/` on every request and
 throws without it, so **a fresh clone cannot serve or test certificates until you put it
-there** — copy both from the secrets repo:
+there** — copy it from the secrets repo:
 
 ```
 git clone --depth 1 https://github.com/Badhan-BUET-Zone/secrets.git /tmp/badhan-secrets
-cp /tmp/badhan-secrets/certificate-background*.png badhan-backend/src/assets/
+cp /tmp/badhan-secrets/certificate-background.png badhan-backend/src/assets/
 ```
 
-Without them the certificate route answers 500 and the
+Without it the certificate route answers 500 and the
 `badhan-backend-test/tests/certificates/` suite fails on PDF size.
 
 The designer's source artwork lives in `certificate-artwork/` of that same secrets repo.
 [scripts/certificate-assets/render-background.sh](scripts/certificate-assets/render-background.sh)
-fetches it and bakes both PNGs in one run:
+fetches it and bakes the PNG:
 
 ```
 GH_TOKEN=$(gh auth token) docker compose --profile assets run --rm -e GH_TOKEN \
@@ -113,8 +107,8 @@ its own. A copy of the artwork in `temp/` is used in preference to fetching, so 
 iterating on an export can work without one.
 
 When the designer supplies a new export, replace the files in `certificate-artwork/`,
-re-run the bake, and publish both PNGs back to the root of the secrets repo — never commit
-either of them here.
+re-run the bake, and publish the PNG back to the root of the secrets repo — never commit
+it here.
 
 Expected output:
 ```
