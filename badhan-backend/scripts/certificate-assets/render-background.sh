@@ -1,10 +1,5 @@
 #!/bin/bash
-# Bake both certificate backgrounds from the supplied Illustrator artwork:
-#
-#   src/assets/certificate-background.png         with the signature block, for a signed-in viewer
-#   src/assets/certificate-background-public.png  without it, for whoever scanned a printed QR code
-#
-# Both come from this one run so they can never drift to different versions of the drawing.
+# Bake src/assets/certificate-background.png from the supplied Illustrator artwork.
 #
 # Run from the repo root:
 #
@@ -17,10 +12,10 @@
 # export can drop it there and skip the token entirely.
 #
 # This is a one-off prep step, not part of any build or request. The render pipeline
-# (src/services/certificate/) only ever reads the finished PNGs, and neither the artwork nor the
-# PNGs it bakes are committed — all of it is the designer's licensed work. So re-run this only when
-# the designer supplies a new export, then publish BOTH PNGs to the ROOT of the same secrets repo
-# (under these same names), which is where ../../upload-gcloud.js fetches them from at deploy time.
+# (src/services/certificate/) only ever reads the finished PNG, and neither the artwork nor the PNG
+# it bakes are committed — all of it is the designer's licensed work. So re-run this only when the
+# designer supplies a new export, then publish the PNG to the ROOT of the same secrets repo (under
+# this same name), which is where ../../upload-gcloud.js fetches it from at deploy time.
 #
 # 300 DPI on an A4 sheet is 3508 x 2480 px. The certificate exists to be printed and then
 # photographed by a stranger months later, so the background is prepared at print resolution rather
@@ -99,14 +94,10 @@ done
 # The PDF is the source of the two commercial faces the SVG names but does not embed.
 python3 "$SCRIPTS/install-fonts.py" "$ARTWORK_PDF"
 
-# One background per pass over the same artwork. The only difference between the two calls is the
-# signature block; everything else — the geometry below, the font fixes, the removed sample values —
-# is shared, which is the point of baking them together.
 bake() {
   local output="$1"
-  shift
 
-  python3 "$SCRIPTS/prepare-background-svg.py" "$ARTWORK_SVG" /tmp/certificate-background.svg "$@"
+  python3 "$SCRIPTS/prepare-background-svg.py" "$ARTWORK_SVG" /tmp/certificate-background.svg
 
   # --background-color white matters: the artwork's own cream fill does not reach the trim edge
   # everywhere, and a transparent margin would print as whatever the paper is under it.
@@ -124,4 +115,3 @@ bake() {
 }
 
 bake "$ASSETS/certificate-background.png"
-bake "$ASSETS/certificate-background-public.png" --without-signature-block

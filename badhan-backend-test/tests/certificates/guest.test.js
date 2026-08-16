@@ -16,7 +16,3 @@ test('GET/guest/certificates: guest', async () => {
   expect(response.headers['content-type']).toEqual('application/pdf');
   expect(Buffer.from(response.data).subarray(0, 5).toString('latin1')).toEqual('%PDF-');
 });
-
-// Whether the demo shows the signed-in document — the decision GuestController makes explicitly —
-// is pinned in ../certificates/getCertificate.test.js, where a real certificate in both variants is
-// already in scope to compare a guest render against. There is nothing here to compare one to.

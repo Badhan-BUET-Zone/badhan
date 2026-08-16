@@ -1280,10 +1280,6 @@ export class GuestController extends Controller {
     // "Mrs. Mr. Antonio Langworth" on the page.
     const withoutTitle = (name: string): string => name.replace(/^(Mr|Mrs|Ms|Miss|Dr|Prof)\.?\s+/i, '')
 
-    // The signature block is on, explicitly. A guest carries no real token, so the signed-in test
-    // the real route applies would come out false here — and guest mode exists to demonstrate the
-    // signed-in app, so a demo showing the version only strangers see would be showing the wrong
-    // document. This `true` is a demo decision, not an authentication result.
     return certificateResponse(this, {
       _id: donorId,
       name: faker.getName(),
@@ -1291,7 +1287,7 @@ export class GuestController extends Controller {
       motherName: withoutTitle(faker.getName()),
       studentId: faker.getStudentId(),
       hall: faker.getHall()
-    } as unknown as IDonor, true)
+    } as unknown as IDonor)
   }
 
   /** Guest get new donors */

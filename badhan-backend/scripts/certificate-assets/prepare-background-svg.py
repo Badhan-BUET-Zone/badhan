@@ -2,9 +2,6 @@
 """Turn the supplied Illustrator SVG into a fixed background: no sample data, and type that
 renders the way the designer's PDF does.
 
-Baked twice, from this one artwork, into the two backgrounds the renderer chooses between — see
---without-signature-block below.
-
 Both halves matter. The supplied artwork has sample values typed into it, and it also has three
 export defects that make it render unlike the PDF exported from the same document — the defects
 being, between them, the whole of the "the font style doesn't match" report this work started from.
@@ -19,20 +16,6 @@ REMOVED — the per-donor values, drawn live by the render pipeline instead:
   * The QR placeholder: the grey "QR Code" label and the rounded box (class st31) around it.
 
 The ruled blanks stay. They are printed form, not data — the values are written onto them.
-
-REMOVED ONLY WITH --without-signature-block — the three signature lines at the foot of the page,
-for the background served to someone who is not signed in:
-
-  * Every <text> carrying class st21, the 12 pt italic the signature block is set in. Note st21 is
-    on the child <tspan>s rather than on the <text> tag, which classes_of() handles because it
-    matches the first class attribute anywhere in the element — the same reason it finds st12.
-    Each of the three elements holds its ruled line and its caption together, so one removal takes
-    both; the third also holds the "____ Unit" blank, which is why the renderer must not draw UNIT
-    onto this background.
-
-A verifier who scanned a printed certificate is holding the signed paper already. Showing them a
-fresh copy with three empty signature lines invites exactly the comparison that should never have
-to be made, so the block is not on the background they are served.
 
 FIXED — three things Illustrator's SVG exporter got wrong, all confirmed against the PDF:
 
@@ -54,11 +37,6 @@ VALUE_FONT_CLASS = 'st12'
 EXPECTED_VALUE_FIELDS = 6
 QR_LABEL_TEXT = 'QR Code'
 QR_BOX_CLASS = 'st31'
-
-# The signature block: three <text> elements, one per signature line, each holding its rule and its
-# caption. Removed only for the public background.
-SIGNATURE_BLOCK_CLASS = 'st21'
-EXPECTED_SIGNATURE_LINES = 3
 
 # class -> the declaration Illustrator should have written. Sizes are what identify these classes:
 # st6 is the 32 pt heading, st10 the 15.9 pt organisation line, st17 the 13 pt body, st21 the 12 pt
@@ -83,18 +61,14 @@ def classes_of(element: str) -> list:
     return match.group(1).split() if match else []
 
 
-def remove_dynamic_fields(svg: str, without_signature_block: bool = False) -> tuple:
+def remove_dynamic_fields(svg: str) -> tuple:
     removed_values = []
     removed_qr = []
-    removed_signature_lines = []
 
     def drop_text(match):
         element = match.group(0)
         if VALUE_FONT_CLASS in classes_of(element):
             removed_values.append(re.sub(r'<[^>]+>', '', element).strip())
-            return ''
-        if without_signature_block and SIGNATURE_BLOCK_CLASS in classes_of(element):
-            removed_signature_lines.append(re.sub(r'<[^>]+>', '', element).strip())
             return ''
         if QR_LABEL_TEXT in element:
             removed_qr.append(QR_LABEL_TEXT)
@@ -111,7 +85,7 @@ def remove_dynamic_fields(svg: str, without_signature_block: bool = False) -> tu
         return element
 
     svg = re.sub(r'<path\b[^>]*/>', drop_qr_box, svg, flags=re.S)
-    return svg, removed_values, removed_qr, removed_signature_lines
+    return svg, removed_values, removed_qr
 
 
 def declare_missing_font_families(svg: str) -> tuple:
@@ -139,11 +113,10 @@ def restore_bangla_slogans(svg: str) -> tuple:
     return svg, restored
 
 
-def main(source_path: str, destination_path: str, without_signature_block: bool = False) -> int:
+def main(source_path: str, destination_path: str) -> int:
     svg = open(source_path, encoding='utf-8').read()
 
-    svg, removed_values, removed_qr, removed_signature_lines = remove_dynamic_fields(
-        svg, without_signature_block)
+    svg, removed_values, removed_qr = remove_dynamic_fields(svg)
     svg, declared = declare_missing_font_families(svg)
     svg, restored = restore_bangla_slogans(svg)
 
@@ -156,12 +129,6 @@ def main(source_path: str, destination_path: str, without_signature_block: bool 
     if len(removed_qr) != 2:
         print(f'expected the QR label and its box, removed {removed_qr}', file=sys.stderr)
         return 1
-    # A background shipping with two of the three signature lines is the defect nobody notices
-    # until it is printed, so an unexpected count fails the bake rather than producing it.
-    if without_signature_block and len(removed_signature_lines) != EXPECTED_SIGNATURE_LINES:
-        print(f'expected {EXPECTED_SIGNATURE_LINES} signature lines, removed '
-              f'{len(removed_signature_lines)}: {removed_signature_lines}', file=sys.stderr)
-        return 1
     if len(declared) != len(MISSING_FONT_FAMILIES):
         print(f'expected to name a font for {sorted(MISSING_FONT_FAMILIES)}, named {declared} — '
               'a re-export may have renamed the classes', file=sys.stderr)
@@ -172,14 +139,10 @@ def main(source_path: str, destination_path: str, without_signature_block: bool 
         return 1
 
     open(destination_path, 'w', encoding='utf-8').write(svg)
-    signature_note = (f'; removed {len(removed_signature_lines)} signature lines'
-                      if without_signature_block else '')
     print(f'removed {removed_values} and the QR placeholder; '
-          f'named fonts for {declared}; restored {restored}{signature_note}')
+          f'named fonts for {declared}; restored {restored}')
     return 0
 
 
 if __name__ == '__main__':
-    arguments = [a for a in sys.argv[1:] if a != '--without-signature-block']
-    sys.exit(main(arguments[0], arguments[1],
-                  '--without-signature-block' in sys.argv[1:]))
+    sys.exit(main(sys.argv[1], sys.argv[2]))

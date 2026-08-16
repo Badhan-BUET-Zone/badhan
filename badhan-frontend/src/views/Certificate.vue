@@ -108,13 +108,6 @@ const RENDER_WIDTH = 2400
 // without a session: whoever scans the paper — an employer, a university, anyone — has no Badhan
 // account and no reason to get one.
 //
-// A session does change what comes back, though nothing here has to do anything about it. The
-// backend draws the signature block only for a signed-in viewer, and it reads that from the x-auth
-// header badhanAxios already attaches when the store holds a token — so a volunteer who opened this
-// from a donor's profile gets the printable version and a stranger with the QR code does not. The
-// token survives the new tab that the profile button opens because store.ts rehydrates it from
-// localStorage on boot; if signature lines ever go missing for a signed-in user, check that first.
-//
 // This page draws nothing. The backend renders the finished PDF and this fetches it once, then both
 // shows it and offers it for download from the same bytes. That is not an implementation detail: it
 // is the only way the artwork can stay private, because everything a browser is sent — every image,
