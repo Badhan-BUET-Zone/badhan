@@ -38,7 +38,8 @@ call**. [Chapter 9](09-call-records.md)
 mother's names, their department, their hall and a QR code. It exists only once somebody ticks
 **Enable certificate** on that donor. Opened from the donor's profile, downloaded as a PDF and
 printed. Anyone can open a certificate without signing in, which is why it shows nothing beyond
-those few facts — never a phone number, blood group or donation history.
+those few facts — never a phone number, blood group or donation history. Opened while signed in it
+carries the three signature lines for printing; opened by someone who is not, it does not.
 [Chapter 7](07-the-donor-profile.md)
 
 **Comment.** A free-text note on a donor, readable by everyone who can see that donor.

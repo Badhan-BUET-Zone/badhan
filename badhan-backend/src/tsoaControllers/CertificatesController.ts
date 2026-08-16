@@ -1,9 +1,11 @@
 import 'reflect-metadata'
-import { Controller, Get, Middlewares, Path, Res, Route, SuccessResponse, Tags, TsoaResponse } from 'tsoa'
+import { Controller, Get, Middlewares, Path, Request, Res, Route, SuccessResponse, Tags, TsoaResponse } from 'tsoa'
 import mongoose from 'mongoose'
 import { Readable } from 'stream'
+import express from 'express'
 import * as donorInterface from '../db/interfaces/donorInterface'
 import { IDonor } from '../db/models/Donor'
+import authenticate from '../middlewares/authenticate'
 import rateLimiter from '../middlewares/rateLimiter'
 import { HTTP_STATUS } from '../constants'
 import { certificateFileName, renderCertificatePdf } from '../services/certificate/certificateRenderer'
@@ -15,6 +17,14 @@ import { certificateFileName, renderCertificatePdf } from '../services/certifica
 // nothing else. That list is enforced by what the renderer is handed to draw, not by a response
 // object somebody could later widen — blood group, phone, email, room number and donation history
 // have no path to this response at all.
+//
+// The one thing being signed in changes is the signature block. A volunteer who opened this from a
+// donor's profile is producing a certificate to print and have physically signed, so they get the
+// three ruled signature lines. Whoever scanned the QR code on a printed certificate is holding the
+// signed paper already, and showing them a fresh copy with three empty signature lines invites
+// exactly the comparison that should never have to be made — so they get a background without the
+// block. Any valid token is enough; this grants nothing and reveals nothing, so there is nothing
+// for a check on *which* donor is signed in to protect.
 //
 // This is the only route in the codebase that answers with something other than JSON, so it is the
 // only one whose plumbing is worth reading before changing:
@@ -51,11 +61,12 @@ export class CertificatesController extends Controller {
    */
   @Get('{donorId}')
   @SuccessResponse(200, 'Certificate rendered successfully', 'application/pdf')
-  @Middlewares([rateLimiter.commonLimiter])
+  @Middlewares([rateLimiter.commonLimiter, authenticate.handleOptionalAuthentication])
   public async getCertificate(
     @Path() donorId: string,
     @Res() notFound: TsoaResponse<404, CertificateError>,
-    @Res() notEnabled: TsoaResponse<403, CertificateError>
+    @Res() notEnabled: TsoaResponse<403, CertificateError>,
+    @Request() request?: express.Request
   ): Promise<Readable> {
     // A malformed id answers exactly as an absent one does. One indistinguishable "not found" tells
     // a caller walking the id space nothing about which ids are even well formed.
@@ -83,16 +94,20 @@ export class CertificatesController extends Controller {
       return alreadyAnswered()
     }
 
+    // handleOptionalAuthentication sets middlewareResponse only when a token verified and resolved
+    // to a donor. Its absence is the ordinary case here, not a failure.
+    const signedIn: boolean = Boolean(request?.res?.locals?.middlewareResponse?.donor)
+
     // archiveFlag is deliberately not consulted. A graduate is who needs the certificate most, and
     // paper already in their hands must keep verifying.
-    return certificateResponse(this, donor)
+    return certificateResponse(this, donor, signedIn)
   }
 }
 
 // `inline` rather than `attachment` so the verification page can show the certificate on screen,
 // with the filename ready for whoever presses download.
-export const certificateResponse = async (controller: Controller, donor: IDonor): Promise<Readable> => {
-  const pdf: Buffer = await renderCertificatePdf(donor)
+export const certificateResponse = async (controller: Controller, donor: IDonor, withSignatureBlock: boolean): Promise<Readable> => {
+  const pdf: Buffer = await renderCertificatePdf(donor, withSignatureBlock)
 
   controller.setStatus(HTTP_STATUS.OK)
   controller.setHeader('Content-Type', 'application/pdf')

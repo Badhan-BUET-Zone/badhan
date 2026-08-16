@@ -4,6 +4,8 @@
 # finished PNG. The `assets` profile keeps it out of `docker compose up`.
 FROM debian:bookworm-slim
 
+# git is here so the bake can fetch the artwork from the private secrets repo rather than requiring
+# it to be sitting in temp/ on the one machine that happens to have it — see render-background.sh.
 RUN apt-get update && apt-get install -y --no-install-recommends \
       librsvg2-bin \
       mupdf-tools \
@@ -12,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 \
       ca-certificates \
       curl \
+      git \
       optipng \
  && rm -rf /var/lib/apt/lists/*
 

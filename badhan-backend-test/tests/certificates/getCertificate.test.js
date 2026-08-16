@@ -6,8 +6,14 @@ const { certificateNotFoundSchema, certificateNotEnabledSchema } = require('./sc
 
 // GET /certificates/{donorId} is the only route in the project that is public by design rather than
 // by omission: a printed certificate's QR code is scanned by someone who has no Badhan account and
-// never will. It carries no authentication middleware at all, so these tests deliberately call it
-// with no x-auth header — operations.guestGet sends none.
+// never will. Most of these tests deliberately call it with no x-auth header — operations.guestGet
+// sends none.
+//
+// It carries handleOptionalAuthentication, which is not access control: it never rejects, and the
+// route answers 200 to everyone. All it decides is which of two backgrounds the certificate is
+// drawn on — with the signature block for a signed-in viewer, without it for the public. The tests
+// at the bottom of this file pin that, including the failure modes that must read as "anonymous"
+// rather than as 401.
 //
 // It is also the only route that answers with a file. The certificate is rendered on the backend
 // and returned as a PDF, so there is no JSON payload left to pin field-by-field; what these tests
@@ -209,4 +215,86 @@ test('GET /certificates: unknown and malformed ids are indistinguishable 404s', 
     );
     expect(response.status).toEqual(HTTP_STATUS.NOT_FOUND);
   }
+});
+
+// --- the signature block -----------------------------------------------------------------------
+//
+// The certificate is drawn on one of two backgrounds. The difference is the three ruled signature
+// lines at the foot of the page: a volunteer producing a certificate to print and have signed gets
+// them, and whoever scanned the QR code on a piece of already-signed paper does not.
+//
+// Nothing here can read the drawing, so these compare LENGTHS, not bytes. Two renders of the same
+// donor on the same background are never byte-identical — pdfkit stamps a /CreationDate into every
+// document — but they are always exactly the same length, and the two backgrounds differ by about
+// 68 kB of embedded PNG. So a byte comparison would pass whatever the renderer did, while a length
+// comparison says precisely which background was used.
+//
+// The other thing pinned here is the boundary the feature must not cross: every one of these calls
+// answers 200, whatever the token is or isn't.
+
+// Comfortably below the ~68 kB the two backgrounds differ by, and far above the few hundred bytes a
+// donor's name is worth.
+const BACKGROUND_DELTA_FLOOR = 50000;
+
+test('GET /certificates: signed in and signed out render different documents', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+  const info = donorInfo({ name: 'Certificate Signature Block', studentId: 1605018 });
+  const donorId = await createDonorWithCertificate(info, signInResponse);
+
+  const anonymousResponse = await operations.guestGetBinary(`/certificates/${donorId}`);
+  const signedInResponse = await operations.authedGetBinary(`/certificates/${donorId}`, signInResponse);
+  const anonymous = expectPdf(anonymousResponse);
+  const signedIn = expectPdf(signedInResponse);
+
+  // The whole feature, in one assertion. A renderer that silently fell back to one background for
+  // both callers produces two documents of exactly equal length, so this is what catches it — and
+  // it is directional, so a failure says which way round the mix-up went rather than only that one
+  // happened.
+  expect(signedIn.length - anonymous.length).toBeGreaterThan(BACKGROUND_DELTA_FLOOR);
+
+  // Same document either way: the filename a visitor saves does not depend on their session, and
+  // neither does the inline disposition the verification page relies on.
+  expect(signedInResponse.headers['content-disposition']).toEqual(
+    anonymousResponse.headers['content-disposition']
+  );
+
+  // Guest mode demonstrates the signed-in app, so its certificate must be the signed-in one. The
+  // two backgrounds differ by tens of kilobytes of embedded PNG while a donor's name is worth a few
+  // hundred bytes at most, so the margin below is comfortably larger than the noise from guest mode
+  // rendering a different, faker-generated donor.
+  const guest = expectPdf(
+    await operations.guestGetBinary('/guest/certificates/5e901d56effc590017712345')
+  );
+  expect(guest.length - anonymous.length).toBeGreaterThan(BACKGROUND_DELTA_FLOOR);
+
+  await operations.deleteDonor(donorId, signInResponse);
+  await operations.signOut(signInResponse);
+});
+
+test('GET /certificates: a token that no longer resolves is anonymous, not a 401', async () => {
+  // This is what handleOptionalAuthentication exists for, and the easiest thing to regress: one
+  // res.status().send() on a failure path would turn the public verification page — reached from
+  // printed paper already in circulation — into a 401 for anyone holding a stale token.
+  const signInResponse = await operations.signInSuperAdmin();
+  const info = donorInfo({ name: 'Certificate Stale Token', studentId: 1605019 });
+  const donorId = await createDonorWithCertificate(info, signInResponse);
+
+  const anonymous = expectPdf(await operations.guestGetBinary(`/certificates/${donorId}`));
+
+  // Signed by us and still well formed, but the session behind it is gone.
+  const staleToken = signInResponse.data.token;
+  await operations.signOut(signInResponse);
+
+  // Same donor, same background, so exactly the same length — see the note above on why this is a
+  // length comparison and not a byte one.
+  const stale = expectPdf(await operations.getBinaryWithToken(`/certificates/${donorId}`, staleToken));
+  expect(stale.length).toEqual(anonymous.length);
+
+  // Garbage in the header is the same story: answered, and answered as a stranger.
+  const garbage = expectPdf(await operations.getBinaryWithToken(`/certificates/${donorId}`, 'not-a-token'));
+  expect(garbage.length).toEqual(anonymous.length);
+
+  const cleanup = await operations.signInSuperAdmin();
+  await operations.deleteDonor(donorId, cleanup);
+  await operations.signOut(cleanup);
 });

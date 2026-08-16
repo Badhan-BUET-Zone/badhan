@@ -133,11 +133,21 @@ ready to print — the button itself does not appear on the paper.
 
 Print it, and hand it to the donor.
 
+**The signature lines only appear when you are signed in.** Open the certificate from a donor's
+profile while signed in and it has the three ruled signature lines at the bottom — Directorate of
+Students' Welfare, your unit, and BUET Zone — ready to be signed by hand after you print it. That
+is the version to print.
+
 **What the QR code is for.** Later, anyone holding that piece of paper — an employer, a
 university, anyone at all — can point a phone camera at the QR code. The same certificate opens
 on their screen, straight from Badhan's own website. If the names on the paper match the names on
 the screen, the paper is genuine. That is the whole point of the certificate, so the QR code
 matters more than anything else on it.
+
+They are not signed in, so **what they see has no signature lines on it** — just the certificate
+and its details. That is on purpose, and it is not a sign that anything is wrong: the signed paper
+is the one in their hand, and showing them a blank-looking copy to sign would only confuse the
+comparison they are there to make. Check the names, not the bottom of the page.
 
 **Check the names before you print.** The certificate reads them from the app every time it is
 opened, but paper cannot be updated. If you print first and correct a spelling afterwards, the
