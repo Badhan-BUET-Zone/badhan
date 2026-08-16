@@ -28,13 +28,19 @@ const SECRETS_BRANCH = process.env.SECRETS_BRANCH || "main";
 // (src/services/certificate/certificateRenderer.ts) and throws without it, so a
 // deploy that skipped this would upload a backend whose certificate route is dead.
 //
-// The secrets repo is flat — everything sits at its root — but this one lands in a
-// subdirectory rather than beside package.json, so it carries its destination
+// Two of them, baked from the one artwork: the signature block is on the background
+// served to a signed-in viewer and off the one served to whoever scanned a printed
+// QR code. BOTH are required — the renderer picks between them per request, so a
+// deploy carrying only one has a half-dead certificate route rather than an obvious
+// failure.
+//
+// The secrets repo is flat — everything sits at its root — but these land in a
+// subdirectory rather than beside package.json, so they carry their destination
 // explicitly instead of relying on source name === on-disk name like the env files.
-const CERTIFICATE_BACKGROUND = {
-  source: "certificate-background.png",
-  dest: "src/assets/certificate-background.png",
-};
+const CERTIFICATE_BACKGROUNDS = [
+  "certificate-background.png",
+  "certificate-background-public.png",
+].map((name) => ({ source: name, dest: `src/assets/${name}` }));
 
 function run(command, cwd) {
   return execSync(command, { stdio: "inherit", cwd });
@@ -184,7 +190,7 @@ function checkRequirements(baseDir = __dirname) {
   // The env file and the certificate artwork are fetched from the secrets repo
   // at deploy time. Accept local copies if they already exist; otherwise require
   // the secrets repo to be reachable so the fetch will succeed.
-  const fromSecrets = [{ source: envFile, dest: envFile }, CERTIFICATE_BACKGROUND];
+  const fromSecrets = [{ source: envFile, dest: envFile }, ...CERTIFICATE_BACKGROUNDS];
   const absent = fromSecrets.filter((entry) => !existsSync(resolve(baseDir, entry.dest)));
   if (absent.length > 0 && !secretsBranchReachable()) {
     errors.push(
@@ -264,7 +270,7 @@ function deployToGoogleCloud() {
     // the artwork — is never deleted.
     const fetched = fetchSecrets(baseDir, [
       { source: envFile, dest: envFile },
-      CERTIFICATE_BACKGROUND,
+      ...CERTIFICATE_BACKGROUNDS,
     ]);
 
     try {

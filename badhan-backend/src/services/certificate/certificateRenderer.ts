@@ -40,7 +40,15 @@ const assetDirectory = (): string => {
   return found
 }
 
+// One background per viewer, both baked from the one artwork by scripts/certificate-assets/. They
+// differ by the signature block at the foot of the page and by nothing else.
+//
+// The pairing below is the correctness condition of this file: the UNIT blank — the "____ Unit"
+// rule in the third signature line — exists ONLY in the signed background. Drawing it on the public
+// one would print a hall name onto empty paper near the bottom edge, with no rule under it and no
+// sentence around it. Background and UNIT move together or not at all.
 const BACKGROUND_FILE: string = 'certificate-background.png'
+const PUBLIC_BACKGROUND_FILE: string = 'certificate-background-public.png'
 
 // One registered name for the one face the renderer draws with. Every value on the certificate is
 // in the artwork's script face; all the fixed wording is already part of the background.
@@ -136,7 +144,9 @@ const drawQrCode = (document: PDFKit.PDFDocument, url: string): void => {
   document.restore()
 }
 
-export const renderCertificatePdf = async (donor: IDonor): Promise<Buffer> => {
+// `withSignatureBlock` is the caller's answer to "is whoever asked for this signed in", not a
+// judgement this file makes. See CertificatesController for how it is decided.
+export const renderCertificatePdf = async (donor: IDonor, withSignatureBlock: boolean): Promise<Buffer> => {
   const assets: string = assetDirectory()
 
   // Sized from the artwork rather than by naming A4, so the background lands 1:1 with no scaling
@@ -150,7 +160,7 @@ export const renderCertificatePdf = async (donor: IDonor): Promise<Buffer> => {
   })
 
   document.registerFont(VALUE_FONT, path.join(assets, 'fonts', VALUE_FONT_FILE))
-  document.image(path.join(assets, BACKGROUND_FILE), 0, 0, {
+  document.image(path.join(assets, withSignatureBlock ? BACKGROUND_FILE : PUBLIC_BACKGROUND_FILE), 0, 0, {
     width: PAGE.width,
     height: PAGE.height
   })
@@ -160,7 +170,11 @@ export const renderCertificatePdf = async (donor: IDonor): Promise<Buffer> => {
   drawValue(document, donor.motherName, MOTHER_NAME)
   drawValue(document, departmentName(donor.studentId), DEPARTMENT)
   drawValue(document, hallName(donor.hall), HALL)
-  drawValue(document, hallName(donor.hall), UNIT)
+
+  // Paired with the background chosen above — see the note beside PUBLIC_BACKGROUND_FILE.
+  if (withSignatureBlock) {
+    drawValue(document, hallName(donor.hall), UNIT)
+  }
 
   drawQrCode(document, certificateVerificationUrl(String(donor._id)))
 

@@ -71,6 +71,9 @@ export const HALL: Blank = {
 // "President/General Secretary, BADHAN, ____ Unit", in the signature block. A BUET-zone unit is a
 // hall, so this blank and HALL above carry the same value — which is what the artwork's own sample
 // does, writing "Sher-E-Bangla" into both.
+//
+// This blank exists ONLY on the background carrying the signature block, so it is the one field the
+// renderer draws conditionally — see the note beside PUBLIC_BACKGROUND_FILE in certificateRenderer.
 export const UNIT: Blank = {
   left: 341.058,
   right: 474.958,
