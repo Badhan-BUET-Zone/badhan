@@ -693,6 +693,17 @@ sheets keep theirs, since those are still in-page SVG). The rendered code was ve
 `<frontend base>/certificate?id=<donorId>`; re-do that check by hand whenever the renderer's QR
 geometry changes.
 
+> **Superseded, 16 August 2026 — and the hand check had let a bug through.** The address recorded
+> above as expected is wrong: it is missing the router's `/#/`, so every certificate printed under
+> it scanned to the app's front page instead of the certificate. Reading a URL off a decoder and
+> agreeing with it is exactly what a hand check is bad at. The coverage is no longer lost and the
+> instruction to re-check by hand no longer applies —
+> `badhan-backend-test/tests/certificates/qrPayload.test.js` now reads the module grid straight out
+> of the PDF's content stream and compares it against the encoder's own output, which catches a
+> wrong URL and a transposed, inverted or shifted grid alike. No rasteriser is involved: the
+> renderer draws each module as a vector rectangle, so the operators are recoverable with `zlib`
+> (see `tests/lib/utils/pdfQr.js`).
+
 ---
 
 ## Phase P4 — backfill existing donors
