@@ -76,9 +76,14 @@ const hallName = (hall: number): string => halls[hall] || halls[halls.length - 1
 // scan the paper. Built from the backend's configured frontend base: a server has no
 // window.location to read, and reading it from a request header would let whoever asked for the
 // certificate choose where the printed code sends people.
+//
+// The `/#/` is load-bearing. The frontend router runs in hash mode, so the certificate page's real
+// address is `<base>/#/certificate?id=…`. Without the hash the browser sends `?id=…` to the server,
+// the hosting rewrite answers with index.html, and the router — seeing an empty hash — routes to
+// the app's default page instead. The scan appears to do nothing.
 export const certificateVerificationUrl = (donorId: string): string => {
   const base: string = dotenvEnvFile.VUE_APP_FRONTEND_BASE.replace(/\/+$/, '')
-  return `${base}/certificate?id=${donorId}`
+  return `${base}/#/certificate?id=${donorId}`
 }
 
 // Anything that is not a letter, digit, dash or underscore is dropped: this becomes a filename on

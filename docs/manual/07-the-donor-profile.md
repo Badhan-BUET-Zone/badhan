@@ -144,6 +144,13 @@ on their screen, straight from Badhan's own website. If the names on the paper m
 the screen, the paper is genuine. That is the whole point of the certificate, so the QR code
 matters more than anything else on it.
 
+**Certificates printed before 16 August 2026 need reprinting.** Their QR codes were built with a
+wrong address: scanning one opens Badhan's website but lands on the app's ordinary front page
+instead of the certificate, so the paper cannot be verified. Nothing on those certificates is
+wrong except the code. Open the donor's profile again, download the certificate fresh, print it,
+and swap the paper — the new code scans correctly. Certificates downloaded from this date onward
+are fine.
+
 They are not signed in, so **what they see has no signature lines on it** — just the certificate
 and its details. That is on purpose, and it is not a sign that anything is wrong: the signed paper
 is the one in their hand, and showing them a blank-looking copy to sign would only confuse the
