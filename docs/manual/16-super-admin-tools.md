@@ -7,7 +7,7 @@
 
 ---
 
-*Super admins only. These three pages are under **Super Admin** in the menu.*
+*Super admins only. These pages are under **Super Admin** in the menu.*
 
 These are the maintenance tools. Most super admins will never need them from one month to the
 next, and that is fine. What follows is enough to know **what each page is, when to open it,
@@ -113,6 +113,47 @@ a developer asks "what does the Dev Console say?", this is where you look. Open 
 reproduce the problem, screenshot what appears, send it on.
 
 Nothing on this page changes anything. It is safe to open and safe to ignore.
+
+---
+
+## Certificate Enabled Donors
+
+A list of **every donor who can produce a certificate**, across every hall, on one page.
+
+A donor has no certificate until somebody switches it on for them, by ticking **Enable
+certificate** on their profile — see [The certificate](07-the-donor-profile.md#the-certificate).
+That tick is not a super admin's job: **any volunteer or hall admin who can edit a donor can
+enable that donor's certificate**, and they are meant to. This page is the other side of that.
+It is the only place in the app where the whole set is visible at once.
+
+That matters because a certificate is the one document the app produces that leaves the building.
+It gets printed, signed, carried, and checked by people who scan the QR code on the paper and have
+no account here. Once it exists, you cannot see where it went.
+
+The page opens straight into the list — there is no button to press. At the top is the count. Each
+row shows the donor's name, hall, student ID, blood group and role, and rows are grouped by hall so
+they can be checked against the person who would know. **Tap a row to open that donor's profile**
+in a new window, which is where you would turn the certificate off again if it should not be on.
+
+Archived donors appear here too, marked **Archived**. That is deliberate and it is worth
+understanding: archiving a donor does **not** disable their certificate. Someone who has left, whose
+record was archived, may still have a certificate that verifies. Those rows are the ones most worth
+a second look.
+
+### What to do with it
+
+Read down it occasionally and ask whether each name should be there. What you are looking for is a
+name nobody can account for. If you find one, open the profile and untick the box.
+
+Two things this page does not tell you:
+
+- **It does not say who has actually printed or used a certificate.** Nothing records that. The
+  list is who *can*, not who *did*.
+- **It does not undo anything.** Turning the tick off stops the certificate verifying from that
+  moment. It does nothing to paper already printed and already in someone's hands — that copy still
+  looks exactly as it did, and its QR code will simply stop confirming it.
+
+The page changes nothing on its own. It is safe to open.
 
 ---
 

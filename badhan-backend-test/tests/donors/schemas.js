@@ -563,6 +563,48 @@ const allDonorSchema = {
   required: ['status', 'statusCode', 'message', 'data'],
 };
 
+// No minItems: an environment where nobody has a certificate enabled is a legitimate empty list,
+// and the page has an empty state for exactly that. additionalProperties:false is the load-bearing
+// part — it fails if the projection ever widens and starts returning a field this route never
+// promised, which for a route about certificates is worth catching.
+const certificateEnabledDonorSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    status: { type: 'string' },
+    statusCode: { const: HTTP_STATUS.OK },
+    message: { type: 'string' },
+    data: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          _id: { type: 'string' },
+          studentId: { type: 'string' },
+          name: { type: 'string' },
+          hall: { type: 'integer' },
+          bloodGroup: { type: 'integer' },
+          designation: { type: 'integer', minimum: 0, maximum: 3 },
+          archiveFlag: { type: 'boolean' },
+          isCertificateEnabled: { type: 'boolean' },
+        },
+        required: [
+          '_id',
+          'studentId',
+          'name',
+          'hall',
+          'bloodGroup',
+          'designation',
+          'archiveFlag',
+          'isCertificateEnabled',
+        ],
+      },
+    },
+  },
+  required: ['status', 'statusCode', 'message', 'data'],
+};
+
 const postDonorSchema = {
   type: 'object',
   additionalProperties: false,
@@ -647,6 +689,7 @@ module.exports = {
   designationSchema,
   donorsSchema,
   allDonorSchema,
+  certificateEnabledDonorSchema,
   postDonorSchema,
   patchDonorSchema,
   deleteDonorSchema,

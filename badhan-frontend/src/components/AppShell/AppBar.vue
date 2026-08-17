@@ -234,6 +234,16 @@ export default {
               designation: 3
             },
             {
+              // Under Super Admin rather than beside the certificate itself: enabling a certificate
+              // is an ordinary hall-level edit on a donor's profile, but seeing every donor it was
+              // done for, across all halls, is not.
+              to: '/certificateEnabledDonors',
+              icon: 'mdi-certificate',
+              text: 'Certificate Enabled Donors',
+              id: 'certificateEnabledDonorsNavigationId',
+              designation: 3
+            },
+            {
               icon: 'mdi-developer-board',
               text: 'Dev Console',
               to: '/devconsole',

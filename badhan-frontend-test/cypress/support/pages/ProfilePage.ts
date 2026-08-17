@@ -160,6 +160,16 @@ export class ProfilePage {
     });
   }
 
+  // Not a super-admin control: anyone who may edit this donor may enable their certificate.
+  toggleCertificateEnabled(checked: boolean): void {
+    cy.get('[data-cy="donorDetailsCertificateEnabledCheckboxId"]').then(($el) => {
+      const isChecked = ($el[0] as HTMLInputElement).checked;
+      if (isChecked !== checked) {
+        cy.wrap($el).click({ force: true });
+      }
+    });
+  }
+
   // Archive switch: rendered for super admins only
   assertArchiveSwitchAbsent(): void {
     cy.get('[data-cy="donorDetailsArchiveSwitchId"]').should('not.exist');
