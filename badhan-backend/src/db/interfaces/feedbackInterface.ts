@@ -105,70 +105,28 @@ const UNRESTRICTED_HALLS: number[] = [...HALL_INDICES_ALLOWED_FOR_DONOR, HALLS_I
   .filter((hall: number): boolean => hasNoSpecificHall(hall))
 
 /**
- * The donor-card enrichment, run inside the $lookup so each feedback row carries the same
- * card a volunteer sees in search results.
+ * The matched donor, reduced to what a queue row can do with one.
  *
- * The field names here must match what PersonCardNew.vue reads, or the card renders
- * blanks. The final $project is an INCLUSION projection on purpose: the search pipeline
- * uses an exclusion list, which leaks any field added to the Donor schema later. Here a
- * new field is invisible until somebody names it.
+ * A feedback row is a name, a phone number and a link to the profile — the queue used to
+ * render a whole search-result card here, and paid for it with four extra $lookups per row
+ * (donations, platelet donations, call records, active donors) whose numbers nothing on the
+ * page ever showed. Anything richer than this belongs on the profile the row links to, which
+ * fetches it for one donor rather than for every row in the queue.
+ *
+ * `availableToAll` is not displayed: the visibility $match below reads it. Removing it from
+ * this projection silently widens or narrows who sees which row.
+ *
+ * The $project is an INCLUSION projection on purpose: the search pipeline uses an exclusion
+ * list, which leaks any field added to the Donor schema later. Here a new field is invisible
+ * until somebody names it — which is why password, email and designation are absent.
  */
-const donorCardPipeline = (threeDaysAgo: number): any[] => [
+const donorSummaryPipeline: any[] = [
   {
-    $lookup: { from: 'donations', localField: '_id', foreignField: 'donorId', as: 'donations' }
-  }, {
-    $lookup: { from: 'plateletdonations', localField: '_id', foreignField: 'donorId', as: 'plateletDonations' }
-  }, {
-    $lookup: { from: 'callrecords', localField: '_id', foreignField: 'calleeId', as: 'callRecords' }
-  }, {
-    $lookup: { from: 'activedonors', localField: '_id', foreignField: 'donorId', as: 'activeDonors' }
-  }, {
-    $addFields: {
-      donationCount: { $size: '$donations' },
-      plateletDonationCount: { $size: '$plateletDonations' },
-      lastDonation: { $ifNull: [{ $max: '$donations.date' }, 0] },
-      lastPlateletDonation: { $ifNull: [{ $max: '$plateletDonations.date' }, 0] },
-      lastCalled: { $max: '$callRecords.date' },
-      callCountLast3Days: {
-        $size: {
-          $filter: { input: '$callRecords', as: 'record', cond: { $gte: ['$$record.date', threeDaysAgo] } }
-        }
-      },
-      markerId: { $arrayElemAt: ['$activeDonors.markerId', 0] },
-      markerTime: { $arrayElemAt: ['$activeDonors.time', 0] }
-    }
-  }, {
-    $lookup: { from: 'donors', localField: 'markerId', foreignField: '_id', as: 'markerDetails' }
-  }, {
-    $addFields: {
-      markerName: { $arrayElemAt: ['$markerDetails.name', 0] },
-      'marker.name': { $arrayElemAt: ['$markerDetails.name', 0] },
-      'marker.time': '$markerTime'
-    }
-  }, {
-    // Inclusion only. password, email and designation are absent because they are not
-    // named, not because they are excluded — which is the difference that matters.
     $project: {
       _id: 1,
       name: 1,
       phone: 1,
-      studentId: 1,
-      bloodGroup: 1,
-      hall: 1,
-      address: 1,
-      roomNumber: 1,
-      comment: 1,
-      commentTime: 1,
-      availableToAll: 1,
-      archiveFlag: 1,
-      donationCount: 1,
-      plateletDonationCount: 1,
-      lastDonation: 1,
-      lastPlateletDonation: 1,
-      lastCalled: 1,
-      callCountLast3Days: 1,
-      markerName: 1,
-      marker: 1
+      availableToAll: 1
     }
   }
 ]
@@ -179,14 +137,12 @@ const donorCardPipeline = (threeDaysAgo: number): any[] => [
  * There is no new permission concept: you see the feedback of the donors you can already
  * find in search. The row's own `hall` column does most of the work, so the filter is a
  * plain match; only the availableToAll clause needs the donor, and the join happens
- * anyway to render the card. The $match therefore runs AFTER the $lookup.
+ * anyway to name the row. The $match therefore runs AFTER the $lookup.
  *
  * A registration row has no matching donor, so it falls through to the hall rule —
  * correct, since somebody who is not in the database cannot be marked available to all.
  */
 export const findFeedbacksForUser = async (user: IDonor): Promise<{data: any[], message: string, status: string}> => {
-  const threeDaysAgo: number = Date.now() - 3 * 24 * 60 * 60 * 1000
-
   const isSuperAdmin: boolean = user.designation === DESIGNATIONS_INDEX.SUPER_ADMIN
   const visibility: any = isSuperAdmin
     ? {}
@@ -217,7 +173,7 @@ export const findFeedbacksForUser = async (user: IDonor): Promise<{data: any[], 
               }
             }
           },
-          ...donorCardPipeline(threeDaysAgo)
+          ...donorSummaryPipeline
         ],
         as: 'donorMatches'
       }

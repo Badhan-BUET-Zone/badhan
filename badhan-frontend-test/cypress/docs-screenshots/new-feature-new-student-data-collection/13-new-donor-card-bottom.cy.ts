@@ -39,7 +39,11 @@ describe('docs screenshot — the reported donation history and the card’s but
       }).then(() => {
         drawer.goToFeedback();
 
-        cy.get('[data-cy="feedbackCreateDonorButton"]').should('be.visible').scrollIntoView();
+        cy.get('[data-cy="feedbackNewDonorCard"]').should('be.visible');
+        cy.get('[data-cy="feedbackHeaderName"]').click();
+        cy.contains('.v-card__subtitle', 'Donation history, as reported by the student')
+          .should('be.visible')
+          .scrollIntoView();
         hideOverlays();
         cy.wait(1500);
         cy.screenshot('registration-new-donor-card-actions', { capture: 'viewport' });

@@ -3,6 +3,25 @@ export class NavigationDrawer {
     cy.get('[data-cy="hamburgerButtonId"]').click();
   }
 
+  ensureClosed(): void {
+    // The drawer sits over the page, so anything a test wants to click underneath it has to wait
+    // for the close animation to finish — not just for whatever started it.
+    cy.get('.v-navigation-drawer').then(($drawer) => {
+      if ($drawer.hasClass('v-navigation-drawer--close')) return;
+      // An open temporary drawer dims the page behind it AND covers the hamburger, so the dimmer
+      // is the only thing left to click. A permanent one has no dimmer, and the hamburger toggles.
+      cy.get('body').then(($body) => {
+        if ($body.find('.v-overlay--active').length > 0) {
+          cy.get('.v-overlay--active').click({ force: true });
+        } else {
+          this.open();
+        }
+      });
+    });
+    cy.get('.v-navigation-drawer').should('have.class', 'v-navigation-drawer--close');
+    cy.get('.v-overlay--active').should('not.exist');
+  }
+
   ensureOpen(): void {
     // The hamburger is a toggle, and the drawer starts open on a wide viewport and closed on a
     // narrow one — so a bare open() closes it on a desktop-sized test. Vuetify marks the state on

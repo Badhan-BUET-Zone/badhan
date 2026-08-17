@@ -36,6 +36,7 @@ describe('docs screenshot — the prefilled donor creation form', () => {
         comment: 'I am new here.',
       }).then(() => {
         drawer.goToFeedback();
+        // Create donor sits on the collapsed header — no need to open the row first.
         cy.get('[data-cy="feedbackCreateDonorButton"]').click();
 
         // Anchored on the top of the form: name, student ID and phone arriving already filled in is
