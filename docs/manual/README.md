@@ -44,7 +44,7 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 13. [Public contacts](13-public-contacts.md) — the emergency contact list anyone can see
 14. [My profile and devices](14-my-profile-and-devices.md) — your password, your signed-in devices
 15. [Statistics and reports](15-statistics-and-reports.md) — donation reports and activity logs
-16. [Super admin tools](16-super-admin-tools.md) — backup, record checks, the developer console
+16. [Super admin tools](16-super-admin-tools.md) — backup, record checks, the developer console, certificate-enabled donors
 
 **Reference**
 

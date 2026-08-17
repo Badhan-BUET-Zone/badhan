@@ -8,9 +8,23 @@ documented in the user manual at [docs/manual/](docs/manual/) in the same change
 ## Running commands
 
 **Never run `npm`, `node`, or `npx` on the host.** Every such command must run
-**inside the relevant Docker container** via `docker compose`. The host does not have the
-project's `node_modules` (they live in the container volumes), so host runs will fail or
-behave inconsistently.
+**inside the relevant Docker container** via `docker compose`. The app projects keep their
+`node_modules` in container volumes, so the host does not have them at all and a host run
+will fail or behave inconsistently.
+
+The two test projects are the exception to *where* the modules sit, not to the rule above:
+`badhan-backend-test` and `badhan-frontend-test` bind-mount their whole directory,
+`node_modules` included, so their dependencies live in the working tree. They are still
+installed from inside the container, never from the host — after changing either
+`package.json`, run:
+
+```
+docker compose --profile test run --rm backend-test  npm ci
+docker compose --profile test run --rm frontend-test npm ci
+```
+
+Nothing installs them for you: unlike the app services, no volume re-seeds itself from the
+image, and `compose run` does not rebuild.
 
 Service names (see [docker-compose.yml](docker-compose.yml)): `backend`, `frontend`,
 `internal`, `mongo`, `backend-test`, `frontend-test`, and — under the `deploy` profile,

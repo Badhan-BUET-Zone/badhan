@@ -316,6 +316,35 @@ export const findAllDonors = async (archiveFlag: boolean):Promise<{data: IDonor[
     }
 }
 
+// Every donor whose certificate is switched on, live and archived alike. The two states are
+// independent — nothing in the archive path touches isCertificateEnabled — so an archived donor
+// with the flag on still has a certificate that verifies, and those are exactly the rows the page
+// exists to surface. Hence no archiveFlag parameter: this query deliberately does not partition.
+//
+// Neither index helps (both lead with archiveFlag), so this scans. That is deliberate: the
+// collection is a few thousand donors, the page is a rarely-opened super admin tool, and an index
+// is paid for on every donor write. See docs/plans/plan18.md for the partial index to reach for if
+// that ever stops being true.
+//
+// archiveFlag is named in the projection for the same reason findAllDonors names it: leave it out
+// and every row arrives with it undefined, so the archived marker silently never renders.
+export const findCertificateEnabledDonors = async ():Promise<{data: IDonor[], message: string, status: string}> => {
+    const data: IDonor[] = await DonorModel.find({ isCertificateEnabled: true }, {
+        name: 1,
+        hall: 1,
+        studentId: 1,
+        bloodGroup: 1,
+        designation: 1,
+        archiveFlag: 1,
+        isCertificateEnabled: 1
+    })
+    return {
+        data,
+        message: 'Certificate enabled donors fetched successfully',
+        status: 'OK'
+    }
+}
+
 export const findDonorsByAggregate = async (reqQuery: {
         bloodGroup: number,
         hall: number,

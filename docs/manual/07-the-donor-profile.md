@@ -126,6 +126,10 @@ already in the app before certificates existed, so expect to tick this box the f
 prepare a certificate for someone. Untick it and save, and the certificate stops opening again
 straight away, on paper already printed as well as on screen.
 
+Every donor this has been done for is listed together on
+[Certificate Enabled Donors](16-super-admin-tools.md#certificate-enabled-donors), which a super
+admin can open to see the whole set across all halls.
+
 Once it is on, tap **Certificate** and the certificate opens in a new tab: the donor's name,
 their father's and mother's names, their department, their hall, and a **QR code**, on Badhan's
 printed certificate design. Below it is a **Download PDF** button. The page is A4, sideways, and

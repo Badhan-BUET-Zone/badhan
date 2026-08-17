@@ -492,6 +492,16 @@ const handleGETDonorsNew = async (payload: GETDonorsNewPayloadInterface) => {
   }
 }
 
+// No payload: the endpoint takes no parameters, and lists archived donors alongside live ones
+// rather than partitioning on an archiveFlag the way /donors/all does.
+const handleGETDonorsCertificateEnabled = async () => {
+  try {
+    return await badhanAxios.get('/donors/certificateEnabled')
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 export interface POSTCallRecordPayloadInterface {
   donorId: string
 }
@@ -718,6 +728,7 @@ export {
   handleGETDonationsReportDonors,
   handleGETPlateletDonationsReportDonors,
   handleGETDonorsNew,
+  handleGETDonorsCertificateEnabled,
   handlePOSTCallRecord,
   handleDELETECallRecord,
   handleGETDonorsDesignation,

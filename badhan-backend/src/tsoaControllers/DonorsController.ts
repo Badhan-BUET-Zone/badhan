@@ -1089,5 +1089,58 @@ export class DonorsController extends Controller {
       data: allDonorResult.data
     }
   }
+
+  /** Get every donor whose certificate is enabled */
+  @Get('certificateEnabled')
+  @SuccessResponse(200, 'Certificate enabled donors fetched successfully')
+  @Example<{ status: string; statusCode: number; message: string; data: any[] }>({
+    status: 'OK',
+    statusCode: HTTP_STATUS.OK,
+    message: 'Certificate enabled donors fetched successfully',
+    data: [{
+      _id: '584abcde6744144441',
+      name: 'Mir Mahathir Mohammad',
+      hall: 5,
+      studentId: '1605011',
+      bloodGroup: 2,
+      designation: 3,
+      archiveFlag: false,
+      isCertificateEnabled: true
+    }]
+  })
+  // Super admin rather than hall admin, even though a hall admin may SET this flag on a donor of
+  // their own hall: the page's whole value is seeing across halls at once, which a hall-scoped
+  // check would defeat. A hall admin who wants to know about one donor already has the profile.
+  //
+  // No validator in the array because the route takes no path, query or body parameter — a
+  // consequence of listing archived donors alongside live ones instead of taking an archiveFlag.
+  @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication, authenticator.handleSuperAdminCheck])
+  public async getCertificateEnabledDonors(
+    @Request() req: any
+  ): Promise<{ status: string; statusCode: number; message: string; data?: any[] }> {
+    const res: ExResponse = (req as any).res
+    const user: IDonor = res.locals.middlewareResponse.donor
+
+    const result: { data: IDonor[]; message: string; status: string } = await donorInterface.findCertificateEnabledDonors()
+
+    if (result.status !== 'OK') {
+      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: result.message }
+    }
+
+    // The count, not the list: it makes growth in the enabled set visible in the logs without
+    // storing a copy of who was on it.
+    await logInterface.addLog(user._id, 'GET DONORS CERTIFICATE ENABLED', {
+      resultCount: result.data.length
+    })
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Certificate enabled donors fetched successfully',
+      data: result.data
+    }
+  }
 }
 

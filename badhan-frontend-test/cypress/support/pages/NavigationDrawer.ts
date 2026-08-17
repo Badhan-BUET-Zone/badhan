@@ -71,6 +71,13 @@ export class NavigationDrawer {
     cy.get('[data-cy="statisticsNavigationId"]').click();
   }
 
+  goToCertificateEnabledDonors(): void {
+    // Open main drawer, expand Super Admin group, and click Certificate Enabled Donors
+    this.open();
+    cy.get('[data-cy="superAdminId"]').click();
+    cy.get('[data-cy="certificateEnabledDonorsNavigationId"]').click();
+  }
+
   goToHome(): void {
     // Open the drawer, then click visible Home link; fallback to direct visit
     this.open();

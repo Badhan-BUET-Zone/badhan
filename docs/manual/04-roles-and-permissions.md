@@ -67,6 +67,7 @@ everything, including the reports, the backups and the appointment of hall admin
 | Statistics and reports | ❌ | ❌ | ❌ | ✅ |
 | Archive donors | ❌ | ❌ | ❌ | ✅ |
 | Backup, record checks, developer console | ❌ | ❌ | ❌ | ✅ |
+| See every donor with a certificate enabled | ❌ | ❌ | ❌ | ✅ |
 | Change their **own** password and details | ❌ | ✅ | ✅ | ✅ |
 
 ## The three rules behind the table

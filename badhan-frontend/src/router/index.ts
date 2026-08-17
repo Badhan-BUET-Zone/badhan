@@ -373,6 +373,20 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    // No `children`, unlike NewDonors below: a row opens the donor's profile in a separate window
+    // rather than a nested route, so the list survives the visit — which is what a sweep through it
+    // wants. Same reason Statistics/DonorsAll has no details child.
+    name: 'CertificateEnabledDonors',
+    path: '/certificateEnabledDonors',
+    component: () => import('../views/CertificateEnabledDonors.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Certificate Enabled Donors',
+      designation: 3,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'NewDonors',
     path: '/newDonors',
     component: () => import('../views/NewDonors.vue'),

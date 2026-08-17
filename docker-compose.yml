@@ -83,10 +83,28 @@ services:
       retries: 5
       start_period: 120s
 
+  # Both test services mount their whole project — node_modules included — rather than running the
+  # copy the Dockerfile baked in. Without a mount, `COPY . .` means an edited test only reaches the
+  # container on a rebuild, and `compose run` does not rebuild: a stale image then runs the OLD
+  # tests against the NEW app and reports failures that describe neither.
+  #
+  # node_modules is deliberately NOT shadowed by a volume, so dependencies live in the working tree
+  # and survive between runs. They are installed FROM INSIDE the container — never from the host,
+  # which has no toolchain for them:
+  #
+  #   docker compose --profile test run --rm backend-test  npm ci
+  #   docker compose --profile test run --rm frontend-test npm ci
+  #
+  # Run one of those after any package.json change; nothing else notices on its own. The Dockerfile's
+  # own `npm ci` stays, so the image is still runnable unmounted (CI, or `run --no-deps` without this
+  # file). Cypress's browser binary is unaffected — it lives in /root/.cache/Cypress, outside /app —
+  # but the `cypress` package here must stay in step with the version that image baked.
   backend-test:
     profiles: ["test"]
     build:
       context: ./badhan-backend-test
+    volumes:
+      - ./badhan-backend-test:/app
     depends_on:
       backend:
         condition: service_healthy
@@ -97,6 +115,8 @@ services:
     profiles: ["test"]
     build:
       context: ./badhan-frontend-test
+    volumes:
+      - ./badhan-frontend-test:/app
     depends_on:
       frontend:
         condition: service_healthy
