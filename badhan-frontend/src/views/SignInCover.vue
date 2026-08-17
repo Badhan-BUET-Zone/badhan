@@ -120,7 +120,7 @@
                       class="align-self-end ma-1"
                       outlined
                       style="text-decoration: none"
-                      href="https://play.google.com/store/apps/details?id=com.mmmbadhan"
+                      :href="playStoreUrl"
                   >
                     Download App
                     <v-icon right>mdi-google-play</v-icon>
@@ -158,6 +158,7 @@
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import DonationsMonthlyBarChart from '@/components/DonationsMonthlyBarChart.vue'
 import TextField from '@/components/UI Components/TextField.vue'
+import { PLAY_STORE_URL } from '@/mixins/constants'
 
 export default {
   name: 'SignInCover',
@@ -183,6 +184,9 @@ export default {
   },
   watch: {},
   computed: {
+    playStoreUrl () {
+      return PLAY_STORE_URL
+    },
     getBuildTime () {
       return new Date(document.documentElement.dataset.buildTimestampUtc).toLocaleString()
     },

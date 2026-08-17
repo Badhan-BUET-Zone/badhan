@@ -74,6 +74,31 @@
         </fragment>
       </v-list>
       <v-list>
+        <!-- One menu entry with two destinations, and so one id across both branches: a test or a
+             screenshot should not have to know which machine it is running on. A narrow screen is
+             sent to the Play Store even though Android Chrome would happily install the PWA in
+             place — the store copy is the supported artefact and keeps one install path to
+             support. The event the wide-screen branch needs is captured in mixins/installPrompt.ts
+             at module load, not here: the browser fires it once, usually before this component
+             exists. Nothing renders in Safari or Firefox, which never fire it and expose no way to
+             open their own install flow from script — the manual documents that route by hand. -->
+        <v-list-item v-if="showPlayStoreInstall">
+          <v-btn rounded depressed small
+                 id="installAppNavigationId" data-cy="installAppNavigationId"
+                 :href="playStoreUrl" target="_blank" rel="noopener"
+                 style="text-decoration: none">
+            <v-icon left>mdi-google-play</v-icon>
+            Get the App
+          </v-btn>
+        </v-list-item>
+        <v-list-item v-else-if="showBrowserInstall">
+          <v-btn rounded depressed small
+                 id="installAppNavigationId" data-cy="installAppNavigationId"
+                 @click="installClicked">
+            <v-icon left>mdi-download</v-icon>
+            Install App
+          </v-btn>
+        </v-list-item>
         <v-list-item>
           <v-btn rounded depressed small @click="toggleTheme">
             <v-icon left v-if="!darkTheme">
@@ -94,7 +119,8 @@
 import { isGuestEnabled } from '@/api'
 import ldb from '@/localDatabase'
 import { environmentService } from '@/mixins/environment'
-import { HTTP_STATUS } from '@/mixins/constants'
+import { HTTP_STATUS, PLAY_STORE_URL } from '@/mixins/constants'
+import { installPromptService } from '@/mixins/installPrompt'
 
 export default {
 
@@ -268,6 +294,20 @@ export default {
     },
     isGuestEnabled () {
       return isGuestEnabled()
+    },
+    playStoreUrl () {
+      return PLAY_STORE_URL
+    },
+    // $vuetify.breakpoint, not $isMobile() or $isLargeScreen(): the question is how wide the
+    // window is, not what shape of device it is, and only the breakpoint object is reactive — a
+    // desktop window dragged narrow should re-decide.
+    showPlayStoreInstall () {
+      return !installPromptService.isRunningAsInstalledApp() && this.$vuetify.breakpoint.smAndDown
+    },
+    showBrowserInstall () {
+      return !installPromptService.isRunningAsInstalledApp() &&
+        this.$vuetify.breakpoint.mdAndUp &&
+        installPromptService.canPromptInstall()
     }
   },
   methods: {
@@ -275,6 +315,14 @@ export default {
       this.theme = !this.theme
       this.$vuetify.theme.dark = this.theme
       ldb.theme.save(this.theme)
+    },
+    async installClicked () {
+      const outcome = await installPromptService.promptInstall()
+      // Nothing is said on 'dismissed': someone who just cancelled a dialog does not need a toast
+      // telling them so.
+      if (outcome === 'accepted') {
+        await this.$store.dispatch('notification/notifySuccess', 'Badhan is being installed')
+      }
     },
     async myProfileclicked () {
       await this.$router.push({

@@ -3,6 +3,38 @@ export class NavigationDrawer {
     cy.get('[data-cy="hamburgerButtonId"]').click();
   }
 
+  ensureOpen(): void {
+    // The hamburger is a toggle, and the drawer starts open on a wide viewport and closed on a
+    // narrow one — so a bare open() closes it on a desktop-sized test. Vuetify marks the state on
+    // the drawer itself.
+    cy.get('.v-navigation-drawer').then(($drawer) => {
+      if ($drawer.hasClass('v-navigation-drawer--close')) {
+        this.open();
+      }
+    });
+  }
+
+  installEntry(): Cypress.Chainable<JQuery<HTMLElement>> {
+    // One id for both destinations — the Play Store link and the browser's install prompt — so a
+    // test does not have to know which machine it is running on.
+    return cy.get('[data-cy="installAppNavigationId"]');
+  }
+
+  assertNoInstallEntry(): void {
+    cy.get('[data-cy="installAppNavigationId"]').should('not.exist');
+  }
+
+  goToInstall(): void {
+    this.ensureOpen();
+    this.installEntry().click();
+  }
+
+  themeToggle(): Cypress.Chainable<JQuery<HTMLElement>> {
+    // The one thing always at the foot of the drawer. Used as proof the drawer really rendered
+    // before asserting that the install entry beside it is absent.
+    return cy.contains('.v-navigation-drawer button', 'Mode');
+  }
+
   goToSingleDonorCreation(): void {
     // Open main drawer
     this.open();

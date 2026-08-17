@@ -76,6 +76,10 @@ export const ARCHIVE_BATCH_LIMIT = 200
 // these beats counting keys, which would have to move every time a filter is added.
 export const SHARE_LINK_MARKER_KEYS = ['hall', 'radios', 'bloodGroup', 'availability', 'notAvailability']
 
+// The one Badhan in the Play Store. There is no test listing — test copies are websites only
+// (docs/manual/02-getting-the-app.md), so this URL is environment-independent on purpose.
+export const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.mmmbadhan'
+
 export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,

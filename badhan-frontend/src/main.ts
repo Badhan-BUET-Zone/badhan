@@ -9,6 +9,11 @@ import router from './router'
 
 import './registerServiceWorker'
 
+// Imported for its side effect, and imported here rather than from the component that uses it:
+// the browser fires the install prompt event once, early, and it has to be caught before Vue
+// mounts. See src/mixins/installPrompt.ts.
+import './mixins/installPrompt'
+
 import './mixins/environment'
 
 // bootstrap, a well known UI component library along with it's vue.js compatible bootstrap-vue library
