@@ -177,6 +177,9 @@ Deployment is a manual, run-by-hand step. From the repo root:
 ./deploy.js
 ```
 
+**Budget about 15 minutes.** It is not a command you fire off and watch finish — start it
+knowing you will not be deploying again for a quarter of an hour.
+
 ## Branches and environments
 
 There are three environments — `production`, `development` and `local` — and two of them
@@ -234,6 +237,24 @@ deploys if **both** pass — the test gate cannot be skipped. On success it depl
 backend to Google Cloud (`upload-gcloud.js`) and the frontend to Firebase
 (`upload-firebase.js`). `deploy` is a Node script that requires those two in-process;
 it uses only the standard library, so there is nothing to install for it.
+
+Where the ~15 minutes goes, measured across four consecutive deploys (two to
+`development`, two to `production`, all within 14m 49s – 15m 48s):
+
+| Step | Roughly |
+| --- | --- |
+| Frontend Cypress suite | 9m 30s |
+| Backend Jest suite | 1m 10s |
+| Frontend production build | 30s |
+| Backend to App Engine, frontend to Firebase | the remainder |
+
+So two thirds of a deploy is the test gate, and almost all of that is Cypress. The gate is
+the point and it is not skippable, but it does mean the cost of a deploy is fixed no matter
+how small the change: a one-word fix to the manual pays the same 15 minutes as a new page.
+Batch what you can into one deploy rather than deploying twice.
+
+A failing gate does not cost the full time — it stops at the first suite that fails, and
+nothing is uploaded. Backend runs first, so a backend failure is known inside two minutes.
 
 ## First-time deploy setup
 
