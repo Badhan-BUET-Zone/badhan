@@ -6,7 +6,7 @@ import { StatisticsPage } from '@pages/StatisticsPage';
 // removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 
-describe('Statistics - Donation Report tab', () => {
+describe('Donation Report', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
@@ -17,11 +17,8 @@ describe('Statistics - Donation Report tab', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
 
-    // Navigate to Statistics
-    drawer.goToStatistics();
-
-    // Click Donation Report tab
-    stats.openDonationReportTab();
+    // Its own page under Super Admin now, not a tab of Statistics
+    drawer.goToDonationReport();
 
     // Assert both section titles exist (after data rendered)
     stats.assertWholeBloodSectionExists();

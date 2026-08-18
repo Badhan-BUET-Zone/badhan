@@ -1,4 +1,7 @@
 <template>
+  <div>
+    <!-- Its own title bar now: this was a tab of a Statistics page, which drew one for it. -->
+    <PageTitle></PageTitle>
     <Container>
         <ActivitySummary />
         <v-divider class="my-4"></v-divider>
@@ -116,10 +119,12 @@
             <v-card-text v-else :key="'nothingToShowId'">Nothing to show</v-card-text>
         </transition>
     </Container>
+  </div>
 </template>
   
 <script>
 import Container from '@/components/Container/Container'
+import PageTitle from '@/components/PageTitle'
 import { handleGETDonationsReport, handleGETPlateletDonationsReport } from '@/api'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import Button from '@/components/UI Components/Button.vue'
@@ -142,6 +147,7 @@ export default {
     name: 'DonationsReport',
     components: {
       Container,
+      PageTitle,
       LoadingMessage,
       Button,
       DatePicker,

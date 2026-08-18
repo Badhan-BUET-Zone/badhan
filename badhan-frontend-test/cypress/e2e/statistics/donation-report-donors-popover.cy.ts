@@ -6,7 +6,7 @@ import { StatisticsPage } from '@pages/StatisticsPage';
 import { ProfilePage } from '@pages/ProfilePage';
 import { MESSAGES } from '@support/constants';
 
-describe('Statistics - Donation Report cell drill-down', () => {
+describe('Donation Report cell drill-down', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
@@ -35,8 +35,7 @@ describe('Statistics - Donation Report cell drill-down', () => {
     notification.assertEquals(MESSAGES.donationInserted);
 
     // The report generates itself on mount, so the new donation is already counted
-    drawer.goToStatistics();
-    stats.openDonationReportTab();
+    drawer.goToDonationReport();
     stats.assertWholeBloodSectionExists();
 
     // Clicking a non-zero cell drills down into the donations it counted

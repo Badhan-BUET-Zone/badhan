@@ -115,11 +115,28 @@ export class NavigationDrawer {
     cy.get('[data-cy="publicContactsNavigationId"]').click();
   }
 
-  goToStatistics(): void {
-    // Open main drawer, expand Super Admin group, and click Statistics
+  // The four pages that used to be tabs of a Statistics page. Each is its own entry under the
+  // Super Admin group now, so reaching one is a menu click rather than a menu click and a tab.
+  private goToSuperAdminPage(dataCy: string): void {
     this.open();
     cy.get('[data-cy="superAdminId"]').click();
-    cy.get('[data-cy="statisticsNavigationId"]').click();
+    cy.get(`[data-cy="${dataCy}"]`).click();
+  }
+
+  goToDonationReport(): void {
+    this.goToSuperAdminPage('donationReportNavigationId');
+  }
+
+  goToAllDonors(): void {
+    this.goToSuperAdminPage('allDonorsNavigationId');
+  }
+
+  goToArchivedDonors(): void {
+    this.goToSuperAdminPage('archivedDonorsNavigationId');
+  }
+
+  goToAppActivity(): void {
+    this.goToSuperAdminPage('appActivityNavigationId');
   }
 
   goToCertificateEnabledDonors(): void {

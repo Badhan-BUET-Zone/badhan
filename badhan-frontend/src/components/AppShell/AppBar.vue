@@ -239,10 +239,34 @@ export default {
           designation: 3,
           subLinks: [
             {
+              // The four entries that used to be tabs of a Statistics page. They were only ever
+              // reachable by a super admin, from this menu, and shared nothing but a title bar —
+              // so the tab strip was this menu drawn a second time.
               icon: 'mdi-chart-bar',
-              text: 'Statistics',
-              to: '/statistics/report',
-              id: 'statisticsNavigationId',
+              text: 'Donation Report',
+              to: '/donationReport',
+              id: 'donationReportNavigationId',
+              designation: 3
+            },
+            {
+              icon: 'mdi-account-multiple',
+              text: 'All Donors',
+              to: '/allDonors',
+              id: 'allDonorsNavigationId',
+              designation: 3
+            },
+            {
+              icon: 'mdi-archive',
+              text: 'Archived Donors',
+              to: '/archivedDonors',
+              id: 'archivedDonorsNavigationId',
+              designation: 3
+            },
+            {
+              icon: 'mdi-chart-timeline-variant',
+              text: 'App Activity',
+              to: '/appActivity',
+              id: 'appActivityNavigationId',
               designation: 3
             },
             {

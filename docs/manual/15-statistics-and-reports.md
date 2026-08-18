@@ -8,16 +8,17 @@
 ---
 
 *Everything in this chapter is for super admins only. If you are a volunteer or hall admin,
-the Statistics entry does not appear in your menu.*
+none of these entries appear in your menu.*
 
-**Statistics** has four tabs: **Donation Report**, **Logs by Date**, **All Donors** and
-**Archived Donors**.
+Four entries under **Super Admin** in the menu: **Donation Report**, **All Donors**,
+**Archived Donors** and **App Activity**. They used to be four tabs of a single Statistics
+page; they are four ordinary pages now, each reached straight from the menu.
 
 ---
 
 ## Donation Report
 
-The tab you land on. It has three parts.
+Three parts.
 
 ### Activity Summary
 
@@ -59,7 +60,7 @@ shows 14 B+ donations, tap the 14 and read the fourteen names.
 
 ---
 
-## Logs by Date
+## App Activity
 
 Every action anybody has taken in the app, grouped by day.
 
@@ -82,7 +83,7 @@ someone, or to work out what happened to a record that changed unexpectedly.
 
 ## All Donors and Archived Donors
 
-Two tabs, the same table, opposite halves of the record book.
+Two menu entries, the same table, opposite halves of the record book.
 
 **All Donors** lists every donor who is not archived. **Archived Donors** lists the archived
 ones. Columns: name, hall, student ID, level, and an activity count. Tap a row to open that
@@ -99,7 +100,7 @@ Archiving is how the app forgets someone without losing them. An archived donor:
 - is **left out of every ordinary search**
 - keeps their entire record and donation history
 - can still be reached from Bookmarked Donors, from a direct link, and from the Archived
-  Donors tab
+  Donors page
 - is clearly marked with an orange **Archived** tag wherever they do appear
 
 Use it for donors who have graduated, moved away, or asked not to be contacted. It is almost

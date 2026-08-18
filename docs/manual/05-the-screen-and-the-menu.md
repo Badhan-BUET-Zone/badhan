@@ -42,8 +42,11 @@ may be shorter than a colleague's.
 | **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |
 | **Credits** | The people who built the app. Works without a connection | Volunteer and above |
 | **About** | What Badhan is, plus which version you are on | Volunteer and above |
-| **Super Admin** | Opens into five entries below | Super Admin only |
-| → Statistics | Donation reports, charts, activity logs. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| **Super Admin** | Opens into eight entries below | Super Admin only |
+| → Donation Report | Running totals, charts, and a report between two dates. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| → All Donors | Every donor who is not archived. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| → Archived Donors | Every donor who has been archived. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| → App Activity | Who did what in the app, day by day. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
 | → Backup & Restore | Copies of the whole record book. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Schema Inconsistencies | Records with something wrong in them. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Certificate Enabled Donors | Every donor whose certificate has been switched on, across all halls. [Chapter 16](16-super-admin-tools.md#certificate-enabled-donors) | Super Admin only |

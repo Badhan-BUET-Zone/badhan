@@ -6,7 +6,7 @@ import { StatisticsPage } from '@pages/StatisticsPage';
 // removed network intercepts; rely on UI rendering instead
 import { MESSAGES } from '@support/constants';
 
-describe('Statistics - All Donors tab', () => {
+describe('All Donors', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
@@ -17,11 +17,8 @@ describe('Statistics - All Donors tab', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
 
-    // Navigate to Statistics
-    drawer.goToStatistics();
-
-    // Switch to All Donors tab
-    stats.openAllDonorsTab();
+    // Its own page under Super Admin now, not a tab of Statistics
+    drawer.goToAllDonors();
 
     // Wait for table to render and assert at least one row
     stats.assertAllDonorsTableVisible();

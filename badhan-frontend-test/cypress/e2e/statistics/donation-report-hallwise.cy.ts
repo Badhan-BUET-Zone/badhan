@@ -6,7 +6,7 @@ import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { StatisticsPage } from '@pages/StatisticsPage';
 import { MESSAGES, HALL } from '@support/constants';
 
-describe('Statistics - Donation Report hall dropdown & charts', () => {
+describe('Donation Report hall dropdown & charts', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
@@ -15,8 +15,7 @@ describe('Statistics - Donation Report hall dropdown & charts', () => {
   it('shows the hall dropdown, per-hall and per-blood-group charts, and switches hall from cache', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
-    drawer.goToStatistics();
-    stats.openDonationReportTab();
+    drawer.goToDonationReport();
 
     // Both bar charts render alongside the existing tables
     stats.assertTotalDonationsByHallChartExists();

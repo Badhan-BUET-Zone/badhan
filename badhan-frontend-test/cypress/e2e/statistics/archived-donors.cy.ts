@@ -12,7 +12,7 @@ import {
   uniqueDonor,
 } from '@support/helpers/members';
 
-describe('Statistics - Archived Donors tab', () => {
+describe('Archived Donors', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
@@ -40,31 +40,30 @@ describe('Statistics - Archived Donors tab', () => {
     createVolunteerViaApi(volunteer);
   });
 
-  it('flips between the two partitions on a tab click, without a page reload', () => {
+  it('flips between the two partitions on a menu click, without a page reload', () => {
     signInAsSuperAdmin();
-    drawer.goToStatistics();
 
     cy.intercept('GET', '**/donors/all*').as('allDonors');
-    stats.openAllDonorsTab();
+    drawer.goToAllDonors();
     cy.wait('@allDonors').its('request.query.archiveFlag').should('eq', 'false');
     cy.get('[data-cy="statisticsAllDonorsTableId"]')
       .should('contain.text', liveDonor.name)
       .and('not.contain.text', archivedDonor.name);
 
-    // Both tabs render the same component, so this is the case that catches a missing
+    // Both pages render the same component, so this is the case that catches a missing
     // re-fetch: without it the table would still be showing the rows above
-    stats.openArchivedDonorsTab();
+    drawer.goToArchivedDonors();
     cy.wait('@allDonors').its('request.query.archiveFlag').should('eq', 'true');
     cy.get('[data-cy="statisticsAllDonorsTableId"]')
       .should('contain.text', archivedDonor.name)
       .and('not.contain.text', liveDonor.name);
   });
 
-  it('renders the archived list when the tab is deep-linked', () => {
+  it('renders the archived list when the page is deep-linked', () => {
     signInAsSuperAdmin();
 
     cy.intercept('GET', '**/donors/all*').as('allDonors');
-    cy.visit('/#/statistics/archivedDonorsAll');
+    cy.visit('/#/archivedDonors');
     cy.reload();
     cy.wait('@allDonors').its('request.query.archiveFlag').should('eq', 'true');
     cy.contains('List of archived donors').should('be.visible');
@@ -77,12 +76,12 @@ describe('Statistics - Archived Donors tab', () => {
     signInPage.signIn(volunteer.phone, MEMBER_PASSWORD);
     notification.assertEquals(MESSAGES.signInSuccess);
 
-    // bounced by the designation: 3 route guard before the page loads, so neither tab
+    // bounced by the designation: 3 route guard before the page loads, so neither table
     // is ever rendered
-    cy.visit('/#/statistics/archivedDonorsAll');
+    cy.visit('/#/archivedDonors');
     cy.reload();
-    cy.get('[data-cy="statisticsArchivedDonorsTabId"]').should('not.exist');
-    cy.get('[data-cy="statisticsAllDonorsTabId"]').should('not.exist');
-    cy.url().should('not.contain', 'archivedDonorsAll');
+    cy.get('[data-cy="statisticsAllDonorsTableId"]').should('not.exist');
+    cy.get('[data-cy="archivedDonorsNavigationId"]').should('not.exist');
+    cy.url().should('not.contain', 'archivedDonors');
   });
 });
