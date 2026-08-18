@@ -59,6 +59,10 @@ nobody checks it, donors write messages that nobody reads, and they stop writing
 
 The list is **oldest first**, so the message that has waited longest is at the top.
 
+**There is no reload button.** The queue is fetched when you open the page, and again the moment
+you send a message of your own from here. Anything that arrived while you were sitting on the page
+shows up the next time you open it — or when you refresh the browser.
+
 ### What a row looks like
 
 Every row in the queue — a message or a new donor submission — starts **closed**, and shows only

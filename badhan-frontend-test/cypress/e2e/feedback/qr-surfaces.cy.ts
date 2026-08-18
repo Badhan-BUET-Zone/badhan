@@ -35,8 +35,9 @@ describe('The printed feedback sheet', () => {
     cy.get('[data-cy="feedbackQrArtwork"]').should('not.exist');
     cy.get('[data-cy="feedbackQrCode"]').should('not.exist');
 
-    // ...and the queue is still the first thing on the page.
-    cy.get('[data-cy="feedbackReloadButton"]').should('be.visible');
+    // ...and the queue is still the first thing on the page: whatever the environment holds, the
+    // page shows the queue itself — rows, or the line saying there are none.
+    cy.get('[data-cy="feedbackEmptyState"], [data-cy^="feedbackCard-"]').should('be.visible');
   });
 
   it('renders an A4 portrait sheet whose QR decodes to the public donor page', () => {

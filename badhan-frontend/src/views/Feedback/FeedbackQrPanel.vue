@@ -14,18 +14,23 @@
             is safe to share anywhere.
           </v-card-text>
 
-          <div v-if="loadingFlag" data-cy="feedbackQrLoading">
-            <LoadingMessage/>
-          </div>
+          <!-- The code is generated on the spot, so the panel opens on a loader and the poster
+               replaces it. mode="out-in" keeps the two from overlapping while the panel is still
+               growing to its expanded height. -->
+          <transition name="slide-fade-down-snapout" mode="out-in">
+            <div v-if="loadingFlag" :key="'qrLoading'" data-cy="feedbackQrLoading">
+              <LoadingMessage/>
+            </div>
 
-          <div v-else-if="qrMatrix" style="max-width: 420px" class="mx-auto">
-            <FeedbackQrArtwork
-              ref="artwork"
-              :caption="caption"
-              :qr-matrix="qrMatrix"
-              :qr-url="donorUrl"
-            />
-          </div>
+            <div v-else-if="qrMatrix" :key="'qrArtwork'" style="max-width: 420px" class="mx-auto">
+              <FeedbackQrArtwork
+                ref="artwork"
+                :caption="caption"
+                :qr-matrix="qrMatrix"
+                :qr-url="donorUrl"
+              />
+            </div>
+          </transition>
 
           <!--
             Chrome, not content: everything below sits OUTSIDE the artwork SVG, so none of it can

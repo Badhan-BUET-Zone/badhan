@@ -42,6 +42,9 @@ describe('Active Donors: the archived chip', () => {
     notification.assertEquals(MESSAGES.signInSuccess);
 
     drawer.goToActiveDonors();
+    // This volunteer bookmarked nothing — the row was marked by the admin above — and the page
+    // opens on your own bookmarks, so everybody's is what this spec has to ask for.
+    activeDonors.showBookmarksFromEveryone();
     activeDonors.assertAnyCardExists();
     cy.get('[data-cy="person-card"].v-card').should('have.length', 1).and('contain.text', archived.name);
     cy.get('[data-cy^="personCardArchivedChipId_"]').should('be.visible').and('contain.text', 'Archived');

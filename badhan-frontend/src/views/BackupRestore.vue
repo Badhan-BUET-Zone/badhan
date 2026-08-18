@@ -6,13 +6,20 @@
         Backup and Restore
       </v-card-title>
       <v-card-text>
-        <div v-if="backupTimestampsLoaderFlag">
-          <v-skeleton-loader type="card" class="mb-3"/>
-          <v-skeleton-loader type="card"/>
+        <!--
+          Four states of one thing — loading, no credentials, unreachable, loaded — so they are
+          branches of a single transition rather than four independent v-ifs. mode="out-in" keeps
+          the outgoing one from still leaving while the next is already arriving, which is what
+          makes a card jump the moment the first is finally removed from the flow.
+        -->
+        <transition name="slide-fade-down-snapout" mode="out-in">
+        <div v-if="backupTimestampsLoaderFlag" :key="'backupsLoading'">
+          <v-skeleton-loader type="card" class="mb-3 rounded-xl"/>
+          <v-skeleton-loader type="card" class="rounded-xl"/>
         </div>
 
-        <div v-else-if="firebaseCredentialsMissing">
-          <v-alert type="warning" outlined>
+        <div v-else-if="firebaseCredentialsMissing" :key="'backupsFirebase'">
+          <v-alert type="warning" outlined class="rounded-xl">
             <p class="font-weight-medium mb-2">Firebase credentials not found</p>
             <p class="mb-2">
               The backup server needs a Firebase service account file to reach cloud storage.
@@ -24,7 +31,7 @@
           </v-alert>
         </div>
 
-        <div v-else-if="backupTimestampsErrorFlag">
+        <div v-else-if="backupTimestampsErrorFlag" :key="'backupsError'">
           <p>
             Error loading backups. Ensure the backup server is running on localhost:4000 and reload this page.
             See
@@ -32,7 +39,7 @@
           </p>
         </div>
 
-        <div v-else>
+        <div v-else :key="'backupsLoaded'">
           <div class="mb-4 d-flex align-center flex-wrap">
             <Button
               :disabled="createNewBackupLoaderFlag"
@@ -62,46 +69,54 @@
               icon="mdi-content-copy"
               text="Copy to Local DB"
             />
-            <v-progress-circular
-              v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || purgeLocalLoaderFlag || copyToLocalLoaderFlag"
-              indeterminate
-              color="primary"
-              size="20"
-              class="ml-3"
-            />
+            <!-- Fades rather than blinking: it sits in a row of buttons, and a spinner that
+                 appears and vanishes between them reads as the row twitching. -->
+            <transition name="fade">
+              <v-progress-circular
+                v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || purgeLocalLoaderFlag || copyToLocalLoaderFlag"
+                indeterminate
+                color="primary"
+                size="20"
+                class="ml-3"
+              />
+            </transition>
           </div>
 
-          <div v-if="backupTimestamps.length === 0">
+          <transition name="slide-fade-down" mode="out-in">
+          <div v-if="backupTimestamps.length === 0" :key="'backupsEmpty'">
             <p>No Backup found</p>
           </div>
 
-          <template v-else>
+          <div v-else :key="'backupsList'">
             <v-subheader class="pl-0">Latest Backup</v-subheader>
-            <v-card outlined class="mb-4">
+            <!-- Keyed on the timestamp, so creating a backup or deleting the newest one swaps this
+                 card instead of silently rewriting the one already on screen. -->
+            <transition name="slide-fade-down" mode="out-in">
+            <v-card outlined class="mb-4 rounded-xl" :key="backupTimestamps[0]">
               <v-card-title class="subtitle-1">{{ formatDateTime(backupTimestamps[0]) }}</v-card-title>
               <v-card-subtitle>Timestamp: {{ backupTimestamps[0] }}</v-card-subtitle>
-                <v-btn class="ma-2" small color="error"
+                <v-btn rounded class="ma-2" small color="error"
                        :loading="deleteLoaderFlagsArray[0]"
                        :disabled="anyRowBusy(0)"
                        @click="handleBackupDelete(backupTimestamps[0], 0)">
                   <v-icon left>mdi-delete</v-icon>
                   Delete
                 </v-btn>
-                <v-btn class="ma-2" small color="success"
+                <v-btn rounded class="ma-2" small color="success"
                         :loading="restoreToLocalFlagsArray[0]"
                         :disabled="anyRowBusy(0)"
                         @click="handleRestoreToLocal(backupTimestamps[0], 0)">
                   <v-icon left>mdi-laptop</v-icon>
                   Restore to Local
                 </v-btn>
-                <v-btn class="ma-2" small color="info"
+                <v-btn rounded class="ma-2" small color="info"
                        :loading="restoreToDevelopmentFlagsArray[0]"
                        :disabled="anyRowBusy(0)"
                        @click="handleRestoreToDevelopment(backupTimestamps[0], 0)">
                   <v-icon left>mdi-database-import</v-icon>
                   Restore to Development
                 </v-btn>
-                <v-btn class="ma-2" small color="primary"
+                <v-btn rounded class="ma-2" small color="primary"
                        :loading="restoreToProductionFlagsArray[0]"
                        :disabled="anyRowBusy(0)"
                        @click="handleRestoreToProduction(backupTimestamps[0], 0)">
@@ -110,36 +125,40 @@
                 </v-btn>
 
             </v-card>
+            </transition>
 
             <v-subheader class="pl-0">All Backups</v-subheader>
-            <v-row>
+            <!-- The v-row is the transition-group itself (`row` is all v-row renders), so a
+                 deleted or trimmed card leaves on its own and the rest glide into the gap it
+                 left rather than jumping across the grid. -->
+            <transition-group name="backup-grid" tag="div" class="row">
               <v-col cols="12" md="4" v-for="(timestamp, index) in backupTimestamps" :key="timestamp">
-                <v-card outlined class="mb-3">
+                <v-card outlined class="mb-3 rounded-xl">
                   <v-card-title class="subtitle-2">{{ formatDateTime(timestamp) }}</v-card-title>
                   <v-card-subtitle>Timestamp: {{ timestamp }}</v-card-subtitle>
 
-                    <v-btn class="ma-2" x-small color="error"
+                    <v-btn rounded class="ma-2" x-small color="error"
                             :loading="deleteLoaderFlagsArray[index]"
                             :disabled="anyRowBusy(index)"
                             @click="handleBackupDelete(timestamp, index)">
                         <v-icon left small>mdi-delete</v-icon>
                         Delete
                     </v-btn>
-                    <v-btn class="ma-2" x-small color="success"
+                    <v-btn rounded class="ma-2" x-small color="success"
                         :loading="restoreToLocalFlagsArray[index]"
                         :disabled="anyRowBusy(index)"
                         @click="handleRestoreToLocal(timestamp, index)">
                       <v-icon left small>mdi-laptop</v-icon>
                       Restore to Local
                     </v-btn>
-                    <v-btn class="ma-2" x-small color="info"
+                    <v-btn rounded class="ma-2" x-small color="info"
                             :loading="restoreToDevelopmentFlagsArray[index]"
                             :disabled="anyRowBusy(index)"
                             @click="handleRestoreToDevelopment(timestamp, index)">
                         <v-icon left small>mdi-database-import</v-icon>
                         Restore to Development
                     </v-btn>
-                    <v-btn class="ma-2" x-small color="primary"
+                    <v-btn rounded class="ma-2" x-small color="primary"
                             :loading="restoreToProductionFlagsArray[index]"
                             :disabled="anyRowBusy(index)"
                             @click="handleRestoreToProduction(timestamp, index)">
@@ -149,9 +168,11 @@
 
                 </v-card>
               </v-col>
-            </v-row>
-          </template>
+            </transition-group>
+          </div>
+          </transition>
         </div>
+        </transition>
       </v-card-text>
     </Container>
   </div>
@@ -420,5 +441,22 @@ export default {
 </script>
 
 <style scoped>
+/* The app-wide slide-fade-down with one addition: a -move rule, so the cards still on screen
+   travel to their new grid positions after one is removed instead of appearing there. */
+.backup-grid-enter-active {
+  transition: all .3s ease;
+}
 
+.backup-grid-leave-active {
+  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.backup-grid-enter, .backup-grid-leave-to {
+  transform: translateY(-40px);
+  opacity: 0;
+}
+
+.backup-grid-move {
+  transition: transform .3s ease;
+}
 </style>

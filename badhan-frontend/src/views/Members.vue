@@ -131,14 +131,16 @@ export default {
   },
   data: function () {
     return {
-      memberLoaderFlag: false,
+      // True from the first frame, not set in mounted(): the page has nothing to show until the
+      // request lands, and starting false rendered the three empty tables for one tick and then
+      // animated them out again to make room for the loader.
+      memberLoaderFlag: true,
       hallAdmins: [],
       superAdmins: [],
       volunteers: []
     }
   },
   async mounted () {
-    this.memberLoaderFlag = true;
     const response = await handleGETDonorsDesignation();
     if (response.status !== HTTP_STATUS.OK) return
     this.hallAdmins = response.data.adminList

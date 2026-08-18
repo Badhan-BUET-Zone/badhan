@@ -31,23 +31,55 @@
         </v-sheet>
       </v-bottom-sheet>
       <Button :icon="'mdi-refresh'" :text="'Reload'" :click="getAllActiveDonors" :color="'primary'"></Button>
-      <v-checkbox @change="checkBoxChanged" v-model="markedByMe" label="Show donors marked by me"></v-checkbox>
+      <v-checkbox
+        data-cy="activeDonorsMarkedByMeCheckbox"
+        @change="checkBoxChanged"
+        v-model="markedByMe"
+        label="Show donors marked by me"
+      ></v-checkbox>
       </v-card-text>
     </ContainerFlat>
 
-    <div ref="noPostFoundHolder" id="noPostFoundHolder">
+    <!--
+      The loader, "nothing found" and the list are three branches of ONE transition, not two
+      transitions side by side. As two, the loader was still sliding out while the cards were
+      already sliding in, and the whole list snapped upwards the moment the loader was finally
+      removed from the flow. mode="out-in" makes the second only start once the first is gone.
 
-    </div>
+      "No Donors Found" used to be a NoticeCard built with Vue.extend and appended into a holder
+      div by hand, which put it outside anything a <transition> can see; as a plain v-else-if it
+      both animates and stops needing two methods to add and remove it.
+    -->
+    <transition name="slide-fade-down-snapout" mode="out-in">
+      <div
+        v-if="activeDonorsLoader"
+        :key="'activeDonorsLoading'"
+        style="max-width: 700px"
+        class="mx-auto"
+      >
+        <LoadingMessage/>
+      </div>
 
-    <div style="max-width: 700px" class="mx-auto" v-if="activeDonorsLoader">
-      <LoadingMessage/>
-    </div>
+      <NoticeCard v-else-if="noDonorsFound" :key="'activeDonorsEmpty'"/>
 
-    <div style="max-width: 700px" class="mx-auto" v-else>
-  <PersonCardNew v-for="donor in activeDonors" :key="donor._id" :person="donor" :detailsBasePath="'/activeDonors'">
-
-      </PersonCardNew>
-    </div>
+      <!-- A transition-group inside the branch, so the list arrives as one block but a card that
+           leaves on its own still goes one at a time. -->
+      <transition-group
+        v-else
+        :key="'activeDonorsList'"
+        name="slide-fade-down"
+        tag="div"
+        style="max-width: 700px"
+        class="mx-auto"
+      >
+        <PersonCardNew
+          v-for="donor in activeDonors"
+          :key="donor._id"
+          :person="donor"
+          :detailsBasePath="'/activeDonors'"
+        ></PersonCardNew>
+      </transition-group>
+    </transition>
     <transition name="slide-fade" mode="out-in">
       <router-view></router-view>
     </transition>
@@ -62,12 +94,11 @@ import Filters from '@/components/Filters'
 import { BLOOD_GROUP_ANY, HALLS_INDEX, HTTP_STATUS, bloodGroups, halls } from '@/mixins/constants'
 import Button from '@/components/UI Components/Button'
 import NoticeCard from '@/components/UI Components/NoticeCard'
-import Vue from 'vue'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { handleGETActiveDonors } from '@/api'
 export default {
   name: 'ActiveDonors',
-  components: { LoadingMessage, Filters, PersonCardNew, PageTitle, ContainerFlat, Button },
+  components: { LoadingMessage, Filters, PersonCardNew, PageTitle, ContainerFlat, Button, NoticeCard },
   methods: {
     async checkBoxChanged (lastValueOfCheckbox) {
       await this.search({
@@ -91,19 +122,11 @@ export default {
       return nameWithoutWs
     },
 
-    createNoDonorComponent () {
-      const NoticeCardClass = Vue.extend(NoticeCard)
-      const instance = new NoticeCardClass()
-      instance.$mount() // pass nothing
-      this.$refs.noPostFoundHolder.appendChild(instance.$el)
-    },
-    clearNoDonorComponent () {
-      if (this.$refs.noPostFoundHolder.children.length !== 0) {
-        this.$refs.noPostFoundHolder.removeChild(this.$refs.noPostFoundHolder.children[0])
-      }
-    },
   async getAllActiveDonors () {
-      this.markedByMe = false
+      // Your own bookmarks, not everybody's. A bookmark is shared, so the unfiltered list is every
+      // volunteer's work at once and the donors you put there yourself are buried in it; unticking
+      // the box is one click away when the whole hall's list is what you want.
+      this.markedByMe = true
       const payloadForGetActiveDonors = {
         bloodGroup: BLOOD_GROUP_ANY,
         hall: HALLS_INDEX.SUHRAWARDY,
@@ -113,7 +136,7 @@ export default {
         isAvailable: true,
         isNotAvailable: true,
         availableToAll: true,
-        markedByMe: false,
+        markedByMe: true,
   availableToAllOrHall: true
       }
       this.lastSearched = payloadForGetActiveDonors
@@ -159,13 +182,11 @@ export default {
     },
     async search (payloadForGetActiveDonors) {
       this.activeDonorsLoader = true
-      this.clearNoDonorComponent()
+      this.noDonorsFound = false
       const activeDonorsResult = await handleGETActiveDonors(payloadForGetActiveDonors)
       if (activeDonorsResult.status !== HTTP_STATUS.OK) return
       this.activeDonors = activeDonorsResult.data.activeDonors
-      if (this.activeDonors.length === 0) {
-        this.createNoDonorComponent()
-      }
+      this.noDonorsFound = this.activeDonors.length === 0
       this.activeDonorsLoader = false
     },
     resetClicked () {
@@ -178,9 +199,14 @@ export default {
   data: () => {
     return {
       activeDonors: [],
-      activeDonorsLoader: false,
+      // True from the first frame: mounted() searches immediately, and starting false left a blank
+      // gap where the loader belongs until the first response came back.
+      activeDonorsLoader: true,
+      noDonorsFound: false,
       filterListMenu: false,
-      markedByMe: false,
+      // Ticked from the first frame, so the checkbox never disagrees with the search that
+      // getAllActiveDonors() is already running underneath it.
+      markedByMe: true,
   lastSearched: null
     }
   }
