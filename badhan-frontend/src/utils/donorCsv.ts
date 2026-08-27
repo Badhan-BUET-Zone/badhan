@@ -28,7 +28,7 @@ const CSV_HALL_TO_INDEX: Record<string, number> = {
   'Ahsan Ullah': 0,
   'Sabekun Nahar Sony': 1,
   'Kazi Nazrul Islam': 2,
-  Rashid: 3,
+  'Dr. M. A. Rashid': 3,
   'Sher-E-Bangla': 4,
   Suhrawardy: 5,
   Titumir: 6

@@ -13,7 +13,7 @@ export const departments: string[] = [
   'NAME', nullDepartment, nullDepartment, 'URP',
   'WRE', 'NCE', 'BME']
 
-export const halls: string[] = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
+export const halls: string[] = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Dr. M. A. Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 export const HALLS_INDEX = {
   AHSANULLAH: 0,
   CHATRI: 1,

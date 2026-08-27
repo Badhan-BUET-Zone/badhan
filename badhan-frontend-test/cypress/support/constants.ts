@@ -41,7 +41,7 @@ export const HALL = {
   AHSANULLAH: 'Ahsan Ullah',
   CHATRI: 'Sabekun Nahar Sony',
   NAZRUL: 'Kazi Nazrul Islam',
-  RASHID: 'Rashid',
+  RASHID: 'Dr. M. A. Rashid',
   SHEREBANGLA: 'Sher-E-Bangla',
   SUHRAWARDY: 'Suhrawardy',
   TITUMIR: 'Titumir',
@@ -49,7 +49,7 @@ export const HALL = {
   UNKNOWN: '(Unknown)',
 } as const;
 
-export const HALLS = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)'] as const;
+export const HALLS = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Dr. M. A. Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)'] as const;
 
 export const RADIO_VALUES = {
   PUBLIC_DATA: 'AvailableToAll',

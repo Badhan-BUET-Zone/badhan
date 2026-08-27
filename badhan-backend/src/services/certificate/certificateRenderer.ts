@@ -65,7 +65,12 @@ const departmentName = (studentId: string): string => {
   return listed.replace(/\s*\(\d+\)$/, '')
 }
 
-const hallName = (hall: number): string => halls[hall] || halls[halls.length - 1]
+// The halls are stored under their bare names ("Sher-E-Bangla"), which is how they are spoken of
+// inside the app but not how they are written on a document: on paper a hall is "Sher-E-Bangla
+// Hall", both where the sentence says where the donor resides and where the signature block names
+// the unit ("BADHAN, ____ Unit" — a BUET-zone unit is its hall). Both blanks take this, so the
+// artwork's own sample, which writes the bare name into both, is not what gets printed.
+const hallName = (hall: number): string => `${halls[hall] || halls[halls.length - 1]} Hall`
 
 // The address the certificate's own QR points at, which is the page a verifier lands on when they
 // scan the paper. Built from the backend's configured frontend base: a server has no

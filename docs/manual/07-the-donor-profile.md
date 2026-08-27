@@ -139,7 +139,8 @@ Print it, and hand it to the donor.
 
 **The signature lines are at the bottom.** Every certificate has the three ruled signature lines —
 Directorate of Students' Welfare, your unit, and BUET Zone — ready to be signed by hand once you
-have printed it. Anyone who opens the certificate sees the same page, whether they are signed in or
+have printed it. The unit line names the donor's hall in full — *Sher-E-Bangla Hall Unit* — and so
+does the line higher up the page saying where they reside. Anyone who opens the certificate sees the same page, whether they are signed in or
 scanning the QR code off paper.
 
 **What the QR code is for.** Later, anyone holding that piece of paper — an employer, a

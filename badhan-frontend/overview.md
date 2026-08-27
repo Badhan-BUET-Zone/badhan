@@ -24,7 +24,7 @@ chronologically,
 - Kazi Nazrul Islam Hall Unit
 - Suhrawardy Hall Unit
 - Sher-E-Bangla Hall Unit
-- Rashid Hall Unit
+- Dr. M. A. Rashid Hall Unit
 - Titumir Hall Unit.
 
 

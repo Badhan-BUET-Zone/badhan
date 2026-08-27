@@ -69,7 +69,7 @@ cannot sign in.
 learning and showing. [Chapter 3](03-signing-in.md)
 
 **Hall.** The residence hall a donor belongs to: Ahsan Ullah, Sabekun Nahar Sony,
-Kazi Nazrul Islam, Rashid, Sher-E-Bangla, Suhrawardy, Titumir. Older records may also carry
+Kazi Nazrul Islam, Dr. M. A. Rashid, Sher-E-Bangla, Suhrawardy, Titumir. Older records may also carry
 **Attached** or **(Unknown)**;
 neither can be given to a new donor.
 
