@@ -30,12 +30,13 @@ Turn the switch off to remove the bookmark.
 Open **Bookmarked Donors** from the menu. You get the same donor cards as a search result,
 with the same expand, call and add-donation buttons.
 
-Two controls sit at the top:
+Three controls sit at the top:
 
 - **Filters** — opens the same filter box as the search page, so you can narrow the bookmarked
   list by blood group, batch and so on.
-- **Show donors marked by me** — tick this to see only the donors *you* bookmarked. Leave it
-  unticked to see everyone's.
+- **Show donors marked by me** — **ticked when the page opens**, so what you see first is the
+  donors *you* bookmarked. Untick it to see everyone's. Bookmarks are shared (below), so the
+  unticked list is the whole hall's work at once and your own entries can be hard to find in it.
 - **Reload** — fetches the list again.
 
 ## Bookmarks are shared, not private

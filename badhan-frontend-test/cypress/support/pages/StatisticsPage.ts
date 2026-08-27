@@ -1,26 +1,6 @@
+// The four pages this covers were tabs of a Statistics page until they became four entries
+// under Super Admin in the menu; NavigationDrawer is what opens each one now.
 export class StatisticsPage {
-  // Tabs live in a scrollable strip (v-tabs show-arrows); a tab may be scrolled
-  // off-view behind an arrow, so force the click to navigate regardless.
-  openDonationReportTab(): void {
-    cy.get('[data-cy="statisticsDonationReportTabId"]').click({ force: true });
-  }
-
-  openAllDonorsTab(): void {
-    cy.get('[data-cy="statisticsAllDonorsTabId"]').click({ force: true });
-  }
-
-  openArchivedDonorsTab(): void {
-    cy.get('[data-cy="statisticsArchivedDonorsTabId"]').click({ force: true });
-  }
-
-  ensureLogsByDateTabExists(): void {
-    cy.get('[data-cy="statisticsLogsByDateTabId"]').should('exist');
-  }
-
-  openLogsByDateTab(): void {
-    cy.get('[data-cy="statisticsLogsByDateTabId"]').click({ force: true });
-  }
-
   assertWholeBloodSectionExists(): void {
     cy.get('[data-cy="wholeBloodDonationsTitle"]').should('exist');
   }

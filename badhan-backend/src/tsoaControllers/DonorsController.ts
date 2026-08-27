@@ -6,7 +6,7 @@ import * as donationInterface from '../db/interfaces/donationInterface'
 import * as plateletDonationInterface from '../db/interfaces/plateletDonationInterface'
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
-import { IDonor, DonorModel } from '../db/models/Donor'
+import { IDonor, DonorModel, donorDefaultsStage } from '../db/models/Donor'
 import { IDonation } from '../db/models/Donation'
 import { IPlateletDonation } from '../db/models/PlateletDonation'
 import donorValidator from '../validations/donors'
@@ -321,6 +321,10 @@ export class DonorsController extends Controller {
     // Aggregate donor info and related data
     const donorAggResult: any[] = await DonorModel.aggregate([
       { $match: { _id: targetDonor._id } },
+      // First, before anything reads the document: an aggregation applies no schema default, and
+      // the profile form PATCHes back what this route returns. A field missing here comes back
+      // missing in the save body and is rejected as required — see donorDefaultsStage.
+      donorDefaultsStage(),
       {
         $lookup: {
           from: 'donations',

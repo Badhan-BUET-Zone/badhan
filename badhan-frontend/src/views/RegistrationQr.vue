@@ -5,6 +5,7 @@
       chrome, the form, the expiry line — is gone, because a QR competing with a sidebar for a
       projector's pixels is a QR the back row cannot scan.
     -->
+    <transition name="fade">
     <div
       v-if="fullScreenFlag"
       data-cy="registrationQrFullScreen"
@@ -31,13 +32,19 @@
         Tap anywhere to leave full screen
       </div>
     </div>
+    </transition>
 
     <!--
       Everything below is removed from the DOM in full screen, not merely covered. Covering it
       would leave the form focusable and readable by a screen reader behind an overlay, and would
       make "is the form gone?" a question about z-index rather than about the page.
+
+      The two fade at the same time rather than one after the other: the overlay is opaque white,
+      so a page that vanished on the first frame would be visible doing it through a half-faded
+      sheet. Crossing them makes the projector view arrive as the form leaves.
     -->
-    <template v-if="!fullScreenFlag">
+    <transition name="fade">
+    <div v-if="!fullScreenFlag">
     <PageTitle></PageTitle>
 
     <Container>
@@ -71,16 +78,22 @@
       </v-card-text>
 
       <!-- An All Halls code changes what the student is asked, so it says so at the moment of
-           choosing rather than being discovered at the desk. -->
-      <v-card-text v-if="isAllHalls" class="subtitle-2" data-cy="registrationQrAllHallsNotice">
-        Students who scan this code will be asked which hall they are in, and their submission goes
-        to that hall's volunteers.
-      </v-card-text>
+           choosing rather than being discovered at the desk. It slides out of the dropdown it
+           belongs to rather than appearing under the cursor, so the eye follows the change it just
+           made instead of hunting for what moved. -->
+      <transition name="slide-fade-down">
+        <v-card-text v-if="isAllHalls" class="subtitle-2" data-cy="registrationQrAllHallsNotice">
+          Students who scan this code will be asked which hall they are in, and their submission goes
+          to that hall's volunteers.
+        </v-card-text>
+      </transition>
 
-      <v-card-text v-if="!canGenerate" class="title error--text" data-cy="registrationQrProfileMissing">
-        Your own phone number and student ID could not be read from your profile, so a code cannot be
-        generated. Try signing out and in again.
-      </v-card-text>
+      <transition name="slide-fade-down">
+        <v-card-text v-if="!canGenerate" class="title error--text" data-cy="registrationQrProfileMissing">
+          Your own phone number and student ID could not be read from your profile, so a code cannot
+          be generated. Try signing out and in again.
+        </v-card-text>
+      </transition>
 
       <v-card-text>
         <!-- A plain v-select rather than the Selector wrapper, which takes a String value; these
@@ -114,11 +127,21 @@
         ></Button>
       </v-card-actions>
 
-      <v-card-text v-if="errorMessage" class="title error--text" data-cy="registrationQrError">
-        {{ errorMessage }}
-      </v-card-text>
+      <!-- A failure is the one thing on this page that can appear while somebody is looking
+           straight at it, so it arrives with movement rather than materialising in place. -->
+      <transition name="slide-fade-down">
+        <v-card-text v-if="errorMessage" class="title error--text" data-cy="registrationQrError">
+          {{ errorMessage }}
+        </v-card-text>
+      </transition>
     </Container>
 
+    <!--
+      The result of pressing Generate, and the only card on the page that was not there a moment
+      ago. Sliding it in is what connects it to the button: a whole card that simply exists on the
+      next frame reads as a page that reloaded rather than as an answer to what was just pressed.
+    -->
+    <transition name="slide-fade-down">
     <Container v-if="qrMatrix">
       <v-card-text class="title" data-cy="registrationQrExpiry">
         {{ expiryLine }}
@@ -181,7 +204,9 @@
         printed for a four-hour event is waste paper the next morning.
       </v-card-text>
     </Container>
-    </template>
+    </transition>
+    </div>
+    </transition>
   </div>
 </template>
 

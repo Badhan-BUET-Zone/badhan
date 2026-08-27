@@ -36,8 +36,11 @@ describe('docs screenshot — a New donor submission card', () => {
       }).then(() => {
         drawer.goToFeedback();
 
+        // Rows arrive collapsed; the submitted fields are the point of this capture.
         cy.get('[data-cy="feedbackNewDonorCard"]').should('be.visible');
+        cy.get('[data-cy="feedbackHeaderName"]').click();
         cy.get('[data-cy="feedbackCreateDonorButton"]').should('be.visible');
+        cy.get('[data-cy="feedbackNewDonorStudentId"]').should('be.visible');
         hideOverlays();
         cy.wait(1500);
         cy.get('[data-cy="feedbackNewDonorCard"]').parents('.v-card').first()

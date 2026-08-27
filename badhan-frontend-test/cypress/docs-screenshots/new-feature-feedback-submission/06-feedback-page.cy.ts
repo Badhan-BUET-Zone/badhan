@@ -28,6 +28,8 @@ describe('docs screenshot — the Feedback page', () => {
       seedMessageViaApi(donor, 'I donated blood on 12 March 2026, please add it.').then(() => {
         drawer.goToFeedback();
 
+        // Rows arrive collapsed. The message is what the screenshot is about, so open it.
+        cy.get('[data-cy="feedbackHeaderName"]').click();
         cy.get('[data-cy="feedbackMessageText"]').should('be.visible');
         hideOverlays();
     cy.wait(1500);

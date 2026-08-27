@@ -1,5 +1,7 @@
 <template>
   <div>
+    <!-- Its own title bar now: this was a tab of a Statistics page, which drew one for it. -->
+    <PageTitle></PageTitle>
     <Container>
       <v-card-title>Activity Logs of <br>Badhan BUET Zone</v-card-title>
       <transition name="slide-fade-down-snapout" type="out-in">
@@ -33,12 +35,13 @@
 import { handleGETLogs } from '@/api'
 import DateLog from './components/DateLog'
 import Container from '@/components/Container/Container'
+import PageTitle from '@/components/PageTitle'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import { DESIGNATIONS_INDEX, HTTP_STATUS } from '@/mixins/constants'
 
 export default {
   name: 'LogsByDate',
-  components: { LoadingMessage, Container, DateLog },
+  components: { LoadingMessage, Container, DateLog, PageTitle },
   computed: {
     // Show newest date groups first without mutating original logs array
     reversedLogs () {

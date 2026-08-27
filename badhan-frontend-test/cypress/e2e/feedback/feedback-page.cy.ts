@@ -26,6 +26,15 @@ const uniqueStudentId = (() => {
   };
 })();
 
+// Every row in the queue is collapsed on arrival: a name, a phone number and its buttons. Anything
+// a spec wants to read — the message, the submitted fields, the date — is behind one tap on the
+// header, so specs say so out loud rather than relying on hidden text still being in the DOM.
+//
+// The tap lands on the name rather than on the middle of the row: the buttons fill most of the
+// right-hand half at some widths, and a bare .click() on the row would centre itself on one of
+// them. What the row toggles on is asserted separately, below.
+const expandCard = () => cy.get('[data-cy="feedbackHeaderName"]').first().click();
+
 describe('The Feedback page', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
@@ -48,9 +57,14 @@ describe('The Feedback page', () => {
         drawer.open();
         cy.get('[data-cy="feedbackNavigationId"]').should('not.contain.text', '1');
         cy.get('[data-cy="feedbackNavigationId"]').find('.v-badge').should('not.exist');
-        cy.get('body').type('{esc}');
+        drawer.ensureClosed();
 
+        // The collapsed row names the donor and their number, and nothing else.
         cy.get('[data-cy="feedbackDonorCard"]').should('contain.text', 'Listed Donor');
+        cy.get('[data-cy="feedbackMessageText"]').should('not.be.visible');
+
+        expandCard();
+        cy.get('[data-cy="feedbackMessageText"]').should('be.visible');
         cy.get('[data-cy="feedbackMessageText"]').should('have.text', 'I donated on 12 March');
       });
     });
@@ -65,6 +79,7 @@ describe('The Feedback page', () => {
     cy.get<FeedbackDonor>('@donor').then((donor) => {
       seedMessageViaApi(donor, hostile).then(() => {
         drawer.goToFeedback();
+        expandCard();
 
         cy.get('[data-cy="feedbackMessageText"]').should('have.text', hostile);
         cy.get('[data-cy="feedbackMessageText"]').find('b').should('not.exist');
@@ -84,6 +99,8 @@ describe('The Feedback page', () => {
       seedMessageViaApi(donor, 'discard me').then(() => {
         drawer.goToFeedback();
 
+        // Discard sits on the collapsed header: a volunteer who has already done the work does not
+        // have to open the row to clear it.
         cy.get('[data-cy="feedbackDiscardButton"]').click();
         // The wording has to say what actually happens: discard deletes the message and touches
         // nothing on the donor.
@@ -111,6 +128,7 @@ describe('The Feedback page', () => {
         // Cancel has no data-cy of its own; it is the other button in the dialog.
         cy.contains('.v-card__actions .v-btn', 'Cancel').click();
 
+        expandCard();
         cy.get('[data-cy="feedbackMessageText"]').should('have.text', 'keep me');
         feedbacksViaApi().then((feedbacks) => {
           expect(feedbacks.find((f) => f.feedbackJSON?.text === 'keep me')).to.not.equal(undefined);
@@ -138,12 +156,19 @@ describe('The Feedback page', () => {
           }).then(() => {
             drawer.goToFeedback();
 
+            // The row still names itself in the queue — as "Unknown donor", with the number that
+            // was typed — so it is not a blank line a volunteer has to open to identify.
             cy.get('[data-cy="feedbackUnknownDonorHeader"]').should('be.visible');
-            cy.get('[data-cy="feedbackUnknownDonorHeader"]').should(
+            cy.get('[data-cy="feedbackUnknownDonorHeader"]').should('contain.text', 'Unknown donor');
+            cy.get('[data-cy="feedbackDonorCard"]').should('not.exist');
+            // There is nothing to open a profile for.
+            cy.get('[data-cy="feedbackSeeProfileButton"]').should('not.exist');
+
+            expandCard();
+            cy.get('[data-cy="feedbackUnknownDonorDetails"]').should(
               'contain.text',
               'No donor record matches this phone number and student ID',
             );
-            cy.get('[data-cy="feedbackDonorCard"]').should('not.exist');
             cy.get('[data-cy="feedbackMessageText"]').should('have.text', 'my donor will be deleted');
           });
         });
@@ -166,6 +191,7 @@ describe('The Feedback page', () => {
         drawer.goToFeedback();
 
         cy.get('[data-cy="feedbackNewDonorCard"]').should('be.visible');
+        expandCard();
         cy.get('[data-cy="feedbackNewDonorName"]').should('have.text', 'Prefill Student');
         cy.get('[data-cy="feedbackCreateDonorButton"]').click();
 
@@ -230,6 +256,7 @@ describe('The Feedback page', () => {
         phone: Number(`88${uniqueLocalPhone()}`),
       }).then(() => {
         drawer.goToFeedback();
+        expandCard();
 
         // 1. The card shows what the student typed, not the stored entities.
         cy.get('[data-cy="feedbackNewDonorName"]').should('have.text', "O'Brien");
@@ -278,12 +305,11 @@ describe('The Feedback page', () => {
       seedMessageViaApi(donor, 'open my profile').then(() => {
         drawer.goToFeedback();
 
-        // PersonCardNew is used verbatim rather than imitated, so See profile keeps working here
-        // exactly as it does in search — and it opens over the list, so the volunteer does not lose
-        // their place in the queue.
-        // The card's actions live behind its expansion, exactly as they do in search.
-        cy.get('[data-cy="person-card"]').first().click();
-        cy.get(`[data-cy="personCardSeeProfileButtonId_${donor.id}"]`).click();
+        // See profile is on the collapsed header, not behind the expansion: step 2 of the three
+        // steps is "do the work on the donor's own profile", so it is the one thing a volunteer
+        // reaches for without opening the row. It opens over the list, so they do not lose their
+        // place in the queue.
+        cy.get('[data-cy="feedbackSeeProfileButton"]').click();
         cy.url().should('include', '/feedback/details');
         cy.url().should('include', donor.id);
       });
@@ -352,6 +378,7 @@ describe('The Feedback page', () => {
     // The field is cleared and the queue below refreshes itself, so the row is on screen without a
     // manual reload.
     cy.get('[data-cy="ownFeedbackInput"]').should('have.value', '');
+    expandCard();
     cy.contains('[data-cy="feedbackMessageText"]', 'A message I filed about myself').should('exist');
   });
 
@@ -369,11 +396,68 @@ describe('The Feedback page', () => {
     cy.get<FeedbackDonor>('@donor').then((donor) => {
       seedMessageViaApi(donor, 'a labelled message').then(() => {
         drawer.goToFeedback();
+        expandCard();
         // Both are named rather than sitting bare under the donor card.
         cy.contains('.v-card__subtitle', 'Feedback content').should('be.visible');
         cy.contains('.v-card__subtitle', 'Date').should('be.visible');
         cy.get('[data-cy="feedbackMessageText"]').should('have.text', 'a labelled message');
         cy.get('[data-cy="feedbackDate"]').should('not.have.text', '');
+      });
+    });
+  });
+
+  it('shows a registration as a name, a number and two buttons until it is opened', () => {
+    createDonorViaApi({ name: 'Minting Donor Four', studentId: uniqueStudentId() }, 'minter');
+    const localPhone = uniqueLocalPhone();
+
+    cy.get<FeedbackDonor>('@minter').then((minter) => {
+      seedRegistrationViaApi(minter, {
+        name: 'Collapsed Student',
+        studentId: '1905405',
+        roomNumber: '512',
+        phone: Number(`88${localPhone}`),
+      }).then(() => {
+        drawer.goToFeedback();
+
+        // The header carries what triage needs and nothing else: who, which number, and the two
+        // things that can be done about it.
+        cy.get('[data-cy="feedbackHeaderName"]').should('have.text', 'Collapsed Student');
+        // Printed without the 88 country code, the way every other card in the app prints one.
+        cy.get('[data-cy="feedbackHeaderPhone"]').should('have.text', localPhone);
+        cy.get('[data-cy="feedbackCreateDonorButton"]').should('be.visible');
+        cy.get('[data-cy="feedbackDiscardButton"]').should('be.visible');
+        cy.get('[data-cy="feedbackCardDetails"]').should('not.be.visible');
+
+        expandCard();
+        cy.get('[data-cy="feedbackCardDetails"]').should('be.visible');
+        cy.get('[data-cy="feedbackNewDonorStudentId"]').should('have.text', '1905405');
+        cy.get('[data-cy="feedbackDate"]').should('not.have.text', '');
+
+        // And it shuts again, so a volunteer can open one row at a time without the queue growing
+        // under them.
+        expandCard();
+        cy.get('[data-cy="feedbackCardDetails"]').should('not.be.visible');
+      });
+    });
+  });
+
+  it('does not toggle the row when a button on its header is pressed', () => {
+    // The buttons live inside the clickable header, so the one thing that must not happen is a
+    // stray expansion behind the confirmation dialog.
+    createDonorViaApi({ name: 'Untoggled Donor', studentId: uniqueStudentId() }, 'donor');
+
+    cy.get<FeedbackDonor>('@donor').then((donor) => {
+      seedMessageViaApi(donor, 'leave me shut').then(() => {
+        drawer.goToFeedback();
+
+        cy.get('[data-cy="feedbackDiscardButton"]').click();
+        cy.contains('.v-card__actions .v-btn', 'Cancel').click();
+        cy.get('[data-cy="feedbackCardDetails"]').should('not.be.visible');
+
+        // The other half of the same rule: everything in the header that is not a button opens the
+        // row — the phone line as much as the name, and the padding around both.
+        cy.get('[data-cy="feedbackHeaderPhone"]').click();
+        cy.get('[data-cy="feedbackCardDetails"]').should('be.visible');
       });
     });
   });

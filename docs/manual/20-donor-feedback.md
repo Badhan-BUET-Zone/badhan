@@ -59,11 +59,39 @@ nobody checks it, donors write messages that nobody reads, and they stop writing
 
 The list is **oldest first**, so the message that has waited longest is at the top.
 
+**There is no reload button.** The queue is fetched when you open the page, and again the moment
+you send a message of your own from here. Anything that arrived while you were sitting on the page
+shows up the next time you open it — or when you refresh the browser.
+
+### What a row looks like
+
+Every row in the queue — a message or a new donor submission — starts **closed**, and shows only
+four things: the **name**, the **phone number**, and two buttons.
+
+**Tap the row to open it.** A message opens to show what was written and when it was sent. A new
+donor submission opens to show everything the student typed. Tap it again to close it.
+
+The buttons are on the closed row, so you never have to open one to deal with it:
+
+| Row | Buttons |
+| --- | --- |
+| A message from a donor we can find | **See profile** and **Discard** |
+| A message we cannot match to a donor | **Discard** only — there is no profile to open |
+| A new donor submission | **Create donor** and **Discard** |
+
+**See profile** opens that donor's profile over the list, which is where step 2 below happens. Come
+back and you are still in the same place in the queue.
+
+If you have been using this page since it launched: the big donor card that used to fill each row is
+gone, and with it the call button and the donation date box that were on it. Record the donation on
+the donor's **profile** instead — **See profile** is one tap away, and it was always the right place
+to do it.
+
 ### The three steps
 
 For every card, in this order:
 
-1. **Read it.**
+1. **Read it** — tap the row to open it.
 2. **Do the work** — on the donor's own profile, the normal way. If they say they donated on
    12 March, open their profile and record the donation ([chapter 8](08-recording-donations.md)).
    If their number changed, change it there.
@@ -102,8 +130,8 @@ collapsible panel: **Send a message about yourself**. Open it, type a message, a
 It files the message on **your own** donor record — the one attached to the account you are signed in
 with. You do not type a phone number or a student ID; they are taken from your profile.
 
-What arrives is an ordinary message. It appears in the queue below like any other, it shows your own
-donor card, and **somebody still has to act on it and discard it** — probably you. Sending one does
+What arrives is an ordinary message. It appears in the queue below like any other, under your own
+name and number, and **somebody still has to act on it and discard it** — probably you. Sending one does
 not record a donation, does not change your record, and does not notify anybody.
 
 Two things it is genuinely useful for:
@@ -133,11 +161,12 @@ Another hall's messages are not greyed out or hidden — they never reach your s
 
 A volunteer can generate a **registration QR code** ([below](#the-registration-qr-code)).
 A student scans it and answers a short set of questions on their own phone. What they send
-arrives on the Feedback page as a **New donor submission** card — a different shape from a
-message, with their name, phone, student ID, blood group, room, address and comment laid out
+arrives on the Feedback page as a **New donor submission** row. Closed, it shows the name and the
+phone number the student typed. **Tap it to open it** and you get everything else they sent —
+student ID, blood group, room, address, comment, and the donation history they reported — laid out
 for reading.
 
-That card has two buttons: **Create donor** and **Discard**.
+That row has two buttons, on it whether it is open or closed: **Create donor** and **Discard**.
 
 **Create donor** opens the ordinary Single Donor Creation form ([chapter
 11](11-adding-new-donors.md)) **already filled in** with what the student typed.
@@ -303,9 +332,10 @@ working, not stuck. Nothing reaches Badhan until they get to the end and press S
 
 ## Cards with no donor attached
 
-Sometimes a card shows a phone number and a student ID with a line saying **no donor record
-matches**. That happens when the donor was deleted after writing, or when the details never
-matched anybody in the first place.
+Sometimes a row is named **Unknown donor**. Open it and it says **no donor record matches this phone
+number and student ID**. That happens when the donor was deleted after writing, or when the details
+never matched anybody in the first place. Such a row has no **See profile** button, because there is
+no profile.
 
 There is nothing to act on. Read it, and discard it.
 

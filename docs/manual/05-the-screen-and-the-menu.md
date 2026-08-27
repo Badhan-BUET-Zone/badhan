@@ -42,16 +42,39 @@ may be shorter than a colleague's.
 | **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |
 | **Credits** | The people who built the app. Works without a connection | Volunteer and above |
 | **About** | What Badhan is, plus which version you are on | Volunteer and above |
-| **Super Admin** | Opens into four entries below | Super Admin only |
-| → Statistics | Donation reports, charts, activity logs. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| **Super Admin** | Opens into eight entries below | Super Admin only |
+| → Donation Report | Running totals, charts, and a report between two dates. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| → All Donors | Every donor who is not archived. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| → Archived Donors | Every donor who has been archived. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
+| → App Activity | Who did what in the app, day by day. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
 | → Backup & Restore | Copies of the whole record book. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Schema Inconsistencies | Records with something wrong in them. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
+| → Certificate Enabled Donors | Every donor whose certificate has been switched on, across all halls. [Chapter 16](16-super-admin-tools.md#certificate-enabled-donors) | Super Admin only |
 | → Dev Console | A technical log for developers. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 
-At the bottom of the menu is a button that reads **Activate Night Mode** — or **Activate Day
-Mode** if you are already in the dark one. It switches the app between light and dark
-colours. Your choice is remembered on that device. The same switch is also on the My Profile
-page.
+## The buttons at the bottom of the menu
+
+**Activate Night Mode** — or **Activate Day Mode** if you are already in the dark one. It
+switches the app between light and dark colours. Your choice is remembered on that device. The
+same switch is also on the My Profile page.
+
+**A button for getting the app**, just above it. What it says depends on what you are using:
+
+- **On a computer** it reads **Install App**. Tapping it asks your browser to install Badhan
+  onto the computer, so it gets its own icon and opens in its own window instead of a browser
+  tab. Nothing is downloaded from anywhere else; it is the same website you are already looking
+  at. See [chapter 2](02-getting-the-app.md).
+- **On a phone** it reads **Get the App** and opens the Badhan page on the Google Play Store.
+
+**Sometimes the button is not there at all**, and that is normal:
+
+- If you are already using the installed app — the Play Store one, or the icon you installed on
+  your computer — there is nothing left to install, so the button is not shown.
+- If Badhan is already installed on that computer, it is not shown even when you are looking at
+  the website in a browser tab.
+- Some browsers, Safari and Firefox among them, do not let a website install itself. There the
+  button is not shown either, and the by-hand route in [chapter 2](02-getting-the-app.md) is the
+  way in.
 
 ## Two pages with no menu entry
 

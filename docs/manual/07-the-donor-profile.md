@@ -30,8 +30,8 @@ Tap **Person Details** to open or close this section. It holds the facts about t
 | Field | Rules |
 | --- | --- |
 | **Name** | Cannot be left empty. |
-| **Father's Name** | Cannot be left empty. Printed on the donor's certificate. |
-| **Mother's Name** | Cannot be left empty. Printed on the donor's certificate. |
+| **Father's Name** | Cannot be left empty. Printed on the donor's certificate. Records created before the app began asking for it show **(Unknown)** — type over it. |
+| **Mother's Name** | Cannot be left empty. Printed on the donor's certificate. Records created before the app began asking for it show **(Unknown)** — type over it. |
 | **Phone** | Exactly 11 digits, numbers only. **No two donors may share a phone number** — this is how the app tells people apart. |
 | **Email** | Optional. Used only for password recovery. You can edit it for a plain donor or for yourself; for another member the box is locked and says *"You cannot edit this email"*. |
 | **Blood Group** | Picked from the list of eight. |
@@ -139,7 +139,8 @@ Print it, and hand it to the donor.
 
 **The signature lines are at the bottom.** Every certificate has the three ruled signature lines —
 Directorate of Students' Welfare, your unit, and BUET Zone — ready to be signed by hand once you
-have printed it. Anyone who opens the certificate sees the same page, whether they are signed in or
+have printed it. The unit line names the donor's hall in full — *Sher-E-Bangla Hall Unit* — and so
+does the line higher up the page saying where they reside. Anyone who opens the certificate sees the same page, whether they are signed in or
 scanning the QR code off paper.
 
 **What the QR code is for.** Later, anyone holding that piece of paper — an employer, a

@@ -13,7 +13,7 @@ export const departments: string[] = [
   'NAME', nullDepartment, nullDepartment, 'URP',
   'WRE', 'NCE', 'BME']
 
-export const halls: string[] = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
+export const halls: string[] = ['Ahsan Ullah', 'Sabekun Nahar Sony', 'Kazi Nazrul Islam', 'Dr. M. A. Rashid', 'Sher-E-Bangla', 'Suhrawardy', 'Titumir', 'Attached', '(Unknown)']
 export const HALLS_INDEX = {
   AHSANULLAH: 0,
   CHATRI: 1,
@@ -75,6 +75,10 @@ export const ARCHIVE_BATCH_LIMIT = 200
 // is excluded so links generated before it existed still auto-search. A presence check on
 // these beats counting keys, which would have to move every time a filter is added.
 export const SHARE_LINK_MARKER_KEYS = ['hall', 'radios', 'bloodGroup', 'availability', 'notAvailability']
+
+// The one Badhan in the Play Store. There is no test listing — test copies are websites only
+// (docs/manual/02-getting-the-app.md), so this URL is environment-independent on purpose.
+export const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.mmmbadhan'
 
 export const HTTP_STATUS = {
   OK: 200,

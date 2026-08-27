@@ -11,48 +11,53 @@
     </Container>
 
     <!--
-      Reload and the state of the queue share one card. They are one thought — "here is the queue,
-      and here is how to refresh it" — and splitting them left an almost-empty strip above a
-      one-line message. Each feedback card is its own container below this one, so nothing nests.
+      No Reload button. The page loads on arrival and again the moment a volunteer sends their own
+      message, which is every occasion the queue is known to have changed from here; anything else
+      arrived from a donor's phone, and a button cannot tell you about that any sooner than the next
+      visit does. Refreshing the browser does the same job on the rare occasion somebody wants it.
+
+      The state of the queue and the queue itself are three branches of ONE transition: loading,
+      nothing waiting, or the list. As two transitions side by side the loader was still sliding
+      out while the cards were already sliding in, and the list snapped upwards the moment the
+      loader left the flow. mode="out-in" makes the second only start once the first is gone — and
+      it also means the loading and empty cards exist only when there is something to report, so a
+      full queue leaves no empty card behind.
+
+      The list itself is oldest first, both kinds interleaved. No tabs and no filter: the queue is
+      meant to be emptied, and a filter would make it comfortable not to.
     -->
-    <Container>
-      <v-card-text>
-        <Button
-          data-cy="feedbackReloadButton"
-          :icon="'mdi-refresh'"
-          :text="'Reload'"
-          :color="'primary'"
-          :disabled="loadingFlag"
-          :click="loadFeedbacks"
-        ></Button>
-      </v-card-text>
+    <transition name="slide-fade-down-snapout" mode="out-in">
+      <Container v-if="loadingFlag" :key="'feedbacksLoading'">
+        <v-card-text>
+          <LoadingMessage/>
+        </v-card-text>
+      </Container>
 
-      <v-card-text v-if="loadingFlag">
-        <LoadingMessage/>
-      </v-card-text>
+      <Container v-else-if="feedbacks.length === 0" :key="'feedbacksEmpty'">
+        <v-card-text class="title text-center" data-cy="feedbackEmptyState">
+          No feedback is waiting.
+        </v-card-text>
+      </Container>
 
-      <v-card-text
-        v-else-if="feedbacks.length === 0"
-        class="title text-center"
-        data-cy="feedbackEmptyState"
+      <!-- A transition-group inside the branch, so the queue arrives as one block but a discarded
+           card still leaves on its own. -->
+      <transition-group
+        v-else
+        :key="'feedbacksList'"
+        name="slide-fade-down"
+        tag="div"
+        style="max-width: 700px"
+        class="mx-auto"
       >
-        No feedback is waiting.
-      </v-card-text>
-    </Container>
-
-    <!--
-      One list, oldest first, both kinds interleaved. No tabs and no filter: the queue is meant to
-      be emptied, and a filter would make it comfortable not to.
-    -->
-    <div style="max-width: 700px" class="mx-auto" v-if="!loadingFlag">
-      <FeedbackCard
-        v-for="feedback in feedbacks"
-        :key="feedback._id"
-        :feedback="feedback"
-        :discarding-flag="discardingId === feedback._id"
-        @discard="discard"
-      ></FeedbackCard>
-    </div>
+        <FeedbackCard
+          v-for="feedback in feedbacks"
+          :key="feedback._id"
+          :feedback="feedback"
+          :discarding-flag="discardingId === feedback._id"
+          @discard="discard"
+        ></FeedbackCard>
+      </transition-group>
+    </transition>
 
     <transition name="slide-fade" mode="out-in">
       <router-view></router-view>
@@ -63,7 +68,6 @@
 <script>
 import PageTitle from '@/components/PageTitle'
 import Container from '@/components/Container/Container'
-import Button from '@/components/UI Components/Button'
 import LoadingMessage from '@/components/LoadingMessage.vue'
 import FeedbackCard from '@/views/Feedback/FeedbackCard'
 import FeedbackQrPanel from '@/views/Feedback/FeedbackQrPanel'
@@ -81,7 +85,7 @@ import { HTTP_STATUS } from '@/mixins/constants'
 export default {
   name: 'FeedbackPage',
   components: {
-    PageTitle, Container, Button, LoadingMessage, FeedbackCard, FeedbackQrPanel, OwnFeedbackPanel
+    PageTitle, Container, LoadingMessage, FeedbackCard, FeedbackQrPanel, OwnFeedbackPanel
   },
   data: () => {
     return {

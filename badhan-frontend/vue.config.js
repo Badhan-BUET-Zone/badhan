@@ -31,6 +31,19 @@ module.exports = defineConfig({
     manifestOptions: {
       name: appName,
       short_name: appName,
+      // Written down rather than inherited from the PWA plugin's default. The menu's install
+      // button hides itself inside the installed app by asking `display-mode`, and that answer is
+      // whatever this line says — so the line should be a decision, not an accident.
+      display: 'standalone',
+      // Lets navigator.getInstalledRelatedApps() tell a tab that this very PWA is already
+      // installed on the machine — the one case display-mode structurally cannot see. The manifest
+      // has to name itself for the call to return anything. prefer_related_applications is
+      // deliberately left unset: it changes install-prompt behaviour, which is not wanted here.
+      // The Android app is deliberately not listed; hiding the phone button for people who already
+      // have it needs the Digital Asset Links association verified first.
+      related_applications: [
+        { platform: 'webapp', url: `${process.env.VUE_APP_FRONTEND_BASE}/manifest.json` },
+      ],
     },
   },
   devServer: {

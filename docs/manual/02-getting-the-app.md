@@ -40,6 +40,15 @@ phone:
 You now have a Badhan icon that opens straight into the app, without the browser's address
 bar in the way.
 
+**Once you are signed in, the menu does this in one tap.** Open the menu (the three lines, top
+left) and look at the bottom of it, just above the night-mode button. On a computer there is an
+**Install App** button that asks the browser to install Badhan there and then, with no hunting
+through the three-dot menu. On a phone the same place has a **Get the App** button that opens
+the Play Store listing. If you cannot see either, it is because there is nothing to install —
+you are already in the installed app, or it is already installed on that computer — or because
+your browser does not offer it, in which case the three steps above are still the way. See
+[chapter 5](05-the-screen-and-the-menu.md).
+
 **If the icon says something other than Badhan.** A test copy of the site installs under the
 name **Badhan (development)**. On a phone the caption under the icon is short, so you may see
 only the beginning of it — something like *Badhan (deve…* — while the full name appears in the

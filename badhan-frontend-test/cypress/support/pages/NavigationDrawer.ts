@@ -3,6 +3,57 @@ export class NavigationDrawer {
     cy.get('[data-cy="hamburgerButtonId"]').click();
   }
 
+  ensureClosed(): void {
+    // The drawer sits over the page, so anything a test wants to click underneath it has to wait
+    // for the close animation to finish — not just for whatever started it.
+    cy.get('.v-navigation-drawer').then(($drawer) => {
+      if ($drawer.hasClass('v-navigation-drawer--close')) return;
+      // An open temporary drawer dims the page behind it AND covers the hamburger, so the dimmer
+      // is the only thing left to click. A permanent one has no dimmer, and the hamburger toggles.
+      cy.get('body').then(($body) => {
+        if ($body.find('.v-overlay--active').length > 0) {
+          cy.get('.v-overlay--active').click({ force: true });
+        } else {
+          this.open();
+        }
+      });
+    });
+    cy.get('.v-navigation-drawer').should('have.class', 'v-navigation-drawer--close');
+    cy.get('.v-overlay--active').should('not.exist');
+  }
+
+  ensureOpen(): void {
+    // The hamburger is a toggle, and the drawer starts open on a wide viewport and closed on a
+    // narrow one — so a bare open() closes it on a desktop-sized test. Vuetify marks the state on
+    // the drawer itself.
+    cy.get('.v-navigation-drawer').then(($drawer) => {
+      if ($drawer.hasClass('v-navigation-drawer--close')) {
+        this.open();
+      }
+    });
+  }
+
+  installEntry(): Cypress.Chainable<JQuery<HTMLElement>> {
+    // One id for both destinations — the Play Store link and the browser's install prompt — so a
+    // test does not have to know which machine it is running on.
+    return cy.get('[data-cy="installAppNavigationId"]');
+  }
+
+  assertNoInstallEntry(): void {
+    cy.get('[data-cy="installAppNavigationId"]').should('not.exist');
+  }
+
+  goToInstall(): void {
+    this.ensureOpen();
+    this.installEntry().click();
+  }
+
+  themeToggle(): Cypress.Chainable<JQuery<HTMLElement>> {
+    // The one thing always at the foot of the drawer. Used as proof the drawer really rendered
+    // before asserting that the install entry beside it is absent.
+    return cy.contains('.v-navigation-drawer button', 'Mode');
+  }
+
   goToSingleDonorCreation(): void {
     // Open main drawer
     this.open();
@@ -64,11 +115,28 @@ export class NavigationDrawer {
     cy.get('[data-cy="publicContactsNavigationId"]').click();
   }
 
-  goToStatistics(): void {
-    // Open main drawer, expand Super Admin group, and click Statistics
+  // The four pages that used to be tabs of a Statistics page. Each is its own entry under the
+  // Super Admin group now, so reaching one is a menu click rather than a menu click and a tab.
+  private goToSuperAdminPage(dataCy: string): void {
     this.open();
     cy.get('[data-cy="superAdminId"]').click();
-    cy.get('[data-cy="statisticsNavigationId"]').click();
+    cy.get(`[data-cy="${dataCy}"]`).click();
+  }
+
+  goToDonationReport(): void {
+    this.goToSuperAdminPage('donationReportNavigationId');
+  }
+
+  goToAllDonors(): void {
+    this.goToSuperAdminPage('allDonorsNavigationId');
+  }
+
+  goToArchivedDonors(): void {
+    this.goToSuperAdminPage('archivedDonorsNavigationId');
+  }
+
+  goToAppActivity(): void {
+    this.goToSuperAdminPage('appActivityNavigationId');
   }
 
   goToCertificateEnabledDonors(): void {

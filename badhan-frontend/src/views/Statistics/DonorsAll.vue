@@ -1,5 +1,8 @@
 <template>
-  <Container>
+  <div>
+    <!-- Its own title bar now: this was a tab of a Statistics page, which drew one for it. -->
+    <PageTitle></PageTitle>
+    <Container>
     <v-card-title>{{ pageTitle }}</v-card-title>
     <transition name="slide-fade-down-snapout" mode="out-in">
       <v-data-table :key="'donorsLoading'" v-if="donorsLoaderFlag">
@@ -30,11 +33,13 @@
         </template>
       </v-data-table>
     </transition>
-  </Container>
+    </Container>
+  </div>
 </template>
 
 <script>
 import Container from '@/components/Container/Container'
+import PageTitle from '@/components/PageTitle'
 import { handleGETDonorsAll } from '@/api'
 import { createNewPopUpWindow } from '@/mixins/helpers'
 import { environmentService } from '@/mixins/environment'
@@ -43,7 +48,8 @@ import { HTTP_STATUS } from '@/mixins/constants'
 export default {
   name: 'DonorsAll',
   components: {
-    Container
+    Container,
+    PageTitle
   },
   data () {
     return {
@@ -70,8 +76,8 @@ export default {
     }
   },
   watch: {
-    // both tabs render this same component, so Vue reuses the instance and mounted() does
-    // not run again — without this the second tab would keep showing the first tab's rows
+    // both routes render this same component, so Vue reuses the instance and mounted() does
+    // not run again — without this the second page would keep showing the first one's rows
     '$route.meta.archiveFlag': 'fetchDonors'
   },
   methods: {

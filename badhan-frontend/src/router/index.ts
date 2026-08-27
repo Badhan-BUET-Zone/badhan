@@ -183,66 +183,76 @@ const routes: CustomRouteConfig[] = [
       reRouteIfAuthorized: true
     }
   },
+  // The four pages that used to be tabs of a Statistics page. Each is now a top-level route with
+  // its own entry under Super Admin in the menu: a tab strip that is only ever reachable by super
+  // admins, whose four tabs share nothing but a title bar, is a menu that has been drawn twice.
   {
-    name: 'StatisticsPage',
-    path: '/statistics',
-    component: () => import('../views/Statistics.vue'),
-    redirect: '/statistics/report',
+    name: 'DonationsReport',
+    path: '/donationReport',
+    component: () => import('../views/Statistics/DonationReport.vue'),
     meta: {
       requiresAuth: true,
-      title: 'Statistics',
+      title: 'Donation Report',
+      designation: 3,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
+    name: 'DonorsAll',
+    path: '/allDonors',
+    component: () => import('../views/Statistics/DonorsAll.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'All Donors',
+      designation: 3,
+      reRouteIfAuthorized: false,
+      archiveFlag: false
+    }
+  },
+  {
+    // same component as the route above: the two tables differ by one boolean, so
+    // duplicating headers, fetch and row template would only guarantee drift
+    name: 'ArchivedDonorsAll',
+    path: '/archivedDonors',
+    component: () => import('../views/Statistics/DonorsAll.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Archived Donors',
+      designation: 3,
+      reRouteIfAuthorized: false,
+      archiveFlag: true
+    }
+  },
+  {
+    name: 'LogsByDate',
+    path: '/appActivity',
+    component: () => import('../views/Statistics/LogsByDate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'App Activity',
+      designation: 3,
+      reRouteIfAuthorized: false
+    }
+  },
+  // Old bookmarks only. /statistics was a real page with four tabbed children until they were
+  // split above, and a super admin who bookmarked one should land on it rather than on a 404.
+  // The meta here is never read — a redirect is resolved while matching, so the guard sees the
+  // destination's meta — but the route type asks for it, so it mirrors the destination's.
+  {
+    name: 'StatisticsLegacy',
+    path: '/statistics',
+    redirect: '/donationReport',
+    meta: {
+      requiresAuth: true,
+      title: 'Donation Report',
       designation: 3,
       reRouteIfAuthorized: false
     },
     children: [
-      {
-        name: 'LogsByDate',
-        path: 'logsByDate',
-        component: () => import('../views/Statistics/LogsByDate.vue'),
-        meta: {
-          title: 'Logs by Date',
-          requiresAuth: true,
-          designation: 3,
-          reRouteIfAuthorized: false
-        }
-      },
-      {
-        name: 'DonorsAll',
-        path: 'donorsAll',
-        component: () => import('../views/Statistics/DonorsAll.vue'),
-        meta: {
-          title: 'All Donors',
-          requiresAuth: true,
-          designation: 3,
-          reRouteIfAuthorized: false,
-          archiveFlag: false
-        }
-      },
-      {
-        // same component as the tab above: the two tables differ by one boolean, so
-        // duplicating headers, fetch and row template would only guarantee drift
-        name: 'ArchivedDonorsAll',
-        path: 'archivedDonorsAll',
-        component: () => import('../views/Statistics/DonorsAll.vue'),
-        meta: {
-          title: 'Archived Donors',
-          requiresAuth: true,
-          designation: 3,
-          reRouteIfAuthorized: false,
-          archiveFlag: true
-        }
-      },
-      {
-        name: 'DonationsReport',
-        path: 'report',
-        component: () => import('../views/Statistics/DonationReport.vue'),
-        meta: {
-          title: 'Donation Report',
-          requiresAuth: true,
-          designation: 3,
-          reRouteIfAuthorized: false
-        }
-      }
+      { path: 'report', redirect: '/donationReport' },
+      { path: 'donorsAll', redirect: '/allDonors' },
+      { path: 'archivedDonorsAll', redirect: '/archivedDonors' },
+      { path: 'logsByDate', redirect: '/appActivity' }
     ]
   },
   {
