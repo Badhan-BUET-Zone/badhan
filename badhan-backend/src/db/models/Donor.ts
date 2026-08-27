@@ -468,4 +468,39 @@ donorSchema.post('findOneAndDelete', async (donor: IDonor):Promise<void> => {
 
 export const DonorModel: Model<IDonor> = model<IDonor>('Donor', donorSchema)
 
+/*
+ * An `$addFields` stage that materialises, for one document, every schema default above that
+ * the stored document may be missing.
+ *
+ * GET /donors answers from an aggregation, and an aggregation goes to the driver directly:
+ * not one `default:` declared above is applied to what it returns — unlike `find()`/`findOne()`,
+ * which hydrate a real document. A donor written before a field was added therefore comes back
+ * without that field, the profile form binds `undefined`, `JSON.stringify` drops the key from
+ * the PATCH body it sends back, and the save is rejected for a missing required field. The
+ * record becomes uneditable through the app, and the message names a field the user never
+ * touched. fatherName, motherName and isCertificateEnabled all had that shape when they were
+ * added; the 20260809 migration is what kept it from reaching anyone, and it can only reach
+ * required paths — `email` is optional and would not have been covered.
+ *
+ * Read off the schema rather than hand-listed, so the next field added with a default is
+ * covered on the day it is added and this trap cannot recur.
+ *
+ * Function defaults are skipped on purpose: they mean "compute one per document" (a timestamp,
+ * an id), which is a write's decision, not something a read may invent. `_id` is skipped for
+ * the same reason. Neither kind can be missing from a stored donor anyway.
+ *
+ * This is a read-time repair, not a substitute for materialising the values on disk — a query
+ * that filters on one of these fields still cannot see a document that lacks it.
+ */
+export const donorDefaultsStage = (): { $addFields: Record<string, unknown> } => {
+  const fields: Record<string, unknown> = {}
 
+  donorSchema.eachPath((path: string, schemaType: any): void => {
+    if (path === '_id') return
+    const defaultValue: unknown = schemaType.defaultValue
+    if (defaultValue === undefined || typeof defaultValue === 'function') return
+    fields[path] = { $ifNull: [`$${path}`, { $literal: defaultValue }] }
+  })
+
+  return { $addFields: fields }
+}
