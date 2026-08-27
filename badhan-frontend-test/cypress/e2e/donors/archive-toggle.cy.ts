@@ -221,6 +221,9 @@ describe('Donor archiving from the detail page', () => {
     });
 
     drawer.goToActiveDonors();
+    // This volunteer bookmarked nothing — the row was marked by the super admin above — and the
+    // page opens on your own bookmarks, so everybody's is what this spec has to ask for.
+    activeDonors.showBookmarksFromEveryone();
     activeDonors.assertAnyCardExists();
     activeDonors.expandFirstCard();
     activeDonors.seeProfileOnFirstCard();

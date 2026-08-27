@@ -61,7 +61,7 @@ FROM app AS deploy
 # eventually prunes old versions, at which point the build fails loudly with
 # "Version '…' was not found" — that is the right failure, because it forces a
 # deliberate bump rather than an unnoticed one.
-ARG GCLOUD_VERSION=529.0.0-0
+ARG GCLOUD_VERSION=582.0.0-0
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends curl ca-certificates gnupg; \
