@@ -118,8 +118,17 @@ export class NavigationDrawer {
   // The four pages that used to be tabs of a Statistics page. Each is its own entry under the
   // Super Admin group now, so reaching one is a menu click rather than a menu click and a tab.
   private goToSuperAdminPage(dataCy: string): void {
-    this.open();
-    cy.get('[data-cy="superAdminId"]').click();
+    // Both the hamburger and the group header are toggles, and this spec family reaches two Super
+    // Admin pages inside one test — so a bare open()/click() pair closes on the second visit what
+    // the first left open. A sublink of a collapsed group sits in a span Vuetify holds at
+    // `visibility: hidden`, which no amount of retrying makes clickable. Open and expand only when
+    // the thing is actually shut; Vuetify marks an expanded group on the group element itself.
+    this.ensureOpen();
+    cy.get('[data-cy="superAdminId"]').then(($group) => {
+      if (!$group.hasClass('v-list-group--active')) {
+        cy.wrap($group).click();
+      }
+    });
     cy.get(`[data-cy="${dataCy}"]`).click();
   }
 
