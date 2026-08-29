@@ -26,7 +26,10 @@ exceptions: donors marked **Public Data**, and donors whose hall is **(Unknown)*
 
 **You cannot touch someone above you.** *"You cannot modify the details of a Badhan member
 with higher designation."* A volunteer cannot edit a hall admin; a hall admin cannot edit a
-super admin. You can always edit yourself.
+super admin. You can always edit yourself. *Above* is the operative word: someone at your own
+level is editable, so two volunteers of one hall can complete each other's records and a super
+admin can edit another super admin. Deleting a donor and sending a password-reset link still
+need a level above the person you are acting on.
 
 **Only hall admins and above can promote.** *"Only hall admins or above can access this
 route."*

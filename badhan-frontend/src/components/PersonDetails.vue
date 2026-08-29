@@ -169,7 +169,7 @@
                         :messages="archiveHint"
                       ></v-switch>
 
-                      <div v-if="$store.getters['getDesignation'] > designation || $isMe(id)">
+                      <div v-if="$store.getters['getDesignation'] >= designation || $isMe(id)">
                         <v-btn id="donorDetailsSaveButtonId" data-cy="donorDetailsSaveButtonId" color="primary" rounded class="white--text ml-2" small
                                :disabled="detailsLoaderFlag || !isDetailsEditable || $v.name.$error || $v.fatherName.$error || $v.motherName.$error || $v.phone.$error || $v.studentId.$error || $v.email.$error"
                                @click="saveDetailsClicked()">
@@ -752,8 +752,15 @@ export default {
       return !this.$isMe(this.id) && this.designation <= DESIGNATIONS_INDEX.VOLUNTEER && (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || isHallUnknown(halls.indexOf(this.hall)) || (this.$store.getters['getDesignation'] > this.designation && this.$store.getters['getHall'] === halls.indexOf(this.hall)))
     },
 
+    // `>=`, not `>`: the rule is that you cannot edit someone ABOVE you, which leaves peers
+    // editable — two volunteers of one hall may complete each other's records, and a super
+    // admin may edit another super admin. The backend has always allowed exactly this
+    // (updateDonor refuses only user.designation < target.designation) and the manual has
+    // always described it; a strict `>` here contradicted both, and left the fields greyed
+    // with no Save button. The workaround it forced was worse than the write it prevented:
+    // demote the target, edit, promote back. Deleting and password-reset stay strict.
     isDetailsEditable () {
-      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || this.$isMe(this.id) || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] > this.designation) || isHallUnknown(halls.indexOf(this.hall))
+      return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN || this.$isMe(this.id) || (this.$store.getters['getHall'] === halls.indexOf(this.hall) && this.$store.getters['getDesignation'] >= this.designation) || isHallUnknown(halls.indexOf(this.hall))
     },
 
     // A record with no recorded hall is one waiting to be completed, not one to annotate. The

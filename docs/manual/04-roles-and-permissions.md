@@ -78,10 +78,14 @@ Almost every refusal in the app comes from one of these.
 hall. Try to open one from another hall and the app says *"You are not authorized to access a
 donor of different hall"*. A super admin is not restricted this way.
 
-**2. You cannot touch someone above you.** You may edit people below your own level, and
-yourself. You cannot edit someone at a higher level — the app says *"You cannot modify the
+**2. You cannot touch someone above you.** You may edit people at or below your own level,
+and yourself. You cannot edit someone at a higher level — the app says *"You cannot modify the
 details of a Badhan member with higher designation"*. A volunteer cannot edit a hall admin,
-and a hall admin cannot edit a super admin.
+and a hall admin cannot edit a super admin. Two members of the *same* level are not above each
+other, so within one hall a volunteer may edit a fellow volunteer, and a super admin may edit
+another super admin — which is how a member's father's and mother's names get filled in
+without demoting them first. Deleting a donor and sending a password-reset link are stricter:
+those need a level above the person you are acting on.
 
 **3. Some records belong to everybody.** A donor can be marked **Public Data**. Those donors
 can be viewed, commented on and have donations recorded by members of *any* hall. This is how
