@@ -2,10 +2,15 @@ import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
 import { decodeFeedbackQr } from '@support/helpers/decodeQr';
-import { createVolunteerInHallViaApi, HALL_SUHRAWARDY } from '@support/helpers/feedback';
+import {
+  createVolunteerInHallViaApi,
+  openRegistrationQrPanel,
+  HALL_SUHRAWARDY,
+} from '@support/helpers/feedback';
 
-// The two QR surfaces. Everything here checks what a camera would actually read, not what the app
-// says it encoded — the decode is the only assertion that exercises the hand-built module geometry.
+// The two QR surfaces, both collapsed panels on the Feedback page. Everything here checks what a
+// camera would actually read, not what the app says it encoded — the decode is the only assertion
+// that exercises the hand-built module geometry.
 //
 // None of it replaces the physical scan gate in 9.4: nothing in a headless browser says anything
 // about ink, contrast, printer resolution or the size of a code in somebody's hand.
@@ -115,26 +120,22 @@ describe('The registration QR generator', () => {
   beforeEach(() => {
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    drawer.goToRegistrationQr();
+    drawer.goToFeedback();
+    openRegistrationQrPanel();
   });
 
-  it('is nested under Donor Creation, and there is no Print Poster entry anywhere', () => {
+  it('has no menu entry of its own, and neither does the poster', () => {
+    // Both QR surfaces are panels on the Feedback page, not menu items. A volunteer told to look
+    // for either in the sidebar would not find it, which is why the manual describes where the
+    // panels are instead.
     drawer.open();
     cy.get('[data-cy="donorCreationNavigationId"]').click();
 
-    // The structural claim, asserted structurally: the entry is a DESCENDANT of the Donor Creation
-    // group, not a sibling of it. Checking that it is absent while collapsed would be testing
-    // Vuetify's expansion state instead — and that state survives a hash-only navigation, so it
-    // passes or fails for reasons that have nothing to do with the menu.
-    cy.get('[data-cy="donorCreationNavigationId"]')
-      .find('[data-cy="registrationQrNavigationId"]')
-      .should('exist');
-
-    // The poster is a panel on the Feedback page, not a menu item. A volunteer told to look for one
-    // would not find it, which is why the manual describes where the panel is instead.
+    cy.get('[data-cy="registrationQrNavigationId"]').should('not.exist');
+    cy.contains('.v-list-item', 'Donor Registration QR').should('not.exist');
     cy.contains('.v-list-item', 'Print Poster').should('not.exist');
 
-    // Bookmarked Donors now sits below Members.
+    // Bookmarked Donors sits below Members.
     cy.get('.v-navigation-drawer').then(($drawer) => {
       const ids = Array.from($drawer[0].querySelectorAll('[data-cy]')).map((el) =>
         el.getAttribute('data-cy'),
@@ -145,6 +146,17 @@ describe('The registration QR generator', () => {
     });
 
     cy.get('body').type('{esc}');
+  });
+
+  it('starts collapsed, so a daily visit costs nothing', () => {
+    // Reload rather than collapse: this is about the state the page arrives in.
+    cy.reload();
+    cy.get('[data-cy="registrationQrPanelHeader"]').should('be.visible');
+    cy.get('[data-cy="registrationQrGenerateButton"]').should('not.exist');
+    cy.get('[data-cy="registrationQrDurationSelector"]').should('not.exist');
+
+    // ...and the queue is still the first thing on the page.
+    cy.get('[data-cy="feedbackEmptyState"], [data-cy^="feedbackCard-"]').should('be.visible');
   });
 
   it('gives a super admin a hall dropdown, including All Halls', () => {
@@ -354,7 +366,8 @@ describe('The registration QR generator, as a volunteer', () => {
     cy.get<{ localPhone: string }>('@volunteer').then((volunteer) => {
       cy.visit('/');
       signInPage.signIn(volunteer.localPhone, 'archivetest1');
-      drawer.goToRegistrationQr();
+      drawer.goToFeedback();
+      openRegistrationQrPanel();
     });
   });
 

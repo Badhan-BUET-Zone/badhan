@@ -94,6 +94,14 @@ export const createDonorViaApi = (
   });
 };
 
+// The registration QR generator is a collapsed panel on the Feedback page, not a page of its own,
+// so every spec that exercises it has to expand it first. The panel builds nothing until Generate
+// is pressed, so expanding it is cheap and there is nothing to wait for here.
+export const openRegistrationQrPanel = (): void => {
+  cy.get('[data-cy="registrationQrPanelHeader"]').click();
+  cy.get('[data-cy="registrationQrWarning"]').should('be.visible');
+};
+
 // Opens the public page with no session, which is how every real donor arrives at it.
 export const visitPublicDonorPage = (): void => {
   cy.clearLocalStorage();

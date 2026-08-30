@@ -29,12 +29,13 @@
 
 ## ১. কোডটি কোথায় বানাবেন
 
-সাইডবারে **Donor Creation** গ্রুপটি খুললে ভেতরে একটি এন্ট্রি আছে — **Donor Registration QR**।
+সাইডবারে এর আলাদা কোনো এন্ট্রি নেই। **Feedback** পাতাটি খুললে উপরে তিনটি ভাঁজ করা প্যানেল
+আছে — তার তিন নম্বরটি **Generate a registration QR for students**। সেটিতে চাপ দিলেই খুলবে।
 ভলান্টিয়ার ও তার উপরের সবাই এটি দেখতে পান।
 
-![সাইডবারে Donor Creation-এর ভেতরে Donor Registration QR](../images/new-feature-new-student-data-collection/registration-sidebar.png)
+![Feedback পাতার উপরে রেজিস্ট্রেশন QR প্যানেল](../images/new-feature-new-student-data-collection/registration-panel.png)
 
-পাতাটি খুললে দুটি জিনিস দেখবেন — কোন হলের জন্য কোডটি হবে, আর কত সময়ের জন্য।
+প্যানেলটি খুললে দুটি জিনিস দেখবেন — কোন হলের জন্য কোডটি হবে, আর কত সময়ের জন্য।
 
 ![রেজিস্ট্রেশন QR তৈরির পাতা — হল, মেয়াদ ও সতর্কবার্তা](../images/new-feature-new-student-data-collection/registration-generator-form.png)
 
@@ -402,7 +403,7 @@ All Halls কোডে তিনি নিজেই বাছেন, তাই �
 
 ## ৮. সংক্ষেপে যা মনে রাখতে হবে
 
-- কোড বানাবেন: **সাইডবার → Donor Creation → Donor Registration QR → Generate**
+- কোড বানাবেন: **সাইডবার → Feedback → Generate a registration QR for students → Generate**
 - **আপনার কোড আপনার নিজের হলের**; সুপার অ্যাডমিন যেকোনো হলের, এমনকি **All Halls**-এরও
   বানাতে পারেন — সেক্ষেত্রে ছাত্র নিজে হল বেছে নেন
 - **একবার বানালে বাতিল করা যায় না** — মেয়াদ ছোট রাখুন

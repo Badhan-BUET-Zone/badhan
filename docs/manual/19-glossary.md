@@ -107,9 +107,10 @@ opens that same certificate on Badhan's website, so the paper can be checked aga
 permanent one on a printed sheet that opens the public feedback page, and a temporary one a
 volunteer generates so students can register themselves. [Chapter 20](20-donor-feedback.md).
 
-**Registration QR code.** The temporary one. A volunteer generates it, it works for a chosen
-length of time, and students who scan it answer a few questions about themselves. What they
-send arrives on the Feedback page as a new donor submission — **it does not create a donor**.
+**Registration QR code.** The temporary one. A volunteer generates it from a panel on the
+Feedback page, it works for a chosen length of time, and students who scan it answer a few
+questions about themselves. What they send arrives on that same page as a new donor submission —
+**it does not create a donor**.
 [Chapter 20](20-donor-feedback.md).
 
 **Rest period.** The time after a donation before a donor is shown as available again: 120 days

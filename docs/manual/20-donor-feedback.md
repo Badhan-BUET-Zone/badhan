@@ -226,7 +226,9 @@ step 2 tells you to do; this is *why* it tells you to do it.
 This is the sheet that goes on a notice board so donors can find the public page at all.
 
 **There is no menu entry for it.** Open the **Feedback** page and look at the top: there is a line
-that says **Print a QR poster for donors**. Tap it to open it, then tap **Download PDF**.
+that says **Print a QR poster for donors**. Tap it to open it, then tap **Download PDF**. Both QR
+codes live here — the poster in this panel, the registration code in one further down — because
+neither is made often enough to earn a place in the menu.
 
 Then print it and pin it up — at eye level, where somebody can hold a phone up to it.
 
@@ -250,7 +252,9 @@ is safe to share.
 
 This is the other code — the one students scan to enter themselves into the database.
 
-It lives at **Donor Registration QR** in the menu, just under Donor Creation.
+**There is no menu entry for it either.** It is the third panel on the **Feedback** page, below the
+poster and below **Send a message about yourself**: a line that says **Generate a registration QR
+for students**. Tap it to open it.
 
 1. **Super admins only:** choose **which hall the code is for** from the dropdown. Everybody else
    makes codes for their own hall, and the page says so instead of offering a choice.

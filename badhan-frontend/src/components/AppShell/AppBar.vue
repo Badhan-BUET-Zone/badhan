@@ -174,19 +174,6 @@ export default {
             to: '/newDonors',
             id: 'newDonorsNavigationId',
             designation: 2
-          },
-          {
-            // Nested under Donor Creation rather than beside it: generating a code is one of the
-            // ways a donor eventually gets created, and it belongs with the others.
-            //
-            // There is deliberately no "Print Poster" entry anywhere. That sheet is a collapsed
-            // panel at the top of the Feedback page, because it is downloaded once and then not
-            // again for months.
-            icon: 'mdi-account-plus-outline',
-            text: 'Donor Registration QR',
-            to: '/registrationQr',
-            id: 'registrationQrNavigationId',
-            designation: 1
           }
           ]
         },

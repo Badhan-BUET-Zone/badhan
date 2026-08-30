@@ -1,6 +1,7 @@
 import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { openRegistrationQrPanel } from '@support/helpers/feedback';
 import { hideOverlays } from '../hideOverlays';
 
 // Documentation screenshot for docs/blog/new-feature-new-student-data-collection.md.
@@ -18,7 +19,8 @@ describe('docs screenshot — a generated All Halls code', () => {
     cy.viewport(500, 900);
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    drawer.goToRegistrationQr();
+    drawer.goToFeedback();
+    openRegistrationQrPanel();
 
     cy.get('[data-cy="registrationQrHallSelector"]').click();
     cy.contains('.v-menu__content.menuable__content__active .v-list-item', 'All Halls').click();

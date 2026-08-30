@@ -2,12 +2,13 @@
   <div>
     <PageTitle></PageTitle>
 
-    <!-- Both panels share one card and are collapsed by default, so the queue is still the first
-         thing on the page. Nothing inside the QR panel is built or imported until it is expanded:
-         this is a volunteer's daily page. -->
+    <!-- All three panels share one card and are collapsed by default, so the queue is still the
+         first thing on the page. No QR is built or imported until one is expanded — the poster's on
+         expansion, the registration code's on Generate: this is a volunteer's daily page. -->
     <Container>
       <FeedbackQrPanel/>
       <OwnFeedbackPanel @submitted="loadFeedbacks"/>
+      <RegistrationQrPanel/>
     </Container>
 
     <!--
@@ -72,6 +73,7 @@ import LoadingMessage from '@/components/LoadingMessage.vue'
 import FeedbackCard from '@/views/Feedback/FeedbackCard'
 import FeedbackQrPanel from '@/views/Feedback/FeedbackQrPanel'
 import OwnFeedbackPanel from '@/views/Feedback/OwnFeedbackPanel'
+import RegistrationQrPanel from '@/views/Feedback/RegistrationQrPanel'
 import { handleGETFeedbacks, handleDELETEFeedback } from '@/api'
 import { HTTP_STATUS } from '@/mixins/constants'
 
@@ -85,7 +87,13 @@ import { HTTP_STATUS } from '@/mixins/constants'
 export default {
   name: 'FeedbackPage',
   components: {
-    PageTitle, Container, LoadingMessage, FeedbackCard, FeedbackQrPanel, OwnFeedbackPanel
+    PageTitle,
+    Container,
+    LoadingMessage,
+    FeedbackCard,
+    FeedbackQrPanel,
+    OwnFeedbackPanel,
+    RegistrationQrPanel
   },
   data: () => {
     return {

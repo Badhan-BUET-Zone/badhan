@@ -1,6 +1,7 @@
 import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { openRegistrationQrPanel } from '@support/helpers/feedback';
 import { hideOverlays } from '../hideOverlays';
 
 // Documentation screenshot for docs/blog/new-feature-new-student-data-collection.md.
@@ -17,7 +18,8 @@ describe('docs screenshot — the generated code’s link and buttons', () => {
     cy.viewport(500, 500);
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    drawer.goToRegistrationQr();
+    drawer.goToFeedback();
+    openRegistrationQrPanel();
 
     cy.get('[data-cy="registrationQrGenerateButton"]').click();
     cy.get('[data-cy="registrationQrDownloadButton"]').should('be.visible').scrollIntoView();

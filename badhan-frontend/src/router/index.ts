@@ -102,17 +102,6 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    name: 'RegistrationQr',
-    path: '/registrationQr',
-    component: () => import('../views/RegistrationQr.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Donor Registration QR',
-      designation: 1,
-      reRouteIfAuthorized: false
-    }
-  },
-  {
     name: 'PublicRegistration',
     path: '/register',
     component: () => import('../views/PublicRegistration.vue'),

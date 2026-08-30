@@ -1,6 +1,7 @@
 import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { AUTH_CREDENTIALS } from '@auth/credentials';
+import { openRegistrationQrPanel } from '@support/helpers/feedback';
 import { hideOverlays } from '../hideOverlays';
 
 // Documentation screenshot for docs/blog/new-feature-new-student-data-collection.md.
@@ -16,7 +17,8 @@ describe('docs screenshot — a generated registration code', () => {
     cy.viewport(500, 900);
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    drawer.goToRegistrationQr();
+    drawer.goToFeedback();
+    openRegistrationQrPanel();
 
     cy.get('[data-cy="registrationQrGenerateButton"]').click();
     // The expiry line sits ABOVE the artwork and the buttons sit below it, so no single frame holds
