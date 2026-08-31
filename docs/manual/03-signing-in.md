@@ -75,6 +75,10 @@ normally, but:
 - every donor you see is made up
 - nothing you change is saved anywhere
 - some buttons, such as generating a recovery link, are switched off
+- the **member chat** shows an invented conversation, anything you send goes nowhere, and **no new
+  message ever arrives** — so *Fetch messages* correctly reports nothing new every time. That is
+  the demonstration behaving properly, not a broken button
+  ([chapter 21](21-member-chat.md))
 
 Use it to learn your way around, or to show someone else how the app works, without any risk
 of touching real records. Nothing you do as a guest can affect real donors.

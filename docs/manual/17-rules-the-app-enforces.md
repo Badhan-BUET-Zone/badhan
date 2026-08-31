@@ -129,6 +129,7 @@ it stops runaway loops and stops anybody guessing at passwords.
 | Signing in | 3 attempts every 5 minutes |
 | Asking for a password recovery link | 3 per minute |
 | Deleting a donor, deleting a donation | 12 per minute |
+| Sending a chat message | 20 per minute |
 | Most other actions | 12 per minute |
 
 When you cross a limit you get *"Please try again after 5 minutes"* or *"Service
@@ -136,6 +137,31 @@ unavailable"*. **Nothing is broken and nothing was lost.** Wait a minute and car
 
 If you keep hitting the limit during ordinary work, say so — it means a limit is set too low
 for how the app is really used.
+
+---
+
+## Rules about the member chat
+
+**A message cannot be empty.** Nor can it be only spaces — the send button stays greyed out until
+you have typed something.
+
+**A message is at most 2000 characters.** The counter under the box shows how many you have used;
+the app will not let you type past it.
+
+**A message cannot be edited.** There is no edit button and there never has been. Delete it and
+send another.
+
+**You can only delete your own messages.** Trying to delete somebody else's gives
+*"You can only delete your own messages."* A **super admin** is the exception and can delete
+anybody's; a hall admin cannot, because the chat is not divided by hall.
+
+**A message somebody else already deleted gives *"This message has already been deleted."*** Two
+people reaching for the same message at once is expected, not an error. The message is gone either
+way.
+
+**The chat is for members only.** *"Only Badhan members can use the member chat"* means your
+account is no longer at Volunteer level or above. The app will sign you out; sign in again and it
+will know your new role. See [chapter 21](21-member-chat.md).
 
 ---
 

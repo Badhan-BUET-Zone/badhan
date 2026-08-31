@@ -8,6 +8,7 @@ import messageBox from './messageBox'
 import confirmationBox from './confirmationBox'
 import myprofile from './myprofile'
 import archiveSearch from './archiveSearch'
+import chat from './chat'
 
 Vue.use(Vuex)
 
@@ -52,7 +53,8 @@ export const store = new Vuex.Store({
     messageBox,
     confirmationBox,
     myprofile,
-    archiveSearch
+    archiveSearch,
+    chat
   }
 })
 

@@ -2,7 +2,16 @@ import dotenv from '../dotenv'
 import rateLimit from 'express-rate-limit'
 import TooManyRequestsError429 from "../response/models/errorTypes/TooManyRequestsError429";
 import { RequestHandler, Request, Response, NextFunction } from "express";
-const rateLimiterEnabled: number = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 100
+// The flag means what it says: off is OFF, not "a hundred times looser".
+//
+// It used to multiply every budget by 100, which reads as disabled and is not. The test suite
+// makes one sign-in per test — the database is purged between tests, so a cached session cannot
+// survive — and at a hundredfold budget that is still a ceiling of 300 sign-ins per five
+// minutes. The suite reached it: every suite passed alone while the full run failed sixty tests
+// on 429s from /users/signin, which looks like a broken feature and is a limiter nobody meant to
+// arm. A multiplier large enough that no run can reach it removes the trap without changing what
+// the flag means when it is on.
+const rateLimiterEnabled: number = dotenv.RATE_LIMITER_ENABLE === 'true' ? 1 : 1000000
 const minute: number = 60 * 1000
 
 const commonRateLimiterError: TooManyRequestsError429 = new TooManyRequestsError429('Service unavailable',{})
@@ -87,6 +96,16 @@ const feedbackSubmissionLimiter: RequestHandler = (req: Request, res: Response, 
   limiter(req, res, next)
 }
 
+// The member chat's send budget. High enough for a real back-and-forth during a blood-drive
+// push, low enough that a scripted flood into a room EVERY member sees is capped. It gets its
+// own budget rather than sharing commonLimiter because the read side of the same feature is on
+// commonLimiter and a user scrolling history must not spend the budget for talking.
+const messageSendLimiter: RequestHandler = rateLimit({
+  windowMs: minute,
+  max: 20 * rateLimiterEnabled,
+  message: commonRateLimiterError
+})
+
 const publicContactInsertionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
@@ -108,5 +127,6 @@ export default {
   publicContactInsertionLimiter,
   publicContactDeletionLimiter,
   feedbackTokenLimiter,
-  feedbackSubmissionLimiter
+  feedbackSubmissionLimiter,
+  messageSendLimiter
 }

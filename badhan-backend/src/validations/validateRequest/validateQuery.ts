@@ -119,3 +119,53 @@ export const validateQUERYFeedbackId: ValidationChain = query('feedbackId')
   .exists().withMessage('feedbackId is required')
   .customSanitizer((value:string):string => String(value))
   .escape().trim().custom((feedbackId: string):boolean => mongoose.Types.ObjectId.isValid(feedbackId)).withMessage('Enter a valid feedbackId')
+
+// ---------------------------------------------------------------------------
+// Member chat cursors.
+//
+// All four are OPTIONAL — `GET /messages` with no query at all is the first-open read.
+// The mutual-exclusion and pairing rules between them are not expressible per-field, so
+// they live in validations/messages.ts; these chains only police the shape of a value that
+// is present.
+// ---------------------------------------------------------------------------
+
+// The newer cursor. Always a `serverTime` this client was previously handed, never a value
+// the browser invented — see the controller for why its own clock must not be used.
+export const validateQUERYAfterOptional: ValidationChain = query('after')
+  .optional()
+  .isInt().toInt().withMessage('after must be integer')
+  .custom(checkTimeStamp).withMessage(checkTimeStampMessage('after'))
+
+// The older cursor's timestamp half.
+export const validateQUERYBeforeOptional: ValidationChain = query('before')
+  .optional()
+  .isInt().toInt().withMessage('before must be integer')
+  .custom(checkTimeStamp).withMessage(checkTimeStampMessage('before'))
+
+// The older cursor's tiebreak half. `before` points at a MESSAGE, not at an instant, so it
+// needs both halves: two messages sharing a millisecond at a page boundary are otherwise
+// ordered arbitrarily and one of them is skipped forever.
+export const validateQUERYBeforeIdOptional: ValidationChain = query('beforeId')
+  .optional()
+  .customSanitizer((value: string): string => String(value))
+  .escape().trim().custom((beforeId: string): boolean => mongoose.Types.ObjectId.isValid(beforeId)).withMessage('Enter a valid beforeId')
+
+// Clamped, never rejected: an out-of-range limit is a client that wants more than it may
+// have, not a malformed request, and answering 400 would break a scroll mid-gesture.
+export const MESSAGE_PAGE_DEFAULT_LIMIT: number = 30
+export const MESSAGE_PAGE_MAX_LIMIT: number = 100
+
+export const validateQUERYLimitOptional: ValidationChain = query('limit')
+  .optional()
+  .isInt().toInt().withMessage('limit must be integer')
+  .customSanitizer((value: number): number => {
+    return Math.min(Math.max(value, 1), MESSAGE_PAGE_MAX_LIMIT)
+  })
+
+// DELETE /messages?messageId=<id>. A query parameter rather than a path one, matching
+// Feedbacks, Donations, CallRecords, PublicContacts, PlateletDonations and Donors — every
+// delete in the codebase but ActiveDonors, which is the exception and not the direction.
+export const validateQUERYMessageId: ValidationChain = query('messageId')
+  .exists().withMessage('messageId is required')
+  .customSanitizer((value: string): string => String(value))
+  .escape().trim().custom((messageId: string): boolean => mongoose.Types.ObjectId.isValid(messageId)).withMessage('Enter a valid messageId')

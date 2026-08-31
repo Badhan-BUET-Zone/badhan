@@ -13,6 +13,7 @@ One folder per markdown file that uses the screenshots:
 | `new-feature-certificate-download/` | [docs/blog/new-feature-certificate-download.md](../../../docs/blog/new-feature-certificate-download.md) |
 | `new-feature-feedback-submission/` | [docs/blog/new-feature-feedback-submission.md](../../../docs/blog/new-feature-feedback-submission.md) |
 | `new-feature-new-student-data-collection/` | [docs/blog/new-feature-new-student-data-collection.md](../../../docs/blog/new-feature-new-student-data-collection.md) |
+| `new-feature-global-chat/` | The member chat. Its images live in `docs/images/new-feature-global-chat/`; no blog post uses them yet, and the manual chapter ([docs/manual/21-member-chat.md](../../../docs/manual/21-member-chat.md)) is text-only like every other chapter |
 
 The images each folder produces are committed under `docs/images/<same folder name>/`.
 

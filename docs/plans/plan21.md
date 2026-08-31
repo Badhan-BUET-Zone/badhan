@@ -484,13 +484,27 @@ New `badhan-backend-test/tests/messages/`, following the existing layout of
 | `fetch/initial.test.js` | no cursor → newest 30, oldest-first, sender joined, no leaked donor fields |
 | `fetch/after.test.js` | catch-up semantics; `serverTime` monotonic; in-flight insert delivered next time; **a truncated catch-up returns the oldest rows in the gap, reports `hasMore`, and watermarks at the last returned `date` — three chained fetches deliver 80 messages with no gap and no duplicate**; a truncation never splits a millisecond |
 | `fetch/before.test.js` | scroll-up paging; `hasMore`; **same-millisecond boundary drops nothing** |
+
+**Seeding a shared millisecond is not optional and not automatic.** Sends through the local
+stack land about 3ms apart, so a sequential seeder NEVER produces two messages sharing a
+timestamp — a same-millisecond test written on one asserts its invariant without ever reaching
+the case that breaks it, and passes forever. A parallel burst does collide, reliably but not
+certainly, so `seedBurstWithSharedMillisecond` in `tests/messages/helpers.js` retries until it
+sees a collision and throws if it cannot get one. Do not relax that into a skip.
 | `fetch/validation.test.js` | `after`+`before` → 400; lone `before` → 400; `limit` clamp |
 | `send/submit.test.js` | 201, joined echo, trim, 1…2000 length bounds, unexpected-key rejection |
 | `send/rateLimit.test.js` | the 21st send in a minute → 429 |
 | `remove/delete.test.js` | author 200, Super Admin 200, Hall Admin on someone else's 403, missing 404, log written; `messageId` passed as a **query** parameter |
 | `permission/designation.test.js` | `designation: 0` token → 403 on all three routes |
 
-Run: `docker compose run --rm backend-test npx jest tests/messages`
+Run: `docker compose run --rm backend-test npm test -- tests/messages`
+
+Not `npx jest`: the project has both a `jest.config.js` and a `jest` key in `package.json`, so
+jest refuses to pick one implicitly, and — more importantly — the suites need `--runInBand`.
+The `npm test` script supplies both. Test files run in parallel by default, and the per-test
+database purge in `setup-after-env.js` is global, so a parallel run has one file wiping the
+super admin out from under another; the failures look like `Account not found` on sign-in and
+have nothing to do with the code under test.
 
 ---
 
@@ -929,6 +943,7 @@ renumbered. It must cover, in the manual's plain-language voice:
 | [17-rules-the-app-enforces.md](../manual/17-rules-the-app-enforces.md) | Empty message refused; 2000-character limit; 20-per-minute limit; "you can only delete your own messages" |
 | [18-when-something-goes-wrong.md](../manual/18-when-something-goes-wrong.md) | "I am not seeing new messages" → press *Fetch messages*; this is expected. "The chat is empty" → check your connection; nothing is stored on the phone. "A message I saw is gone" → someone deleted it. "It says *More messages waiting* after I already fetched" → press it again; you are being caught up a page at a time. "I was signed out when I opened the chat" → your membership was changed; sign in again and the app will know your new role |
 | [19-glossary.md](../manual/19-glossary.md) | **Member chat**, **Fetch messages**, **Unread badge**, **More messages waiting** |
+| [03-signing-in.md](../manual/03-signing-in.md) | The guest-login section already says every donor is made up and nothing is saved. Add what the chat does in a demo specifically: the messages are invented, sending shows your own message but posts it nowhere, and **no new message ever arrives**, so *Fetch messages* correctly reports nothing new every time. Without this a demo looks broken at exactly the point somebody presses the one button the feature is named for |
 
 ---
 

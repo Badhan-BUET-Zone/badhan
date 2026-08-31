@@ -5,6 +5,7 @@ import { checkTimeStamp, checkTimeStampMessage } from './others';
 import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR, HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, HALL_INDICES_ALLOWED_FOR_QR } from '../../constants'
 import { FEEDBACK_TOKEN_MAX_MINUTES } from '../../services/feedbackToken'
 import { FEEDBACK_TYPE_VALUES } from '../../db/models/Feedback'
+import { MESSAGE_TEXT_MAX_LENGTH } from '../../db/models/Message'
 
 export const validateBODYPhone: ValidationChain = body('phone')
   .exists().withMessage('Phone number is required')
@@ -178,3 +179,25 @@ export const validateBODYType: ValidationChain = body('type')
 export const validateBODYToken: ValidationChain = body('token')
   .exists().not().isEmpty().withMessage('token is required')
   .customSanitizer((value:any):string => String(value)).trim()
+
+/**
+ * A chat message body.
+ *
+ * DELIBERATELY NOT `.escape()`, unlike validateBODYComment and the newDonor fields beside it.
+ * This is a value a human reads verbatim, and escaping turns "I can't come" into
+ * "I can&#x27;t come" on every member's screen. It follows the precedent already set and
+ * documented for feedback text in validations/feedbackPayload.ts.
+ *
+ * What makes that safe is a render-time rule, and it is absolute: the frontend renders message
+ * text with Vue text interpolation ONLY — never v-html, never VueMarkdown, never a link
+ * autolinker that builds an <a> out of message text.
+ *
+ * `.trim()` runs before the length check, so a body of spaces is 1-char-minimum failure rather
+ * than a stored blank, and the handler receives the trimmed value.
+ */
+export const validateBODYMessageText: ValidationChain = body('text')
+  .exists().withMessage('text is required')
+  .isString().withMessage('text must be a string')
+  .trim()
+  .isLength({ min: 1, max: MESSAGE_TEXT_MAX_LENGTH })
+  .withMessage(`text must be between 1 and ${MESSAGE_TEXT_MAX_LENGTH} characters`)

@@ -56,6 +56,9 @@ everything, including the reports, the backups and the appointment of hall admin
 | Generate a registration QR code for their own hall | ❌ | ✅ | ✅ | ✅ |
 | Generate a registration QR code for another hall | ❌ | ❌ | ❌ | ✅ |
 | Generate an "All Halls" registration QR code | ❌ | ❌ | ❌ | ✅ |
+| Read and write in the member chat | ❌ | ✅ | ✅ | ✅ |
+| Delete their **own** chat message | ❌ | ✅ | ✅ | ✅ |
+| Delete somebody else's chat message | ❌ | ❌ | ❌ | ✅ |
 | See "Newly Created Donors" | ❌ | ❌ | ✅ | ✅ |
 | Promote a donor to volunteer | ❌ | ❌ | ✅ (own hall) | ✅ |
 | Demote a volunteer to donor | ❌ | ❌ | ✅ (own hall) | ✅ |
@@ -91,6 +94,16 @@ those need a level above the person you are acting on.
 can be viewed, commented on and have donations recorded by members of *any* hall. This is how
 donors who are not tied to one hall — attached students, for example — stay reachable. See
 [chapter 7](07-the-donor-profile.md).
+
+### The member chat is the one place hall makes no difference
+
+Almost everything above is scoped by hall: you see your own hall's donors, your own hall's
+feedback, and a hall admin's extra powers stop at their hall's edge.
+
+**The member chat is not.** It is one room for the whole of Badhan — every member sees exactly the
+same messages whatever hall they belong to. A hall admin has no more say over it than a volunteer:
+deleting somebody else's message is a super admin's job and nobody else's. See
+[chapter 21](21-member-chat.md).
 
 ## The two halls that are not halls
 

@@ -139,6 +139,16 @@ export default {
           designation: 1
         },
         {
+          // No badge here either, and for a sharper reason than Feedback's: the floating button
+          // IS the badge, it is on every signed-in screen already, and two counters that can
+          // disagree is worse than one that cannot.
+          icon: 'mdi-forum',
+          text: 'Messages',
+          to: '/chat',
+          id: 'chatNavigationId',
+          designation: 1
+        },
+        {
           // No badge and no count. Nothing here tells a volunteer that work is waiting — the app
           // bar makes no request on mount, and there is no count endpoint for it to call. Opening
           // the page has to be a habit, which is what the manual says.

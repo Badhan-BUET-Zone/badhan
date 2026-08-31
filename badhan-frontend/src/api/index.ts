@@ -42,7 +42,14 @@ badhanAxios.interceptors.request.use((config) => {
 
   myConsole.log('%cAPI:', 'color: #ff00ff',' REQUEST TO ' + config.method + ' ' + config.url + ': ', config.data, config.params)
 
-  store.dispatch('notification/clearNotification')
+  // Clearing the current toast is right for a request the USER just triggered: the old message
+  // is about the last thing they did, not this one. It is wrong for a background fetch nobody
+  // asked for — the member chat fetches on app open and immediately after sign-in, and an
+  // unmarked one wipes "Signed in successfully" off the screen before it can be read.
+  // A caller opts out by setting `backgroundRequest` on its config.
+  if (!(config as any).backgroundRequest) {
+    store.dispatch('notification/clearNotification')
+  }
 
   config.headers = {
     'x-auth': store.getters.getToken
@@ -580,6 +587,49 @@ const handleDELETEFeedback = async (feedbackId: string) => {
   }
 }
 
+/**
+ * The member chat's three calls.
+ *
+ * Nothing here branches on guest mode. The request interceptor already attaches `x-auth`, and
+ * `enableGuestAPI` already rewrites the base URL to `/guest`, so these same three functions
+ * drive the demo and the live room alike — which is the whole reason the backend mirrors the
+ * routes rather than the frontend hiding the feature.
+ */
+
+// One route, three reads, told apart only by which cursor is present:
+//   {}                          the newest page          (app open)
+//   { after }                   everything strictly newer (Fetch messages / after a send)
+//   { before, beforeId }        the page older than one message (scrolling up)
+// Axios drops undefined params, so the caller passes the shape it means and nothing else.
+const handleGETMessages = async (params: { after?: number, before?: number, beforeId?: string, limit?: number }) => {
+  try {
+    // Marked as a background request: reading the room is not a user action that should clear
+    // whatever notification is on screen. Sending and deleting are, and are not marked.
+    return await badhanAxios.get('/messages', { params, backgroundRequest: true } as any)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+// `text` and nothing else. `senderId` and `date` are the server's to decide, and a body that
+// states either is refused rather than silently ignored — so do not "helpfully" add them here.
+const handlePOSTMessage = async (payload: { text: string }) => {
+  try {
+    return await badhanAxios.post('/messages', payload)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+// A query parameter, matching every other delete in this file but ActiveDonors.
+const handleDELETEMessage = async (messageId: string) => {
+  try {
+    return await badhanAxios.delete('/messages', { params: { messageId } })
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 const handleGETPublicContacts = async () => {
   try {
     return await badhanAxios.get('/publicContacts')
@@ -737,6 +787,9 @@ export {
   handleGETFeedbacks,
   handleDELETEFeedback,
   handlePOSTFeedback,
+  handleGETMessages,
+  handlePOSTMessage,
+  handleDELETEMessage,
   handleGETCertificate,
   handlePOSTPublicContacts,
   handleDELETEPublicContacts,

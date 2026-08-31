@@ -72,6 +72,27 @@ export const getAddress = ():string => {
 export const getComment = ():string => {
   return faker.lorem.sentence()
 }
+// Chat lines rather than lorem: the member room is demoed with the panel open, and a wall of
+// "Lorem ipsum dolor sit amet" tells a viewer nothing about what the feature is for. These read
+// like the traffic the room is actually meant to carry.
+const messageTexts: string[] = [
+  'Need 2 bags of O+ at DMC tonight, anyone free?',
+  'Donor confirmed for the Suhrawardy case, thanks everyone',
+  'Reminder: the intake camp starts at 9am tomorrow',
+  'Can someone from Titumir take a call at 4pm?',
+  'A- needed urgently at BSMMU, patient party is waiting',
+  'Please update the donation you made last week',
+  'We are short of volunteers for Friday, put your name down',
+  'B+ arranged, standing down the request',
+  'Who has the printed QR codes from last camp?',
+  'Two donors from batch 21 signed up today',
+  'AB- request came in, checking availability now',
+  'Camp wrapped up, 34 donors registered'
+]
+
+export const getMessageText = ():string => {
+  return messageTexts[getRandomIndex(messageTexts.length - 1)]
+}
 export const getTimestamp = (day: number):number => {
   return new Date().getTime() - 24 * 3600 * 1000 * getRandomIndex(day)
 }

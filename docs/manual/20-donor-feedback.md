@@ -3,7 +3,7 @@
 > **Written for readers with no coding experience.** This manual assumes no programming or
 > technical knowledge of any kind — only that you use the Badhan app.
 
-[← Previous: Glossary](19-glossary.md) · [Contents](README.md)
+[← Previous: Glossary](19-glossary.md) · [Contents](README.md) · [Next: Member chat →](21-member-chat.md)
 
 ---
 
@@ -345,4 +345,4 @@ There is nothing to act on. Read it, and discard it.
 
 ---
 
-[← Previous: Glossary](19-glossary.md) · [Contents](README.md)
+[← Previous: Glossary](19-glossary.md) · [Contents](README.md) · [Next: Member chat →](21-member-chat.md)

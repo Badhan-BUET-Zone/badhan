@@ -126,6 +126,41 @@ cleanly.
 
 ---
 
+## Member chat
+
+**I am not seeing new messages.**
+That is expected. Nothing arrives on its own — press **Fetch messages** at the top of the
+conversation. The app only checks when you open it, when you press that button, and when you send
+something. See [chapter 21](21-member-chat.md).
+
+**The chat is empty.**
+Check your connection. Nothing about the chat is stored on your phone, so with no internet the
+conversation is blank. No messages have been lost; they come back when you are online again.
+
+**It says *More messages waiting* after I already fetched.**
+Press it again. One press brings back thirty messages at most, so after a few days away you are
+being caught up a page at a time. Keep pressing until the button goes back to saying **Fetch
+messages**. Nothing is lost in between.
+
+**A message I saw is gone.**
+Somebody deleted it — the author, or a super admin. Deleted messages leave no marker behind, so
+there is nothing on screen to say it was ever there. A super admin can find what was removed in the
+activity log.
+
+**The red number will not clear.**
+It clears when you **open** the chat, and only then. A message arriving while the chat is already
+open raises the number behind it. Close the chat and open it again.
+
+**I was signed out when I opened the chat.**
+Your membership was changed — you are no longer at Volunteer level or above. Sign in again and the
+app will know your new role. If you think that is a mistake, ask a hall admin or super admin.
+
+**I cannot delete somebody else's message.**
+Only its author can, and super admins. A hall admin cannot, because this room is not divided by
+hall.
+
+---
+
 ## Messages and refusals
 
 **"Service unavailable" / "Please try again after 5 minutes."**

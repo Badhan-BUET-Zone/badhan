@@ -202,6 +202,185 @@ export class GuestController extends Controller {
     }
   }
 
+  /**
+   * THE FIXED ROOM, BUILT ONCE.
+   *
+   * Every other guest route fabricates a fresh payload per request, which is fine when the
+   * response is a page in its own right. It is not fine here: the panel PAGES. Scrolling up
+   * asks for "the messages older than this one", so if the set were rebuilt each time, the
+   * second page would be forty different messages with forty different timestamps and the
+   * scroller would either loop forever or jump. So the demo room is generated once, on first
+   * use, and every request after that reads slices of the same array.
+   *
+   * Oldest-first, matching the real route, on a fixed four-minute spacing rather than
+   * getTimestamp's random one — a demo whose messages arrive out of order looks like a bug in
+   * the ordering the whole feature is built on.
+   */
+  private static demoRoom: any[] | null = null
+
+  private static getDemoRoom (): any[] {
+    if (GuestController.demoRoom !== null) {
+      return GuestController.demoRoom
+    }
+
+    const COUNT: number = 40
+    const SPACING_MS: number = 4 * 60 * 1000
+    const newest: number = Date.now() - 5 * 60 * 1000
+
+    // A handful of recurring senders rather than forty strangers: a room where nobody ever
+    // speaks twice does not read as a conversation.
+    const senders: any[] = Array.from({ length: 6 }, (): any => ({
+      _id: faker.getId(),
+      name: faker.getName(),
+      studentId: faker.getStudentId(),
+      hall: faker.getHall(),
+      designation: faker.getDesignation()
+    }))
+
+    GuestController.demoRoom = Array.from({ length: COUNT }, (_unused: unknown, index: number): any => ({
+      _id: faker.getId(),
+      text: faker.getMessageText(),
+      date: newest - (COUNT - 1 - index) * SPACING_MS,
+      // One deliberate null, so the demo also shows how a message from a member whose record
+      // has since been deleted renders. It is a real state of the live route, not an error.
+      //
+      // Placed near the NEWEST end on purpose: it has to fall inside the first page, because
+      // nobody scrolls up in a demo and a state nobody sees is not being demonstrated.
+      sender: index === COUNT - 5 ? null : senders[index % senders.length]
+    }))
+
+    return GuestController.demoRoom
+  }
+
+  /**
+   * Guest member chat — slices of the fixed room above.
+   *
+   * The cursors are honoured well enough that the panel's controls visibly do something,
+   * which is the whole point of mirroring the route rather than hiding the feature:
+   *
+   *   after   → always empty. Nothing new ever arrives in a demo, because nothing can send
+   *             into this room. The Fetch messages button therefore truthfully reports "no
+   *             new messages" rather than inventing traffic that the next press contradicts.
+   *   before  → the next slice of the fixed set, with a `hasMore` that really does go false
+   *             at the top of the history. A scroller that is lied to never stops asking.
+   *   neither → the newest page.
+   */
+  @Get('messages')
+  @Hidden()
+  public async getMessages(
+    @Query() after?: number,
+    @Query() before?: number,
+    @Query() beforeId?: string,
+    @Query() limit?: number
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    messages: any[]
+    serverTime: number
+    hasMore: boolean
+  }> {
+    const room: any[] = GuestController.getDemoRoom()
+    const pageLimit: number = Math.min(Math.max(limit ?? 30, 1), 100)
+
+    let messages: any[] = []
+    let hasMore: boolean = false
+
+    if (after !== undefined) {
+      // Deliberately empty, and `hasMore` false with it — see the note above.
+      messages = []
+      hasMore = false
+    } else if (before !== undefined) {
+      // Locate the cursor message by id, falling back to its timestamp. The real route needs
+      // both halves to survive two messages sharing a millisecond; nothing here shares one, so
+      // the id alone is enough and the date is only a fallback for a cursor this process did
+      // not mint — which is what a page reload after a restart hands back.
+      let cursorIndex: number = room.findIndex((m: any): boolean => m._id === beforeId)
+      if (cursorIndex === -1) {
+        cursorIndex = room.findIndex((m: any): boolean => m.date >= before)
+      }
+      if (cursorIndex === -1) {
+        cursorIndex = room.length
+      }
+      const start: number = Math.max(cursorIndex - pageLimit, 0)
+      messages = room.slice(start, cursorIndex)
+      hasMore = start > 0
+    } else {
+      const start: number = Math.max(room.length - pageLimit, 0)
+      messages = room.slice(start)
+      hasMore = start > 0
+    }
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Messages fetched successfully',
+      messages,
+      serverTime: Date.now(),
+      hasMore
+    }
+  }
+
+  /**
+   * Guest send — echoes the text back as a 201 and stores nothing.
+   *
+   * The echo carries a faker sender in the same element shape the real route returns, so the
+   * composer clears and the bubble appears exactly as it would live. It does not join the
+   * fixed room: a demo that accumulated messages would drift further from its own scroll
+   * positions the longer somebody played with it.
+   */
+  @Post('messages')
+  @Hidden()
+  public async postMessage(@Body() body: { text: string }): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    sentMessage: any
+  }> {
+    this.setStatus(HTTP_STATUS.CREATED)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.CREATED,
+      message: 'Message sent successfully',
+      sentMessage: {
+        _id: faker.getId(),
+        // Echoed rather than faked: the demo has to show the sender their own words.
+        text: typeof body?.text === 'string' ? body.text.trim() : faker.getMessageText(),
+        date: Date.now(),
+        sender: {
+          _id: faker.getId(),
+          name: faker.getName(),
+          studentId: faker.getStudentId(),
+          hall: faker.getHall(),
+          designation: faker.getDesignation()
+        }
+      }
+    }
+  }
+
+  /**
+   * Guest delete — answers 200 without removing anything.
+   *
+   * `messageId` as a QUERY parameter, like its real counterpart and like
+   * DELETE /guest/feedbacks. A guest route that took it differently would let the frontend
+   * work in demo mode and 404 in production.
+   */
+  @Delete('messages')
+  @Hidden()
+  public async deleteMessage(@Query() messageId: string): Promise<{
+    status: string
+    statusCode: number
+    message: string
+  }> {
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Message deleted successfully'
+    }
+  }
+
   /** Guest sign out */
   @Delete('users/signout')
   @Hidden()

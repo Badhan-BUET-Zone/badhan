@@ -6,6 +6,7 @@ import * as donationInterface from '../db/interfaces/donationInterface'
 import * as plateletDonationInterface from '../db/interfaces/plateletDonationInterface'
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
+import * as tokenCache from '../cache/tokenCache'
 import { IDonor, DonorModel, donorDefaultsStage } from '../db/models/Donor'
 import { IDonation } from '../db/models/Donation'
 import { IPlateletDonation } from '../db/models/PlateletDonation'
@@ -691,7 +692,8 @@ export class DonorsController extends Controller {
     // is done by hand, so no previous designation is stored.
     const isNewlyArchived: boolean = body.archiveFlag && !target.archiveFlag
     target.archiveFlag = body.archiveFlag
-    if (isNewlyArchived && target.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN) {
+    const isDemotedByArchiving: boolean = isNewlyArchived && target.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN
+    if (isDemotedByArchiving) {
       target.designation = DESIGNATIONS_INDEX.DONOR
     }
 
@@ -700,6 +702,12 @@ export class DonorsController extends Controller {
     }
 
     await target.save()
+
+    // Archiving demotes, so it has to invalidate the cached designation for the same reason
+    // PATCH /donors/designation does — see the comment there.
+    if (isDemotedByArchiving) {
+      tokenCache.clearAll()
+    }
 
     await logInterface.addLog(user._id, 'PATCH DONORS', target)
 
@@ -895,6 +903,16 @@ export class DonorsController extends Controller {
 
     donor.designation = to
     await donor.save()
+
+    // A DESIGNATION LIVES IN TWO PLACES AND BOTH HAVE TO MOVE.
+    //
+    // handleAuthentication caches the whole donor document against the token, so a member who
+    // has made any request since signing in is served from that cache on every later one. The
+    // row above is now correct and the cached copy is not, which means a route that gates on
+    // designation — handleVolunteerCheck, and the member chat behind it — would keep letting a
+    // demoted member through until the process restarted. Their token stays valid on purpose
+    // (the frontend signs them out on the 403), so the cache is the only thing to invalidate.
+    tokenCache.clearAll()
 
     await logInterface.addLog(user._id, `PATCH DONORS DESIGNATION (${from} → ${to})`, donor)
 

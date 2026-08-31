@@ -49,6 +49,18 @@ Do this when someone leaves Badhan or graduates. If you also want their record o
 of everyday searches, ask a super admin to archive it
 ([chapter 15](15-statistics-and-reports.md)).
 
+> **The change takes effect at once, on every device they are signed in on.** They are not
+> signed out — the app they already have open keeps showing whatever was on screen — but the
+> next thing they try to open that needs a member's permissions will refuse them. The same is
+> true of every promotion and demotion, and of archiving a member.
+
+### A change of rank applies immediately
+
+Whenever anybody's rank changes — promoted, demoted, or demoted automatically by being archived
+or replaced as hall admin — the new rank applies to their very next action. There is no delay,
+no waiting for them to sign out and back in, and nothing an administrator has to do afterwards
+to make it stick.
+
 ### Appointing a hall admin
 
 *Super admins only.*

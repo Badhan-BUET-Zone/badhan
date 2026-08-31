@@ -2,6 +2,9 @@
   <v-app id="app" app>
     <TopProgressBar/>
     <app-bar v-if="$store.getters['getToken']"></app-bar>
+    <!-- Outside <router-view> on purpose: one instance for the whole app, surviving every
+         route change. See the component for why that placement is load-bearing. -->
+    <ChatFab v-if="$store.getters['getToken']"></ChatFab>
     <v-main>
       <transition name="slide-fade" mode="out-in">
         <router-view app class="container"></router-view>
@@ -16,6 +19,7 @@
 
 <script>
 import AppBar from './components/AppShell/AppBar'
+import ChatFab from './components/AppShell/ChatFab'
 
 import Notification from './components/AppShell/Notification'
 import MessageBox from './components/AppShell/MessageBox'
@@ -35,6 +39,7 @@ export default {
     ConfirmationBox,
     MessageBox,
     'app-bar': AppBar,
+    ChatFab,
     Notification,
   },
   computed: {
@@ -45,6 +50,23 @@ export default {
   async mounted () {
     if(this.$store.getters['getToken'] && !await this.$store.dispatch('autoLogin')){
       await this.$router.push('/')
+      return
+    }
+
+    /*
+      TRIGGER 1 OF 4: app open.
+
+      AFTER autoLogin and only on a truthy result. Firing it in parallel races the token check
+      and puts a 401 toast on every cold start with an expired session.
+
+      It is deliberately NOT awaited into anything that gates rendering: it rides the existing
+      appBarLoadingFlag interceptor like every other call, and a failure is a toast and nothing
+      worse. Nobody should be unable to search for a donor because chat history would not load.
+
+      fetchInitialMessages sends NO cursor, and that is the whole point — see the action.
+    */
+    if (this.$store.getters['getToken']) {
+      this.$store.dispatch('chat/fetchInitialMessages')
     }
   }
 }

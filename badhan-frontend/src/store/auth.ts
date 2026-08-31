@@ -11,7 +11,7 @@ import {
 
 import ldb from '@/localDatabase'
 import {Commit, Dispatch} from "vuex";
-import { HTTP_STATUS } from '@/mixins/constants'
+import { DESIGNATIONS_INDEX, HTTP_STATUS } from '@/mixins/constants'
 
 interface AuthStoreStateInterface {
   token: null | string
@@ -219,6 +219,27 @@ const actions = {
       ldb.token.clear()
     }
     commit('setLoginFlag')
+
+    /*
+      TRIGGER 2 OF 4: a fresh sign-in.
+
+      App.vue's mounted hook has long since run, so without this someone who signs in
+      mid-session sees an empty room until they touch something. Not awaited, for the same
+      reason as trigger 1: signing in must not be held up by chat history.
+
+      DESIGNATION IS NOT CHECKED BY THE SERVER ALONE HERE. A plain donor's fetch is refused with
+      a 403, and the chat store treats a 403 as a logout — which would sign somebody out of the
+      app the instant they signed into it. So the dispatch is gated on being a member.
+
+      IT MUST COME BEFORE THE SUCCESS NOTIFICATION, AND THAT IS NOT COSMETIC. The API request
+      interceptor clears the current notification on every outgoing request, so a fetch started
+      after the toast wipes "Signed in successfully" off the screen before anybody can read it.
+      Ordering it first means the toast is the last thing to happen and survives.
+    */
+    if (donor.designation >= DESIGNATIONS_INDEX.VOLUNTEER) {
+      dispatch('chat/fetchInitialMessages', null, { root: true })
+    }
+
     dispatch('notification/notifySuccess',signInResponse.data.message)
     return true
   }

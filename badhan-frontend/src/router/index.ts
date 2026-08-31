@@ -25,6 +25,20 @@ interface CustomRoute extends Route{
 
 const routes: CustomRouteConfig[] = [
   {
+    // The member chat's own page. The floating button is the other way in and hides itself on
+    // this route; the drawer entry carries no badge, because the button already is one and two
+    // counters that can disagree is worse than one that cannot.
+    name: 'Chat',
+    path: '/chat',
+    component: () => import('../views/Chat.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Member Chat',
+      designation: 1,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'Feedback',
     path: '/feedback',
     component: () => import('../views/Feedback.vue'),

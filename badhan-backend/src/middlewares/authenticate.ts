@@ -101,6 +101,23 @@ const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunc
   next()
 }
 
+/**
+ * "Volunteer or above" — the member gate.
+ *
+ * Holding a valid token is NOT the same as being a Badhan member. A donor at
+ * DESIGNATIONS_INDEX.DONOR normally has no password and never signs in, but
+ * DonorsController's demotion path rewrites a member's designation to DONOR in place and does
+ * not revoke their tokens. Between that demotion and the token expiring, a demoted person is
+ * an authenticated `designation: 0` caller. Routes that are for members only must say so
+ * themselves rather than leaning on authentication having happened.
+ */
+const handleVolunteerCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
+  if (res.locals.middlewareResponse.donor.designation < DESIGNATIONS_INDEX.VOLUNTEER) {
+    return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403('Only Badhan members can use the member chat',{}))
+  }
+  next()
+}
+
 const handleHigherDesignationCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation &&
         res.locals.middlewareResponse.donor._id !== res.locals.middlewareResponse.targetDonor._id) {
@@ -139,6 +156,7 @@ export default {
   handleAuthenticationIfHallStated,
   handleHallAdminCheck,
   handleSuperAdminCheck,
+  handleVolunteerCheck,
   handleHallPermission,
   handleHigherDesignationCheck,
   handleHallPermissionOrCheckAvailableToAll

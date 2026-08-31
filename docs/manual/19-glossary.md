@@ -65,6 +65,10 @@ are counted separately. [Chapter 8](08-recording-donations.md)
 **Donor.** A person whose details are in the app. Also the lowest level — and a level that
 cannot sign in.
 
+**Fetch messages.** The button at the top of the member chat, and the only ordinary way new
+messages appear. Nothing in the chat arrives on its own — the app checks when you open it, when you
+press this, and when you send something. [Chapter 21](21-member-chat.md).
+
 **Guest login.** A demonstration sign-in with made-up donors, where nothing is saved. Safe for
 learning and showing. [Chapter 3](03-signing-in.md)
 
@@ -82,6 +86,14 @@ neither can be given to a new donor.
 [Chapter 15](15-statistics-and-reports.md)
 
 **Member.** Anybody at volunteer level or above — that is, anybody who can sign in.
+
+**Member chat.** One conversation shared by every Badhan member at Volunteer level or above,
+across every hall. Donors cannot see it. Reached from the round button in the top-right corner or
+from **Messages** in the menu. [Chapter 21](21-member-chat.md).
+
+**More messages waiting.** What the *Fetch messages* button says when a catch-up did not fit in
+one go. One press brings back thirty messages at most; keep pressing until the label goes back to
+**Fetch messages**.
 
 **Platelet donation.** A donation of platelets rather than whole blood. The rest period is 12
 days instead of 120.
@@ -137,6 +149,10 @@ given it** — the creation form, the CSV import and the public registration pag
 the seven halls. Donors added before that rule keep it, and can still be searched, edited and
 archived by members of any hall; their comment cannot be changed and they cannot be made a
 volunteer until someone sets their real hall.
+
+**Unread badge.** The red number on the round chat button. It counts messages the app has fetched
+since you last **opened** the chat, never your own, and it clears only on opening the chat — not on
+fetching. It is not a count of everything waiting on the server.
 
 **Volunteer.** A working member of Badhan. Can search, call, record donations and add donors,
 within their own hall. Cannot promote anybody.

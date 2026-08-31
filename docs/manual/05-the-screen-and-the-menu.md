@@ -18,6 +18,18 @@ Across the top of every screen there is a coloured bar with three things on it:
 On a phone the bar shrinks out of the way as you scroll down, and comes back when you scroll
 up.
 
+## The round button in the corner
+
+Just below the bar, on the right, there is a **round button with a speech-bubble icon**. It is on
+every screen once you are signed in, and unlike the bar it does not move when you scroll.
+
+Tap it to open the **member chat** — one conversation shared by every Badhan member in every hall.
+A **red number** on it means messages have come in since you last opened it.
+
+It is the same conversation as the **Messages** menu entry, and it hides itself while you are on
+that page. [Chapter 21](21-member-chat.md) explains all of it, including the one thing worth
+knowing up front: new messages only appear when you ask for them.
+
 ## The menu
 
 Tap the three lines. A panel slides in from the left. At the very top it shows **your name**
@@ -30,6 +42,7 @@ may be shorter than a colleague's.
 | Menu entry | What it is | Who sees it |
 | --- | --- | --- |
 | **Home** | Search for donors. The page you will use most. [Chapter 6](06-searching-for-donors.md) | Volunteer and above |
+| **Messages** | The one conversation every Badhan member shares. [Chapter 21](21-member-chat.md) | Volunteer and above |
 | **Bookmarked Donors** | Your own shortlist of donors. [Chapter 10](10-bookmarked-donors.md) | Volunteer and above |
 | **Feedback** | Messages and registrations sent from the public pages — and, in collapsed panels at the top of it, the printed poster and the registration QR generator. Neither has a menu entry of its own. [Chapter 20](20-donor-feedback.md) | Volunteer and above |
 | **Donor Creation** | Opens into three entries below | Volunteer and above |
