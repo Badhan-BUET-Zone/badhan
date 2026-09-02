@@ -109,6 +109,10 @@ On a computer, **Enter** sends and **Shift+Enter** starts a new line. On a phone
 starts a new line and only the arrow sends — otherwise half of a two-line message would go out
 before you finished writing it.
 
+The box grows as you add lines, but only up to about five lines — after that it scrolls inside
+itself instead of getting taller, and the conversation above it shrinks to make room. The line you
+are typing and the send arrow therefore stay on screen no matter how long the message gets.
+
 If a message fails to send, **what you typed stays in the box**. Fix whatever the app complains
 about and press send again. You never have to retype it.
 

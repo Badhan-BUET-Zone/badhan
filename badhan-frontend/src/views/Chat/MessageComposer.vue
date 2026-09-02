@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-end pa-2">
+  <div class="chat-composer d-flex align-end pa-2">
     <v-textarea
       v-model="text"
       data-cy="chatComposerInput"
@@ -80,3 +80,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/*
+  A CEILING ON auto-grow. Left to itself the textarea grows a line at a time with no limit, and
+  since the panel hangs from a fixed button the extra height pushes the send button — and the
+  line being typed — off the bottom of the screen. Past about five lines the box scrolls
+  internally instead of growing, which is what every chat composer does.
+*/
+.chat-composer ::v-deep textarea {
+  max-height: 120px;
+  overflow-y: auto;
+}
+</style>

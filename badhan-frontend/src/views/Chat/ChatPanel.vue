@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-xl d-flex flex-column" data-cy="chatPanel">
+  <v-card class="rounded-xl d-flex flex-column" :style="{ maxHeight: maxHeight }" data-cy="chatPanel">
     <v-card-title class="py-2">
       <span class="subtitle-1">Member chat</span>
       <v-spacer></v-spacer>
@@ -44,6 +44,18 @@ export default {
     listHeight: {
       type: String,
       default: '420px'
+    },
+    /**
+     * The panel's OWN ceiling, and the other half of the fix for a growing composer.
+     *
+     * `listHeight` alone assumes a one-line message box: as the textarea grows the card grows
+     * with it and the composer walks off the bottom edge. With a ceiling here the card stops
+     * growing and the list — which sets `min-height: 0` for exactly this — shrinks instead, so
+     * the box being typed into stays on screen.
+     */
+    maxHeight: {
+      type: String,
+      default: 'none'
     }
   }
 }

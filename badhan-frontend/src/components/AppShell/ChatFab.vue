@@ -52,7 +52,11 @@
         composer off the bottom edge — a chat you can read and cannot reply in. The subtrahend
         is the panel's own chrome: the title bar, the fetch row, the composer and the margins.
       -->
-      <ChatPanel list-height="min(420px, calc(100vh - 290px))" @close="panelOpen = false"></ChatPanel>
+      <ChatPanel
+        list-height="min(420px, calc(100vh - 290px))"
+        max-height="calc(100vh - 140px)"
+        @close="panelOpen = false"
+      ></ChatPanel>
     </v-menu>
 
     <!-- Phones: the same body in a full-width bottom sheet. -->
@@ -77,7 +81,13 @@
       </v-badge>
 
       <v-bottom-sheet v-model="panelOpen" content-class="rounded-t-xl">
-        <ChatPanel list-height="55vh" @close="panelOpen = false"></ChatPanel>
+        <!-- dvh where it exists: with the keyboard up, plain `vh` still measures the whole
+             screen, including the part the keyboard now covers. -->
+        <ChatPanel
+          list-height="min(55vh, calc(100dvh - 260px))"
+          max-height="90dvh"
+          @close="panelOpen = false"
+        ></ChatPanel>
       </v-bottom-sheet>
     </template>
   </div>

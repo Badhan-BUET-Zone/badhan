@@ -162,6 +162,11 @@ export default {
 .chat-scroller {
   overflow-y: auto;
   overflow-x: hidden;
+  /* The height above is a PREFERENCE, not a floor. Inside the panel this is a flex item in a
+     height-capped card, and a flex item defaults to min-height:auto — big enough for its own
+     content — which would make the card grow rather than the list shrink when the composer
+     gains a line. Zero here is what lets the list give up its space instead. */
+  min-height: 0;
 }
 /* Height rather than zero so the observer has something to intersect with. */
 .chat-top-sentinel {
