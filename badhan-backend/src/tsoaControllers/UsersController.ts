@@ -2,15 +2,13 @@ import 'reflect-metadata'
 import { Body, Controller, Delete, Example, Get, Middlewares, Patch, Path, Post, Response, Route, SuccessResponse, Tags, Request } from 'tsoa'
 import type { Response as ExResponse } from 'express'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import dotenv from '../dotenv'
 import * as donorInterface from '../db/interfaces/donorInterface'
 import * as tokenInterface from '../db/interfaces/tokenInterface'
 import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenCache from '../cache/tokenCache'
 import { IDonor } from '../db/models/Donor'
-import { JwtPayload } from '../db/models/Token'
 import userValidator from '../validations/users'
+import { REDIRECTION_TOKEN_DEFAULT_SECONDS, REDIRECTION_TOKEN_MAX_SECONDS, clampRedirectionTokenSeconds, redirectionTokenExpiresIn } from '../services/redirectionToken'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import { HTTP_STATUS } from '../constants'
@@ -184,131 +182,63 @@ export class UsersController extends Controller {
     }
   }
 
-  /** Create a temporary redirection token (expires in 30 seconds) */
+  /**
+   * Create a temporary token from the caller's own session, expiring on its own.
+   *
+   * `durationSeconds` is optional and defaults to 30 — the web-redirection handoff, which
+   * sends no body at all and must keep behaving exactly as it did. A longer one is for a
+   * credential handed to something outside the app, such as the prompt file the AI
+   * Integration page produces.
+   *
+   * The token is an ordinary auth token for as long as it lives: it carries the caller's own
+   * role and can do everything they can, so ask for the shortest duration that works.
+   */
   @Post('redirection')
   @SuccessResponse(201, 'Redirection token created')
+  @Response<{ status: string; statusCode: number; message: string }>(400, 'durationSeconds out of range', {
+    status: 'ERROR',
+    statusCode: HTTP_STATUS.BAD_REQUEST,
+    message: `durationSeconds must be an integer between 1 and ${REDIRECTION_TOKEN_MAX_SECONDS}`
+  })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
     status: 'ERROR',
     statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Token insertion failed'
   })
-  @Example<{ status: string; statusCode: number; message: string; token: string }>({
+  @Example<{ status: string; statusCode: number; message: string; token: string; durationSeconds: number }>({
     status: 'OK',
     statusCode: HTTP_STATUS.CREATED,
     message: 'Redirection token created',
-    token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
+    token: 'dvsoigneoihegoiwsngoisngoiswgnbon',
+    durationSeconds: REDIRECTION_TOKEN_DEFAULT_SECONDS
   })
-  @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
-  public async createRedirectionToken(@Request() req: any): Promise<{ status: string; statusCode: number; message: string; token?: string }> {
+  @Middlewares([userValidator.validatePOSTRedirection, rateLimiter.commonLimiter, authenticator.handleAuthentication])
+  public async createRedirectionToken(@Request() req: any, @Body() body?: { durationSeconds?: number }): Promise<{ status: string; statusCode: number; message: string; token?: string; durationSeconds?: number }> {
     const res: ExResponse = (req as any).res
     const donor: IDonor = res.locals.middlewareResponse.donor
 
-    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, '30s')
+    // Read off req.body rather than the tsoa-bound `body`: the validator's `.toInt()` writes
+    // the coerced value back onto the express body, and an absent body is `{}` there rather
+    // than undefined.
+    const requestedSeconds: number | undefined = (req.body ?? {}).durationSeconds
+    const expiresIn: string = redirectionTokenExpiresIn(requestedSeconds)
+
+    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, expiresIn)
 
     if (tokenInsertResult.status !== 'OK') {
       this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
       return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
     }
 
-    await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
+    await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', { durationSeconds: clampRedirectionTokenSeconds(requestedSeconds) })
 
     this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
       statusCode: HTTP_STATUS.CREATED,
       message: 'Redirection token created',
-      token: tokenInsertResult.data!.token
-    }
-  }
-
-  /** Exchange temporary redirection token for a permanent authentication token */
-  @Patch('redirection')
-  @SuccessResponse(201, 'Redirected login successful')
-  @Response<{ status: string; statusCode: number; message: string }>(401, 'Session Expired', {
-    status: 'ERROR',
-    statusCode: HTTP_STATUS.UNAUTHORIZED,
-    message: 'Session Expired'
-  })
-  @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found / Token not found', {
-    status: 'ERROR',
-    statusCode: HTTP_STATUS.NOT_FOUND,
-    message: 'Donor not found'
-  })
-  @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
-    status: 'ERROR',
-    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
-    message: 'Token insertion failed'
-  })
-  @Example<{ status: string; statusCode: number; message: string; token: string; donor: any }>({
-    status: 'OK',
-    statusCode: HTTP_STATUS.CREATED,
-    message: 'Redirected login successful',
-    token: 'dvsoigneoihegoiwsngoisngoiswgnbon',
-    donor: {
-      _id: 'jhdwiurh837921',
-      phone: 8801521438557,
-      name: 'Mir Mahathir',
-      studentId: '1605011',
-      email: 'mirmahathir1@gmail.com',
-      lastDonation: 786534785,
-      bloodGroup: 2,
-      hall: 5,
-      roomNumber: '3009',
-      address: 'Azimpur',
-      comment: 'Developer of badhan',
-      commentTime: 0,
-      designation: 3,
-      availableToAll: true
-    }
-  })
-  @Middlewares([rateLimiter.redirectionSignInLimiter])
-  public async redirectedAuthentication(
-    @Body() body: { token: string },
-    @Request() req: any
-  ): Promise<{ status: string; statusCode: number; message: string; token?: string; donor?: any }> {
-    const token: string = body.token
-    const res: ExResponse = (req as any).res
-
-    let decodedDonor: JwtPayload
-    try {
-      decodedDonor = await jwt.verify(token, dotenv.JWT_SECRET) as JwtPayload
-    } catch (_e) {
-      this.setStatus(HTTP_STATUS.UNAUTHORIZED)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.UNAUTHORIZED, message: 'Session Expired' }
-    }
-
-    const donorQueryResult: {data?: IDonor, message: string, status: string} = await donorInterface.findDonorByQuery({ _id: decodedDonor._id })
-
-    if (donorQueryResult.status !== 'OK') {
-      this.setStatus(HTTP_STATUS.NOT_FOUND)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Donor not found' }
-    }
-
-    const donor: IDonor = donorQueryResult.data!
-
-    const tokenDeleteResponse: {message: string, status: string} = await tokenInterface.deleteTokenDataByToken(token)
-
-    if (tokenDeleteResponse.status !== 'OK') {
-      this.setStatus(HTTP_STATUS.NOT_FOUND)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: 'Token not found' }
-    }
-
-    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, null)
-
-    if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
-    }
-
-    await logInterface.addLog(donor._id, 'PATCH USERS REDIRECTION', {})
-
-    this.setStatus(HTTP_STATUS.CREATED)
-    return {
-      status: 'OK',
-      statusCode: HTTP_STATUS.CREATED,
-      message: 'Redirected login successful',
       token: tokenInsertResult.data!.token,
-      donor
+      durationSeconds: clampRedirectionTokenSeconds(requestedSeconds)
     }
   }
 

@@ -7,6 +7,15 @@ export class NotificationComponent {
     return cy.get('[data-cy="notificationTextId"]').should('be.visible').invoke('text');
   }
 
+  // For messages the test should not have to quote in full — a toast whose wording is a sentence
+  // of advice, where only the fact that it fired is the assertion.
+  assertContains(expectedFragment: string): void {
+    cy.get('[data-cy="notificationTextId"]').should(($el) => {
+      expect($el).to.be.visible;
+      expect($el.text()).to.contain(expectedFragment);
+    });
+  }
+
   assertEquals(expectedText: string): void {
     cy.get('[data-cy="notificationTextId"]').should(($el) => {
       expect($el).to.be.visible;

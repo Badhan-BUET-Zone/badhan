@@ -230,7 +230,6 @@ export default {
       showFab: false,
 
       downloadCSVMessageFlag: false,
-      downloadCSVLoader: false,
 
       //vuex variables
       searchLoaderFlag: false,
@@ -550,34 +549,6 @@ export default {
           this.showTooltip = false
         }, 2000)
       })
-    },
-
-    async downloadInMobileClicked () {
-      this.downloadCSVLoader = true
-      const redirectionTokenResponse = this.$store.dispatch('requestRedirectionToken')
-      this.downloadCSVLoader = false
-      if (redirectionTokenResponse.status !== HTTP_STATUS.CREATED) return
-      const searchRouteData = this.$router.resolve({
-        name: 'Home',
-        query: {
-          name: this.name,
-          bloodGroup: this.bloodGroup,
-          batch: this.batch,
-          address: this.address,
-          hall: this.hall,
-          availability: this.availability,
-          notAvailability: this.notAvailability,
-          radios: this.radios,
-          download: true,
-          archiveFlag: this.archiveFlag
-        }
-      })
-      const redirectionURL = searchRouteData.href.substr(1, searchRouteData.href.length - 1)
-      const routeData = this.$router.resolve({
-        name: 'RedirectionPage',
-        query: { token: redirectionTokenResponse.data.token, payload: redirectionURL }
-      })
-      window.open(environmentService.getFrontendBaseURL() + '/' + routeData.href, '_blank')
     },
 
     clearFields () {

@@ -22,12 +22,6 @@ const signInLimiter: RequestHandler = rateLimit({
   message: new TooManyRequestsError429('Please try again after 5 minutes',{})
 })
 
-const redirectionSignInLimiter: RequestHandler = rateLimit({
-  windowMs: minute,
-  max: 3 * rateLimiterEnabled,
-  message: commonRateLimiterError
-})
-
 const donorDeletionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
@@ -121,7 +115,6 @@ export default {
   signInLimiter,
   deleteDonationLimiter,
   donorDeletionLimiter,
-  redirectionSignInLimiter,
   commonLimiter,
   passwordRequestLimiter,
   publicContactInsertionLimiter,

@@ -3,7 +3,6 @@ import {
   handleDELETESignOut,
   handleDELETESignOutAll,
   handleGETDonorsMe,
-  handlePATCHRedirectedAuthentication,
   handlePOSTRedirection,
   handlePOSTSignIn,
   resetBaseURL
@@ -17,7 +16,6 @@ interface AuthStoreStateInterface {
   token: null | string
   signInLoaderFlag: boolean
   error: string
-  redirectionRequestMade: boolean
   isLoggedIn: boolean
   isGuest: boolean
   autoRedirectionPath: string | null
@@ -28,7 +26,6 @@ const state: AuthStoreStateInterface = {
   signInLoaderFlag: false,
   error: '',
 
-  redirectionRequestMade: false,
   isLoggedIn: false,
   isGuest: false,
 
@@ -128,25 +125,11 @@ const actions = {
     ldb.reset()
     resetBaseURL()
   },
-  async requestRedirectionToken ({ commit }: {commit: Commit}) {
+  async requestRedirectionToken ({ commit }: {commit: Commit}, durationSeconds?: number) {
     commit('setLoadingTrue')
-    const postRedirectionTokenResponse = await handlePOSTRedirection()
+    const postRedirectionTokenResponse = await handlePOSTRedirection(durationSeconds)
     commit('setLoadingFalse')
     return postRedirectionTokenResponse
-  },
-  async redirectionLogin ({ commit }: {commit: Commit}, payload: string) {
-    ldb.reset()
-    commit('signInLoaderFlagOn')
-    const patchRedirectionResponse = await handlePATCHRedirectedAuthentication({ token: payload })
-    commit('signInLoaderFlagOff')
-    if (patchRedirectionResponse.status !== HTTP_STATUS.CREATED) {
-      return false
-    }
-    commit('setToken', patchRedirectionResponse.data.token)
-    commit('setMyProfile', patchRedirectionResponse.data.donor)
-    commit('setLoginFlag')
-    commit('saveTokenToLocalStorage')
-    return true
   },
   async autoLogin ({ commit, state }: {commit: Commit, state: AuthStoreStateInterface} ) {
     if (state.token === null) return true

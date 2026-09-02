@@ -157,4 +157,62 @@ The page changes nothing on its own. It is safe to open.
 
 ---
 
+## AI Integration
+
+This page prepares **one file to hand to an AI assistant** — the kind you type instructions to in
+plain English. The file explains to it how Badhan's records can be reached, and it carries a
+sign-in inside it. With that file, an assistant can answer questions like *"find O+ donors in
+Titumir who have not donated since March"* without anyone writing code.
+
+You do not need to understand what is in the file. Two buttons:
+
+| Button | What it does |
+| --- | --- |
+| **Download Prompt File** | Saves the file to your device, named `badhan-api-prompt.md`. |
+| **Copy to Clipboard** | Puts the same text on the clipboard, to paste straight into an assistant. |
+
+**Preview the file (token hidden)** opens the whole text so you can read it first. No sign-in
+appears in the preview, and none exists yet: nothing is created until you press one of the two
+buttons.
+
+The page also names the **server the file points at**. A file made here works only against that
+server.
+
+### The file stops working after 30 minutes
+
+The sign-in inside the file is **not your own**. Each press of a button asks the server for a
+fresh **temporary token that expires 30 minutes later**, and the file is dead from then on — the
+assistant simply starts getting refused. Nothing you do here affects your own session, and you
+stay signed in as normal.
+
+Because the clock starts when you press the button, **make the file when you are ready to use
+it**, not in advance. If a file has gone stale, come back and press the button again; there is no
+limit on how many you make.
+
+### Read this before you send that file anywhere
+
+For those 30 minutes the token **is you**. Anyone holding the file can do everything your role
+allows, as you, without knowing your password — read every donor, and change or delete records.
+Thirty minutes is plenty of time for that.
+
+So, while it is live, treat the file as you would treat your password:
+
+- **Do not email it, post it in a group chat, or put it in shared storage.**
+- **Do not give it to an assistant you would not trust with your password.** Pasting it into an
+  online service sends that token to that company.
+- **Delete the downloaded file when you are done with it.** It expires on its own, but there is no
+  reason to leave it lying about.
+
+**If it goes somewhere it should not have, sign out.** Signing out ends the session every token
+from this page hangs off, including one still inside its 30 minutes. Otherwise, waiting half an
+hour is itself the fix.
+
+An assistant working from this file is **not restricted** to reading. It can add, change and
+delete real records while the token lasts, and the app cannot tell its actions apart from yours —
+the App Activity page will show them as yours. Everything in
+[chapter 17](17-rules-the-app-enforces.md) still applies: it can do exactly what your role allows,
+no more, and it is a super admin's role you would be lending it.
+
+---
+
 [← Previous: Statistics and reports](15-statistics-and-reports.md) · [Contents](README.md) · [Next: Rules the app enforces →](17-rules-the-app-enforces.md)

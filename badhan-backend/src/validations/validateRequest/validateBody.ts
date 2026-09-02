@@ -4,6 +4,7 @@ import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
 import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR, HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, HALL_INDICES_ALLOWED_FOR_QR } from '../../constants'
 import { FEEDBACK_TOKEN_MAX_MINUTES } from '../../services/feedbackToken'
+import { REDIRECTION_TOKEN_MAX_SECONDS } from '../../services/redirectionToken'
 import { FEEDBACK_TYPE_VALUES } from '../../db/models/Feedback'
 import { MESSAGE_TEXT_MAX_LENGTH } from '../../db/models/Message'
 
@@ -169,6 +170,15 @@ export const validateBODYDurationMinutes: ValidationChain = body('durationMinute
   .optional()
   .isInt({ min: 1, max: FEEDBACK_TOKEN_MAX_MINUTES }).toInt()
   .withMessage(`durationMinutes must be an integer between 1 and ${FEEDBACK_TOKEN_MAX_MINUTES}`)
+
+// The redirection token's lifetime, in seconds rather than minutes: its default is 30 seconds,
+// and a caller that wants the handoff token cannot ask for it in minutes. Optional — absent
+// means the service's default. The ceiling is enforced here and again in
+// redirectionToken.clampRedirectionTokenSeconds.
+export const validateBODYDurationSeconds: ValidationChain = body('durationSeconds')
+  .optional()
+  .isInt({ min: 1, max: REDIRECTION_TOKEN_MAX_SECONDS }).toInt()
+  .withMessage(`durationSeconds must be an integer between 1 and ${REDIRECTION_TOKEN_MAX_SECONDS}`)
 
 // The submission's own discriminator. It lives on the body rather than inside
 // feedbackJSON because it is what selects the payload validator and, later, the card.

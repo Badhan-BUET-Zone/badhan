@@ -26,8 +26,8 @@ export const convertObjectToCSV = (objArray:object[], keys: string[], delimiter:
   return str
 }
 
-export const textFileDownloadInWeb = (text: string, fileName: string) => {
-  const blob = new Blob([text], { type: 'text/csv;charset=utf-8' })
+export const textFileDownloadInWeb = (text: string, fileName: string, mimeType = 'text/csv;charset=utf-8') => {
+  const blob = new Blob([text], { type: mimeType })
   saveAs(blob, fileName)
 }
 

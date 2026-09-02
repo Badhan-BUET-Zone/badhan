@@ -140,6 +140,10 @@ export class NavigationDrawer {
     this.goToSuperAdminPage('appActivityNavigationId');
   }
 
+  goToAIIntegration(): void {
+    this.goToSuperAdminPage('aiIntegrationNavigationId');
+  }
+
   goToCertificateEnabledDonors(): void {
     // Open main drawer, expand Super Admin group, and click Certificate Enabled Donors
     this.open();

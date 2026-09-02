@@ -118,8 +118,7 @@
 <script>
 import { isGuestEnabled } from '@/api'
 import ldb from '@/localDatabase'
-import { environmentService } from '@/mixins/environment'
-import { HTTP_STATUS, PLAY_STORE_URL } from '@/mixins/constants'
+import { PLAY_STORE_URL } from '@/mixins/constants'
 import { installPromptService } from '@/mixins/installPrompt'
 
 export default {
@@ -291,6 +290,16 @@ export default {
               designation: 3
             },
             {
+              // Sits with the other developer-facing entries rather than beside My Profile: the
+              // file it hands out is a live session token, and that is a super admin's decision
+              // to make deliberately, not something to stumble into from a profile page.
+              icon: 'mdi-robot',
+              text: 'AI Integration',
+              to: '/aiIntegration',
+              id: 'aiIntegrationNavigationId',
+              designation: 3
+            },
+            {
               icon: 'mdi-developer-board',
               text: 'Dev Console',
               to: '/devconsole',
@@ -366,18 +375,6 @@ export default {
     },
     async signOutAllModalCanceled () {
       this.signOutAllModalFlag = false
-    },
-    async goToWebClicked () {
-      const redirectionTokenResponse = await this.$store.dispatch('requestRedirectionToken')
-      if (redirectionTokenResponse.status !== HTTP_STATUS.CREATED) return
-      const routeData = this.$router.resolve({
-        name: 'RedirectionPage',
-        query: {
-          token: redirectionTokenResponse.data.token,
-          payload: this.$route.fullPath
-        }
-      })
-      window.open(environmentService.getFrontendBaseURL() + routeData.href, '_blank')
     }
   },
   watch: {

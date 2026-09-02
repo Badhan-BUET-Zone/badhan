@@ -242,19 +242,12 @@ const handleDELETESignOutAll = async () => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
-const handlePOSTRedirection = async () => {
+// durationSeconds is optional and the server defaults it to 30 — the web-redirection handoff,
+// which is spent the moment it crosses the URL. A caller that needs the token to outlive one
+// request, such as the AI Integration page, asks for longer.
+const handlePOSTRedirection = async (durationSeconds?: number) => {
   try {
-    return await badhanAxios.post('/users/redirection')
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
-export interface PATCHRedirectionAuthenticationPayloadInterface {
-  token: string
-}
-const handlePATCHRedirectedAuthentication = async (payload: PATCHRedirectionAuthenticationPayloadInterface) => {
-  try {
-    return await badhanAxios.patch('/users/redirection', payload)
+    return await badhanAxios.post('/users/redirection', durationSeconds === undefined ? {} : { durationSeconds })
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
@@ -758,7 +751,6 @@ export {
   handleDELETESignOut,
   handleDELETESignOutAll,
   handlePOSTRedirection,
-  handlePATCHRedirectedAuthentication,
   handleGETDonorsMe,
   handlePOSTSignIn,
   handlePOSTDonors,

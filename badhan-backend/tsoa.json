@@ -12,12 +12,21 @@
       "info": {
         "title": "Badhan API",
         "version": "1.0.0",
-        "description": "Automatically generated documentation of Badhan API. Documentation is generated using TSOA and initially created by Sumaiya Azad."
+        "description": "Automatically generated documentation of Badhan API. Documentation is generated using TSOA\nand initially created by Sumaiya Azad.\n\n## How values are encoded\n\nThe API speaks **indices, not names**. A client that sends `\"B+\"` where a blood group belongs\ngets a validation error; the value is `2`. The mappings below are the whole vocabulary, and the\nindividual fields below repeat them where they appear.\n\n**Blood group** \u2014 `0` A+, `1` A-, `2` B+, `3` B-, `4` O+, `5` O-, `6` AB+, `7` AB-.\n`-1` is a search-only sentinel meaning *any blood group*; no stored record holds it.\nPublic contacts accept Rh-positive groups only (`0`, `2`, `4`, `6`).\n\n**Hall** \u2014 `0` Ahsan Ullah, `1` Sabekun Nahar Sony, `2` Kazi Nazrul Islam, `3` Dr. M. A. Rashid,\n`4` Sher-E-Bangla, `5` Suhrawardy, `6` Titumir, `7` Attached, `8` (Unknown).\nA donor record may hold any of these **except `7` Attached**. `8` means the hall was never\nrecorded, and `-1` is a search and report-drill-down sentinel meaning *any hall*.\nHalls `0`-`6` are the residence halls a hall admin is scoped to; `7` and `8` belong to nobody,\nso no hall admin can act on those records.\n\n**Designation** (role) \u2014 `0` Donor, `1` Volunteer, `2` Hall Admin, `3` Super Admin.\n\n**Dates** are Unix timestamps in **milliseconds**, sent and returned as numbers. Never ISO\nstrings. `0` is used for \"never\" on fields such as `lastDonation`.\n\n**Student ID** is a 7-digit string, not a number, and it is structured: `1905005` is batch\n`19` (admission year 2019), department `05`, roll `005`. The batch must be between `01` and the\ncurrent year's last two digits. Department codes are `01` Arch, `02` Ch.E, `04` CE, `05` CSE,\n`06` EEE, `08` IPE, `10` ME, `11` MME, `12` NAME, `15` URP, `16` WRE, `17` NCE, `18` BME \u2014\nplus `00`, which names no department and is accepted only because older records carry it.\nCodes not in that list are rejected.\n\n## Response envelope\n\nEvery JSON response carries `status` (`\"OK\"` or `\"ERROR\"`), `statusCode` and `message`, with\nthe payload alongside on success. Check `status`, not only the HTTP status code."
       },
       "servers": [
-        { "url": "https://badhan-buet-test.uc.r.appspot.com", "description": "Development server" },
-        { "url": "https://badhan-buet.uc.r.appspot.com", "description": "Production server — real donor data; every request here is live" },
-        { "url": "http://localhost:3000", "description": "Local development server" }
+        {
+          "url": "https://badhan-buet-test.uc.r.appspot.com",
+          "description": "Development server"
+        },
+        {
+          "url": "https://badhan-buet.uc.r.appspot.com",
+          "description": "Production server \u2014 real donor data; every request here is live"
+        },
+        {
+          "url": "http://localhost:3000",
+          "description": "Local development server"
+        }
       ],
       "components": {
         "securitySchemes": {
@@ -31,88 +40,251 @@
           "Donors": {
             "type": "object",
             "properties": {
-              "phone": { "type": "number" },
-              "password": { "type": "string" },
-              "studentId": { "type": "string" },
-              "bloodGroup": { "type": "number" },
-              "hall": { "type": "number" },
-              "address": { "type": "string" },
-              "roomNumber": { "type": "string" },
-              "designation": { "type": "number" },
-              "name": { "type": "string" },
-              "comment": { "type": "string" },
-              "commentTime": { "type": "number" },
-              "availableToAll": { "type": "boolean" },
-              "email": { "type": "string" },
-              "lastDonation": { "type": "number" },
-              "lastPlateletDonation": { "type": "number" }
+              "phone": {
+                "type": "number",
+                "description": "Bangladeshi number as a 13-digit integer including the country code, e.g. 8801521438557 \u2014 a number, not a string.",
+                "example": 8801521438557
+              },
+              "password": {
+                "type": "string"
+              },
+              "studentId": {
+                "type": "string",
+                "pattern": "^[0-9]{7}$",
+                "description": "Seven digits as a string, structured as batch + department + roll: 1905005 is batch 19 (2019), department 05 (CSE), roll 005. Department must be one of 00, 01, 02, 04, 05, 06, 08, 10, 11, 12, 15, 16, 17, 18; batch must fall between 01 and the current year.",
+                "example": "1905005"
+              },
+              "bloodGroup": {
+                "type": "number",
+                "enum": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                "description": "Blood group index: 0 A+, 1 A-, 2 B+, 3 B-, 4 O+, 5 O-, 6 AB+, 7 AB-. Search endpoints also accept -1, meaning any.",
+                "example": 2
+              },
+              "hall": {
+                "type": "number",
+                "enum": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  8
+                ],
+                "description": "Hall index: 0 Ahsan Ullah, 1 Sabekun Nahar Sony, 2 Kazi Nazrul Islam, 3 Dr. M. A. Rashid, 4 Sher-E-Bangla, 5 Suhrawardy, 6 Titumir, 7 Attached, 8 (Unknown). A donor record may hold any of these except 7 (Attached). Search and report drill-down also accept -1, meaning any.",
+                "example": 5
+              },
+              "address": {
+                "type": "string"
+              },
+              "roomNumber": {
+                "type": "string"
+              },
+              "designation": {
+                "type": "number",
+                "enum": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "description": "Role index: 0 Donor, 1 Volunteer, 2 Hall Admin, 3 Super Admin.",
+                "example": 3
+              },
+              "name": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              },
+              "commentTime": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string. 0 when no comment has been written."
+              },
+              "availableToAll": {
+                "type": "boolean"
+              },
+              "email": {
+                "type": "string"
+              },
+              "lastDonation": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string. 0 when the donor has never donated."
+              },
+              "lastPlateletDonation": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string. 0 when the donor has never donated platelets."
+              }
             },
-            "required": ["phone","studentId","bloodGroup","hall","address","roomNumber","name","comment","availableToAll"]
+            "required": [
+              "phone",
+              "studentId",
+              "bloodGroup",
+              "hall",
+              "address",
+              "roomNumber",
+              "name",
+              "comment",
+              "availableToAll"
+            ]
           },
           "Tokens": {
             "type": "object",
             "properties": {
-              "donorId": { "type": "string" },
-              "token": { "type": "string" },
-              "os": { "type": "string" },
-              "browserFamily": { "type": "string" },
-              "device": { "type": "string" },
-              "ipAddress": { "type": "string" },
-              "expireAt": { "type": "number" }
+              "donorId": {
+                "type": "string"
+              },
+              "token": {
+                "type": "string"
+              },
+              "os": {
+                "type": "string"
+              },
+              "browserFamily": {
+                "type": "string"
+              },
+              "device": {
+                "type": "string"
+              },
+              "ipAddress": {
+                "type": "string"
+              },
+              "expireAt": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string. Absent on a session token that does not expire."
+              }
             },
-            "required": ["donorId","token","os","browserFamily","device","ipAddress"]
+            "required": [
+              "donorId",
+              "token",
+              "os",
+              "browserFamily",
+              "device",
+              "ipAddress"
+            ]
           },
           "Donations": {
             "type": "object",
             "properties": {
-              "donorId": { "type": "string" },
-              "date": { "type": "number" }
+              "donorId": {
+                "type": "string"
+              },
+              "date": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string."
+              }
             },
-            "required": ["donorId","date"]
+            "required": [
+              "donorId",
+              "date"
+            ]
           },
           "PlateletDonations": {
             "type": "object",
             "properties": {
-              "donorId": { "type": "string" },
-              "date": { "type": "number" }
+              "donorId": {
+                "type": "string"
+              },
+              "date": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string."
+              }
             },
-            "required": ["donorId","date"]
+            "required": [
+              "donorId",
+              "date"
+            ]
           },
           "CallRecords": {
             "type": "object",
             "properties": {
-              "callerId": { "type": "string" },
-              "calleeId": { "type": "string" },
-              "date": { "type": "number" }
+              "callerId": {
+                "type": "string"
+              },
+              "calleeId": {
+                "type": "string"
+              },
+              "date": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string."
+              }
             },
-            "required": ["callerId","calleeId","date"]
+            "required": [
+              "callerId",
+              "calleeId",
+              "date"
+            ]
           },
           "Logs": {
             "type": "object",
             "properties": {
-              "donorId": { "type": "string" },
-              "date": { "type": "number" },
-              "operation": { "type": "string" },
-              "details": { "type": "object" }
+              "donorId": {
+                "type": "string"
+              },
+              "date": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string."
+              },
+              "operation": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              }
             },
-            "required": ["donorId","date","operation","details"]
+            "required": [
+              "donorId",
+              "date",
+              "operation",
+              "details"
+            ]
           },
           "PublicContacts": {
             "type": "object",
             "properties": {
-              "donorId": { "type": "string" },
-              "bloodGroup": { "type": "integer" }
+              "donorId": {
+                "type": "string"
+              },
+              "bloodGroup": {
+                "type": "integer",
+                "description": "Blood group index, as on a donor. Public contacts are kept for the Rh-positive groups only: 0 A+, 2 B+, 4 O+, 6 AB+.",
+                "example": 2
+              }
             },
-            "required": ["donorId","bloodGroup"]
+            "required": [
+              "donorId",
+              "bloodGroup"
+            ]
           },
           "ActiveDonors": {
             "type": "object",
             "properties": {
-              "donorId": { "type": "string" },
-              "markerId": { "type": "string" },
-              "time": { "type": "number" }
+              "donorId": {
+                "type": "string"
+              },
+              "markerId": {
+                "type": "string"
+              },
+              "time": {
+                "type": "number",
+                "description": "Unix timestamp in milliseconds, not an ISO string."
+              }
             },
-            "required": ["donorId","markerId","time"]
+            "required": [
+              "donorId",
+              "markerId",
+              "time"
+            ]
           }
         }
       }
@@ -124,5 +296,3 @@
     "authenticationModule": "src/tsoaAuth.ts"
   }
 }
-
-

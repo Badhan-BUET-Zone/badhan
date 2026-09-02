@@ -12,7 +12,15 @@ import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 @Route('search')
 @Tags('Search')
 export class SearchController extends Controller {
-  /** Search for donors filtered by criteria */
+  /**
+   * Search for donors filtered by criteria.
+   *
+   * @param bloodGroup Blood group index (0 A+, 1 A-, 2 B+, 3 B-, 4 O+, 5 O-, 6 AB+, 7 AB-), or -1 for any.
+   * @param hall Hall index (0 Ahsan Ullah, 1 Sabekun Nahar Sony, 2 Kazi Nazrul Islam, 3 Dr. M. A. Rashid, 4 Sher-E-Bangla, 5 Suhrawardy, 6 Titumir, 7 Attached, 8 (Unknown)), or -1 for any. A hall admin may only search their own hall.
+   * @param batch The two-digit batch of a student ID, e.g. "19" for 2019. Empty string means any batch.
+   * @param name Matched as a substring, case-insensitively. Empty string means any name.
+   * @param address Matched as a substring, case-insensitively. Empty string means any address.
+   */
   @Get('v3')
   @SuccessResponse(200, 'Donors queried successfully')
   @Response<{ status: string; statusCode: number; message: string }>(403, 'Not allowed to search other halls', {

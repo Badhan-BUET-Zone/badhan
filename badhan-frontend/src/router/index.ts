@@ -342,13 +342,16 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    name: 'RedirectionPage',
-    path: '/redirection',
-    component: () => import('../views/Redirection.vue'),
+    // Super admin only, and requiresAuth unlike its Backup & Restore and Schema Inconsistencies
+    // neighbours: the page's whole output is the signed-in session token, so there is nothing
+    // for it to show without one.
+    name: 'AIIntegration',
+    path: '/aiIntegration',
+    component: () => import('../views/AIIntegration.vue'),
     meta: {
-      requiresAuth: false,
-      title: 'Redirection',
-      designation: 0,
+      requiresAuth: true,
+      title: 'AI Integration',
+      designation: 3,
       reRouteIfAuthorized: false
     }
   },
