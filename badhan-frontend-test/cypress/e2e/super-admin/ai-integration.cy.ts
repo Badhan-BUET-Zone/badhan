@@ -35,6 +35,16 @@ const captureClipboard = (onCopy: (text: string) => void): void => {
   });
 };
 
+const selectAIApp = (app: string): void => {
+  cy.get('[data-cy="aiAppSelectorId"]').click();
+  cy.contains('.v-list-item', app).click();
+};
+
+const selectSetupAIApp = (app: string): void => {
+  cy.get('[data-cy="setupAiAppSelectorId"]').click();
+  cy.contains('.v-list-item', app).click();
+};
+
 const initialize = { jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18' } };
 
 describe('AI Integration', () => {
@@ -42,16 +52,18 @@ describe('AI Integration', () => {
   const drawer = new NavigationDrawer();
   const notification = new NotificationComponent();
 
-  it('downloads a prompt file carrying a fresh temporary token, not the session token', () => {
+  it('downloads a setup file carrying a fresh temporary token, not the session token', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
 
     drawer.goToAIIntegration();
 
-    cy.contains('The token inside it never expires').should('be.visible');
-
-    cy.get('[data-cy="aiPromptPreviewId"]').click();
-    cy.get('.ai-prompt-preview').should('be.visible').and('contain', 'x-auth');
+    cy.contains('Only connect an assistant you trust').should('be.visible');
+    cy.contains('Server the file points at:').should('not.exist');
+    cy.get('[data-cy="mcpEndpointId"]').should('not.exist');
+    selectSetupAIApp('I am using ChatGPT');
+    cy.get('[data-cy="aiSetupDomainId"]').should('be.visible').and('not.contain', '://');
+    cy.get('[data-cy="copyAiSetupDomainId"]').should('be.visible');
 
     cy.window().then((win) => {
       const sessionToken = win.localStorage.getItem('x-auth');
@@ -59,10 +71,8 @@ describe('AI Integration', () => {
 
       // Nothing on screen shows a real token — not the session one, and not a minted one either,
       // because none is minted until a button is pressed.
-      cy.get('.ai-prompt-preview').should('not.contain', sessionToken as string);
-
       cy.get('[data-cy="downloadAiPromptId"]').click();
-      notification.assertContains('Prompt file downloaded');
+      notification.assertContains('Setup file downloaded');
 
       cy.readFile(DOWNLOADED_FILE, { timeout: 15000 }).then((contents: string) => {
         expect(contents).to.contain('/openapi.json');
@@ -89,7 +99,7 @@ describe('AI Integration', () => {
     notification.assertEquals(MESSAGES.signInSuccess);
     drawer.goToAIIntegration();
 
-    cy.contains('Connect an MCP client').should('be.visible');
+    cy.contains('Connect an AI app').should('be.visible');
 
     let copied = '';
     captureClipboard((text) => {
@@ -100,8 +110,9 @@ describe('AI Integration', () => {
       const sessionToken = win.localStorage.getItem('x-auth');
       expect(sessionToken, 'session token in local storage').to.be.a('string').and.not.be.empty;
 
+      selectAIApp('I am using VS Code, Cursor, or another desktop AI app');
       cy.get('[data-cy="copyMcpConfigId"]').click({ force: true });
-      notification.assertContains('MCP config copied');
+      notification.assertContains('Desktop app setup copied');
 
       cy.wrap(null).should(() => {
         const parsed = JSON.parse(copied);
@@ -141,8 +152,9 @@ describe('AI Integration', () => {
       copied = text;
     });
 
+    selectAIApp('I am using ChatGPT (only for paid)');
     cy.get('[data-cy="copyMcpConnectorUrlId"]').click({ force: true });
-    notification.assertContains('Connector URL copied');
+    notification.assertContains('Connection link copied');
 
     cy.then(() => {
       cy.request({ method: 'POST', url: copied, body: initialize }).then((response) => {
@@ -168,8 +180,9 @@ describe('AI Integration', () => {
       seen.push(text);
     });
 
+    selectAIApp('I am using Claude Code');
     cy.get('[data-cy="copyMcpCommandId"]').click({ force: true });
-    notification.assertContains('CLI command copied');
+    notification.assertContains('Claude Code setup copied');
 
     cy.wrap(null).should(() => {
       expect(copied, 'the Claude Code one-liner').to.contain('claude mcp add --transport http badhan');
@@ -181,8 +194,9 @@ describe('AI Integration', () => {
     });
 
     // A second press is a second connection, endable on its own.
+    selectAIApp('I am using VS Code, Cursor, or another desktop AI app');
     cy.get('[data-cy="copyMcpConfigId"]').click({ force: true });
-    notification.assertContains('MCP config copied');
+    notification.assertContains('Desktop app setup copied');
     cy.wrap(null).should(() => {
       expect(seen.length).to.eq(2);
       const first = (seen[0].match(/--header "x-auth: (\S+)"/) as RegExpMatchArray)[1];
@@ -191,7 +205,7 @@ describe('AI Integration', () => {
     });
   });
 
-  it('tells the member that ending it means the device list, not signing out', () => {
+  it('keeps connection details out of the page while explaining how to remove access', () => {
     // The page used to say signing out revokes the token. It does not: DELETE /users/signout ends
     // only the token that made the request. With no expiry, wrong wording here is the difference
     // between a member thinking they revoked access and having done nothing at all.
@@ -200,7 +214,47 @@ describe('AI Integration', () => {
     drawer.goToAIIntegration();
 
     cy.contains('My Profile').should('be.visible');
-    cy.contains('Sign out from all devices').should('be.visible');
+    cy.contains('Server the file points at:').should('not.exist');
+    cy.contains('MCP endpoint:').should('not.exist');
     cy.get('[data-cy="mcpDurationId"]').should('not.exist');
+  });
+
+  it('shows three setup steps for the selected AI app', () => {
+    signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
+    notification.assertEquals(MESSAGES.signInSuccess);
+    drawer.goToAIIntegration();
+
+    const choices = [
+      ['I am using VS Code, Cursor, or another desktop AI app', 'VS Code, Cursor, or another desktop AI app'],
+      ['I am using Claude Code', 'Claude Code'],
+      ['I am using ChatGPT (only for paid)', 'ChatGPT'],
+      ['I am using Claude', 'Claude'],
+    ];
+
+    choices.forEach(([choice, heading]) => {
+      selectAIApp(choice);
+      cy.get('[data-cy="aiAppInstructionsId"]')
+        .should('contain', heading)
+        .find('ol li')
+        .should('have.length', 3);
+    });
+  });
+
+  it('shows setup-file instructions for ChatGPT and Claude Web UI', () => {
+    signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
+    notification.assertEquals(MESSAGES.signInSuccess);
+    drawer.goToAIIntegration();
+
+    selectSetupAIApp('I am using ChatGPT');
+    cy.get('[data-cy="setupAiAppInstructionsId"]')
+      .should('contain', 'allow the Badhan domain written in the setup file')
+      .find('ol li')
+      .should('have.length', 3);
+
+    selectSetupAIApp('I am using Claude Web UI');
+    cy.get('[data-cy="setupAiAppInstructionsId"]')
+      .should('contain', 'allow the Badhan domain written in the setup file')
+      .find('ol li')
+      .should('have.length', 3);
   });
 });

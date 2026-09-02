@@ -294,7 +294,7 @@ export default {
               // file it hands out is a live session token, and that is a super admin's decision
               // to make deliberately, not something to stumble into from a profile page.
               icon: 'mdi-robot',
-              text: 'AI Integration',
+              text: 'Use Badhan with AI',
               to: '/aiIntegration',
               id: 'aiIntegrationNavigationId',
               designation: 3

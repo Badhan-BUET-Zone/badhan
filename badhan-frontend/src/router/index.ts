@@ -350,7 +350,7 @@ const routes: CustomRouteConfig[] = [
     component: () => import('../views/AIIntegration.vue'),
     meta: {
       requiresAuth: true,
-      title: 'AI Integration',
+      title: 'Use Badhan with AI',
       designation: 3,
       reRouteIfAuthorized: false
     }
