@@ -8,10 +8,22 @@ import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenCache from '../cache/tokenCache'
 import { IDonor } from '../db/models/Donor'
 import userValidator from '../validations/users'
-import { REDIRECTION_TOKEN_DEFAULT_SECONDS, REDIRECTION_TOKEN_MAX_SECONDS, clampRedirectionTokenSeconds, redirectionTokenExpiresIn } from '../services/redirectionToken'
+import { REDIRECTION_TOKEN_EXPIRES_IN } from '../services/redirectionToken'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import { HTTP_STATUS } from '../constants'
+
+/**
+ * The body of POST /users/redirection, which has no fields.
+ *
+ * It is declared, rather than the route simply taking no body, so that a caller still sending the
+ * old `durationSeconds` gets a 400. tsoa is configured throw-on-extras, and the alternative is
+ * worse than a stale client breaking: it would be a stale client receiving a PERMANENT token
+ * while believing it had asked for one that expires in half an hour.
+ */
+// tslint:disable-next-line:no-empty-interface  (an empty model is the whole point — see above)
+export interface RedirectionRequestBody {
+}
 
 @Route('users')
 @Tags('Users')
@@ -195,50 +207,40 @@ export class UsersController extends Controller {
    */
   @Post('redirection')
   @SuccessResponse(201, 'Redirection token created')
-  @Response<{ status: string; statusCode: number; message: string }>(400, 'durationSeconds out of range', {
-    status: 'ERROR',
-    statusCode: HTTP_STATUS.BAD_REQUEST,
-    message: `durationSeconds must be an integer between 1 and ${REDIRECTION_TOKEN_MAX_SECONDS}`
-  })
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
     status: 'ERROR',
     statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     message: 'Token insertion failed'
   })
-  @Example<{ status: string; statusCode: number; message: string; token: string; durationSeconds: number }>({
+  @Example<{ status: string; statusCode: number; message: string; token: string }>({
     status: 'OK',
     statusCode: HTTP_STATUS.CREATED,
     message: 'Redirection token created',
-    token: 'dvsoigneoihegoiwsngoisngoiswgnbon',
-    durationSeconds: REDIRECTION_TOKEN_DEFAULT_SECONDS
+    token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
   })
-  @Middlewares([userValidator.validatePOSTRedirection, rateLimiter.commonLimiter, authenticator.handleAuthentication])
-  public async createRedirectionToken(@Request() req: any, @Body() body?: { durationSeconds?: number }): Promise<{ status: string; statusCode: number; message: string; token?: string; durationSeconds?: number }> {
+  @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
+  public async createRedirectionToken(@Request() req: any, @Body() _body?: RedirectionRequestBody): Promise<{ status: string; statusCode: number; message: string; token?: string }> {
     const res: ExResponse = (req as any).res
     const donor: IDonor = res.locals.middlewareResponse.donor
 
-    // Read off req.body rather than the tsoa-bound `body`: the validator's `.toInt()` writes
-    // the coerced value back onto the express body, and an absent body is `{}` there rather
-    // than undefined.
-    const requestedSeconds: number | undefined = (req.body ?? {}).durationSeconds
-    const expiresIn: string = redirectionTokenExpiresIn(requestedSeconds)
-
-    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, expiresIn)
+    // No expiry. The token lives until its row in the tokens collection is deleted — from My
+    // Profile's device list, or by signing out of every device. See services/redirectionToken.ts
+    // for why the clock was removed and what that costs.
+    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, REDIRECTION_TOKEN_EXPIRES_IN)
 
     if (tokenInsertResult.status !== 'OK') {
       this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
       return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
     }
 
-    await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', { durationSeconds: clampRedirectionTokenSeconds(requestedSeconds) })
+    await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
 
     this.setStatus(HTTP_STATUS.CREATED)
     return {
       status: 'OK',
       statusCode: HTTP_STATUS.CREATED,
       message: 'Redirection token created',
-      token: tokenInsertResult.data!.token,
-      durationSeconds: clampRedirectionTokenSeconds(requestedSeconds)
+      token: tokenInsertResult.data!.token
     }
   }
 

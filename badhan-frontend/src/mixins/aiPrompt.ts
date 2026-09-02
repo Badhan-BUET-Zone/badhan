@@ -46,19 +46,19 @@ const PROMPT_TEMPLATE_LINES: string[] = [
   '{{TOKEN}}',
   '```',
   '',
-  '**This token expires at {{EXPIRES_AT}}** — {{DURATION_LABEL}} after the file was made. It is a',
-  'temporary token, not the sign-in that produced it: when it lapses, every call answers `401` and',
-  'the only fix is a fresh file from the app. Do not try to renew it.',
+  'This token does not expire on a clock. It is not the sign-in that produced it either: it is a',
+  'session of its own, and it stays valid until the person who made it deletes it from their',
+  'device list in the app. When that happens every call answers `401` and the only fix is a fresh',
+  'file. Do not try to renew it.',
   '',
   'Notes on auth:',
   '',
   '- The token is a JWT tied to a server-side session row. `401 Invalid Authentication` means the',
-  '  JWT itself failed to verify or has expired; `401 You have been logged out` means the session',
-  '  row is gone (the person signed out) — in either case, stop and ask for a fresh file rather',
-  '  than retrying.',
-  '- **Never call `POST /users/redirection`.** It mints another token from this one, which would',
-  '  outlive the access you were deliberately given for {{DURATION_LABEL}}. There is no route that',
-  '  turns this token into a permanent one, and looking for one is not the task.',
+  '  JWT itself failed to verify; `401 You have been logged out` means the session row is gone',
+  '  (the person revoked it) — in either case, stop and ask for a fresh file rather than retrying.',
+  '- **Never call `POST /users/redirection`.** It mints another token from this one. The person',
+  '  revokes access by deleting the row for the token they gave you, and a second token you made',
+  '  for yourself would survive that — which is precisely the thing they must be able to rely on.',
   '- Do not sign in as anybody. `POST /users/signin` needs a password you were not given, and',
   '  asking for one is not a way around an expired token.',
   '- Never call `DELETE /users/signout` or `DELETE /users/signout/all` — they end the session this',
@@ -96,12 +96,6 @@ const PROMPT_TEMPLATE_LINES: string[] = [
 
 export const AI_PROMPT_FILE_NAME = 'badhan-api-prompt.md'
 
-// What the page asks POST /users/redirection for. Thirty minutes is long enough to be worth
-// handing to an assistant and short enough that a leaked file is a stale file by the time
-// anyone finds it — the session token in local storage, by contrast, never expires.
-export const AI_TOKEN_DURATION_SECONDS = 30 * 60
-export const AI_TOKEN_DURATION_LABEL = '30 minutes'
-
 // The base URL the file should name: the one this app is actually talking to, guest suffix and
 // all, so a file downloaded from a guest session does not send an AI at the real backend.
 export const getAIPromptBaseURL = (isGuest: boolean): string => {
@@ -109,15 +103,13 @@ export const getAIPromptBaseURL = (isGuest: boolean): string => {
   return isGuest ? base + '/guest' : base
 }
 
-export const buildAIIntegrationPrompt = (token: string, baseURL: string, environmentName: string, expiresAt: string): string => {
+export const buildAIIntegrationPrompt = (token: string, baseURL: string, environmentName: string): string => {
   // Function replacements, not string ones: a `$&` or `$1` inside a JWT would otherwise be read
   // as a substitution pattern rather than as the character it is.
   return PROMPT_TEMPLATE_LINES.join('\n')
     .replace(/\{\{TOKEN\}\}/g, () => token)
     .replace(/\{\{BASE_URL\}\}/g, () => baseURL)
     .replace(/\{\{ENVIRONMENT\}\}/g, () => environmentName)
-    .replace(/\{\{EXPIRES_AT\}\}/g, () => expiresAt)
-    .replace(/\{\{DURATION_LABEL\}\}/g, () => AI_TOKEN_DURATION_LABEL)
 }
 
 /* ── MCP ─────────────────────────────────────────────────────────────
@@ -134,21 +126,6 @@ export const buildAIIntegrationPrompt = (token: string, baseURL: string, environ
 export const getMCPEndpointURL = (): string => {
   return environmentService.getAPIBaseURL() + '/mcp'
 }
-
-// Thirty minutes was chosen for a FILE, which is made and used in one sitting. MCP config is
-// written into a settings file once and left alone, so a fixed 30-minute token would mean
-// editing that file every thirty minutes — which nobody will do. They would go looking for a
-// permanent credential instead, and that is a worse outcome than the one the short clock guards
-// against. Hence a choice, with the safe end of it selected by default.
-export const MCP_TOKEN_DURATION_OPTIONS = [
-  { label: '30 minutes', seconds: 30 * 60 },
-  { label: '8 hours', seconds: 8 * 60 * 60 },
-  { label: '24 hours', seconds: 24 * 60 * 60 }
-]
-
-// Never move this off the first entry. Nobody should end up with a longer-lived token by
-// accident; choosing one is the moment the warning beside it gets read.
-export const MCP_DEFAULT_DURATION_SECONDS = MCP_TOKEN_DURATION_OPTIONS[0].seconds
 
 // For a client with a config file — Cursor, VS Code, Zed, and anything else that takes a JSON
 // block with a headers object.

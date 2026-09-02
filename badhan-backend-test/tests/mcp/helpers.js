@@ -109,9 +109,8 @@ async function createHallAdmin(signInResponse, overrides = {}) {
 // The credential this whole feature is built on: the redirection token the AI Integration page
 // mints. Tests use it rather than a sign-in token wherever the point is "what a member would
 // actually put in their MCP config".
-async function mintRedirectionToken(signInResponse, durationSeconds) {
-  const body = durationSeconds === undefined ? {} : { durationSeconds };
-  const response = await operations.authedPost('/users/redirection', body, signInResponse);
+async function mintRedirectionToken(signInResponse) {
+  const response = await operations.authedPost('/users/redirection', {}, signInResponse);
   return response.data.token;
 }
 

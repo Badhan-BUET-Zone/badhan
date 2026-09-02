@@ -178,38 +178,50 @@ buttons.
 The page also names the **server the file points at**. A file made here works only against that
 server.
 
-### The file stops working after 30 minutes
+### The token does not expire — you end it yourself
 
 The sign-in inside the file is **not your own**. Each press of a button asks the server for a
-fresh **temporary token that expires 30 minutes later**, and the file is dead from then on — the
-assistant simply starts getting refused. Nothing you do here affects your own session, and you
-stay signed in as normal.
+separate token, and your own session is untouched. But that token has **no clock on it**: it keeps
+working until somebody deliberately ends it.
 
-Because the clock starts when you press the button, **make the file when you are ready to use
-it**, not in advance. If a file has gone stale, come back and press the button again; there is no
-limit on how many you make.
+Every press adds one entry to the device list on your **My Profile** page, alongside the phones and
+computers you have signed in from. **That entry is how you end it**: open My Profile, find it, and
+press **Logout** on it. Ending one does not touch the others.
+
+Two things about that, both worth knowing before you need them:
+
+- **Signing out of this browser does not end it.** The ordinary Sign Out ends only the session you
+  are using right now. The file's token is a separate entry and keeps working.
+- **Sign out from all devices does end it** — along with every other session you have, on every
+  device.
+
+Because there is no clock, **make the file when you are ready to use it**, and end it when the
+assistant is done rather than leaving it in the list. There is no limit on how many you make.
+
+Every entry in that list looks much the same — an operating system, a browser, an address — so if
+you make several, end the ones you are unsure about and make a fresh one. That is cheap; guessing
+is not.
 
 ### Read this before you send that file anywhere
 
-For those 30 minutes the token **is you**. Anyone holding the file can do everything your role
+The token **is you**, for as long as it exists. Anyone holding the file can do everything your role
 allows, as you, without knowing your password — read every donor, and change or delete records.
-Thirty minutes is plenty of time for that.
 
-So, while it is live, treat the file as you would treat your password:
+So treat the file as you would treat your password:
 
 - **Do not email it, post it in a group chat, or put it in shared storage.**
 - **Do not give it to an assistant you would not trust with your password.** Pasting it into an
   online service sends that token to that company.
-- **Delete the downloaded file when you are done with it.** It expires on its own, but there is no
-  reason to leave it lying about.
+- **Delete the downloaded file when you are done with it**, and end its entry in My Profile. The
+  file lying about on your computer is a live sign-in, not an expired one.
 
-**If it goes somewhere it should not have, sign out.** Signing out ends the session every token
-from this page hangs off, including one still inside its 30 minutes. Otherwise, waiting half an
-hour is itself the fix.
+**If it goes somewhere it should not have, go to My Profile and press Logout on its entry.** If you
+cannot tell which entry it is, **Sign out from all devices** ends everything at once. Waiting is
+not a fix here: nothing expires on its own.
 
 An assistant working from this file is **not restricted** to reading. It can add, change and
-delete real records while the token lasts, and the app cannot tell its actions apart from yours —
-the App Activity page will show them as yours. Everything in
+delete real records, and the app cannot tell its actions apart from yours — the App Activity page
+will show them as yours. Everything in
 [chapter 17](17-rules-the-app-enforces.md) still applies: it can do exactly what your role allows,
 no more, and it is a super admin's role you would be lending it.
 
@@ -244,27 +256,23 @@ text everybody has been taught is safe to pass around.
 It is not. **The sign-in is inside the address itself.** Anyone you send that link to is signed in
 as you until it lapses. Do not put it in a group chat, in an email, or in a screenshot.
 
-#### Choosing how long the connection lasts
+#### How long the connection lasts
 
-A settings file is written once and then forgotten about, so 30 minutes would mean going back and
-editing it every half hour. The page therefore lets you choose: **30 minutes**, **8 hours** or
-**24 hours**.
+Until you end it. A settings file is written once and then forgotten about, so a connection that
+lapsed every half hour would mean editing that file every half hour — which nobody does.
 
-**30 minutes is selected when the page opens**, and it stays that way unless you change it. The
-longer options are a real trade: 24 hours is forty-eight times as long for a leaked settings file
-to still be a live sign-in as you. The page says so, in red, as soon as you pick one.
+The cost of that convenience is stated plainly: a leaked settings file is a live sign-in as you,
+with no clock running it down. The only thing that ends it is you pressing **Logout** on its entry
+in **My Profile**, or **Sign out from all devices**.
 
-Everything from *"Read this before you send that file anywhere"* above applies here word for word,
-including the last line of it: **signing out is the only way to end a connection early.**
+Every press of a button here adds one entry, so make one connection per assistant and end it when
+that assistant is finished with.
 
 #### When it stops working
 
-It will, and this is the one way it differs from the file. A file is made and used in one sitting,
-so you notice when it goes stale. A settings file sits on your computer, and **the dead sign-in
-stays in it until you replace it** — the assistant simply starts saying it is not authorised.
-
-When that happens, come back to this page, press the same button again, and paste the new one over
-the old one. There is no limit on how many times you can do this.
+Only when you end it, or when someone signs your account out of all devices. If an assistant
+suddenly says it is not authorised, that is what happened — press the button again and paste the
+new one over the old one in its settings file.
 
 #### Two more things
 
@@ -274,6 +282,10 @@ widest one there is.
 **A connected assistant can write, not just read** — donations, call records, donor edits, chat
 messages, everything your role allows. The App Activity page records those actions as yours,
 because as far as Badhan is concerned they are.
+
+**Nothing lasts forever regardless.** The app clears out sign-ins that are 30 days old, so a
+connection you forget about stops working a month after you made it. That is a backstop, not a
+plan: end connections you are done with.
 
 **The demo has no connection to offer.** If you are signed in to the demo, this section says so
 instead of showing the buttons.

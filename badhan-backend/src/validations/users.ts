@@ -1,5 +1,5 @@
 import { validate } from './index'
-import { validateBODYPhone, validateBODYPassword, validateBODYDurationSeconds } from './validateRequest/validateBody'
+import { validateBODYPhone, validateBODYPassword } from './validateRequest/validateBody'
 import { validatePARAMTokenId } from './validateRequest/validateParam'
 import {NextFunction, Request, Response} from "express";
 const validateLogin:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
@@ -11,10 +11,6 @@ const validatePATCHPassword:(req: Request, res: Response, next: NextFunction) =>
   validateBODYPassword
 ])
 
-const validatePOSTRedirection:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
-  validateBODYDurationSeconds
-])
-
 const validateDELETELogins:(req: Request, res: Response, next: NextFunction) => Promise<Response | void> = validate([
   validatePARAMTokenId
 ])
@@ -22,6 +18,5 @@ const validateDELETELogins:(req: Request, res: Response, next: NextFunction) => 
 export default {
   validateLogin,
   validatePATCHPassword,
-  validatePOSTRedirection,
   validateDELETELogins
 }

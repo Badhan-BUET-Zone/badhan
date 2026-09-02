@@ -18,14 +18,10 @@ const tokenFromPrompt = (contents: string): string => {
   return (match as RegExpMatchArray)[1];
 };
 
-// A JWT is signed, not encrypted, so the lifetime it actually carries can be read straight off the
-// token — the same trick tests/users/redirection/duration.test.js uses in the backend suite. This
-// is the assertion that matters for the selector: the page could print one number while the token
-// expired on another schedule.
-const tokenLifetimeSeconds = (token: string): number => {
-  const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
-  return payload.exp - payload.iat;
-};
+// A JWT is signed, not encrypted, so what it actually claims can be read straight off the token —
+// the same trick tests/users/redirection/duration.test.js uses in the backend suite.
+const payloadOf = (token: string): { exp?: number; jti?: string } =>
+  JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
 
 // vue-clipboard2 copies by selecting a detached element and calling execCommand, so the selection
 // at that moment is the copied text. Stubbing it is the only way to read a clipboard Cypress
@@ -52,7 +48,7 @@ describe('AI Integration', () => {
 
     drawer.goToAIIntegration();
 
-    cy.contains('The file expires 30 minutes after you make it').should('be.visible');
+    cy.contains('The token inside it never expires').should('be.visible');
 
     cy.get('[data-cy="aiPromptPreviewId"]').click();
     cy.get('.ai-prompt-preview').should('be.visible').and('contain', 'x-auth');
@@ -156,19 +152,20 @@ describe('AI Integration', () => {
     });
   });
 
-  it('leaves the lifetime selector at 30 minutes unless it is changed', () => {
-    // The default is the safety property of the selector: nobody should end up holding a
-    // longer-lived token by accident, and choosing one is the moment the warning is read. So the
-    // untouched default is pinned on the token itself, not on what the page says.
+  it('mints a non-expiring token, and a different one each press', () => {
+    // The page no longer offers a lifetime, because the token no longer has one: it lives until
+    // its row is deleted from My Profile's device list. Two things have to hold for that to be a
+    // real revocation rather than a claim — no exp on the token, and a distinct token per press,
+    // since two identical ones would share a row and deleting either would end neither.
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
     drawer.goToAIIntegration();
 
-    cy.get('[data-cy="mcpLongLifetimeWarningId"]').should('not.exist');
-
     let copied = '';
+    const seen: string[] = [];
     captureClipboard((text) => {
       copied = text;
+      seen.push(text);
     });
 
     cy.get('[data-cy="copyMcpCommandId"]').click({ force: true });
@@ -178,12 +175,32 @@ describe('AI Integration', () => {
       expect(copied, 'the Claude Code one-liner').to.contain('claude mcp add --transport http badhan');
       const match = copied.match(/--header "x-auth: (\S+)"/);
       expect(match, 'the header argument').to.not.be.null;
-      expect(tokenLifetimeSeconds((match as RegExpMatchArray)[1])).to.eq(1800);
+      const payload = payloadOf((match as RegExpMatchArray)[1]);
+      expect(payload.exp, 'the token must carry no expiry').to.be.undefined;
+      expect(payload.jti, 'every token is its own credential').to.be.a('string');
     });
 
-    // And choosing a longer one says so, in as many words.
-    cy.get('[data-cy="mcpDurationId"]').click({ force: true });
-    cy.contains('.v-list-item__title', '24 hours').click({ force: true });
-    cy.get('[data-cy="mcpLongLifetimeWarningId"]').should('contain', '48 times');
+    // A second press is a second connection, endable on its own.
+    cy.get('[data-cy="copyMcpConfigId"]').click({ force: true });
+    notification.assertContains('MCP config copied');
+    cy.wrap(null).should(() => {
+      expect(seen.length).to.eq(2);
+      const first = (seen[0].match(/--header "x-auth: (\S+)"/) as RegExpMatchArray)[1];
+      const second = JSON.parse(seen[1]).mcpServers.badhan.headers['x-auth'];
+      expect(second).to.not.equal(first);
+    });
+  });
+
+  it('tells the member that ending it means the device list, not signing out', () => {
+    // The page used to say signing out revokes the token. It does not: DELETE /users/signout ends
+    // only the token that made the request. With no expiry, wrong wording here is the difference
+    // between a member thinking they revoked access and having done nothing at all.
+    signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
+    notification.assertEquals(MESSAGES.signInSuccess);
+    drawer.goToAIIntegration();
+
+    cy.contains('My Profile').should('be.visible');
+    cy.contains('Sign out from all devices').should('be.visible');
+    cy.get('[data-cy="mcpDurationId"]').should('not.exist');
   });
 });

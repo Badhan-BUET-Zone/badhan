@@ -7,9 +7,8 @@ const postUsersRedirectionSchema = {
     statusCode: { const: HTTP_STATUS.CREATED },
     message: { type: 'string' },
     token: { type: 'string' },
-    durationSeconds: { type: 'integer' },
   },
-  required: ['status', 'statusCode', 'token', 'message', 'durationSeconds'],
+  required: ['status', 'statusCode', 'token', 'message'],
 };
 
 module.exports = {

@@ -15,20 +15,21 @@
         <!-- Not a hint in small grey text: the file is a live credential, and someone who has
              not read this before sending it somewhere cannot un-send it. -->
         <v-alert type="warning" outlined class="rounded-xl">
-          <p class="font-weight-medium mb-2">The file expires {{ durationLabel }} after you make it</p>
+          <p class="font-weight-medium mb-2">The token inside it never expires</p>
           <p class="mb-2">
-            The token inside it is <b>not</b> your own sign-in. Each button below asks the server
-            for a fresh temporary token that stops working {{ durationLabel }} later, so an old
-            file is a dead file. Your own session is untouched either way.
+            It is <b>not</b> your own sign-in — each button below asks the server for a separate
+            token, and your own session is untouched either way. But it has no clock on it: it
+            keeps working until somebody deliberately ends it.
           </p>
           <p class="mb-2">
-            For those {{ durationLabel }}, though, the token is you: whoever holds the file can do
-            everything your role allows, without your password. Do not post it in a group chat or
-            email it, and delete it once the assistant is done.
+            Until then the token is you: whoever holds the file can do everything your role
+            allows, without your password. Do not post it in a group chat or email it, and delete
+            it once the assistant is done.
           </p>
           <p class="mb-0">
-            If it goes somewhere it should not have, <b>sign out</b> — that ends the session every
-            token from this page hangs off, including ones still inside their {{ durationLabel }}.
+            <b>To end one, open My Profile and press Logout on its entry in the device list</b> —
+            each press of a button below adds one there. Signing out of this browser does
+            <b>not</b> end it; <b>Sign out from all devices</b> ends every one of them at once.
           </p>
         </v-alert>
 
@@ -42,10 +43,6 @@
             <tr>
               <td><b>Build:</b></td>
               <td>{{ environmentName }}</td>
-            </tr>
-            <tr>
-              <td><b>Token lifetime:</b></td>
-              <td>{{ durationLabel }}</td>
             </tr>
             </tbody>
           </template>
@@ -117,33 +114,6 @@
             </template>
           </v-simple-table>
 
-          <!-- The selector sits above the buttons rather than beside them: it changes what every
-               one of them mints, and a control that reads as belonging to one button would be a
-               lie about the other two. -->
-          <v-select
-            :items="durationOptions"
-            v-model="mcpDurationSeconds"
-            item-text="label"
-            item-value="seconds"
-            label="How long the connection lasts"
-            outlined
-            dense
-            class="mcp-duration-select"
-            data-cy="mcpDurationId"
-          />
-
-          <v-alert
-            v-if="mcpDurationSeconds !== defaultDurationSeconds"
-            type="warning"
-            outlined
-            class="rounded-xl"
-            data-cy="mcpLongLifetimeWarningId"
-          >
-            <b>{{ mcpDurationLabel }} is {{ lifetimeMultiplier }} times the window in which a
-              leaked config file is a live credential.</b> For all of it, whoever holds that file
-            can do everything your role allows. Signing out remains the only way to end it early.
-          </v-alert>
-
           <p class="mb-2">Press the one that matches your assistant:</p>
 
           <div class="d-flex align-center flex-wrap mb-2">
@@ -204,10 +174,11 @@
           </v-alert>
 
           <p class="mb-0">
-            A config file is written once and then forgotten about, which is the one way this
-            differs from the file above: <b>the connection stops working when its token lapses,
-            and the dead token stays in that file until you replace it.</b> When an assistant
-            starts saying it is not authorised, press the button again and paste the new one in.
+            A config file is written once and then forgotten about, which is why these tokens do
+            not expire: a connection that lapsed every half hour would mean editing that file
+            every half hour. <b>The other side of that is that the connection lasts until you end
+            it</b>, so when an assistant no longer needs Badhan, open My Profile and press Logout
+            on its entry in the device list.
           </p>
         </template>
       </v-card-text>
@@ -224,30 +195,22 @@ import { environmentService } from '@/mixins/environment'
 import { HTTP_STATUS } from '@/mixins/constants'
 import {
   AI_PROMPT_FILE_NAME,
-  AI_TOKEN_DURATION_LABEL,
-  AI_TOKEN_DURATION_SECONDS,
   buildAIIntegrationPrompt,
   buildMCPCLICommand,
   buildMCPConfigJSON,
   buildMCPConnectorURL,
   getAIPromptBaseURL,
-  getMCPEndpointURL,
-  MCP_DEFAULT_DURATION_SECONDS,
-  MCP_TOKEN_DURATION_OPTIONS
+  getMCPEndpointURL
 } from '@/mixins/aiPrompt'
 import { isGuestEnabled } from '@/api'
 
-const HIDDEN_TOKEN = '<a temporary token goes here — hidden in this preview>'
-const HIDDEN_EXPIRY = `<${AI_TOKEN_DURATION_LABEL} after you press the button>`
+const HIDDEN_TOKEN = '<a token goes here — hidden in this preview>'
 
 export default {
   name: 'AIIntegrationPage',
   components: { PageTitle, Container, Button },
   data: () => ({
-    busy: false,
-    // 30 minutes on load, always. A member who wants longer has to choose it, and choosing is
-    // what puts the warning in front of them.
-    mcpDurationSeconds: MCP_DEFAULT_DURATION_SECONDS
+    busy: false
   }),
   computed: {
     baseURL () {
@@ -259,45 +222,25 @@ export default {
     mcpEndpointURL () {
       return getMCPEndpointURL()
     },
-    durationOptions () {
-      return MCP_TOKEN_DURATION_OPTIONS
-    },
-    defaultDurationSeconds () {
-      return MCP_DEFAULT_DURATION_SECONDS
-    },
-    mcpDurationLabel () {
-      const option = MCP_TOKEN_DURATION_OPTIONS.find(item => item.seconds === this.mcpDurationSeconds)
-      return option ? option.label : ''
-    },
-    lifetimeMultiplier () {
-      return Math.round(this.mcpDurationSeconds / MCP_DEFAULT_DURATION_SECONDS)
-    },
     environmentName () {
       return environmentService.getEnvironmentName()
     },
-    durationLabel () {
-      return AI_TOKEN_DURATION_LABEL
-    },
     maskedPrompt () {
-      return buildAIIntegrationPrompt(HIDDEN_TOKEN, this.baseURL, this.environmentName, HIDDEN_EXPIRY)
+      return buildAIIntegrationPrompt(HIDDEN_TOKEN, this.baseURL, this.environmentName)
     }
   },
   methods: {
-    // One fresh token per press, rather than one per page visit: the clock starts when the file
-    // is made, so a page left open all afternoon must not hand out a token that expired at lunch.
+    // One fresh token per press, rather than one per page visit: each press adds a separate
+    // entry to the member's device list, and pressing twice must not hand out the same one.
     // Returns null when the server refuses, having already said why.
     async buildPrompt () {
-      const response = await this.$store.dispatch('requestRedirectionToken', AI_TOKEN_DURATION_SECONDS)
+      const response = await this.$store.dispatch('requestRedirectionToken')
       if (!response || response.status !== HTTP_STATUS.CREATED) {
         const message = (response && response.data && response.data.message) ? response.data.message : 'Could not create a token for the file'
         await this.$store.dispatch('notification/notifyError', message)
         return null
       }
-      // The server clamps and reports back what it actually granted, so the expiry printed in the
-      // file is the server's answer rather than this page's request.
-      const grantedSeconds = response.data.durationSeconds || AI_TOKEN_DURATION_SECONDS
-      const expiresAt = new Date(Date.now() + grantedSeconds * 1000).toLocaleString()
-      return buildAIIntegrationPrompt(response.data.token, this.baseURL, this.environmentName, expiresAt)
+      return buildAIIntegrationPrompt(response.data.token, this.baseURL, this.environmentName)
     },
     async handleDownload () {
       this.busy = true
@@ -305,32 +248,28 @@ export default {
       this.busy = false
       if (!prompt) return
       textFileDownloadInWeb(prompt, AI_PROMPT_FILE_NAME, 'text/markdown;charset=utf-8')
-      await this.$store.dispatch('notification/notifySuccess', `Prompt file downloaded. Its token works for ${AI_TOKEN_DURATION_LABEL}`)
+      await this.$store.dispatch('notification/notifySuccess', 'Prompt file downloaded. End it later from My Profile')
     },
-    // The MCP half mints its own token, at the chosen lifetime, one per press — same rule as the
-    // file: the clock starts when the config is made, not when the page was opened.
-    // Returns null when the server refuses, having already said why.
+    // The MCP half mints its own token, one per press — same rule as the file: each press is a
+    // separate entry in the device list, so a member can end one connection without ending the
+    // rest. Returns null when the server refuses, having already said why.
     async mintMCPToken () {
-      const response = await this.$store.dispatch('requestRedirectionToken', this.mcpDurationSeconds)
+      const response = await this.$store.dispatch('requestRedirectionToken')
       if (!response || response.status !== HTTP_STATUS.CREATED) {
         const message = (response && response.data && response.data.message) ? response.data.message : 'Could not create a token for the connection'
         await this.$store.dispatch('notification/notifyError', message)
         return null
       }
-      // What the server granted, never what this page asked for. The server clamps, and a page
-      // that echoed its own request would tell members a lifetime they do not have.
-      const grantedSeconds = response.data.durationSeconds || this.mcpDurationSeconds
-      const granted = MCP_TOKEN_DURATION_OPTIONS.find(item => item.seconds === grantedSeconds)
-      return { token: response.data.token, label: granted ? granted.label : `${grantedSeconds} seconds` }
+      return response.data.token
     },
     async copyMCP (build, what) {
       this.busy = true
-      const minted = await this.mintMCPToken()
+      const token = await this.mintMCPToken()
       this.busy = false
-      if (!minted) return
+      if (!token) return
       try {
-        await this.$copyText(build(minted.token, this.mcpEndpointURL))
-        await this.$store.dispatch('notification/notifySuccess', `${what} copied. The connection works for ${minted.label}`)
+        await this.$copyText(build(token, this.mcpEndpointURL))
+        await this.$store.dispatch('notification/notifySuccess', `${what} copied. End it later from My Profile`)
       } catch (e) {
         await this.$store.dispatch('notification/notifyError', 'Could not copy to clipboard')
       }
@@ -351,7 +290,7 @@ export default {
       if (!prompt) return
       try {
         await this.$copyText(prompt)
-        await this.$store.dispatch('notification/notifySuccess', `Prompt copied. Its token works for ${AI_TOKEN_DURATION_LABEL}`)
+        await this.$store.dispatch('notification/notifySuccess', 'Prompt copied. End it later from My Profile')
       } catch (e) {
         await this.$store.dispatch('notification/notifyError', 'Could not copy to clipboard. Use the download button instead')
       }
@@ -361,10 +300,6 @@ export default {
 </script>
 
 <style scoped>
-.mcp-duration-select {
-  max-width: 320px;
-}
-
 .ai-prompt-preview {
   white-space: pre-wrap;
   word-break: break-word;

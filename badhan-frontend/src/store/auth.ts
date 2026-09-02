@@ -125,9 +125,9 @@ const actions = {
     ldb.reset()
     resetBaseURL()
   },
-  async requestRedirectionToken ({ commit }: {commit: Commit}, durationSeconds?: number) {
+  async requestRedirectionToken ({ commit }: {commit: Commit}) {
     commit('setLoadingTrue')
-    const postRedirectionTokenResponse = await handlePOSTRedirection(durationSeconds)
+    const postRedirectionTokenResponse = await handlePOSTRedirection()
     commit('setLoadingFalse')
     return postRedirectionTokenResponse
   },

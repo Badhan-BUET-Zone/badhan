@@ -242,12 +242,12 @@ const handleDELETESignOutAll = async () => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
-// durationSeconds is optional and the server defaults it to 30 — the web-redirection handoff,
-// which is spent the moment it crosses the URL. A caller that needs the token to outlive one
-// request, such as the AI Integration page, asks for longer.
-const handlePOSTRedirection = async (durationSeconds?: number) => {
+// The token this mints does not expire. It lives until its row is deleted from My Profile's
+// device list, or until the member signs out of every device — see the backend's
+// services/redirectionToken.ts. There is no lifetime to ask for, so there is no argument.
+const handlePOSTRedirection = async () => {
   try {
-    return await badhanAxios.post('/users/redirection', durationSeconds === undefined ? {} : { durationSeconds })
+    return await badhanAxios.post('/users/redirection', {})
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
