@@ -16,6 +16,7 @@
       },
       "servers": [
         { "url": "https://badhan-buet-test.uc.r.appspot.com", "description": "Development server" },
+        { "url": "https://badhan-buet.uc.r.appspot.com", "description": "Production server — real donor data; every request here is live" },
         { "url": "http://localhost:3000", "description": "Local development server" }
       ],
       "components": {
