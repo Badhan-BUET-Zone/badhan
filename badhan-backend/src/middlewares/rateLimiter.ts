@@ -2,6 +2,7 @@ import dotenv from '../dotenv'
 import rateLimit from 'express-rate-limit'
 import TooManyRequestsError429 from "../response/models/errorTypes/TooManyRequestsError429";
 import { RequestHandler, Request, Response, NextFunction } from "express";
+import { JSON_RPC } from "../mcp/protocol";
 // The flag means what it says: off is OFF, not "a hundred times looser".
 //
 // It used to multiply every budget by 100, which reads as disabled and is not. The test suite
@@ -100,6 +101,23 @@ const messageSendLimiter: RequestHandler = rateLimit({
   message: commonRateLimiterError
 })
 
+// The MCP endpoint's own budget. It sits ABOVE the per-route budgets rather than replacing
+// them: a tool call spends one unit here and one unit of whatever limiter its route already
+// carries. The reason it exists at all is initialize, tools/list and ping, which dispatch
+// nothing and would otherwise be free to hammer.
+//
+// It answers in JSON-RPC rather than the app's error envelope because /mcp speaks JSON-RPC and
+// nothing else; a client that met the envelope here would fail to parse its own rate limit.
+const mcpLimiter: RequestHandler = rateLimit({
+  windowMs: minute,
+  max: 60 * rateLimiterEnabled,
+  message: {
+    jsonrpc: '2.0',
+    id: null,
+    error: { code: JSON_RPC.INTERNAL_ERROR, message: 'Too many MCP requests. Try again in a minute.' }
+  }
+})
+
 const publicContactInsertionLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 12 * rateLimiterEnabled,
@@ -121,5 +139,6 @@ export default {
   publicContactDeletionLimiter,
   feedbackTokenLimiter,
   feedbackSubmissionLimiter,
-  messageSendLimiter
+  messageSendLimiter,
+  mcpLimiter
 }

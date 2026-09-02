@@ -13,6 +13,7 @@ import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from './tsoaRoutes/routes'
 import { Request, Response } from 'express';
 import path from 'node:path';
+import { mcpRouter } from './mcp/router'
 
 const app:Express = express()
 
@@ -23,6 +24,25 @@ const app:Express = express()
 app.use(cors({ exposedHeaders: ['Content-Disposition'] }))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+
+// POST /mcp/<token> carries a Badhan token in the URL, because claude.ai's and ChatGPT's
+// connectors take a URL and have nowhere to type a header. Morgan prints the raw URL of every
+// request on stdout, which on App Engine is Cloud Logging — so the token is stripped here, at
+// the source. Registered BEFORE app.use(logger('dev')): morgan resolves its tokens at mount
+// time, and overriding one afterwards changes nothing.
+//
+// App Engine's own request log is a different matter: the platform writes an access-log entry
+// per request with the full path and no application code can redact it. That is accepted rather
+// than solved, and the reasoning is worth keeping so nobody "fixes" it later with a token store
+// nobody wants. Reading those logs needs a Logs Viewer role on the GCP project, and anyone
+// holding that can already read the database — the token discloses nothing to them they did not
+// have. It also expires on its own, in 30 minutes by default and 24 hours at the outside, while
+// the log entry is retained far longer: what sits in the log is a dead credential within a day.
+// The alternative — an opaque handle with a stored mapping — is a whole new credential class
+// with its own lifecycle and revocation, which is not worth it for a risk whose holder is
+// already an administrator.
+logger.token('url', (req: Request): string =>
+  req.originalUrl.replace(/^\/mcp\/.+$/, '/mcp/<redacted>'))
 app.use(logger('dev'))
 
 
@@ -46,6 +66,13 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/openapi.json' })
 )
+
+// After RegisterRoutes and BEFORE the catch-all, which would otherwise swallow it. Placement
+// after express.json() is required rather than incidental: the body arrives parsed. The router
+// takes the app because the dispatcher replays tool calls through it — a circular-looking
+// dependency that is really late binding, and passing it explicitly is what keeps dispatch.ts
+// free of an import back into this file.
+app.use('/mcp', mcpRouter(app))
 
 app.use('*', routeNotFoundHandler)
 app.use(internalServerErrorHandler)

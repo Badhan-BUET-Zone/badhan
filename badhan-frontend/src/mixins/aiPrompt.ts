@@ -119,3 +119,60 @@ export const buildAIIntegrationPrompt = (token: string, baseURL: string, environ
     .replace(/\{\{EXPIRES_AT\}\}/g, () => expiresAt)
     .replace(/\{\{DURATION_LABEL\}\}/g, () => AI_TOKEN_DURATION_LABEL)
 }
+
+/* ── MCP ─────────────────────────────────────────────────────────────
+ *
+ * The prompt file above is one half of this page; the MCP server is the other. Where the file
+ * explains the API in prose and leaves the model to write HTTP calls, MCP hands the assistant a
+ * named set of tools its client can show, confirm and audit. Same token, same permissions, same
+ * server — only the shape of the handover changes.
+ */
+
+// The endpoint mounted in the backend's app.ts. There is deliberately no guest counterpart: the
+// guest mirror exists so a demo account can click around with faker data, and there is no
+// /guest/mcp to point anybody at.
+export const getMCPEndpointURL = (): string => {
+  return environmentService.getAPIBaseURL() + '/mcp'
+}
+
+// Thirty minutes was chosen for a FILE, which is made and used in one sitting. MCP config is
+// written into a settings file once and left alone, so a fixed 30-minute token would mean
+// editing that file every thirty minutes — which nobody will do. They would go looking for a
+// permanent credential instead, and that is a worse outcome than the one the short clock guards
+// against. Hence a choice, with the safe end of it selected by default.
+export const MCP_TOKEN_DURATION_OPTIONS = [
+  { label: '30 minutes', seconds: 30 * 60 },
+  { label: '8 hours', seconds: 8 * 60 * 60 },
+  { label: '24 hours', seconds: 24 * 60 * 60 }
+]
+
+// Never move this off the first entry. Nobody should end up with a longer-lived token by
+// accident; choosing one is the moment the warning beside it gets read.
+export const MCP_DEFAULT_DURATION_SECONDS = MCP_TOKEN_DURATION_OPTIONS[0].seconds
+
+// For a client with a config file — Cursor, VS Code, Zed, and anything else that takes a JSON
+// block with a headers object.
+export const buildMCPConfigJSON = (token: string, endpointURL: string): string => {
+  return JSON.stringify({
+    mcpServers: {
+      badhan: {
+        type: 'http',
+        url: endpointURL,
+        headers: { 'x-auth': token }
+      }
+    }
+  }, null, 2)
+}
+
+// For Claude Code, which takes the whole thing as one command.
+export const buildMCPCLICommand = (token: string, endpointURL: string): string => {
+  return `claude mcp add --transport http badhan ${endpointURL} --header "x-auth: ${token}"`
+}
+
+// For claude.ai on the web or a phone, and for ChatGPT: both take a connector URL and offer OAuth
+// or no authentication, with nowhere to type a header. The token rides in the path instead, which
+// means the WHOLE URL is the credential — the page says so beside the button, because a member who
+// has learned that a link is safe to paste has learned the wrong thing here.
+export const buildMCPConnectorURL = (token: string, endpointURL: string): string => {
+  return `${endpointURL}/${token}`
+}

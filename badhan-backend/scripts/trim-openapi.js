@@ -17,12 +17,20 @@
 // survives in the list is the hand-written vocabulary in tsoa.json (Donors, Tokens,
 // Donations…), which is what the list is for.
 //
-// Standard library only; runs inside the backend container as part of the build.
+// It also puts the encoding vocabulary — the blood group, hall, designation, date and student
+// ID mappings — back into info.description. That prose has two readers, this spec and the MCP
+// handshake, so it lives in ONE place (src/doc/apiVocabulary.ts) and is appended here rather
+// than being written out a second time in tsoa.json. Requiring the COMPILED module is why
+// `npm run build` runs tsc before tsoa:spec.
+//
+// Standard library only (bar that one compiled module of our own); runs inside the backend
+// container as part of the build.
 
 const { readFileSync, writeFileSync } = require("fs");
 const { resolve } = require("path");
 
 const SPEC_PATH = resolve(__dirname, "..", "dist", "tsoa", "swagger.json");
+const VOCABULARY_PATH = resolve(__dirname, "..", "dist", "doc", "apiVocabulary.js");
 
 const REF_PREFIX = "#/components/schemas/";
 
@@ -79,16 +87,14 @@ function substitute(node, schemas, seen) {
   return copy;
 }
 
-function main() {
-  const spec = JSON.parse(readFileSync(SPEC_PATH, "utf8"));
-  const schemas = (spec.components && spec.components.schemas) || {};
-  const dropped = Object.keys(schemas).filter(shouldDrop);
+// tsoa.json carries only the first paragraph of info.description; the vocabulary is appended
+// here so the spec and the MCP handshake cannot disagree about what a `2` means.
+function withVocabulary(description) {
+  const { API_VOCABULARY_MARKDOWN } = require(VOCABULARY_PATH);
+  return [description, API_VOCABULARY_MARKDOWN].join("\n\n");
+}
 
-  if (dropped.length === 0) {
-    console.log("trim-openapi: nothing to trim.");
-    return;
-  }
-
+function trim(spec, schemas, dropped) {
   const trimmed = substitute(spec, schemas, []);
   for (const name of dropped) delete trimmed.components.schemas[name];
 
@@ -105,8 +111,25 @@ function main() {
     throw new Error(`Dangling references left after trimming: ${[...new Set(dangling)].join(", ")}`);
   }
 
-  writeFileSync(SPEC_PATH, JSON.stringify(trimmed, null, 2) + "\n");
-  console.log(`trim-openapi: inlined and removed ${dropped.length} schemas (${dropped.join(", ")}).`);
+  return trimmed;
+}
+
+function main() {
+  const spec = JSON.parse(readFileSync(SPEC_PATH, "utf8"));
+  const schemas = (spec.components && spec.components.schemas) || {};
+  const dropped = Object.keys(schemas).filter(shouldDrop);
+
+  // Unconditional: even with nothing to trim, the description still has to be written, so this
+  // script always rewrites the spec rather than returning early.
+  const rewritten = dropped.length === 0 ? spec : trim(spec, schemas, dropped);
+  rewritten.info.description = withVocabulary(rewritten.info.description);
+
+  writeFileSync(SPEC_PATH, JSON.stringify(rewritten, null, 2) + "\n");
+  console.log(
+    dropped.length === 0
+      ? "trim-openapi: nothing to trim; wrote the API vocabulary into info.description."
+      : `trim-openapi: inlined and removed ${dropped.length} schemas (${dropped.join(", ")}).`
+  );
 }
 
 try {

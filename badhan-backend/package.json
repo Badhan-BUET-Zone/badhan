@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "npm run tsoa:routes && npm run tsoa:spec && tsc",
+    "__comment_of_build_order": "tsoa:routes generates src/tsoaRoutes/routes.ts, which tsc needs; tsoa:spec must come AFTER tsc because scripts/trim-openapi.js requires the compiled dist/doc/apiVocabulary.js. Safe in that order: tsoa:spec reads the .ts sources directly and writes dist/tsoa/swagger.json, which tsc neither reads nor cleans.",
+    "build": "npm run tsoa:routes && tsc && npm run tsoa:spec",
     "postinstall": "npm run build",
     "gcp-build": "npm run build",
     "lint": "tslint --project tsconfig.json",

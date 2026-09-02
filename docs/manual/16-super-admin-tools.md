@@ -213,6 +213,71 @@ the App Activity page will show them as yours. Everything in
 [chapter 17](17-rules-the-app-enforces.md) still applies: it can do exactly what your role allows,
 no more, and it is a super admin's role you would be lending it.
 
+### Connecting an assistant instead of handing it a file
+
+Below the two buttons there is a second half of the page, headed **Connect an MCP client**. It
+does the same job a different way: instead of pasting a file into an assistant each time, you set
+the connection up **once** and it stays there.
+
+The difference you will notice is that a connected assistant is given a **list of named things it
+can do** in Badhan — search donors, log a donation, read the member chat — rather than being left
+to work it out from a document. Assistants ask you before the ones that change something, and they
+are much less likely to get it wrong.
+
+You do not need to know what "MCP" stands for. You need to know which button to press.
+
+| If you use… | Press | Then |
+| --- | --- | --- |
+| **ChatGPT**, or **Claude** on the web or your phone | **Copy Connector URL** | Add it as a connector and choose *no authentication* |
+| **Claude Code** | **Copy CLI Command** | Paste the line into a terminal |
+| **Cursor, VS Code, Zed**, or another assistant with a settings file | **Copy MCP Config** | Paste the block into its MCP settings |
+
+Each press asks the server for a **fresh temporary sign-in**, exactly as the two buttons above do.
+Nothing is created until you press one.
+
+#### The connector URL *is* the password
+
+This one is worth its own warning. The other two buttons give you something that obviously looks
+like a secret. The connector URL looks like an ordinary web link — and a link is the one kind of
+text everybody has been taught is safe to pass around.
+
+It is not. **The sign-in is inside the address itself.** Anyone you send that link to is signed in
+as you until it lapses. Do not put it in a group chat, in an email, or in a screenshot.
+
+#### Choosing how long the connection lasts
+
+A settings file is written once and then forgotten about, so 30 minutes would mean going back and
+editing it every half hour. The page therefore lets you choose: **30 minutes**, **8 hours** or
+**24 hours**.
+
+**30 minutes is selected when the page opens**, and it stays that way unless you change it. The
+longer options are a real trade: 24 hours is forty-eight times as long for a leaked settings file
+to still be a live sign-in as you. The page says so, in red, as soon as you pick one.
+
+Everything from *"Read this before you send that file anywhere"* above applies here word for word,
+including the last line of it: **signing out is the only way to end a connection early.**
+
+#### When it stops working
+
+It will, and this is the one way it differs from the file. A file is made and used in one sitting,
+so you notice when it goes stale. A settings file sits on your computer, and **the dead sign-in
+stays in it until you replace it** — the assistant simply starts saying it is not authorised.
+
+When that happens, come back to this page, press the same button again, and paste the new one over
+the old one. There is no limit on how many times you can do this.
+
+#### Two more things
+
+**This page is Super Admin only**, so the role you are lending a connected assistant is always the
+widest one there is.
+
+**A connected assistant can write, not just read** — donations, call records, donor edits, chat
+messages, everything your role allows. The App Activity page records those actions as yours,
+because as far as Badhan is concerned they are.
+
+**The demo has no connection to offer.** If you are signed in to the demo, this section says so
+instead of showing the buttons.
+
 ---
 
 [← Previous: Statistics and reports](15-statistics-and-reports.md) · [Contents](README.md) · [Next: Rules the app enforces →](17-rules-the-app-enforces.md)

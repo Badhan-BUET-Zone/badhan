@@ -62,7 +62,7 @@ may be shorter than a colleague's.
 | → Backup & Restore | Copies of the whole record book. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Schema Inconsistencies | Records with something wrong in them. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Certificate Enabled Donors | Every donor whose certificate has been switched on, across all halls. [Chapter 16](16-super-admin-tools.md#certificate-enabled-donors) | Super Admin only |
-| → AI Integration | A file that lets an AI assistant work with Badhan on your behalf for 30 minutes. [Chapter 16](16-super-admin-tools.md#ai-integration) | Super Admin only |
+| → AI Integration | Lets an AI assistant work with Badhan on your behalf: a file to hand it once, or a lasting connection you set up. [Chapter 16](16-super-admin-tools.md#ai-integration) | Super Admin only |
 | → Dev Console | A technical log for developers. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 
 ## The buttons at the bottom of the menu
