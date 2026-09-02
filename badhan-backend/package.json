@@ -20,7 +20,7 @@
     "fetch:backup-secrets": "node scripts/fetch-backup-secrets.js",
     "migrate:list": "ts-node --transpile-only scripts/migrations/index.ts list",
     "migrate": "ts-node --transpile-only scripts/migrations/index.ts",
-    "tsoa:spec": "tsoa spec -c tsoa.json",
+    "tsoa:spec": "tsoa spec -c tsoa.json && node scripts/trim-openapi.js",
     "tsoa:routes": "tsoa routes -c tsoa.json"
   },
   "engines": {
