@@ -195,15 +195,16 @@ export class UsersController extends Controller {
   }
 
   /**
-   * Create a temporary token from the caller's own session, expiring on its own.
+   * Create a second auth token from the caller's own session. It does not expire.
    *
-   * `durationSeconds` is optional and defaults to 30 — the web-redirection handoff, which
-   * sends no body at all and must keep behaving exactly as it did. A longer one is for a
-   * credential handed to something outside the app, such as the prompt file the AI
-   * Integration page produces.
+   * The body is empty and has no options: there is no lifetime to ask for. A caller still
+   * sending the old `durationSeconds` gets an error rather than a token, because silently
+   * accepting it would hand back a permanent credential to something expecting a brief one.
    *
-   * The token is an ordinary auth token for as long as it lives: it carries the caller's own
-   * role and can do everything they can, so ask for the shortest duration that works.
+   * The token is an ordinary auth token carrying the caller's own role, and it can do
+   * everything they can. It stops working only when its row is deleted — from the caller's
+   * device list (`DELETE /users/logins/{tokenId}`), or by `DELETE /users/signout/all`.
+   * `DELETE /users/signout` does NOT end it: that deletes only the token making the request.
    */
   @Post('redirection')
   @SuccessResponse(201, 'Redirection token created')
