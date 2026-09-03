@@ -148,8 +148,10 @@ const COLLECTION_VALIDATORS: CollectionValidator[] = [
   }
 ];
 
-export async function syncCollectionValidators(): Promise<void> {
-  const db: mongoose.mongo.Db | undefined = mongoose.connection.db;
+export async function syncCollectionValidators(
+  connection: mongoose.Connection = mongoose.connection
+): Promise<void> {
+  const db: mongoose.mongo.Db | undefined = connection.db;
   if (!db) {
     myConsole.log('⚠️   No database handle; skipped collection validators.');
     return;

@@ -4,6 +4,7 @@ import '../db/mongoose' // ensure mongoose connection is initialized (cached if 
 import rateLimiter from '../middlewares/rateLimiter'
 import { param, query, validationResult } from 'express-validator'
 import { spawnSync } from 'child_process'
+import { Connection, createConnection } from 'mongoose'
 import path from 'path'
 import fs from 'fs'
 import dotenv from 'dotenv'
@@ -324,6 +325,62 @@ const purgeController = async () => {
   }
 }
 
+// Purge and populate above run on the process's own connection, which is the local database and
+// nothing else. Development lives on another server entirely, so a reset aimed at it needs a
+// connection of its own, opened from env.development for the one operation and closed after —
+// this process has no business holding a handle on a shared database between resets.
+//
+// `autoIndex: false` matches how the app itself connects (see db/mongoose.ts): the reset drops
+// the database, indexes included, and the environment's own backend rebuilds them on its next
+// boot. Exactly what a local purge leaves behind, on the local machine.
+const withDevelopmentConnection = async (
+  operation: (connection: Connection) => Promise<any>
+) => {
+  const target = MONGODB_URI_BY_ENVIRONMENT.development
+  if (!target.uri) {
+    return new BadRequestError400(`no MONGODB_URI for the development environment; ${target.envFile} is missing or has no MONGODB_URI`, {})
+  }
+  const connection = await createConnection(target.uri, {
+    autoIndex: false,
+    serverSelectionTimeoutMS: 30_000,
+    maxPoolSize: 10
+  }).asPromise()
+  try {
+    return await operation(connection)
+  } finally {
+    await connection.close()
+  }
+}
+
+const purgeDevelopmentController = async () => {
+  console.log('[purge] purging development database...')
+  return withDevelopmentConnection(async (connection: Connection) => {
+    try {
+      const result = await clearDatabase(connection)
+      if (!result.ok) {
+        return new InternalServerError500('Purge script failed', { error: (result as any).error }, {})
+      }
+      console.log('[purge] development database purged successfully')
+      return new OKResponse200('Successfully purged development database', {})
+    } catch (e: any) {
+      return new InternalServerError500('Purge script threw exception', { error: e?.message }, {})
+    }
+  })
+}
+
+const populateDevelopmentController = async () =>
+  withDevelopmentConnection(async (connection: Connection) => {
+    try {
+      const result = await generateFakeData(connection)
+      if (!result.ok) {
+        return new InternalServerError500('Populate script failed', { error: (result as any).error }, {})
+      }
+      return new OKResponse200('Successfully populated development database', {})
+    } catch (e: any) {
+      return new InternalServerError500('Populate script threw exception', { error: e?.message }, {})
+    }
+  })
+
 // small helper to simulate original wait for prune route
 const wait = () => new Promise(resolve => setTimeout(() => resolve(0), 3000))
 
@@ -388,6 +445,14 @@ router.post('/populate-local-db',
   commonQueue,
   handle(async () => populateController()))
 
+router.post('/purge-development-db',
+  commonQueue,
+  handle(async () => purgeDevelopmentController()))
+
+router.post('/populate-development-db',
+  commonQueue,
+  handle(async () => populateDevelopmentController()))
+
 // --- Guest routes ---
 // Guest mode lets a visitor explore the Backup & Restore page without touching any real
 // infrastructure: no firebase storage, no mongodump/mongorestore, no local DB mutation.
@@ -426,6 +491,12 @@ const guestPurgeController = async () =>
 const guestPopulateController = async () =>
   new OKResponse200('Successfully populated local database (guest)', {})
 
+const guestPurgeDevelopmentController = async () =>
+  new OKResponse200('Successfully purged development database (guest)', {})
+
+const guestPopulateDevelopmentController = async () =>
+  new OKResponse200('Successfully populated development database (guest)', {})
+
 router.delete('/guest/backup/old',
   rateLimiter.commonLimiter,
   handle(async () => guestPruneController()))
@@ -457,6 +528,14 @@ router.post('/guest/purge-local-db',
 router.post('/guest/populate-local-db',
   rateLimiter.commonLimiter,
   handle(async () => guestPopulateController()))
+
+router.post('/guest/purge-development-db',
+  rateLimiter.commonLimiter,
+  handle(async () => guestPurgeDevelopmentController()))
+
+router.post('/guest/populate-development-db',
+  rateLimiter.commonLimiter,
+  handle(async () => guestPopulateDevelopmentController()))
 
 // Generate in-memory schema inconsistencies report (no filesystem writes)
 router.get('/schema-inconsistencies',

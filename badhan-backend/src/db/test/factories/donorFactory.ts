@@ -1,9 +1,17 @@
+import { Model } from 'mongoose';
 import { DonorModel, IDonor } from '../../models/Donor';
 import {DataFactory} from './dataFactory'
 import * as faker from "../../../doc/faker";
 export class DonorFactory extends DataFactory {
+    // The model decides which database a donor is saved to, so a reset aimed at another
+    // environment passes that environment's model (see `donorModelOn`). Defaults to the
+    // process's own.
+    constructor (private readonly donorModel: Model<IDonor> = DonorModel) {
+        super()
+    }
+
     createData(partialDonor: Partial<IDonor>): IDonor {
-        return new DonorModel({
+        return new this.donorModel({
             name: faker.getName(),
             fatherName: faker.getName(),
             motherName: faker.getName(),

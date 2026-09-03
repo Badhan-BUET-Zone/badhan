@@ -1,21 +1,28 @@
-import '../mongoose'
+import { Connection } from 'mongoose'
+import { mongoose } from '../mongoose'
 import { IDonor } from '../models/Donor'
 import { DonorFactory } from './factories/donorFactory'
+import { donorModelOn } from './modelsOn'
 import myConsole from '../../utils/myConsole'
 import { Progress } from '../../utils/progress'
 import { DESIGNATIONS_INDEX, HALLS_INDEX } from '../../constants'
 
 /**
- * Populates the database with synthetic data for local development / tests.
+ * Populates a database with synthetic data for local development / tests.
  * Returns status and any error encountered. Does NOT exit when imported.
+ *
+ * Defaults to the process's own connection — the local database. Pass a connection to seed a
+ * different environment's database.
  */
-export const generateFakeData = async (): Promise<{ ok: boolean, error?: unknown }> => {
+export const generateFakeData = async (
+    connection: Connection = mongoose.connection
+): Promise<{ ok: boolean, error?: unknown }> => {
     const VOLUNTEER_COUNT_PER_HALL: number = 1
     const DONOR_COUNT_PER_HALL: number = 1
     const MAX_HALL_ADMIN_COUNT: number = 7
     try {
         const userIds: string[] = [] // retained for possible future usage
-        const donorFactory: DonorFactory = new DonorFactory()
+        const donorFactory: DonorFactory = new DonorFactory(donorModelOn(connection))
         const progressBar: Progress = new Progress(MAX_HALL_ADMIN_COUNT)
         for (let i: number = 0; i < MAX_HALL_ADMIN_COUNT; i++) {
             const hallAdmin: IDonor = donorFactory.createData({

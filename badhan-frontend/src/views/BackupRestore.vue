@@ -56,11 +56,18 @@
               text="Trim Backups"
             />
             <Button
-              :disabled="purgeLocalLoaderFlag"
-              :click="handlePurgeLocalDB"
+              :disabled="resetLocalLoaderFlag"
+              :click="handleResetLocalDB"
               color="error"
               icon="mdi-database-refresh"
-              text="Purge Local DB"
+              text="Reset Local DB"
+            />
+            <Button
+              :disabled="resetDevelopmentLoaderFlag"
+              :click="handleResetDevelopmentDB"
+              color="error"
+              icon="mdi-database-refresh"
+              text="Reset Development DB"
             />
             <Button
               :disabled="copyToLocalLoaderFlag"
@@ -73,7 +80,7 @@
                  appears and vanishes between them reads as the row twitching. -->
             <transition name="fade">
               <v-progress-circular
-                v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || purgeLocalLoaderFlag || copyToLocalLoaderFlag"
+                v-if="createNewBackupLoaderFlag || trimBackupsLoaderFlag || resetLocalLoaderFlag || resetDevelopmentLoaderFlag || copyToLocalLoaderFlag"
                 indeterminate
                 color="primary"
                 size="20"
@@ -202,7 +209,8 @@ export default {
     createNewBackupLoaderFlag: false,
     trimBackupsLoaderFlag: false,
   copyToLocalLoaderFlag: false,
-  purgeLocalLoaderFlag: false,
+  resetLocalLoaderFlag: false,
+  resetDevelopmentLoaderFlag: false,
   }),
   computed: {
     firebaseCredentialsMissing () {
@@ -372,26 +380,34 @@ export default {
       }
     }
     ,
-    async handlePurgeLocalDB () {
-      this.purgeLocalLoaderFlag = true
+    // A reset is the purge and the reseed together: an emptied database with no super admin in
+    // it is a database nobody can log in to, so the two are never offered separately here.
+    async resetDatabase (environment, loaderFlagName) {
+      this[loaderFlagName] = true
       try {
-        const response = await this.backupAPIAxios.post('/purge-local-db')
-        const response2 = await this.backupAPIAxios.post('/populate-local-db')
-        this.purgeLocalLoaderFlag = false
+        const response = await this.backupAPIAxios.post(`/purge-${environment}-db`)
+        const response2 = await this.backupAPIAxios.post(`/populate-${environment}-db`)
+        this[loaderFlagName] = false
         if (response.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response.data.message)
           return
         }
-        if(response2.status !== HTTP_STATUS.OK){
+        if (response2.status !== HTTP_STATUS.OK) {
           this.$store.dispatch('notification/notifyError', response2.data.message)
           return
         }
-        this.$store.dispatch('notification/notifySuccess', 'Successfully purged local database')
+        this.$store.dispatch('notification/notifySuccess', `Successfully reset ${environment} database`)
       } catch (e) {
-        this.purgeLocalLoaderFlag = false
+        this[loaderFlagName] = false
         const msg = (e && e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Unknown error occured'
         this.$store.dispatch('notification/notifyError', msg)
       }
+    },
+    async handleResetLocalDB () {
+      await this.resetDatabase('local', 'resetLocalLoaderFlag')
+    },
+    async handleResetDevelopmentDB () {
+      await this.resetDatabase('development', 'resetDevelopmentLoaderFlag')
     },
     async handleCopyToLocal () {
       this.copyToLocalLoaderFlag = true

@@ -35,7 +35,8 @@ the date and time it was taken.
 | --- | --- |
 | **Create New Backup** | Takes a fresh copy of the record book as it stands right now. |
 | **Trim Backups** | Deletes older backups to save space. |
-| **Purge Local DB** | Empties the copy of the record book held on this computer. ("DB" is short for database — the record book itself.) |
+| **Reset Local DB** | Empties the copy of the record book held on this computer and puts a small set of made-up practice records in its place. ("DB" is short for database — the record book itself.) |
+| **Reset Development DB** | The same, but for the practice copy of the app — the shared test site. Everyone using the test site loses whatever was in it. |
 | **Copy to Local DB** | Copies the live record book down onto this computer. |
 
 ### The buttons on each backup
@@ -52,6 +53,12 @@ the date and time it was taken.
 **Restore to Production replaces the live record book.** Everything recorded since that backup
 was taken — every donation, every new donor, every comment — is gone. This is the single most
 destructive button in the whole application.
+
+**The two Reset buttons throw away everything in the database they name.** They are for a
+developer setting up a clean starting point, not for fixing a problem with real records.
+*Reset Local DB* only touches the machine you are sitting at, so it is harmless. *Reset
+Development DB* wipes the shared test site for everyone using it — tell the team before you
+press it. Neither one can touch the live app.
 
 Sensible habits:
 
