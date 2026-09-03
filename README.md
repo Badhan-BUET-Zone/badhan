@@ -33,6 +33,18 @@ warnings are in
 
 <hr>
 
+<a name="one-codebase-update"/>
+
+# Update of 11 February 2023: One Codebase, Web and Android
+
+The app on Google Play is the website. Bubblewrap wraps the same Vue frontend as a Trusted Web
+Activity — an Android shell whose only job is to open `badhan-buet.web.app` full screen, with no
+address bar, proved to belong to us by a `.well-known/assetlinks.json` the site serves. So there
+is no second codebase and no Android port to keep in step: a screen written once appears on both,
+and shipping the web app ships the phone app with it.
+
+<hr>
+
 <a name="e2e-tests-update"/>
 
 # Update of 26 March 2022: End-to-End Tests
@@ -57,6 +69,8 @@ https://github.com/user-attachments/assets/69410526-b020-46c2-b63f-a4a80bcef950
 [Update of 3 September 2026: AI Integration](#ai-integration-update)
 
 [Update of 16 August 2025: Backup and Restore](#backup-restore-update)
+
+[Update of 11 February 2023: One Codebase, Web and Android](#one-codebase-update)
 
 [Update of 26 March 2022: End-to-End Tests](#e2e-tests-update)
 
