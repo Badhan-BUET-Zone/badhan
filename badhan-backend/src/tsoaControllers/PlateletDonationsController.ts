@@ -205,10 +205,23 @@ export class PlateletDonationsController extends Controller {
     @Query() startDate: number,
     @Query() endDate: number,
     @Query() bloodGroup: number,
-    @Query() hall: number
+    @Query() hall: number,
+    @Request() req: any
   ): Promise<{ status: string; statusCode: number; message: string; donations?: any[] }> {
+    const res: ExResponse = (req as any).res
+    const user: IDonor = res.locals.middlewareResponse.donor
+
     const donationsResult: { data: plateletDonationInterface.IPlateletDonationWithDonor[]; message: string; status: string } =
       await plateletDonationInterface.getPlateletDonationsWithDonorByTimePeriod(startDate, endDate, bloodGroup, hall)
+
+    await logInterface.addLog(user._id, 'GET PLATELET DONATIONS REPORT DONORS', {
+      startDate,
+      endDate,
+      bloodGroup,
+      hall,
+      resultCount: donationsResult.data.length,
+      name: user.name
+    })
 
     this.setStatus(HTTP_STATUS.OK)
     return {

@@ -58,6 +58,9 @@ to open that donor's profile.
 That is the feature to reach for when a number looks wrong. Instead of wondering why March
 shows 14 B+ donations, tap the 14 and read the fourteen names.
 
+Opening the drill-down panel is itself recorded in App Activity, the same as generating the
+report was.
+
 ---
 
 ## App Activity
@@ -76,8 +79,9 @@ Use it to see whether a hall has gone quiet, to check who has been active before
 someone, or to work out what happened to a record that changed unexpectedly.
 
 > **Everything is logged, by everybody, including you.** Every sign-in, search, edit, donation
-> and deletion is recorded with the name of the person who did it. This is not surveillance so
-> much as bookkeeping — but it does mean nothing in this app is anonymous.
+> and deletion is recorded with the name of the person who did it. So is looking: opening the
+> Activity Summary, and opening this App Activity page itself, both leave an entry. This is not
+> surveillance so much as bookkeeping — but it does mean nothing in this app is anonymous.
 
 ---
 

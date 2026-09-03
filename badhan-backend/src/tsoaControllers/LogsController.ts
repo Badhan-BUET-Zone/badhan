@@ -39,6 +39,10 @@ export class LogsController extends Controller {
     const plateletDonationCount: { message: string; status: string; data: number } = await plateletDonationInterface.getPlateletDonationCount()
     const volunteerCount: { message: string; status: string; data: number } = await donorInterface.getVolunteerCount()
 
+    const res: ExResponse = (req as any).res
+    const user: IDonor = res.locals.middlewareResponse.donor
+    await logInterface.addLog(user._id, 'GET STATISTICS', { name: user.name })
+
     this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
@@ -96,6 +100,10 @@ export class LogsController extends Controller {
     @Request() req: any
   ): Promise<{ status: string; statusCode: number; message: string; logs?: any[] }> {
     const logsResult: { data: ILog[]; status: string; message: string } = await logInterface.getLogs()
+
+    const res: ExResponse = (req as any).res
+    const user: IDonor = res.locals.middlewareResponse.donor
+    await logInterface.addLog(user._id, 'GET LOGS', { resultCount: logsResult.data.length, name: user.name })
 
     this.setStatus(HTTP_STATUS.OK)
     return {
