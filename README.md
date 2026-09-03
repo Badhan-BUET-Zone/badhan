@@ -4,7 +4,7 @@
 </div>
 <a name="ai-integration-update"/>
 
-# Update of 3 September: AI Integration
+# Update of 3 September 2026: AI Integration
 
 Badhan now connects to **Claude** as an MCP server, so a member can ask for what they need in
 plain English — *"find me someone from Titumir hall who can donate A+ blood"* — and Claude
@@ -42,7 +42,11 @@ backend and database — no mocks. It began with a single sign-in test and now s
 and 164 tests**, running in about thirteen minutes, and it is the gate every deploy has to
 pass. The whole run, recorded end to end:
 
-[<img width="700" alt="Cypress driving the Badhan app, command log on the left and the app on the right" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/d766d029/docs/images/cypress-full-run-thumbnail.png" />](https://github.com/Badhan-BUET-Zone/badhan/blob/d766d029/docs/videos/cypress-full-run.mp4)
+
+
+https://github.com/user-attachments/assets/f83a17c9-c660-49ce-9303-f86f84a41340
+
+
 
 <hr>
 
