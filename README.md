@@ -167,6 +167,24 @@ The following output should occur:
     ✔  All specs passed!                        02:39       13       13        -        -        -  
 ```
 
+### Recording the run
+
+Cypress writes one video per spec and cannot record a run as a whole, so to watch the
+suite end to end there is a script that turns video on and then stitches the clips
+together:
+
+```
+docker compose --profile test run --build --rm frontend-test npm run cypress:video
+```
+
+It leaves `badhan-frontend-test/cypress/videos/full-run.mp4` — every spec in the order it
+ran — beside `full-run.txt`, which lists the timestamp each spec starts at. The per-spec
+clips stay where Cypress put them. Anything after `--` goes on to `cypress run`, so
+`... npm run cypress:video -- --spec 'cypress/e2e/auth/**'` records just that slice.
+
+Recording costs a couple of minutes on top of an already slow suite, so it is a
+deliberate step rather than something the ordinary run does.
+
 That's it. You have done the local setup for developing the app.
 
 # Deploy
