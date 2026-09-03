@@ -40,7 +40,7 @@ warnings are in
 Every screen in the app is exercised by a Cypress suite that drives a real browser against a real
 backend and database — no mocks. It began with a single sign-in test and now stands at **49 specs
 and 164 tests**, running in about thirteen minutes, and it is the gate every deploy has to
-pass. The whole run, recorded end to end:
+pass. The opening 2:51 of a run — eleven of those specs, at the speed they really go:
 
 
 
@@ -54,7 +54,7 @@ https://github.com/user-attachments/assets/69410526-b020-46c2-b63f-a4a80bcef950
 
 # Table of Contents
 
-[Update of 3 September: AI Integration](#ai-integration-update)
+[Update of 3 September 2026: AI Integration](#ai-integration-update)
 
 [Update of 16 August 2025: Backup and Restore](#backup-restore-update)
 
