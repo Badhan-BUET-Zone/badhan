@@ -13,7 +13,7 @@ first before anything that changes a record. Super admins set it up from the **A
 page; the walkthrough is in
 [the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/16-super-admin-tools.md#ai-integration).
 
-<img width="600" alt="Claude answering donor questions through the Badhan MCP server" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/ai-integration.jpeg" />
+<img width="600" alt="Claude answering donor questions through the Badhan MCP server" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/4fee0edf/docs/images/ai-integration.jpeg" />
 
 <hr>
 
@@ -29,7 +29,7 @@ and **Copy to Local DB** pulls the live records onto a developer's machine. The 
 warnings are in
 [the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/16-super-admin-tools.md#backup--restore).
 
-<img width="700" alt="Backup and Restore panel showing snapshots with their restore targets" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/backup-and-restore-panel.png" />
+<img width="700" alt="Backup and Restore panel showing snapshots with their restore targets" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/4fee0edf/docs/images/backup-and-restore-panel.png" />
 
 <hr>
 
@@ -42,7 +42,7 @@ backend and database — no mocks. It began with a single sign-in test and now s
 and 164 tests**, running in about thirteen minutes, and it is the gate every deploy has to
 pass. The whole run, recorded end to end:
 
-[<img width="700" alt="Cypress driving the Badhan app, command log on the left and the app on the right" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/cypress-full-run-thumbnail.png" />](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/videos/cypress-full-run.mp4)
+[<img width="700" alt="Cypress driving the Badhan app, command log on the left and the app on the right" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/4fee0edf/docs/images/cypress-full-run-thumbnail.png" />](https://github.com/Badhan-BUET-Zone/badhan/blob/4fee0edf/docs/videos/cypress-full-run.mp4)
 
 <hr>
 
