@@ -2,9 +2,59 @@
   <img width="150" height="150" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/logo.png"/>
   <h1>Badhan, BUET Zone</h1>
 </div>
+<a name="ai-integration-update"/>
+
+# Update of 3 September: AI Integration
+
+Badhan now connects to **Claude** as an MCP server, so a member can ask for what they need in
+plain English — *"find me someone from Titumir hall who can donate A+ blood"* — and Claude
+searches the donor records, reads call history and logs donations through named actions, asking
+first before anything that changes a record. Super admins set it up from the **AI Integration**
+page; the walkthrough is in
+[the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/16-super-admin-tools.md#ai-integration).
+
+<img width="600" alt="Claude answering donor questions through the Badhan MCP server" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/ai-integration.jpeg" />
+
+<hr>
+
+<a name="backup-restore-update"/>
+
+# Update of 16 August 2025: Backup and Restore
+
+Super admins can snapshot the whole record book and put it back. **Create New Backup** takes a
+copy as it stands, **Trim Backups** clears out old ones, and every saved snapshot can be restored
+into the local, development or production database — the last of which replaces the live records
+outright. The two **Reset** buttons wipe the local or development database down to practice data,
+and **Copy to Local DB** pulls the live records onto a developer's machine. The rules and the
+warnings are in
+[the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/16-super-admin-tools.md#backup--restore).
+
+<img width="700" alt="Backup and Restore panel showing snapshots with their restore targets" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/backup-and-restore-panel.png" />
+
+<hr>
+
+<a name="e2e-tests-update"/>
+
+# Update of 26 March 2022: End-to-End Tests
+
+Every screen in the app is exercised by a Cypress suite that drives a real browser against a real
+backend and database — no mocks. It began with a single sign-in test and now stands at **49 specs
+and 164 tests**, running in about thirteen minutes, and it is the gate every deploy has to
+pass. The whole run, recorded end to end:
+
+[<img width="700" alt="Cypress driving the Badhan app, command log on the left and the app on the right" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/cypress-full-run-thumbnail.png" />](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/videos/cypress-full-run.mp4)
+
+<hr>
+
 <a name="tableofcontent"/>
 
 # Table of Contents
+
+[Update of 3 September: AI Integration](#ai-integration-update)
+
+[Update of 16 August 2025: Backup and Restore](#backup-restore-update)
+
+[Update of 26 March 2022: End-to-End Tests](#e2e-tests-update)
 
 [Introduction](#introduction)
 
