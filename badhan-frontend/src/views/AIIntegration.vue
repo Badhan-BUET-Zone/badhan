@@ -5,37 +5,22 @@
       <v-card-title>Use Badhan with AI</v-card-title>
       <v-card-text>
         <p>
-          Let an AI assistant help with Badhan using everyday instructions. Connect with your
-          favorite AI and then simply ask:
-          <i>"find O+ donors in Titumir who have not donated since March"</i>.
-        </p>
-        <p lang="bn">
-          সাধারণ ভাষায় নির্দেশনা দিয়ে একটি AI সহকারীকে Badhan-এর কাজে আপনাকে সাহায্য করতে দিন।
-          আপনার পছন্দের AI-এর সাথে সংযোগ করুন, তারপর সহজভাবে জিজ্ঞেস করুন:
-          <i>"তিতুমীর হলে O+ রক্তদাতা খুঁজে দাও, যাঁরা মার্চের পর আর রক্ত দেননি"</i>।
+          Let an AI assistant help with Badhan using everyday instructions. Connect Claude in your
+          web browser and then simply ask:
+          <i>"find O+ donors in Titumir who have not donated since March"</i> or in bangla
+          <i lang="bn">"তিতুমীর হলে O+ রক্তদাতা খুঁজে দাও, যাঁরা মার্চের পর আর রক্ত দেননি"</i>.
         </p>
 
-        <v-card-title class="pl-0">Connect to AI</v-card-title>
+        <v-card-title class="pl-0">Hand Claude a setup file</v-card-title>
+
         <p>
-          <b>If you want to connect to AI temporarily:</b> choose the AI assistant you use, then
-          follow the setup steps.
+          <b>If you want to connect to Claude temporarily:</b> download a setup file and upload it
+          to a conversation.
         </p>
 
-        <v-select
-          v-model="selectedSetupAIApp"
-          :items="setupAIApps"
-          label="Which AI assistant are you using?"
-          outlined
-          rounded
-          dense
-          hide-details
-          class="mb-4"
-          data-cy="setupAiAppSelectorId"
-        />
-
-        <v-card v-if="selectedSetupAIApp" outlined class="pa-4 mb-4" data-cy="setupAiAppInstructionsId">
+        <v-card outlined class="pa-4 mb-4" data-cy="setupAiAppInstructionsId">
           <div class="d-flex align-center flex-wrap mb-4">
-            <span class="mr-3">Allow this Badhan domain when your AI assistant asks:</span>
+            <span class="mr-3">Claude has to be allowed to reach this Badhan domain:</span>
             <code data-cy="aiSetupDomainId">{{ badhanDomain }}</code>
             <Button
               :click="handleCopyDomain"
@@ -46,23 +31,35 @@
             />
           </div>
 
-          <template v-if="selectedSetupAIApp === 'chatgpt'">
-            <h3 class="text-subtitle-1 mb-3">ChatGPT</h3>
-            <ol class="pl-5 mb-4">
-              <li>Press <b>Download Setup File</b>.</li>
-              <li>Upload the file to a new ChatGPT conversation.</li>
-              <li>When ChatGPT asks to use a website, allow the Badhan domain written in the setup file.</li>
-            </ol>
-          </template>
+          <h3 class="text-subtitle-1 mb-3">Claude Web UI</h3>
 
-          <template v-else>
-            <h3 class="text-subtitle-1 mb-3">Claude Web UI</h3>
-            <ol class="pl-5 mb-4">
-              <li>Press <b>Download Setup File</b>.</li>
-              <li>Upload the file to a new Claude conversation in your web browser.</li>
-              <li>When Claude asks to use a website, allow the Badhan domain written in the setup file.</li>
-            </ol>
-          </template>
+          <h4 class="text-subtitle-2 mb-2">One time setup</h4>
+          <ol class="pl-5 mb-4" data-cy="setupFileOnceStepsId">
+            <li>
+              Press <b>Download Setup File</b> below. It saves as
+              <code>badhan-api-prompt.md</code> — keep it, you upload the same file every time.
+            </li>
+            <li>Open <b>claude.ai</b> in your web browser and sign in.</li>
+            <li>Select your name at the bottom left of Claude, then <b>Settings</b>, then <b>Capabilities</b>.</li>
+            <li>Turn on <b>Code execution and file creation</b>, and turn on <b>Allow network egress</b>.</li>
+            <li>
+              Choose the network option that allows <b>specific domains</b> — not package managers
+              only — then paste the Badhan domain above into <b>Additional allowed domains</b> and
+              save. Without this step Claude cannot reach Badhan at all.
+            </li>
+          </ol>
+
+          <h4 class="text-subtitle-2 mb-2">For your everyday use</h4>
+          <ol class="pl-5 mb-4" data-cy="setupFileEverydayStepsId">
+            <li>Start a new chat in Claude.</li>
+            <li>Press <b>+</b> beside the message box and upload <code>badhan-api-prompt.md</code>.</li>
+            <li>Ask your question in plain language.</li>
+          </ol>
+
+          <p class="text-caption mb-4">
+            On a Team or Enterprise Claude plan these settings live under <b>Organization
+            settings</b>, then <b>Capabilities</b>, and only an owner can change them.
+          </p>
 
           <div class="d-flex align-center flex-wrap">
             <Button
@@ -81,104 +78,60 @@
 
         <v-divider class="mt-6"/>
 
-        <v-card-title class="pl-0">Connect an AI app</v-card-title>
+        <v-card-title class="pl-0">Connect Claude once</v-card-title>
 
         <p v-if="isGuest" data-cy="mcpGuestNoticeId">
-          Sign in to Badhan to connect an AI app.
+          Sign in to Badhan to connect Claude.
         </p>
 
         <template v-else>
           <p>
-            <b>If you want to connect to AI for long-term use:</b> connect an app once to let it
-            help with Badhan whenever you need it.
+            <b>If you want to connect to AI for long-term use:</b> connect Claude once to let it
+            help with Badhan whenever you need it, without uploading a file each time.
           </p>
 
-          <v-select
-            v-model="selectedAIApp"
-            :items="aiApps"
-            label="Which AI app are you using?"
-            outlined
-            rounded
-            dense
-            hide-details
-            class="mb-4"
-            data-cy="aiAppSelectorId"
-          />
+          <v-card outlined class="pa-4 mb-4" data-cy="aiAppInstructionsId">
+            <h3 class="text-subtitle-1 mb-3">Claude</h3>
 
-          <v-card v-if="selectedAIApp" outlined class="pa-4 mb-4" data-cy="aiAppInstructionsId">
-            <template v-if="selectedAIApp === 'desktop'">
-              <h3 class="text-subtitle-1 mb-3">VS Code, Cursor, or another desktop AI app</h3>
-              <ol class="pl-5 mb-4">
-                <li>Press <b>Copy Desktop App Setup</b>.</li>
-                <li>Open your app's settings and look for <b>MCP</b>, <b>Tools</b>, or <b>Integrations</b>.</li>
-                <li>Paste the setup, save it, and allow Badhan when the app asks for permission.</li>
-              </ol>
-              <Button
-                :click="handleCopyMCPConfig"
-                :disabled="busy"
-                color="primary"
-                icon="mdi-content-copy"
-                text="Copy Desktop App Setup"
-                data-cy="copyMcpConfigId"
-              />
-            </template>
+            <h4 class="text-subtitle-2 mb-2">One time setup</h4>
+            <ol class="pl-5 mb-4" data-cy="connectorOnceStepsId">
+              <li>Press <b>Copy Claude Link</b> below. The link is a sign-in — keep it to yourself.</li>
+              <li>Open <b>claude.ai</b> in your web browser and sign in.</li>
+              <li>Select your name at the bottom left of Claude, then <b>Customize</b>, then <b>Connectors</b>.</li>
+              <li>Press <b>+</b>, then <b>Add custom connector</b>.</li>
+              <li>Paste the link into the URL box, name it <b>Badhan</b>, and select <b>Add</b>.</li>
+              <li>
+                On the <b>Badhan</b> connector that now appears, press <b>Connect</b>. Adding it is
+                not enough — until you connect it once, Claude cannot use it. After that it stays
+                connected for every chat.
+              </li>
+            </ol>
 
-            <template v-else-if="selectedAIApp === 'claude-code'">
-              <h3 class="text-subtitle-1 mb-3">Claude Code</h3>
-              <ol class="pl-5 mb-4">
-                <li>Press <b>Copy Claude Code Setup</b>.</li>
-                <li>Open the terminal where you use Claude Code.</li>
-                <li>Paste the setup, press Enter, and allow Badhan when Claude Code asks for permission.</li>
-              </ol>
-              <Button
-                :click="handleCopyMCPCommand"
-                :disabled="busy"
-                color="primary"
-                icon="mdi-content-copy"
-                text="Copy Claude Code Setup"
-                data-cy="copyMcpCommandId"
-              />
-            </template>
+            <h4 class="text-subtitle-2 mb-2">For your everyday use</h4>
+            <ol class="pl-5 mb-4" data-cy="connectorEverydayStepsId">
+              <li>Start a new chat in Claude.</li>
+              <li>Ask your question in plain language. Claude will ask before anything it changes.</li>
+            </ol>
 
-            <template v-else-if="selectedAIApp === 'chatgpt'">
-              <h3 class="text-subtitle-1 mb-3">ChatGPT</h3>
-              <ol class="pl-5 mb-4">
-                <li>Press <b>Copy ChatGPT Link</b>.</li>
-                <li>In ChatGPT, open <b>Settings</b>, then <b>Apps</b>.</li>
-                <li>Add a custom app or connector, paste the link, and follow the prompts to save it.</li>
-              </ol>
-              <Button
-                :click="handleCopyMCPConnectorURL"
-                :disabled="busy"
-                color="primary"
-                icon="mdi-link-variant"
-                text="Copy ChatGPT Link"
-                data-cy="copyMcpConnectorUrlId"
-              />
-            </template>
-
-            <template v-else>
-              <h3 class="text-subtitle-1 mb-3">Claude</h3>
-              <ol class="pl-5 mb-4">
-                <li>Press <b>Copy Claude Link</b>.</li>
-                <li>In Claude, open <b>Customize</b>, then <b>Connectors</b>.</li>
-                <li>Select <b>Add custom connector</b>, paste the link, and select <b>Add</b>.</li>
-              </ol>
-              <Button
-                :click="handleCopyMCPConnectorURL"
-                :disabled="busy"
-                color="primary"
-                icon="mdi-link-variant"
-                text="Copy Claude Link"
-                data-cy="copyMcpConnectorUrlId"
-              />
-            </template>
+            <p class="text-caption mb-4">
+              On a Team or Enterprise Claude plan an owner adds the connector under <b>Organization
+              settings</b>, then <b>Connectors</b>; everyone else then connects to it from
+              <b>Customize</b>, then <b>Connectors</b>.
+            </p>
+            <Button
+              :click="handleCopyMCPConnectorURL"
+              :disabled="busy"
+              color="primary"
+              icon="mdi-link-variant"
+              text="Copy Claude Link"
+              data-cy="copyMcpConnectorUrlId"
+            />
           </v-card>
-
-          <p class="mb-0">
-            You can remove an app's access at any time from <b>My Profile</b>.
-          </p>
         </template>
+
+        <p class="mb-0">
+          You can remove Claude's access at any time from <b>My Profile</b>.
+        </p>
 
         <v-alert type="warning" outlined class="rounded-xl mt-6">
           <p class="font-weight-medium mb-2">Only connect an assistant you trust</p>
@@ -206,8 +159,6 @@ import { HTTP_STATUS } from '@/mixins/constants'
 import {
   AI_PROMPT_FILE_NAME,
   buildAIIntegrationPrompt,
-  buildMCPCLICommand,
-  buildMCPConfigJSON,
   buildMCPConnectorURL,
   getAIPromptBaseURL,
   getMCPEndpointURL
@@ -218,19 +169,7 @@ export default {
   name: 'AIIntegrationPage',
   components: { PageTitle, Container, Button },
   data: () => ({
-    busy: false,
-    selectedSetupAIApp: null,
-    selectedAIApp: null,
-    setupAIApps: [
-      { text: 'I am using ChatGPT', value: 'chatgpt' },
-      { text: 'I am using Claude Web UI', value: 'claude-web' }
-    ],
-    aiApps: [
-      { text: 'I am using VS Code, Cursor, or another desktop AI app', value: 'desktop' },
-      { text: 'I am using Claude Code', value: 'claude-code' },
-      { text: 'I am using ChatGPT (only for paid)', value: 'chatgpt' },
-      { text: 'I am using Claude', value: 'claude' }
-    ]
+    busy: false
   }),
   computed: {
     baseURL () {
@@ -275,35 +214,21 @@ export default {
       textFileDownloadInWeb(prompt, AI_PROMPT_FILE_NAME, 'text/markdown;charset=utf-8')
       await this.$store.dispatch('notification/notifySuccess', 'Setup file downloaded. You can remove access later from My Profile')
     },
-    async mintMCPToken () {
+    async handleCopyMCPConnectorURL () {
+      this.busy = true
       const response = await this.$store.dispatch('requestRedirectionToken')
+      this.busy = false
       if (!response || response.status !== HTTP_STATUS.CREATED) {
         const message = (response && response.data && response.data.message) ? response.data.message : 'Could not create the connection'
         await this.$store.dispatch('notification/notifyError', message)
-        return null
+        return
       }
-      return response.data.token
-    },
-    async copyMCP (build, what) {
-      this.busy = true
-      const token = await this.mintMCPToken()
-      this.busy = false
-      if (!token) return
       try {
-        await this.$copyText(build(token, this.mcpEndpointURL))
-        await this.$store.dispatch('notification/notifySuccess', `${what} copied. You can remove access later from My Profile`)
+        await this.$copyText(buildMCPConnectorURL(response.data.token, this.mcpEndpointURL))
+        await this.$store.dispatch('notification/notifySuccess', 'Connection link copied. You can remove access later from My Profile')
       } catch (e) {
         await this.$store.dispatch('notification/notifyError', 'Could not copy to clipboard')
       }
-    },
-    async handleCopyMCPConfig () {
-      await this.copyMCP(buildMCPConfigJSON, 'Desktop app setup')
-    },
-    async handleCopyMCPCommand () {
-      await this.copyMCP(buildMCPCLICommand, 'Claude Code setup')
-    },
-    async handleCopyMCPConnectorURL () {
-      await this.copyMCP(buildMCPConnectorURL, 'Connection link')
     }
   }
 }

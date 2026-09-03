@@ -127,29 +127,10 @@ export const getMCPEndpointURL = (): string => {
   return environmentService.getAPIBaseURL() + '/mcp'
 }
 
-// For a client with a config file — Cursor, VS Code, Zed, and anything else that takes a JSON
-// block with a headers object.
-export const buildMCPConfigJSON = (token: string, endpointURL: string): string => {
-  return JSON.stringify({
-    mcpServers: {
-      badhan: {
-        type: 'http',
-        url: endpointURL,
-        headers: { 'x-auth': token }
-      }
-    }
-  }, null, 2)
-}
-
-// For Claude Code, which takes the whole thing as one command.
-export const buildMCPCLICommand = (token: string, endpointURL: string): string => {
-  return `claude mcp add --transport http badhan ${endpointURL} --header "x-auth: ${token}"`
-}
-
-// For claude.ai on the web or a phone, and for ChatGPT: both take a connector URL and offer OAuth
-// or no authentication, with nowhere to type a header. The token rides in the path instead, which
-// means the WHOLE URL is the credential — the page says so beside the button, because a member who
-// has learned that a link is safe to paste has learned the wrong thing here.
+// For claude.ai on the web or a phone: it takes a connector URL and offers OAuth or no
+// authentication, with nowhere to type a header. The token rides in the path instead, which means
+// the WHOLE URL is the credential — the page says so beside the button, because a member who has
+// learned that a link is safe to paste has learned the wrong thing here.
 export const buildMCPConnectorURL = (token: string, endpointURL: string): string => {
   return `${endpointURL}/${token}`
 }

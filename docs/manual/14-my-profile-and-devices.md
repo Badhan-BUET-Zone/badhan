@@ -83,8 +83,8 @@ you lose nothing by doing so.
 ### AI assistants appear here too
 
 If you are a super admin and have used the **AI Integration** page
-([chapter 16](16-super-admin-tools.md#ai-integration)), every file you made and every assistant
-you connected has an entry in this list, one per press of a button. They look like ordinary
+([chapter 16](16-super-admin-tools.md#ai-integration)), every setup file you made and every
+connection you set up has an entry in this list, one per press of a button. They look like ordinary
 entries — a browser, an operating system, an address — because that is the device you made them
 from.
 
@@ -92,8 +92,8 @@ from.
 ordinary Sign Out does not touch them. Find the entry and tap its delete button; the assistant
 stops working immediately and nothing else you use is affected.
 
-So the count matters more here than the paragraph above suggests: if you have connected two
-assistants, expect two extra entries. If there are more than you can account for, delete the ones
+So the count matters more here than the paragraph above suggests: if you have made two setup files,
+expect two extra entries. If there are more than you can account for, delete the ones
 you are unsure about and set them up again. That costs a minute.
 
 ## Delete Account

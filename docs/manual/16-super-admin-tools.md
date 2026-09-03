@@ -159,30 +159,99 @@ The page changes nothing on its own. It is safe to open.
 
 ## AI Integration
 
-This page prepares **one file to hand to an AI assistant** — the kind you type instructions to in
-plain English. The file explains to it how Badhan's records can be reached, and it carries a
-sign-in inside it. With that file, an assistant can answer questions like *"find O+ donors in
-Titumir who have not donated since March"* without anyone writing code.
+This page connects **Claude** — the assistant you type instructions to in plain English — to
+Badhan's records, so it can answer questions like *"find O+ donors in Titumir who have not donated
+since March"* without anyone writing code.
 
-You do not need to understand what is in the file. Two buttons:
+Claude is the only assistant this page sets up, and it offers two ways to do it. There is nothing
+else to choose between.
 
-| Button | What it does |
-| --- | --- |
-| **Download Prompt File** | Saves the file to your device, named `badhan-api-prompt.md`. |
-| **Copy to Clipboard** | Puts the same text on the clipboard, to paste straight into an assistant. |
+| | **Hand Claude a setup file** | **Connect Claude once** |
+| --- | --- | --- |
+| For | one conversation, now | using it again and again |
+| You give Claude | a file you upload | a link you paste into its settings |
+| Claude works from | a written description of the records | a list of named things it can do |
 
-**Preview the file (token hidden)** opens the whole text so you can read it first. No sign-in
-appears in the preview, and none exists yet: nothing is created until you press one of the two
-buttons.
+The second is the better one if you expect to come back to it: setting it up is a one-off, and a
+connected Claude is given named actions — search donors, log a donation, read the member chat — rather than being left to work it
+out from a document, and it asks you before the ones that change something.
 
-The page also names the **server the file points at**. A file made here works only against that
-server.
+### Hand Claude a setup file
+
+#### One time setup
+
+1. On this page, press **Download Setup File**. It saves to your device as
+   `badhan-api-prompt.md`. Keep it — you upload the same file every time.
+2. Open **claude.ai** in your web browser and sign in.
+3. Select your name at the bottom left of Claude, then **Settings**, then **Capabilities**.
+4. Turn on **Code execution and file creation**, then turn on **Allow network egress**.
+5. Choose the network option that allows **specific domains** — not package managers only — and
+   paste the Badhan domain into **Additional allowed domains**. Save.
+
+#### For your everyday use
+
+1. Start a new chat in Claude.
+2. Press **+** beside the message box and upload `badhan-api-prompt.md`.
+3. Ask your question in plain language. If Claude asks whether it may use the Badhan domain,
+   allow it.
+
+**Step 5 of the one time setup is the one that catches people out.** Claude reads the file happily
+and then cannot reach Badhan at all, which looks like the file being wrong rather than a setting
+being unset. The page prints the exact domain above the button, with a **Copy Domain** button
+beside it, so there is nothing to type out or mistype.
+
+On a **Team or Enterprise** Claude plan those settings live under **Organization settings**, then
+**Capabilities**, and only an owner can change them. Ask your owner for the domain to be added;
+nothing else about the steps changes.
+
+You do not need to understand what is in the file. Nothing is created until you press the
+button — no sign-in exists before then.
+
+### Connect Claude once
+
+#### One time setup
+
+1. On this page, press **Copy Claude Link**.
+2. Open **claude.ai** in your web browser and sign in.
+3. Select your name at the bottom left of Claude, then **Customize**, then **Connectors**.
+4. Press **+**, then **Add custom connector**.
+5. Paste the link into the URL box, name it **Badhan**, and select **Add**.
+6. On the **Badhan** connector that now appears, press **Connect**.
+
+**Step 6 is the one that catches people out.** Adding a connector is not the same as connecting to
+it: until you press **Connect** that once, Claude has it listed and still cannot use it. Once
+connected it stays connected.
+
+#### For your everyday use
+
+1. Start a new chat in Claude.
+2. Ask your question in plain language. Claude asks you before anything that changes a record.
+
+That really is the whole of it. The connector is there in every chat once you have connected it, so
+there is nothing to upload, nothing to switch on, and no domain to allow — Claude reaches Badhan
+from its own servers rather than from the sandbox the setup file uses.
+
+On a **Team or Enterprise** Claude plan an owner adds the connector under **Organization
+settings**, then **Connectors**; everyone else then finds it under **Customize**, then
+**Connectors**, and presses **Connect** there — that press is still theirs to make.
+
+#### The connector link *is* the password
+
+This one is worth its own warning. A setup file obviously looks like a secret. The connector link
+looks like an ordinary web link — and a link is the one kind of text everybody has been taught is
+safe to pass around.
+
+It is not. **The sign-in is inside the address itself.** Anyone you send that link to is signed in
+as you until you end it. Do not put it in a group chat, in an email, or in a screenshot.
+
+**The demo has no connection to offer.** If you are signed in to the demo, this half of the page
+asks you to sign in to Badhan instead of showing the button.
 
 ### The token does not expire — you end it yourself
 
-The sign-in inside the file is **not your own**. Each press of a button asks the server for a
-separate token, and your own session is untouched. But that token has **no clock on it**: it keeps
-working until somebody deliberately ends it.
+This holds for both halves of the page. The sign-in Claude is given is **not your own**: each press
+of either button asks the server for a separate token, and your own session is untouched. But that
+token has **no clock on it**: it keeps working until somebody deliberately ends it.
 
 Every press adds one entry to the device list on your **My Profile** page, alongside the phones and
 computers you have signed in from. **That entry is how you end it**: open My Profile, find it, and
@@ -191,104 +260,48 @@ press **Logout** on it. Ending one does not touch the others.
 Two things about that, both worth knowing before you need them:
 
 - **Signing out of this browser does not end it.** The ordinary Sign Out ends only the session you
-  are using right now. The file's token is a separate entry and keeps working.
+  are using right now. Claude's token is a separate entry and keeps working.
 - **Sign out from all devices does end it** — along with every other session you have, on every
   device.
 
-Because there is no clock, **make the file when you are ready to use it**, and end it when the
-assistant is done rather than leaving it in the list. There is no limit on how many you make.
+Because there is no clock, **make the file or the link when you are ready to use it**, and end it
+when you are done rather than leaving it in the list. There is no limit on how many you make.
 
 Every entry in that list looks much the same — an operating system, a browser, an address — so if
 you make several, end the ones you are unsure about and make a fresh one. That is cheap; guessing
 is not.
 
-### Read this before you send that file anywhere
+**Nothing lasts forever regardless.** The app clears out sign-ins that are 30 days old, so a file
+or a connection you forget about stops working a month after you made it. That is a backstop, not a
+plan: end the ones you are done with.
 
-The token **is you**, for as long as it exists. Anyone holding the file can do everything your role
-allows, as you, without knowing your password — read every donor, and change or delete records.
+If a connected Claude suddenly says it is not authorised, that is what happened — press the button
+again and paste the new link over the old one.
 
-So treat the file as you would treat your password:
+### Read this before you send that file or link anywhere
 
-- **Do not email it, post it in a group chat, or put it in shared storage.**
-- **Do not give it to an assistant you would not trust with your password.** Pasting it into an
+The token **is you**, for as long as it exists. Anyone holding the file or the link can do
+everything your role allows, as you, without knowing your password — read every donor, and change
+or delete records.
+
+So treat both as you would treat your password:
+
+- **Do not email them, post them in a group chat, or put them in shared storage.**
+- **Do not give them to an assistant you would not trust with your password.** Pasting one into an
   online service sends that token to that company.
 - **Delete the downloaded file when you are done with it**, and end its entry in My Profile. The
   file lying about on your computer is a live sign-in, not an expired one.
 
-**If it goes somewhere it should not have, go to My Profile and press Logout on its entry.** If you
+**If one goes somewhere it should not have, go to My Profile and press Logout on its entry.** If you
 cannot tell which entry it is, **Sign out from all devices** ends everything at once. Waiting is
 not a fix here: nothing expires on its own.
 
-An assistant working from this file is **not restricted** to reading. It can add, change and
+Claude, either way round, is **not restricted** to reading. It can add, change and
 delete real records, and the app cannot tell its actions apart from yours — the App Activity page
 will show them as yours. Everything in
 [chapter 17](17-rules-the-app-enforces.md) still applies: it can do exactly what your role allows,
-no more, and it is a super admin's role you would be lending it.
-
-### Connecting an assistant instead of handing it a file
-
-Below the two buttons there is a second half of the page, headed **Connect an MCP client**. It
-does the same job a different way: instead of pasting a file into an assistant each time, you set
-the connection up **once** and it stays there.
-
-The difference you will notice is that a connected assistant is given a **list of named things it
-can do** in Badhan — search donors, log a donation, read the member chat — rather than being left
-to work it out from a document. Assistants ask you before the ones that change something, and they
-are much less likely to get it wrong.
-
-You do not need to know what "MCP" stands for. You need to know which button to press.
-
-| If you use… | Press | Then |
-| --- | --- | --- |
-| **ChatGPT**, or **Claude** on the web or your phone | **Copy Connector URL** | Add it as a connector and choose *no authentication* |
-| **Claude Code** | **Copy CLI Command** | Paste the line into a terminal |
-| **Cursor, VS Code, Zed**, or another assistant with a settings file | **Copy MCP Config** | Paste the block into its MCP settings |
-
-Each press asks the server for a **fresh temporary sign-in**, exactly as the two buttons above do.
-Nothing is created until you press one.
-
-#### The connector URL *is* the password
-
-This one is worth its own warning. The other two buttons give you something that obviously looks
-like a secret. The connector URL looks like an ordinary web link — and a link is the one kind of
-text everybody has been taught is safe to pass around.
-
-It is not. **The sign-in is inside the address itself.** Anyone you send that link to is signed in
-as you until it lapses. Do not put it in a group chat, in an email, or in a screenshot.
-
-#### How long the connection lasts
-
-Until you end it. A settings file is written once and then forgotten about, so a connection that
-lapsed every half hour would mean editing that file every half hour — which nobody does.
-
-The cost of that convenience is stated plainly: a leaked settings file is a live sign-in as you,
-with no clock running it down. The only thing that ends it is you pressing **Logout** on its entry
-in **My Profile**, or **Sign out from all devices**.
-
-Every press of a button here adds one entry, so make one connection per assistant and end it when
-that assistant is finished with.
-
-#### When it stops working
-
-Only when you end it, or when someone signs your account out of all devices. If an assistant
-suddenly says it is not authorised, that is what happened — press the button again and paste the
-new one over the old one in its settings file.
-
-#### Two more things
-
-**This page is Super Admin only**, so the role you are lending a connected assistant is always the
-widest one there is.
-
-**A connected assistant can write, not just read** — donations, call records, donor edits, chat
-messages, everything your role allows. The App Activity page records those actions as yours,
-because as far as Badhan is concerned they are.
-
-**Nothing lasts forever regardless.** The app clears out sign-ins that are 30 days old, so a
-connection you forget about stops working a month after you made it. That is a backstop, not a
-plan: end connections you are done with.
-
-**The demo has no connection to offer.** If you are signed in to the demo, this section says so
-instead of showing the buttons.
+no more, and **this page is Super Admin only**, so it is a super admin's role you would be lending
+it.
 
 ---
 
