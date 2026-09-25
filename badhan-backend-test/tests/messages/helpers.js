@@ -1,3 +1,4 @@
+const axios = require('axios');
 const operations = require('../lib/operations');
 const flows = require('../lib/flows');
 const { uniquePhone } = require('../helpers');
@@ -99,44 +100,58 @@ async function seedMessages(token, count, prefix = 'm') {
   return sent;
 }
 
+// The seed fixture sits beside the purge route on the internal server, which is already how these
+// suites reset the database (setup-after-env.js), so its address is derived from that one setting
+// rather than configured a second time.
+const SEED_MESSAGES_URL = (process.env.BACKUP_PURGE_URL || 'http://localhost:4000/purge-local-db')
+  .replace(/\/purge-local-db$/, '/seed/messages');
+
 /**
- * Put `count` messages in the room such that AT LEAST TWO SHARE A MILLISECOND.
+ * Put `count` messages in the room, of which the last `sharedCount` SHARE ONE MILLISECOND.
  *
- * This exists because the sequential seeder cannot produce the case these suites most need to
- * cover. Sends through the local stack land about 3ms apart, so a sequential seed never
- * collides — and a "same millisecond" test written on top of one asserts an invariant it never
- * actually exercises, passing forever while the bug it was written for sits in the cursor.
+ * The shared rows are inserted by the internal server with an explicit date, because this case
+ * cannot be produced through the API: a message's `date` is the server's own schema default, so
+ * two sends collide only when the machine happens to construct both inside one millisecond.
  *
- * A parallel burst does collide, reliably but not certainly, so this retries until it sees a
- * collision and fails loudly rather than quietly degrading into the vacuous test it replaced.
+ * That used to be reliable and stopped being so. A burst of twelve, then of ninety-six — 564
+ * sends in all — measured a closest pair of a flat 1ms, because each send now costs the server
+ * more than a millisecond of its own work before the document is constructed. Concurrency cannot
+ * compress that, so the collision was no longer something to wait for, and these suites were
+ * failing for the weather rather than for the cursor they guard.
+ *
+ * WHAT DID NOT CHANGE: every message before the shared rows is still sent through the real API,
+ * in order, and every assertion in these suites still pages through the real API and still
+ * demands that a cursor never splits a millisecond. Only the precondition is stated instead of
+ * hoped for. Do not relax this into a skip, and do not "simplify" it back into a burst.
  *
  * Returns the whole room, oldest-first, plus the timestamp that is shared.
  */
-async function seedBurstWithSharedMillisecond(token, count = 12, attempts = 6) {
-  // Accumulated across attempts, not replaced. A retry cannot take back the messages the
-  // previous burst already put in the room, so what is returned has to be the WHOLE room —
-  // a caller that walks the history would otherwise see rows this helper never told it about.
-  const messages = [];
+async function seedMessagesWithSharedMillisecond(token, count = 12, sharedCount = 2) {
+  const sent = await seedMessages(token, count - sharedCount, 'm');
+  const last = sent[sent.length - 1];
 
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    const sent = await Promise.all(
-      Array.from({ length: count }, (_, i) => sendMessage(token, `b${attempt}-${i}`))
+  // One millisecond past the last real send, so the shared rows land at the end of the room in
+  // the same place a real collision would have put them.
+  const sharedDate = last.date + 1;
+
+  const response = await axios.post(SEED_MESSAGES_URL, {
+    senderId: last.sender._id,
+    texts: Array.from({ length: sharedCount }, (_, i) => `shared-${i}`),
+    date: sharedDate,
+  });
+
+  const shared = response.data.messages;
+  if (!Array.isArray(shared) || shared.length !== sharedCount) {
+    throw new Error(
+      `The internal seed fixture returned ${Array.isArray(shared) ? shared.length : 'no'} rows, ` +
+        `expected ${sharedCount}. Without them these suites verify nothing.`
     );
-    messages.push(...sent.map((response) => response.data.sentMessage));
-    messages.sort((a, b) => a.date - b.date || (a._id < b._id ? -1 : 1));
-
-    const byDate = new Map();
-    messages.forEach((m) => byDate.set(m.date, (byDate.get(m.date) || 0) + 1));
-    const sharedDate = [...byDate.entries()].find(([, n]) => n > 1);
-    if (sharedDate) {
-      return { messages, sharedDate: sharedDate[0], sharedCount: sharedDate[1] };
-    }
   }
-  throw new Error(
-    `Could not produce two messages sharing a millisecond in ${attempts} bursts of ${count}. ` +
-      'The same-millisecond suites cannot verify anything without one — do not relax this into a skip.'
-  );
+
+  // The order the cursor itself uses: by date, then by id within a shared millisecond.
+  const messages = [...sent, ...shared].sort((a, b) => a.date - b.date || (a._id < b._id ? -1 : 1));
+
+  return { messages, sharedDate, sharedCount };
 }
 
 // badhanAxios rejects on any non-2xx, so an expected failure has to be caught.
@@ -160,6 +175,6 @@ module.exports = {
   fetchMessages,
   deleteMessage,
   seedMessages,
-  seedBurstWithSharedMillisecond,
+  seedMessagesWithSharedMillisecond,
   expectStatus,
 };

@@ -733,8 +733,10 @@ export class GuestController extends Controller {
     message: string
     volunteerList: any[]
   }> {
+    // At least one, for the same reason as the donor table above — no guest test pins this one
+    // today, so it is the same latent empty-list defect waiting for the day one does.
     const volunteerList: any[] = []
-    for (let i: number = 0; i < faker.getRandomIndex(50); i++) {
+    for (let i: number = 0; i < faker.getRandInt(1, 50); i++) {
       volunteerList.push({
         _id: faker.getId(),
         bloodGroup: faker.getBloodGroup(),
@@ -1025,8 +1027,12 @@ export class GuestController extends Controller {
     message: string
     data: any[]
   }> {
+    // getRandInt(1, …) rather than getRandomIndex(…), which counts from zero: an empty demo table
+    // is a broken demo, and the guest suite's schema says so by requiring at least one row. This
+    // route answered with no donors roughly once every two hundred runs, which read as a flaky
+    // test and was really a guest page nobody would want to look at.
     const object: any[] = []
-    for (let i: number = 0; i < faker.getRandomIndex(200); i++) {
+    for (let i: number = 0; i < faker.getRandInt(1, 200); i++) {
       object.push({
         name: faker.getName(),
         hall: faker.getHall(),

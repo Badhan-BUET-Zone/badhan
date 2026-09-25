@@ -10,6 +10,7 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import { clearDatabase } from '../db/test/clearDatabase'
 import { generateFakeData } from '../db/test/populate'
+import { MessageModel } from '../db/models/Message'
 
 // --- Load MongoDB URIs for backup/restore from per-environment dotenv files ------
 // Each environment's connection string lives in its own file (env.production /
@@ -311,6 +312,45 @@ const populateController = async () => {
   }
 }
 
+/**
+ * Insert chat messages that all carry ONE timestamp, for the same-millisecond cursor suites.
+ *
+ * This exists because the case those suites test cannot be produced through the API. A message's
+ * `date` is the schema default, taken when the document is constructed, and insertMessage refuses
+ * a caller-supplied one on purpose — the send time is the server's to decide. Two sends therefore
+ * share a millisecond only if the server happens to construct both inside one, which is a property
+ * of how fast the machine is that day: it collided reliably when these suites were written and
+ * stopped colliding entirely when the same machine got slower, with the closest pair measured a flat
+ * 1ms apart across 564 sends. The suites then failed for the weather while the cursor they guard was fine.
+ *
+ * So the precondition moves here, where it can be stated instead of hoped for. THE ASSERTIONS DO
+ * NOT MOVE: the tests still page through the real API and still demand that a cursor never splits
+ * a millisecond. Only the setup is deterministic.
+ *
+ * Local only, by construction: this router is mounted by bin/internalServer.ts alone, which
+ * refuses to start when NODE_ENV is production, and the deployed App Engine service runs bin/www
+ * and never sees these routes.
+ */
+const seedMessagesController = async (req: Request) => {
+  const senderId = req.body?.senderId
+  const texts = req.body?.texts
+  const date = req.body?.date
+
+  if (typeof senderId !== 'string' || !Array.isArray(texts) || texts.length === 0 || !Number.isInteger(date)) {
+    return new BadRequestError400('senderId (string), texts (non-empty array) and date (integer ms) are required', {})
+  }
+
+  // insertMany rather than a loop of save(): one round trip, and no chance of the documents
+  // picking up different defaults. `date` is passed explicitly, which is the whole point.
+  const inserted = await MessageModel.insertMany(
+    texts.map((text: string) => ({ senderId, text: String(text), date }))
+  )
+
+  return new OKResponse200('Seeded messages sharing a millisecond', {
+    messages: inserted.map((m: any) => ({ _id: String(m._id), date: m.date, text: m.text }))
+  })
+}
+
 const purgeController = async () => {
   console.log('[purge] purging local database...')
   try {
@@ -440,6 +480,11 @@ router.post('/restore/:date',
 router.post('/purge-local-db',
   commonQueue,
   handle(async () => purgeController()))
+
+// Test fixture. See seedMessagesController for why it is here rather than in the suite.
+router.post('/seed/messages',
+  commonQueue,
+  handle(async (req: Request) => seedMessagesController(req)))
 
 router.post('/populate-local-db',
   commonQueue,

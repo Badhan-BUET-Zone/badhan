@@ -4,7 +4,7 @@ const {
   createVolunteer,
   fetchMessages,
   seedMessages,
-  seedBurstWithSharedMillisecond,
+  seedMessagesWithSharedMillisecond,
   expectStatus,
 } = require('../helpers');
 
@@ -79,9 +79,9 @@ test('GET/messages?before: a boundary inside a shared millisecond drops nothing'
   const signInResponse = await operations.signInSuperAdmin();
   const { token } = await createVolunteer(signInResponse);
 
-  // A real collision, not a hoped-for one: seedBurstWithSharedMillisecond fails rather than
+  // A real collision, not a hoped-for one: seedMessagesWithSharedMillisecond fails rather than
   // letting this test pass without exercising the case it exists for.
-  const { messages, sharedCount } = await seedBurstWithSharedMillisecond(token, 12);
+  const { messages, sharedCount } = await seedMessagesWithSharedMillisecond(token, 12);
   expect(sharedCount).toBeGreaterThan(1);
 
   // limit=1 walks EVERY boundary, so the cut is guaranteed to land between the two messages
@@ -111,7 +111,7 @@ test('GET/messages?before: two messages sharing a millisecond are returned acros
   const signInResponse = await operations.signInSuperAdmin();
   const { token } = await createVolunteer(signInResponse);
 
-  const { messages, sharedDate } = await seedBurstWithSharedMillisecond(token, 12);
+  const { messages, sharedDate } = await seedMessagesWithSharedMillisecond(token, 12);
   const sharing = messages.filter((m) => m.date === sharedDate);
   expect(sharing.length).toBeGreaterThan(1);
 

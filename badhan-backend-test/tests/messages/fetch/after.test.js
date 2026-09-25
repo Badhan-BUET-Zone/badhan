@@ -4,7 +4,7 @@ const {
   createVolunteer,
   fetchMessages,
   seedMessages,
-  seedBurstWithSharedMillisecond,
+  seedMessagesWithSharedMillisecond,
   sendMessage,
 } = require('../helpers');
 
@@ -133,10 +133,10 @@ test('GET/messages?after: the cut never splits a millisecond, and the held-back 
   const { token } = await createVolunteer(signInResponse);
 
   const watermark = (await fetchMessages(token, '', getMessagesSchema)).data.serverTime;
-  // A REAL collision. A sequential seed cannot make one — sends land about 3ms apart — so a
-  // version of this test built on seedMessages asserts the invariant without ever reaching the
-  // case that breaks it.
-  const { messages, sharedDate } = await seedBurstWithSharedMillisecond(token, 12);
+  // A REAL shared millisecond. A plain seedMessages cannot make one — sends land milliseconds
+  // apart — so a version of this test built on it asserts the invariant without ever reaching
+  // the case that breaks it. The rows before the shared pair are still sent through the API.
+  const { messages, sharedDate } = await seedMessagesWithSharedMillisecond(token, 12);
 
   // Walk the room in small pages and check the invariant at EVERY boundary, wherever the shared
   // millisecond happens to fall on this run.
@@ -168,7 +168,7 @@ test('GET/messages?after: a page cut inside a shared millisecond returns the who
   const { token } = await createVolunteer(signInResponse);
 
   const watermark = (await fetchMessages(token, '', getMessagesSchema)).data.serverTime;
-  const { messages, sharedDate } = await seedBurstWithSharedMillisecond(token, 12);
+  const { messages, sharedDate } = await seedMessagesWithSharedMillisecond(token, 12);
   const sharing = messages.filter((m) => m.date === sharedDate);
 
   // Page through with a limit small enough to land inside the shared group, and assert that no
