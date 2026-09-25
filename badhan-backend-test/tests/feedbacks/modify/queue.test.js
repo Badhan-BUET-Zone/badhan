@@ -1,16 +1,16 @@
 const operations = require('../../lib/operations');
 const flows = require('../../lib/flows');
 const { getFeedbacksSchema, deleteFeedbackSchema } = require('../schemas');
-const { buildDonorInfo, mintToken, expectStatus } = require('../helpers');
+const { buildDonorInfo, expectStatus } = require('../helpers');
 const { HALLS_INDEX } = require('../../lib/utils/constants');
 
 // GET and DELETE /feedbacks — the volunteer-facing half, and the visibility rule that is the one
 // thing this phase has to get right.
 
 async function seedMessage(donorInfo, text) {
-  const token = await mintToken(donorInfo.phone, donorInfo.studentId);
+  // No token: a message is authorised by the pair of credentials inside feedbackJSON, and the row
+  // lands in the hall of the record they match.
   return operations.guestPost('/feedbacks', {
-    token,
     type: 'feedback',
     feedbackJSON: { phone: donorInfo.phone, studentId: donorInfo.studentId, text },
   });

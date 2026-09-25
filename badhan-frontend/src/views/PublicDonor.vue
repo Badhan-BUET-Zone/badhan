@@ -11,11 +11,6 @@
             for the volunteers.
           </v-card-text>
 
-          <v-card-text v-if="expiredNotice" class="title" data-cy="publicDonorExpiredNotice">
-            That took a little too long. Please enter your phone number and student ID again; your
-            message is still here.
-          </v-card-text>
-
           <v-card-text>
             <TextField
               id="publicDonorPhone"
@@ -144,7 +139,7 @@
 import Container from '@/components/Container/Container'
 import Button from '@/components/UI Components/Button'
 import TextField from '@/components/UI Components/TextField'
-import { handlePOSTFeedbackToken, handlePOSTFeedback } from '@/api'
+import { handlePOSTFeedbackDonorLookup, handlePOSTFeedback } from '@/api'
 import { HTTP_STATUS } from '@/mixins/constants'
 
 // The page behind every printed QR code on a notice board. Most donors in the database have no
@@ -161,18 +156,18 @@ export default {
   data: () => {
     return {
       state: 'form',
+      // The two credentials, typed once and sent twice: once to fetch the record, once to file
+      // the message. NOTHING is carried between the two steps — there is no token any more, and
+      // the summary on screen is a display, not a permission. The submit route matches this pair
+      // against a donor record for itself.
       phone: '',
       studentId: '',
-      // The token lives here and nowhere else — never localStorage, never the URL, never a cookie.
-      // It dies with the page, which is the point of a fifteen-minute default.
-      token: '',
       donor: null,
       text: '',
       verifyingFlag: false,
       submittingFlag: false,
       mismatchFlag: false,
       networkErrorFlag: false,
-      expiredNotice: false,
       thanksMessage: ''
     }
   },
@@ -195,11 +190,10 @@ export default {
       this.verifyingFlag = true
       this.mismatchFlag = false
       this.networkErrorFlag = false
-      this.expiredNotice = false
 
       // The app's convention: the donor types 11 digits and the client prefixes 88. Asking a donor
       // standing at a notice board to type a country code is asking for a mistake.
-      const response = await handlePOSTFeedbackToken({
+      const response = await handlePOSTFeedbackDonorLookup({
         phone: Number('88' + this.phone),
         studentId: this.studentId
       })
@@ -219,7 +213,6 @@ export default {
         return
       }
 
-      this.token = response.data.token
       this.donor = response.data.donor
       this.state = 'summary'
     },
@@ -227,8 +220,10 @@ export default {
       this.submittingFlag = true
       this.networkErrorFlag = false
 
+      // No token — the server rejects a message that carries one. The phone and student id inside
+      // feedbackJSON are the credential, and they are matched against a donor record again here,
+      // independently of the lookup that filled the summary above.
       const response = await handlePOSTFeedback({
-        token: this.token,
         type: 'feedback',
         feedbackJSON: {
           phone: Number('88' + this.phone),
@@ -244,20 +239,11 @@ export default {
         return
       }
 
-      // The token expired while they were typing. Fifteen minutes is generous, but a phone that
-      // sleeps mid-sentence spends the whole window doing nothing, so this path is reached in
-      // practice — and it is the most likely everyday failure in the feature.
-      //
-      // KEEP THE TYPED TEXT. A donor who loses their words to an expiry does not type them again.
-      // Re-verifying re-mints a token and submits the very same message.
-      if (response.status === HTTP_STATUS.UNAUTHORIZED) {
-        this.token = ''
-        this.donor = null
-        this.expiredNotice = true
-        this.state = 'form'
-        return
-      }
-
+      // There is no expiry path left to handle. A donor could sit on this page for a week and
+      // still submit, because nothing they hold goes stale: the credential is their own phone
+      // number and student id. The one remaining failure — the record changing underneath them
+      // between the two steps, which is a 404 — falls into the generic line below, and their
+      // typed text stays on screen either way.
       if (response.status !== HTTP_STATUS.CREATED) {
         this.networkErrorFlag = true
         return

@@ -14,11 +14,13 @@ import rateLimiter from '../middlewares/rateLimiter'
 import feedbackValidator from '../validations/feedbacks'
 import { DESIGNATIONS_INDEX, HALLS_INDEX, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR, HTTP_STATUS } from '../constants'
 
-// Every failure of the mint route answers with this, byte for byte. No match, phone
-// matched but student id did not, student id matched but phone did not, more than one
-// record matched — all the same 404. Anything that distinguishes them turns the endpoint
-// into an oracle for probing which phone numbers exist.
-const MINT_FAILURE_MESSAGE: string = 'Information does not match. Please contact a volunteer.'
+// Every failure of a phone/student-id match answers with this, byte for byte, on BOTH routes
+// that perform one — the lookup and a `feedback` submission. No match, phone matched but
+// student id did not, student id matched but phone did not, more than one record matched — all
+// the same 404. Anything that distinguishes them turns the endpoint into an oracle for probing
+// which phone numbers exist. The text is printed in the manual and in the public page's own
+// copy; change it in all three or in none.
+const LOOKUP_FAILURE_MESSAGE: string = 'Information does not match. Please contact a volunteer.'
 
 const TOKEN_EXPIRED_MESSAGE: string = 'This link has expired. Please scan again or ask a volunteer for a new code.'
 const TOKEN_INVALID_MESSAGE: string = 'This link is not valid.'
@@ -38,49 +40,48 @@ export interface IPublicDonorSummary {
   lastPlateletDonation: number
 }
 
-export interface IPostTokenResponse {
+export interface IPostDonorLookupResponse {
   status: string
   statusCode: number
   message: string
-  token?: string
-  expiresAt?: number
   donor?: IPublicDonorSummary
+}
+
+export interface IPostRegistrationTokenResponse {
+  status: string
+  statusCode: number
+  message: string
+  // Absent on every failure, and on success it is the whole answer. There is deliberately no
+  // `expiresAt` beside it: the token has no expiry, and a null field here would have every
+  // caller wondering whether one was meant to arrive.
+  token?: string
 }
 
 @Route('feedbacks')
 @Tags('Feedbacks')
 export class FeedbacksController extends Controller {
   /**
-   * Mint a feedback submission token.
+   * Look a donor up from the two things they know about themselves.
    *
-   * Unauthenticated on purpose: a donor arriving from a printed QR code sends no
-   * `x-auth` header and must still get 200. A volunteer generating a registration QR code
-   * calls this very same route with their own phone and student id.
+   * Unauthenticated on purpose: a donor arriving from a printed QR code sends no `x-auth`
+   * header and must still get 200. This is the first half of /#/donor — they see their own
+   * record, then write a message — and it is ALL it does.
    *
-   * ONE OPTIONAL FIELD BRANCHES IT, AND THE BRANCH IS KEYED ON THE BODY, NOT ON THE SESSION:
-   *
-   *   { phone, studentId }        no session   → the token carries the matched donor's hall
-   *   { phone, studentId, hall }  session       → the token carries `hall`, if the caller may
-   *                                               state it
-   *
-   * A request that states no hall is answered identically whether or not somebody is signed
-   * in — the handler never inspects the session on that path — which is what keeps the public
-   * behaviour of this route one thing. Stating a hall is what requires a session, and it is
-   * also what makes minting attributable at last.
+   * IT RETURNS NO CREDENTIAL. There is nothing to carry from here to the submission: a message
+   * is filed by sending the same phone and student id again, which the submit route matches for
+   * itself. That is why this route can be as public as it is — a 200 here authorises nothing.
    */
-  @Post('token')
-  @SuccessResponse(200, 'Token generated successfully')
+  @Post('donorLookup')
+  @SuccessResponse(200, 'Donor fetched successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Information does not match', {
     status: 'ERROR',
     statusCode: HTTP_STATUS.NOT_FOUND,
-    message: MINT_FAILURE_MESSAGE
+    message: LOOKUP_FAILURE_MESSAGE
   })
-  @Example<IPostTokenResponse>({
+  @Example<IPostDonorLookupResponse>({
     status: 'OK',
     statusCode: HTTP_STATUS.OK,
-    message: 'Token generated successfully',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    expiresAt: 1739011200000,
+    message: 'Donor fetched successfully',
     donor: {
       name: 'Mir Mahathir Mohammad',
       phone: 8801500000000,
@@ -93,81 +94,32 @@ export class FeedbacksController extends Controller {
       lastPlateletDonation: 1707000000000
     }
   })
-  // The validator runs first, so a malformed `hall` is a 400 here rather than a 401 below.
-  // handleAuthenticationIfHallStated runs last and only bites when `hall` is present.
   @Middlewares([
-    feedbackValidator.validatePOSTToken,
-    rateLimiter.feedbackTokenLimiter,
-    authenticator.handleAuthenticationIfHallStated
+    feedbackValidator.validatePOSTDonorLookup,
+    rateLimiter.feedbackLookupLimiter
   ])
-  public async postToken(
-    @Body() body: { phone: number; studentId: string; durationMinutes?: number; hall?: number },
-    @Request() req: any
-  ): Promise<IPostTokenResponse> {
+  public async postDonorLookup(
+    @Body() body: { phone: number; studentId: string }
+  ): Promise<IPostDonorLookupResponse> {
     const lookupResult: { data?: IPublicDonorProfile; message: string; status: string } =
       await donorInterface.findPublicDonorProfile(body.phone, body.studentId)
 
     if (lookupResult.status !== 'OK' || !lookupResult.data) {
       this.setStatus(HTTP_STATUS.NOT_FOUND)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: MINT_FAILURE_MESSAGE }
+      return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: LOOKUP_FAILURE_MESSAGE }
     }
 
     const profile: IPublicDonorProfile = lookupResult.data
 
-    // Only a hall travels into the token. The phone and student id found this record; they
-    // go no further, because a registration token is printed into a QR code that a room
-    // full of students can decode.
-    //
-    // Which hall depends on the one optional field. Absent → the matched donor's own, which
-    // is the whole of the anonymous path and is unchanged.
-    let tokenHall: number = profile.hall
-    const hallStated: boolean = body.hall !== undefined && body.hall !== null
-    let requester: IDonor | null = null
-
-    if (hallStated) {
-      // Only reachable with a session: handleAuthenticationIfHallStated answered 401 otherwise.
-      requester = (req as any).res.locals.middlewareResponse.donor
-
-      // The same comparison SearchController and DonorsController use. HALL_ANY needs no
-      // clause of its own — no member's hall is -1, so this rejects an "All Halls" request
-      // from anyone below super admin by the same test.
-      //
-      // ATTACHED and UNKNOWN never get this far: validateBODYQrHall refuses them for every
-      // caller, super admin included, because a code is something you make for a hall you
-      // belong to and nobody belongs to either of those.
-      if (requester!.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN && body.hall !== requester!.hall) {
-        this.setStatus(HTTP_STATUS.FORBIDDEN)
-        return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: NOT_AUTHORIZED_MESSAGE }
-      }
-
-      tokenHall = body.hall!
-    }
-
-    const minted: { token: string; expiresAt: number } =
-      feedbackToken.mintFeedbackToken(tokenHall, body.durationMinutes)
-
-    // No log entry when no hall is stated: logInterface.addLog needs a user id and there is
-    // no session on that path. A request that states a hall has one, and is logged — which
-    // is what makes generating a registration QR attributable at last.
-    if (hallStated) {
-      await logInterface.addLog(requester!._id, 'POST FEEDBACK TOKEN', {
-        hall: tokenHall,
-        durationMinutes: body.durationMinutes,
-        expiresAt: minted.expiresAt
-      })
-    }
-
-    // Built field by field. Never spread the document, never toObject() it — that is how
-    // an address or a comment ends up on a public page. It is the CALLER'S OWN record on
-    // both branches, looked up from the phone and student id they sent, so a super admin
-    // minting for another hall learns nothing about that hall.
+    // Built field by field. Never spread the document, never toObject() it — that is how an
+    // address or a comment ends up on a public page. It is the CALLER'S OWN record, found from
+    // the phone and student id they sent, so this discloses nothing they did not already state
+    // except the record behind it.
     this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
       statusCode: HTTP_STATUS.OK,
-      message: 'Token generated successfully',
-      token: minted.token,
-      expiresAt: minted.expiresAt,
+      message: 'Donor fetched successfully',
       donor: {
         name: profile.name,
         phone: profile.phone,
@@ -183,12 +135,81 @@ export class FeedbacksController extends Controller {
   }
 
   /**
+   * Mint the credential behind a registration QR code.
+   *
+   * AUTHENTICATED, unconditionally — the one route in this feature that is. A registration code
+   * is a member's act: they choose a hall, the server says whether they may, and the log records
+   * who asked. The body is a hall and nothing else; the session says who the caller is, which is
+   * strictly better than a phone and a student id they could have typed.
+   *
+   * The token it returns NEVER EXPIRES AND CANNOT BE WITHDRAWN. Nothing here can undo a code
+   * once it is made — see services/feedbackToken.ts — so this log entry is the only record that
+   * a permanent door was opened, and the panel warns in those words before the button is pressed.
+   */
+  @Post('registrationToken')
+  @SuccessResponse(200, 'Token generated successfully')
+  @Response<{ status: string; statusCode: number; message: string }>(403, 'Hall not permitted', {
+    status: 'ERROR',
+    statusCode: HTTP_STATUS.FORBIDDEN,
+    message: NOT_AUTHORIZED_MESSAGE
+  })
+  @Example<IPostRegistrationTokenResponse>({
+    status: 'OK',
+    statusCode: HTTP_STATUS.OK,
+    message: 'Token generated successfully',
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  })
+  // The validator runs first, so a malformed or disallowed `hall` is a 400 rather than a 401.
+  @Middlewares([
+    feedbackValidator.validatePOSTRegistrationToken,
+    rateLimiter.commonLimiter,
+    authenticator.handleAuthentication
+  ])
+  public async postRegistrationToken(
+    @Body() body: { hall: number },
+    @Request() req: any
+  ): Promise<IPostRegistrationTokenResponse> {
+    const requester: IDonor = (req as any).res.locals.middlewareResponse.donor
+
+    // The same comparison SearchController and DonorsController use. HALL_ANY needs no clause of
+    // its own — no member's hall is -1, so this rejects an "All Halls" request from anyone below
+    // super admin by the same test.
+    //
+    // ATTACHED and UNKNOWN never get this far: validateBODYQrHall refuses them for every caller,
+    // super admin included, because a code is something you make for a hall you belong to and
+    // nobody belongs to either of those.
+    if (requester.designation !== DESIGNATIONS_INDEX.SUPER_ADMIN && body.hall !== requester.hall) {
+      this.setStatus(HTTP_STATUS.FORBIDDEN)
+      return { status: 'ERROR', statusCode: HTTP_STATUS.FORBIDDEN, message: NOT_AUTHORIZED_MESSAGE }
+    }
+
+    const minted: { token: string } = feedbackToken.mintFeedbackToken(body.hall)
+
+    await logInterface.addLog(requester._id, 'POST FEEDBACK REGISTRATION TOKEN', {
+      hall: body.hall
+    })
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Token generated successfully',
+      token: minted.token
+    }
+  }
+
+  /**
    * File a submission. The one write the public side can perform.
    *
    * NOTE: this verb is anonymous while GET and DELETE on the same path require a
    * session. That is the only place in the project where one path is public under one
    * verb and authenticated under another, and it is deliberate — adding
-   * authenticator.handleAuthentication here would break every printed QR code.
+   * authenticator.handleAuthentication here would break every printed QR code and lock out
+   * every donor, none of whom has an account.
+   *
+   * What authorises a write depends on `type`, and the validator has already enforced which
+   * credential may be present: a message carries a phone and a student id and NO token, a
+   * registration carries a token and no credentials of its own.
    */
   @Post()
   @SuccessResponse(201, 'Feedback submitted successfully')
@@ -200,7 +221,7 @@ export class FeedbacksController extends Controller {
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Information does not match', {
     status: 'ERROR',
     statusCode: HTTP_STATUS.NOT_FOUND,
-    message: MINT_FAILURE_MESSAGE
+    message: LOOKUP_FAILURE_MESSAGE
   })
   @Example<{ status: string; statusCode: number; message: string }>({
     status: 'OK',
@@ -209,68 +230,70 @@ export class FeedbacksController extends Controller {
   })
   @Middlewares([feedbackValidator.validatePOSTFeedback, rateLimiter.feedbackSubmissionLimiter])
   public async postFeedback(
-    @Body() body: { token: string; type: FeedbackType; feedbackJSON: any }
+    @Body() body: { token?: string; type: FeedbackType; feedbackJSON: any }
   ): Promise<{ status: string; statusCode: number; message: string }> {
-    // 1. The token. A valid one yields exactly one thing: a hall.
-    const verification: FeedbackTokenVerification = feedbackToken.verifyFeedbackToken(body.token)
-    if (!verification.valid) {
-      // Expired and invalid are distinguished because one is actionable by the person
-      // holding the phone — scan again — and the other is not.
-      this.setStatus(HTTP_STATUS.UNAUTHORIZED)
-      return {
-        status: 'ERROR',
-        statusCode: HTTP_STATUS.UNAUTHORIZED,
-        message: verification.reason === 'expired' ? TOKEN_EXPIRED_MESSAGE : TOKEN_INVALID_MESSAGE
-      }
-    }
+    // `type` selected the payload rules in the validator, which is also where the credential
+    // rule was applied in both directions: a newDonor body without a token never reaches here,
+    // and neither does a feedback body WITH one. body.feedbackJSON arrives already validated,
+    // escaped where it should be, and defaulted.
+    //
+    // THE TWO KINDS ARE AUTHORISED BY DIFFERENT THINGS, AND THAT IS THE WHOLE SHAPE OF THIS
+    // HANDLER:
+    //
+    //   type       authorised by            row hall                      decided by
+    //   --------   ----------------------   ---------------------------   ----------------------
+    //   feedback   a matching donor record  THE MATCHED RECORD'S HALL     the server, from a row
+    //   newDonor   the registration token   the token's hall              the token
+    //   newDonor   (token says HALL_ANY)    feedbackJSON.hall             THE SUBMITTER
+    //
+    // A message's hall no longer comes from a token, because there is no token: the pair of
+    // credentials finds one donor record, and that record's own hall is where the row belongs.
+    // It is also the hall the queue's visibility filter assumes, so a message can no longer land
+    // in a queue its donor does not belong to.
+    let rowHall: number
 
-    // 2 and 3 happened in the validator: `type` selected the payload rules, and
-    // body.feedbackJSON arrives already validated, escaped where it should be, and
-    // defaulted.
-
-    // 4. Only a message is matched against the donor collection. A registration is not,
-    // because the whole premise is that this person is not in the database yet — and a
-    // lookup would either find nothing every time or block a genuine registration whose
-    // phone somebody else already holds. Duplicate detection belongs in the creation
-    // form, with a human present.
-    let matchedDonor: IPublicDonorProfile | null = null
     if (body.type === FEEDBACK_TYPES.FEEDBACK) {
+      // The credential IS the lookup. A pair that matches no record authorises nothing, and the
+      // 404 that says so is the same one the lookup route answers, byte for byte.
       const donorLookup: { data?: IPublicDonorProfile; message: string; status: string } =
         await donorInterface.findPublicDonorProfile(body.feedbackJSON.phone, body.feedbackJSON.studentId)
       if (donorLookup.status !== 'OK' || !donorLookup.data) {
         this.setStatus(HTTP_STATUS.NOT_FOUND)
-        return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: MINT_FAILURE_MESSAGE }
+        return { status: 'ERROR', statusCode: HTTP_STATUS.NOT_FOUND, message: LOOKUP_FAILURE_MESSAGE }
       }
-      matchedDonor = donorLookup.data
+      rowHall = donorLookup.data.hall
+    } else {
+      // A registration is NOT matched against the donor collection: the whole premise is that
+      // this person is not in the database yet, so a lookup would either find nothing every time
+      // or block a genuine registration whose phone somebody else already holds. Duplicate
+      // detection belongs in the creation form, with a human present.
+      const verification: FeedbackTokenVerification = feedbackToken.verifyFeedbackToken(body.token!)
+      if (!verification.valid) {
+        // Expired and invalid are distinguished because one is actionable by the person holding
+        // the phone — ask for a new code — and the other is not. Nothing mints an expiring token
+        // any more, but codes printed before that change are still on walls.
+        this.setStatus(HTTP_STATUS.UNAUTHORIZED)
+        return {
+          status: 'ERROR',
+          statusCode: HTTP_STATUS.UNAUTHORIZED,
+          message: verification.reason === 'expired' ? TOKEN_EXPIRED_MESSAGE : TOKEN_INVALID_MESSAGE
+        }
+      }
+
+      // The token's hall, except under an "All Halls" code — which is the point of one: nobody
+      // named a hall when the code was made, so the submission names it. The payload validator
+      // has already pinned that value to one of the seven
+      // (HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, which excludes -1 and (Unknown) — do not relax
+      // that check; it is what makes this branch safe).
+      //
+      // Do not "simplify" this by always reading body.feedbackJSON.hall. A newDonor payload
+      // carries its own `hall` — NewPersonCard's key list requires it — and under a hall-bearing
+      // token that value is stored inside the JSON for the volunteer to read and has NO effect on
+      // the column. The body is attacker-controlled and the token is not.
+      rowHall = verification.hall === HALL_ANY ? body.feedbackJSON.hall : verification.hall
     }
 
-    // 5. THE HALL COMES FROM THE TOKEN IN EVERY CASE THE TOKEN NAMES ONE.
-    //
-    //   token hall   type       row hall                    decided by
-    //   ----------   --------   -------------------------   ---------------------------
-    //   a real hall  feedback   the token's                  the token
-    //   a real hall  newDonor   the token's                  the token
-    //   HALL_ANY     feedback   the fetched donor's hall     the server, from a record
-    //   HALL_ANY     newDonor   feedbackJSON.hall            THE SUBMITTER
-    //
-    // Rows one and two are unchanged and must stay that way: a newDonor payload carries its
-    // own `hall` — NewPersonCard's key list requires it — and under a hall-bearing token that
-    // value is stored inside the JSON for the volunteer to read and has NO effect on the
-    // column. Do not "simplify" this by always reading body.feedbackJSON.hall: the body is
-    // attacker-controlled and the token is not.
-    //
-    // HALL_ANY is the exception, and it is the point of an "All Halls" code: nobody named a
-    // hall when the code was made, so the submission names it. For a message that means the
-    // hall of the donor just fetched — a database record, not the body. For a registration it
-    // means the payload's hall, which the payload validator has already pinned to one of the seven
-    // (HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, which excludes -1 and (Unknown) — do not relax
-    // that check; it is what makes this branch safe).
-    let rowHall: number = verification.hall
-    if (verification.hall === HALL_ANY) {
-      rowHall = body.type === FEEDBACK_TYPES.FEEDBACK ? matchedDonor!.hall : body.feedbackJSON.hall
-    }
-
-    // HALL_ANY must never be stored. Unreachable given the two branches above; it exists so
+    // HALL_ANY must never be stored. Unreachable given the branches above; it exists so
     // that a future third `type` cannot reach the collection with -1 and fail as a 500 in the
     // model's own hall validator.
     //
@@ -279,7 +302,7 @@ export class FeedbacksController extends Controller {
     // still be (Unknown); narrowing this to the creation set would 400 those messages.
     if (![...HALL_INDICES_ALLOWED_FOR_DONOR, HALLS_INDEX.ATTACHED].includes(rowHall)) {
       this.setStatus(HTTP_STATUS.BAD_REQUEST)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.BAD_REQUEST, message: MINT_FAILURE_MESSAGE }
+      return { status: 'ERROR', statusCode: HTTP_STATUS.BAD_REQUEST, message: LOOKUP_FAILURE_MESSAGE }
     }
 
     const insertion: { data: IFeedback; message: string; status: string } =

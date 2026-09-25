@@ -2,12 +2,10 @@ import {
   answerChoice,
   answerText,
   confirmLockedHall,
-  createDonorViaApi,
-  mintTokenViaApi,
-  mintTokenForHallViaApi,
+  mintRegistrationTokenViaApi,
   visitRegistrationPage,
-  FeedbackDonor,
   HALL_ANY,
+  HALL_SUHRAWARDY,
   HALL_TITUMIR,
 } from '@support/helpers/feedback';
 
@@ -70,28 +68,21 @@ const ANSWER_STEP: { [field: string]: (allHalls: boolean) => void } = {
 
 export const STEP_ORDER = Object.keys(ANSWER_STEP);
 
-// `minterStudentId` only has to be unique across the specs in this folder — it belongs to the donor
-// whose credentials mint the token, not to the student being registered.
+// `minterStudentId` is no longer used to mint anything — a registration token is made from a hall
+// and a session — but the parameter stays so every spec in this folder keeps its call unchanged.
 export const walkTo = (
   stopBefore: string,
   minterStudentId: string,
   options: { allHalls?: boolean } = {},
 ): void => {
   const allHalls = options.allHalls === true;
-  createDonorViaApi({ name: 'Token Minter', studentId: minterStudentId }, 'minter');
 
-  cy.get<FeedbackDonor>('@minter').then((minter) => {
-    const token = allHalls
-      ? mintTokenForHallViaApi(minter.phone, minter.studentId, HALL_ANY)
-      : mintTokenViaApi(minter.phone, minter.studentId);
+  mintRegistrationTokenViaApi(allHalls ? HALL_ANY : HALL_SUHRAWARDY).then((t) => {
+    visitRegistrationPage(t);
 
-    token.then((t) => {
-      visitRegistrationPage(t);
-
-      for (const field of STEP_ORDER) {
-        if (field === stopBefore) return;
-        ANSWER_STEP[field](allHalls);
-      }
-    });
+    for (const field of STEP_ORDER) {
+      if (field === stopBefore) return;
+      ANSWER_STEP[field](allHalls);
+    }
   });
 };

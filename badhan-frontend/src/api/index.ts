@@ -535,28 +535,37 @@ const handleGETDonorsDesignation = async () => {
   }
 }
 
-// The two calls behind the whole feedback feature, and both run without a session most of the time.
+// The public half of the feedback feature, and both of these run without a session.
 // badhanAxios is still the right instance: its request interceptor simply sends no x-auth header
 // when the store has no token, and going through it keeps guest mode working (guest mode rewrites
-// the base URL to /guest, where both routes are mirrored).
+// the base URL to /guest, where every route below is mirrored).
 //
-// One route, one optional field. Send no `hall` — as the public donor page and the self-service
-// panel do — and the answer does not depend on whether anybody is signed in: the token carries the
-// matched donor's own hall, exactly as it always has.
-//
-// Send a `hall` and the request must be authenticated, and the caller must be allowed to state that
-// hall: their own, or, for a super admin, any hall or HALL_ANY for an "All Halls" registration code.
-// The QR generator always sends one, even a volunteer's own, because that is the branch the server
-// logs.
-const handlePOSTFeedbackToken = async (payload: { phone: number, studentId: string, durationMinutes?: number, hall?: number }) => {
+// The lookup hands back a donor's own summary and NO credential. Nothing is carried from it to the
+// submission — /#/donor sends the same phone and student id again — so a 200 here authorises
+// nothing at all.
+const handlePOSTFeedbackDonorLookup = async (payload: { phone: number, studentId: string }) => {
   try {
-    return await badhanAxios.post('/feedbacks/token', payload)
+    return await badhanAxios.post('/feedbacks/donorLookup', payload)
   } catch (e) {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
 
-const handlePOSTFeedback = async (payload: { token: string, type: string, feedbackJSON: object }) => {
+// The one authenticated call in the feature: it mints the credential printed into a registration
+// QR code. A hall and nothing else — the session says who is asking — and the caller must be
+// allowed to state it: their own, or, for a super admin, any hall or HALL_ANY for an "All Halls"
+// code. The token that comes back never expires and cannot be withdrawn.
+const handlePOSTRegistrationToken = async (payload: { hall: number }) => {
+  try {
+    return await badhanAxios.post('/feedbacks/registrationToken', payload)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+// `token` is present on a registration and ABSENT on a message — the server rejects a message
+// that carries one rather than ignoring it, so this is not a field to send defensively.
+const handlePOSTFeedback = async (payload: { token?: string, type: string, feedbackJSON: object }) => {
   try {
     return await badhanAxios.post('/feedbacks', payload)
   } catch (e) {
@@ -775,7 +784,8 @@ export {
   handleDELETECallRecord,
   handleGETDonorsDesignation,
   handleGETPublicContacts,
-  handlePOSTFeedbackToken,
+  handlePOSTFeedbackDonorLookup,
+  handlePOSTRegistrationToken,
   handleGETFeedbacks,
   handleDELETEFeedback,
   handlePOSTFeedback,

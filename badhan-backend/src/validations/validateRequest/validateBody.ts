@@ -3,7 +3,6 @@ import mongoose from 'mongoose'
 import {checkEmail} from "./others";
 import { checkTimeStamp, checkTimeStampMessage } from './others';
 import { BLOOD_GROUP_ANY, BLOOD_GROUP_INDICES, BLOOD_GROUP_INDICES_POSITIVE, DEPARTMENT_CODES_FOR_VALIDATION, DESIGNATION_INDICES, HALL_ANY, HALL_INDICES_ALLOWED_FOR_DONOR, HALL_INDICES_ALLOWED_FOR_DONOR_CREATION, HALL_INDICES_ALLOWED_FOR_QR } from '../../constants'
-import { FEEDBACK_TOKEN_MAX_MINUTES } from '../../services/feedbackToken'
 import { FEEDBACK_TYPE_VALUES } from '../../db/models/Feedback'
 import { MESSAGE_TEXT_MAX_LENGTH } from '../../db/models/Message'
 
@@ -38,18 +37,19 @@ export const validateBODYHallForCreation: ValidationChain = body('hall')
   .isInt().toInt().withMessage('hall must be integer')
   .isIn(HALL_INDICES_ALLOWED_FOR_DONOR_CREATION).withMessage('Please input an allowed hall number')
 
-// Optional, and present only on a registration-QR mint, where it says which hall the code is
-// for. Stating it is a permissioned act — see handleAuthenticationIfHallStated — so a body
-// carrying it must identify its caller, and the route decides whether that caller may.
+// Required, and present only on a registration-QR mint, where it says which hall the code is
+// for. The route behind it is authenticated outright, so there is no longer an optional branch
+// here: a mint without a hall is a 400 rather than a token for whichever hall the caller's own
+// record happened to name.
 //
 // Deliberately NOT the same set as validateBODYHall: ATTACHED and (Unknown) are out, because a
 // code is something you make for a hall you belong to and nobody belongs to either of those, and
 // HALL_ANY is in, because an "All Halls" code names no hall and no donor record is ever -1.
 //
-// This governs only the STATED hall. A donor whose own record says (Unknown) can still mint the
-// anonymous way — that token carries their record's hall and never comes through here.
+// Which of these a given caller may actually state is the controller's question, not this one's:
+// everybody below super admin is held to their own hall there.
 export const validateBODYQrHall: ValidationChain = body('hall')
-  .optional()
+  .exists().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')
   .isIn([...HALL_INDICES_ALLOWED_FOR_QR, HALL_ANY]).withMessage('Please input an allowed hall number')
 
@@ -162,23 +162,22 @@ export const validateBODYEmail: ValidationChain = body('email')
     return checkEmail(email)
   }).withMessage('email is not valid')
 
-// The token's lifetime, in minutes. Optional: absent means the service's default of 15.
-// The ceiling is enforced here and again in feedbackToken.mintFeedbackToken, because it
-// is a property of the token rather than of one endpoint that happens to mint it.
-export const validateBODYDurationMinutes: ValidationChain = body('durationMinutes')
-  .optional()
-  .isInt({ min: 1, max: FEEDBACK_TOKEN_MAX_MINUTES }).toInt()
-  .withMessage(`durationMinutes must be an integer between 1 and ${FEEDBACK_TOKEN_MAX_MINUTES}`)
-
 // The submission's own discriminator. It lives on the body rather than inside
 // feedbackJSON because it is what selects the payload validator and, later, the card.
 export const validateBODYType: ValidationChain = body('type')
   .exists().withMessage('type is required')
   .isIn(FEEDBACK_TYPE_VALUES).withMessage(`type must be one of ${FEEDBACK_TYPE_VALUES.join(', ')}`)
 
+// The registration credential, and the only token left on any body in this feature. It is
+// required on a `newDonor` submission and FORBIDDEN on a `feedback` one — see
+// validations/feedbacks.ts, which picks between these two chains from the body's `type`, so
+// that there is exactly one way to submit each kind rather than two that differ silently.
 export const validateBODYToken: ValidationChain = body('token')
   .exists().not().isEmpty().withMessage('token is required')
   .customSanitizer((value:any):string => String(value)).trim()
+
+export const validateBODYNoToken: ValidationChain = body('token')
+  .not().exists().withMessage('token is not accepted for this type of feedback')
 
 /**
  * A chat message body.

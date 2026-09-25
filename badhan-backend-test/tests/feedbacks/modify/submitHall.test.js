@@ -3,23 +3,21 @@ const { postFeedbackSchema, getFeedbacksSchema } = require('../schemas');
 const {
   buildDonorInfo,
   buildNewDonorPayload,
-  mintToken,
-  mintTokenForHall,
+  mintRegistrationToken,
   expectStatus,
 } = require('../helpers');
 const { HALLS_INDEX, HALL_ANY } = require('../../lib/utils/constants');
 
-// Where a row's hall comes from. Four cases, and only the last is decided by the submitter:
+// Where a row's hall comes from. Three cases, and only the last is decided by the submitter:
 //
-//   token hall    type       row hall                   decided by
-//   -----------   --------   ------------------------   -------------------------
-//   a real hall   feedback   the token's                 the token
-//   a real hall   newDonor   the token's                 the token
-//   HALL_ANY      feedback   the fetched donor's hall    the server, from a record
-//   HALL_ANY      newDonor   feedbackJSON.hall           THE SUBMITTER
+//   type       token hall    row hall                   decided by
+//   --------   -----------   ------------------------   -------------------------
+//   feedback   (no token)    the matched donor's hall    the server, from a record
+//   newDonor   a real hall   the token's                 the token
+//   newDonor   HALL_ANY      feedbackJSON.hall           THE SUBMITTER
 //
-// Rows one and two are the rule that was there before "All Halls" codes existed, and they must stay
-// exactly as they are — a hall-bearing token cannot be aimed by anything in the body.
+// A message carries no token at all, so its hall can only come from the record its credentials
+// match. A hall-bearing registration token cannot be aimed by anything in the body.
 
 // A sign-in per test, not per file: setup-after-env purges the database between tests, which drops
 // the Tokens row a cached session depends on. Every other suite here does the same.
@@ -29,17 +27,9 @@ async function rowFor(studentId, signInResponse) {
   return list.data.feedbacks.find((row) => row.feedbackJSON.studentId === studentId);
 }
 
-async function superAdminCredentials(signInResponse) {
-  const me = await operations.getMe(signInResponse);
-  return { phone: me.data.donor.phone, studentId: me.data.donor.studentId };
-}
-
 test('POST/feedbacks: a hall-bearing token ignores the payload hall', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALLS_INDEX.CHATRI, signInResponse
-  );
+  const token = await mintRegistrationToken(HALLS_INDEX.CHATRI, signInResponse);
 
   // A different hall in the body on purpose. The app's own form cannot send this any more, which is
   // exactly why the test must: the body is attacker-controlled and the token is not.
@@ -58,10 +48,7 @@ test('POST/feedbacks: a hall-bearing token ignores the payload hall', async () =
 
 test('POST/feedbacks: an All Halls token routes a registration by the payload hall', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
+  const token = await mintRegistrationToken(HALL_ANY, signInResponse);
 
   const payload = buildNewDonorPayload({ hall: HALLS_INDEX.TITUMIR });
   const response = await operations.guestPost(
@@ -77,10 +64,7 @@ test('POST/feedbacks: an All Halls token routes a registration by the payload ha
 
 test('POST/feedbacks: one All Halls token sends two registrations to two different halls', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
+  const token = await mintRegistrationToken(HALL_ANY, signInResponse);
 
   const first = buildNewDonorPayload({ hall: HALLS_INDEX.TITUMIR });
   const second = buildNewDonorPayload({ hall: HALLS_INDEX.AHSANULLAH });
@@ -94,10 +78,7 @@ test('POST/feedbacks: one All Halls token sends two registrations to two differe
 
 test('POST/feedbacks: an All Halls token cannot store HALL_ANY as a registration hall', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
+  const token = await mintRegistrationToken(HALL_ANY, signInResponse);
 
   const payload = buildNewDonorPayload({ hall: HALL_ANY });
   await expectStatus(
@@ -111,12 +92,8 @@ test('POST/feedbacks: an All Halls token cannot store HALL_ANY as a registration
   expect(row).toBeUndefined();
 });
 
-test('POST/feedbacks: an All Halls token routes a message by the donor\'s own hall', async () => {
+test("POST/feedbacks: a message routes by the donor's own hall, with no token in sight", async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
 
   const donorInfo = buildDonorInfo({ hall: HALLS_INDEX.NAZRUL });
   await operations.createDonor(donorInfo, signInResponse);
@@ -124,7 +101,6 @@ test('POST/feedbacks: an All Halls token routes a message by the donor\'s own ha
   await operations.guestPost(
     '/feedbacks',
     {
-      token,
       type: 'feedback',
       feedbackJSON: {
         phone: donorInfo.phone,
@@ -135,23 +111,19 @@ test('POST/feedbacks: an All Halls token routes a message by the donor\'s own ha
     postFeedbackSchema
   );
 
-  // Off a database record, not off the body — the route already fetched this donor to check the
-  // pair exists, so its hall is the most useful thing to route by and the submitter cannot aim it.
+  // Off a database record, not off the body — the route fetched this donor to check the pair
+  // exists, so its hall is the only thing it can route by and the submitter cannot aim it. There
+  // is no longer any token that could disagree with the record.
   const row = await rowFor(donorInfo.studentId, signInResponse);
   expect(row.hall).toBe(HALLS_INDEX.NAZRUL);
 });
 
-test('POST/feedbacks: an All Halls token still refuses a message naming nobody', async () => {
+test('POST/feedbacks: a message naming nobody is refused and writes no row', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
 
   const stranger = buildDonorInfo();
   await expectStatus(
     () => operations.guestPost('/feedbacks', {
-      token,
       type: 'feedback',
       feedbackJSON: { phone: stranger.phone, studentId: stranger.studentId, text: 'nobody' },
     }),
@@ -164,19 +136,12 @@ test('POST/feedbacks: an All Halls token still refuses a message naming nobody',
 
 test('POST/feedbacks: no row anywhere carries HALL_ANY', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-
-  const anyToken = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
-  const hallToken = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALLS_INDEX.CHATRI, signInResponse
-  );
+  const anyToken = await mintRegistrationToken(HALL_ANY, signInResponse);
+  const hallToken = await mintRegistrationToken(HALLS_INDEX.CHATRI, signInResponse);
 
   const donorInfo = buildDonorInfo({ hall: HALLS_INDEX.NAZRUL });
   await operations.createDonor(donorInfo, signInResponse);
   await operations.guestPost('/feedbacks', {
-    token: anyToken,
     type: 'feedback',
     feedbackJSON: { phone: donorInfo.phone, studentId: donorInfo.studentId, text: 'one' },
   });
@@ -200,31 +165,11 @@ test('POST/feedbacks: no row anywhere carries HALL_ANY', async () => {
 
 test('POST/feedbacks: a row still has exactly four fields under an All Halls token', async () => {
   const signInResponse = await operations.signInSuperAdmin();
-  const credentials = await superAdminCredentials(signInResponse);
-  const token = await mintTokenForHall(
-    credentials.phone, credentials.studentId, HALL_ANY, signInResponse
-  );
+  const token = await mintRegistrationToken(HALL_ANY, signInResponse);
 
   const payload = buildNewDonorPayload({ hall: HALLS_INDEX.TITUMIR });
   await operations.guestPost('/feedbacks', { token, type: 'newDonor', feedbackJSON: payload });
 
   const row = await rowFor(payload.studentId, signInResponse);
   expect(Object.keys(row).sort()).toEqual(['_id', 'date', 'donor', 'feedbackJSON', 'hall', 'type']);
-});
-
-test('POST/feedbacks: an anonymously minted token is unaffected by any of this', async () => {
-  const signInResponse = await operations.signInSuperAdmin();
-  const donorInfo = buildDonorInfo({ hall: HALLS_INDEX.CHATRI });
-  await operations.createDonor(donorInfo, signInResponse);
-
-  // No hall stated at mint time: the token carries the donor's own, and the row lands there.
-  const token = await mintToken(donorInfo.phone, donorInfo.studentId);
-  await operations.guestPost('/feedbacks', {
-    token,
-    type: 'feedback',
-    feedbackJSON: { phone: donorInfo.phone, studentId: donorInfo.studentId, text: 'unchanged' },
-  });
-
-  const row = await rowFor(donorInfo.studentId, signInResponse);
-  expect(row.hall).toBe(HALLS_INDEX.CHATRI);
 });

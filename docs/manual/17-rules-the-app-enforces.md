@@ -54,10 +54,13 @@ instead of making a new one.
 **Student IDs are 7 digits, numbers only.** First two digits are the batch, next two the
 department. Use `00` for the department if it is genuinely unknown.
 
-**Names cannot be blank** — the donor's own, their father's and their mother's. All three are
-required whenever you type a donor into a form. A CSV upload is the one exception: it accepts a
-blank parent's name and stores `(Unknown)`, because a file of hundreds of rows cannot stop and ask
-([chapter 11](11-adding-new-donors.md)).
+**A donor's own name cannot be blank**, anywhere, ever.
+
+**Their father's and mother's names can be.** Creating a donor — one at a time or by CSV — accepts
+both blank and stores `(Unknown)`, because a volunteer at a desk usually does not know them and a
+record is worth more than two names nobody can verify ([chapter 11](11-adding-new-donors.md)).
+Editing an existing profile still demands all three, so a name already on file cannot be erased
+([chapter 7](07-the-donor-profile.md)).
 
 **An email must look like an email**, if you fill one in at all. It is optional.
 

@@ -30,8 +30,8 @@ Tap **Person Details** to open or close this section. It holds the facts about t
 | Field | Rules |
 | --- | --- |
 | **Name** | Cannot be left empty. |
-| **Father's Name** | Cannot be left empty. Printed on the donor's certificate. Records created before the app began asking for it show **(Unknown)** — type over it. |
-| **Mother's Name** | Cannot be left empty. Printed on the donor's certificate. Records created before the app began asking for it show **(Unknown)** — type over it. |
+| **Father's Name** | Cannot be left empty **here**, although the creation form does not ask for it ([chapter 11](11-adding-new-donors.md)). Printed on the donor's certificate. A record created without it — and any record made before the app began asking — shows **(Unknown)**; type over it when you learn the name. |
+| **Mother's Name** | Cannot be left empty **here**, although the creation form does not ask for it ([chapter 11](11-adding-new-donors.md)). Printed on the donor's certificate. A record created without it — and any record made before the app began asking — shows **(Unknown)**; type over it when you learn the name. |
 | **Phone** | Exactly 11 digits, numbers only. **No two donors may share a phone number** — this is how the app tells people apart. |
 | **Email** | Optional. Used only for password recovery. You can edit it for a plain donor or for yourself; for another member the box is locked and says *"You cannot edit this email"*. |
 | **Blood Group** | Picked from the list of eight. |

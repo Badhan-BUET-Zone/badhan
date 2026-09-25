@@ -191,10 +191,11 @@ That row has two buttons, on it whether it is open or closed: **Create donor** a
 - They **are** asked how many times they have donated and when. **Every number on that card is
   the student's own claim**, not a Badhan record. Treat it exactly as you would if they had
   told you at a desk: check it before saving.
-- They are **not** asked for their father's and mother's names, so those two boxes arrive blank
-  and the form will not save until you fill them in. There is nothing on the card to copy them
-  from — ask the student, or put what you know. They are printed on the donor's certificate
-  ([chapter 7](07-the-donor-profile.md)).
+- They are **not** asked for their father's and mother's names, so those two boxes arrive blank —
+  and the form now saves anyway, storing **(Unknown)** for each. Fill them in if the student is
+  standing there; otherwise the record is created without them and anyone can add them later from
+  the profile. They are printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)),
+  so they are worth getting eventually.
 
 ## Two things that will look wrong but are not
 
@@ -258,10 +259,13 @@ for students**. Tap it to open it.
 
 1. **Super admins only:** choose **which hall the code is for** from the dropdown. Everybody else
    makes codes for their own hall, and the page says so instead of offering a choice.
-2. Choose **how long it should work** — one, two, four, eight or twenty-four hours.
-3. Tap **Generate**.
-4. The code appears, and above it a line saying in plain words when it stops working:
-   *"This code stops working at 6:30 pm — valid for 4 hours."*
+2. Tap **Generate**.
+3. The code appears, with a line on it saying in plain words that it has no end date:
+   *"This code does not expire. Take this sheet down when the event is over."*
+
+**There is nothing to choose about how long it lasts.** A code works from the moment it is made
+until somebody changes the app's own secret key, which effectively means forever. Read the next
+few paragraphs before you make one.
 
 The sheet and the screen both say **which hall the code is for**, in words under the caption, so a
 code left on a desk or found in a downloads folder can be identified without scanning it.
@@ -278,8 +282,9 @@ The same seven are the only choices the **student** gets under an All Halls code
 creates a donor, and a new donor must name a hall, so **(Unknown)** is not an answer they can
 give.
 
-**Making a code is recorded.** Who made it, for which hall, and for how long — a super admin can
-look it up afterwards if a question ever comes up about where a batch of submissions came from.
+**Making a code is recorded.** Who made it and for which hall — a super admin can look it up
+afterwards if a question ever comes up about where a batch of submissions came from. Since a code
+cannot be withdrawn, that record is the only thing that says a code exists at all.
 
 ### The "All Halls" option
 
@@ -299,16 +304,26 @@ Two things follow from that:
 - **Use the named code by default.** All Halls exists for the rooms where a single hall's code would
   be wrong; it is not the better version of the same thing.
 
-**It cannot be cancelled.** Once generated, it works until it expires — there is no button to switch
-it off, and no list of active codes. So pick a duration that matches the event: four hours for an
-afternoon at a desk, not twenty-four because it is the largest number.
+**It never expires, and it cannot be cancelled.** Once generated, a code works forever. There is no
+button to switch it off, no list of active codes, and no date at which it goes quiet on its own.
+Anybody holding it — on a phone, on a photograph of your slide, on a sheet found in a drawer — can
+keep sending new donor submissions into that hall's list for as long as the app exists.
+
+Nothing in the app can undo that, so the care has to happen outside it:
+
+- **Make a code for the event, not for the year.** A fresh one takes two taps.
+- **Take the sheet down when the event is over,** and delete the slide.
+- **Do not forward the link** to a group "just in case somebody needs it later".
+- If you think a code has ended up somewhere it should not be, **tell a super admin** — the fix is
+  a change to the app's secret key, which is their call and affects every code at once.
 
 Once a code is generated, the page also shows its web address as a link. Click it to open the
 registration page yourself and check it works before an event starts.
 
 **Be careful with that address.** Unlike the poster's link, this one has the code built into it —
-anybody you send it to can register donors into the code's hall until it expires, exactly as if you
-had shown them the QR. Send it only where you would be willing to hold the code up.
+anybody you send it to can register donors into the code's hall **permanently**, exactly as if you
+had shown them the QR, and you cannot take it back. Send it only where you would be willing to hold
+the code up.
 
 ### At a new-intake event
 
@@ -320,13 +335,14 @@ entering themselves in ten minutes.
 
 - Use the **Full screen** button. It fills the screen with just the code on white — no menu, no
   form, nothing competing for the projector's pixels.
-- Pick a duration that covers the whole session, with a little to spare.
 - The room will be lit, and a projector washes out contrast, so give the code the biggest slide you
   can and check from the back row before the students arrive.
+- **Delete the slide afterwards.** A deck that gets passed around carries a working code in it.
 
 There is also a **Download PDF** button for events where a printed copy is easier. Remember that
-**a printed registration code still expires** — the duration you chose is baked into it, so a sheet
-printed for a four-hour event is waste paper the next morning.
+**a printed registration code never expires** — an old sheet left on a notice board is still a
+working door into that hall's list months later, so take it down when the event ends. The sheet
+itself says so, under the code.
 
 ### If you are standing at the desk
 

@@ -153,7 +153,7 @@ describe('The registration QR generator', () => {
     cy.reload();
     cy.get('[data-cy="registrationQrPanelHeader"]').should('be.visible');
     cy.get('[data-cy="registrationQrGenerateButton"]').should('not.exist');
-    cy.get('[data-cy="registrationQrDurationSelector"]').should('not.exist');
+    cy.get('[data-cy="registrationQrWarning"]').should('not.exist');
 
     // ...and the queue is still the first thing on the page.
     cy.get('[data-cy="feedbackEmptyState"], [data-cy^="feedbackCard-"]').should('be.visible');
@@ -209,7 +209,7 @@ describe('The registration QR generator', () => {
     });
 
     cy.get('[data-cy="feedbackQrHallLine"]').should('have.text', 'Titumir Hall');
-    // Caption, expiry, hall — three lines and no more.
+    // Caption, permanence line, hall — three lines and no more.
     cy.get('[data-cy="feedbackQrArtwork"]').find('text').should('have.length', 3);
   });
 
@@ -226,16 +226,26 @@ describe('The registration QR generator', () => {
       ) as Record<string, unknown>;
       // -1 is not a hall. It is what tells the registration page to ask.
       expect(payload.hall).to.equal(-1);
-      // Still exactly two claims: the extra value went into the claim that already existed, so the
+      // Still exactly one claim: the extra meaning went into the claim that already existed, so the
       // code is no denser than it was.
-      expect(Object.keys(payload).sort()).to.deep.equal(['exp', 'hall']);
+      expect(Object.keys(payload)).to.deep.equal(['hall']);
     });
 
     cy.get('[data-cy="feedbackQrHallLine"]').should('have.text', 'All Halls');
   });
 
-  it('warns that a generated code cannot be cancelled', () => {
+  it('warns that a generated code never expires and cannot be cancelled', () => {
+    // The warning is the feature's only safeguard — there is no expiry and no revocation behind it
+    // — so both halves of the sentence are pinned here.
+    cy.get('[data-cy="registrationQrWarning"]').should('contain.text', 'forever');
+    cy.get('[data-cy="registrationQrWarning"]').should('contain.text', 'never');
     cy.get('[data-cy="registrationQrWarning"]').should('contain.text', 'cannot be cancelled');
+  });
+
+  it('offers no duration control', () => {
+    // Asserted as an absence: a code has no lifetime to choose any more, and a selector that
+    // implied otherwise would be a lie printed onto paper.
+    cy.get('[data-cy="registrationQrDurationSelector"]').should('not.exist');
   });
 
   it('generates a code that decodes to the registration page with a working token', () => {
@@ -245,25 +255,18 @@ describe('The registration QR generator', () => {
     decodeFeedbackQr().then((decoded) => {
       expect(decoded).to.contain(`${FRONTEND_BASE}/#/register?t=`);
 
-      // The token in the code carries a hall and an expiry and nothing else — no phone, no student
-      // ID, nothing about the volunteer who generated it. A JWT payload is readable by anyone who
-      // scans, so this assertion is the privacy one.
+      // The token in the code carries a hall and NOTHING else — no phone, no student ID, nothing
+      // about the volunteer who generated it, and no expiry. A JWT payload is readable by anyone
+      // who scans, so this assertion is the privacy one.
       const token = decodeURIComponent(decoded.split('?t=')[1]);
       const payload = JSON.parse(
         atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')),
       ) as Record<string, unknown>;
 
-      expect(Object.keys(payload).sort()).to.deep.equal(['exp', 'hall']);
+      expect(Object.keys(payload)).to.deep.equal(['hall']);
       expect(payload.phone).to.equal(undefined);
       expect(payload.studentId).to.equal(undefined);
-
-      // The stated expiry matches the token's, so nobody has to decode a JWT to know.
-      const expiryClock = new Date((payload.exp as number) * 1000).toLocaleTimeString([], {
-        hour: 'numeric',
-        minute: '2-digit',
-      });
-      cy.get('[data-cy="registrationQrExpiry"]').should('contain.text', expiryClock);
-      cy.get('[data-cy="registrationQrExpiry"]').should('contain.text', '4 hours');
+      expect(payload.exp).to.equal(undefined);
     });
   });
 
@@ -306,11 +309,10 @@ describe('The registration QR generator', () => {
       cy.get('[data-cy="registrationQrFullScreenButton"]').click();
 
       cy.get('[data-cy="registrationQrFullScreen"]').should('be.visible');
-      // The form and the expiry line are REMOVED, not covered — asserting on absence rather than on
-      // z-index, because Cypress considers an overlaid element visible and so does a screen reader.
-      cy.get('[data-cy="registrationQrDurationSelector"]').should('not.exist');
-      cy.get('[data-cy="registrationQrExpiry"]').should('not.exist');
+      // The form is REMOVED, not covered — asserting on absence rather than on z-index, because
+      // Cypress considers an overlaid element visible and so does a screen reader.
       cy.get('[data-cy="registrationQrGenerateButton"]').should('not.exist');
+      cy.get('[data-cy="registrationQrWarning"]').should('not.exist');
 
       // The hall line survives, because a projected code should say which hall it is for and four
       // words cost the code nothing.
@@ -344,10 +346,10 @@ describe('The registration QR generator', () => {
       expect(contents).to.not.contain('/FontFile');
       // No raster image anywhere — the QR is vector geometry, which is what survives printing.
       expect(contents).to.not.contain('/Subtype /Image');
-      // The expiry sentence is printed onto the sheet, not only shown on screen: a registration
-      // code expires, and paper that does not say when gets pinned up and trusted past its life.
-      expect(contents).to.contain('This code stops working at');
-      expect(contents).to.contain('valid for 4 hours');
+      // The permanence sentence is printed onto the sheet, not only shown on screen: a registration
+      // code never expires, and paper that does not say so gets left up and trusted as harmless.
+      expect(contents).to.contain('This code does not expire');
+      expect(contents).to.contain('Take this sheet down');
       // And which hall it is for, so a sheet left on a desk is identifiable without scanning it.
       expect(contents).to.contain('Hall');
     });
@@ -379,16 +381,18 @@ describe('The registration QR generator, as a volunteer', () => {
     cy.get('[data-cy="registrationQrHall"]').should('contain.text', 'a super admin can make it');
   });
 
-  it('still states its own hall in the request, so the mint is logged', () => {
-    // Every QR mint takes the authenticated, logged branch — that is why a volunteer sends a hall
-    // it could have omitted. "It worked" would pass without this, so the body is asserted directly.
-    cy.intercept('POST', '**/feedbacks/token').as('mint');
+  it('states its own hall in the request, and mints with a session', () => {
+    // Every QR mint is authenticated and logged, and the hall is the whole body — no phone, no
+    // student ID. "It worked" would pass without this, so the body is asserted directly.
+    cy.intercept('POST', '**/feedbacks/registrationToken').as('mint');
     cy.get('[data-cy="registrationQrGenerateButton"]').click();
 
     cy.wait('@mint').then((interception) => {
-      expect(interception.request.body).to.have.property('hall');
+      expect(Object.keys(interception.request.body)).to.deep.equal(['hall']);
       expect(interception.request.body.hall).to.equal(HALL_SUHRAWARDY);
       expect(interception.request.headers).to.have.property('x-auth');
+      // No expiry comes back, because the token has none.
+      expect(interception.response?.body).to.not.have.property('expiresAt');
     });
 
     cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 }).should('exist');

@@ -13,6 +13,8 @@
             <li><b>Blood Group: </b>Blood group of donor from dropdown</li>
             <li><b>Room: </b>Field can be null but must be a string if not null</li>
             <li><b>Address: </b>Field can be null but must be a string if not null</li>
+            <li><b>Father's Name: </b>Field can be null but must be a string if not null</li>
+            <li><b>Mother's Name: </b>Field can be null but must be a string if not null</li>
             <li><b>Comment: </b>Field can be null but must be a string if not null</li>
             <li><b>Donation count: </b>Must be an integer number and minimum value should be 0.</li>
             <li><b>Select Hall: </b>If the hall name is unknown, the donor will be editable and accessible to members of

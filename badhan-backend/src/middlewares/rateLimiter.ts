@@ -46,13 +46,13 @@ const passwordRequestLimiter: RequestHandler = rateLimit({
   message: commonRateLimiterError
 })
 
-// The feature's only guessing surface. POST /feedbacks/token answers differently for a
-// phone/student-id pair that exists than for one that does not, which makes it an oracle
-// for probing which donors are in the database. It gets its own budget rather than
-// sharing commonLimiter so that tightening it after an abuse report does not throttle
-// signed-in volunteers. A volunteer generating a QR code passes through it too, which is
-// fine: that is a once-an-event action.
-const feedbackTokenLimiter: RequestHandler = rateLimit({
+// One of the feature's two guessing surfaces. POST /feedbacks/donorLookup answers differently
+// for a phone/student-id pair that exists than for one that does not, which makes it an oracle
+// for probing which donors are in the database. It gets its own budget rather than sharing
+// commonLimiter so that tightening it after an abuse report does not throttle signed-in
+// volunteers — who no longer pass through here at all, since minting a registration code is an
+// authenticated route on commonLimiter.
+const feedbackLookupLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 10 * rateLimiterEnabled,
   message: commonRateLimiterError
@@ -67,9 +67,10 @@ const feedbackTokenLimiter: RequestHandler = rateLimit({
 //   junk rows in one hall's queue, which is the blast radius already accepted.
 //
 //   feedback (10/min) fetches the donor, so a 201 rather than a 404 tells the caller that
-//   a phone/student-id pair exists. That is the same disclosure feedbackTokenLimiter
+//   a phone/student-id pair exists. That is the same disclosure feedbackLookupLimiter
 //   rations, and the two oracles must share one story or an attacker just uses the wider
-//   door.
+//   door. They are now the SAME pair of credentials on both routes, which makes keeping the
+//   two budgets equal a requirement rather than a tidiness.
 const feedbackNewDonorLimiter: RequestHandler = rateLimit({
   windowMs: minute,
   max: 60 * rateLimiterEnabled,
@@ -137,7 +138,7 @@ export default {
   passwordRequestLimiter,
   publicContactInsertionLimiter,
   publicContactDeletionLimiter,
-  feedbackTokenLimiter,
+  feedbackLookupLimiter,
   feedbackSubmissionLimiter,
   messageSendLimiter,
   mcpLimiter

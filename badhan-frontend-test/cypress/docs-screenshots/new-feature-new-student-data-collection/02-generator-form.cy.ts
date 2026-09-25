@@ -11,7 +11,7 @@ describe('docs screenshot — the registration QR generator, before generating',
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
 
-  it('captures the hall line, the duration selector and the cannot-be-cancelled warning', () => {
+  it('captures the hall line and the never-expires warning', () => {
     cy.viewport(500, 700);
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);

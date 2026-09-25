@@ -1,9 +1,12 @@
 export class NewDonorPage {
+  // The parents' names are OPTIONAL on this form and are left untouched when an empty string is
+  // passed — blank, they are saved as (Unknown), exactly as the comment and the CSV import already
+  // behave.
   fillBasic(params: { name: string; phone: string; studentId: string; fatherName?: string; motherName?: string }): void {
     const { name, phone, studentId, fatherName = `${name} Father`, motherName = `${name} Mother` } = params;
     cy.get('[data-cy="newDonorNameTextBoxId"]').type(name).blur();
-    cy.get('[data-cy="newDonorFatherNameTextBoxId"]').type(fatherName).blur();
-    cy.get('[data-cy="newDonorMotherNameTextBoxId"]').type(motherName).blur();
+    if (fatherName !== '') cy.get('[data-cy="newDonorFatherNameTextBoxId"]').type(fatherName).blur();
+    if (motherName !== '') cy.get('[data-cy="newDonorMotherNameTextBoxId"]').type(motherName).blur();
     cy.get('[data-cy="newDonorPhoneTextBoxId"]').type(phone).blur();
     cy.get('[data-cy="newDonorStudentIdTextBoxId"]').type(studentId).blur();
   }

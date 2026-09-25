@@ -76,6 +76,59 @@ describe('Single Donor Creation', () => {
     profile.clickDeleteDonor();
     notification.assertEquals(MESSAGES.donorDeletedSuccess);
   });
+
+  it('creates a donor with both parents\' names left blank', () => {
+    // The two name fields are not required. A volunteer at a desk usually does not know them, and
+    // the record they were blocking is worth more than the names — so blank is sent as (Unknown),
+    // the same treatment the comment and the CSV import already give.
+    signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
+    notification.assertEquals(MESSAGES.signInSuccess);
+    drawer.goToSingleDonorCreation();
+
+    cy.intercept('POST', '**/donors').as('createDonor');
+
+    const uniqueSuffix = String(Date.now()).slice(-7);
+    const donorName = `No Parents Donor ${uniqueSuffix}`;
+    const donorPhone = `017${uniqueSuffix.slice(-8, -1)}`.slice(0, 11).padEnd(11, '0');
+
+    newDonor.fillBasic({
+      name: donorName,
+      phone: donorPhone,
+      studentId: '1605012',
+      fatherName: '',
+      motherName: '',
+    });
+
+    // No asterisk on either field, and no error after touching them — the absence of the
+    // `required` class is what a volunteer actually sees.
+    cy.get('[data-cy="newDonorFatherNameTextBoxId"]').should('not.have.class', 'required');
+    cy.get('[data-cy="newDonorMotherNameTextBoxId"]').should('not.have.class', 'required');
+
+    newDonor.selectBloodGroup(BLOOD_GROUP.A_POS);
+    newDonor.selectHall(HALL.SUHRAWARDY);
+    newDonor.setPublicData(true);
+    newDonor.setDonationCounts({ wholeBloodCount: 0, plateletCount: 0 });
+    newDonor.submit();
+
+    // The button was not disabled and the request carries (Unknown) rather than an empty string,
+    // which is what the server's three-character minimum needs.
+    cy.wait('@createDonor').then((interception) => {
+      expect(interception.request.body.fatherName).to.equal('(Unknown)');
+      expect(interception.request.body.motherName).to.equal('(Unknown)');
+    });
+    notification.assertEquals(MESSAGES.donorCreateSuccess);
+
+    drawer.goToHome();
+    home.setNameFilter(donorName);
+    home.triggerSearch();
+    home.assertDonorCardWithNameExists(donorName);
+
+    home.clickSeeProfileOnFirstCard();
+    profile.assertSettingsVisible();
+    profile.openSettings();
+    profile.clickDeleteDonor();
+    notification.assertEquals(MESSAGES.donorDeletedSuccess);
+  });
 });
 
 

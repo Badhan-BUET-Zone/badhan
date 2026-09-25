@@ -243,9 +243,26 @@ describe('Search results footer: the archive sweep', () => {
     cy.get('[data-cy="archiveBatchHintId"]').should('not.exist');
 
     confirmSweep();
-    // 400 stubbed round trips, run one after another
-    cy.get('[data-cy="notificationTextId"]', { timeout: 120000 })
-      .should('have.text', `Archived ${ARCHIVE_BATCH_LIMIT} donors`);
+
+    // 400 stubbed round trips, run one after another — inherently ~40s on an idle machine and
+    // half as long again when the rest of the suite is competing for the same CPU. A single
+    // assertion on the finished notice therefore has to choose between failing on a slow machine
+    // and waiting minutes to report a real break. These three refuse that trade:
+    //
+    //   1. LIVENESS — writes are going out. On the PATCH alias rather than the button's progress
+    //      label, because the label reads "0 / 200" from the moment the loader turns on and so
+    //      would pass for a loop that swept nobody; a recorded PATCH cannot. Alias calls
+    //      accumulate, so this holds even if the sweep finishes first.
+    //   2. SETTLED — the loop is no longer running, on a ceiling generous enough that only a hang
+    //      reaches it. Asserted on the absence of the "N / 200" counter anywhere on the page,
+    //      which covers both endings: a completed sweep empties the results and takes the footer
+    //      with it, a sweep that stopped early leaves the button behind under its ordinary label.
+    //   3. OUTCOME — and only now, on the default timeout, what actually happened. A sweep that
+    //      died on donor 7 fails here within seconds of stopping rather than sitting out the
+    //      ceiling above, and says so in the notification text it prints.
+    cy.get('@patchDonor.all', { timeout: 30000 }).should('have.length.greaterThan', 0);
+    cy.get('body', { timeout: 300000 }).should('not.contain.text', `/ ${ARCHIVE_BATCH_LIMIT}`);
+    cy.get('[data-cy="notificationTextId"]').should('have.text', `Archived ${ARCHIVE_BATCH_LIMIT} donors`);
     personCards().should('not.exist');
   });
 });

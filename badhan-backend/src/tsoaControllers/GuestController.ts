@@ -29,22 +29,16 @@ export class GuestController extends Controller {
   }
 
   /**
-   * Guest feedback token — returns a faker donor and a REAL, mintable token.
-   *
-   * Guest mode should exercise the same code path rather than a stub: the token this
-   * returns actually verifies, so the guest QR generator and the guest donor page behave
-   * like the real thing all the way through to submission.
+   * Guest donor lookup — a faker profile and no credential, mirroring the real route.
    */
-  @Post('feedbacks/token')
+  @Post('feedbacks/donorLookup')
   @Hidden()
-  public async postFeedbackToken(
-    @Body() body: { phone: number; studentId: string; durationMinutes?: number; hall?: number }
+  public async postDonorLookup(
+    @Body() body: { phone: number; studentId: string }
   ): Promise<{
     status: string
     statusCode: number
     message: string
-    token: string
-    expiresAt: number
     donor: {
       name: string
       phone: number
@@ -57,32 +51,57 @@ export class GuestController extends Controller {
       lastPlateletDonation: number
     }
   }> {
-    // The requested hall when one is stated — including HALL_ANY, so the guest QR generator
-    // can demonstrate an "All Halls" code — and a faker hall otherwise. No designation
-    // branch: the guest user is a super admin, so there is nothing here to refuse.
-    const hall: number = (body.hall !== undefined && body.hall !== null) ? body.hall : faker.getHall()
-    const minted: { token: string; expiresAt: number } = feedbackToken.mintFeedbackToken(hall, body.durationMinutes)
-
     this.setStatus(HTTP_STATUS.OK)
     return {
       status: 'OK',
       statusCode: HTTP_STATUS.OK,
-      message: 'Token generated successfully',
-      token: minted.token,
-      expiresAt: minted.expiresAt,
+      message: 'Donor fetched successfully',
       donor: {
         name: faker.getName(),
         phone: faker.getPhone(),
         studentId: faker.getStudentId(),
         bloodGroup: faker.getBloodGroup(),
-        // The caller's own hall, which is not the token's when a hall was stated — and must
-        // never be HALL_ANY, since no donor record is -1.
+        // A real hall, never HALL_ANY: no donor record is -1.
         hall: faker.getHall(),
         donationCount: faker.getDonationCount(),
         plateletDonationCount: faker.getDonationCount(),
         lastDonation: faker.getTimestamp(30),
         lastPlateletDonation: faker.getTimestamp(30)
       }
+    }
+  }
+
+  /**
+   * Guest registration token — a REAL, verifiable token.
+   *
+   * Guest mode should exercise the same code path rather than a stub: the token this returns
+   * actually verifies, so the guest QR generator and the guest registration page behave like
+   * the real thing all the way through to submission.
+   *
+   * Unauthenticated, unlike its real counterpart — every guest route is. There is no
+   * designation branch to mirror either: the guest user is a super admin, so there is nothing
+   * here to refuse, and a stated HALL_ANY is honoured so that an "All Halls" code can be
+   * demonstrated.
+   */
+  @Post('feedbacks/registrationToken')
+  @Hidden()
+  public async postRegistrationToken(
+    @Body() body: { hall?: number }
+  ): Promise<{
+    status: string
+    statusCode: number
+    message: string
+    token: string
+  }> {
+    const hall: number = (body.hall !== undefined && body.hall !== null) ? body.hall : faker.getHall()
+    const minted: { token: string } = feedbackToken.mintFeedbackToken(hall)
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Token generated successfully',
+      token: minted.token
     }
   }
 
@@ -95,7 +114,7 @@ export class GuestController extends Controller {
   @Post('feedbacks')
   @Hidden()
   public async postFeedback(
-    @Body() body: { token: string; type: string; feedbackJSON: any }
+    @Body() body: { token?: string; type: string; feedbackJSON: any }
   ): Promise<{ status: string; statusCode: number; message: string }> {
     this.setStatus(HTTP_STATUS.CREATED)
     return {

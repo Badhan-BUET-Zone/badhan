@@ -1,17 +1,18 @@
-// additionalProperties: false everywhere on purpose. The whole point of the mint route's payload is
-// that it is exactly nine fields — a schema that tolerated a tenth would pass on the day somebody
-// added `address` "because the donor asked for it".
+// additionalProperties: false everywhere on purpose. The whole point of the lookup route's payload
+// is that it is exactly nine fields — a schema that tolerated a tenth would pass on the day
+// somebody added `address` "because the donor asked for it".
 
-const postFeedbackTokenSchema = {
+const postDonorLookupSchema = {
   type: 'object',
+  // No `token` and no `expiresAt`, and additionalProperties: false is what enforces that: this
+  // route hands back a record and NO credential, so a token reappearing here is a test failure
+  // rather than a nice surprise.
   additionalProperties: false,
-  required: ['status', 'statusCode', 'message', 'token', 'expiresAt', 'donor'],
+  required: ['status', 'statusCode', 'message', 'donor'],
   properties: {
     status: { type: 'string' },
     statusCode: { type: 'number' },
     message: { type: 'string' },
-    token: { type: 'string' },
-    expiresAt: { type: 'number' },
     donor: {
       type: 'object',
       additionalProperties: false,
@@ -38,6 +39,20 @@ const postFeedbackTokenSchema = {
         lastPlateletDonation: { type: 'number' },
       },
     },
+  },
+};
+
+// The mint route's whole answer. No `expiresAt` beside the token — there is no expiry to report —
+// and additionalProperties: false is what stops one drifting back in.
+const postRegistrationTokenSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['status', 'statusCode', 'message', 'token'],
+  properties: {
+    status: { type: 'string' },
+    statusCode: { type: 'number' },
+    message: { type: 'string' },
+    token: { type: 'string' },
   },
 };
 
@@ -84,7 +99,8 @@ const getFeedbacksSchema = {
 const deleteFeedbackSchema = postFeedbackSchema;
 
 module.exports = {
-  postFeedbackTokenSchema,
+  postDonorLookupSchema,
+  postRegistrationTokenSchema,
   postFeedbackSchema,
   getFeedbacksSchema,
   deleteFeedbackSchema,

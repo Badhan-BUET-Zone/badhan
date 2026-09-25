@@ -28,7 +28,7 @@ describe('docs screenshot — a generated All Halls code', () => {
     cy.get('[data-cy="registrationQrGenerateButton"]').click();
 
     cy.get('[data-cy="feedbackQrHallLine"]').should('exist');
-    cy.get('[data-cy="registrationQrExpiry"]')
+    cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 })
       .should('be.visible')
       .scrollIntoView({ offset: { top: -100, left: 0 } });
     hideOverlays();

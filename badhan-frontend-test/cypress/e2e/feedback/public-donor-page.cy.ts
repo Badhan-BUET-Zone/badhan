@@ -139,36 +139,35 @@ describe('The public donor page', () => {
     });
   });
 
-  it('keeps the typed message when the token expires mid-sentence', () => {
-    // The most likely everyday failure in the whole feature: a phone sleeps while somebody is
-    // typing and the fifteen minutes run out. A donor who loses their words does not type them
-    // again, so the text has to survive the trip back to the identity check.
-    createDonorViaApi({ name: 'Expiring Token Donor', studentId: '1605046' }, 'donor');
+  it('submits without a token, sending the same credentials again', () => {
+    // The shape of the page after the token was removed: Continue looks the donor up, Submit sends
+    // the phone and student ID a second time, and NOTHING is carried between the two steps. The
+    // body assertion is the point — a token reappearing here would mean the page had grown a
+    // credential again.
+    createDonorViaApi({ name: 'No Token Donor', studentId: '1605046' }, 'donor');
 
     cy.get<FeedbackDonor>('@donor').then((donor) => {
       visitPublicDonorPage();
+
+      cy.intercept('POST', `${API_BASE_URL}/feedbacks/donorLookup`).as('lookup');
+      cy.intercept('POST', `${API_BASE_URL}/feedbacks`).as('submit');
+
       fillIdentityCheck(donor.localPhone, donor.studentId);
+      cy.wait('@lookup').then((interception) => {
+        // The lookup hands back a record and no credential at all.
+        expect(interception.response?.body).to.not.have.property('token');
+        expect(interception.response?.body).to.not.have.property('expiresAt');
+      });
 
-      cy.intercept('POST', `${API_BASE_URL}/feedbacks`, {
-        statusCode: 401,
-        body: {
-          status: 'ERROR',
-          statusCode: 401,
-          message: 'This link has expired. Please scan again or ask a volunteer for a new code.',
-        },
-      }).as('expiredSubmit');
-
-      const message = 'A message worth keeping';
-      cy.get('[data-cy="publicDonorMessageInput"]').type(message);
+      cy.get('[data-cy="publicDonorMessageInput"]').type('sent with no token');
       cy.get('[data-cy="publicDonorSubmitButton"]').click();
-      cy.wait('@expiredSubmit');
 
-      cy.get('[data-cy="publicDonorForm"]').should('be.visible');
-      cy.get('[data-cy="publicDonorExpiredNotice"]').should('be.visible');
-
-      // Re-verifying re-mints a token and the very same text is still there to submit.
-      cy.get('[data-cy="publicDonorVerifyButton"]').click();
-      cy.get('[data-cy="publicDonorMessageInput"]').should('have.value', message);
+      cy.wait('@submit').then((interception) => {
+        expect(interception.request.body).to.not.have.property('token');
+        expect(interception.request.body.feedbackJSON.phone).to.equal(donor.phone);
+        expect(interception.request.body.feedbackJSON.studentId).to.equal(donor.studentId);
+      });
+      cy.get('[data-cy="publicDonorThanks"]').should('be.visible');
     });
   });
 

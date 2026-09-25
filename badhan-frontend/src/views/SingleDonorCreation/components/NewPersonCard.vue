@@ -5,14 +5,10 @@
                     :hint="''"
                     @blur="$v.name.$touch()"
                     :error-messages="nameErrors"></TextField>
-      <TextField id="newDonorFatherNameTextBoxId" data-cy="newDonorFatherNameTextBoxId" class="required" label="Father's Name" v-model="fatherName"
-                    :hint="''"
-                    @blur="$v.fatherName.$touch()"
-                    :error-messages="fatherNameErrors"></TextField>
-      <TextField id="newDonorMotherNameTextBoxId" data-cy="newDonorMotherNameTextBoxId" class="required" label="Mother's Name" v-model="motherName"
-                    :hint="''"
-                    @blur="$v.motherName.$touch()"
-                    :error-messages="motherNameErrors"></TextField>
+      <TextField id="newDonorFatherNameTextBoxId" data-cy="newDonorFatherNameTextBoxId" label="Father's Name" v-model="fatherName"
+                    :hint="''"></TextField>
+      <TextField id="newDonorMotherNameTextBoxId" data-cy="newDonorMotherNameTextBoxId" label="Mother's Name" v-model="motherName"
+                    :hint="''"></TextField>
       <TextField id="newDonorPhoneTextBoxId" data-cy="newDonorPhoneTextBoxId" :loading="phoneDuplicateCheckLoader" :disabled="phoneDuplicateCheckLoader" class="required" label="Phone" v-model="computedPhone" :hint="''" @blur="$v.phone.$touch()"
                     :error-messages="phoneErrors"></TextField>
       <transition name="slide-fade-down">
@@ -168,12 +164,6 @@ export default {
       name: {
         required
       },
-      fatherName: {
-        required
-      },
-      motherName: {
-        required
-      },
       bloodGroup: {
         required
       },
@@ -257,18 +247,6 @@ export default {
       const errors = []
       if (!this.$v.name.$dirty) return errors
       !this.$v.name.required && errors.push('Name is required')
-      return errors
-    },
-    fatherNameErrors () {
-      const errors = []
-      if (!this.$v.fatherName.$dirty) return errors
-      !this.$v.fatherName.required && errors.push('Father\'s name is required')
-      return errors
-    },
-    motherNameErrors () {
-      const errors = []
-      if (!this.$v.motherName.$dirty) return errors
-      !this.$v.motherName.required && errors.push('Mother\'s name is required')
       return errors
     },
     studentIdErrors () {
@@ -440,6 +418,11 @@ export default {
         lastPlateletDonation = new Date(this.lastPlateletDonation).getTime()
       }
 
+      // The same treatment the comment gets, and the same one the CSV importer already applies:
+      // a name nobody knows is stored as (Unknown) rather than blocking the record. The server
+      // still demands three characters, which '(Unknown)' satisfies.
+      if (this.fatherName === '' || this.fatherName === null) this.fatherName = '(Unknown)'
+      if (this.motherName === '' || this.motherName === null) this.motherName = '(Unknown)'
       if (this.comment === '' || this.comment === null) this.comment = '(Unknown)'
       if (this.address === '' || this.address === null) this.address = '(Unknown)'
       if (this.roomNumber === '' || this.roomNumber === null) this.roomNumber = '(Unknown)'

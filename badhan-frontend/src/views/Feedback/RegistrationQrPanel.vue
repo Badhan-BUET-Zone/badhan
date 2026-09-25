@@ -4,7 +4,7 @@
   <div>
     <!--
       Full-screen mode: the code alone on white, filling the viewport. Everything else — the app
-      chrome, the form, the expiry line — is gone, because a QR competing with a sidebar for a
+      chrome, the form, the caption — is gone, because a QR competing with a sidebar for a
       projector's pixels is a QR the back row cannot scan.
     -->
     <transition name="fade">
@@ -18,9 +18,9 @@
       <!-- Square and centred at any aspect ratio: a projector's is not a laptop's. -->
       <div style="width: min(90vw, 90vh); height: min(90vw, 90vh)">
         <!--
-          The hall line survives into full screen; the caption and the expiry do not. A projected
-          code should say which hall it is for — the back row can read four words — and everything
-          else is chrome nobody reads from there anyway.
+          The hall line survives into full screen; the caption does not. A projected code should
+          say which hall it is for — the back row can read four words — and everything else is
+          chrome nobody reads from there anyway.
         -->
         <FeedbackQrArtwork
           :caption="''"
@@ -95,32 +95,13 @@
               </v-card-text>
             </transition>
 
-            <transition name="slide-fade-down">
-              <v-card-text v-if="!canGenerate" class="title error--text" data-cy="registrationQrProfileMissing">
-                Your own phone number and student ID could not be read from your profile, so a code
-                cannot be generated. Try signing out and in again.
-              </v-card-text>
-            </transition>
-
-            <v-card-text>
-              <!-- A plain v-select rather than the Selector wrapper, which takes a String value;
-                   these are minutes and are sent as an integer. -->
-              <v-select
-                id="registrationQrDuration"
-                data-cy="registrationQrDurationSelector"
-                v-model="durationMinutes"
-                :items="durations"
-                label="How long should it work?"
-                outlined
-                rounded
-                dense
-              ></v-select>
-            </v-card-text>
-
-            <!-- Always visible, generated or not. There is no revocation anywhere in this feature. -->
+            <!-- Always visible, generated or not. There is no expiry and no revocation anywhere in
+                 this feature, so this is the only thing standing between a volunteer and a
+                 permanent door into their hall's queue. It says so before the button, not after. -->
             <v-card-text class="subtitle-2" data-cy="registrationQrWarning">
-              Anyone who has this code can submit until it expires, and <b>it cannot be cancelled</b>.
-              Generate a short one for a short event.
+              Anyone who has this code can submit new donors to this hall <b>forever</b>. It never
+              expires and <b>it cannot be cancelled</b>. Take the sheet down and delete the link
+              when the event is over.
             </v-card-text>
 
             <v-card-actions>
@@ -129,7 +110,7 @@
                 :icon="'mdi-qrcode'"
                 :text="generatingFlag ? 'Generating…' : 'Generate'"
                 :color="'primary'"
-                :disabled="generatingFlag || !canGenerate"
+                :disabled="generatingFlag"
                 :click="generate"
               ></Button>
             </v-card-actions>
@@ -149,17 +130,14 @@
             -->
             <transition name="slide-fade-down">
             <div v-if="qrMatrix">
-              <v-card-text class="title" data-cy="registrationQrExpiry">
-                {{ expiryLine }}
-              </v-card-text>
-
               <div style="max-width: 420px" class="mx-auto">
-                <!-- The same sentence on screen and on paper: a printed code expires, and the sheet
-                     has to say so or somebody pins it up and trusts it past its lifetime. -->
+                <!-- The same sentence on screen and on paper: this code does not expire, and the
+                     sheet has to say so or somebody leaves it pinned up for a year believing it
+                     went stale on its own. -->
                 <FeedbackQrArtwork
                   ref="artwork"
                   :caption="caption"
-                  :sub-caption="expiryLine"
+                  :sub-caption="permanenceLine"
                   :hall-line="generatedHallLine"
                   :qr-matrix="qrMatrix"
                   :qr-url="qrUrl"
@@ -170,9 +148,9 @@
                 Chrome, not content: outside the artwork SVG, so it never reaches the printed sheet.
 
                 Unlike the poster's link, THIS ONE IS THE CREDENTIAL. The token is in the address, so
-                anyone who has the link can submit until it expires, exactly as if they had scanned
-                the code. That is why the wording here is a warning and the poster's is an invitation
-                to share.
+                anyone who has the link can submit forever, exactly as if they had scanned the code.
+                That is why the wording here is a warning and the poster's is an invitation to
+                share.
               -->
               <v-card-text class="text-center" style="word-break: break-all">
                 <a
@@ -184,7 +162,7 @@
               </v-card-text>
               <v-card-text class="subtitle-2" data-cy="registrationQrLinkWarning">
                 This link contains the code itself. Sharing it is the same as letting somebody scan
-                the QR, so send it only where you would show the code.
+                the QR — permanently — so send it only where you would show the code.
               </v-card-text>
 
               <v-card-actions class="justify-center">
@@ -207,8 +185,8 @@
               </v-card-actions>
 
               <v-card-text class="subtitle-2">
-                A printed registration code expires too — the duration above is baked into it, so a
-                sheet printed for a four-hour event is waste paper the next morning.
+                A printed registration code never expires — an old sheet left on a notice board is a
+                live door into this hall's queue, so take it down when the event is over.
               </v-card-text>
             </div>
             </transition>
@@ -226,7 +204,7 @@ import FeedbackQrArtwork from '@/views/FeedbackQr/FeedbackQrArtwork'
 import { registrationPageUrl } from '@/views/FeedbackQr/qrUrl'
 import { COPY } from '@/views/FeedbackQr/feedbackQrLayout'
 import { REGISTRATION_QR_FILE_NAME, downloadQrPdf } from '@/views/FeedbackQr/feedbackQrPdf'
-import { handlePOSTFeedbackToken } from '@/api'
+import { handlePOSTRegistrationToken } from '@/api'
 import {
   DESIGNATIONS_INDEX, HALL_ANY, HTTP_STATUS, halls, restrictedHallNames
 } from '@/mixins/constants'
@@ -238,6 +216,11 @@ import {
 // Its primary use is still on screen: a laptop propped on a desk, or — the case that earns the whole
 // feature — a code projected at a new-intake event so a room full of students enters itself instead
 // of one volunteer typing a hundred names.
+//
+// THE CODE IT MAKES IS PERMANENT. There is no duration to choose and no way to withdraw one once
+// it exists, so every surface here — the warning above the button, the sentence printed onto the
+// sheet, the note under the link — says so in as many words. That warning IS the feature's only
+// safeguard; do not soften it.
 //
 // Nothing here builds a QR until Generate is pressed, so an expanded panel costs a form and the
 // qrcode library stays out of the load path of a page volunteers open every day.
@@ -255,20 +238,11 @@ export default {
       // successful mint, so the label and the code cannot disagree and no label appears before
       // there is a code to label.
       generatedHall: null,
-      durationMinutes: 240,
-      durations: [
-        { text: '1 hour', value: 60 },
-        { text: '2 hours', value: 120 },
-        { text: '4 hours', value: 240 },
-        { text: '8 hours', value: 480 },
-        { text: '24 hours', value: 1440 }
-      ],
       generatingFlag: false,
       downloadingFlag: false,
       fullScreenFlag: false,
       qrMatrix: null,
       qrUrl: '',
-      expiresAt: null,
       errorMessage: '',
       caption: COPY.registrationCaption
     }
@@ -292,10 +266,9 @@ export default {
     isAllHalls () {
       return this.selectedHall === HALL_ANY
     },
-    // What Generate actually sends. For everybody but a super admin there is no control, so it is
-    // simply their own hall — read here rather than copied at mount, so it cannot depend on whether
-    // the profile had loaded by then. A hall is sent ALWAYS, which is what puts every QR mint on
-    // the authenticated, logged branch.
+    // What Generate actually sends, and the whole body of the request. For everybody but a super
+    // admin there is no control, so it is simply their own hall — read here rather than copied at
+    // mount, so it cannot depend on whether the profile had loaded by then.
     hallToMint () {
       if (!this.canChooseHall) return this.hall
       return this.selectedHall === null ? this.hall : this.selectedHall
@@ -307,25 +280,11 @@ export default {
       const name = halls[this.generatedHall]
       return name === undefined ? '' : `${name} Hall`
     },
-    // The mint route is the ordinary public one and takes a phone and a student ID, so the panel
-    // sends the signed-in member's own. Without them there is nothing to send, and sending
-    // undefined would be a 400 dressed up as a mystery.
-    canGenerate () {
-      const profile = this.$store.state.myprofile
-      return Boolean(profile && profile.phone && profile.studentId)
-    },
-    expiryClock () {
-      if (!this.expiresAt) return ''
-      return new Date(this.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-    },
-    // One string, rendered on screen and printed into the PDF, so the two can never disagree.
-    expiryLine () {
-      if (!this.expiresAt) return ''
-      return `This code stops working at ${this.expiryClock} — valid for ${this.durationLabel}.`
-    },
-    durationLabel () {
-      const match = this.durations.find((option) => option.value === this.durationMinutes)
-      return match ? match.text : `${this.durationMinutes} minutes`
+    // One string, rendered on screen and printed into the PDF, so the two can never disagree. It
+    // replaces the expiry line that used to sit here, and it carries the opposite news: whoever
+    // finds this sheet in six months is holding a working code.
+    permanenceLine () {
+      return 'This code does not expire. Take this sheet down when the event is over.'
     }
   },
   mounted () {
@@ -336,18 +295,13 @@ export default {
       this.generatingFlag = true
       this.errorMessage = ''
 
-      const profile = this.$store.state.myprofile
-      // The same route /#/donor calls, with one field more. A `hall` is sent ALWAYS — even by a
-      // volunteer, for whom it is simply their own — because that is the branch the server
-      // authenticates and logs, and "who made this code" should be answerable for every code and
-      // not only for the ones a super admin aimed somewhere.
+      // An authenticated route with one field. The session says who is asking — which is what
+      // makes "who made this code" answerable for every code, not just the ones a super admin
+      // aimed somewhere — and the hall is the only thing the caller states.
       //
-      // The token that comes back carries a hall and an expiry and nothing else, so nothing about
-      // this member reaches the code.
-      const response = await handlePOSTFeedbackToken({
-        phone: profile.phone,
-        studentId: profile.studentId,
-        durationMinutes: this.durationMinutes,
+      // The token that comes back carries that hall and NOTHING else: no identity, and no expiry
+      // either, so the code works until the secret changes.
+      const response = await handlePOSTRegistrationToken({
         hall: this.hallToMint
       })
 
@@ -357,9 +311,10 @@ export default {
         this.errorMessage = 'Could not reach Badhan. Please check your connection and try again.'
         return
       }
-      // Both of these should be unreachable from this panel — it only offers halls the signed-in
-      // member may state — so they are worth naming rather than folding into the generic failure.
-      // If one ever appears, the panel and the server have drifted.
+      // The 403 should be unreachable — the panel only offers halls the signed-in member may state
+      // — so if it ever appears, the panel and the server have drifted. The 401 is a different
+      // matter now that the mint is authenticated outright: a session that expired while the page
+      // sat open lands here, and it is worth its own sentence rather than the generic failure.
       if (response.status === HTTP_STATUS.FORBIDDEN) {
         this.errorMessage = 'You can only generate a code for your own hall.'
         return
@@ -373,9 +328,6 @@ export default {
         return
       }
 
-      // The donor summary comes back with it and is deliberately ignored: this panel is about the
-      // token, not about the member who happened to mint it.
-      this.expiresAt = response.data.expiresAt
       this.generatedHall = this.hallToMint
       this.qrUrl = registrationPageUrl(response.data.token)
 

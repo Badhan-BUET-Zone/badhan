@@ -132,39 +132,31 @@ export const donorViaApi = (donorId: string): Cypress.Chainable<any> =>
       .then((response) => response.body.donor),
   );
 
-// A registration token, minted the way the QR generator will: through the ordinary public mint
-// route, using an existing donor's own phone and student id. The token that comes back carries
-// nothing but that donor's hall and an expiry.
-export const mintTokenViaApi = (
-  phone: number,
-  studentId: string,
-  durationMinutes?: number,
-): Cypress.Chainable<string> =>
-  cy
-    .request({
-      method: 'POST',
-      url: `${API_BASE_URL}/feedbacks/token`,
-      body: durationMinutes === undefined ? { phone, studentId } : { phone, studentId, durationMinutes },
-    })
-    .then((response) => response.body.token as string);
-
-// The other branch of the same route: stating a hall needs a session and a designation that allows
-// it, and it is the branch the QR generator always takes. `hall` may be HALL_ANY.
-export const mintTokenForHallViaApi = (
-  phone: number,
-  studentId: string,
-  hall: number,
-): Cypress.Chainable<string> =>
+// A registration token, minted the way the QR generator does: an authenticated call stating a
+// hall, and nothing else in the body. The token that comes back carries that hall alone — no
+// identity and no expiry, so it works for as long as the secret does. `hall` may be HALL_ANY.
+export const mintRegistrationTokenViaApi = (hall: number): Cypress.Chainable<string> =>
   superAdminToken().then((token) =>
     cy
       .request({
         method: 'POST',
-        url: `${API_BASE_URL}/feedbacks/token`,
+        url: `${API_BASE_URL}/feedbacks/registrationToken`,
         headers: { 'x-auth': token },
-        body: { phone, studentId, hall },
+        body: { hall },
       })
       .then((response) => response.body.token as string),
   );
+
+// The public identity check behind /#/donor. It returns a record and NO credential, so nothing
+// here can be carried into a submission.
+export const donorLookupViaApi = (phone: number, studentId: string): Cypress.Chainable<any> =>
+  cy
+    .request({
+      method: 'POST',
+      url: `${API_BASE_URL}/feedbacks/donorLookup`,
+      body: { phone, studentId },
+    })
+    .then((response) => response.body.donor);
 
 export const visitRegistrationPage = (token: string | null): void => {
   cy.clearLocalStorage();
@@ -215,29 +207,29 @@ export const confirmLockedHall = (expectedLabel: string): void => {
   cy.get('[data-cy="registrationNextButton"]').should('not.be.disabled').click();
 };
 
-// Seeds a row straight into the queue over the API: mint a token with the target donor's own
-// credentials, then submit as that donor. That is the same path the public page takes, so nothing
-// here is a shortcut around the real rules.
+// Seeds a row straight into the queue over the API: submit as that donor, with their own phone and
+// student id as the whole credential. That is the same path the public page takes, so nothing here
+// is a shortcut around the real rules — and no token, because the route refuses one on a message.
 export const seedMessageViaApi = (donor: FeedbackDonor, text: string): Cypress.Chainable<void> =>
-  mintTokenViaApi(donor.phone, donor.studentId).then((token) =>
-    cy
-      .request({
-        method: 'POST',
-        url: `${API_BASE_URL}/feedbacks`,
-        body: {
-          token,
-          type: 'feedback',
-          feedbackJSON: { phone: donor.phone, studentId: donor.studentId, text },
-        },
-      })
-      .then(() => undefined),
-  );
+  cy
+    .request({
+      method: 'POST',
+      url: `${API_BASE_URL}/feedbacks`,
+      body: {
+        type: 'feedback',
+        feedbackJSON: { phone: donor.phone, studentId: donor.studentId, text },
+      },
+    })
+    .then(() => undefined);
 
+// `minter` is no longer read: a registration token is minted from a hall and a session rather than
+// from anybody's credentials. The parameter stays so the specs that pass a donor keep reading the
+// way they did, and so the seeded row still lands in that donor's hall.
 export const seedRegistrationViaApi = (
   minter: FeedbackDonor,
   payload: Record<string, unknown>,
 ): Cypress.Chainable<void> =>
-  mintTokenViaApi(minter.phone, minter.studentId).then((token) =>
+  mintRegistrationTokenViaApi(HALL_SUHRAWARDY).then((token) =>
     cy
       .request({
         method: 'POST',

@@ -27,8 +27,8 @@ Open **Single Donor Creation**. Fill in the form:
 | Field | What to put |
 | --- | --- |
 | **Name** | Required. Any text, but not blank. |
-| **Father's Name** | Required. Any text, but not blank. Printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)), so write it in English. |
-| **Mother's Name** | Required. Any text, but not blank. Printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)), so write it in English. |
+| **Father's Name** | Optional. Printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)), so write it in English if you know it. Left blank, it is saved as **(Unknown)** and anyone can fill it in later from the profile. |
+| **Mother's Name** | Optional. Printed on the donor's certificate ([chapter 7](07-the-donor-profile.md)), so write it in English if you know it. Left blank, it is saved as **(Unknown)** and anyone can fill it in later from the profile. |
 | **Phone** | Required. 11 digits. This must not already belong to another donor. |
 | **Student ID** | Required. Exactly 7 digits, e.g. `1605011`. First two digits are the batch, next two the department. If the department is unknown, put `00` there. |
 | **Blood Group** | Required. Pick from the list. |

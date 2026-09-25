@@ -11,9 +11,9 @@ describe('docs screenshot — a generated registration code', () => {
   const signInPage = new SignInPage();
   const drawer = new NavigationDrawer();
 
-  it('captures the code under its expiry line', () => {
-    // Tall enough for the expiry line and the whole sheet beneath it — the artwork is
-    // A4-proportioned, so it is about 1.4x as tall as the container is wide.
+  it('captures the code and the sheet under it', () => {
+    // Tall enough for the whole sheet — the artwork is A4-proportioned, so it is about 1.4x as
+    // tall as the container is wide.
     cy.viewport(500, 900);
     cy.visit('/');
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
@@ -21,11 +21,10 @@ describe('docs screenshot — a generated registration code', () => {
     openRegistrationQrPanel();
 
     cy.get('[data-cy="registrationQrGenerateButton"]').click();
-    // The expiry line sits ABOVE the artwork and the buttons sit below it, so no single frame holds
-    // both. This one is anchored on the expiry; 12-generated-link.cy.ts captures the other end.
-    // The offset keeps the line clear of the fixed app bar; scrollIntoView on its own puts it at
-    // y=0, underneath it, and the capture then shows a half-eaten sentence.
-    cy.get('[data-cy="registrationQrExpiry"]')
+    // The sheet and the buttons below it do not fit one frame, so this one is anchored on the
+    // artwork and 12-generated-link.cy.ts captures the other end. The offset keeps the top of the
+    // sheet clear of the fixed app bar; scrollIntoView on its own puts it at y=0, underneath it.
+    cy.get('[data-cy="feedbackQrArtwork"]', { timeout: 20000 })
       .should('be.visible')
       .scrollIntoView({ offset: { top: -100, left: 0 } });
     hideOverlays();

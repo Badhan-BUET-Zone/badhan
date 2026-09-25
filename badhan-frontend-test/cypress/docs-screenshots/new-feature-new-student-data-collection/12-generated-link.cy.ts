@@ -8,7 +8,7 @@ import { hideOverlays } from '../hideOverlays';
 // ONE cy.screenshot() per spec file — see 01-sidebar-entry.cy.ts.
 //
 // The other end of the generated code: the link, the warning that the link IS the credential, and
-// the two buttons. The expiry line is above the artwork and cannot share a frame with these.
+// the two buttons. The sheet itself is above them and cannot share a frame with these.
 
 describe('docs screenshot — the generated code’s link and buttons', () => {
   const signInPage = new SignInPage();

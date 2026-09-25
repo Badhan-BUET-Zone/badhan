@@ -13,7 +13,7 @@ export const PAGE = {
 // The feedback sheet is a caption and a QR code: no logo, no border, no hall name, no readable URL
 // and no Bangla line — each of those was withdrawn deliberately, and the missing Bangla is why no
 // font has to be embedded (see feedbackQrPdf.ts). The registration sheet adds two short lines and
-// nothing else: when the code expires, and which hall it is for.
+// nothing else: that the code never expires, and which hall it is for.
 export const CAPTION = {
   centerX: PAGE.width / 2,
   baseline: 60,
@@ -23,9 +23,10 @@ export const CAPTION = {
   fontFamily: 'Helvetica, Arial, sans-serif'
 } as const
 
-// Only the registration sheet uses this. A printed registration code expires, and a sheet that does
-// not say when is a sheet somebody pins up and trusts past its lifetime. The feedback sheet has no
-// sub-caption because it never expires.
+// Only the registration sheet uses this. A printed registration code is a live credential that
+// never expires, and a sheet that does not say so is one somebody leaves pinned up for a year
+// assuming it went stale on its own. The feedback sheet has no sub-caption because it carries no
+// credential at all — it points at a public page.
 export const SUB_CAPTION = {
   centerX: PAGE.width / 2,
   baseline: 72,

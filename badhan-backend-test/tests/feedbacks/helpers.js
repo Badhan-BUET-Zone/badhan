@@ -2,9 +2,14 @@ const operations = require('../lib/operations');
 const { uniquePhone } = require('../helpers');
 const { HALLS_INDEX } = require('../lib/utils/constants');
 
-// Everything the feedback suites need to build a donor and get a token, in one place. Tokens are
-// always minted through the real public route rather than forged, so no suite here takes a shortcut
-// around a rule the feature actually enforces.
+// Everything the feedback suites need to build a donor and get a registration token, in one place.
+// Tokens are always minted through the real route rather than forged, so no suite here takes a
+// shortcut around a rule the feature actually enforces.
+//
+// NOT TESTED HERE, and deliberately: the `expired` branch of verifyFeedbackToken. No route can
+// mint an expiring token any more, and forging one would need this project to hold JWT_SECRET,
+// which it does not and should not — every suite here is a black-box API client. That branch is
+// covered by the comment in services/feedbackToken.ts and by the codes already in the wild.
 
 let studentIdCounter = 0;
 
@@ -53,22 +58,13 @@ function buildNewDonorPayload(overrides = {}) {
   };
 }
 
-// Stating no hall is the anonymous path: a donor at a notice board has no session, and the token
-// carries the matched donor's own hall.
-async function mintToken(phone, studentId, durationMinutes) {
-  const body = durationMinutes === undefined
-    ? { phone, studentId }
-    : { phone, studentId, durationMinutes };
-  const response = await operations.guestPost('/feedbacks/token', body);
-  return response.data.token;
-}
-
-// Stating a hall is the other branch: it needs a session and a designation that allows that hall,
-// and it is the one the QR generator always takes. `hall` may be HALL_ANY for an "All Halls" code.
-async function mintTokenForHall(phone, studentId, hall, signInResponse) {
+// The only way to get a token now: an authenticated call stating a hall. `hall` may be HALL_ANY
+// for an "All Halls" code. There is no anonymous mint and no unauthenticated one — a message needs
+// no token at all.
+async function mintRegistrationToken(hall, signInResponse) {
   const response = await operations.authedPost(
-    '/feedbacks/token',
-    { phone, studentId, hall },
+    '/feedbacks/registrationToken',
+    { hall },
     signInResponse
   );
   return response.data.token;
@@ -97,7 +93,6 @@ module.exports = {
   buildDonorInfo,
   buildNewDonorPayload,
   uniqueStudentId,
-  mintToken,
-  mintTokenForHall,
+  mintRegistrationToken,
   decodeJwtPayload,
 };

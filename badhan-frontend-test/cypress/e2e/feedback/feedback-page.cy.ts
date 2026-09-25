@@ -344,11 +344,10 @@ describe('The Feedback page', () => {
     });
   });
 
-  it('files a message about yourself through the two public calls', () => {
-    // Two calls, in order: mint a token from the member's own phone and student ID, then submit
-    // with it. There is deliberately no authenticated write path for feedback — this exercises the
-    // same contract a donor at a notice board uses, so it breaks when that journey breaks.
-    cy.intercept('POST', '**/feedbacks/token').as('mintToken');
+  it('files a message about yourself through the one public call', () => {
+    // ONE call, and no token anywhere in it. There is deliberately no authenticated write path for
+    // feedback — this exercises the same contract a donor at a notice board uses, so it breaks when
+    // that journey breaks.
     cy.intercept('POST', '**/feedbacks').as('submitFeedback');
 
     drawer.goToFeedback();
@@ -356,20 +355,14 @@ describe('The Feedback page', () => {
     cy.get('[data-cy="ownFeedbackInput"]').type('A message I filed about myself');
     cy.get('[data-cy="ownFeedbackSubmitButton"]').click();
 
-    cy.wait('@mintToken').then((mint) => {
-      expect(mint.response.statusCode).to.equal(200);
-
-      cy.wait('@submitFeedback').then((submit) => {
-        expect(submit.response.statusCode).to.equal(201);
-        // The second call carries the token the first returned, and repeats the pair, because the
-        // token itself holds no identity.
-        expect(submit.request.body.token).to.equal(mint.response.body.token);
-        expect(submit.request.body.type).to.equal('feedback');
-        expect(submit.request.body.feedbackJSON.phone).to.equal(mint.response.body.donor.phone);
-        expect(submit.request.body.feedbackJSON.studentId).to.equal(
-          mint.response.body.donor.studentId,
-        );
-      });
+    cy.wait('@submitFeedback').then((submit) => {
+      expect(submit.response.statusCode).to.equal(201);
+      // The member's own phone and student ID are the whole credential, and a token would be
+      // refused rather than ignored.
+      expect(submit.request.body).to.not.have.property('token');
+      expect(submit.request.body.type).to.equal('feedback');
+      expect(submit.request.body.feedbackJSON.phone).to.be.a('number');
+      expect(submit.request.body.feedbackJSON.studentId).to.exist;
     });
 
     // There is deliberately no success line: the row appearing in the queue below IS the

@@ -53,16 +53,19 @@
 
 <script>
 import Button from '@/components/UI Components/Button'
-import { handlePOSTFeedbackToken, handlePOSTFeedback } from '@/api'
+import { handlePOSTFeedback } from '@/api'
 import { HTTP_STATUS } from '@/mixins/constants'
 
-// Files a message on the signed-in member's own record, through exactly the same two public calls a
-// donor at a notice board makes: mint a token from a phone and student ID, then submit with it.
+// Files a message on the signed-in member's own record, through exactly the same public call a
+// donor at a notice board makes: submit a phone, a student ID and some text.
 //
 // It deliberately does NOT take a shortcut. There is no authenticated write path for feedback and
 // there should not be one — the public submit route is the only way a row is created, so this panel
 // exercises the real contract rather than a private door around it. If the public journey breaks,
 // this breaks with it, which is the point.
+//
+// It is one call rather than two now: there is no token to fetch first, and the phone and student
+// ID from the member's own profile are the whole credential.
 
 export default {
   name: 'OwnFeedbackPanel',
@@ -75,8 +78,8 @@ export default {
     }
   },
   computed: {
-    // The mint route takes a phone and a student ID and nothing else, so without both there is
-    // nothing to send. Sending undefined would be a 400 dressed up as a mystery.
+    // The submit route matches a phone and a student ID against a donor record, so without both
+    // there is nothing to send. Sending undefined would be a 400 dressed up as a mystery.
     canSubmit () {
       const profile = this.$store.state.myprofile
       return Boolean(profile && profile.phone && profile.studentId)
@@ -89,30 +92,9 @@ export default {
 
       const profile = this.$store.state.myprofile
 
-      // Call one: mint. The token that comes back carries this member's hall and an expiry, and no
-      // identity at all — which is why call two has to repeat the phone and student ID.
-      const tokenResponse = await handlePOSTFeedbackToken({
-        phone: profile.phone,
-        studentId: profile.studentId
-      })
-
-      if (!tokenResponse) {
-        this.submittingFlag = false
-        this.errorMessage = 'Could not reach Badhan. Please check your connection and try again.'
-        return
-      }
-      if (tokenResponse.status !== HTTP_STATUS.OK) {
-        this.submittingFlag = false
-        // The mint route answers one message for every kind of mismatch. Reaching this from your own
-        // profile means the record behind your session no longer matches it.
-        this.errorMessage = 'Your own donor record could not be matched. Please contact a super admin.'
-        return
-      }
-
-      // Call two: submit. Phone and student ID travel inside feedbackJSON because the token does not
-      // carry them; the hall on the stored row comes from the token regardless of anything here.
+      // One call, no token: the phone and student ID inside feedbackJSON are the credential, and
+      // the hall on the stored row comes from the donor record they match — this member's own.
       const submitResponse = await handlePOSTFeedback({
-        token: tokenResponse.data.token,
         type: 'feedback',
         feedbackJSON: {
           phone: profile.phone,
@@ -125,6 +107,12 @@ export default {
 
       if (!submitResponse) {
         this.errorMessage = 'Could not reach Badhan. Please check your connection and try again.'
+        return
+      }
+      // The submit route answers one message for every kind of mismatch. Reaching a 404 from your
+      // own profile means the record behind your session no longer matches it.
+      if (submitResponse.status === HTTP_STATUS.NOT_FOUND) {
+        this.errorMessage = 'Your own donor record could not be matched. Please contact a super admin.'
         return
       }
       if (submitResponse.status !== HTTP_STATUS.CREATED) {

@@ -160,8 +160,10 @@ import { HTTP_STATUS, HALL_ANY, halls } from '@/mixins/constants'
 // no draft on the server, so a student who closes the tab halfway has sent nothing at all. That also
 // means an abandoned sequence leaves no trace, which is the cost of this shape and is accepted.
 //
-// The token in ?t= is a capability, not a secret about anybody: it names a hall and an expiry and
-// nothing else, which is why it is safe in a URL, in a QR code and in a browser history.
+// The token in ?t= is a capability, not a secret about anybody: it names a hall and nothing else,
+// which is why it is safe in a URL, in a QR code and in a browser history. It is also PERMANENT —
+// there is no expiry and no way to withdraw it — so the link is a live door for as long as it
+// exists, which is what the generator panel warns about before making one.
 //
 // The hall it names may be HALL_ANY, which is not a hall: it is what an "All Halls" code carries,
 // and it means the student is asked which hall they are in rather than being shown one. That is the
@@ -235,9 +237,9 @@ export default {
       }
 
       // Decoded FOR DISPLAY ONLY, and never trusted. A JWT payload is base64url, so anyone holding
-      // the token can read it — that is exactly why it carries nothing but a hall and an expiry.
-      // The server is the authority on both; this read exists so the page can fail early and kindly
-      // instead of after a student has answered twelve questions.
+      // the token can read it — that is exactly why it carries nothing but a hall. The server is
+      // the authority; this read exists so the page can fail early and kindly instead of after a
+      // student has answered twelve questions.
       let payload = null
       try {
         payload = JSON.parse(atob(String(this.token).split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
@@ -258,6 +260,11 @@ export default {
 
       this.hall = payload.hall
       this.hallLocked = claimsRealHall
+      // Codes minted today have NO `exp` and never go stale, so this check falls through for
+      // them. It is kept for the codes printed before that changed: those carry an expiry, the
+      // server still refuses them, and a student standing in front of such a sheet deserves
+      // "ask a volunteer for a new one" rather than "this link is not valid". Remove it only
+      // once no expiring code can still be on a wall.
       this.expiresAt = payload.exp ? payload.exp * 1000 : null
 
       if (this.expiresAt && this.expiresAt <= Date.now()) {
