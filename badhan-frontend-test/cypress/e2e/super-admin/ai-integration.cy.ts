@@ -49,7 +49,10 @@ describe('AI Integration', () => {
       notification.assertContains('Setup file downloaded');
 
       cy.readFile(DOWNLOADED_FILE, { timeout: 15000 }).then((contents: string) => {
-        expect(contents).to.contain('/openapi.json');
+        // The compact reference is what the file sends Claude to read; the spec is the fallback.
+        // Both are served once at the API root, so neither link may carry a /guest suffix.
+        expect(contents).to.contain(`${Cypress.env('apiBaseURL')}/llms.txt`);
+        expect(contents).to.contain(`${Cypress.env('apiBaseURL')}/openapi.json`);
         expect(contents, 'the file must not carry the permanent session token').to.not.contain(sessionToken as string);
 
         const fileToken = tokenFromPrompt(contents);

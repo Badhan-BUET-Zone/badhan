@@ -205,6 +205,12 @@ nothing else about the steps changes.
 You do not need to understand what is in the file. Nothing is created until you press the
 button — no sign-in exists before then.
 
+The file itself is short. It sends Claude to a description of Badhan's records that the server
+publishes at `/llms.txt` — every action Claude can take, with what each one needs and returns —
+and that description is rebuilt with every update to the app, so Claude always reads the current
+version rather than one frozen into your file. Anyone can open that address in a browser; it holds no
+records and no sign-in, only the description.
+
 ### The token does not expire — you end it yourself
 
 The sign-in Claude is given is **not your own**: each press of **Download Setup File** asks the

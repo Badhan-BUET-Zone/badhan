@@ -19,17 +19,20 @@ const PROMPT_TEMPLATE_LINES: string[] = [
   '',
   '## Documentation',
   '',
-  '- Raw OpenAPI 3 spec (JSON): **{{BASE_URL}}/openapi.json**',
+  '- API reference for assistants (Markdown): **{{DOCS_BASE_URL}}/llms.txt**',
+  '- Full OpenAPI 3 spec (JSON): {{DOCS_BASE_URL}}/openapi.json',
   '',
-  'Fetch `/openapi.json` first and read it. It is the authoritative, generated list of every',
-  'route, parameter, request body and response shape — prefer it over any assumption. Nothing',
-  'below replaces it; it only tells you what the spec cannot.',
+  'Fetch `/llms.txt` first and read all of it. It is generated from the OpenAPI spec on every',
+  'build — every route, parameter, request body and response shape, written as TypeScript-style',
+  'types — so prefer it over any assumption. `/openapi.json` says the same in JSON Schema at',
+  'several times the size: reach for it only to look up one detail by machine (with `jq`, say),',
+  'not to read through. Nothing below replaces either; it only tells you what the spec cannot.',
   '',
-  '**Read its `info.description` before constructing a single request.** The API speaks integer',
-  'indices rather than names — blood groups, halls and roles are numbers, dates are milliseconds,',
-  'and a student ID is a structured 7-digit string — and that section, with the per-field',
-  '`description` and `enum` on each schema, is where those mappings are written down. Guessing',
-  'them produces requests that validate and mean the wrong thing.',
+  '**Read its "How values are encoded" section before constructing a single request.** The API',
+  'speaks integer indices rather than names — blood groups, halls and roles are numbers, dates',
+  'are milliseconds, and a student ID is a structured 7-digit string — and that section, with the',
+  'comment beside each field, is where those mappings are written down. Guessing them produces',
+  'requests that validate and mean the wrong thing.',
   '',
   '## Authentication',
   '',
@@ -87,7 +90,7 @@ const PROMPT_TEMPLATE_LINES: string[] = [
   '',
   '## Working rules',
   '',
-  '1. Read `/openapi.json` before constructing any request.',
+  '1. Read `/llms.txt` before constructing any request.',
   '2. Treat this server as live: read freely, but confirm before any `POST`, `PATCH` or `DELETE`',
   '   that writes donor, donation, call-record or message data.',
   '3. Report the server\'s `message` verbatim when something fails — it is specific and useful.',
@@ -106,8 +109,12 @@ export const getAIPromptBaseURL = (isGuest: boolean): string => {
 export const buildAIIntegrationPrompt = (token: string, baseURL: string, environmentName: string): string => {
   // Function replacements, not string ones: a `$&` or `$1` inside a JWT would otherwise be read
   // as a substitution pattern rather than as the character it is.
+  // The docs are served once, at the API root: a guest session's base URL ends in /guest, and
+  // /guest/llms.txt does not exist. The routes they describe are the same under either.
+  const docsBaseURL = environmentService.getAPIBaseURL()
   return PROMPT_TEMPLATE_LINES.join('\n')
     .replace(/\{\{TOKEN\}\}/g, () => token)
+    .replace(/\{\{DOCS_BASE_URL\}\}/g, () => docsBaseURL)
     .replace(/\{\{BASE_URL\}\}/g, () => baseURL)
     .replace(/\{\{ENVIRONMENT\}\}/g, () => environmentName)
 }
