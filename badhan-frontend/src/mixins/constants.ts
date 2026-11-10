@@ -47,9 +47,19 @@ export const BLOOD_GROUP_ANY = -1
 // Rendered to the user as "All Negative" — a display bucket, not a wildcard.
 export const BLOOD_GROUP_ALL_NEGATIVE = -1
 
-// Sent to the donation report drill-down endpoints to mean "match any hall" — the
-// backend's HALL_ANY. Corresponds to the report's 'All Halls' view.
+// Sent to the donation report drill-down endpoints, and by a super admin to donor search, to
+// mean "match any hall" — the backend's HALL_ANY. Corresponds to the report's 'All Halls' view.
 export const HALL_ANY = -1
+
+// What the search page's hall picker shows for HALL_ANY. Deliberately not in `halls`, which
+// lists real halls by index.
+export const ALL_HALLS_NAME = 'All Halls'
+
+// A hall picker's name → the index the API takes. Without the ALL_HALLS_NAME case,
+// halls.indexOf would still return -1 for it, but by accident: the same -1 a misspelt hall
+// gets, which is not a value to send to a server on purpose.
+export const hallIndexFromName = (name: string): number =>
+  name === ALL_HALLS_NAME ? HALL_ANY : halls.indexOf(name)
 
 // The three encoded rules that the raw hall comparisons express.
 // The boundary is "whichever hall sits last in the list before Attached"; keeping it in

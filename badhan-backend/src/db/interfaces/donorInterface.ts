@@ -89,7 +89,7 @@ import { Types } from 'mongoose';
 import {DonorModel, IDonor} from '../models/Donor'
 import {Schema} from "mongoose";
 import {PipelineStage} from "mongoose";
-import { BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HALLS_INDEX } from '../../constants'
+import { BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HALL_ANY, HALLS_INDEX } from '../../constants'
 
 
 /**
@@ -792,12 +792,16 @@ export const generateSearchQuery = (reqQuery: {
 
     // process hall
     // if the availableToAll is true, then there is no need to search using hall
-    // otherwise, hall must be included
+    // otherwise, hall must be included — unless it is HALL_ANY, a super admin's search of every
+    // hall, which matches on no hall at all. Only /search/v3 lets -1 through its validator, and
+    // SearchController has already refused it to anyone below super admin.
 
     if (reqQuery.availableToAllOrHall) {
         // do something later
     } else if (!reqQuery.availableToAll) {
-        queryBuilder.hall = reqQuery.hall
+        if (reqQuery.hall !== HALL_ANY) {
+            queryBuilder.hall = reqQuery.hall
+        }
     } else {
         queryBuilder.availableToAll = reqQuery.availableToAll
     }

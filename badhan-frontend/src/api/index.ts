@@ -252,6 +252,20 @@ const handlePOSTRedirection = async () => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
+// The API reference the AI setup file carries, as Markdown text. Plain axios, not badhanAxios: it is
+// served once at the API root, so the /guest suffix a guest session adds would miss it, and it needs
+// no auth header. The body is kept as text — axios would otherwise try to parse it as JSON.
+// undefined when the request never got an answer.
+const handleGETAPIReference = async (): Promise<AxiosResponse<string> | undefined> => {
+  try {
+    return await axios.get<string>(environmentService.getAPIBaseURL() + '/llms.txt', {
+      responseType: 'text',
+      transformResponse: (body: string): string => body
+    })
+  } catch (e) {
+    return (e as AxiosError<string>).response
+  }
+}
 const handleGETDonorsMe = async () => {
   try {
     return await badhanAxios.get('/users/me')
@@ -760,6 +774,7 @@ export {
   handleDELETESignOut,
   handleDELETESignOutAll,
   handlePOSTRedirection,
+  handleGETAPIReference,
   handleGETDonorsMe,
   handlePOSTSignIn,
   handlePOSTDonors,

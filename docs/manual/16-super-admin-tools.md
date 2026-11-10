@@ -166,54 +166,50 @@ The page changes nothing on its own. It is safe to open.
 
 ## AI Integration
 
-This page connects **Claude** — the assistant you type instructions to in plain English — to
+This page connects an **AI assistant** — one you type instructions to in plain English — to
 Badhan's records, so it can answer questions like *"find O+ donors in Titumir who have not donated
 since March"* without anyone writing code.
 
-Claude is the only assistant this page sets up, and there is one way to do it: you hand Claude a
-setup file at the start of a conversation, and Claude works from the description of the records
-inside it. There is nothing else to choose between.
+There is one way to do it: you hand the assistant a setup file at the start of a conversation, and
+it works from the description of the records inside it. The page names no particular assistant;
+any that can read an uploaded file and make web requests will do.
 
-### Hand Claude a setup file
-
-#### One time setup
+### Hand your assistant a setup file
 
 1. On this page, press **Download Setup File**. It saves to your device as
-   `badhan-api-prompt.md`. Keep it — you upload the same file every time.
-2. Open **claude.ai** in your web browser and sign in.
-3. Select your name at the bottom left of Claude, then **Settings**, then **Capabilities**.
-4. Turn on **Code execution and file creation**, then turn on **Allow network egress**.
-5. Choose the network option that allows **specific domains** — not package managers only — and
-   paste the Badhan domain into **Additional allowed domains**. Save.
+   `badhan-api-prompt.md`.
+2. Upload it to a conversation with your AI assistant.
+3. Ask the AI to do anything that you would have done by clicking or typing on the app.
 
-#### For your everyday use
-
-1. Start a new chat in Claude.
-2. Press **+** beside the message box and upload `badhan-api-prompt.md`.
-3. Ask your question in plain language. If Claude asks whether it may use the Badhan domain,
-   allow it.
-
-**Step 5 of the one time setup is the one that catches people out.** Claude reads the file happily
-and then cannot reach Badhan at all, which looks like the file being wrong rather than a setting
-being unset. The page prints the exact domain above the button, with a **Copy Domain** button
-beside it, so there is nothing to type out or mistype.
-
-On a **Team or Enterprise** Claude plan those settings live under **Organization settings**, then
-**Capabilities**, and only an owner can change them. Ask your owner for the domain to be added;
-nothing else about the steps changes.
+**The assistant has to be able to reach Badhan.** Some assistants make their requests from a
+sandbox that blocks the internet except for domains you allow. Such an assistant reads the file
+happily and then cannot reach Badhan at all, which looks like the file being wrong rather than a
+setting being unset. If yours has a setting like that, allow the Badhan domain the page prints
+above the steps — the **Copy Domain** button beside it saves typing it out.
 
 You do not need to understand what is in the file. Nothing is created until you press the
 button — no sign-in exists before then.
 
-The file itself is short. It sends Claude to a description of Badhan's records that the server
-publishes at `/llms.txt` — every action Claude can take, with what each one needs and returns —
-and that description is rebuilt with every update to the app, so Claude always reads the current
-version rather than one frozen into your file. Anyone can open that address in a browser; it holds no
-records and no sign-in, only the description.
+Most of the file is a full description of Badhan's records — every action the assistant can take,
+with what each one needs and returns — so the assistant has everything it needs in the one file and
+has nothing else to look up before it starts. That description is copied in when you press the
+button. If Badhan has been updated since, the old file keeps working, and the assistant is told
+where the server publishes the current description (`/llms.txt`) in case something has changed; pressing the
+button again gives you a file with the new one inside. Anyone can open that address in a browser;
+it holds no records and no sign-in, only the description.
+
+If the button says it **could not load the API reference**, nothing was created — no sign-in was
+made and nothing needs ending. Press it again.
+
+The assistant can also search **every hall at once**, as the search page's **All Halls** option
+does ([chapter 6](06-searching-for-donors.md)). Ask it for *"every A+ donor who can donate now"*
+without naming a hall and it searches them all in one go, rather than hall by hall. It is allowed
+because the file signs the assistant in as you, a super admin; the app refuses it to every other
+role.
 
 ### The token does not expire — you end it yourself
 
-The sign-in Claude is given is **not your own**: each press of **Download Setup File** asks the
+The sign-in the assistant is given is **not your own**: each press of **Download Setup File** asks the
 server for a separate token, and your own session is untouched. But that token has **no clock on
 it**: it keeps working until somebody deliberately ends it.
 
@@ -224,7 +220,7 @@ press **Logout** on it. Ending one does not touch the others.
 Two things about that, both worth knowing before you need them:
 
 - **Signing out of this browser does not end it.** The ordinary Sign Out ends only the session you
-  are using right now. Claude's token is a separate entry and keeps working.
+  are using right now. The assistant's token is a separate entry and keeps working.
 - **Sign out from all devices does end it** — along with every other session you have, on every
   device.
 
@@ -239,7 +235,7 @@ is not.
 you forget about stops working a month after you made it. That is a backstop, not a
 plan: end the ones you are done with.
 
-If Claude suddenly says the file is not authorised, that is what happened — press the button
+If the assistant suddenly says the file is not authorised, that is what happened — press the button
 again and upload the new file instead of the old one.
 
 ### Read this before you send that file anywhere
@@ -260,7 +256,7 @@ So treat it as you would treat your password:
 cannot tell which entry it is, **Sign out from all devices** ends everything at once. Waiting is
 not a fix here: nothing expires on its own.
 
-Claude is **not restricted** to reading. It can add, change and
+The assistant is **not restricted** to reading. It can add, change and
 delete real records, and the app cannot tell its actions apart from yours — the App Activity page
 will show them as yours. Everything in
 [chapter 17](17-rules-the-app-enforces.md) still applies: it can do exactly what your role allows,

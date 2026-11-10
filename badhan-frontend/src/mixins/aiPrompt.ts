@@ -19,14 +19,19 @@ const PROMPT_TEMPLATE_LINES: string[] = [
   '',
   '## Documentation',
   '',
-  '- API reference for assistants (Markdown): **{{DOCS_BASE_URL}}/llms.txt**',
-  '- Full OpenAPI 3 spec (JSON): {{DOCS_BASE_URL}}/openapi.json',
+  'The full API reference is at the end of this file, under **API reference**. It is generated',
+  'from the server on every build — every route, parameter, request body and response shape,',
+  'written as TypeScript-style types — so prefer it over any assumption. The sections before it',
+  'do not replace it; they only tell you what it cannot.',
   '',
-  'Fetch `/llms.txt` first and read all of it. It is generated from the OpenAPI spec on every',
-  'build — every route, parameter, request body and response shape, written as TypeScript-style',
-  'types — so prefer it over any assumption. `/openapi.json` says the same in JSON Schema at',
-  'several times the size: reach for it only to look up one detail by machine (with `jq`, say),',
-  'not to read through. Nothing below replaces either; it only tells you what the spec cannot.',
+  'Read everything in it above its **Types** heading — how values are encoded, authentication and',
+  'the endpoint index — then read the full section of every endpoint before you call it: its',
+  'parameter descriptions say what each flag selects, and that is not something to guess. Its',
+  '**Servers** list names every environment; use only the one above.',
+  '',
+  'It is a copy taken when this file was downloaded. If a call answers in a way it does not',
+  'describe, the server may have been updated since: the current version is at',
+  '{{DOCS_BASE_URL}}/llms.txt.',
   '',
   '**Read its "How values are encoded" section before constructing a single request.** The API',
   'speaks integer indices rather than names — blood groups, halls and roles are numbers, dates',
@@ -90,10 +95,14 @@ const PROMPT_TEMPLATE_LINES: string[] = [
   '',
   '## Working rules',
   '',
-  '1. Read `/llms.txt` before constructing any request.',
+  '1. Read the API reference below before constructing any request.',
   '2. Treat this server as live: read freely, but confirm before any `POST`, `PATCH` or `DELETE`',
   '   that writes donor, donation, call-record or message data.',
-  '3. Report the server\'s `message` verbatim when something fails — it is specific and useful.',
+  '3. Send **one request per shell command**, and check that response\'s `status` before the next.',
+  '   Two requests in one command print one combined output, and a failure in the second reads as',
+  '   part of the first one\'s success.',
+  '4. Report the server\'s `message` verbatim when something fails — it is specific and useful —',
+  '   including a failure on the way to an answer that turned out fine without it.',
   ''
 ]
 
@@ -106,15 +115,20 @@ export const getAIPromptBaseURL = (isGuest: boolean): string => {
   return isGuest ? base + '/guest' : base
 }
 
-export const buildAIIntegrationPrompt = (token: string, baseURL: string, environmentName: string): string => {
+// `apiReference` is the server's /llms.txt, fetched at download time and carried whole, so the
+// assistant has everything in the one file it was handed and needs nothing else to read first.
+export const buildAIIntegrationPrompt = (token: string, baseURL: string, environmentName: string, apiReference: string): string => {
   // Function replacements, not string ones: a `$&` or `$1` inside a JWT would otherwise be read
   // as a substitution pattern rather than as the character it is.
   // The docs are served once, at the API root: a guest session's base URL ends in /guest, and
   // /guest/llms.txt does not exist. The routes they describe are the same under either.
   const docsBaseURL = environmentService.getAPIBaseURL()
-  return PROMPT_TEMPLATE_LINES.join('\n')
+  const instructions = PROMPT_TEMPLATE_LINES.join('\n')
     .replace(/\{\{TOKEN\}\}/g, () => token)
     .replace(/\{\{DOCS_BASE_URL\}\}/g, () => docsBaseURL)
     .replace(/\{\{BASE_URL\}\}/g, () => baseURL)
     .replace(/\{\{ENVIRONMENT\}\}/g, () => environmentName)
+  // Appended after substitution rather than through a placeholder, so nothing in the reference can
+  // ever be mistaken for one.
+  return [instructions, '---', '', '# API reference', '', apiReference.trim(), ''].join('\n')
 }

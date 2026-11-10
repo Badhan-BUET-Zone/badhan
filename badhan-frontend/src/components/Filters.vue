@@ -21,6 +21,8 @@
           </li>
           <li><b>Specify Hall: </b>If you choose this option, donors of specified hall will be fetched. You can only
             search your own hall for donors in such case.
+            <template v-if="isAllHallsOffered">A super admin can also choose <b>{{ ALL_HALLS_NAME }}</b> to search
+              every hall at once.</template>
           </li>
           <li><b>Available: </b>Available only if last blood donation was before 120 days AND last platelet donation was before 12 days.</li>
           <li><b>Not Available: </b>Not available if blood donated within 120 days OR platelet donated within 12 days.</li>
@@ -166,7 +168,7 @@
 import TextField from '@/components/UI Components/TextField.vue'
 import HelpTooltip from '@/components/UI Components/HelpTooltip'
 import Selector from '@/components/UI Components/Selector.vue'
-import { DESIGNATIONS_INDEX, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
+import { ALL_HALLS_NAME, DESIGNATIONS_INDEX, bloodGroups, hallIndexFromName, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
 import ldb from '@/localDatabase'
 import { maxLength, minLength, numeric, required } from 'vuelidate/lib/validators'
 
@@ -180,6 +182,12 @@ export default {
     resetClicked: {
       type: Function,
       required: true
+    },
+    // Opt-in, because this form is shared: Home's donor search accepts an every-hall search from a
+    // super admin, while Active Donors' endpoint takes one real hall and would answer it with 400.
+    allowAllHalls: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -235,7 +243,8 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && isHallRestricted(this.halls.indexOf(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
+          // HALL_ANY counts as restricted (it is below Titumir), so only a super admin passes it
+          return !(this.$store.getters['getHall'] !== hallIndexFromName(hall) && isHallRestricted(hallIndexFromName(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
         }
       }
     }
@@ -256,10 +265,14 @@ export default {
       return this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN &&
              inStore && stored
     },
+    isAllHallsOffered () {
+      return this.allowAllHalls && this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN
+    },
     availableHalls () {
       if (this.$store.getters['getDesignation'] !== null) {
         if (this.$store.getters['getDesignation'] === DESIGNATIONS_INDEX.SUPER_ADMIN) {
-          return restrictedHallNames()
+          // first, as in the donation report's picker
+          return this.isAllHallsOffered ? [ALL_HALLS_NAME, ...restrictedHallNames()] : restrictedHallNames()
         } else {
           return [halls[this.$store.getters['getHall']]]
         }
@@ -306,6 +319,7 @@ export default {
       bloodGroups,
       // exposed for the template, which cannot see module imports
       DESIGNATIONS_INDEX,
+      ALL_HALLS_NAME,
 
       showTooltip: false,
       showFilterHelpTooltip: false,

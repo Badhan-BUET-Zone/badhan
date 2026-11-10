@@ -49,10 +49,18 @@ describe('AI Integration', () => {
       notification.assertContains('Setup file downloaded');
 
       cy.readFile(DOWNLOADED_FILE, { timeout: 15000 }).then((contents: string) => {
-        // The compact reference is what the file sends Claude to read; the spec is the fallback.
-        // Both are served once at the API root, so neither link may carry a /guest suffix.
+        // The file carries the whole API reference, so the assistant has nothing to fetch before it starts:
+        // the encoding vocabulary and an endpoint's own section both have to be in it. The JSON spec
+        // is deliberately not mentioned at all.
+        expect(contents).to.contain('# API reference');
+        expect(contents).to.contain('## How values are encoded');
+        expect(contents).to.contain('### GET /search/v3');
+        expect(contents).to.not.contain('openapi.json');
+        // Written for any assistant, so it names none.
+        expect(contents.toLowerCase()).to.not.contain('claude');
+        // The live copy, for when the server has moved on since the download. Served once at the API
+        // root, so the link may not carry a /guest suffix.
         expect(contents).to.contain(`${Cypress.env('apiBaseURL')}/llms.txt`);
-        expect(contents).to.contain(`${Cypress.env('apiBaseURL')}/openapi.json`);
         expect(contents, 'the file must not carry the permanent session token').to.not.contain(sessionToken as string);
 
         const fileToken = tokenFromPrompt(contents);
@@ -78,35 +86,30 @@ describe('AI Integration', () => {
     });
   });
 
-  it('offers Claude only, and walks the setup-file route from opening claude.ai to asking a question', () => {
+  it('names no particular assistant, and walks the setup-file route from download to question', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
     drawer.goToAIIntegration();
 
-    // The steps start at claude.ai and end at a question asked, because the step that gets missed
-    // is the one outside this page: the domain allowlist under Settings. Splitting the route into
-    // what you do once and what you do every time is what keeps the second list short enough to
-    // actually follow each morning.
+    // Three generic steps — download, upload, ask — with no product's own settings to walk through.
+    cy.get('[data-cy="setupFileStepsId"] li').should('have.length', 3);
     cy.get('[data-cy="setupAiAppInstructionsId"]')
-      .should('contain', 'claude.ai')
-      .and('contain', 'One time setup')
-      .and('contain', 'For your everyday use')
-      .and('contain', 'Capabilities')
-      .and('contain', 'Additional allowed domains');
-    cy.get('[data-cy="setupFileOnceStepsId"] li').should('have.length', 5);
-    cy.get('[data-cy="setupFileEverydayStepsId"] li').should('have.length', 3);
+      .should('contain', 'Download Setup File')
+      .and('contain', 'badhan-api-prompt.md');
+    cy.get('[data-cy="setupFileOnceStepsId"]').should('not.exist');
+    cy.get('[data-cy="setupFileEverydayStepsId"]').should('not.exist');
 
-    // The connector route is gone: Badhan no longer runs an MCP server, so there is no link to
-    // copy and nothing to add under Claude's Connectors.
+    // The connector route is gone too: Badhan no longer runs an MCP server, so there is no link to
+    // copy and no connector to add.
     cy.get('[data-cy="aiAppInstructionsId"]').should('not.exist');
     cy.get('[data-cy="copyMcpConnectorUrlId"]').should('not.exist');
     cy.contains('Add custom connector').should('not.exist');
 
-    // Nothing to choose between any more, and no assistant on the page but Claude.
+    // No assistant is named or chosen between.
     cy.get('[data-cy="setupAiAppSelectorId"]').should('not.exist');
     cy.get('[data-cy="aiAppSelectorId"]').should('not.exist');
+    cy.contains(/claude/i).should('not.exist');
     cy.contains('ChatGPT').should('not.exist');
-    cy.contains('Claude Code').should('not.exist');
     cy.contains('Cursor').should('not.exist');
   });
 

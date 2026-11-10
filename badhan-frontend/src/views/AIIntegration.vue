@@ -5,22 +5,17 @@
       <v-card-title>Use Badhan with AI</v-card-title>
       <v-card-text>
         <p>
-          Let an AI assistant help with Badhan using everyday instructions. Hand Claude a setup
-          file in your web browser and then simply ask:
+          Let an AI assistant help with Badhan using everyday instructions. Hand it a setup file and
+          then simply ask:
           <i>"find O+ donors in Titumir who have not donated since March"</i> or in bangla
           <i lang="bn">"তিতুমীর হলে O+ রক্তদাতা খুঁজে দাও, যাঁরা মার্চের পর আর রক্ত দেননি"</i>.
         </p>
 
-        <v-card-title class="pl-0">Hand Claude a setup file</v-card-title>
-
-        <p>
-          Download a setup file once, then upload it to any conversation where you want Claude's
-          help.
-        </p>
+        <v-card-title class="pl-0">Hand your assistant a setup file</v-card-title>
 
         <v-card outlined class="pa-4 mb-4" data-cy="setupAiAppInstructionsId">
           <div class="d-flex align-center flex-wrap mb-4">
-            <span class="mr-3">Claude has to be allowed to reach this Badhan domain:</span>
+            <span class="mr-3">The assistant has to be able to reach this Badhan domain:</span>
             <code data-cy="aiSetupDomainId">{{ badhanDomain }}</code>
             <Button
               :click="handleCopyDomain"
@@ -31,35 +26,13 @@
             />
           </div>
 
-          <h3 class="text-subtitle-1 mb-3">Claude Web UI</h3>
-
-          <h4 class="text-subtitle-2 mb-2">One time setup</h4>
-          <ol class="pl-5 mb-4" data-cy="setupFileOnceStepsId">
+          <ol class="pl-5 mb-4" data-cy="setupFileStepsId">
             <li>
-              Press <b>Download Setup File</b> below. It saves as
-              <code>badhan-api-prompt.md</code> — keep it, you upload the same file every time.
+              Press <b>Download Setup File</b> below. It saves as <code>badhan-api-prompt.md</code>.
             </li>
-            <li>Open <b>claude.ai</b> in your web browser and sign in.</li>
-            <li>Select your name at the bottom left of Claude, then <b>Settings</b>, then <b>Capabilities</b>.</li>
-            <li>Turn on <b>Code execution and file creation</b>, and turn on <b>Allow network egress</b>.</li>
-            <li>
-              Choose the network option that allows <b>specific domains</b> — not package managers
-              only — then paste the Badhan domain above into <b>Additional allowed domains</b> and
-              save. Without this step Claude cannot reach Badhan at all.
-            </li>
+            <li>Upload it to a conversation with your AI assistant.</li>
+            <li>Ask the AI to do anything that you would have done by clicking or typing on the app.</li>
           </ol>
-
-          <h4 class="text-subtitle-2 mb-2">For your everyday use</h4>
-          <ol class="pl-5 mb-4" data-cy="setupFileEverydayStepsId">
-            <li>Start a new chat in Claude.</li>
-            <li>Press <b>+</b> beside the message box and upload <code>badhan-api-prompt.md</code>.</li>
-            <li>Ask your question in plain language.</li>
-          </ol>
-
-          <p class="text-caption mb-4">
-            On a Team or Enterprise Claude plan these settings live under <b>Organization
-            settings</b>, then <b>Capabilities</b>, and only an owner can change them.
-          </p>
 
           <div class="d-flex align-center flex-wrap">
             <Button
@@ -77,7 +50,7 @@
         </v-card>
 
         <p class="mb-0">
-          You can remove Claude's access at any time from <b>My Profile</b>.
+          You can remove the assistant's access at any time from <b>My Profile</b>.
         </p>
 
         <v-alert type="warning" outlined class="rounded-xl mt-6">
@@ -108,7 +81,7 @@ import {
   buildAIIntegrationPrompt,
   getAIPromptBaseURL
 } from '@/mixins/aiPrompt'
-import { isGuestEnabled } from '@/api'
+import { handleGETAPIReference, isGuestEnabled } from '@/api'
 
 export default {
   name: 'AIIntegrationPage',
@@ -137,13 +110,20 @@ export default {
       }
     },
     async buildPrompt () {
+      // Fetched before the token is minted: a token is a live session the member then has to end
+      // by hand, so none is made for a file that could not have been built anyway.
+      const referenceResponse = await handleGETAPIReference()
+      if (!referenceResponse || referenceResponse.status !== HTTP_STATUS.OK || !referenceResponse.data) {
+        await this.$store.dispatch('notification/notifyError', 'Could not load the API reference. Try again')
+        return null
+      }
       const response = await this.$store.dispatch('requestRedirectionToken')
       if (!response || response.status !== HTTP_STATUS.CREATED) {
         const message = (response && response.data && response.data.message) ? response.data.message : 'Could not create setup'
         await this.$store.dispatch('notification/notifyError', message)
         return null
       }
-      return buildAIIntegrationPrompt(response.data.token, this.baseURL, this.environmentName)
+      return buildAIIntegrationPrompt(response.data.token, this.baseURL, this.environmentName, referenceResponse.data)
     },
     async handleDownload () {
       this.busy = true

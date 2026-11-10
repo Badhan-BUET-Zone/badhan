@@ -22,7 +22,7 @@ You do not have to fill in everything. Leave a box empty and it simply is not us
 | **Batch** | Exactly **two digits**, such as `16` or `19`. Anything else is rejected with *"Batch number must be of 2 digits"*. |
 | **Address / Comment** | Searches inside the address and comment written on donors. Useful for finding, say, everyone with "hostel" in their address. |
 | **Public Data** *or* **Specify hall** | Choose one. **Public Data** finds donors marked as open to every hall. **Specify hall** lets you pick a hall from the list below. |
-| **Select Hall** | Only usable when **Specify hall** is chosen. A volunteer or hall admin can only pick their own hall; a super admin can pick any. |
+| **Select Hall** | Only usable when **Specify hall** is chosen. A volunteer or hall admin can only pick their own hall; a super admin can pick any, or **All Halls** at the top of the list to search every hall at once. |
 | **Available** | Include donors who are ready to give now. |
 | **Not Available** | Include donors who are still resting after a recent donation. |
 
@@ -105,6 +105,12 @@ the top says *"Showing archived donors"* so you cannot mistake one list for the 
 **Volunteers and hall admins cannot search other halls.** The Select Hall list will only offer
 you your own. The exception is **Public Data**, which reaches donors of every hall who have
 been marked as open to all.
+
+**All Halls is not the same as Public Data.** Public Data finds only the donors marked as open to
+all, wherever they live. **All Halls**, which only a super admin is offered, finds *every* donor in
+every hall that matches your other filters. A shared link to an All Halls search works only for a
+super admin; for anyone else it opens without searching. The **Active Donors** page's filters
+still search one hall at a time.
 
 ---
 

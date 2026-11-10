@@ -18,7 +18,7 @@
     <div>
       <v-row>
         <v-col cols="12" lg="4">
-          <Filters :reset-clicked="clearFields" :search-clicked="searchClickedFromFilterComponent"></Filters>
+          <Filters :reset-clicked="clearFields" :search-clicked="searchClickedFromFilterComponent" allow-all-halls></Filters>
         </v-col>
         <v-col cols="12" lg="8" id="results" data-cy="homeResults">
           <transition name="loader-fade" appear>
@@ -134,7 +134,7 @@
 
 <script>
 import PersonCardNew from '@/components/PersonCardNew'
-import { ARCHIVE_BATCH_LIMIT, BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HTTP_STATUS, SHARE_LINK_MARKER_KEYS, bloodGroups, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
+import { ARCHIVE_BATCH_LIMIT, BLOOD_GROUP_ANY, DESIGNATIONS_INDEX, HTTP_STATUS, SHARE_LINK_MARKER_KEYS, bloodGroups, hallIndexFromName, halls, isHallRestricted, restrictedHallNames } from '@/mixins/constants'
 import { minLength, maxLength, numeric, required } from 'vuelidate/lib/validators'
 import { isGuestEnabled, handleGETDonors, handleGETSearchV3, handlePATCHDonors } from '@/api'
 import { convertObjectToCSV, textFileDownloadInWeb, processPersonsForReport } from '@/mixins/helpers'
@@ -256,7 +256,9 @@ export default {
         required,
         permission (hall) {
           // COVID DATABASE
-          return !(this.$store.getters['getHall'] !== this.halls.indexOf(hall) && isHallRestricted(this.halls.indexOf(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
+          // HALL_ANY counts as restricted (it is below Titumir), so a shared 'All Halls' link opened
+          // by anyone below super admin stops here instead of earning a 403 from the server
+          return !(this.$store.getters['getHall'] !== hallIndexFromName(hall) && isHallRestricted(hallIndexFromName(hall)) && this.$store.getters['getDesignation'] !== DESIGNATIONS_INDEX.SUPER_ADMIN)
         }
       }
     }
@@ -320,7 +322,7 @@ export default {
         name: payload.inputName,
         bloodGroup: bloodGroups.indexOf(payload.bloodGroup),
         batch: payload.inputBatch.toString(),
-        hall: halls.indexOf(payload.hall),
+        hall: hallIndexFromName(payload.hall),
         isAvailable: payload.availability,
         isNotAvailable: payload.notAvailability,
         address: payload.inputAddress,

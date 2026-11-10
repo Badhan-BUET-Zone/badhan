@@ -299,9 +299,10 @@ function render(spec) {
   out.push(
     `# ${info.title || "API"}${info.version ? ` (v${info.version})` : ""}`,
     "",
-    "> Generated from /openapi.json on every build, for AI assistants: every route, parameter,",
-    "> request body and response shape, written as TypeScript-style types. /openapi.json says the",
-    "> same in JSON Schema, at many times the size.",
+    // No pointer to /openapi.json: this text is also embedded whole in the AI Integration setup
+    // file, which deliberately sends the assistant nowhere else to read.
+    "> Generated from the server's own route definitions on every build, for AI assistants: every",
+    "> route, parameter, request body and response shape, written as TypeScript-style types.",
     "",
     "How to read it: `?` marks an optional field; `// comments` carry the meaning, the allowed",
     "values and an example; a named type such as `Donors` is defined under **Types**; `any` means",

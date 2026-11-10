@@ -81,7 +81,7 @@
                   6,
                   8
                 ],
-                "description": "Hall index: 0 Ahsan Ullah, 1 Sabekun Nahar Sony, 2 Kazi Nazrul Islam, 3 Dr. M. A. Rashid, 4 Sher-E-Bangla, 5 Suhrawardy, 6 Titumir, 7 Attached, 8 (Unknown). A donor record may hold any of these except 7 (Attached). Search and report drill-down also accept -1, meaning any.",
+                "description": "Hall index: 0 Ahsan Ullah, 1 Sabekun Nahar Sony, 2 Kazi Nazrul Islam, 3 Dr. M. A. Rashid, 4 Sher-E-Bangla, 5 Suhrawardy, 6 Titumir, 7 Attached, 8 (Unknown). A donor record may hold any of these except 7 (Attached). Report drill-down also accepts -1, meaning any, and so does donor search for a Super Admin.",
                 "example": 5
               },
               "address": {

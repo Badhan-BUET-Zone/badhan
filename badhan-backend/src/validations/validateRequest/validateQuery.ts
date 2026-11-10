@@ -28,8 +28,9 @@ export const validateQUERYHall: ValidationChain = query('hall')
   .isInt().toInt().withMessage('hall must be integer')
   .isIn(HALL_INDICES_ALLOWED_FOR_DONOR).withMessage('Please input an allowed hall number')
 
-// Same as validateQUERYHall, but also accepts the HALL_ANY sentinel used by the
-// report drill-down when the report is being viewed for 'All Halls'.
+// Same as validateQUERYHall, but also accepts the HALL_ANY sentinel: the report drill-down sends it
+// when the report is being viewed for 'All Halls', and a super admin's donor search sends it to
+// search every hall at once.
 export const validateQUERYHallOrAny: ValidationChain = query('hall')
   .exists().not().isEmpty().withMessage('hall is required')
   .isInt().toInt().withMessage('hall must be integer')

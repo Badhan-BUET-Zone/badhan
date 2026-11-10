@@ -41,6 +41,7 @@ everything, including the reports, the backups and the appointment of hall admin
 | **Sign in at all** | ❌ | ✅ | ✅ | ✅ |
 | Search for donors | ❌ | ✅ | ✅ | ✅ |
 | Search halls other than their own | ❌ | ❌ | ❌ | ✅ |
+| Search every hall at once (**All Halls** — see [chapter 6](06-searching-for-donors.md)) | ❌ | ❌ | ❌ | ✅ |
 | View a donor of their own hall | ❌ | ✅ | ✅ | ✅ |
 | Edit a donor of their own hall | ❌ | ✅ | ✅ | ✅ |
 | Edit a donor of another hall | ❌ | ❌ | ❌ | ✅ |
