@@ -6,14 +6,12 @@
 
 # Update of 3 September 2026: AI Integration
 
-Badhan now connects to **Claude** as an MCP server, so a member can ask for what they need in
-plain English — *"find me someone from Titumir hall who can donate A+ blood"* — and Claude
-searches the donor records, reads call history and logs donations through named actions, asking
-first before anything that changes a record. Super admins set it up from the **AI Integration**
-page; the walkthrough is in
+Badhan now works with **Claude**, so a member can ask for what they need in plain English —
+*"find me someone from Titumir hall who can donate A+ blood"* — and Claude searches the donor
+records, reads call history and logs donations through the Badhan API, asking first before
+anything that changes a record. Super admins download a setup file from the **AI Integration**
+page and upload it to a Claude conversation; the walkthrough is in
 [the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/16-super-admin-tools.md#ai-integration).
-
-<img width="600" alt="Claude answering donor questions through the Badhan MCP server" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/d766d029/docs/images/ai-integration.jpeg" />
 
 <hr>
 

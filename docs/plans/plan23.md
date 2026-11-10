@@ -384,5 +384,4 @@ route whose callers are two public pages and one volunteer panel.
 
 The `feedbacks` collection and its schema; the queue, `FeedbackCard`, the "create donor"
 prefill handoff; hall visibility in `findFeedbacksForUser`; the donor-feedback poster and its
-`/#/donor` URL; `POST /donors` and its parent-name validation; the certificate; the CSV import;
-the MCP donor-creation tool, which already documents `""` for an unknown parent name.
+`/#/donor` URL; `POST /donors` and its parent-name validation; the certificate; the CSV import.

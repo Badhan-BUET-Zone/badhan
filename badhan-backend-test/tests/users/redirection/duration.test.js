@@ -2,8 +2,9 @@
 //
 // It used to take a durationSeconds with a 30-second default and a 24-hour ceiling, both chosen
 // for the web redirection handoff — a token that crosses one URL and is spent immediately. The
-// MCP server changed what the token is for: an MCP config is written into a settings file once
-// and left alone, and a token on any clock at all means editing that file on that clock.
+// AI Integration setup file changed what the token is for: the file is downloaded once and
+// uploaded to every new conversation, and a token on any clock at all means remaking that file
+// on that clock.
 //
 // So the clock is gone, and what has to be pinned now is the opposite of what these tests used to
 // pin: that the token carries no exp, that the knob is really gone rather than silently ignored,

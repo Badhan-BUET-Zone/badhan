@@ -18,10 +18,9 @@
 // Donations…), which is what the list is for.
 //
 // It also puts the encoding vocabulary — the blood group, hall, designation, date and student
-// ID mappings — back into info.description. That prose has two readers, this spec and the MCP
-// handshake, so it lives in ONE place (src/doc/apiVocabulary.ts) and is appended here rather
-// than being written out a second time in tsoa.json. Requiring the COMPILED module is why
-// `npm run build` runs tsc before tsoa:spec.
+// ID mappings — back into info.description. That prose lives in src/doc/apiVocabulary.ts and
+// is appended here rather than being written out as an escaped string in tsoa.json. Requiring
+// the COMPILED module is why `npm run build` runs tsc before tsoa:spec.
 //
 // Standard library only (bar that one compiled module of our own); runs inside the backend
 // container as part of the build.
@@ -88,7 +87,7 @@ function substitute(node, schemas, seen) {
 }
 
 // tsoa.json carries only the first paragraph of info.description; the vocabulary is appended
-// here so the spec and the MCP handshake cannot disagree about what a `2` means.
+// here.
 function withVocabulary(description) {
   const { API_VOCABULARY_MARKDOWN } = require(VOCABULARY_PATH);
   return [description, API_VOCABULARY_MARKDOWN].join("\n\n");

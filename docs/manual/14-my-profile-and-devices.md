@@ -83,8 +83,8 @@ you lose nothing by doing so.
 ### AI assistants appear here too
 
 If you are a super admin and have used the **AI Integration** page
-([chapter 16](16-super-admin-tools.md#ai-integration)), every setup file you made and every
-connection you set up has an entry in this list, one per press of a button. They look like ordinary
+([chapter 16](16-super-admin-tools.md#ai-integration)), every setup file you made has an entry
+in this list, one per press of the button. They look like ordinary
 entries — a browser, an operating system, an address — because that is the device you made them
 from.
 

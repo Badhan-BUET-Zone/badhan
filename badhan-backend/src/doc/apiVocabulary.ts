@@ -1,14 +1,9 @@
 // The one copy of the prose that tells a caller a blood group is `2` and not "B+".
 //
-// It used to live as a single escaped string inside `info.description` in tsoa.json, which was
-// fine while the OpenAPI spec was its only reader. The MCP handshake needs the same text as its
-// `instructions`, and a second copy would drift inside a release — so it lives here, and both
-// consumers read it:
-//
-//   - scripts/trim-openapi.js appends it to `info.description` of the generated spec, which is
-//     why `npm run build` compiles before it runs the spec step (that script requires the
-//     compiled dist/doc/apiVocabulary.js).
-//   - the MCP server returns MCP_INSTRUCTIONS_MARKDOWN from `initialize`.
+// scripts/trim-openapi.js appends it to `info.description` of the generated spec, which is why
+// `npm run build` compiles before it runs the spec step (that script requires the compiled
+// dist/doc/apiVocabulary.js). Kept here rather than as an escaped string in tsoa.json because
+// it is far easier to read and edit as lines of markdown.
 //
 // Kept as an array of single-quoted lines rather than one template literal, for the same reason
 // and in the same shape as badhan-frontend/src/mixins/aiPrompt.ts: it is markdown full of
@@ -47,16 +42,4 @@ export const API_VOCABULARY_MARKDOWN: string = [
   '',
   'Every JSON response carries `status` (`"OK"` or `"ERROR"`), `statusCode` and `message`, with',
   'the payload alongside on success. Check `status`, not only the HTTP status code.'
-].join('\n')
-
-// What an MCP client is handed at `initialize`. The vocabulary is the whole of it bar two
-// sentences of context: the spec's reader arrives with the page around it, a model arrives with
-// nothing.
-export const MCP_INSTRUCTIONS_MARKDOWN: string = [
-  'Badhan is a voluntary blood-donation platform run by BUET students; this server exposes its',
-  'API as tools. Every tool call runs as the member whose token is configured here, with exactly',
-  'the permissions their role gives them in the app, and is recorded in the activity log as',
-  'theirs. Call `whoami` first to learn that role.',
-  '',
-  API_VOCABULARY_MARKDOWN
 ].join('\n')

@@ -111,26 +111,3 @@ export const buildAIIntegrationPrompt = (token: string, baseURL: string, environ
     .replace(/\{\{BASE_URL\}\}/g, () => baseURL)
     .replace(/\{\{ENVIRONMENT\}\}/g, () => environmentName)
 }
-
-/* ── MCP ─────────────────────────────────────────────────────────────
- *
- * The prompt file above is one half of this page; the MCP server is the other. Where the file
- * explains the API in prose and leaves the model to write HTTP calls, MCP hands the assistant a
- * named set of tools its client can show, confirm and audit. Same token, same permissions, same
- * server — only the shape of the handover changes.
- */
-
-// The endpoint mounted in the backend's app.ts. There is deliberately no guest counterpart: the
-// guest mirror exists so a demo account can click around with faker data, and there is no
-// /guest/mcp to point anybody at.
-export const getMCPEndpointURL = (): string => {
-  return environmentService.getAPIBaseURL() + '/mcp'
-}
-
-// For claude.ai on the web or a phone: it takes a connector URL and offers OAuth or no
-// authentication, with nowhere to type a header. The token rides in the path instead, which means
-// the WHOLE URL is the credential — the page says so beside the button, because a member who has
-// learned that a link is safe to paste has learned the wrong thing here.
-export const buildMCPConnectorURL = (token: string, endpointURL: string): string => {
-  return `${endpointURL}/${token}`
-}

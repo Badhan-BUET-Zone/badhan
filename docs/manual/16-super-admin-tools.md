@@ -170,18 +170,9 @@ This page connects **Claude** — the assistant you type instructions to in plai
 Badhan's records, so it can answer questions like *"find O+ donors in Titumir who have not donated
 since March"* without anyone writing code.
 
-Claude is the only assistant this page sets up, and it offers two ways to do it. There is nothing
-else to choose between.
-
-| | **Hand Claude a setup file** | **Connect Claude once** |
-| --- | --- | --- |
-| For | one conversation, now | using it again and again |
-| You give Claude | a file you upload | a link you paste into its settings |
-| Claude works from | a written description of the records | a list of named things it can do |
-
-The second is the better one if you expect to come back to it: setting it up is a one-off, and a
-connected Claude is given named actions — search donors, log a donation, read the member chat — rather than being left to work it
-out from a document, and it asks you before the ones that change something.
+Claude is the only assistant this page sets up, and there is one way to do it: you hand Claude a
+setup file at the start of a conversation, and Claude works from the description of the records
+inside it. There is nothing else to choose between.
 
 ### Hand Claude a setup file
 
@@ -214,51 +205,11 @@ nothing else about the steps changes.
 You do not need to understand what is in the file. Nothing is created until you press the
 button — no sign-in exists before then.
 
-### Connect Claude once
-
-#### One time setup
-
-1. On this page, press **Copy Claude Link**.
-2. Open **claude.ai** in your web browser and sign in.
-3. Select your name at the bottom left of Claude, then **Customize**, then **Connectors**.
-4. Press **+**, then **Add custom connector**.
-5. Paste the link into the URL box, name it **Badhan**, and select **Add**.
-6. On the **Badhan** connector that now appears, press **Connect**.
-
-**Step 6 is the one that catches people out.** Adding a connector is not the same as connecting to
-it: until you press **Connect** that once, Claude has it listed and still cannot use it. Once
-connected it stays connected.
-
-#### For your everyday use
-
-1. Start a new chat in Claude.
-2. Ask your question in plain language. Claude asks you before anything that changes a record.
-
-That really is the whole of it. The connector is there in every chat once you have connected it, so
-there is nothing to upload, nothing to switch on, and no domain to allow — Claude reaches Badhan
-from its own servers rather than from the sandbox the setup file uses.
-
-On a **Team or Enterprise** Claude plan an owner adds the connector under **Organization
-settings**, then **Connectors**; everyone else then finds it under **Customize**, then
-**Connectors**, and presses **Connect** there — that press is still theirs to make.
-
-#### The connector link *is* the password
-
-This one is worth its own warning. A setup file obviously looks like a secret. The connector link
-looks like an ordinary web link — and a link is the one kind of text everybody has been taught is
-safe to pass around.
-
-It is not. **The sign-in is inside the address itself.** Anyone you send that link to is signed in
-as you until you end it. Do not put it in a group chat, in an email, or in a screenshot.
-
-**The demo has no connection to offer.** If you are signed in to the demo, this half of the page
-asks you to sign in to Badhan instead of showing the button.
-
 ### The token does not expire — you end it yourself
 
-This holds for both halves of the page. The sign-in Claude is given is **not your own**: each press
-of either button asks the server for a separate token, and your own session is untouched. But that
-token has **no clock on it**: it keeps working until somebody deliberately ends it.
+The sign-in Claude is given is **not your own**: each press of **Download Setup File** asks the
+server for a separate token, and your own session is untouched. But that token has **no clock on
+it**: it keeps working until somebody deliberately ends it.
 
 Every press adds one entry to the device list on your **My Profile** page, alongside the phones and
 computers you have signed in from. **That entry is how you end it**: open My Profile, find it, and
@@ -271,7 +222,7 @@ Two things about that, both worth knowing before you need them:
 - **Sign out from all devices does end it** — along with every other session you have, on every
   device.
 
-Because there is no clock, **make the file or the link when you are ready to use it**, and end it
+Because there is no clock, **make the file when you are ready to use it**, and end it
 when you are done rather than leaving it in the list. There is no limit on how many you make.
 
 Every entry in that list looks much the same — an operating system, a browser, an address — so if
@@ -279,22 +230,22 @@ you make several, end the ones you are unsure about and make a fresh one. That i
 is not.
 
 **Nothing lasts forever regardless.** The app clears out sign-ins that are 30 days old, so a file
-or a connection you forget about stops working a month after you made it. That is a backstop, not a
+you forget about stops working a month after you made it. That is a backstop, not a
 plan: end the ones you are done with.
 
-If a connected Claude suddenly says it is not authorised, that is what happened — press the button
-again and paste the new link over the old one.
+If Claude suddenly says the file is not authorised, that is what happened — press the button
+again and upload the new file instead of the old one.
 
-### Read this before you send that file or link anywhere
+### Read this before you send that file anywhere
 
-The token **is you**, for as long as it exists. Anyone holding the file or the link can do
+The token **is you**, for as long as it exists. Anyone holding the file can do
 everything your role allows, as you, without knowing your password — read every donor, and change
 or delete records.
 
-So treat both as you would treat your password:
+So treat it as you would treat your password:
 
-- **Do not email them, post them in a group chat, or put them in shared storage.**
-- **Do not give them to an assistant you would not trust with your password.** Pasting one into an
+- **Do not email it, post it in a group chat, or put it in shared storage.**
+- **Do not give it to an assistant you would not trust with your password.** Uploading it to an
   online service sends that token to that company.
 - **Delete the downloaded file when you are done with it**, and end its entry in My Profile. The
   file lying about on your computer is a live sign-in, not an expired one.
@@ -303,7 +254,7 @@ So treat both as you would treat your password:
 cannot tell which entry it is, **Sign out from all devices** ends everything at once. Waiting is
 not a fix here: nothing expires on its own.
 
-Claude, either way round, is **not restricted** to reading. It can add, change and
+Claude is **not restricted** to reading. It can add, change and
 delete real records, and the app cannot tell its actions apart from yours — the App Activity page
 will show them as yours. Everything in
 [chapter 17](17-rules-the-app-enforces.md) still applies: it can do exactly what your role allows,

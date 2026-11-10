@@ -2,11 +2,11 @@
  * How long a token minted by POST /users/redirection lives: forever.
  *
  * It used to carry a 30-second default and a 24-hour ceiling, both chosen for the web
- * redirection handoff — a token that crosses one URL and is spent immediately. The MCP server
- * changed what this token is FOR. An MCP client config is written into a settings file once and
- * left alone, and a token that lapses on any clock at all means editing that file on that clock,
- * which nobody does. They go looking for a permanent credential instead, and that search ends
- * somewhere worse than here.
+ * redirection handoff — a token that crosses one URL and is spent immediately. The AI
+ * Integration setup file changed what this token is FOR. That file is downloaded once and
+ * uploaded to every new conversation, and a token that lapses on any clock at all means
+ * remaking the file on that clock, which nobody does. They go looking for a permanent
+ * credential instead, and that search ends somewhere worse than here.
  *
  * So there is no clock. `expiresIn` is null, jwt.sign emits no `exp` claim, and the token is
  * valid for as long as its row exists in the tokens collection.
@@ -21,7 +21,7 @@
  *     browser does NOT touch a token minted for an assistant.
  *
  * What this costs, stated plainly because the expiry is no longer there to cover it: a leaked
- * config file is a live credential with the full powers of its owner's role until a human
+ * setup file is a live credential with the full powers of its owner's role until a human
  * notices and deletes that row. Nothing expires on its own any more.
  */
 

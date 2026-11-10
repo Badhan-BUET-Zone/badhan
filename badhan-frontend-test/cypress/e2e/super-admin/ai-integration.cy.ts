@@ -1,8 +1,7 @@
 // The page hands out a working credential, so the assertions that matter are about which one:
 // the file must carry a freshly minted temporary token, never the session token in local storage,
-// and that token must actually authenticate. The same rule governs the connector half of the page
-// below: shape is not enough, so every credential is used against the real API rather than
-// inspected.
+// and that token must actually authenticate. Shape is not enough, so the credential is used
+// against the real API rather than inspected.
 import { SignInPage } from '@pages/SignInPage';
 import { NavigationDrawer } from '@pages/NavigationDrawer';
 import { NotificationComponent } from '@components/Notification';
@@ -23,20 +22,6 @@ const tokenFromPrompt = (contents: string): string => {
 // the same trick tests/users/redirection/duration.test.js uses in the backend suite.
 const payloadOf = (token: string): { exp?: number; jti?: string } =>
   JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
-
-// vue-clipboard2 copies by selecting a detached element and calling execCommand, so the selection
-// at that moment is the copied text. Stubbing it is the only way to read a clipboard Cypress
-// cannot otherwise see.
-const captureClipboard = (onCopy: (text: string) => void): void => {
-  cy.window().then((win) => {
-    cy.stub(win.document, 'execCommand').callsFake(() => {
-      onCopy(win.getSelection()?.toString() ?? '');
-      return true;
-    });
-  });
-};
-
-const initialize = { jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18' } };
 
 describe('AI Integration', () => {
   const signInPage = new SignInPage();
@@ -90,47 +75,13 @@ describe('AI Integration', () => {
     });
   });
 
-  it('copies a connector URL that needs no headers at all', () => {
-    // The whole claim of the path form: the URL alone is enough, because claude.ai's connector has
-    // nowhere to type a header. It is one request to check, and if it ever stopped being true the
-    // page would be telling members to do something that cannot work.
-    signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
-    notification.assertEquals(MESSAGES.signInSuccess);
-    drawer.goToAIIntegration();
-
-    let copied = '';
-    captureClipboard((text) => {
-      copied = text;
-    });
-
-    cy.window().then((win) => {
-      const sessionToken = win.localStorage.getItem('x-auth');
-
-      cy.get('[data-cy="copyMcpConnectorUrlId"]').click({ force: true });
-      notification.assertContains('Connection link copied');
-
-      cy.wrap(null).should(() => {
-        expect(copied, 'the connector URL').to.match(/\/mcp\/\S+$/);
-        // Same rule as the file: never the permanent session token.
-        expect(copied).to.not.contain(sessionToken as string);
-      });
-
-      cy.then(() => {
-        cy.request({ method: 'POST', url: copied, body: initialize }).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body.result.serverInfo.name).to.eq('badhan');
-        });
-      });
-    });
-  });
-
-  it('offers Claude only, and walks each route from opening claude.ai to asking a question', () => {
+  it('offers Claude only, and walks the setup-file route from opening claude.ai to asking a question', () => {
     signInPage.signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     notification.assertEquals(MESSAGES.signInSuccess);
     drawer.goToAIIntegration();
 
     // The steps start at claude.ai and end at a question asked, because the step that gets missed
-    // is the one outside this page: the domain allowlist under Settings. Splitting each route into
+    // is the one outside this page: the domain allowlist under Settings. Splitting the route into
     // what you do once and what you do every time is what keeps the second list short enough to
     // actually follow each morning.
     cy.get('[data-cy="setupAiAppInstructionsId"]')
@@ -142,18 +93,11 @@ describe('AI Integration', () => {
     cy.get('[data-cy="setupFileOnceStepsId"] li').should('have.length', 5);
     cy.get('[data-cy="setupFileEverydayStepsId"] li').should('have.length', 3);
 
-    cy.get('[data-cy="aiAppInstructionsId"]')
-      .should('contain', 'claude.ai')
-      .and('contain', 'One time setup')
-      .and('contain', 'For your everyday use')
-      .and('contain', 'Add custom connector')
-      // Adding the connector does not make it usable; the Connect press is a step of its own.
-      .and('contain', 'Connect')
-      .and('contain', 'Connectors');
-    cy.get('[data-cy="connectorOnceStepsId"] li').should('have.length', 6);
-    // Two, not three: a connector added once is on in every chat, so there is nothing to
-    // switch on before asking.
-    cy.get('[data-cy="connectorEverydayStepsId"] li').should('have.length', 2);
+    // The connector route is gone: Badhan no longer runs an MCP server, so there is no link to
+    // copy and nothing to add under Claude's Connectors.
+    cy.get('[data-cy="aiAppInstructionsId"]').should('not.exist');
+    cy.get('[data-cy="copyMcpConnectorUrlId"]').should('not.exist');
+    cy.contains('Add custom connector').should('not.exist');
 
     // Nothing to choose between any more, and no assistant on the page but Claude.
     cy.get('[data-cy="setupAiAppSelectorId"]').should('not.exist');
@@ -161,8 +105,6 @@ describe('AI Integration', () => {
     cy.contains('ChatGPT').should('not.exist');
     cy.contains('Claude Code').should('not.exist');
     cy.contains('Cursor').should('not.exist');
-    cy.get('[data-cy="copyMcpConfigId"]').should('not.exist');
-    cy.get('[data-cy="copyMcpCommandId"]').should('not.exist');
   });
 
   it('keeps connection details out of the page while explaining how to remove access', () => {
@@ -175,8 +117,5 @@ describe('AI Integration', () => {
 
     cy.contains('My Profile').should('be.visible');
     cy.contains('Server the file points at:').should('not.exist');
-    cy.contains('MCP endpoint:').should('not.exist');
-    cy.get('[data-cy="mcpEndpointId"]').should('not.exist');
-    cy.get('[data-cy="mcpDurationId"]').should('not.exist');
   });
 });
