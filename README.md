@@ -169,6 +169,22 @@ frontend-1  |   - Local:   http://localhost:8080/
 The first run seeds no data. To populate the database, see
 [Purge and Seed the Database](#purge-and-seed-the-database) below.
 
+## Run the Chat Agent
+
+[badhan-agent](badhan-agent/) is a one-page chat app that works the Badhan API through an
+OpenAI model: every API route is one of the model's tools, and each call it makes shows up in
+the chat as a card with the request and the response. It is not part of the stack that
+`docker compose up` starts. Start it on its own with:
+
+```
+docker compose up -d agent
+```
+
+Then open http://localhost:8090, paste an OpenAI API key into Settings, and pick
+**Development**, **Production** or **Local** in the chat's header. Sign in to that server from
+the header too. Requests to Production are live, and every change there waits for your approval.
+The details are in [badhan-agent/README.md](badhan-agent/README.md).
+
 # Run Backend and Frontend Tests
 
 Both test suites run as one-off containers under the `test` compose profile. With the
