@@ -1,4 +1,7 @@
-// The one copy of the prose that tells a caller a blood group is `2` and not "B+".
+// The prose that tells a caller a blood group is `2` and not "B+".
+//
+// There is a second, word-for-word copy: VALUE_CODES in badhan-frontend/src/views/Agent.vue, the
+// Badhan Agent page's fixed system prompt. Change both together.
 //
 // scripts/trim-openapi.js appends it to `info.description` of the generated spec, which is why
 // `npm run build` compiles before it runs the spec step (that script requires the compiled

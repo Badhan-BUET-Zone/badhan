@@ -265,4 +265,100 @@ it.
 
 ---
 
+## Badhan Agent
+
+This page is a chat with an **AI assistant** that works inside Badhan for you. You type what you
+want in plain English — *"find B+ donors in Suhrawardy hall who can donate now"* — and it looks the
+records up, or makes the change you asked for, and answers in the chat.
+
+Unlike **AI Integration** above, nothing leaves the app as a file: the assistant works right here,
+on this page. The assistant itself comes from **OpenAI**, the company behind ChatGPT, so the page
+needs an OpenAI key before it can do anything.
+
+### Before you start: the OpenAI key
+
+An **OpenAI API key** is a long code, starting with `sk-`, that lets this page use OpenAI's
+assistant. OpenAI charges whoever owns the key for what the assistant does, so use a key you have
+been given for this, or your own.
+
+1. Open the page. The first time, **Settings** opens by itself. Later, press **Settings** at the
+   bottom of the chat list (on a phone, open the list first with the menu button at the top left
+   of the chat). It opens out right there, under the button; press it again to fold it away.
+2. Paste the key into **API key** and press **Save API key**.
+
+Before keeping the key, the page checks it with OpenAI: that the key is real, that it can use the
+assistant, and that there is money left on it. The check uses OpenAI for a moment, which costs a
+tiny fraction of a cent. If the check fails, the key is not saved, and the reason appears under
+the box — fix it and press **Save API key** again.
+
+Once a key is saved, the box is replaced by a note showing its last four characters and a
+**Clear key** button, which forgets it. **You cannot send a message until a key is saved.**
+
+The key stays on this device and is sent only to OpenAI. **Signing out of Badhan removes it** —
+along with everything else on this page — so after you sign in again you will need to save it
+again.
+
+### Who the assistant works as
+
+The assistant works **as you**, on the same Badhan records as the rest of the app, using the
+sign-in you already have. There is nothing else to sign in to, and it adds nothing to the device
+list on your My Profile page. When you sign out of Badhan, it stops working too.
+
+On the real app, a red strip at the top of the chat reminds you that the records are real. On a
+test copy ([chapter 2](02-getting-the-app.md)) the strip is not there.
+
+A few things are deliberately out of its reach: it cannot sign you in or out, change your
+password, or make a sign-in code like the one in an AI Integration setup file. Do those yourself.
+
+### Chatting
+
+Type in the box at the bottom and press **Enter** to send (**Shift+Enter** starts a new line). On
+an empty chat there are a few example questions you can tap to try.
+
+Everything the assistant does in Badhan shows up in the chat as a **card**: what it asked Badhan
+for, and what came back. A green edge means Badhan answered normally, a red one means it
+refused or something went wrong. Tap a card to see the details. The assistant's own answers are
+shown as plain text.
+
+**Changes wait for you.** Looking things up happens on its own, but before anything that would
+add, change or delete a record, the card stops with **Send request** and **Decline**. Nothing is
+changed until you press **Send request**. **Settings** can make it ask before everything, or
+never ask — but on the real app it always asks before a change, whatever the setting says.
+
+**Stop** (the square button where Send usually is) ends what the assistant is doing. Leaving the
+page also stops it.
+
+### Your chats
+
+Every chat is kept on this device and listed on the left — on a phone, behind the menu button at
+the top left of the chat. **New chat** starts another; the bin icon deletes one for good. To rename
+a chat, edit its title at the top.
+
+**Signing out of Badhan deletes all of them** from this device, because they can hold donors'
+personal details. So does signing in, which starts the page afresh.
+
+### The system prompt
+
+At the top of each chat is the **System prompt**: the instructions the assistant reads before
+anything you type. Tap it to read it; it cannot be changed, and it is the same for every chat.
+
+Besides how to behave, it tells the assistant the way Badhan writes things down — for example
+that blood groups and halls are stored as numbers. At its end is a short note filled in each time:
+which copy of Badhan the chat is on, who is signed in, and the current date and time, so the
+assistant can work out things like "the last four months".
+
+### Read this before you use it
+
+- **The assistant is you.** It acts with your super admin role. The App Activity page will show
+  its changes as yours, and everything in [chapter 17](17-rules-the-app-enforces.md) still
+  applies.
+- **What you type, and what Badhan sends back, goes to OpenAI** — including donors' names and
+  phone numbers. Ask only for what you need.
+- **Check before you press Send request**, especially on the real app. Tap the card to see
+  exactly what it is about to do.
+- **On a shared computer, sign out of Badhan when you are done.** That also removes your OpenAI
+  key and your chats from it.
+
+---
+
 [← Previous: Statistics and reports](15-statistics-and-reports.md) · [Contents](README.md) · [Next: Rules the app enforces →](17-rules-the-app-enforces.md)

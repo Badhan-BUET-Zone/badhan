@@ -27,9 +27,7 @@ Nothing installs them for you: unlike the app services, no volume re-seeds itsel
 image, and `compose run` does not rebuild.
 
 Service names (see [docker-compose.yml](docker-compose.yml)): `backend`, `frontend`,
-`internal`, `mongo`, `backend-test`, `frontend-test`, `agent` (the
-[badhan-agent](badhan-agent/) chat app, under the `agent` profile; `docker compose up -d agent`
-starts it), and — under the `deploy` profile,
+`internal`, `mongo`, `backend-test`, `frontend-test`, and — under the `deploy` profile,
 driven by the scripts below rather than by hand — `backend-deploy`, `frontend-deploy`,
 `android`.
 

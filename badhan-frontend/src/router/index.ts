@@ -356,6 +356,19 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
+    // Super admin only, like AIIntegration above: an AI working the API with real records. It
+    // requiresAuth because every request it makes is sent with the member's own session token.
+    name: 'Agent',
+    path: '/agent',
+    component: () => import('../views/Agent.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Badhan Agent',
+      designation: 3,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
     name: 'DevConsole',
     path: '/devconsole',
     component: () => import('../views/DevConsole.vue'),

@@ -83,24 +83,6 @@ services:
       retries: 5
       start_period: 120s
 
-  # The chat agent (badhan-agent/): a one-page app that drives the Badhan API through OpenAI tool
-  # calls. Behind its own profile so `docker compose up` does not build it for everyone; naming the
-  # service starts it anyway:
-  #
-  #   docker compose up -d agent        → http://localhost:8090
-  #
-  # It depends on nothing here — it talks to whichever server its chat picks (development,
-  # production or the local backend on :3000) straight from the browser.
-  agent:
-    profiles: ["agent"]
-    build:
-      context: ./badhan-agent
-    ports:
-      - "8090:8090"
-    volumes:
-      - ./badhan-agent:/app
-      - /app/node_modules
-
   # Both test services mount their whole project — node_modules included — rather than running the
   # copy the Dockerfile baked in. Without a mount, `COPY . .` means an edited test only reaches the
   # container on a rebuild, and `compose run` does not rebuild: a stale image then runs the OLD

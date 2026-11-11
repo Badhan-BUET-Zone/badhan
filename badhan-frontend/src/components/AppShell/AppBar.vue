@@ -300,6 +300,13 @@ export default {
               designation: 3
             },
             {
+              icon: 'mdi-chat-processing',
+              text: 'Badhan Agent',
+              to: '/agent',
+              id: 'agentNavigationId',
+              designation: 3
+            },
+            {
               icon: 'mdi-developer-board',
               text: 'Dev Console',
               to: '/devconsole',
