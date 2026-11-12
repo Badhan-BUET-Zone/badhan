@@ -38,6 +38,7 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 11. [Adding new donors](11-adding-new-donors.md) — one at a time, or many from a file
 20. [Donor feedback and new donor registration](20-donor-feedback.md) — the public pages, the Feedback queue, the QR codes
 21. [Member chat](21-member-chat.md) — the one conversation every member shares, and why it only updates when you ask
+22. [Badhan Agent](22-badhan-agent.md) — an AI assistant that looks things up and makes changes for you, as you
 
 **For admins**
 
@@ -53,7 +54,7 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 18. [When something goes wrong](18-when-something-goes-wrong.md) — common problems and fixes
 19. [Glossary](19-glossary.md) — every term in one place
 
-*Chapters 20 and 21 are listed under "Everyday work" above, where you would look for them. They keep
+*Chapters 20, 21 and 22 are listed under "Everyday work" above, where you would look for them. They keep
 those numbers because chapters are never renumbered — renumbering would break every
 cross-reference in the manual.*
 

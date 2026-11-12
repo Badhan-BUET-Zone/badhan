@@ -168,6 +168,31 @@ will know your new role. See [chapter 21](21-member-chat.md).
 
 ---
 
+## Rules about Badhan Agent
+
+**The assistant can only do what you can.** It works as you, so every rule in this chapter applies
+to it exactly as it applies to you. A request it makes that you could not make is refused, and the
+card shows the refusal.
+
+**Anything that adds, changes or deletes waits for you.** Looking things up happens on its own;
+everything else waits for you to press **Approve**, for every member and on every copy of the app. There is
+no setting to change this.
+
+**One message allows at most 20 steps.** *"Stopped after 20 model calls for one message. Send a
+message to carry on."* means the assistant used all of them. Send another message.
+
+**One chat runs in one place at a time.** *"This chat is busy in another tab or window."* means the
+same chat is already running somewhere else. Let that finish, then press **Retry**.
+
+**"The agent is not set up on this server yet. Ask a super admin."** This copy of Badhan has not
+been connected to OpenAI. Nobody can send anything until it is.
+
+**The agent is for members only.** *"Only Badhan members can use Badhan Agent"* means your account
+is no longer at Volunteer level or above. The app will sign you out; sign in again and it will
+know your new role. See [chapter 22](22-badhan-agent.md).
+
+---
+
 ## Rules that apply quietly
 
 **Everything is logged.** Every sign-in, search, edit, donation, deletion and promotion is

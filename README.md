@@ -171,14 +171,30 @@ The first run seeds no data. To populate the database, see
 
 ## The Chat Agent
 
-The chat agent is a page of the frontend: **Super Admin → Badhan Agent** in the menu, at
-http://localhost:8080/#/agent. It works the Badhan API through an OpenAI model: every API route
-is one of the model's tools, and each call it makes shows up in the chat as a card with the
-request and the response. It uses the same backend as the rest of the app and the signed-in
-member's own session, so the only setup is an OpenAI API key in its Settings. On the production
-build every change waits for your approval. The whole page
-is one file, [badhan-frontend/src/views/Agent.vue](badhan-frontend/src/views/Agent.vue); how it
-works is in the comment at the top of its script.
+Badhan Agent is a page of the frontend, **Badhan Agent** in the menu for every member from
+Volunteer up, at http://localhost:8080/#/agent. It works the Badhan API through an OpenAI model:
+every API route is one of the model's tools, and each call it makes shows up in the chat as a card
+headed by the route's own description, with the request and the response one click away.
+
+The work is split between the two halves:
+
+- **The backend** holds the organisation's OpenAI key, makes every model call and stores every
+  chat in MongoDB, so chats follow a member from device to device. The code is in
+  [badhan-backend/src/services/agent/](badhan-backend/src/services/agent/), and the routes in
+  [AgentController.ts](badhan-backend/src/tsoaControllers/AgentController.ts).
+- **The browser** runs the API calls the model asks for, with the signed-in member's own session,
+  so the agent can do exactly what that member can. A GET runs on its own; anything that changes
+  data waits for the member to press **Approve**. The page is
+  [badhan-frontend/src/views/Agent.vue](badhan-frontend/src/views/Agent.vue), and the transcript
+  is drawn by
+  [AgentThread.vue](badhan-frontend/src/components/Agent/AgentThread.vue). How a turn runs is in
+  the comment at the top of the page's script.
+
+The key is the backend's optional `OPENAI_API_KEY`, set in `env.development` and `env.production`
+from the secrets repo. Without it the backend starts normally and the page says the agent is not
+set up. `env.local` has none: to try the agent locally, add your own key to
+`badhan-backend/env.local` and restart the backend — and take it out again before running the
+backend tests, which refuse to run with a key set rather than spend money.
 
 # Run Backend and Frontend Tests
 

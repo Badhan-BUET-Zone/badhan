@@ -15,7 +15,7 @@ import { HTTP_STATUS } from '../constants'
 @Route('platelet-donations')
 @Tags('PlateletDonations')
 export class PlateletDonationsController extends Controller {
-  /** Insert a platelet donation */
+  /** Record a platelet donation */
   @Post()
   @SuccessResponse(201, 'Platelet donation inserted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Internal server error', {
@@ -182,8 +182,8 @@ export class PlateletDonationsController extends Controller {
   }
 
   /**
-   * List the platelet donations behind a single cell of the platelet report (Super Admin only).
-   * The cell is identified by the time window it covers plus its blood group and hall;
+   * List the platelet donations behind one figure in the platelet report (Super Admin only)
+   * That figure is one cell of the report, identified by the time window it covers plus its blood group and hall;
    * pass bloodGroup = -1 for the report's 'Total' column and hall = -1 for 'All Halls'.
    */
   @Get('report/donors')

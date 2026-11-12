@@ -88,12 +88,22 @@ const handleHallAdminCheck = async (req: Request, res: Response, next:  NextFunc
  * an authenticated `designation: 0` caller. Routes that are for members only must say so
  * themselves rather than leaning on authentication having happened.
  */
-const handleVolunteerCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
-  if (res.locals.middlewareResponse.donor.designation < DESIGNATIONS_INDEX.VOLUNTEER) {
-    return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403('Only Badhan members can use the member chat',{}))
+//
+// One gate, worded per feature: the refusal names what the person was trying to use, and the
+// manual quotes each wording (chapter 17).
+const volunteerCheck = (refusal: string): (req: Request, res: Response, next: NextFunction) => Promise<Response|void> =>
+  async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
+    if (res.locals.middlewareResponse.donor.designation < DESIGNATIONS_INDEX.VOLUNTEER) {
+      return res.status(HTTP_STATUS.FORBIDDEN).send(new ForbiddenError403(refusal,{}))
+    }
+    next()
   }
-  next()
-}
+
+const handleVolunteerCheck: (req: Request, res: Response, next: NextFunction) => Promise<Response|void> =
+  volunteerCheck('Only Badhan members can use the member chat')
+
+const handleAgentVolunteerCheck: (req: Request, res: Response, next: NextFunction) => Promise<Response|void> =
+  volunteerCheck('Only Badhan members can use Badhan Agent')
 
 const handleHigherDesignationCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation &&
@@ -133,6 +143,7 @@ export default {
   handleHallAdminCheck,
   handleSuperAdminCheck,
   handleVolunteerCheck,
+  handleAgentVolunteerCheck,
   handleHallPermission,
   handleHigherDesignationCheck,
   handleHallPermissionOrCheckAvailableToAll

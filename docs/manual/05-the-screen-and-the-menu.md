@@ -42,16 +42,17 @@ may be shorter than a colleague's.
 | Menu entry | What it is | Who sees it |
 | --- | --- | --- |
 | **Home** | Search for donors. The page you will use most. [Chapter 6](06-searching-for-donors.md) | Volunteer and above |
-| **Messages** | The one conversation every Badhan member shares. [Chapter 21](21-member-chat.md) | Volunteer and above |
-| **Bookmarked Donors** | Your own shortlist of donors. [Chapter 10](10-bookmarked-donors.md) | Volunteer and above |
-| **Feedback** | Messages and registrations sent from the public pages — and, in collapsed panels at the top of it, the printed poster and the registration QR generator. Neither has a menu entry of its own. [Chapter 20](20-donor-feedback.md) | Volunteer and above |
+| **Badhan Agent** | A chat with an AI assistant that looks things up and makes changes in Badhan for you, as you. [Chapter 22](22-badhan-agent.md) | Volunteer and above |
+| **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |
 | **Donor Creation** | Opens into three entries below | Volunteer and above |
 | → Single Donor Creation | Add one new donor by filling a form. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |
 | → Upload CSV of Donors | Add many donors at once from a file. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |
 | → Newly Created Donors | See who was added between two dates. [Chapter 11](11-adding-new-donors.md) | Hall Admin and above |
+| **Messages** | The one conversation every Badhan member shares. [Chapter 21](21-member-chat.md) | Volunteer and above |
+| **Feedback** | Messages and registrations sent from the public pages — and, in collapsed panels at the top of it, the printed poster and the registration QR generator. Neither has a menu entry of its own. [Chapter 20](20-donor-feedback.md) | Volunteer and above |
 | **Members** | Volunteers of your hall and the hall admins of every hall. [Chapter 12](12-members-and-promotions.md) | Volunteer and above |
+| **Bookmarked Donors** | Your own shortlist of donors. [Chapter 10](10-bookmarked-donors.md) | Volunteer and above |
 | **Public Contacts** | The emergency contact list. [Chapter 13](13-public-contacts.md) | Volunteer and above |
-| **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |
 | **Credits** | The people who built the app. Works without a connection | Volunteer and above |
 | **About** | What Badhan is, plus which version you are on | Volunteer and above |
 | **Super Admin** | Opens into ten entries below | Super Admin only |
@@ -63,7 +64,7 @@ may be shorter than a colleague's.
 | → Schema Inconsistencies | Records with something wrong in them. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Certificate Enabled Donors | Every donor whose certificate has been switched on, across all halls. [Chapter 16](16-super-admin-tools.md#certificate-enabled-donors) | Super Admin only |
 | → AI Integration | Lets an AI assistant work with Badhan on your behalf, from a setup file you upload to a conversation. [Chapter 16](16-super-admin-tools.md#ai-integration) | Super Admin only |
-| → Badhan Agent | A chat with an AI assistant that looks things up and makes changes in Badhan for you. [Chapter 16](16-super-admin-tools.md#badhan-agent) | Super Admin only |
+| → Agent Chats | Every member's Badhan Agent chats, including the ones they deleted, to read or delete for good, and the assistant's system prompt. [Chapter 16](16-super-admin-tools.md#agent-chats) | Super Admin only |
 | → Dev Console | A technical log for developers. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 
 ## The buttons at the bottom of the menu

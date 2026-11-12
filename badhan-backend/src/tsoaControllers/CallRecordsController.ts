@@ -14,7 +14,7 @@ import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 @Route('callrecords')
 @Tags('Call Records')
 export class CallRecordsController extends Controller {
-  /** Insert a call record */
+  /** Record a call to a donor */
   @Post()
   @SuccessResponse(201, 'Call record insertion successful')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {

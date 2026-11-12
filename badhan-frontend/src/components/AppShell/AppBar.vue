@@ -138,23 +138,19 @@ export default {
           designation: 1
         },
         {
-          // No badge here either, and for a sharper reason than Feedback's: the floating button
-          // IS the badge, it is on every signed-in screen already, and two counters that can
-          // disagree is worse than one that cannot.
-          icon: 'mdi-forum',
-          text: 'Messages',
-          to: '/chat',
-          id: 'chatNavigationId',
+          // For every member, not only super admins: the agent works as whoever is signed in, so a
+          // volunteer's agent can do what that volunteer can and nothing more.
+          icon: 'mdi-chat-processing',
+          text: 'Badhan Agent',
+          to: '/agent',
+          id: 'agentNavigationId',
           designation: 1
         },
         {
-          // No badge and no count. Nothing here tells a volunteer that work is waiting — the app
-          // bar makes no request on mount, and there is no count endpoint for it to call. Opening
-          // the page has to be a habit, which is what the manual says.
-          icon: 'mdi-message-alert',
-          text: 'Feedback',
-          to: '/feedback',
-          id: 'feedbackNavigationId',
+          icon: 'mdi-account',
+          text: 'My Profile',
+          to: '/myProfile',
+          id: 'myProfileNavigationId',
           designation: 1
         },
         {
@@ -187,6 +183,26 @@ export default {
           ]
         },
         {
+          // No badge here either, and for a sharper reason than Feedback's: the floating button
+          // IS the badge, it is on every signed-in screen already, and two counters that can
+          // disagree is worse than one that cannot.
+          icon: 'mdi-forum',
+          text: 'Messages',
+          to: '/chat',
+          id: 'chatNavigationId',
+          designation: 1
+        },
+        {
+          // No badge and no count. Nothing here tells a volunteer that work is waiting — the app
+          // bar makes no request on mount, and there is no count endpoint for it to call. Opening
+          // the page has to be a habit, which is what the manual says.
+          icon: 'mdi-message-alert',
+          text: 'Feedback',
+          to: '/feedback',
+          id: 'feedbackNavigationId',
+          designation: 1
+        },
+        {
           icon: 'mdi-account-group',
           text: 'Members',
           to: '/members',
@@ -205,13 +221,6 @@ export default {
           text: 'Public Contacts',
           to: '/contacts',
           id: 'publicContactsNavigationId',
-          designation: 1
-        },
-        {
-          icon: 'mdi-account',
-          text: 'My Profile',
-          to: '/myProfile',
-          id: 'myProfileNavigationId',
           designation: 1
         },
         {
@@ -300,10 +309,12 @@ export default {
               designation: 3
             },
             {
-              icon: 'mdi-chat-processing',
-              text: 'Badhan Agent',
-              to: '/agent',
-              id: 'agentNavigationId',
+              // Reading every member's agent chats, and deleting one for good. Badhan Agent itself
+              // is a top-level entry for every member.
+              icon: 'mdi-forum-outline',
+              text: 'Agent Chats',
+              to: '/agentChats',
+              id: 'agentChatsNavigationId',
               designation: 3
             },
             {

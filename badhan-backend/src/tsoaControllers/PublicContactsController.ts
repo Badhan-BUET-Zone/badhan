@@ -15,7 +15,7 @@ import { HTTP_STATUS } from '../constants'
 @Route('publicContacts')
 @Tags('Public Contacts')
 export class PublicContactsController extends Controller {
-  /** Insert a public contact */
+  /** Add a public contact */
   @Post()
   @SuccessResponse(201, 'Public contact added successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Internal server error', {

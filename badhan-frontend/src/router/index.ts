@@ -356,14 +356,28 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    // Super admin only, like AIIntegration above: an AI working the API with real records. It
-    // requiresAuth because every request it makes is sent with the member's own session token.
+    // Every member from Volunteer up. The agent acts as whoever is signed in: every request it
+    // makes carries the member's own session token, so it can do exactly what they can and no
+    // more. requiresAuth for the same reason.
     name: 'Agent',
     path: '/agent',
     component: () => import('../views/Agent.vue'),
     meta: {
       requiresAuth: true,
       title: 'Badhan Agent',
+      designation: 1,
+      reRouteIfAuthorized: false
+    }
+  },
+  {
+    // Super admin only: every member's Badhan Agent chats, including the ones members deleted,
+    // and the only permanent delete.
+    name: 'AgentChats',
+    path: '/agentChats',
+    component: () => import('../views/AgentChats.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Agent Chats',
       designation: 3,
       reRouteIfAuthorized: false
     }

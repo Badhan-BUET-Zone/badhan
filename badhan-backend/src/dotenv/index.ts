@@ -81,6 +81,13 @@ const dotenvEnvFile: DotenvEnvFile = {
   MONGODB_URI:         process.env.MONGODB_URI!,
 };
 
+/* ── optional keys ─────────────────────────────────────────────── */
+/* Deliberately NOT in dotenvEnvFile: everything there is checked below, and a
+ * missing one stops the server. The organisation's OpenAI key, which Badhan
+ * Agent's model calls are made with. Without it the server starts normally and
+ * the agent reports that it is not set up. Never log it or put it in a response. */
+export const OPENAI_API_KEY: string | undefined = process.env.OPENAI_API_KEY || undefined;
+
 /* ── helpers ───────────────────────────────────────────────────── */
 export const isEnvironmentProduction = (): boolean =>
   NODE_ENV === ENVIRONMENT_TYPES.PRODUCTION;

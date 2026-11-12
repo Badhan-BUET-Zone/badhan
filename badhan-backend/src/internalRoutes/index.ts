@@ -4,13 +4,15 @@ import '../db/mongoose' // ensure mongoose connection is initialized (cached if 
 import rateLimiter from '../middlewares/rateLimiter'
 import { param, query, validationResult } from 'express-validator'
 import { spawnSync } from 'child_process'
-import { Connection, createConnection } from 'mongoose'
+import { Connection, createConnection, Types } from 'mongoose'
 import path from 'path'
 import fs from 'fs'
 import dotenv from 'dotenv'
 import { clearDatabase } from '../db/test/clearDatabase'
 import { generateFakeData } from '../db/test/populate'
 import { MessageModel } from '../db/models/Message'
+import { AgentChatModel } from '../db/models/AgentChat'
+import { AgentMessageModel } from '../db/models/AgentMessage'
 
 // --- Load MongoDB URIs for backup/restore from per-environment dotenv files ------
 // Each environment's connection string lives in its own file (env.production /
@@ -351,6 +353,85 @@ const seedMessagesController = async (req: Request) => {
   })
 }
 
+/**
+ * Insert Badhan Agent chats and their messages directly, for the agent suites.
+ *
+ * Most of the states those suites test cannot be reached through the API without a model call,
+ * and the suites have no OpenAI key and must not spend money: a chat the member deleted, tool calls
+ * still pending, a step lock that is held or has gone stale, twenty model calls since the last user
+ * message. So the states are written here and every assertion still goes through the real routes.
+ *
+ * Body: { chats: [{ owner, title?, createdAt?, updatedAt?, userDeletedChat?, userDeletedAt?,
+ *                   promptTokens?, completionTokens?, stepStartedAt?,
+ *                   messages?: [{ role, content?, toolCalls?, openaiModel?, usage?, toolCallId?, run?,
+ *                                 createdAt? }] }] }
+ *
+ * `seq` and `messageCount` are NOT accepted. They are assigned here from the order of `messages`,
+ * so a seeded chat is always as consistent as one the server built itself. Anything else the
+ * schema would refuse is refused with a 400.
+ *
+ * Local only, for the reason given above seedMessagesController.
+ */
+const seedAgentChatsController = async (req: Request) => {
+  const chats = req.body?.chats
+  if (!Array.isArray(chats) || chats.length === 0) {
+    return new BadRequestError400('chats (non-empty array) is required', {})
+  }
+  for (const chat of chats) {
+    if (typeof chat?.owner !== 'string' || !Types.ObjectId.isValid(chat.owner)) {
+      return new BadRequestError400('every chat needs owner, a donor id', {})
+    }
+    if (chat.messages !== undefined && !Array.isArray(chat.messages)) {
+      return new BadRequestError400('messages, when given, must be an array', {})
+    }
+    if ('seq' in chat || 'messageCount' in chat || (chat.messages || []).some((m: any) => m && 'seq' in m)) {
+      return new BadRequestError400('seq and messageCount are assigned by the fixture, not passed in', {})
+    }
+  }
+
+  try {
+    const seeded = []
+    for (const { messages = [], ...fields } of chats) {
+      const chat = await AgentChatModel.create({ title: 'Seeded chat', ...fields, messageCount: messages.length })
+      const inserted = messages.length === 0 ? [] : await AgentMessageModel.insertMany(
+        messages.map((message: any, seq: number) => ({ ...message, chatId: chat._id, seq }))
+      )
+      seeded.push({
+        _id: String(chat._id),
+        owner: String(chat.owner),
+        title: chat.title,
+        messages: inserted.map((m: any) => ({ _id: String(m._id), seq: m.seq, role: m.role, toolCallId: m.toolCallId }))
+      })
+    }
+    return new OKResponse200('Seeded agent chats', { chats: seeded })
+  } catch (e: any) {
+    // A schema refusal (a bad role, a timestamp before 2000) is the caller's mistake, not ours.
+    if (e?.name === 'ValidationError') {
+      return new BadRequestError400(e.message, {})
+    }
+    throw e
+  }
+}
+
+/**
+ * Read one agent chat exactly as stored, deleted or not, and how many messages it still has.
+ *
+ * The member routes cannot show a chat the member deleted — that is the point of them — so this is
+ * how a suite proves that a soft delete kept the chat and its messages. Answers `chat: null` rather
+ * than a 404, so a test can assert that something is gone without catching an error.
+ *
+ * Local only, for the reason given above seedMessagesController.
+ */
+const inspectAgentChatController = async (req: Request) => {
+  const chatId = req.params.chatId
+  if (!Types.ObjectId.isValid(chatId)) {
+    return new BadRequestError400('chatId must be a valid id', {})
+  }
+  const chat = await AgentChatModel.findById(chatId).lean()
+  const storedMessageCount = await AgentMessageModel.countDocuments({ chatId })
+  return new OKResponse200('Agent chat as stored', { chat, storedMessageCount })
+}
+
 const purgeController = async () => {
   console.log('[purge] purging local database...')
   try {
@@ -485,6 +566,15 @@ router.post('/purge-local-db',
 router.post('/seed/messages',
   commonQueue,
   handle(async (req: Request) => seedMessagesController(req)))
+
+// Test fixtures for the Badhan Agent suites. See seedAgentChatsController.
+router.post('/seed/agentChats',
+  commonQueue,
+  handle(async (req: Request) => seedAgentChatsController(req)))
+
+router.get('/inspect/agentChats/:chatId',
+  commonQueue,
+  handle(async (req: Request) => inspectAgentChatController(req)))
 
 router.post('/populate-local-db',
   commonQueue,

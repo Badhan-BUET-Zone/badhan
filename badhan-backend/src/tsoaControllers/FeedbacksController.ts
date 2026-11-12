@@ -61,6 +61,8 @@ export interface IPostRegistrationTokenResponse {
 @Tags('Feedbacks')
 export class FeedbacksController extends Controller {
   /**
+   * Find a donor from their phone number and student ID
+   *
    * Look a donor up from the two things they know about themselves.
    *
    * Unauthenticated on purpose: a donor arriving from a printed QR code sends no `x-auth`
@@ -135,6 +137,8 @@ export class FeedbacksController extends Controller {
   }
 
   /**
+   * Create a QR code for new donor registration
+   *
    * Mint the credential behind a registration QR code.
    *
    * AUTHENTICATED, unconditionally — the one route in this feature that is. A registration code
@@ -199,6 +203,8 @@ export class FeedbacksController extends Controller {
   }
 
   /**
+   * Submit donor feedback or a new donor registration
+   *
    * File a submission. The one write the public side can perform.
    *
    * NOTE: this verb is anonymous while GET and DELETE on the same path require a
@@ -320,6 +326,8 @@ export class FeedbacksController extends Controller {
   }
 
   /**
+   * List donor feedback and registrations waiting for review
+   *
    * The queue, oldest first, filtered to what this member is allowed to see.
    *
    * There is no new permission concept: you see the feedback of the donors you can
@@ -353,8 +361,10 @@ export class FeedbacksController extends Controller {
   }
 
   /**
-   * Discard one row. It deletes the row and does nothing else — no donor is touched, no
-   * donation is recorded, nothing is archived.
+   * Discard one donor feedback or registration
+   *
+   * It deletes the row and does nothing else — no donor is touched, no donation is recorded,
+   * nothing is archived.
    */
   @Delete()
   @SuccessResponse(200, 'Feedback discarded successfully')

@@ -20,6 +20,22 @@ export const checkTimeStamp = (field: string): DBValidator=>{
     }
 }
 
+// For a timestamp that is legitimately empty until something happens (a chat nobody has deleted
+// yet). Mongoose skips validators on undefined but NOT on null, so checkTimeStamp on a nullable
+// field would fail every document that is still in its empty state.
+type NullableDBValidator = {
+  validator: (value: number | null) => boolean;
+  msg: string;
+};
+export const checkNullableTimeStamp = (field: string): NullableDBValidator=>{
+    return {
+        validator: (value: number | null): boolean =>{
+          return value === null || (Number.isInteger(value) && year2000TimeStamp <= value)
+        },
+        msg: `DB: ${field} must be null or a timestamp of miliseconds after year 2000`
+    }
+}
+
 export const checkPublicContactBloodGroup = (field: string): DBValidator=>{
     return {
         validator: (value: number): boolean => {

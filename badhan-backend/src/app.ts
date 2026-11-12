@@ -29,6 +29,11 @@ app.use(logger('dev'))
 
 
 app.use(userAgentHandler)
+// Badhan Agent reports each API result it ran to PUT /agent/chats/{chatId}/toolCalls/{toolCallId},
+// and one result may carry up to 250 KB of response for display. That one path gets a 1 MB parser,
+// placed first so the global one below sees the body already parsed and leaves it alone. Every
+// other route keeps express's default 100 KB.
+app.use(/^\/agent\/chats\/[^/]+\/toolCalls\/[^/]+\/?$/, express.json({ limit: '1mb' }))
 app.use(express.json())
 app.use(handleJsonBodyParseFailures)
 

@@ -58,6 +58,8 @@ export interface IPostMessageResponse {
 @Tags('Messages')
 export class MessagesController extends Controller {
   /**
+   * Read messages in the member chat
+   *
    * One page of the member room, oldest-first.
    *
    * Three reads, one route, distinguished only by which cursor arrives:
@@ -150,7 +152,7 @@ export class MessagesController extends Controller {
   }
 
   /**
-   * Send one message to the room.
+   * Send a message to the member chat
    *
    * The body is `{ text }` and nothing else. `senderId` comes from the token and `date` from
    * the schema default; a body that states either is a 400 rather than a silently ignored
@@ -199,8 +201,10 @@ export class MessagesController extends Controller {
   }
 
   /**
-   * Remove one message. Its author, or a Super Admin. Nobody else — a Hall Admin has no say
-   * over a room that is not scoped by hall.
+   * Delete a message from the member chat
+   *
+   * Its author, or a Super Admin. Nobody else — a Hall Admin has no say over a room that is
+   * not scoped by hall.
    *
    * THE DELETE IS HARD AND LEAVES NO TOMBSTONE. Nobody who fetches afterwards sees any trace.
    * Someone who already had the bubble on screen keeps it until their next fetch, which given

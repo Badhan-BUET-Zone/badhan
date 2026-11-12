@@ -19,7 +19,10 @@ import { DESIGNATIONS_INDEX, HTTP_STATUS, halls, hasNoSpecificHall, isHallRestri
 @Route('donors')
 @Tags('Donors')
 export class DonorsController extends Controller {
-  /** Get own donor profile (alias for /users/me) */
+  /**
+   * Get your own profile
+   * The same as GET /users/me.
+   */
   @Get('me')
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; donor: any }>({
@@ -91,7 +94,7 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Insert a new donor */
+  /** Add a new donor */
   @Post()
   @SuccessResponse(201, 'New donor inserted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(409, 'Duplicate donor found', {
@@ -268,7 +271,7 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Get donor details by donorId */
+  /** Look up a donor's details */
   @Get()
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
@@ -792,7 +795,8 @@ export class DonorsController extends Controller {
   }
 
   /**
-   * Change a donor's designation to an explicit target level.
+   * Promote or demote a donor
+   * Changes a donor's designation to an explicit target level.
    * Hall admins may toggle donors between donor (0) and volunteer (1) within their own
    * hall; super admins may additionally promote a volunteer to hall admin (2) or super
    * admin (3) and demote a super admin back to volunteer. Only a volunteer can be
@@ -924,7 +928,10 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Get list of designated donors of own hall */
+  /**
+   * List the members of your hall
+   * The volunteers of your own hall, every hall admin and every super admin.
+   */
   @Get('designation')
   @SuccessResponse(200, 'All designated members fetched')
   @Example<{ status: string; statusCode: number; message: string; volunteerList: any[]; adminList: any[]; superAdminList: any[] }>({
@@ -976,7 +983,7 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Check if phone number already exists */
+  /** Check whether a phone number is already registered */
   @Get('checkDuplicate')
   @SuccessResponse(200, 'Duplicate check completed')
   @Example<{ status: string; statusCode: number; message: string; found: boolean; donor: any }>({
@@ -1035,7 +1042,7 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Check whether list of phone numbers exist in database */
+  /** Check which of several phone numbers are already registered */
   @Get('phone')
   @SuccessResponse(200, 'Existing donors fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; donors: any[] }>({
@@ -1069,7 +1076,11 @@ export class DonorsController extends Controller {
     }
   }
 
-  /** Get every donor, designated or not (Super Admin only) */
+  /**
+   * List all current or all archived donors (Super Admin only)
+   * archiveFlag=true lists the archived donors and archiveFlag=false the rest. Members are
+   * included either way.
+   */
   @Get('all')
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; data: any[] }>({

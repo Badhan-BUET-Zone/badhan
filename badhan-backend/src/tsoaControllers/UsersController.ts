@@ -154,7 +154,7 @@ export class UsersController extends Controller {
     }
   }
 
-  /** Get own profile information */
+  /** Get your own profile */
   @Get('me')
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; donor: any }>({
@@ -289,7 +289,7 @@ export class UsersController extends Controller {
     }
   }
 
-  /** Get list of recent logins for the authenticated user */
+  /** List the devices you are signed in on */
   @Get('logins')
   @SuccessResponse(200, 'Recent logins fetched successfully')
   @Response<{ status: string; statusCode: number; message: string }>(500, 'Failed to fetch logins', {
@@ -348,7 +348,11 @@ export class UsersController extends Controller {
     }
   }
 
-  /** Handle missing tokenId - validation error */
+  /**
+   * Sign out a device (the device's id is missing)
+   * Always answers 400: the id of the device to sign out was not given. To sign a device out,
+   * call DELETE /users/logins/{tokenId} with an id from GET /users/logins.
+   */
   @Delete('logins')
   @Response<{ status: string; statusCode: number; message: string }>(400, 'tokenId is required', {
     status: 'ERROR',
@@ -364,7 +368,7 @@ export class UsersController extends Controller {
     }
   }
 
-  /** Delete a specific login session by token ID */
+  /** Sign out one of your devices */
   @Delete('logins/{tokenId}')
   @SuccessResponse(200, 'Logged out from specified device')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Login information not found', {

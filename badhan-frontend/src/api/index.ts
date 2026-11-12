@@ -646,6 +646,133 @@ const handleDELETEMessage = async (messageId: string) => {
   }
 }
 
+/**
+ * Badhan Agent.
+ *
+ * The config, the chat list, opening a chat, renaming and deleting go through badhanAxios like
+ * every other page: their errors are app errors, and a toast is the right way to report them.
+ *
+ * The three STEP calls and the result report do not. A step that fails — OpenAI refused the key,
+ * the chat is busy in another tab, the 20-call limit — is drawn in the chat as a notice with Retry,
+ * and badhanAxios's interceptors would toast it app-wide on top of that. They go through plain
+ * fetch instead, never throw for an HTTP error, and hand back the status and the body for the page
+ * to read. A network failure does throw, as fetch does, and so does Stop (an aborted signal).
+ *
+ * The agent has no guest mirror, so none of this is ever sent to /guest.
+ */
+const handleGETAgentConfig = async () => {
+  try {
+    return await badhanAxios.get('/agent/config')
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleGETAgentChats = async () => {
+  try {
+    return await badhanAxios.get('/agent/chats')
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleGETAgentChat = async (chatId: string) => {
+  try {
+    return await badhanAxios.get(`/agent/chats/${encodeURIComponent(chatId)}`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handlePATCHAgentChat = async (chatId: string, payload: { title: string }) => {
+  try {
+    return await badhanAxios.patch(`/agent/chats/${encodeURIComponent(chatId)}`, payload)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleDELETEAgentChat = async (chatId: string) => {
+  try {
+    return await badhanAxios.delete(`/agent/chats/${encodeURIComponent(chatId)}`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+// The Agent Chats review page: super admins only. Every member's chats, the ones they deleted
+// included, and the one permanent delete.
+const handleGETAgentReviewMembers = async () => {
+  try {
+    return await badhanAxios.get('/agent/review/members')
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleGETAgentReviewMemberChats = async (donorId: string) => {
+  try {
+    return await badhanAxios.get(`/agent/review/members/${encodeURIComponent(donorId)}/chats`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleGETAgentReviewChat = async (chatId: string) => {
+  try {
+    return await badhanAxios.get(`/agent/review/chats/${encodeURIComponent(chatId)}`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+const handleDELETEAgentReviewChat = async (chatId: string) => {
+  try {
+    return await badhanAxios.delete(`/agent/review/chats/${encodeURIComponent(chatId)}`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
+export interface AgentStepResult {
+  status: number
+  // The parsed JSON body, or null when there was none.
+  data: any
+}
+
+const agentFetch = async (method: string, path: string, body: object, signal?: AbortSignal): Promise<AgentStepResult> => {
+  const response = await fetch(`${baseURL}${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'x-auth': store.getters.getToken },
+    body: JSON.stringify(body),
+    signal
+  })
+  let data = null
+  try {
+    data = await response.json()
+  } catch {
+    // An empty or non-JSON body: the status is all there is.
+  }
+  return { status: response.status, data }
+}
+
+const handlePOSTAgentChat = (payload: { content: string }, signal?: AbortSignal) =>
+  agentFetch('POST', '/agent/chats', payload, signal)
+
+const handlePOSTAgentMessage = (chatId: string, payload: { content: string }, signal?: AbortSignal) =>
+  agentFetch('POST', `/agent/chats/${encodeURIComponent(chatId)}/messages`, payload, signal)
+
+const handlePOSTAgentContinue = (chatId: string, signal?: AbortSignal) =>
+  agentFetch('POST', `/agent/chats/${encodeURIComponent(chatId)}/continue`, {}, signal)
+
+// Not abortable on purpose: once a request has run, its result is reported even if Stop is pressed
+// meanwhile, so the chat on the server says what really happened.
+const handlePUTAgentToolCall = (
+  chatId: string,
+  toolCallId: string,
+  payload: { status: string, httpStatus?: number | null, durationMs?: number | null, response?: string | null, note?: string | null }
+) => agentFetch('PUT', `/agent/chats/${encodeURIComponent(chatId)}/toolCalls/${encodeURIComponent(toolCallId)}`, payload)
+
 const handleGETPublicContacts = async () => {
   try {
     return await badhanAxios.get('/publicContacts')
@@ -807,6 +934,19 @@ export {
   handleGETMessages,
   handlePOSTMessage,
   handleDELETEMessage,
+  handleGETAgentConfig,
+  handleGETAgentChats,
+  handleGETAgentChat,
+  handlePATCHAgentChat,
+  handleDELETEAgentChat,
+  handlePOSTAgentChat,
+  handlePOSTAgentMessage,
+  handlePOSTAgentContinue,
+  handlePUTAgentToolCall,
+  handleGETAgentReviewMembers,
+  handleGETAgentReviewMemberChats,
+  handleGETAgentReviewChat,
+  handleDELETEAgentReviewChat,
   handleGETCertificate,
   handlePOSTPublicContacts,
   handleDELETEPublicContacts,

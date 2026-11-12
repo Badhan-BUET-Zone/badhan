@@ -11,7 +11,11 @@ import { HTTP_STATUS } from '../constants'
 @Route('volunteers')
 @Tags('Volunteers')
 export class VolunteersController extends Controller {
-  /** Get all designated donors (Super Admin only) */
+  /**
+   * List every donor who is not archived (Super Admin only)
+   * An older address for GET /donors/all with archiveFlag=false. Despite its path, it returns
+   * every non-archived donor, not only volunteers.
+   */
   @Get('all')
   @SuccessResponse(200, 'Fetched donor details successfully')
   @Example<{ status: string; statusCode: number; message: string; data: any[] }>({

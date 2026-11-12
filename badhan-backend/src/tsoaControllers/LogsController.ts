@@ -82,7 +82,7 @@ export class LogsController extends Controller {
     }
   }
 
-  /** Get log counts by date */
+  /** Count App Activity by day */
   @Get()
   @SuccessResponse(200, 'Logs fetched successfully')
   @Example<{ status: string; statusCode: number; message: string; logs?: any[] }>({
@@ -114,7 +114,7 @@ export class LogsController extends Controller {
     }
   }
 
-  /** Delete all logs */
+  /** Delete all App Activity records */
   @Delete()
   @SuccessResponse(200, 'All logs deleted successfully')
   @Example<{ status: string; statusCode: number; message: string }>({

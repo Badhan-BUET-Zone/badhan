@@ -14,7 +14,7 @@ import { DESIGNATIONS_INDEX, HTTP_STATUS, isHallRestricted } from '../constants'
 @Route('donations')
 @Tags('Donations')
 export class DonationsController extends Controller {
-  /** Insert a donation date for a donor */
+  /** Record a blood donation */
   @Post()
   @SuccessResponse(201, 'Donation inserted successfully')
   @Response<{ status: string; statusCode: number; message: string }>(404, 'Donor not found', {
@@ -236,8 +236,8 @@ export class DonationsController extends Controller {
   }
 
   /**
-   * List the donations behind a single cell of the donation report (Super Admin only).
-   * The cell is identified by the time window it covers plus its blood group and hall;
+   * List the donations behind one figure in the donation report (Super Admin only)
+   * That figure is one cell of the report, identified by the time window it covers plus its blood group and hall;
    * pass bloodGroup = -1 for the report's 'Total' column and hall = -1 for 'All Halls'.
    */
   @Get('report/donors')

@@ -32,6 +32,20 @@ async function authedPatch(path, body, signInResponse, schema) {
   return response;
 }
 
+async function authedPut(path, body, signInResponse, schema) {
+  const response = await badhanAxios.put(path, body, {
+    headers: { 'x-auth': signInResponse.data.token },
+  });
+  if (schema) validateSchema(response.data, schema);
+  return response;
+}
+
+async function guestPut(path, body, schema) {
+  const response = await badhanAxios.put(path, body);
+  if (schema) validateSchema(response.data, schema);
+  return response;
+}
+
 async function authedDelete(path, signInResponse, schema) {
   const response = await badhanAxios.delete(path, {
     headers: { 'x-auth': signInResponse.data.token },
@@ -155,12 +169,14 @@ module.exports = {
   authedGet,
   authedPost,
   authedPatch,
+  authedPut,
   authedDelete,
   guestGet,
   guestGetBinary,
   authedGetBinary,
   guestPost,
   guestPatch,
+  guestPut,
   guestDelete,
   expectAuthedError,
   expectGuestError,

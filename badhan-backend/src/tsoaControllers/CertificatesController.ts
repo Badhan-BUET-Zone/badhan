@@ -49,7 +49,8 @@ const alreadyAnswered = (): Readable => Readable.from([])
 @Tags('Certificates')
 export class CertificatesController extends Controller {
   /**
-   * Download a donor's certificate as a PDF. Requires no authentication.
+   * Download a donor's certificate as a PDF
+   * Requires no authentication.
    * @param notFound No donor has this id, or the id is not an id at all.
    * @param notEnabled The donor exists, but nobody has turned their certificate on.
    */

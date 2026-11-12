@@ -3,7 +3,7 @@
 > **Written for readers with no coding experience.** This manual assumes no programming or
 > technical knowledge of any kind — only that you use the Badhan app.
 
-[← Previous: Donor feedback and new donor registration](20-donor-feedback.md) · [Contents](README.md)
+[← Previous: Donor feedback and new donor registration](20-donor-feedback.md) · [Contents](README.md) · [Next: Badhan Agent →](22-badhan-agent.md)
 
 ---
 
@@ -174,4 +174,4 @@ behaving properly, not the button failing.
 
 ---
 
-[← Previous: Donor feedback and new donor registration](20-donor-feedback.md) · [Contents](README.md)
+[← Previous: Donor feedback and new donor registration](20-donor-feedback.md) · [Contents](README.md) · [Next: Badhan Agent →](22-badhan-agent.md)
