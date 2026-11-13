@@ -81,6 +81,8 @@
               :messages="chat.messages"
               :server="server"
               :thinking="chat.thinking"
+              :calling="calling"
+              @call="callDonor"
               @approve="resolveApproval($event, true)"
               @decline="resolveApproval($event, false)"
               @retry="retry(chat)"
@@ -163,6 +165,10 @@
 
   Notices — "Stopped.", errors, the limit — belong to this page only. The backend never stores them.
 
+  A Call button in an answer is not a step of the turn. It is the member's own action, like the
+  donor card's Direct call: the dialler opens, then POST /callrecords logs the call through
+  badhanAxios, as the card does, and the model is never told.
+
   The step calls and the requests the model asks for go through fetch, not badhanAxios: its
   interceptors toast every error, and a failed step belongs in the chat with Retry, while a 404 the
   model asked for is an answer to hand back, not an app error.
@@ -171,8 +177,10 @@ import PageTitle from '@/components/PageTitle'
 import AgentThread from '@/components/Agent/AgentThread'
 import { agentServer, when } from '@/components/Agent/format'
 import { environmentService } from '@/mixins/environment'
+import { directCall } from '@/mixins/helpers'
 import {
   isGuestEnabled,
+  handlePOSTCallRecord,
   handleGETAgentConfig,
   handleGETAgentChats,
   handleGETAgentChat,
@@ -307,7 +315,9 @@ export default {
       chats: [],
       chat: null,
       listOpen: false,
-      draft: ''
+      draft: '',
+      // Donor id → true while a Call button's call record is being written.
+      calling: {}
     }
   },
   computed: {
@@ -511,6 +521,22 @@ export default {
       const resolve = this.$_approvals.get(toolCallId)
       this.$_approvals.delete(toolCallId)
       if (resolve) resolve(approved)
+    },
+    // A Call button. The dialler opens first, while this is still the click: a browser may block
+    // a window opened after an await. Then the call is logged, exactly as the donor card logs it,
+    // so whoever looks the donor up next sees it. badhanAxios shows any refusal itself.
+    async callDonor ({ donorId, phone }) {
+      if (this.calling[donorId]) return
+      directCall(phone)
+      this.$set(this.calling, donorId, true)
+      try {
+        const response = await handlePOSTCallRecord({ donorId })
+        if (response && response.status === 201) {
+          await this.$store.dispatch('notification/notifySuccess', 'Added call record')
+        }
+      } finally {
+        this.$delete(this.calling, donorId)
+      }
     },
     stop (chat) {
       const controller = this.$_controllers.get(chat)

@@ -14,6 +14,8 @@ const DELETED_AT = new Date('2026-11-10T09:00:00Z').getTime();
 const RAHIM = { _id: 'd00000000000000000000001', name: 'Rahim Uddin', hall: 5, designation: 1 };
 const KARIM = { _id: 'd00000000000000000000002', name: 'Karim Hasan', hall: 4, designation: 2 };
 const GONE_ID = 'd00000000000000000000003';
+// A donor the transcript's search returned, whom the answer offers a Call button for.
+const SALMA = { _id: 'e00000000000000000000001', name: 'Salma Akter', phone: 8801700000000, bloodGroup: 4, hall: 5 };
 
 const memberRow = (member: typeof RAHIM | null, donorId: string, chatCount: number, deletedChatCount = 0) => ({
   donorId,
@@ -52,10 +54,11 @@ const transcriptOf = (chat: ReturnType<typeof reviewChat>, member: typeof RAHIM 
         run: {
           status: 'done', name: 'SearchDonors', label: 'Search for donors filtered by criteria', method: 'GET',
           path: '/search/v3?bloodGroup=4&hall=5', args: { bloodGroup: 4, hall: 5 }, body: null, isWrite: false,
-          httpStatus: 200, durationMs: 120, response: '{\n  "status": "OK"\n}', note: null,
+          httpStatus: 200, durationMs: 120, note: null,
+          response: JSON.stringify({ status: 'OK', filteredDonors: [SALMA] }, null, 2),
         },
       },
-      assistantMessage(3, 'There are 12 O+ donors in Suhrawardy.'),
+      assistantMessage(3, `There are 12 O+ donors in Suhrawardy, among them ${SALMA.name} [[call:${SALMA._id}]]`),
     ],
   });
 
@@ -128,11 +131,13 @@ describe('Agent Chats', () => {
       cy.get('[data-cy="agentChatsTranscript"]').within(() => {
         cy.contains('Rahim Uddin · created').should('be.visible');
         cy.get('[data-cy="agentUserMessage"]').should('contain', 'How many O+ donors are in Suhrawardy?');
-        cy.contains('There are 12 O+ donors in Suhrawardy.').should('be.visible');
+        cy.contains('There are 12 O+ donors in Suhrawardy').should('be.visible');
+        // A Call button is drawn where the member saw one, but reading a transcript dials nobody.
+        cy.get('[data-cy="agentCallButton"]').should('contain', 'Call Salma Akter').and('be.disabled');
         // What each answer cost, for the super admin reviewing it.
         cy.get('[data-cy="agentUsage"]').first().should('have.text', 'gpt-6-luna · 1.2k in · 30 out');
         cy.get('[data-cy="agentToolLabel"]').should('have.text', 'Search for donors filtered by criteria');
-        // Read-only: nothing to approve, nothing to retry, nothing to type into.
+        // Read-only: nothing to approve, nothing to retry, nothing to type into, nobody to call.
         cy.get('[data-cy="agentApproveButton"]').should('not.exist');
         cy.get('[data-cy="agentRetryButton"]').should('not.exist');
       });
@@ -225,7 +230,7 @@ describe('Agent Chats', () => {
     cy.get('[data-cy="agentChatsChat"]').last().click();
     cy.get('[data-cy="agentChatsChats"]').should('not.be.visible');
     cy.get('[data-cy="agentChatsTranscript"]').should('be.visible')
-      .and('contain', 'There are 12 O+ donors in Suhrawardy.');
+      .and('contain', 'There are 12 O+ donors in Suhrawardy');
 
     cy.get('[data-cy="agentChatsBackToChats"]').click();
     cy.get('[data-cy="agentChatsChats"]').should('be.visible');

@@ -300,6 +300,8 @@ On a phone you see one column at a time; tap a member, then a chat, and use the 
 left to go back.
 
 You can only read here. There is no box to type in: nobody can carry on another member's chat.
+The **Call** buttons the member saw in the answers ([chapter 22](22-badhan-agent.md)) are shown
+greyed out, so reading a chat never rings a donor.
 
 A member whose record has since been deleted from Badhan is listed as **Deleted member**.
 

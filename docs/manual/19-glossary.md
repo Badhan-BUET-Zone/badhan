@@ -57,7 +57,8 @@ separately.
 **Designation.** The app's word for your level: Donor, Volunteer, Hall Admin or Super Admin.
 This manual usually says **level**. [Chapter 4](04-roles-and-permissions.md)
 
-**Direct call.** The button that dials a donor and logs the call at the same time.
+**Direct call.** The button that dials a donor and logs the call at the same time. Badhan Agent's
+**Call** button does the same ([chapter 22](22-badhan-agent.md)).
 
 **Donation.** One occasion of giving blood, recorded as a date. Blood and platelet donations
 are counted separately. [Chapter 8](08-recording-donations.md)

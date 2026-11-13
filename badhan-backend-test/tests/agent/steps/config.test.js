@@ -68,6 +68,8 @@ test('GET/agent/config: a super admin gets the system prompt, with their own ses
   // The one line that changed when approval stopped being a setting.
   expect(prompt).toContain('The app asks the user to approve it, and they may decline.');
   expect(prompt).not.toContain('The app may ask the user to approve it.');
+  // The call marker, in the exact form the page turns into a Call button.
+  expect(prompt).toContain('write [[call:ID]] right after that donor\'s name');
   // The value codes, imported from the backend's own vocabulary.
   expect(prompt).toContain('## How values are encoded');
   // The session note.

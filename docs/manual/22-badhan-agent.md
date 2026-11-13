@@ -51,6 +51,29 @@ not what will be written. **Tap the card first** to see exactly what it will sen
 
 If you press **Decline**, nothing is sent, and the assistant is told you said no.
 
+## Calling a donor from the chat
+
+When the assistant finds donors you may want to ring — B+ donors for a request, say — it puts a
+small **Call** button with the donor's name, such as **Call Rahim Uddin**, right after that
+donor in its answer.
+
+**Tap it to call.** It works exactly like **Direct call** on a donor's card
+([chapter 9](09-call-records.md)): your phone's dialler opens with the number, and a call record
+is written in your name, so everyone else can see the donor was just called. You will see
+*"Added call record"* at the bottom of the screen. Tapping **Call** needs no **Approve**: you
+pressing it is the decision.
+
+The number always comes from Badhan's own records — from what the assistant looked up in that
+chat — never from something the assistant typed. Hold the mouse over the button on a computer to
+see the number first.
+
+Sometimes there is a **See profile** button instead. That means the number could not be found in
+what the assistant looked up in that chat. It opens the donor's profile, which has its own
+**Direct call**; if the donor does not exist or is not yours to see, the profile says so.
+
+The assistant gives the button rather than writing the phone number out. If you want the number
+itself, ask for it.
+
 ## One message allows at most 20 steps
 
 The assistant may need several steps to answer one message: look something up, look up something

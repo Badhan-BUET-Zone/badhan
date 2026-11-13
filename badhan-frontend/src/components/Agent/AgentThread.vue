@@ -9,8 +9,40 @@
 
       <div v-else-if="message.role === 'assistant'" :key="keyOf(message)" class="agent-msg" data-cy="agentAssistantMessage">
         <!-- Plain text through {{ }}, never v-html: an answer can quote donor records, which are
-             free text that anyone filling in a public form controls. -->
-        <div v-if="message.content" class="agent-answer">{{ message.content }}</div>
+             free text that anyone filling in a public form controls. A call marker in it becomes
+             a Call button (see calls.js): with the donor's number when a response in this chat
+             gave it, otherwise a link to the donor's profile, which has its own Direct call.
+             The tags sit on separate lines on purpose: the build drops the whitespace between
+             them, so none of it reaches the answer, which keeps its own line breaks. -->
+        <div v-if="message.content" class="agent-answer">
+          <template v-for="(part, index) in partsOf(message)">
+            <span v-if="part.type === 'text'" :key="index">{{ part.text }}</span>
+            <v-btn
+              v-else-if="part.donor"
+              :key="index"
+              x-small
+              rounded
+              depressed
+              color="secondary"
+              class="agent-call text-none"
+              :disabled="readOnly || !!calling[part.donorId]"
+              :title="`+${part.donor.phone}`"
+              data-cy="agentCallButton"
+              @click="$emit('call', { donorId: part.donorId, phone: part.donor.phone })"
+            ><v-icon x-small left>mdi-phone</v-icon>{{ part.donor.name ? `Call ${part.donor.name}` : 'Call' }}</v-btn>
+            <v-btn
+              v-else
+              :key="index"
+              x-small
+              rounded
+              outlined
+              class="agent-call text-none"
+              :disabled="readOnly"
+              :to="{ path: '/home/details', query: { id: part.donorId } }"
+              data-cy="agentProfileButton"
+            ><v-icon x-small left>mdi-account-details</v-icon>See profile</v-btn>
+          </template>
+        </div>
 
         <div
           v-for="call in message.toolCalls || []"
@@ -115,8 +147,11 @@
   - readOnly: no approval buttons and no Retry, for a transcript that is only read.
   - thinking: a step is running, so the "thinking" dots show at the end.
   - showUsage: under each answer, the model and its token counts. For the Agent Chats review page.
+  - calling: donor id → true while the page records a call to that donor, which disables its
+    Call buttons so one press makes one record.
 
-  Events: approve(toolCallId), decline(toolCallId), retry.
+  Events: approve(toolCallId), decline(toolCallId), retry, call({ donorId, phone }). A call is
+  emitted inside the click itself, so the page can open the dialler before anything waits.
 
   A message is one of:
     { _id, role: 'user', content }
@@ -128,6 +163,7 @@
   on a call it also shows awaiting-approval and running.
 */
 import { pretty, tokens } from './format'
+import { donorsIn, splitAnswer } from './calls'
 
 const TONE_COLORS = { ok: 'green', err: 'red', warn: 'orange darken-2' }
 
@@ -152,7 +188,8 @@ export default {
     server: { type: Object, default: null },
     readOnly: { type: Boolean, default: false },
     thinking: { type: Boolean, default: false },
-    showUsage: { type: Boolean, default: false }
+    showUsage: { type: Boolean, default: false },
+    calling: { type: Object, default: () => ({}) }
   },
   data () {
     return {
@@ -171,6 +208,10 @@ export default {
     visibleMessages () {
       return this.messages.filter((message) => message.role !== 'tool')
     },
+    // Donor id → { name, phone }, from the chat's own API responses, for the Call buttons.
+    donors () {
+      return donorsIn(this.messages)
+    },
     lastMessage () {
       return this.messages.length ? this.messages[this.messages.length - 1] : null
     },
@@ -184,6 +225,11 @@ export default {
 
     keyOf (message) {
       return message._id || message.id
+    },
+    // An answer as text pieces and call buttons, each button with its donor when one is known.
+    partsOf (message) {
+      return splitAnswer(message.content).map((part) =>
+        part.type === 'call' ? { ...part, donor: this.donors.get(part.donorId) || null } : part)
     },
     usageLabel (message) {
       const usage = message.usage
@@ -280,6 +326,7 @@ export default {
   word-break: break-word;
 }
 .agent-answer { white-space: pre-wrap; word-break: break-word; }
+.agent-call { margin: 0 2px; white-space: nowrap; vertical-align: baseline; }
 
 .agent-thinking { display: flex; gap: 4px; padding: 8px 0; }
 .agent-thinking span {

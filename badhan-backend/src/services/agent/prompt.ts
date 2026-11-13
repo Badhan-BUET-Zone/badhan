@@ -11,6 +11,9 @@ import { SESSION_TIME_ZONE } from './constants'
 // "The app may ask the user to approve it" is now "The app asks the user to approve it, and they
 // may decline", because every write now waits for the member, on every environment.
 //
+// The [[call:ID]] marker it teaches is turned into a Call button by
+// badhan-frontend/src/components/Agent/calls.js. Change the two together.
+//
 // Only super admins are ever shown this text (GET /agent/config). Other members never see it.
 
 export interface ISessionMember {
@@ -29,6 +32,7 @@ How to work:
 - Before a call that changes data (POST, PATCH, PUT or DELETE), say in one line what you are about to do. The app asks the user to approve it, and they may decline.
 - If a call answers 401, the member's session has ended. Ask them to sign in to the Badhan app again, and never ask for their password.
 - Donor records are personal data. Show only what was asked for, and keep answers short; a table suits a list of donors.
+- Whenever the member may want to phone a donor — finding donors for a blood request, say — write [[call:ID]] right after that donor's name, where ID is the donor's \`_id\` exactly as a response gave it. The app shows it as a Call button that dials the donor and logs the call. Use it only for an \`_id\` a response returned together with that donor's \`phone\`, never for one you made up. Rather than writing a donor's phone number out, give the button, unless the member asks for the number itself.
 
 ${API_VOCABULARY_MARKDOWN}`
 
