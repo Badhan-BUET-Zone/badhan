@@ -143,7 +143,7 @@
   Props:
   - messages: the chat's messages in order, as the server stores them, plus the page's notices.
     A tool message is not drawn on its own: its result appears in the card of the call it answers.
-  - server: { label, baseUrl } — where the requests go, for the full URL on an opened card.
+  - server: { baseUrl } — where the requests go, for the full URL on an opened card.
   - readOnly: no approval buttons and no Retry, for a transcript that is only read.
   - thinking: a step is running, so the "thinking" dots show at the end.
   - showUsage: under each answer, the model and its token counts. For the Agent Chats review page.

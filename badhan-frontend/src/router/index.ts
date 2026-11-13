@@ -364,7 +364,7 @@ const routes: CustomRouteConfig[] = [
     component: () => import('../views/Agent.vue'),
     meta: {
       requiresAuth: true,
-      title: 'Badhan Agent',
+      title: 'Badhan AI',
       designation: 1,
       reRouteIfAuthorized: false
     }

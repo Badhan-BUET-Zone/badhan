@@ -171,7 +171,7 @@ The first run seeds no data. To populate the database, see
 
 ## The Chat Agent
 
-Badhan Agent is a page of the frontend, **Badhan Agent** in the menu for every member from
+Badhan AI is a page of the frontend, **Badhan AI** in the menu for every member from
 Volunteer up, at http://localhost:8080/#/agent. It works the Badhan API through an OpenAI model:
 every API route is one of the model's tools, and each call it makes shows up in the chat as a card
 headed by the route's own description, with the request and the response one click away.

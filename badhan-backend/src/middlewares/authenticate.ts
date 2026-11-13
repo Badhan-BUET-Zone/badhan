@@ -103,7 +103,7 @@ const handleVolunteerCheck: (req: Request, res: Response, next: NextFunction) =>
   volunteerCheck('Only Badhan members can use the member chat')
 
 const handleAgentVolunteerCheck: (req: Request, res: Response, next: NextFunction) => Promise<Response|void> =
-  volunteerCheck('Only Badhan members can use Badhan Agent')
+  volunteerCheck('Only Badhan members can use Badhan AI')
 
 const handleHigherDesignationCheck = async (req: Request, res: Response, next:  NextFunction):Promise<Response|void> => {
   if (res.locals.middlewareResponse.donor.designation < res.locals.middlewareResponse.targetDonor.designation &&

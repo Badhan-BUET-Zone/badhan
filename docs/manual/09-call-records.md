@@ -28,7 +28,7 @@ does two things at once:
 
 You will see *"Added call record"* at the bottom of the screen.
 
-The **Call** button that Badhan Agent puts beside a donor in its answers does the same two things
+The **Call** button that Badhan AI puts beside a donor in its answers does the same two things
 ([chapter 22](22-badhan-agent.md)).
 
 If you ring the donor from your own contacts instead of through the app, no record is made and

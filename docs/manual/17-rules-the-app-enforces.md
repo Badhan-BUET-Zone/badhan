@@ -168,7 +168,7 @@ will know your new role. See [chapter 21](21-member-chat.md).
 
 ---
 
-## Rules about Badhan Agent
+## Rules about Badhan AI
 
 **The assistant can only do what you can.** It works as you, so every rule in this chapter applies
 to it exactly as it applies to you. A request it makes that you could not make is refused, and the
@@ -187,7 +187,7 @@ same chat is already running somewhere else. Let that finish, then press **Retry
 **"The agent is not set up on this server yet. Ask a super admin."** This copy of Badhan has not
 been connected to OpenAI. Nobody can send anything until it is.
 
-**The agent is for members only.** *"Only Badhan members can use Badhan Agent"* means your account
+**The agent is for members only.** *"Only Badhan members can use Badhan AI"* means your account
 is no longer at Volunteer level or above. The app will sign you out; sign in again and it will
 know your new role. See [chapter 22](22-badhan-agent.md).
 

@@ -38,7 +38,7 @@ is explained the first time it appears, and again in the [glossary](19-glossary.
 11. [Adding new donors](11-adding-new-donors.md) — one at a time, or many from a file
 20. [Donor feedback and new donor registration](20-donor-feedback.md) — the public pages, the Feedback queue, the QR codes
 21. [Member chat](21-member-chat.md) — the one conversation every member shares, and why it only updates when you ask
-22. [Badhan Agent](22-badhan-agent.md) — an AI assistant that looks things up and makes changes for you, as you
+22. [Badhan AI](22-badhan-agent.md) — an AI assistant that looks things up and makes changes for you, as you
 
 **For admins**
 

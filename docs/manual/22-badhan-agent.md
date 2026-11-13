@@ -1,4 +1,4 @@
-# 22. Badhan Agent
+# 22. Badhan AI
 
 > **Written for readers with no coding experience.** This manual assumes no programming or
 > technical knowledge of any kind — only that you use the Badhan app.
@@ -9,11 +9,11 @@
 
 ## What it is
 
-**Badhan Agent** is a chat with an **AI assistant** that works inside Badhan for you. You type
+**Badhan AI** is a chat with an **AI assistant** that works inside Badhan for you. You type
 what you want in plain English — *"find B+ donors in Suhrawardy hall who can donate now"* — and it
 looks the records up, or makes the change you asked for, and answers in the chat.
 
-It is in the menu as **Badhan Agent**, just under **Home**, for every member: volunteers,
+It is in the menu as **Badhan AI**, with a sparkle icon, just under **Home**, for every member: volunteers,
 hall admins and super admins. The assistant itself comes from **OpenAI**, the company behind
 ChatGPT. Badhan looks after the connection to it, so there is no key to enter and nothing to set
 up.

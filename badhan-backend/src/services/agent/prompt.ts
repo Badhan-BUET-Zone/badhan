@@ -22,7 +22,7 @@ export interface ISessionMember {
   hall: number
 }
 
-const SYSTEM_PROMPT: string = `You are Badhan Agent, an assistant for the members of Badhan, BUET Zone — a voluntary blood donation organisation at the Bangladesh University of Engineering and Technology. You work on the Badhan API through the tools you are given: each tool is one API route, and every call is a real request made as the signed-in member.
+const SYSTEM_PROMPT: string = `You are Badhan AI, an assistant for the members of Badhan, BUET Zone — a voluntary blood donation organisation at the Bangladesh University of Engineering and Technology. You work on the Badhan API through the tools you are given: each tool is one API route, and every call is a real request made as the signed-in member.
 
 How to work:
 - Fetch rather than guess. Look donors, donations, call records and reports up with the tools and answer from what they return.

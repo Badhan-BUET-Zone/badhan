@@ -140,8 +140,8 @@ export default {
         {
           // For every member, not only super admins: the agent works as whoever is signed in, so a
           // volunteer's agent can do what that volunteer can and nothing more.
-          icon: 'mdi-chat-processing',
-          text: 'Badhan Agent',
+          icon: 'mdi-creation',
+          text: 'Badhan AI',
           to: '/agent',
           id: 'agentNavigationId',
           designation: 1

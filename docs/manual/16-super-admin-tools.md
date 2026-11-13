@@ -265,9 +265,9 @@ it.
 
 ---
 
-## Badhan Agent
+## Badhan AI
 
-Badhan Agent — the chat with an AI assistant that works inside Badhan for you — is no longer a
+Badhan AI — the chat with an AI assistant that works inside Badhan for you — is no longer a
 super admin tool. Every member has it, at the top of the menu, and
 [chapter 22](22-badhan-agent.md) describes it. It works the same for you as for anyone: it acts
 with your own role, and every change waits for you to press **Approve**.
@@ -279,7 +279,7 @@ What is for super admins only — every member's chats, and the assistant's inst
 
 ## Agent Chats
 
-Every member's Badhan Agent chats, for you to read — including the ones they deleted. It is
+Every member's Badhan AI chats, for you to read — including the ones they deleted. It is
 **Agent Chats** under **Super Admin** in the menu.
 
 ### The three columns
@@ -342,7 +342,7 @@ a look.
 ### The system prompt
 
 The **System prompt** button above the columns shows the instructions the assistant reads before
-anything a member types. It is shown here and nowhere else: not on the Badhan Agent page, and not
+anything a member types. It is shown here and nowhere else: not on the Badhan AI page, and not
 to any member below super admin. It cannot be changed here, and it is the same for every chat and
 every member.
 

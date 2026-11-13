@@ -42,7 +42,7 @@ may be shorter than a colleague's.
 | Menu entry | What it is | Who sees it |
 | --- | --- | --- |
 | **Home** | Search for donors. The page you will use most. [Chapter 6](06-searching-for-donors.md) | Volunteer and above |
-| **Badhan Agent** | A chat with an AI assistant that looks things up and makes changes in Badhan for you, as you. [Chapter 22](22-badhan-agent.md) | Volunteer and above |
+| **Badhan AI** | A chat with an AI assistant that looks things up and makes changes in Badhan for you, as you. [Chapter 22](22-badhan-agent.md) | Volunteer and above |
 | **My Profile** | Your own record, your password, your devices. [Chapter 14](14-my-profile-and-devices.md) | Volunteer and above |
 | **Donor Creation** | Opens into three entries below | Volunteer and above |
 | → Single Donor Creation | Add one new donor by filling a form. [Chapter 11](11-adding-new-donors.md) | Volunteer and above |
@@ -64,7 +64,7 @@ may be shorter than a colleague's.
 | → Schema Inconsistencies | Records with something wrong in them. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Certificate Enabled Donors | Every donor whose certificate has been switched on, across all halls. [Chapter 16](16-super-admin-tools.md#certificate-enabled-donors) | Super Admin only |
 | → AI Integration | Lets an AI assistant work with Badhan on your behalf, from a setup file you upload to a conversation. [Chapter 16](16-super-admin-tools.md#ai-integration) | Super Admin only |
-| → Agent Chats | Every member's Badhan Agent chats, including the ones they deleted, to read or delete for good, and the assistant's system prompt. [Chapter 16](16-super-admin-tools.md#agent-chats) | Super Admin only |
+| → Agent Chats | Every member's Badhan AI chats, including the ones they deleted, to read or delete for good, and the assistant's system prompt. [Chapter 16](16-super-admin-tools.md#agent-chats) | Super Admin only |
 | → Dev Console | A technical log for developers. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 
 ## The buttons at the bottom of the menu

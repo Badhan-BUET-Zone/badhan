@@ -43,7 +43,7 @@ test('the refusal names Badhan Agent, not the member chat', async () => {
   const demoted = await createDemotedMemberHoldingToken(signInResponse);
 
   const response = await expectStatus(() => operations.authedGet('/agent/chats', asSignIn(demoted.token)), 403);
-  expect(response.data.message).toBe('Only Badhan members can use Badhan Agent');
+  expect(response.data.message).toBe('Only Badhan members can use Badhan AI');
 });
 
 test('membership is checked before the body: a demoted member with a bad title gets 403, not 400', async () => {

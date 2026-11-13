@@ -153,7 +153,7 @@ describe('Agent Chats', () => {
       cy.get('[data-cy="agentChatsSystemPromptButton"]').should('not.be.disabled').click();
       cy.get('[data-cy="agentChatsSystemPromptDialog"]').should('be.visible');
       cy.get('[data-cy="agentChatsSystemPrompt"]')
-        .should('contain', 'You are Badhan Agent')
+        .should('contain', 'You are Badhan AI')
         .and('contain', '## How values are encoded')
         .and('contain', '## Session');
     });

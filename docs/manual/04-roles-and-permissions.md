@@ -60,7 +60,7 @@ everything, including the reports, the backups and the appointment of hall admin
 | Read and write in the member chat | ❌ | ✅ | ✅ | ✅ |
 | Delete their **own** chat message | ❌ | ✅ | ✅ | ✅ |
 | Delete somebody else's chat message | ❌ | ❌ | ❌ | ✅ |
-| Use Badhan Agent (it can do only what you can) | ❌ | ✅ | ✅ | ✅ |
+| Use Badhan AI (it can do only what you can) | ❌ | ✅ | ✅ | ✅ |
 | Read every member's agent chats, and delete one for good (Agent Chats) | ❌ | ❌ | ❌ | ✅ |
 | See "Newly Created Donors" | ❌ | ❌ | ✅ | ✅ |
 | Promote a donor to volunteer | ❌ | ❌ | ✅ (own hall) | ✅ |

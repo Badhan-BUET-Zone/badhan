@@ -64,7 +64,7 @@ test('GET/agent/config: a super admin gets the system prompt, with their own ses
   const prompt = response.data.systemPrompt;
 
   expect(typeof prompt).toBe('string');
-  expect(prompt).toContain('You are Badhan Agent');
+  expect(prompt).toContain('You are Badhan AI');
   // The one line that changed when approval stopped being a setting.
   expect(prompt).toContain('The app asks the user to approve it, and they may decline.');
   expect(prompt).not.toContain('The app may ask the user to approve it.');

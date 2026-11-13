@@ -98,7 +98,7 @@
               auto-grow
               rows="1"
               hide-details
-              :placeholder="blocker || `Message the agent on ${server.label}…`"
+              :placeholder="blocker || 'Message the agent…'"
               data-cy="agentInput"
               @keydown="onKey"
             ></v-textarea>
@@ -322,9 +322,9 @@ export default {
       return agentServer()
     },
     blocker () {
-      if (this.config.status === 'guest') return 'Badhan Agent is not available in the demo.'
+      if (this.config.status === 'guest') return 'Badhan AI is not available in the demo.'
       if (this.config.status === 'loading') return 'Loading…'
-      if (this.config.status === 'error') return 'Badhan Agent could not be reached. Reload the page to try again.'
+      if (this.config.status === 'error') return 'Badhan AI could not be reached. Reload the page to try again.'
       if (!this.config.configured) return NOT_SET_UP
       if (this.chat && this.chat.loading) return 'Loading the chat…'
       return ''
