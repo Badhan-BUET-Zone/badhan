@@ -114,9 +114,6 @@ sign in to, and it adds nothing to the device list on your My Profile page.
 A few things are deliberately out of its reach: it cannot sign you in or out, change your
 password, or make a sign-in code. Do those yourself.
 
-On the real app, a red strip at the top of the chat reminds you that the records are real. On a
-test copy ([chapter 2](02-getting-the-app.md)) the strip is not there.
-
 ## When it is not set up
 
 *"The agent is not set up on this server yet. Ask a super admin."* means this copy of Badhan has

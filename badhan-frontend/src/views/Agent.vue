@@ -63,10 +63,6 @@
           ></v-text-field>
         </header>
 
-        <div v-if="server.live" class="agent-live body-2">
-          <strong>Production</strong> — real donor records. Every request is live, and every change asks you first.
-        </div>
-
         <div ref="scroller" class="agent-scroll" @scroll="onScroll">
           <div class="agent-thread">
 
@@ -842,12 +838,6 @@ export default {
 }
 .agent-title { flex: 1; min-width: 80px; }
 .agent-title ::v-deep input { font-weight: 600; }
-.agent-live {
-  padding: 6px 16px;
-  color: #c62828;
-  background: rgba(229, 57, 53, 0.1);
-  border-bottom: 1px solid rgba(229, 57, 53, 0.25);
-}
 
 .agent-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 .agent-thread { max-width: 860px; margin: 0 auto; padding: 16px 16px 24px; }

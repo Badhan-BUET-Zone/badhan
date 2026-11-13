@@ -23,12 +23,11 @@ export const day = (time) => new Date(time).toLocaleDateString([], { day: 'numer
 export const tokens = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n || 0))
 
 // The backend the rest of the app talks to, which is also where the model's requests go:
-// { label, baseUrl, live }. Production holds real donor records, and the pages say so.
+// { label, baseUrl }.
 export function agentServer () {
   const name = environmentService.getEnvironmentName() || 'unknown'
   return {
     label: name.charAt(0).toUpperCase() + name.slice(1),
-    baseUrl: (environmentService.getAPIBaseURL() || '').replace(/\/+$/, ''),
-    live: environmentService.isEnvironmentProduction()
+    baseUrl: (environmentService.getAPIBaseURL() || '').replace(/\/+$/, '')
   }
 }
