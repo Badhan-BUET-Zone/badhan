@@ -7,3 +7,8 @@ docs/anonymized/
 .deploy-auth/
 .claude/
 temp/
+
+# Local secrets that docker-compose.yml reads, such as Badhan Agent's OPENAI_API_KEY. The
+# template, .env.example, is committed. Anchored to the root: the two test projects commit
+# their own .env files, which hold no secrets.
+/.env

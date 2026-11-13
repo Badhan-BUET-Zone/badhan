@@ -192,9 +192,21 @@ The work is split between the two halves:
 
 The key is the backend's optional `OPENAI_API_KEY`, set in `env.development` and `env.production`
 from the secrets repo. Without it the backend starts normally and the page says the agent is not
-set up. `env.local` has none: to try the agent locally, add your own key to
-`badhan-backend/env.local` and restart the backend — and take it out again before running the
-backend tests, which refuse to run with a key set rather than spend money.
+set up. `env.local` has none, and must not: it is committed. To try the agent locally, copy
+[.env.example](.env.example) to `.env` at the repo root (git-ignored), put your key in it, and
+recreate the backend so Compose passes it in:
+
+```
+docker compose up -d --force-recreate backend
+```
+
+The backend tests refuse to run with a key set rather than spend money. Recreate the backend
+with the key blanked before running them — a shell variable wins over `.env` — and with the
+command above to bring it back:
+
+```
+OPENAI_API_KEY= docker compose up -d --force-recreate backend
+```
 
 # Run Backend and Frontend Tests
 

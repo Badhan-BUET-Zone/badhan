@@ -108,8 +108,9 @@ const deleteChatPermanently = (token, chatId, schema) =>
 
 /**
  * These suites have no OpenAI key and must never spend money: every step they send is expected to
- * stop at the key check. If the backend they run against has a key (someone put one in env.local
- * to try the agent), a step would make a real, billed model call — so refuse to go on, and say why.
+ * stop at the key check. If the backend they run against has a key (someone put one in the root
+ * .env to try the agent), a step would make a real, billed model call — so refuse to go on, and
+ * say why.
  */
 async function assertAgentNotConfigured() {
   const signInResponse = await operations.signInSuperAdmin();
@@ -117,7 +118,7 @@ async function assertAgentNotConfigured() {
   if (response.data.configured !== false) {
     throw new Error(
       'The backend under test has OPENAI_API_KEY set, so these step tests would make real, billed ' +
-        'model calls. Remove the key from badhan-backend/env.local and restart the backend.'
+        'model calls. Recreate the backend without it: OPENAI_API_KEY= docker compose up -d --force-recreate backend'
     );
   }
 }

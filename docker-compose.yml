@@ -26,6 +26,13 @@ services:
       target: app
     ports:
       - "3000:3000"
+    # Badhan Agent's OpenAI key, for trying the agent locally. Compose fills it in from the
+    # git-ignored .env beside this file (see .env.example), or from the shell, which wins over
+    # .env. Unset or blank, the backend runs without the agent, as the backend tests require:
+    #   OPENAI_API_KEY= docker compose up -d --force-recreate backend
+    # Never put it in badhan-backend/env.local, which is committed.
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
       - ./badhan-backend:/app
       - /app/node_modules
