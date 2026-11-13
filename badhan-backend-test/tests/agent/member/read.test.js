@@ -7,6 +7,8 @@ const {
   getChat,
   seedChat,
   sampleMessages,
+  recordedParts,
+  recordedMessages,
   expectStatus,
   UNKNOWN_CHAT_ID,
 } = require('../helpers');
@@ -49,6 +51,19 @@ test('GET/agent/chats/{chatId}: a chat with no messages yet is an empty list, no
 
   const response = await getChat(me.token, seeded._id, getChatSchema);
   expect(response.data.messages).toEqual([]);
+});
+
+test('GET/agent/chats/{chatId}: failed model calls and the call records are not part of the transcript', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+  const me = await createVolunteer(signInResponse);
+  const seeded = await seedChat({ owner: me.donorId, requestParts: recordedParts(), messages: recordedMessages() });
+
+  // getChatSchema allows no extra key, so the chat's requestParts and each message's modelCall
+  // failing to appear is checked by the schema itself.
+  const response = await getChat(me.token, seeded._id, getChatSchema);
+
+  expect(response.data.messages.map((m) => m.role)).toEqual(['user', 'assistant', 'tool', 'assistant']);
+  expect(response.data.messages.map((m) => m.seq)).toEqual([0, 2, 3, 4]);
 });
 
 describe('the 404 rule', () => {

@@ -362,9 +362,11 @@ const seedMessagesController = async (req: Request) => {
  * message. So the states are written here and every assertion still goes through the real routes.
  *
  * Body: { chats: [{ owner, title?, createdAt?, updatedAt?, userDeletedChat?, userDeletedAt?,
- *                   promptTokens?, completionTokens?, stepStartedAt?,
+ *                   promptTokens?, completionTokens?, stepStartedAt?, requestParts?,
  *                   messages?: [{ role, content?, toolCalls?, openaiModel?, usage?, toolCallId?, run?,
- *                                 createdAt? }] }] }
+ *                                 modelCall?, createdAt? }] }] }
+ *
+ * `role` may be 'error', with a modelCall, for a model call that failed.
  *
  * `seq` and `messageCount` are NOT accepted. They are assigned here from the order of `messages`,
  * so a seeded chat is always as consistent as one the server built itself. Anything else the

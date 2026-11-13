@@ -1,9 +1,12 @@
 import { Schema, model, Model, Document, Types } from 'mongoose'
 import { checkNumber, checkTimeStamp } from './validators'
 
-export const AGENT_MESSAGE_ROLES: string[] = ['user', 'assistant', 'tool']
+// `error` is a model call that failed. It is a record for the download on the review page, not
+// part of the conversation: the model is never sent it, it does not count towards the per-message
+// limit, and neither the member's routes nor the review transcript return it.
+export const AGENT_MESSAGE_ROLES: string[] = ['user', 'assistant', 'tool', 'error']
 
-export type AgentMessageRole = 'user' | 'assistant' | 'tool'
+export type AgentMessageRole = 'user' | 'assistant' | 'tool' | 'error'
 
 export interface IAgentMessage extends Document {
   chatId: Types.ObjectId
@@ -17,6 +20,8 @@ export interface IAgentMessage extends Document {
   // tool messages only
   toolCallId?: string
   run?: any
+  // assistant and error messages only
+  modelCall?: any
   createdAt: number
 }
 
@@ -24,10 +29,11 @@ export interface IAgentMessage extends Document {
  * One message of a Badhan Agent chat, in its own document rather than inside the chat: one tool
  * response can be 250 KB, and a chat holding fifty of them would pass MongoDB's 16 MB limit.
  *
- * WHY THE STRUCTURED FIELDS ARE MIXED. `toolCalls`, `usage` and `run` are written only by the agent
- * service, which owns their shape: `toolCalls` exactly as OpenAI returned them; `run` keeping the
- * browser's shape (status, name, method, path with query, args, body, isWrite, HTTP status,
- * duration, the response for display, a note, and the card's `label`). Declaring them as nested
+ * WHY THE STRUCTURED FIELDS ARE MIXED. `toolCalls`, `usage`, `run` and `modelCall` are written only
+ * by the agent service, which owns their shape: `toolCalls` exactly as OpenAI returned them; `run`
+ * keeping the browser's shape (status, name, method, path with query, args, body, isWrite, HTTP
+ * status, duration, the response for display, a note, and the card's `label`); `modelCall` as
+ * services/agent/callRecord.ts describes it. Declaring them as nested
  * paths or subdocuments would make the Schema Inconsistencies report flag every tool message: it
  * compares a document's top-level keys with the schema's paths, so a nested `run` reads as an
  * extra field and a subdocument as a type mismatch. Mixed is what that report skips. The cost is
@@ -84,6 +90,12 @@ const agentMessageSchema: Schema = new Schema<IAgentMessage>({
     type: String
   },
   run: {
+    type: Schema.Types.Mixed
+  },
+  // The model call that wrote this message (assistant) or failed (error): references into the
+  // chat's `requestParts` for what every call repeats, and only what is this call's own. Absent on
+  // messages saved before calls were recorded.
+  modelCall: {
     type: Schema.Types.Mixed
   },
   createdAt: {

@@ -163,10 +163,63 @@ const reviewTranscriptSchema = envelope(['chat', 'member', 'messages'], {
   messages: { type: 'array', items: messageItemSchema },
 });
 
+// The download. The opposite of everything above: it exists to carry every stored field, the step
+// lock and each message's chatId included, so these schemas say what must be there and allow more.
+// Whatever a document holds beyond the schema is in the file too.
+const storedChatSchema = {
+  type: 'object',
+  required: [...reviewChatSchema.required, 'stepStartedAt'],
+  properties: { ...reviewChatSchema.properties, stepStartedAt: { type: ['number', 'null'] } },
+};
+
+const storedMessageSchema = {
+  type: 'object',
+  required: [...messageItemSchema.required, 'chatId'],
+  properties: {
+    ...messageItemSchema.properties,
+    role: { type: 'string', enum: ['user', 'assistant', 'tool', 'error'] },
+    chatId: { type: 'string' },
+    modelCall: { type: 'object' },
+  },
+};
+
+// A model call as the export rebuilds it. Exactly one of conversationLength and messages is set.
+const exportedModelCallSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'seq', 'outcome', 'requestId', 'durationMs', 'request', 'systemMessage', 'conversationLength',
+    'messages', 'response', 'error',
+  ],
+  properties: {
+    seq: { type: 'number' },
+    outcome: { enum: ['answered', 'failed'] },
+    requestId: { type: ['string', 'null'] },
+    durationMs: { type: ['number', 'null'] },
+    request: { type: ['object', 'null'] },
+    systemMessage: { type: ['object', 'null'] },
+    conversationLength: { type: ['number', 'null'] },
+    messages: { type: ['array', 'null'] },
+    response: { type: ['object', 'null'] },
+    error: { type: ['object', 'null'] },
+    missingParts: { type: 'array', items: { type: 'string' } },
+  },
+};
+
+const exportSchema = envelope(['exportedAt', 'chat', 'member', 'messages', 'conversation', 'modelCalls'], {
+  exportedAt: { type: 'number' },
+  chat: storedChatSchema,
+  member: reviewMemberSchema,
+  messages: { type: 'array', items: storedMessageSchema },
+  conversation: { type: 'array' },
+  modelCalls: { type: 'array', items: exportedModelCallSchema },
+});
+
 module.exports = {
   reviewMembersSchema,
   reviewMemberChatsSchema,
   reviewTranscriptSchema,
+  exportSchema,
   configSchema,
   stepRefusalSchema,
   notConfiguredSchema,

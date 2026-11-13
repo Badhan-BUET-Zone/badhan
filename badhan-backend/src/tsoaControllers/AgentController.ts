@@ -8,6 +8,7 @@ import { IDonor } from '../db/models/Donor'
 import authenticator from '../middlewares/authenticate'
 import agentValidator from '../validations/agent'
 import { DESIGNATIONS_INDEX, HTTP_STATUS } from '../constants'
+import { exportModelCalls, IExportedModelCall } from '../services/agent/callRecord'
 import { AGENT_MODEL } from '../services/agent/constants'
 import { systemPromptFor } from '../services/agent/prompt'
 import { isAgentConfigured, recordToolCallResult, runStep, StepOutcome, ToolCallOutcome } from '../services/agent/step'
@@ -556,6 +557,71 @@ export class AgentController extends Controller {
       chat: result.chat,
       member: result.member,
       messages: result.messages
+    }
+  }
+
+  // Every field of the chat and of each message, straight from the database: unlike the route
+  // above, nothing is projected or filtered away, so the step lock, the model call records and the
+  // `error` messages are in it too. `chat` and `messages` are typed `any` because they are whatever
+  // the documents hold. `conversation` and `modelCalls` are rebuilt from them, not stored
+  // (services/agent/callRecord.ts); the page expands them into one full request per call.
+  /**
+   * Download any member's Badhan Agent chat exactly as stored (Super Admin only)
+   * The chat and all its messages with every stored field, for debugging, whoever owns it and
+   * whether or not they deleted it, and each recorded model call rebuilt: what was sent to OpenAI
+   * and what came back. `member` is looked up from the donor record and is null when that record
+   * has been deleted. Downloading one is recorded in App Activity.
+   */
+  @Get('review/chats/{chatId}/export')
+  @SuccessResponse(200, 'Chat exported successfully')
+  @Response<IErrorBody>(404, 'Chat not found', {
+    status: 'ERROR',
+    statusCode: HTTP_STATUS.NOT_FOUND,
+    message: CHAT_NOT_FOUND
+  })
+  @Middlewares([
+    authenticator.handleAuthentication,
+    authenticator.handleAgentVolunteerCheck,
+    authenticator.handleSuperAdminCheck
+  ])
+  public async getReviewChatExport(
+    @Path() chatId: string,
+    @Request() req: any
+  ): Promise<IErrorBody & {
+    exportedAt?: number
+    chat?: any
+    member?: IAgentReviewMember | null
+    messages?: any[]
+    conversation?: any[]
+    modelCalls?: IExportedModelCall[]
+  }> {
+    const res: ExResponse = (req as any).res
+    const user: IDonor = res.locals.middlewareResponse.donor
+
+    if (!Types.ObjectId.isValid(chatId)) {
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return notFoundBody
+    }
+    const result: { chat: any, member: any, messages: any[] } | null = await agentChatInterface.findChatAsStored(chatId)
+    if (!result) {
+      this.setStatus(HTTP_STATUS.NOT_FOUND)
+      return notFoundBody
+    }
+
+    // The file leaves Badhan with the whole transcript in it, so it is recorded like opening one.
+    // Ids only, never the title or any message text.
+    await logInterface.addLog(user._id, 'EXPORT AGENT CHAT (REVIEW)', { chatId, ownerId: String(result.chat.owner) })
+
+    this.setStatus(HTTP_STATUS.OK)
+    return {
+      status: 'OK',
+      statusCode: HTTP_STATUS.OK,
+      message: 'Chat exported successfully',
+      exportedAt: Date.now(),
+      chat: result.chat,
+      member: result.member,
+      messages: result.messages,
+      ...exportModelCalls(result.chat, result.messages)
     }
   }
 

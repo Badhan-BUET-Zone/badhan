@@ -103,6 +103,9 @@ const reviewMemberChats = (token, donorId, schema) =>
 
 const reviewChat = (token, chatId, schema) => operations.authedGet(`/agent/review/chats/${chatId}`, asSignIn(token), schema);
 
+const exportChat = (token, chatId, schema) =>
+  operations.authedGet(`/agent/review/chats/${chatId}/export`, asSignIn(token), schema);
+
 const deleteChatPermanently = (token, chatId, schema) =>
   operations.authedDelete(`/agent/review/chats/${chatId}`, asSignIn(token), schema);
 
@@ -196,6 +199,104 @@ function sampleMessages() {
   ];
 }
 
+// A chat whose model calls were recorded (services/agent/callRecord.ts): the parts every call
+// shares, each stored once on the chat, and a turn in which the first call failed and the next two
+// answered. The keys have the shape the backend writes; here they only have to match each other.
+const PART_KEYS = {
+  systemPrompt: 'systemPrompt_0000000000000a01',
+  tools: 'tools_0000000000000a02',
+  settings: 'settings_0000000000000a03',
+};
+
+function recordedParts() {
+  return {
+    [PART_KEYS.systemPrompt]: 'You are Badhan AI. (the fixed part)',
+    [PART_KEYS.tools]: [
+      { type: 'function', function: { name: 'SearchDonors', description: 'Search', parameters: { type: 'object', properties: {} } } },
+    ],
+    [PART_KEYS.settings]: { model: 'gpt-6-luna', reasoning_effort: 'none' },
+  };
+}
+
+// Seeded at seq 0 to 4: user, error, assistant (asks for a tool), tool, assistant (answers). Each
+// stored response is what the backend keeps: OpenAI's answer minus what the message already holds.
+function recordedMessages() {
+  const toolCalls = [{ id: 'call_1', type: 'function', function: { name: 'SearchDonors', arguments: '{"bloodGroup":4,"hall":0}' } }];
+  return [
+    { role: 'user', content: 'How many O+ donors are in Ahsanullah hall?' },
+    {
+      role: 'error',
+      modelCall: {
+        parts: PART_KEYS,
+        sessionNote: '## Session\n- Call 1',
+        requestId: 'req_1',
+        durationMs: 30000,
+        error: { kind: 'quota', httpStatus: 429, body: '{"error":{"message":"Rate limit reached"}}' },
+      },
+    },
+    {
+      role: 'assistant',
+      content: '',
+      openaiModel: 'gpt-6-luna-2026-01-01',
+      usage: { prompt_tokens: 1200, completion_tokens: 40 },
+      toolCalls,
+      modelCall: {
+        parts: PART_KEYS,
+        sessionNote: '## Session\n- Call 2',
+        requestId: 'req_2',
+        durationMs: 1500,
+        response: {
+          id: 'chatcmpl-2',
+          object: 'chat.completion',
+          created: 1794597056,
+          choices: [{ index: 0, message: { role: 'assistant', content: null, refusal: null, annotations: [] }, logprobs: null, finish_reason: 'tool_calls' }],
+          system_fingerprint: 'fp_2',
+        },
+        responseOmits: ['model', 'usage', 'toolCalls'],
+      },
+    },
+    {
+      role: 'tool',
+      toolCallId: 'call_1',
+      content: '{"httpStatus":200,"body":{"status":"OK","filteredDonors":[]}}',
+      run: {
+        status: 'done',
+        name: 'SearchDonors',
+        label: 'Search for donors filtered by criteria',
+        method: 'GET',
+        path: '/search/v3?bloodGroup=4&hall=0',
+        args: { bloodGroup: 4, hall: 0 },
+        body: null,
+        isWrite: false,
+        httpStatus: 200,
+        durationMs: 140,
+        response: '{"status":"OK","filteredDonors":[]}',
+        note: null,
+      },
+    },
+    {
+      role: 'assistant',
+      content: 'There are no O+ donors in Ahsanullah hall.',
+      openaiModel: 'gpt-6-luna-2026-01-01',
+      usage: { prompt_tokens: 1300, completion_tokens: 12 },
+      modelCall: {
+        parts: PART_KEYS,
+        sessionNote: '## Session\n- Call 3',
+        requestId: 'req_3',
+        durationMs: 900,
+        response: {
+          id: 'chatcmpl-3',
+          object: 'chat.completion',
+          created: 1794597060,
+          choices: [{ index: 0, message: { role: 'assistant', refusal: null, annotations: [] }, logprobs: null, finish_reason: 'stop' }],
+          system_fingerprint: 'fp_2',
+        },
+        responseOmits: ['model', 'usage', 'content'],
+      },
+    },
+  ];
+}
+
 // badhanAxios rejects on any non-2xx, so an expected failure has to be caught.
 async function expectStatus(request, expectedStatus) {
   try {
@@ -231,11 +332,15 @@ module.exports = {
   reviewMembers,
   reviewMemberChats,
   reviewChat,
+  exportChat,
   deleteChatPermanently,
   seedChats,
   seedChat,
   inspectChat,
   sampleMessages,
+  PART_KEYS,
+  recordedParts,
+  recordedMessages,
   expectStatus,
   UNKNOWN_CHAT_ID,
 };

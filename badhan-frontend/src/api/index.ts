@@ -726,6 +726,15 @@ const handleGETAgentReviewChat = async (chatId: string) => {
   }
 }
 
+// Every stored field of the chat and its messages, for the download button.
+const handleGETAgentReviewChatExport = async (chatId: string) => {
+  try {
+    return await badhanAxios.get(`/agent/review/chats/${encodeURIComponent(chatId)}/export`)
+  } catch (e) {
+    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
+  }
+}
+
 const handleDELETEAgentReviewChat = async (chatId: string) => {
   try {
     return await badhanAxios.delete(`/agent/review/chats/${encodeURIComponent(chatId)}`)
@@ -946,6 +955,7 @@ export {
   handleGETAgentReviewMembers,
   handleGETAgentReviewMemberChats,
   handleGETAgentReviewChat,
+  handleGETAgentReviewChatExport,
   handleDELETEAgentReviewChat,
   handleGETCertificate,
   handlePOSTPublicContacts,

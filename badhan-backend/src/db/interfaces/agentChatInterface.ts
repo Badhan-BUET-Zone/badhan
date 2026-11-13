@@ -22,7 +22,12 @@ const OWN_CHAT_SUMMARY_PROJECTION: Record<string, 1> = {
   updatedAt: 1
 }
 
-// A message as the transcript shows it. `chatId` is left out because the caller already has it.
+// The messages that make up the conversation. A failed model call is kept as an `error` message
+// for the review page's download, and every transcript and the model's own history leave it out.
+const CONVERSATION_ROLES: Record<string, any> = { $ne: 'error' }
+
+// A message as the transcript shows it. `chatId` is left out because the caller already has it,
+// and `modelCall` because it is for the download only.
 const MESSAGE_PROJECTION: Record<string, 1> = {
   _id: 1,
   seq: 1,
@@ -65,7 +70,7 @@ export const findOwnChatWithMessages = async (
   if (!chat) {
     return { message: 'Chat not found', status: 'ERROR' }
   }
-  const messages: any[] = await AgentMessageModel.find({ chatId: chat._id }, MESSAGE_PROJECTION)
+  const messages: any[] = await AgentMessageModel.find({ chatId: chat._id, role: CONVERSATION_ROLES }, MESSAGE_PROJECTION)
     .sort({ seq: 1 }).lean()
   return { data: { chat, messages }, message: 'Chat fetched successfully', status: 'OK' }
 }
@@ -166,12 +171,13 @@ export const releaseStepLock = async (chatId: Types.ObjectId, lockValue: number)
   await AgentChatModel.updateOne({ _id: chatId, stepStartedAt: lockValue }, { $set: { stepStartedAt: null } })
 }
 
-// The newest message, or null for a chat with none.
+// The newest message of the conversation, or null for a chat with none.
 export const findLastMessage = async (chatId: Types.ObjectId): Promise<any> =>
-  AgentMessageModel.findOne({ chatId }, { role: 1, seq: 1 }).sort({ seq: -1 }).lean()
+  AgentMessageModel.findOne({ chatId, role: CONVERSATION_ROLES }, { role: 1, seq: 1 }).sort({ seq: -1 }).lean()
 
-// How many model calls the chat has made since the member last wrote. Each model call saves
-// exactly one assistant message, and a failed call saves none.
+// How many model calls the chat has made since the member last wrote. Each model call that
+// answered saves exactly one assistant message; a failed one saves an `error` message, which does
+// not count.
 export const countModelCallsSinceLastUserMessage = async (chatId: Types.ObjectId): Promise<number> => {
   const lastUser: any = await AgentMessageModel.findOne({ chatId, role: 'user' }, { seq: 1 }).sort({ seq: -1 }).lean()
   return AgentMessageModel.countDocuments({ chatId, role: 'assistant', seq: { $gt: lastUser ? lastUser.seq : -1 } })
@@ -191,7 +197,19 @@ export const cancelPendingToolMessages = async (chatId: Types.ObjectId, content:
 
 // The whole chat in order, as much of each message as the model's history needs.
 export const findHistory = async (chatId: Types.ObjectId): Promise<any[]> =>
-  AgentMessageModel.find({ chatId }, { role: 1, content: 1, toolCalls: 1, toolCallId: 1 }).sort({ seq: 1 }).lean()
+  AgentMessageModel.find({ chatId, role: CONVERSATION_ROLES }, { role: 1, content: 1, toolCalls: 1, toolCallId: 1 }).sort({ seq: 1 }).lean()
+
+/**
+ * Store what a model call sends besides the messages (services/agent/callRecord.ts), each part
+ * only if the chat does not hold it yet: the filter makes an unchanged part a no-op, so the 20 KB
+ * tools list is written once per version, not once per call.
+ */
+export const addRequestParts = async (chatId: Types.ObjectId, parts: Record<string, any>): Promise<void> => {
+  await Promise.all(Object.entries(parts).map(([key, value]: [string, any]): Promise<any> => AgentChatModel.updateOne(
+    { _id: chatId, [`requestParts.${key}`]: { $exists: false } },
+    { $set: { [`requestParts.${key}`]: value } }
+  )))
+}
 
 /**
  * Append messages to the end of the chat, in order, and return them as the transcript shows them.
@@ -275,7 +293,7 @@ const REVIEW_MEMBER_PROJECTION: Record<string, 1> = {
   designation: 1
 }
 
-// A chat as the review page shows it: everything but the step lock.
+// A chat as the review page shows it: everything but the step lock and the model calls' parts.
 const REVIEW_CHAT_PROJECTION: Record<string, 1> = {
   _id: 1,
   owner: 1,
@@ -350,7 +368,26 @@ export const findReviewChat = async (chatId: string): Promise<{ chat: any, membe
   if (!chat) return null
   const [member, messages]: [any, any[]] = await Promise.all([
     findMember(chat.owner),
-    AgentMessageModel.find({ chatId: chat._id }, MESSAGE_PROJECTION).sort({ seq: 1 }).lean()
+    AgentMessageModel.find({ chatId: chat._id, role: CONVERSATION_ROLES }, MESSAGE_PROJECTION).sort({ seq: 1 }).lean()
+  ])
+  return { chat, member, messages }
+}
+
+/**
+ * A chat and every one of its messages EXACTLY as stored, for the review page's download, which
+ * is for debugging. Deliberately NO projection and no role filter, unlike everything above: the
+ * step lock, the model calls' parts, each message's chatId and model call record, the failed calls
+ * kept as `error` messages, and any field a later schema adds (or an old document still carries)
+ * are all in it without anybody naming them. The owner's donor record is looked up as
+ * findReviewChat does and returned beside the chat, never merged into it. Null when there is no
+ * such chat.
+ */
+export const findChatAsStored = async (chatId: string): Promise<{ chat: any, member: any, messages: any[] } | null> => {
+  const chat: any = await AgentChatModel.findById(chatId).lean()
+  if (!chat) return null
+  const [member, messages]: [any, any[]] = await Promise.all([
+    findMember(chat.owner),
+    AgentMessageModel.find({ chatId: chat._id }).sort({ seq: 1 }).lean()
   ])
   return { chat, member, messages }
 }

@@ -7,8 +7,9 @@ import {
   clip, displayCopyOf, IHistoryMessage, modelCopyOf, NO_RESULT_RECORDED, NO_RESULT_RECORDED_CONTENT,
   titleFrom, toApiMessages, ToolRunStatus
 } from './conversation'
-import { createCompletion, ICompletion, OpenAiError } from './openai'
-import { ISessionMember, systemPromptFor } from './prompt'
+import { answeredCallRecord, failedCallRecord, requestPartsOf } from './callRecord'
+import { createCompletion, ICompletion, IRequestSettings, OpenAiError, requestSettings } from './openai'
+import { FIXED_SYSTEM_PROMPT, ISessionMember, joinSystemPrompt, sessionNote } from './prompt'
 import { buildRequest, findTool, getTools, IAgentRequest, IAgentTool, toOpenAiTool } from './tools'
 
 // One agent step: the backend's whole part in a turn.
@@ -160,18 +161,33 @@ export const runStep = async (
       saved.push(...await agentChatInterface.appendMessages(chatObjectId, [{ role: 'user', content, createdAt: now }]))
     }
 
-    // 7. One model call, on the chat as it now stands.
+    // 7. One model call, on the chat as it now stands. What the call sends besides the messages is
+    //    stored first, each part once per chat (callRecord.ts), so a call that fails can point at
+    //    it as well as one that answers.
     const history: IHistoryMessage[] = await agentChatInterface.findHistory(chatObjectId)
+    const note: string = sessionNote(member, new Date())
+    const tools: any[] = getTools().map(toOpenAiTool)
+    const settings: IRequestSettings = requestSettings()
+    const { keys, parts } = requestPartsOf({ systemPrompt: FIXED_SYSTEM_PROMPT, tools, settings })
+    await agentChatInterface.addRequestParts(chatObjectId, parts)
     let completion: ICompletion
     try {
       completion = await createCompletion({
         apiKey: OPENAI_API_KEY,
-        messages: toApiMessages(history, systemPromptFor(member)),
-        tools: getTools().map(toOpenAiTool)
+        settings,
+        messages: toApiMessages(history, joinSystemPrompt(FIXED_SYSTEM_PROMPT, note)),
+        tools
       })
     } catch (error: any) {
       if (!(error instanceof OpenAiError)) throw error
-      // No assistant message is saved, so a failed call does not count towards the limit.
+      // The failure is kept as an `error` message, for the review page's download. It is not part
+      // of the conversation: it is not returned to the browser, not sent to the model, and, like
+      // before, not counted towards the limit, which counts assistant messages.
+      // Recording it must not stand in the way of telling the member: a chat deleted from the
+      // review page meanwhile makes appendMessages throw, and the member still gets this answer.
+      await agentChatInterface.appendMessages(chatObjectId, [
+        { role: 'error', createdAt: Date.now(), modelCall: failedCallRecord(keys, note, error.failure) }
+      ]).catch((): void => undefined)
       if (saved.length) await agentChatInterface.touchChat(chatObjectId, Date.now())
       return { kind: 'modelFailed', message: error.message, chat: await agentChatInterface.findChatSummary(chatObjectId), messages: saved }
     }
@@ -184,7 +200,8 @@ export const runStep = async (
       openaiModel: completion.model,
       createdAt: answeredAt,
       ...(completion.usage ? { usage: completion.usage } : {}),
-      ...(completion.toolCalls.length ? { toolCalls: completion.toolCalls } : {})
+      ...(completion.toolCalls.length ? { toolCalls: completion.toolCalls } : {}),
+      modelCall: answeredCallRecord(keys, note, completion.trace, completion.raw)
     }
     const toolMessages: Record<string, any>[] = completion.toolCalls.map((call: any): Record<string, any> => toolMessageFor(call, answeredAt))
     saved.push(...await agentChatInterface.appendMessages(chatObjectId, [assistant, ...toolMessages]))

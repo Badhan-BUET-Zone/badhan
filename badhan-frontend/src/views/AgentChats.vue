@@ -100,6 +100,17 @@
                   {{ deletedTag(item) }}
                 </v-chip>
               </div>
+              <v-btn
+                icon
+                x-small
+                title="Download as stored"
+                :loading="exportingChatId === item._id"
+                :disabled="!!exportingChatId && exportingChatId !== item._id"
+                data-cy="agentChatsDownloadButton"
+                @click.stop="downloadChat(item)"
+              >
+                <v-icon small>mdi-download-outline</v-icon>
+              </v-btn>
               <v-btn icon x-small title="Delete permanently" data-cy="agentChatsDeleteButton" @click.stop="confirmDelete(item)">
                 <v-icon small>mdi-delete-outline</v-icon>
               </v-btn>
@@ -123,6 +134,17 @@
               <v-chip v-if="transcript.chat.userDeletedChat" x-small outlined color="orange darken-2" class="flex-shrink-0">
                 {{ deletedTag(transcript.chat) }}
               </v-chip>
+              <v-btn
+                icon
+                small
+                title="Download as stored"
+                :loading="exportingChatId === transcript.chat._id"
+                :disabled="!!exportingChatId && exportingChatId !== transcript.chat._id"
+                data-cy="agentChatsTranscriptDownloadButton"
+                @click="downloadChat(transcript.chat)"
+              >
+                <v-icon small>mdi-download-outline</v-icon>
+              </v-btn>
               <v-btn icon small title="Delete permanently" data-cy="agentChatsTranscriptDeleteButton" @click="confirmDelete(transcript.chat)">
                 <v-icon small>mdi-delete-outline</v-icon>
               </v-btn>
@@ -158,16 +180,23 @@
   buttons, no Retry, answers as plain text. Opening one is recorded in App Activity by the backend.
 
   The System prompt button is the only place the agent's system prompt is shown.
+
+  The download button saves one chat as a JSON file, for debugging: the chat and its messages
+  exactly as the database holds them (the export route projects nothing away), the owner's donor
+  record beside them, when and from which server it was taken, and every recorded model call with
+  the full request that was sent to OpenAI and the answer or error that came back.
 */
 import PageTitle from '@/components/PageTitle'
 import AgentThread from '@/components/Agent/AgentThread'
 import { agentServer, day, tokens, when } from '@/components/Agent/format'
 import { designations, halls } from '@/mixins/constants'
+import { textFileDownloadInWeb } from '@/mixins/helpers'
 import {
   handleGETAgentConfig,
   handleGETAgentReviewMembers,
   handleGETAgentReviewMemberChats,
   handleGETAgentReviewChat,
+  handleGETAgentReviewChatExport,
   handleDELETEAgentReviewChat
 } from '@/api'
 
@@ -191,7 +220,9 @@ export default {
       column: 'members',
       // From GET /agent/config, which sends it to super admins only.
       systemPrompt: '',
-      promptOpen: false
+      promptOpen: false,
+      // The chat whose download is being fetched; one at a time.
+      exportingChatId: null
     }
   },
   computed: {
@@ -276,6 +307,41 @@ export default {
       }
       this.transcript = response.data
       this.transcriptStatus = 'ready'
+    },
+    // A failed request has already been shown by the API layer's error toast.
+    async downloadChat (chat) {
+      if (this.exportingChatId) return
+      this.exportingChatId = chat._id
+      const response = await handleGETAgentReviewChatExport(chat._id)
+      this.exportingChatId = null
+      if (!response || response.status !== 200) return
+
+      const { exportedAt, member, chat: stored, messages, conversation, modelCalls } = response.data
+      const file = {
+        exportedAt: new Date(exportedAt).toISOString(),
+        server: this.server.baseUrl,
+        member,
+        chat: stored,
+        messages,
+        modelCalls: modelCalls.map((call) => this.expandModelCall(call, conversation))
+      }
+      textFileDownloadInWeb(JSON.stringify(file, null, 2) + '\n', `badhan-agent-chat-${chat._id}.json`, 'application/json;charset=utf-8')
+    },
+    // The backend sends each call's messages as a length into `conversation`, so its answer stays
+    // small however long the chat. The file spells every request out in full, as it was sent.
+    expandModelCall (call, conversation) {
+      const { systemMessage, conversationLength, messages, request, ...rest } = call
+      const sent = [systemMessage, ...(messages || conversation.slice(0, conversationLength))].filter(Boolean)
+      return {
+        seq: rest.seq,
+        outcome: rest.outcome,
+        requestId: rest.requestId,
+        durationMs: rest.durationMs,
+        request: { ...(request || {}), messages: sent },
+        response: rest.response,
+        error: rest.error,
+        ...(rest.missingParts ? { missingParts: rest.missingParts } : {})
+      }
     },
     confirmDelete (chat) {
       const member = this.memberName(this.transcript && this.transcript.chat._id === chat._id ? this.transcript.member : this.chatsMember)

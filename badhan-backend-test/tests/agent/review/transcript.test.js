@@ -1,11 +1,14 @@
 const operations = require('../../lib/operations');
-const { reviewTranscriptSchema, chatNotFoundSchema } = require('../schemas');
+const { reviewTranscriptSchema, reviewMemberChatsSchema, chatNotFoundSchema } = require('../schemas');
 const {
   createVolunteer,
   createSuperAdmin,
   reviewChat,
+  reviewMemberChats,
   seedChat,
   sampleMessages,
+  recordedParts,
+  recordedMessages,
   expectStatus,
   UNKNOWN_CHAT_ID,
 } = require('../helpers');
@@ -36,6 +39,19 @@ test('a chat the member deleted can still be read, with its deleted flag and dat
   expect(response.data.chat.userDeletedChat).toBe(true);
   expect(response.data.chat.userDeletedAt).toBe(deletedAt);
   expect(response.data.messages).toHaveLength(sampleMessages().length);
+});
+
+test('failed model calls and the call records are left out: they are in the download only', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+  const admin = await createSuperAdmin(signInResponse);
+  const member = await createVolunteer(signInResponse);
+  const seeded = await seedChat({ owner: member.donorId, requestParts: recordedParts(), messages: recordedMessages() });
+
+  // Both schemas allow no extra key: requestParts on the chat and modelCall on a message would fail them.
+  const transcript = await reviewChat(admin.token, seeded._id, reviewTranscriptSchema);
+  expect(transcript.data.messages.map((m) => m.role)).toEqual(['user', 'assistant', 'tool', 'assistant']);
+
+  await reviewMemberChats(admin.token, member.donorId, reviewMemberChatsSchema);
 });
 
 test('a chat whose owner\'s donor record is gone: member is null', async () => {

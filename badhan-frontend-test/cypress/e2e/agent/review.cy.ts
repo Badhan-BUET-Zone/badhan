@@ -87,6 +87,41 @@ const stubReview = (initial: { members: ReturnType<typeof memberRow>[]; chats: R
   }).as('permanentDelete');
 };
 
+// What the export route answers for KEPT: the stored documents, with the fields the transcript
+// route leaves out (the step lock, each message's chatId) and one no other route returns.
+const EXPORTED = {
+  exportedAt: NOW,
+  member: RAHIM,
+  chat: { ...KEPT, stepStartedAt: null },
+  messages: [
+    { _id: 'm0', chatId: KEPT._id, seq: 0, role: 'user', content: 'How many O+ donors are in Suhrawardy?', createdAt: NOW },
+    { _id: 'm1', chatId: KEPT._id, seq: 1, role: 'error', content: '', createdAt: NOW, modelCall: { error: { kind: 'quota' } } },
+    { _id: 'm2', chatId: KEPT._id, seq: 2, role: 'assistant', content: 'There are 12.', openaiModel: 'gpt-6-luna', usage: { prompt_tokens: 1200 }, createdAt: NOW, legacyField: 'kept' },
+  ],
+  // Rebuilt by the backend: each call's messages are a length into `conversation`, which the page
+  // expands, unless they are given whole in `messages`.
+  conversation: [
+    { role: 'user', content: 'How many O+ donors are in Suhrawardy?' },
+    { role: 'assistant', content: 'There are 12.' },
+  ],
+  modelCalls: [
+    {
+      seq: 1, outcome: 'failed', requestId: null, durationMs: 90000,
+      request: { model: 'gpt-6-luna', messages: null, tools: [{ type: 'function' }], reasoning_effort: 'none' },
+      systemMessage: { role: 'system', content: 'PROMPT 1' }, conversationLength: 1, messages: null,
+      response: null, error: { kind: 'quota', httpStatus: 429, body: null },
+    },
+    {
+      seq: 2, outcome: 'answered', requestId: 'req_2', durationMs: 900,
+      request: { model: 'gpt-6-luna', messages: null, tools: [{ type: 'function' }], reasoning_effort: 'none' },
+      systemMessage: { role: 'system', content: 'PROMPT 2' }, conversationLength: null,
+      messages: [{ role: 'user', content: 'given whole' }],
+      response: { id: 'chatcmpl-2' }, error: null, missingParts: ['tools_x'],
+    },
+  ],
+};
+const DOWNLOADED_FILE = `cypress/downloads/badhan-agent-chat-${KEPT._id}.json`;
+
 const twoMembers = () => ({
   members: [memberRow(RAHIM, RAHIM._id, 2, 1), memberRow(KARIM, KARIM._id, 1)],
   chats: { [RAHIM._id]: [HIDDEN, KEPT], [KARIM._id]: [KARIMS] },
@@ -203,6 +238,57 @@ describe('Agent Chats', () => {
       cy.get('[data-cy="agentChatsMember"]').should('have.length', 1).and('not.contain', 'Karim Hasan');
       cy.get('[data-cy="agentChatsChats"]').should('contain', 'Choose a member to see their chats.');
       cy.get('[data-cy="agentChatsTranscript"]').should('contain', 'Choose a chat to read it.');
+    });
+
+    it('the download buttons save the chat exactly as the export route returns it', () => {
+      stubReview(twoMembers());
+      cy.intercept('GET', `**/agent/review/chats/${KEPT._id}/export`, ok(200, EXPORTED)).as('export');
+      signInAsSuperAdmin();
+      cy.visit('/#/agentChats');
+
+      cy.get('[data-cy="agentChatsMember"]').first().click();
+      // From the chats column: the file is saved without opening the chat.
+      cy.get('[data-cy="agentChatsChat"]').last().find('[data-cy="agentChatsDownloadButton"]').click();
+      cy.wait('@export');
+      cy.get('[data-cy="agentChatsTranscript"]').should('contain', 'Choose a chat to read it.');
+      // A .json file is parsed by readFile.
+      cy.readFile(DOWNLOADED_FILE, { timeout: 15000 }).then((file) => {
+        expect(file.exportedAt).to.equal(new Date(NOW).toISOString());
+        expect(file.server, 'the API the chat was read from').to.be.a('string').and.not.be.empty;
+        expect(file.member).to.deep.equal(EXPORTED.member);
+        expect(file.chat).to.deep.equal(EXPORTED.chat);
+        expect(file.messages).to.deep.equal(EXPORTED.messages);
+        // Each call with its full request, as it was sent; the backend's compact form is gone.
+        expect(file).to.not.have.property('conversation');
+        expect(file.modelCalls).to.deep.equal([
+          {
+            seq: 1, outcome: 'failed', requestId: null, durationMs: 90000,
+            request: {
+              model: 'gpt-6-luna',
+              messages: [{ role: 'system', content: 'PROMPT 1' }, { role: 'user', content: 'How many O+ donors are in Suhrawardy?' }],
+              tools: [{ type: 'function' }],
+              reasoning_effort: 'none',
+            },
+            response: null, error: { kind: 'quota', httpStatus: 429, body: null },
+          },
+          {
+            seq: 2, outcome: 'answered', requestId: 'req_2', durationMs: 900,
+            request: {
+              model: 'gpt-6-luna',
+              messages: [{ role: 'system', content: 'PROMPT 2' }, { role: 'user', content: 'given whole' }],
+              tools: [{ type: 'function' }],
+              reasoning_effort: 'none',
+            },
+            response: { id: 'chatcmpl-2' }, error: null, missingParts: ['tools_x'],
+          },
+        ]);
+      });
+
+      // And from the open chat's header.
+      cy.get('[data-cy="agentChatsChat"]').last().click();
+      cy.wait('@transcript');
+      cy.get('[data-cy="agentChatsTranscriptDownloadButton"]').click();
+      cy.wait('@export');
     });
 
     it('with no chats anywhere, says so', () => {

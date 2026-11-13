@@ -177,6 +177,29 @@ describe('409: the checks that come before the key', () => {
     await expectStatus(continueChat(me.token, chat._id), 503);
   });
 
+  test('continue after a failed model call is allowed: it is how Retry works', async () => {
+    const signInResponse = await operations.signInSuperAdmin();
+    const me = await createVolunteer(signInResponse);
+    const failed = await seedChat({
+      owner: me.donorId,
+      messages: [
+        { role: 'user', content: 'Find O+ donors' },
+        { role: 'error', modelCall: { error: { kind: 'unreachable', httpStatus: null, body: null } } },
+      ],
+    });
+
+    await expectStatus(continueChat(me.token, failed._id), 503);
+  });
+
+  test('failed model calls do not count towards the limit', async () => {
+    const signInResponse = await operations.signInSuperAdmin();
+    const me = await createVolunteer(signInResponse);
+    const failures = Array.from({ length: 5 }, () => ({ role: 'error', modelCall: { error: { kind: 'quota', httpStatus: 429, body: null } } }));
+    const chat = await seedChat({ owner: me.donorId, messages: [...turnWithModelCalls(19), ...failures] });
+
+    await expectStatus(continueChat(me.token, chat._id), 503);
+  });
+
   test('a new message on that same 20-call chat answers 503, not 409: it starts the count again', async () => {
     const signInResponse = await operations.signInSuperAdmin();
     const me = await createVolunteer(signInResponse);

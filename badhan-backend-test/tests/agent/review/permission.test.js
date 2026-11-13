@@ -11,7 +11,7 @@ const {
   expectStatus,
 } = require('../helpers');
 
-// The four review routes read and delete every member's chats. Super admins only: a volunteer or a
+// The five review routes read, export and delete every member's chats. Super admins only: a volunteer or a
 // hall admin is refused on every one of them, and refused before anything is read or deleted.
 
 async function reviewRoutes(signInResponse) {
@@ -23,12 +23,13 @@ async function reviewRoutes(signInResponse) {
       (as) => operations.authedGet('/agent/review/members', as),
       (as) => operations.authedGet(`/agent/review/members/${owner.donorId}/chats`, as),
       (as) => operations.authedGet(`/agent/review/chats/${chat._id}`, as),
+      (as) => operations.authedGet(`/agent/review/chats/${chat._id}/export`, as),
       (as) => operations.authedDelete(`/agent/review/chats/${chat._id}`, as),
     ],
   };
 }
 
-test('volunteers and hall admins get 403 on all four, and the chat survives', async () => {
+test('volunteers and hall admins get 403 on all five, and the chat survives', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const { chat, calls } = await reviewRoutes(signInResponse);
   const volunteer = await createVolunteer(signInResponse);
@@ -46,7 +47,7 @@ test('volunteers and hall admins get 403 on all four, and the chat survives', as
   expect(stored.storedMessageCount).toBe(sampleMessages().length);
 });
 
-test('a demoted member is 403 and no token is 401, on all four', async () => {
+test('a demoted member is 403 and no token is 401, on all five', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const { chat, calls } = await reviewRoutes(signInResponse);
   const demoted = await createDemotedMemberHoldingToken(signInResponse);
@@ -59,10 +60,11 @@ test('a demoted member is 403 and no token is 401, on all four', async () => {
   await expectStatus(() => operations.guestGet('/agent/review/members'), 401);
   await expectStatus(() => operations.guestGet(`/agent/review/members/${demoted.donorId}/chats`), 401);
   await expectStatus(() => operations.guestGet(`/agent/review/chats/${chat._id}`), 401);
+  await expectStatus(() => operations.guestGet(`/agent/review/chats/${chat._id}/export`), 401);
   await expectStatus(() => operations.guestDelete(`/agent/review/chats/${chat._id}`), 401);
 });
 
-test('a super admin may use all four', async () => {
+test('a super admin may use all five', async () => {
   const signInResponse = await operations.signInSuperAdmin();
   const { calls } = await reviewRoutes(signInResponse);
   const admin = await createSuperAdmin(signInResponse);

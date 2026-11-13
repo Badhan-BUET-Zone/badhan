@@ -22,7 +22,8 @@ export interface ISessionMember {
   hall: number
 }
 
-const SYSTEM_PROMPT: string = `You are Badhan AI, an assistant for the members of Badhan, BUET Zone — a voluntary blood donation organisation at the Bangladesh University of Engineering and Technology. You work on the Badhan API through the tools you are given: each tool is one API route, and every call is a real request made as the signed-in member.
+// The fixed part. The call record stores it once per chat for as long as it does not change.
+export const FIXED_SYSTEM_PROMPT: string = `You are Badhan AI, an assistant for the members of Badhan, BUET Zone — a voluntary blood donation organisation at the Bangladesh University of Engineering and Technology. You work on the Badhan API through the tools you are given: each tool is one API route, and every call is a real request made as the signed-in member.
 
 How to work:
 - Fetch rather than guess. Look donors, donations, call records and reports up with the tools and answer from what they return.
@@ -58,5 +59,8 @@ export const sessionNote = (member: ISessionMember, now: Date): string => [
   `- Current time: ${dhakaTime(now)} — ${now.getTime()} in Unix milliseconds (time zone ${SESSION_TIME_ZONE})`
 ].join('\n')
 
+// The one place the two parts are joined, so the call record rebuilds the prompt exactly.
+export const joinSystemPrompt = (fixed: string, note: string): string => `${fixed}\n\n${note}`
+
 export const systemPromptFor = (member: ISessionMember, now: Date = new Date()): string =>
-  `${SYSTEM_PROMPT}\n\n${sessionNote(member, now)}`
+  joinSystemPrompt(FIXED_SYSTEM_PROMPT, sessionNote(member, now))

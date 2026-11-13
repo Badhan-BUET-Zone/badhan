@@ -313,6 +313,50 @@ until a super admin deletes it for good. Members are not told this; the delete i
 list looks like any other delete. A member stays in the first column for as long as they have any
 chat left here, deleted ones included.
 
+### Downloading a chat
+
+The **download icon**, beside a chat in the second column or at the top of an open chat, saves
+that chat to your device as a file named `badhan-agent-chat-` followed by the chat's id, ending in
+`.json`. It is meant for looking into what went wrong in a chat, not for reading. It holds
+**everything Badhan has stored for the chat**, exactly as stored — the title, the dates, whether
+the member deleted it, the token counts, and every message with all its details, including the
+exact requests the assistant made in Badhan and the full answers that came back. Alongside that it
+carries the member's name, hall and role (or nothing, if their record has since been deleted), the
+time you downloaded it, and which copy of Badhan it came from.
+
+It also lists **every time the assistant was asked something** — each call to OpenAI, the company
+whose model answers — with:
+
+- **what was sent**: the system prompt exactly as it was that time (with its note naming the
+  member and the time), the list of everything the assistant could do in Badhan, the model and its
+  settings, and the whole conversation up to that point;
+- **what came back**: OpenAI's full answer, including why it stopped (finished, or cut off at its
+  length limit), or, for a call that **failed**, what went wrong — out of quota, unreachable,
+  refused — and OpenAI's own error message;
+- OpenAI's reference for the call, which their support can look up, and how long it took.
+
+Failed calls are kept for this file only. The member never sees them in their chat, and neither do
+you when you read it here; the member only saw a message at the time, and **Retry**.
+
+Calls are listed only for chats used after Badhan started keeping them. An older chat's file has
+its messages, but no list of calls.
+
+How it is kept: Badhan stores the long parts every call repeats — the system prompt's fixed text,
+the list of everything the assistant can do, the settings — **once per chat**, and each call points
+at them; the conversation each call was sent is not stored again, but rebuilt for the file from
+the chat's messages. So nothing is kept twice in a chat, however many calls it makes. If the app
+was updated while a chat was going on, the file shows which calls had the old prompt or list and
+which had the new one.
+
+A few things are never kept, so they are not in the file: OpenAI's error text when it refuses the
+organisation's key (that text quotes part of the key), the pop-up messages a member sees in the
+moment (such as *"Stopped."* or *"This chat is busy in another tab or window"*), and anything past
+the first 250,000 characters of a single answer from Badhan.
+
+The file has every message of a member's conversation in it, and the answers can include donors'
+names and phone numbers. Keep it as carefully as you would the chat itself, and delete it when you
+are done.
+
 ### Deleting a chat for good
 
 The **bin icon**, beside a chat in the second column or at the top of an open chat, deletes it
@@ -320,14 +364,15 @@ The **bin icon**, beside a chat in the second column or at the top of an open ch
 good and cannot be undone."* After that the chat and everything in it are gone — from this page,
 from the member's own list if it was still there, and from Badhan. Only the record in App Activity
 that a chat was deleted, and by whom, remains — and any backup taken before the delete
-([Backup & Restore](#backup--restore)) still holds a copy, as it does of everything else.
+([Backup & Restore](#backup--restore)) still holds a copy, as it does of everything else, and so
+does any file someone downloaded with the download icon.
 
 If it was the member's last chat, the member leaves the first column too.
 
 ### Reading is recorded
 
 **Opening a chat here is recorded in App Activity** under your name, like opening the Activity
-Summary. So is every permanent delete. Listing members and chats is not.
+Summary. So is every download and every permanent delete. Listing members and chats is not.
 
 ### Token counts
 
@@ -351,7 +396,8 @@ that blood groups and halls are stored as numbers. At its end is a short note fi
 the assistant is asked something: which copy of Badhan the chat is on, who is signed in, and the
 current date and time in Bangladesh, so the assistant can work out things like "the last four
 months". In a member's chat that note names the member; the copy shown here names you, at the
-time you opened the page.
+time you opened the page. The exact prompt each call in a chat was given, note included, is in
+that chat's download ([Downloading a chat](#downloading-a-chat), above).
 
 ---
 
