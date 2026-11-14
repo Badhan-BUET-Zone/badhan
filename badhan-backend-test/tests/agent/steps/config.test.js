@@ -68,6 +68,8 @@ test('GET/agent/config: a super admin gets the system prompt, with their own ses
   // The one line that changed when approval stopped being a setting.
   expect(prompt).toContain('The app asks the user to approve it, and they may decline.');
   expect(prompt).not.toContain('The app may ask the user to approve it.');
+  // The scope rule that stops members using it as a general chatbot.
+  expect(prompt).toContain('- Help only with Badhan\'s work: donors, donations, blood requests, call records, reports and using the Badhan app. Decline anything else in one sentence, and say what you can help with instead.');
   // The call marker, in the exact form the page turns into a Call button.
   expect(prompt).toContain('write [[call:ID]] right after that donor\'s name');
   // The value codes, imported from the backend's own vocabulary.

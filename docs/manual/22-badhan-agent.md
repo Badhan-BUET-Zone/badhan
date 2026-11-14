@@ -18,6 +18,10 @@ hall admins and super admins. The assistant itself comes from **OpenAI**, the co
 ChatGPT. Badhan looks after the connection to it, so there is no key to enter and nothing to set
 up.
 
+It helps **only with Badhan's work**: donors, donations, blood requests, call records, reports
+and using the Badhan app. Ask it anything else — help with programming or homework, say — and it
+politely declines in one sentence and tells you what it can help with instead.
+
 ## Chatting
 
 Type in the box at the bottom and press **Enter** to send (**Shift+Enter** starts a new line).
