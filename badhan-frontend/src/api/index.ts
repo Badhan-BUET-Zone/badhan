@@ -242,30 +242,6 @@ const handleDELETESignOutAll = async () => {
     return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
   }
 }
-// The token this mints does not expire. It lives until its row is deleted from My Profile's
-// device list, or until the member signs out of every device — see the backend's
-// services/redirectionToken.ts. There is no lifetime to ask for, so there is no argument.
-const handlePOSTRedirection = async () => {
-  try {
-    return await badhanAxios.post('/users/redirection', {})
-  } catch (e) {
-    return (e as BadhanAxiosErrorInterface<BadhanAxiosResponseDataInterface>).response
-  }
-}
-// The API reference the AI setup file carries, as Markdown text. Plain axios, not badhanAxios: it is
-// served once at the API root, so the /guest suffix a guest session adds would miss it, and it needs
-// no auth header. The body is kept as text — axios would otherwise try to parse it as JSON.
-// undefined when the request never got an answer.
-const handleGETAPIReference = async (): Promise<AxiosResponse<string> | undefined> => {
-  try {
-    return await axios.get<string>(environmentService.getAPIBaseURL() + '/llms.txt', {
-      responseType: 'text',
-      transformResponse: (body: string): string => body
-    })
-  } catch (e) {
-    return (e as AxiosError<string>).response
-  }
-}
 const handleGETDonorsMe = async () => {
   try {
     return await badhanAxios.get('/users/me')
@@ -909,8 +885,6 @@ export {
   handleGETLogsDonations,
   handleDELETESignOut,
   handleDELETESignOutAll,
-  handlePOSTRedirection,
-  handleGETAPIReference,
   handleGETDonorsMe,
   handlePOSTSignIn,
   handlePOSTDonors,

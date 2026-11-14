@@ -2,16 +2,17 @@
   <img width="150" height="150" src="https://raw.githubusercontent.com/Badhan-BUET-Zone/badhan/production/docs/images/logo.png"/>
   <h1>Badhan, BUET Zone</h1>
 </div>
-<a name="ai-integration-update"/>
+<a name="badhan-ai-update"/>
 
-# Update of 3 September 2026: AI Integration
+# Update of 13 November 2026: Badhan AI
 
-Badhan now works with **Claude**, so a member can ask for what they need in plain English —
-*"find me someone from Titumir hall who can donate A+ blood"* — and Claude searches the donor
-records, reads call history and logs donations through the Badhan API, asking first before
-anything that changes a record. Super admins download a setup file from the **AI Integration**
-page and upload it to a Claude conversation; the walkthrough is in
-[the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/16-super-admin-tools.md#ai-integration).
+Every member can now ask for what they need in plain English, right inside the app —
+*"find B+ donors in Suhrawardy hall who can donate now"* — and **Badhan AI**, at the top of the
+menu, searches the donor records, reads call history and logs donations for them. It acts with the
+member's own role, so it can do only what they can, and nothing is added, changed or deleted until
+they press **Approve**. A **Call** button beside each donor it finds dials the number and records
+the call, and super admins can read every member's chats on **Agent Chats**. The walkthrough is in
+[the manual](https://github.com/Badhan-BUET-Zone/badhan/blob/production/docs/manual/22-badhan-agent.md).
 
 <hr>
 
@@ -64,7 +65,7 @@ https://github.com/user-attachments/assets/69410526-b020-46c2-b63f-a4a80bcef950
 
 # Table of Contents
 
-[Update of 3 September 2026: AI Integration](#ai-integration-update)
+[Update of 13 November 2026: Badhan AI](#badhan-ai-update)
 
 [Update of 16 August 2025: Backup and Restore](#backup-restore-update)
 

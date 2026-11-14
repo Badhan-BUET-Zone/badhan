@@ -342,20 +342,6 @@ const routes: CustomRouteConfig[] = [
     }
   },
   {
-    // Super admin only, and requiresAuth unlike its Backup & Restore and Schema Inconsistencies
-    // neighbours: the page's whole output is the signed-in session token, so there is nothing
-    // for it to show without one.
-    name: 'AIIntegration',
-    path: '/aiIntegration',
-    component: () => import('../views/AIIntegration.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Use Badhan with AI',
-      designation: 3,
-      reRouteIfAuthorized: false
-    }
-  },
-  {
     // Every member from Volunteer up. The agent acts as whoever is signed in: every request it
     // makes carries the member's own session token, so it can do exactly what they can and no
     // more. requiresAuth for the same reason.

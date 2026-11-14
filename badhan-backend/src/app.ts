@@ -45,14 +45,6 @@ app.get('/openapi.json', (_req: Request, res: Response): void => {
   res.sendFile(path.join(__dirname, 'tsoa', 'swagger.json'))
 })
 
-// The same spec as compact Markdown for AI assistants, rendered by scripts/openapi-to-llms.js on
-// every build. The AI Integration setup file points here: /openapi.json is too large for an
-// assistant to read whole. text/plain so a browser shows it rather than downloading it.
-app.get('/llms.txt', (_req: Request, res: Response): void => {
-  res.type('text/plain; charset=utf-8')
-  res.sendFile(path.join(__dirname, 'tsoa', 'llms.txt'))
-})
-
 // Serve TSOA Swagger UI
 app.use(
   '/docs',

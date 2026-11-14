@@ -3,7 +3,6 @@ import {
   handleDELETESignOut,
   handleDELETESignOutAll,
   handleGETDonorsMe,
-  handlePOSTRedirection,
   handlePOSTSignIn,
   resetBaseURL
 } from '@/api'
@@ -124,12 +123,6 @@ const actions = {
     ldb.token.clear()
     ldb.reset()
     resetBaseURL()
-  },
-  async requestRedirectionToken ({ commit }: {commit: Commit}) {
-    commit('setLoadingTrue')
-    const postRedirectionTokenResponse = await handlePOSTRedirection()
-    commit('setLoadingFalse')
-    return postRedirectionTokenResponse
   },
   async autoLogin ({ commit, state }: {commit: Commit, state: AuthStoreStateInterface} ) {
     if (state.token === null) return true

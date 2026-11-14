@@ -55,7 +55,7 @@ may be shorter than a colleague's.
 | **Public Contacts** | The emergency contact list. [Chapter 13](13-public-contacts.md) | Volunteer and above |
 | **Credits** | The people who built the app. Works without a connection | Volunteer and above |
 | **About** | What Badhan is, plus which version you are on | Volunteer and above |
-| **Super Admin** | Opens into ten entries below | Super Admin only |
+| **Super Admin** | Opens into nine entries below | Super Admin only |
 | → Donation Report | Running totals, charts, and a report between two dates. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
 | → All Donors | Every donor who is not archived. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
 | → Archived Donors | Every donor who has been archived. [Chapter 15](15-statistics-and-reports.md) | Super Admin only |
@@ -63,7 +63,6 @@ may be shorter than a colleague's.
 | → Backup & Restore | Copies of the whole record book. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Schema Inconsistencies | Records with something wrong in them. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 | → Certificate Enabled Donors | Every donor whose certificate has been switched on, across all halls. [Chapter 16](16-super-admin-tools.md#certificate-enabled-donors) | Super Admin only |
-| → AI Integration | Lets an AI assistant work with Badhan on your behalf, from a setup file you upload to a conversation. [Chapter 16](16-super-admin-tools.md#ai-integration) | Super Admin only |
 | → Agent Chats | Every member's Badhan AI chats, including the ones they deleted, to read or delete for good, and the assistant's system prompt. [Chapter 16](16-super-admin-tools.md#agent-chats) | Super Admin only |
 | → Dev Console | A technical log for developers. [Chapter 16](16-super-admin-tools.md) | Super Admin only |
 

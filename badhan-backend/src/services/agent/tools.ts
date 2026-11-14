@@ -32,14 +32,12 @@ const DROPPED_KEYWORDS: Set<string> = new Set([
 ])
 
 // Routes that act on the session the agent borrows rather than on records, left out so the model
-// cannot call them at all. A sign-out would end the member's own app session; a sign-in or a
-// password change would put a password through the chat, and so through OpenAI; and a redirection
-// token is a second, long-lived session nobody asked for.
+// cannot call them at all. A sign-out would end the member's own app session; and a sign-in or a
+// password change would put a password through the chat, and so through OpenAI.
 export const SESSION_ROUTES: Set<string> = new Set([
   'POST /users/signin',
   'DELETE /users/signout',
   'DELETE /users/signout/all',
-  'POST /users/redirection',
   'PATCH /users/password'
 ])
 

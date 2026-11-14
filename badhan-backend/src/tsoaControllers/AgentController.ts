@@ -25,7 +25,7 @@ import { getTools } from '../services/agent/tools'
 // NO RATE LIMITER, deliberately. One agent turn with ten tool calls makes eleven or more requests
 // to these routes in under a minute, and commonLimiter's 12 per minute would cut it off midway.
 //
-// The JSDoc above each method is published in /openapi.json and /llms.txt, so it describes what
+// The JSDoc above each method is published in /openapi.json, so it describes what
 // the route does for the caller and nothing more. Notes for whoever maintains this file are `//`
 // comments, which tsoa does not publish.
 //

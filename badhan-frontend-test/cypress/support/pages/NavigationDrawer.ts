@@ -140,10 +140,6 @@ export class NavigationDrawer {
     this.goToSuperAdminPage('appActivityNavigationId');
   }
 
-  goToAIIntegration(): void {
-    this.goToSuperAdminPage('aiIntegrationNavigationId');
-  }
-
   goToAgentChats(): void {
     this.goToSuperAdminPage('agentChatsNavigationId');
   }

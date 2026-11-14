@@ -8,22 +8,9 @@ import * as logInterface from '../db/interfaces/logInterface'
 import * as tokenCache from '../cache/tokenCache'
 import { IDonor } from '../db/models/Donor'
 import userValidator from '../validations/users'
-import { REDIRECTION_TOKEN_EXPIRES_IN } from '../services/redirectionToken'
 import rateLimiter from '../middlewares/rateLimiter'
 import authenticator from '../middlewares/authenticate'
 import { HTTP_STATUS } from '../constants'
-
-/**
- * The body of POST /users/redirection, which has no fields.
- *
- * It is declared, rather than the route simply taking no body, so that a caller still sending the
- * old `durationSeconds` gets a 400. tsoa is configured throw-on-extras, and the alternative is
- * worse than a stale client breaking: it would be a stale client receiving a PERMANENT token
- * while believing it had asked for one that expires in half an hour.
- */
-// tslint:disable-next-line:no-empty-interface  (an empty model is the whole point — see above)
-export interface RedirectionRequestBody {
-}
 
 @Route('users')
 @Tags('Users')
@@ -191,57 +178,6 @@ export class UsersController extends Controller {
       statusCode: HTTP_STATUS.OK,
       message: 'Fetched donor details successfully',
       donor
-    }
-  }
-
-  /**
-   * Create a second auth token from the caller's own session. It does not expire.
-   *
-   * The body is empty and has no options: there is no lifetime to ask for. A caller still
-   * sending the old `durationSeconds` gets an error rather than a token, because silently
-   * accepting it would hand back a permanent credential to something expecting a brief one.
-   *
-   * The token is an ordinary auth token carrying the caller's own role, and it can do
-   * everything they can. It stops working only when its row is deleted — from the caller's
-   * device list (`DELETE /users/logins/{tokenId}`), or by `DELETE /users/signout/all`.
-   * `DELETE /users/signout` does NOT end it: that deletes only the token making the request.
-   */
-  @Post('redirection')
-  @SuccessResponse(201, 'Redirection token created')
-  @Response<{ status: string; statusCode: number; message: string }>(500, 'Token insertion failed', {
-    status: 'ERROR',
-    statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
-    message: 'Token insertion failed'
-  })
-  @Example<{ status: string; statusCode: number; message: string; token: string }>({
-    status: 'OK',
-    statusCode: HTTP_STATUS.CREATED,
-    message: 'Redirection token created',
-    token: 'dvsoigneoihegoiwsngoisngoiswgnbon'
-  })
-  @Middlewares([rateLimiter.commonLimiter, authenticator.handleAuthentication])
-  public async createRedirectionToken(@Request() req: any, @Body() _body?: RedirectionRequestBody): Promise<{ status: string; statusCode: number; message: string; token?: string }> {
-    const res: ExResponse = (req as any).res
-    const donor: IDonor = res.locals.middlewareResponse.donor
-
-    // No expiry. The token lives until its row in the tokens collection is deleted — from My
-    // Profile's device list, or by signing out of every device. See services/redirectionToken.ts
-    // for why the clock was removed and what that costs.
-    const tokenInsertResult: {data?: any, message: string, status: string} = await tokenInterface.insertAndSaveTokenWithExpiry(donor._id, res.locals.userAgent, REDIRECTION_TOKEN_EXPIRES_IN)
-
-    if (tokenInsertResult.status !== 'OK') {
-      this.setStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      return { status: 'ERROR', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: 'Token insertion failed' }
-    }
-
-    await logInterface.addLog(donor._id, 'POST USERS REDIRECTION', {})
-
-    this.setStatus(HTTP_STATUS.CREATED)
-    return {
-      status: 'OK',
-      statusCode: HTTP_STATUS.CREATED,
-      message: 'Redirection token created',
-      token: tokenInsertResult.data!.token
     }
   }
 

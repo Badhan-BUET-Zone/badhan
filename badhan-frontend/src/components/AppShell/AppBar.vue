@@ -299,16 +299,6 @@ export default {
               designation: 3
             },
             {
-              // Sits with the other developer-facing entries rather than beside My Profile: the
-              // file it hands out is a live session token, and that is a super admin's decision
-              // to make deliberately, not something to stumble into from a profile page.
-              icon: 'mdi-robot',
-              text: 'Use Badhan with AI',
-              to: '/aiIntegration',
-              id: 'aiIntegrationNavigationId',
-              designation: 3
-            },
-            {
               // Reading every member's agent chats, and deleting one for good. Badhan Agent itself
               // is a top-level entry for every member.
               icon: 'mdi-forum-outline',

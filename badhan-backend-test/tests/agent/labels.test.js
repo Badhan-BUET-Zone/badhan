@@ -14,7 +14,6 @@ const SESSION_ROUTES = new Set([
   'POST /users/signin',
   'DELETE /users/signout',
   'DELETE /users/signout/all',
-  'POST /users/redirection',
   'PATCH /users/password',
 ]);
 const isAgentRoute = (path) => path === '/agent' || path.startsWith('/agent/');

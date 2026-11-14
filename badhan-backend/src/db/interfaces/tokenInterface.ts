@@ -15,10 +15,6 @@ export const insertAndSaveTokenWithExpiry = async (donorId: mongoose.Types.Objec
     // whichever came first, and deleting one row from the device list revoked nothing: the
     // credential kept working through the other. A unique id per token makes every mint its own
     // credential, which is what the device list has always claimed to show.
-    //
-    // This was latent while only sign-in minted expiry-less tokens (a human signing in twice in
-    // one second is rare). POST /users/redirection now mints them too, and pressing a button
-    // twice is not rare at all.
     const options: {expiresIn?: string, jwtid: string} = { jwtid: randomUUID() }
     if (expiresIn) {
         options.expiresIn = expiresIn

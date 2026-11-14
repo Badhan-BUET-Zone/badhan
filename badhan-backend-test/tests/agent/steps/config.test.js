@@ -19,7 +19,6 @@ const SESSION_ROUTES = new Set([
   'POST /users/signin',
   'DELETE /users/signout',
   'DELETE /users/signout/all',
-  'POST /users/redirection',
   'PATCH /users/password',
 ]);
 
@@ -35,7 +34,7 @@ test('GET/agent/config: not configured here, with the fixed model and a tool cou
   expect(response.data.toolCount).toBeGreaterThan(0);
 });
 
-test('GET/agent/config: every route is a tool except the five session routes and the agent\'s own', async () => {
+test('GET/agent/config: every route is a tool except the four session routes and the agent\'s own', async () => {
   // So the exclusion cannot quietly break: if an /agent route ever became a tool, the model could
   // read other members' chats or drive its own.
   const signInResponse = await operations.signInSuperAdmin();
