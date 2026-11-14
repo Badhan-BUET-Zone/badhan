@@ -114,6 +114,9 @@ they are there. **Signing out does not delete them.**
 They are listed on the left — on a phone, behind the menu button at the top left of the chat —
 newest first.
 
+**Badhan AI always opens on a new chat**, ready to type into, at the top of the list as
+*"Not sent yet"*. To carry on with an earlier chat, tap it in the list.
+
 - **New chat** starts another. A new chat is not saved until you send its first message, and it
   takes its title from that message.
 - To **rename** a chat, edit its title at the top.

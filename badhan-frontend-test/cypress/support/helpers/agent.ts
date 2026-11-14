@@ -123,6 +123,13 @@ export const openAgentFromMenu = (): void => {
 
 export const composer = () => cy.get('[data-cy="agentInput"]');
 
+// The page opens on a new chat; an earlier one is picked from the list, which at the specs' phone
+// width sits behind the menu button.
+export const openChatFromList = (title: string): void => {
+  cy.get('[data-cy="agentChatsButton"]', { timeout: 20000 }).click();
+  cy.contains('[data-cy="agentChatListItem"]', title).click();
+};
+
 export const sendMessage = (text: string): void => {
   composer().type(`${text}{enter}`);
 };

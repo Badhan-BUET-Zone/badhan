@@ -12,6 +12,7 @@ import {
   stubToolReports,
   composer,
   sendMessage,
+  openChatFromList,
 } from '@support/helpers/agent';
 
 // One turn of Badhan Agent, with the model's side scripted through cy.intercept on the /agent
@@ -32,7 +33,9 @@ const signInAndOpenNewChat = (): void => {
   cy.url({ timeout: 20000 }).should('include', '/home');
   cy.visit('/#/agent');
   cy.wait('@config');
-  cy.get('[data-cy="agentStartChatButton"]', { timeout: 20000 }).click();
+  // Every visit opens on a new chat, ready to type into.
+  cy.get('[data-cy="agentEmptyHint"]', { timeout: 20000 }).should('be.visible');
+  composer().should('have.attr', 'placeholder', 'Message the agent…');
 };
 
 // The first step of a new chat: the member's message, an answer that asks for one call, the call.
@@ -252,6 +255,7 @@ describe('a Badhan Agent turn', () => {
     new SignInPage().signIn(AUTH_CREDENTIALS.phone, AUTH_CREDENTIALS.password);
     cy.url({ timeout: 20000 }).should('include', '/home');
     cy.visit('/#/agent');
+    openChatFromList('Who am I signed in as?');
     cy.get('[data-cy="agentUserMessage"]', { timeout: 20000 }).should('contain', 'Hello');
 
     composer().should('not.have.attr', 'placeholder', 'Loading…');

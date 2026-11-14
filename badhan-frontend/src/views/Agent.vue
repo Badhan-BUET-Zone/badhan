@@ -356,6 +356,9 @@ export default {
 
     forgetBrowserChats()
 
+    // Every visit opens on a new chat. Earlier chats are in the list, and one opens when picked.
+    this.newChat()
+
     // The agent has no guest mirror: a demo session has no real records to work on.
     if (isGuestEnabled()) {
       this.config.status = 'guest'
@@ -410,9 +413,6 @@ export default {
       // A New chat made while the list was loading stays at the top.
       this.chats = [...this.chats.filter((chat) => chat.draft), ...response.data.chats.map(chatFromSummary)]
       this.listStatus = 'ready'
-      // The newest chat opens by itself. With none, the page waits for New chat: it never makes
-      // one on its own.
-      if (this.chats.length && !this.chat) this.pickChat(this.chats[0])
     },
     async loadMessages (chat) {
       chat.loading = true

@@ -10,6 +10,7 @@ import {
   stubConfig,
   stubChatList,
   stubToolReports,
+  composer,
   sendMessage,
 } from '@support/helpers/agent';
 
@@ -28,7 +29,9 @@ const signInAndOpenNewChat = (): void => {
   cy.url({ timeout: 20000 }).should('include', '/home');
   cy.visit('/#/agent');
   cy.wait('@config');
-  cy.get('[data-cy="agentStartChatButton"]', { timeout: 20000 }).click();
+  // Every visit opens on a new chat, ready to type into.
+  cy.get('[data-cy="agentEmptyHint"]', { timeout: 20000 }).should('be.visible');
+  composer().should('have.attr', 'placeholder', 'Message the agent…');
 };
 
 describe('a Call button in a Badhan Agent answer', () => {

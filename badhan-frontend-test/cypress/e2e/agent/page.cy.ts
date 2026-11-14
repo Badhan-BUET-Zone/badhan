@@ -10,6 +10,7 @@ import {
   stubConfig,
   stubChatList,
   openAgentFromMenu,
+  openChatFromList,
   composer,
 } from '@support/helpers/agent';
 
@@ -29,11 +30,10 @@ describe('Badhan Agent page', () => {
         // A top-level entry, not under Super Admin, which a volunteer does not have at all.
         cy.get('[data-cy="superAdminId"]').should('not.exist');
 
-        // A first visit has no chats, and the page does not make one by itself.
-        cy.get('[data-cy="agentChatListItem"]').should('not.exist');
-        cy.get('[data-cy="agentStartChatButton"]').click();
-
+        // Every visit opens on a new chat; on a first visit it is the only one in the list.
         cy.get('[data-cy="agentEmptyHint"]').should('be.visible');
+        cy.get('[data-cy="agentChatListItem"]').should('have.length', 1).and('contain', 'Not sent yet');
+        cy.get('[data-cy="agentStartChatButton"]').should('not.exist');
         cy.get('[data-cy="agentSettingsButton"]').should('not.exist');
         cy.get('[data-cy="agentSystemPromptPanel"]').should('not.exist');
         cy.get('[data-cy="agentPage"] .v-chip').should('not.exist');
@@ -46,8 +46,7 @@ describe('Badhan Agent page', () => {
     cy.url({ timeout: 20000 }).should('include', '/home');
     cy.visit('/#/agent');
 
-    cy.get('[data-cy="agentStartChatButton"]', { timeout: 20000 }).click();
-    cy.get('[data-cy="agentEmptyHint"]').should('be.visible');
+    cy.get('[data-cy="agentEmptyHint"]', { timeout: 20000 }).should('be.visible');
     cy.get('[data-cy="agentSystemPromptPanel"]').should('not.exist');
     cy.contains('System prompt').should('not.exist');
   });
@@ -61,8 +60,7 @@ describe('Badhan Agent page', () => {
     cy.url({ timeout: 20000 }).should('include', '/home');
     cy.visit('/#/agent');
 
-    cy.get('[data-cy="agentStartChatButton"]', { timeout: 20000 }).click();
-    cy.get('[data-cy="agentComposerNote"]').should('contain', NOT_SET_UP);
+    cy.get('[data-cy="agentComposerNote"]', { timeout: 20000 }).should('contain', NOT_SET_UP);
     composer().should('have.attr', 'placeholder', NOT_SET_UP).type('Hello');
     cy.get('[data-cy="agentSendButton"]').should('be.disabled');
   });
@@ -94,16 +92,21 @@ describe('Badhan Agent page', () => {
     cy.url({ timeout: 20000 }).should('include', '/home');
     cy.visit('/#/agent');
 
-    // The newest chat opens by itself.
-    cy.get('[data-cy="agentUserMessage"]', { timeout: 20000 }).should('contain', 'Hello');
+    // The page opens on a new chat, not on the newest saved one.
+    cy.get('[data-cy="agentEmptyHint"]', { timeout: 20000 }).should('be.visible');
+    cy.get('[data-cy="agentUserMessage"]').should('not.exist');
+    openChatFromList('Chat to delete');
+    cy.get('[data-cy="agentUserMessage"]').should('contain', 'Hello');
+
     cy.get('[data-cy="agentChatsButton"]').click();
-    cy.get('[data-cy="agentChatListItem"]').should('have.length', 2).first().within(() => {
+    // The new chat first, then the saved ones, newest first.
+    cy.get('[data-cy="agentChatListItem"]').should('have.length', 3).eq(1).should('contain', 'Chat to delete').within(() => {
       cy.get('[data-cy="agentDeleteChatButton"]').click({ force: true });
     });
     cy.contains('Delete "Chat to delete"? This cannot be undone.').should('be.visible');
     cy.get('[data-cy="confirmationBoxButtonId"]').click();
 
     cy.wait('@deleteChat');
-    cy.get('[data-cy="agentChatListItem"]').should('have.length', 1).and('contain', 'Kept chat');
+    cy.get('[data-cy="agentChatListItem"]').should('have.length', 2).and('contain', 'Kept chat').and('not.contain', 'Chat to delete');
   });
 });
