@@ -47,6 +47,7 @@ test('GET/agent/review/members: one row per member, counted, most recent activit
       member: { _id: rahim.donorId, name: 'Rahim', hall: HALLS_INDEX.SUHRAWARDY, designation: 1 },
       chatCount: 2,
       deletedChatCount: 1,
+      problemChatCount: 0,
       // A deleted chat's activity still counts.
       lastActivity: now - 1000,
     },
@@ -55,6 +56,7 @@ test('GET/agent/review/members: one row per member, counted, most recent activit
       member: { _id: karim.donorId, name: 'Karim', hall: HALLS_INDEX.SUHRAWARDY, designation: 2 },
       chatCount: 1,
       deletedChatCount: 0,
+      problemChatCount: 0,
       lastActivity: now - 3000,
     },
     {
@@ -62,6 +64,7 @@ test('GET/agent/review/members: one row per member, counted, most recent activit
       member: { _id: admin.donorId, name: 'Reviewing Admin', hall: HALLS_INDEX.CHATRI, designation: 3 },
       chatCount: 1,
       deletedChatCount: 0,
+      problemChatCount: 0,
       lastActivity: now - 9000,
     },
   ]);
@@ -121,7 +124,97 @@ test('GET/agent/review/members/{donorId}/chats: every chat, deleted ones flagged
     messageCount: sampleMessages().length,
     promptTokens: 1200,
     completionTokens: 40,
+    failedModelCalls: 0,
+    failedRequests: 0,
   });
+  expect(deletedRow).toMatchObject({ failedModelCalls: 0, failedRequests: 0 });
+});
+
+// A tool message as a step stores it, with `run` changed as given.
+const toolMessage = (toolCallId, run) => ({
+  role: 'tool',
+  toolCallId,
+  content: '{}',
+  run: {
+    status: 'done',
+    name: 'SearchDonors',
+    label: 'Search for donors filtered by criteria',
+    method: 'GET',
+    path: '/search/v3',
+    args: {},
+    body: null,
+    isWrite: false,
+    httpStatus: 200,
+    durationMs: 10,
+    response: '{}',
+    note: '',
+    ...run,
+  },
+});
+
+// A model call that failed, as a step keeps it.
+const failedModelCall = () => ({
+  role: 'error',
+  modelCall: { error: { kind: 'quota', httpStatus: 429, body: '{"error":{"message":"Rate limit reached"}}' } },
+});
+
+test('a failed model call or a failed request counts against its chat and its member; nothing else does', async () => {
+  const signInResponse = await operations.signInSuperAdmin();
+  const admin = await createSuperAdmin(signInResponse);
+  const member = await createVolunteer(signInResponse);
+  const other = await createVolunteer(signInResponse);
+  const now = Date.now();
+
+  const [broken, fine, deletedBroken] = await seedChats([
+    {
+      owner: member.donorId,
+      title: 'broken',
+      updatedAt: now - 1000,
+      messages: [
+        failedModelCall(),
+        failedModelCall(),
+        // Did not complete, and answered with an error status.
+        toolMessage('call_1', { status: 'failed', httpStatus: null, response: null, note: 'The request did not complete' }),
+        toolMessage('call_2', { httpStatus: 500 }),
+        toolMessage('call_3', { httpStatus: 200 }),
+      ],
+    },
+    {
+      owner: member.donorId,
+      title: 'fine',
+      updatedAt: now - 2000,
+      // Declined, cancelled, still pending and answered normally: none of them went wrong.
+      messages: [
+        toolMessage('call_1', { status: 'denied', httpStatus: null }),
+        toolMessage('call_2', { status: 'cancelled', httpStatus: null }),
+        toolMessage('call_3', { status: 'pending', httpStatus: null }),
+        toolMessage('call_4', { httpStatus: 201 }),
+        ...sampleMessages(),
+      ],
+    },
+    {
+      // A chat the member deleted still counts.
+      owner: member.donorId,
+      title: 'deleted, broken',
+      updatedAt: now - 3000,
+      userDeletedChat: true,
+      userDeletedAt: now - 3000,
+      messages: [toolMessage('call_1', { httpStatus: 403 })],
+    },
+    { owner: other.donorId, messages: sampleMessages() },
+  ]);
+
+  const chats = await reviewMemberChats(admin.token, member.donorId, reviewMemberChatsSchema);
+  expect(chats.data.chats.map((c) => [c._id, c.failedModelCalls, c.failedRequests])).toEqual([
+    [broken._id, 2, 2],
+    [fine._id, 0, 0],
+    [deletedBroken._id, 0, 1],
+  ]);
+
+  const members = await reviewMembers(admin.token, reviewMembersSchema);
+  const rowOf = (donorId) => members.data.members.find((row) => row.donorId === donorId);
+  expect(rowOf(member.donorId)).toMatchObject({ chatCount: 3, problemChatCount: 2 });
+  expect(rowOf(other.donorId)).toMatchObject({ chatCount: 1, problemChatCount: 0 });
 });
 
 test('GET/agent/review/members/{donorId}/chats: a deleted donor\'s chats, with member null', async () => {

@@ -17,15 +17,16 @@ const GONE_ID = 'd00000000000000000000003';
 // A donor the transcript's search returned, whom the answer offers a Call button for.
 const SALMA = { _id: 'e00000000000000000000001', name: 'Salma Akter', phone: 8801700000000, bloodGroup: 4, hall: 5 };
 
-const memberRow = (member: typeof RAHIM | null, donorId: string, chatCount: number, deletedChatCount = 0) => ({
+const memberRow = (member: typeof RAHIM | null, donorId: string, chatCount: number, deletedChatCount = 0, problemChatCount = 0) => ({
   donorId,
   member,
   chatCount,
   deletedChatCount,
+  problemChatCount,
   lastActivity: NOW,
 });
 
-const reviewChat = (id: string, owner: string, title: string, deleted = false) => ({
+const reviewChat = (id: string, owner: string, title: string, deleted = false, failedModelCalls = 0, failedRequests = 0) => ({
   _id: id,
   owner,
   title,
@@ -36,6 +37,8 @@ const reviewChat = (id: string, owner: string, title: string, deleted = false) =
   messageCount: 4,
   promptTokens: 2400,
   completionTokens: 60,
+  failedModelCalls,
+  failedRequests,
 });
 
 const KEPT = reviewChat('c00000000000000000000001', RAHIM._id, 'O+ donors in Suhrawardy');
@@ -193,6 +196,32 @@ describe('Agent Chats', () => {
         cy.get('[data-cy="agentRetryButton"]').should('not.exist');
       });
       cy.get('[data-cy="agentInput"]').should('not.exist');
+    });
+
+    it('a yellow mark flags a member and a chat where something went wrong, and says what', () => {
+      const broken = reviewChat('c00000000000000000000004', RAHIM._id, 'A chat that went wrong', false, 1, 2);
+      const lone = reviewChat('c00000000000000000000005', RAHIM._id, 'One failed request', false, 0, 1);
+      stubReview({
+        members: [memberRow(RAHIM, RAHIM._id, 3, 0, 2), memberRow(KARIM, KARIM._id, 1)],
+        chats: { [RAHIM._id]: [broken, lone, KEPT], [KARIM._id]: [KARIMS] },
+      });
+      signInAsSuperAdmin();
+      cy.visit('/#/agentChats');
+      cy.wait('@members');
+
+      cy.get('[data-cy="agentChatsMember"]').eq(0).find('[data-cy="agentChatsMemberProblemMark"]')
+        .should('be.visible')
+        .and('have.attr', 'title', '2 chats where something went wrong');
+      cy.get('[data-cy="agentChatsMember"]').eq(1).find('[data-cy="agentChatsMemberProblemMark"]').should('not.exist');
+
+      cy.get('[data-cy="agentChatsMember"]').first().click();
+      cy.wait('@memberChats');
+      cy.get('[data-cy="agentChatsChat"]').eq(0).find('[data-cy="agentChatsChatProblemMark"]')
+        .should('be.visible')
+        .and('have.attr', 'title', '1 failed model call · 2 failed requests');
+      cy.get('[data-cy="agentChatsChat"]').eq(1).find('[data-cy="agentChatsChatProblemMark"]')
+        .should('have.attr', 'title', '1 failed request');
+      cy.get('[data-cy="agentChatsChat"]').eq(2).find('[data-cy="agentChatsChatProblemMark"]').should('not.exist');
     });
 
     it('the System prompt button shows the prompt the backend sends a super admin', () => {

@@ -118,12 +118,13 @@ const reviewMembersSchema = envelope(['members'], {
     items: {
       type: 'object',
       additionalProperties: false,
-      required: ['donorId', 'member', 'chatCount', 'deletedChatCount', 'lastActivity'],
+      required: ['donorId', 'member', 'chatCount', 'deletedChatCount', 'problemChatCount', 'lastActivity'],
       properties: {
         donorId: { type: 'string' },
         member: reviewMemberSchema,
         chatCount: { type: 'number' },
         deletedChatCount: { type: 'number' },
+        problemChatCount: { type: 'number' },
         lastActivity: { type: 'number' },
       },
     },
@@ -152,9 +153,21 @@ const reviewChatSchema = {
   },
 };
 
+// A chat in one member's list: the transcript's chat, plus how many of its model calls and its
+// requests to Badhan failed.
+const reviewChatRowSchema = {
+  ...reviewChatSchema,
+  required: [...reviewChatSchema.required, 'failedModelCalls', 'failedRequests'],
+  properties: {
+    ...reviewChatSchema.properties,
+    failedModelCalls: { type: 'number' },
+    failedRequests: { type: 'number' },
+  },
+};
+
 const reviewMemberChatsSchema = envelope(['member', 'chats'], {
   member: reviewMemberSchema,
-  chats: { type: 'array', items: reviewChatSchema },
+  chats: { type: 'array', items: reviewChatRowSchema },
 });
 
 const reviewTranscriptSchema = envelope(['chat', 'member', 'messages'], {

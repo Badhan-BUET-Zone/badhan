@@ -112,6 +112,9 @@ export interface IAgentReviewMemberRow {
   // Every chat the member has, the ones they deleted included.
   chatCount: number
   deletedChatCount: number
+  // How many of those chats hold a problem: a failed model call, or a request to Badhan that did
+  // not complete or answered with an error status. The page marks the member when it is not 0.
+  problemChatCount: number
   // The newest updatedAt among their chats.
   lastActivity: number
 }
@@ -128,6 +131,15 @@ export interface IAgentReviewChat {
   messageCount: number
   promptTokens: number
   completionTokens: number
+}
+
+// A chat in one member's list on the review page, with what went wrong in it. The page marks a
+// chat when either count is not 0.
+export interface IAgentReviewChatRow extends IAgentReviewChat {
+  // Model calls that failed. They are kept for the download and shown in no transcript.
+  failedModelCalls: number
+  // Requests to Badhan that did not complete or answered with an HTTP status of 400 or more.
+  failedRequests: number
 }
 
 export interface IAgentToolCallReport {
@@ -473,8 +485,8 @@ export class AgentController extends Controller {
   /**
    * List every member who has Badhan Agent chats (Super Admin only)
    * Counts chats the member deleted, so a member stays listed until their last chat is deleted
-   * permanently. Most recent activity first. `member` is null when the donor record has been
-   * deleted.
+   * permanently, and the chats that hold a failed model call or a failed request. Most recent
+   * activity first. `member` is null when the donor record has been deleted.
    */
   @Get('review/members')
   @SuccessResponse(200, 'Members fetched successfully')
@@ -491,8 +503,9 @@ export class AgentController extends Controller {
 
   /**
    * List one member's Badhan Agent chats, deleted ones included (Super Admin only)
-   * Newest first, each with whether the member deleted it and when, its message count and its
-   * token totals. `member` is null when the donor record has been deleted.
+   * Newest first, each with whether the member deleted it and when, its message count, its token
+   * totals, and how many of its model calls and requests to Badhan failed. `member` is null when
+   * the donor record has been deleted.
    */
   @Get('review/members/{donorId}/chats')
   @SuccessResponse(200, 'Chats fetched successfully')
@@ -504,7 +517,7 @@ export class AgentController extends Controller {
   ])
   public async getReviewMemberChats(
     @Path() donorId: string
-  ): Promise<{ status: string; statusCode: number; message: string; member: IAgentReviewMember | null; chats: IAgentReviewChat[] }> {
+  ): Promise<{ status: string; statusCode: number; message: string; member: IAgentReviewMember | null; chats: IAgentReviewChatRow[] }> {
     const result: { member: any, chats: any[] } =
       await agentChatInterface.findReviewMemberChats(new Types.ObjectId(donorId))
     this.setStatus(HTTP_STATUS.OK)

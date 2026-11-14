@@ -207,6 +207,23 @@ greyed out, so reading a chat never rings a donor.
 
 A member whose record has since been deleted from Badhan is listed as **Deleted member**.
 
+### The yellow mark: something went wrong
+
+A **yellow exclamation mark** before a chat's title means something went wrong in that chat:
+
+- **a failed model call** — the assistant itself could not be reached or gave no answer, such as
+  when OpenAI's limit was hit. The member saw a red note at the time, but it is **not in the
+  chat** you read here: download the chat (below) to see it.
+- **a failed request** — something the assistant tried in Badhan did not go through, or Badhan
+  refused it. Its card in the chat has a red edge.
+
+Hold the mouse over the mark to see how many of each, such as *"1 failed model call · 2 failed
+requests"*. A request the member **declined**, or one that was **cancelled**, does not count.
+
+The same mark before a **member's** name means at least one of their chats has it — hold the mouse
+over it to see how many. Chats the member deleted count too. The lists keep their usual order,
+most recent first.
+
 ### "Deleted by user"
 
 A chat tagged **Deleted by user** with a date is one the member deleted. When a member deletes a

@@ -57,7 +57,17 @@
               @click="pickMember(row)"
               @keydown.enter="pickMember(row)"
             >
-              <div class="review-item-title">{{ memberName(row.member) }}</div>
+              <div class="review-item-title">
+                <v-icon
+                  v-if="row.problemChatCount"
+                  small
+                  color="amber darken-1"
+                  class="review-mark"
+                  :title="memberProblems(row)"
+                  :aria-label="memberProblems(row)"
+                  data-cy="agentChatsMemberProblemMark"
+                >mdi-alert-circle</v-icon>{{ memberName(row.member) }}
+              </div>
               <div class="caption text--secondary">{{ memberDetails(row.member) }}</div>
               <div class="caption text--secondary">
                 {{ row.chatCount }} {{ row.chatCount === 1 ? 'chat' : 'chats' }}<template v-if="row.deletedChatCount">, {{ row.deletedChatCount }} deleted by user</template>
@@ -92,7 +102,17 @@
               @keydown.enter="pickChat(item)"
             >
               <div class="review-item-text">
-                <div class="review-item-title">{{ item.title }}</div>
+                <div class="review-item-title">
+                  <v-icon
+                    v-if="chatProblems(item)"
+                    small
+                    color="amber darken-1"
+                    class="review-mark"
+                    :title="chatProblems(item)"
+                    :aria-label="chatProblems(item)"
+                    data-cy="agentChatsChatProblemMark"
+                  >mdi-alert-circle</v-icon>{{ item.title }}
+                </div>
                 <div class="caption text--secondary">
                   {{ when(item.updatedAt) }} · {{ tokens(item.promptTokens) }} in · {{ tokens(item.completionTokens) }} out
                 </div>
@@ -176,6 +196,11 @@
   include the chats members deleted: a member's delete only hides a chat from them, and it stays
   here, tagged, until a super admin deletes it permanently.
 
+  A yellow mark flags where something went wrong: on a chat that holds a failed model call or a
+  failed request to Badhan, and on a member with any such chat. The backend counts both when it
+  lists them (failedModelCalls, failedRequests, problemChatCount); the mark's title says which.
+  A failed model call is in no transcript, only in the download.
+
   There is no composer. A transcript is drawn by AgentThread in read-only mode: no approval
   buttons, no Retry, answers as plain text. Opening one is recorded in App Activity by the backend.
 
@@ -255,6 +280,17 @@ export default {
     },
     deletedTag (chat) {
       return `Deleted by user · ${day(chat.userDeletedAt)}`
+    },
+    // What the yellow mark on a chat stands for, or '' when nothing went wrong in it.
+    chatProblems (chat) {
+      const parts = []
+      if (chat.failedModelCalls) parts.push(`${chat.failedModelCalls} failed model ${chat.failedModelCalls === 1 ? 'call' : 'calls'}`)
+      if (chat.failedRequests) parts.push(`${chat.failedRequests} failed ${chat.failedRequests === 1 ? 'request' : 'requests'}`)
+      return parts.join(' · ')
+    },
+    memberProblems (row) {
+      const n = row.problemChatCount
+      return `${n} ${n === 1 ? 'chat' : 'chats'} where something went wrong`
     },
 
     async loadSystemPrompt () {
@@ -433,6 +469,7 @@ export default {
 .review-item--chat { display: flex; align-items: flex-start; gap: 4px; }
 .review-item-text { flex: 1; min-width: 0; }
 .review-item-title { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review-mark { margin-right: 4px; vertical-align: text-bottom; }
 
 .review-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 .review-thread { max-width: 860px; margin: 0 auto; padding: 16px 16px 24px; }

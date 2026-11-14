@@ -1,4 +1,4 @@
-import { Types } from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 import { AgentChatModel, IAgentChat } from '../models/AgentChat'
 import { AgentMessageModel } from '../models/AgentMessage'
 import { DonorModel } from '../models/Donor'
@@ -313,8 +313,40 @@ const findMember = async (donorId: Types.ObjectId): Promise<any> =>
   DonorModel.findById(donorId, REVIEW_MEMBER_PROJECTION).lean()
 
 /**
+ * What makes a chat worth a look on the review page: a model call that failed (kept as an `error`
+ * message, which no transcript shows), or a request to Badhan that did not complete or came back
+ * with an error status. A declined or cancelled call is not a problem.
+ */
+const PROBLEM_MESSAGE_FILTER: Record<string, any> = {
+  $or: [
+    { role: 'error' },
+    { role: 'tool', 'run.status': 'failed' },
+    { role: 'tool', 'run.status': 'done', 'run.httpStatus': { $gte: 400 } }
+  ]
+}
+
+// Joins each chat to its problem messages, at most `limit` of them, through the { chatId, seq }
+// index. Counted when read rather than stored on the chat, so it holds for every chat ever saved.
+const problemMessagesLookup = (pipeline: any[]): PipelineStage.Lookup => ({
+  $lookup: {
+    from: AgentMessageModel.collection.name,
+    localField: '_id',
+    foreignField: 'chatId',
+    pipeline: [{ $match: PROBLEM_MESSAGE_FILTER }, ...pipeline],
+    as: 'problems'
+  }
+})
+
+// How many of the joined problem messages have this role: 'error' for model calls, 'tool' for
+// requests to Badhan.
+const problemCount = (role: string): Record<string, any> => ({
+  $size: { $filter: { input: '$problems', cond: { $eq: ['$$this.role', role] } } }
+})
+
+/**
  * Every member with at least one chat, counting chats they deleted, with how many they have, how
- * many of those they deleted, and when the last one moved. Most recent activity first.
+ * many of those they deleted, how many hold a problem (PROBLEM_MESSAGE_FILTER), and when the last
+ * one moved. Most recent activity first.
  *
  * Grouped in the database and joined only after, so the join runs once per member, not per chat.
  * The group reads the whole collection; there is deliberately no paging, because the organisation
@@ -322,11 +354,14 @@ const findMember = async (donorId: Types.ObjectId): Promise<any> =>
  */
 export const findReviewMembers = async (): Promise<any[]> =>
   AgentChatModel.aggregate([
+    // One problem is enough to mark a chat, so the join stops at the first.
+    problemMessagesLookup([{ $limit: 1 }, { $project: { _id: 1 } }]),
     {
       $group: {
         _id: '$owner',
         chatCount: { $sum: 1 },
         deletedChatCount: { $sum: { $cond: ['$userDeletedChat', 1, 0] } },
+        problemChatCount: { $sum: { $cond: [{ $gt: [{ $size: '$problems' }, 0] }, 1, 0] } },
         lastActivity: { $max: '$updatedAt' }
       }
     },
@@ -347,16 +382,27 @@ export const findReviewMembers = async (): Promise<any[]> =>
         member: { $ifNull: [{ $arrayElemAt: ['$memberMatches', 0] }, null] },
         chatCount: 1,
         deletedChatCount: 1,
+        problemChatCount: 1,
         lastActivity: 1
       }
     }
   ])
 
-// One member's chats, deleted ones included, newest first, and who the member is.
+/**
+ * One member's chats, deleted ones included, newest first, and who the member is. Each chat
+ * carries how many of its model calls failed and how many of its requests to Badhan failed.
+ */
 export const findReviewMemberChats = async (donorId: Types.ObjectId): Promise<{ member: any, chats: any[] }> => {
   const [member, chats]: [any, any[]] = await Promise.all([
     findMember(donorId),
-    AgentChatModel.find({ owner: donorId }, REVIEW_CHAT_PROJECTION).sort({ updatedAt: -1, _id: -1 }).lean()
+    AgentChatModel.aggregate([
+      { $match: { owner: donorId } },
+      { $sort: { updatedAt: -1, _id: -1 } },
+      { $project: REVIEW_CHAT_PROJECTION },
+      problemMessagesLookup([{ $project: { _id: 0, role: 1 } }]),
+      { $addFields: { failedModelCalls: problemCount('error'), failedRequests: problemCount('tool') } },
+      { $project: { problems: 0 } }
+    ])
   ])
   return { member, chats }
 }
