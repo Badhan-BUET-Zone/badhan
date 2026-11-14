@@ -58,7 +58,18 @@ const transcriptOf = (chat: ReturnType<typeof reviewChat>, member: typeof RAHIM 
           response: JSON.stringify({ status: 'OK', filteredDonors: [SALMA] }, null, 2),
         },
       },
-      assistantMessage(3, `There are 12 O+ donors in Suhrawardy, among them ${SALMA.name} [[call:${SALMA._id}]]`),
+      // A second step that only calls a tool: on the member's page the two cards would share a group.
+      { ...assistantMessage(3, '', ['call_2']) },
+      {
+        _id: 'm4', seq: 4, role: 'tool', toolCallId: 'call_2', content: '{}', createdAt: NOW,
+        run: {
+          status: 'done', name: 'GetDonor', label: 'Get a donor\'s details', method: 'GET',
+          path: `/donors?donorId=${SALMA._id}`, args: { donorId: SALMA._id }, body: null, isWrite: false,
+          httpStatus: 200, durationMs: 80, note: null,
+          response: JSON.stringify({ status: 'OK', donor: SALMA }, null, 2),
+        },
+      },
+      assistantMessage(5, `There are 12 O+ donors in Suhrawardy, among them ${SALMA.name} [[call:${SALMA._id}]]`),
     ],
   });
 
@@ -170,8 +181,13 @@ describe('Agent Chats', () => {
         // A Call button is drawn where the member saw one, but reading a transcript dials nobody.
         cy.get('[data-cy="agentCallButton"]').should('contain', 'Call Salma Akter').and('be.disabled');
         // What each answer cost, for the super admin reviewing it.
-        cy.get('[data-cy="agentUsage"]').first().should('have.text', 'gpt-6-luna · 1.2k in · 30 out');
-        cy.get('[data-cy="agentToolLabel"]').should('have.text', 'Search for donors filtered by criteria');
+        cy.get('[data-cy="agentUsage"]').should('have.length', 3).first().should('have.text', 'gpt-6-luna · 1.2k in · 30 out');
+        // Calls in a row are not folded into a group here: every card shows, each collapsed.
+        cy.get('[data-cy="agentToolGroup"]').should('not.exist');
+        cy.get('[data-cy="agentToolCard"]').should('have.length', 2);
+        cy.get('[data-cy="agentToolLabel"]').eq(0).should('have.text', 'Search for donors filtered by criteria');
+        cy.get('[data-cy="agentToolLabel"]').eq(1).should('have.text', 'Get a donor\'s details');
+        cy.get('[data-cy="agentToolBody"]').should('not.exist');
         // Read-only: nothing to approve, nothing to retry, nothing to type into, nobody to call.
         cy.get('[data-cy="agentApproveButton"]').should('not.exist');
         cy.get('[data-cy="agentRetryButton"]').should('not.exist');

@@ -44,6 +44,17 @@ criteria"* — with a small label on the right saying how it went:
 **Tap a card** to open it and see exactly what was asked of Badhan and what came back. Tap it
 again to fold it away.
 
+### Several cards in a row
+
+When the assistant does several things one after another without writing anything in between,
+their cards are **gathered into one box**, headed with how many there are — for example
+**5 actions**. The box starts folded and shows only **one card: the latest**. While the assistant
+is still working, that is the card it is on, so a card waiting for your **Approve** is always the
+one on show.
+
+**Tap the heading** to unfold the box and see every card in it; tap it again to fold it. If a card
+hidden in a folded box went wrong, the heading says so in red — for example *"· 1 failed"*.
+
 ## Changes wait for you
 
 **Looking things up happens on its own.** Anything that would **add, change or delete** a record

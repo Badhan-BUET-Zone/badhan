@@ -181,8 +181,61 @@ describe('a Badhan Agent turn', () => {
       .should('contain', 'Stopped after 20 model calls for one message. Send a message to carry on.');
     // The first call, then nineteen continues: twenty model calls, and not a twenty-first.
     cy.get('@continue.all').should('have.length', 19);
-    cy.get('[data-cy="agentToolCard"]').should('have.length', 20);
+    // No answer text between them, so the twenty calls are one group, folded to the last.
+    cy.get('[data-cy="agentToolGroup"]').should('have.length', 1).within(() => {
+      cy.get('[data-cy="agentToolGroupHead"]').should('contain', '20 actions');
+      cy.get('[data-cy="agentToolCard"]').should('have.length', 1);
+      cy.get('[data-cy="agentToolGroupHead"]').click();
+      cy.get('[data-cy="agentToolCard"]').should('have.length', 20);
+    });
     cy.get('[data-cy="agentStopButton"]').should('not.exist');
+  });
+
+  it('groups calls with no answer between them; folded, the group shows the latest call, or the one waiting', () => {
+    // One step asks for a lookup, a write and another lookup.
+    const calls = [
+      pendingToolMessage(2, 'call_a', LOGINS),
+      pendingToolMessage(3, 'call_b', ADD_CONTACT),
+      pendingToolMessage(4, 'call_c', LOGINS),
+    ];
+    const toolMessages = new Map(calls.map((message) => [message.toolCallId, message]));
+    cy.intercept('POST', '**/agent/chats', ok(201, {
+      chat: chatSummary(),
+      messages: [userMessage(0, 'Help me'), assistantMessage(1, '', ['call_a', 'call_b', 'call_c']), ...calls],
+      finishReason: 'tool_calls',
+    })).as('create');
+    stubToolReports(toolMessages);
+    cy.intercept('POST', `**/agent/chats/${CHAT_ID}/continue`, finalStep(5, 'I looked twice and added nothing.')).as('continue');
+    cy.intercept('POST', '**/publicContacts').as('addContact');
+
+    signInAndOpenNewChat();
+    sendMessage('Help me');
+    cy.wait('@create');
+
+    cy.get('[data-cy="agentToolGroup"]').should('have.length', 1).within(() => {
+      cy.get('[data-cy="agentToolGroupHead"]').should('contain', '3 actions').and('have.attr', 'aria-expanded', 'false');
+      // The write waits, and the folded group shows it — with its buttons — not the call queued after it.
+      cy.get('[data-cy="agentToolCard"]').should('have.length', 1).within(() => {
+        cy.get('[data-cy="agentToolLabel"]').should('have.text', ADD_CONTACT.label);
+        cy.get('[data-cy="agentApproveButton"]').should('be.visible');
+      });
+
+      cy.get('[data-cy="agentToolGroupHead"]').click();
+      cy.get('[data-cy="agentToolCard"]').should('have.length', 3);
+      cy.get('[data-cy="agentToolStatus"]').eq(0).should('contain', '200');
+      cy.get('[data-cy="agentToolStatus"]').eq(1).should('contain', 'needs approval');
+      cy.get('[data-cy="agentToolStatus"]').eq(2).should('contain', 'queued');
+      cy.get('[data-cy="agentToolGroupHead"]').click();
+      cy.get('[data-cy="agentToolCard"]').should('have.length', 1);
+    });
+
+    cy.get('[data-cy="agentDeclineButton"]').click();
+    cy.wait('@continue');
+    cy.contains('I looked twice and added nothing.').should('be.visible');
+    cy.get('@addContact.all').should('have.length', 0);
+    // All done: folded, the group shows the last call.
+    cy.get('[data-cy="agentToolGroup"] [data-cy="agentToolCard"]').should('have.length', 1)
+      .find('[data-cy="agentToolLabel"]').should('have.text', LOGINS.label);
   });
 
   it('a chat busy in another tab says so, with Retry', () => {

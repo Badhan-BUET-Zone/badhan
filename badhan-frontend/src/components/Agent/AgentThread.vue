@@ -2,20 +2,26 @@
   <!-- A Badhan Agent transcript: user bubbles, plain-text answers, a card for every API call, and
        the notices. Drawn the same wherever a transcript is shown. -->
   <div class="agent-transcript">
-    <template v-for="message in visibleMessages">
-      <div v-if="message.role === 'user'" :key="keyOf(message)" class="agent-msg agent-msg--user">
-        <div class="agent-bubble" data-cy="agentUserMessage">{{ message.content }}</div>
+    <template v-for="item in items">
+      <div v-if="item.kind === 'user'" :key="item.key" class="agent-msg agent-msg--user">
+        <div class="agent-bubble" data-cy="agentUserMessage">{{ item.message.content }}</div>
       </div>
 
-      <div v-else-if="message.role === 'assistant'" :key="keyOf(message)" class="agent-msg" data-cy="agentAssistantMessage">
+      <div
+        v-else-if="item.kind === 'answer'"
+        :key="item.key"
+        class="agent-msg"
+        :class="{ 'agent-msg--lead': item.lead }"
+        data-cy="agentAssistantMessage"
+      >
         <!-- Plain text through {{ }}, never v-html: an answer can quote donor records, which are
              free text that anyone filling in a public form controls. A call marker in it becomes
              a Call button (see calls.js): with the donor's number when a response in this chat
              gave it, otherwise a link to the donor's profile, which has its own Direct call.
              The tags sit on separate lines on purpose: the build drops the whitespace between
              them, so none of it reaches the answer, which keeps its own line breaks. -->
-        <div v-if="message.content" class="agent-answer">
-          <template v-for="(part, index) in partsOf(message)">
+        <div v-if="item.message.content" class="agent-answer">
+          <template v-for="(part, index) in partsOf(item.message)">
             <span v-if="part.type === 'text'" :key="index">{{ part.text }}</span>
             <v-btn
               v-else-if="part.donor"
@@ -44,87 +50,116 @@
           </template>
         </div>
 
-        <div
-          v-for="call in message.toolCalls || []"
-          :key="call.id"
-          class="agent-tool"
-          :class="`agent-tool--${toolTone(call)}`"
-          data-cy="agentToolCard"
-        >
-          <!-- The heading is the route's own description, never its URL. The URL, the arguments and
-               the response are one click away. -->
-          <div
-            class="agent-tool-head"
-            role="button"
-            tabindex="0"
-            :aria-expanded="String(!!openCards[call.id])"
-            data-cy="agentToolCardHead"
-            @click="toggleCard(call)"
-            @keydown.enter.prevent="toggleCard(call)"
-          >
-            <v-icon small class="agent-chevron" :class="{ 'agent-chevron--open': openCards[call.id] }">mdi-chevron-right</v-icon>
-            <span class="agent-tool-label" data-cy="agentToolLabel">{{ labelOf(call) }}</span>
-            <v-chip x-small outlined :color="toneColor(call)" class="flex-shrink-0" data-cy="agentToolStatus">
-              <v-progress-circular v-if="runOf(call).status === 'running'" indeterminate size="9" width="2" class="mr-1"></v-progress-circular>
-              {{ statusLabel(call) }}
-            </v-chip>
-          </div>
-
-          <!-- Waiting for the member. The card stays collapsed like any other; opening it shows
-               exactly what would be sent. -->
-          <div v-if="!readOnly && runOf(call).status === 'awaiting-approval'" class="agent-approval" data-cy="agentApproval">
-            <v-btn small depressed color="primary" class="text-none mr-2" data-cy="agentApproveButton" @click="$emit('approve', call.id)">Approve</v-btn>
-            <v-btn small outlined class="text-none" data-cy="agentDeclineButton" @click="$emit('decline', call.id)">Decline</v-btn>
-          </div>
-
-          <div v-if="openCards[call.id]" class="agent-tool-body" data-cy="agentToolBody">
-            <div v-if="runOf(call).method && runOf(call).path" class="agent-field">
-              <div class="d-flex align-center justify-space-between">
-                <span class="agent-label">Request</span>
-                <v-btn x-small text class="text-none" @click="copyCurl(call)">{{ copiedCall === call.id ? 'Copied' : 'Copy as curl' }}</v-btn>
-              </div>
-              <pre class="agent-pre" data-cy="agentToolRequest">{{ runOf(call).method }} {{ urlOf(call) }}</pre>
-            </div>
-            <div class="agent-field">
-              <span class="agent-label">Arguments</span>
-              <pre class="agent-pre">{{ argsText(call) }}</pre>
-            </div>
-            <div v-if="runOf(call).body !== null && runOf(call).body !== undefined" class="agent-field">
-              <span class="agent-label">Request body</span>
-              <pre class="agent-pre">{{ pretty(runOf(call).body) }}</pre>
-            </div>
-            <div v-if="runOf(call).status === 'done'" class="agent-field">
-              <span class="agent-label">Status</span>
-              <pre class="agent-pre">{{ resultLine(call) }}</pre>
-            </div>
-            <div v-if="runOf(call).note" class="agent-field">
-              <span class="agent-label">Note</span>
-              <pre class="agent-pre">{{ runOf(call).note }}</pre>
-            </div>
-            <div v-if="runOf(call).response !== null && runOf(call).response !== undefined" class="agent-field">
-              <span class="agent-label">Response</span>
-              <pre class="agent-pre agent-pre--tall" data-cy="agentToolResponse">{{ runOf(call).response }}</pre>
-            </div>
-          </div>
-        </div>
-
         <!-- The model and what this answer cost in tokens. The review page only: members using the
              agent are not shown it. -->
-        <div v-if="showUsage && message.openaiModel" class="caption text--secondary mt-1" data-cy="agentUsage">{{ usageLabel(message) }}</div>
+        <div v-if="item.usage" class="caption text--secondary mt-1" data-cy="agentUsage">{{ usageLabel(item.message) }}</div>
+      </div>
+
+      <!-- A run of calls with no answer text between them, even across steps. Unless groupCalls is
+           off, two or more are one group: folded, it shows only its latest call, or the one waiting
+           for approval, so the Approve and Decline buttons are never folded away. -->
+      <div
+        v-else-if="item.kind === 'calls'"
+        :key="item.key"
+        class="agent-calls"
+        :class="{ 'agent-group': isGroup(item) }"
+        :data-cy="isGroup(item) ? 'agentToolGroup' : null"
+      >
+        <div
+          v-if="isGroup(item)"
+          class="agent-group-head"
+          role="button"
+          tabindex="0"
+          :aria-expanded="String(!!openGroups[item.key])"
+          data-cy="agentToolGroupHead"
+          @click="toggleGroup(item)"
+          @keydown.enter.prevent="toggleGroup(item)"
+        >
+          <v-icon small class="agent-chevron" :class="{ 'agent-chevron--open': openGroups[item.key] }">mdi-chevron-right</v-icon>
+          <span class="agent-group-count">{{ item.entries.length }} actions</span>
+          <span v-if="!openGroups[item.key] && hiddenFailures(item)" class="agent-group-failed" data-cy="agentToolGroupFailed">· {{ hiddenFailures(item) }} failed</span>
+        </div>
+
+        <template v-for="{ call, usage } in shownEntries(item)">
+          <div
+            :key="call.id"
+            class="agent-tool"
+            :class="`agent-tool--${toolTone(call)}`"
+            data-cy="agentToolCard"
+          >
+            <!-- The heading is the route's own description, never its URL. The URL, the arguments and
+                 the response are one click away. -->
+            <div
+              class="agent-tool-head"
+              role="button"
+              tabindex="0"
+              :aria-expanded="String(!!openCards[call.id])"
+              data-cy="agentToolCardHead"
+              @click="toggleCard(call)"
+              @keydown.enter.prevent="toggleCard(call)"
+            >
+              <v-icon small class="agent-chevron" :class="{ 'agent-chevron--open': openCards[call.id] }">mdi-chevron-right</v-icon>
+              <span class="agent-tool-label" data-cy="agentToolLabel">{{ labelOf(call) }}</span>
+              <v-chip x-small outlined :color="toneColor(call)" class="flex-shrink-0" data-cy="agentToolStatus">
+                <v-progress-circular v-if="runOf(call).status === 'running'" indeterminate size="9" width="2" class="mr-1"></v-progress-circular>
+                {{ statusLabel(call) }}
+              </v-chip>
+            </div>
+
+            <!-- Waiting for the member. The card stays collapsed like any other; opening it shows
+                 exactly what would be sent. -->
+            <div v-if="!readOnly && runOf(call).status === 'awaiting-approval'" class="agent-approval" data-cy="agentApproval">
+              <v-btn small depressed color="primary" class="text-none mr-2" data-cy="agentApproveButton" @click="$emit('approve', call.id)">Approve</v-btn>
+              <v-btn small outlined class="text-none" data-cy="agentDeclineButton" @click="$emit('decline', call.id)">Decline</v-btn>
+            </div>
+
+            <div v-if="openCards[call.id]" class="agent-tool-body" data-cy="agentToolBody">
+              <div v-if="runOf(call).method && runOf(call).path" class="agent-field">
+                <div class="d-flex align-center justify-space-between">
+                  <span class="agent-label">Request</span>
+                  <v-btn x-small text class="text-none" @click="copyCurl(call)">{{ copiedCall === call.id ? 'Copied' : 'Copy as curl' }}</v-btn>
+                </div>
+                <pre class="agent-pre" data-cy="agentToolRequest">{{ runOf(call).method }} {{ urlOf(call) }}</pre>
+              </div>
+              <div class="agent-field">
+                <span class="agent-label">Arguments</span>
+                <pre class="agent-pre">{{ argsText(call) }}</pre>
+              </div>
+              <div v-if="runOf(call).body !== null && runOf(call).body !== undefined" class="agent-field">
+                <span class="agent-label">Request body</span>
+                <pre class="agent-pre">{{ pretty(runOf(call).body) }}</pre>
+              </div>
+              <div v-if="runOf(call).status === 'done'" class="agent-field">
+                <span class="agent-label">Status</span>
+                <pre class="agent-pre">{{ resultLine(call) }}</pre>
+              </div>
+              <div v-if="runOf(call).note" class="agent-field">
+                <span class="agent-label">Note</span>
+                <pre class="agent-pre">{{ runOf(call).note }}</pre>
+              </div>
+              <div v-if="runOf(call).response !== null && runOf(call).response !== undefined" class="agent-field">
+                <span class="agent-label">Response</span>
+                <pre class="agent-pre agent-pre--tall" data-cy="agentToolResponse">{{ runOf(call).response }}</pre>
+              </div>
+            </div>
+          </div>
+          <!-- After the last call of a step, what that step cost: the review page only. -->
+          <div v-if="usage" :key="`${call.id}-usage`" class="caption text--secondary mt-1" data-cy="agentUsage">{{ usageLabel(usage) }}</div>
+        </template>
       </div>
 
       <v-alert
-        v-else-if="message.role === 'notice'"
-        :key="keyOf(message)"
+        v-else-if="item.kind === 'notice'"
+        :key="item.key"
         dense
         text
-        :type="message.level === 'error' ? 'error' : 'info'"
+        :type="item.message.level === 'error' ? 'error' : 'info'"
         class="body-2 mb-4"
         data-cy="agentNotice"
       >
         <div class="d-flex align-center flex-wrap">
-          <span class="flex-grow-1">{{ message.content }}</span>
-          <v-btn v-if="!readOnly && lastIsError && message === lastMessage" small text class="text-none" data-cy="agentRetryButton" @click="$emit('retry')">Retry</v-btn>
+          <span class="flex-grow-1">{{ item.message.content }}</span>
+          <v-btn v-if="!readOnly && lastIsError && item.message === lastMessage" small text class="text-none" data-cy="agentRetryButton" @click="$emit('retry')">Retry</v-btn>
         </div>
       </v-alert>
     </template>
@@ -147,6 +182,8 @@
   - readOnly: no approval buttons and no Retry, for a transcript that is only read.
   - thinking: a step is running, so the "thinking" dots show at the end.
   - showUsage: under each answer, the model and its token counts. For the Agent Chats review page.
+  - groupCalls: fold a run of calls into one group (below). The review page turns it off, so a
+    super admin sees every card at once; each card still starts collapsed.
   - calling: donor id → true while the page records a call to that donor, which disables its
     Call buttons so one press makes one record.
 
@@ -161,6 +198,11 @@
   A tool message's run: { status, label, method, path, args, body, httpStatus, durationMs, response,
   note }. The server's statuses are pending, done, failed, denied and cancelled; while the page works
   on a call it also shows awaiting-approval and running.
+
+  Calls with no answer text between them are drawn together, even when they come from several
+  steps: a step that only calls tools continues the run, while answer text, a user message or a
+  notice ends it. A run of two or more is a group, folded until the member opens it. Folded, it
+  shows one card: the call awaiting approval or running, otherwise the latest one that has started.
 */
 import { pretty, tokens } from './format'
 import { donorsIn, splitAnswer } from './calls'
@@ -189,12 +231,15 @@ export default {
     readOnly: { type: Boolean, default: false },
     thinking: { type: Boolean, default: false },
     showUsage: { type: Boolean, default: false },
+    groupCalls: { type: Boolean, default: true },
     calling: { type: Object, default: () => ({}) }
   },
   data () {
     return {
       // tool call id → true when its card is expanded. Every card starts collapsed.
       openCards: {},
+      // group key → true when the group shows all its calls. Every group starts folded.
+      openGroups: {},
       copiedCall: null
     }
   },
@@ -205,8 +250,41 @@ export default {
       for (const message of this.messages) if (message.role === 'tool') map.set(message.toolCallId, message)
       return map
     },
-    visibleMessages () {
-      return this.messages.filter((message) => message.role !== 'tool')
+    /**
+     * What to draw, in order:
+     *   { kind: 'user' | 'notice', key, message }
+     *   { kind: 'answer', key, message, usage, lead } — an assistant message's text; lead when its
+     *     own calls follow straight after
+     *   { kind: 'calls', key, entries: [{ call, usage }] } — a run of calls; usage is the assistant
+     *     message whose cost to show after that call (its last one), or null
+     * Tool messages are not items, and no other role is drawn or ends a run.
+     */
+    items () {
+      const items = []
+      let run = null
+      for (const message of this.messages) {
+        if (message.role === 'user' || message.role === 'notice') {
+          run = null
+          items.push({ kind: message.role, key: this.keyOf(message), message })
+          continue
+        }
+        if (message.role !== 'assistant') continue
+
+        const calls = message.toolCalls || []
+        const usage = this.showUsage && message.openaiModel ? message : null
+        if (message.content || !calls.length) {
+          run = null
+          items.push({ kind: 'answer', key: this.keyOf(message), message, usage: calls.length ? null : usage, lead: calls.length > 0 })
+        }
+        if (!calls.length) continue
+        if (!run) {
+          // Keyed by its first call, so the group keeps its key, and its open state, as it grows.
+          run = { kind: 'calls', key: `calls-${calls[0].id}`, entries: [] }
+          items.push(run)
+        }
+        calls.forEach((call, index) => run.entries.push({ call, usage: index === calls.length - 1 ? usage : null }))
+      }
+      return items
     },
     // Donor id → { name, phone }, from the chat's own API responses, for the Call buttons.
     donors () {
@@ -250,6 +328,29 @@ export default {
     },
     toggleCard (call) {
       this.$set(this.openCards, call.id, !this.openCards[call.id])
+    },
+    isGroup (item) {
+      return this.groupCalls && item.entries.length > 1
+    },
+    toggleGroup (item) {
+      this.$set(this.openGroups, item.key, !this.openGroups[item.key])
+    },
+    // The one call a folded group shows: the call the member or the page is busy with, otherwise
+    // the latest one that has started. Calls still queued behind it have not happened yet.
+    featured (item) {
+      const statusOf = (entry) => this.runOf(entry.call).status
+      const active = item.entries.find((entry) => ['awaiting-approval', 'running'].includes(statusOf(entry)))
+      if (active) return active
+      for (let i = item.entries.length - 1; i >= 0; i--) if (statusOf(item.entries[i]) !== 'pending') return item.entries[i]
+      return item.entries[item.entries.length - 1]
+    },
+    shownEntries (item) {
+      return !this.isGroup(item) || this.openGroups[item.key] ? item.entries : [this.featured(item)]
+    },
+    // How many calls a folded group hides that went wrong, so a failure is not folded out of sight.
+    hiddenFailures (item) {
+      const shown = this.featured(item)
+      return item.entries.filter((entry) => entry !== shown && this.toolTone(entry.call) === 'err').length
     },
     toolTone (call) {
       const run = this.runOf(call)
@@ -317,6 +418,7 @@ export default {
 
 .agent-msg { margin: 0 0 16px; line-height: 1.6; }
 .agent-msg--user { display: flex; justify-content: flex-end; }
+.agent-msg--lead { margin-bottom: 0; }
 .agent-bubble {
   background: var(--agent-fill);
   border-radius: 16px 16px 4px 16px;
@@ -340,6 +442,26 @@ export default {
 .agent-thinking span:nth-child(2) { animation-delay: 0.15s; }
 .agent-thinking span:nth-child(3) { animation-delay: 0.3s; }
 @keyframes agent-blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 0.9; } }
+
+.agent-calls { margin: 6px 0 16px; }
+.agent-group {
+  border: 1px solid var(--agent-line);
+  border-radius: 10px;
+  padding: 2px 8px 2px;
+}
+.agent-group-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 -4px;
+  padding: 4px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.agent-group-head:hover { background: var(--agent-fill); }
+.agent-group-count { font-weight: 500; opacity: 0.75; }
+.agent-group-failed { color: #e53935; }
 
 .agent-tool {
   border: 1px solid var(--agent-line);

@@ -192,8 +192,11 @@ On a computer the page has three columns, side by side:
    last moved, and its token counts (see below).
 3. **The chat itself** — tap a chat to read it, exactly as the member saw it: their messages, the
    assistant's answers, and a card for everything the assistant did in Badhan. Tap a card to see
-   the exact request and what came back. The header shows the title, the member, and the date the
-   chat was started.
+   the exact request and what came back. Unlike the member's own page
+   ([chapter 22](22-badhan-agent.md)), cards in a row are **not** gathered into a folded box:
+   every card is listed, each folded on its own. Under each answer, and under the last card of each
+   step, a grey line names the model and that step's token counts. The header shows the title, the
+   member, and the date the chat was started.
 
 On a phone you see one column at a time; tap a member, then a chat, and use the arrow at the top
 left to go back.

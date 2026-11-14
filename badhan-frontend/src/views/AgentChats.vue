@@ -158,7 +158,7 @@
           <div v-else-if="transcript" class="review-scroll">
             <div class="review-thread">
               <p v-if="!transcript.messages.length" class="text--secondary text-center">This chat has no messages.</p>
-              <AgentThread :messages="transcript.messages" :server="server" read-only show-usage></AgentThread>
+              <AgentThread :messages="transcript.messages" :server="server" read-only show-usage :group-calls="false"></AgentThread>
             </div>
           </div>
         </section>
